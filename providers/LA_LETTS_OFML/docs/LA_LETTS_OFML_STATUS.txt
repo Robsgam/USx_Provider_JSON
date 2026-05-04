@@ -1,9 +1,33 @@
 LA_LETTS_OFML -- Build Status
 ==============================
-Last updated: 2026-04-23
+Last updated: 2026-05-04
 Current version: 1.0 (Phase 1 -- initial standup)
 Provider: LA_LEMS (internal name) / LA_LETTS_OFML (repo name)
 Phase: 01_standup (initial JSON, not yet tested)
+
+RE-VALIDATION (2026-05-04, monorepo validator):
+  Validator: 39 PASS / 7 FAIL / 53 WARN / 3 LIMITATION
+  Status: NEEDS REBUILD -- pre-KB build, does not meet current standards
+
+  CRITICAL FAILs (7):
+    - ENTITIES bundle not first -> forms render incorrectly
+    - State AP #1 x3: Vehicle, DH, Boat QIDMs missing codeTypeProvider -> sends numeric ID
+    - SexCode AP #2 x2: DL + DH QIDMs send numeric ID for SexCode
+    - RaceCode AP #3: DL QIDM sends numeric ID for RaceCode
+
+  KEY WARNs (53):
+    - No entity order array defined
+    - Missing CAD_DISPATCH + FIRST_RESPONDER layouts on 3 entities
+    - LicensePlateYear='2025' (stale, should be 2026)
+    - RaceCode field uses attributeTypeId='RACE' without codeTypeProvider (AP #3)
+    - SexCode field missing codeTypeProvider='NIBRS' on form
+    - Attention in combo any[] on ALL queries (unresolvable per validator)
+    - RMS Patch 3 missing (no registrationState on Person QIDM)
+    - RMS Patch 6 not applied (dead HIDLE fields remain)
+    - RMS autoSelect not true
+    - Firearm ImageIndicator missing initialValue
+    - Firearm layout misalignment (2-col row, 1 child)
+    - Generic LicensePlateNumber fieldId (needs LicensePlateNumberIn)
 
 ARCHITECTURE (v1.0)
 --------------------

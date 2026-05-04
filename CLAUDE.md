@@ -18,13 +18,13 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.0 BASE + MC | DONE (17+57 PASS live) | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 46P/0F/15FIRE import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
-| AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/4LIM/18FIRE | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 100P/0F/1W/4LIM/34FIRE | DL+DH shared form, 6-card Person, entity-split BLOCKED (#28) |
-| TX_TLETS | providers/TX_TLETS/ | v1.0 BASE | Phase 1 standup | TX-specific queries (DPSI/REG/CPL/RSDWW) |
-| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v1.0 BASE | Phase 1 standup | RMS phantom field fix (AP #27) |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.0 BASE + MC | 64P/0F/3W/2LIM live 17+57 PASS | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6 |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 62P/0F/5W/4LIM import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/0W/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
+| AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/0W/4LIM import PENDING | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
+| FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 100P/0F/1W/4LIM import PENDING | DL+DH shared form, 6-card Person, entity-split BLOCKED (#28) |
+| TX_TLETS | providers/TX_TLETS/ | v1.0 BASE | **67P/16F/44W NEEDS REBUILD** | TX-specific queries (DPSI/REG/CPL/RSDWW) |
+| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v1.0 BASE | **39P/7F/53W NEEDS REBUILD** | Attention handler pattern (AP #27) |
 
 ## Legacy Repos (READ-ONLY)
 

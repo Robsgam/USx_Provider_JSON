@@ -1,15 +1,27 @@
 HI_HCJDC_OFML STATUS
 ====================
-Last Updated: 2026-04-28
+Last Updated: 2026-05-04
 
 BASE v1.0
-  Validator: 46 PASS / 0 FAIL / 0 WARN
+  Validator: 62 PASS / 0 FAIL / 5 WARN / 4 LIMITATION (re-validated 2026-05-04)
   Queries:   15 FIRE / 0 SKIP
   Import:    PENDING
   Live Test: PENDING
 
 MC v1.0
-  Status: PENDING
+  Validator: 62 PASS / 0 FAIL / 5 WARN / 4 LIMITATION (re-validated 2026-05-04)
+  Import:    PENDING
+  Live Test: PENDING
+
+  OPEN WARNs (monorepo re-validation 2026-05-04):
+    1. Vehicle ImageIndicator not in any combo set[]/any[] -- will not serialize (needs fix)
+    2. Vehicle State initialValue='HI' with In/Out combos -- LIMITATION #30 (documented, no fix)
+    3. AUTH combination missing keyReference -- low risk
+    4. RMS Person autoSelect not true -- should be true (cross-provider consistency)
+    5. RMS Vehicle autoSelect not true -- should be true (cross-provider consistency)
+  OPEN LIMITATIONs:
+    1-3. Combo ordering (Vehicle, DL, DH) -- operational priority correct
+    4. DL+DH single form without DH-suffix -- known constraint (AP #14 / LIMITATION #25)
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built, for comparison)

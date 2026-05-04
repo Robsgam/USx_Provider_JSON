@@ -1,9 +1,32 @@
 TX_TLETS -- Build Status
 ========================
-Last updated: 2026-04-23
+Last updated: 2026-05-04
 Current version: 1.0 (Phase 1 -- initial standup)
 Provider: TX_TLETS
 Phase: 01_standup (initial JSON, not yet tested)
+
+RE-VALIDATION (2026-05-04, monorepo validator):
+  Validator: 67 PASS / 16 FAIL / 44 WARN / 4 LIMITATION
+  Status: NEEDS REBUILD -- pre-KB build, does not meet current standards
+
+  CRITICAL FAILs (16):
+    - RMS Vehicle+Person QIDMs in provider bundle (should be in RMS bundle)
+    - combinations array on all 5 QIFs (belongs on QIDMs only)
+    - State AP #1: Vehicle QIDM no codeTypeProvider -> sends numeric ID
+    - SexCode AP #2: Person QIDM no codeTypeProvider -> sends numeric ID
+    - RMS bundle incomplete: missing QRDM, QUERYRESULTSLAYOUT, no QIDM configs
+    - RMS bundle provider name 'TX_TLETS_RMS' instead of 'RMS'
+
+  KEY WARNs (44):
+    - Missing FIRST_RESPONDER layout on all 5 entities
+    - SexCode uses codeTypeCategory='SEX' (wrong pattern)
+    - ImageIndicator is FormCheckbox on 4 entities (should be FormSelect YES_NO_UNKNOWN)
+    - ArticleTypeCode codeTypeSource='NCIC' -> empty dropdown (needs CA_CLETS)
+    - ROW_0 parent broken on all CAD_DISPATCH layouts
+    - LicensePlateYear missing initialValue
+    - State initialValue='TX' with In/Out combos (LIMITATION #30)
+    - Generic LicensePlateNumber fieldId (needs LicensePlateNumberIn)
+    - CPL combo has unresolvable MessageKey in any[]
 
 ARCHITECTURE (v1.0)
 --------------------
