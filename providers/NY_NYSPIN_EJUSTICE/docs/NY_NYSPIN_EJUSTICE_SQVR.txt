@@ -109,27 +109,29 @@ Future tests must follow GATE 2/3 (per-test log with XML capture).
   QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery (autoSelect=true)
   QIF:  Person (shared with DL)
   Combos: DALL (OLN), DALH (Name -- invented keyRef)
-  DH-suffix fieldIds: OperatorLicenseNumberDH, NameFirstDH, NameLastDH,
-    NameMiddleDH, NameSuffixDH, BirthDateDH, SexCodeDH
+  Shared fieldIds with DL (no DH-suffix): OperatorLicenseNumber, NameFirst, NameLast,
+    NameMiddle, NameSuffix, BirthDate, SexCode
 
-  DALL -- OLN (DH-suffix) [CONFIRMED]
-    set: OperatorLicenseNumberDH
-    any: State, NyNyspinTransactionName, PurposeCode, Requestor
+  DALL -- OLN [CONFIRMED]
+    set: OperatorLicenseNumber
+    any: ImageIndicator, RegistrationState
     keyReference: DALL
-    Fires when: OperatorLicenseNumberDH filled (via DL+DH co-fire)
+    Fires when: OperatorLicenseNumber filled (via DL+DH co-fire)
     Tests: T5 (co-fire with DLIC), T14 (co-fire OOS)
 
-  DALH -- Name + DOB (DH-suffix, invented keyRef) [CONFIRMED]
-    set: NameLastDH, NameFirstDH
-    any: BirthDateDH, SexCodeDH, NameMiddleDH, NameSuffixDH, State
+  DALH -- Name + DOB (invented keyRef) [CONFIRMED]
+    set: BirthDate, NameLast, NameFirst, SexCode
+    any: ImageIndicator, RegistrationState, NameMiddle, NameSuffix
     keyReference: DALH
-    Fires when: NameLastDH + NameFirstDH filled (via DL+DH co-fire)
+    Fires when: NameLast + NameFirst filled (via DL+DH co-fire)
     Tests: T6 (co-fire with DLICN), T15 (co-fire OOS), T18 (4-field name)
 
   DL+DH co-fire: CONFIRMED
     When user enters OLN -> DLIC + DALL both fire (DL first, DH second)
     When user enters Name+DOB -> DLICN + DALH both fire
-    DH-suffix fieldIds prevent cross-QIDM field collision
+    NY uses shared fieldIds (no DH-suffix) because DL+DH co-fire is the
+    correct workflow. DH-suffix fieldIds only needed when DL and DH must be
+    independently selectable (FL pattern with queriesToDeselect).
     Correct police workflow: officer wants both DL and DH from single entry
 
 ================================================================================
@@ -213,7 +215,7 @@ RMS BUNDLE
   RMS co-fire tested on Vehicle (plate, VIN) and Person (OLN, Name) [CONFIRMED]
   Patches applied: 7 (RMS cleanup + autoSelect)
   Patch 7: autoSelect=true on both Vehicle and Person RMS QIDMs
-  Sex removed from RMS Person QIDM (NIBRS_SEX CommSys-only)
+  SexCodeOOS (sexOOS) removed from RMS Person QIDM; main sex attr retained (HIDLE default)
   VehicleMakeCode present in RMS (VEHICLE_MAKE attrType) but absent from CommSys XML
 
 ================================================================================

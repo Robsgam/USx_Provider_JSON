@@ -12,7 +12,6 @@
 #   VehicleRegistrationQuery             RVEH (plate), RVIN (VIN+state OOS), RCAR (VIN NY DMV)
 #   BoatQuery                            BVEH (reg+state OOS), BVIN (hull+state OOS), RVEH (reg NY), RCAR (hull NY)
 #   DriverLicenseQuery                   DLIC (OLN), DLICN (Name+DOB+Sex -- invented keyRef)
-#   NyNyspinDriverLicenseNameQuery       DGRP (Name)
 #   DriverHistoryQuery                   DALL (OLN), DALH (Name+DOB+Sex -- invented keyRef)
 #   GunQuery                             GINQ
 #   ArticleSingleQuery                   AINQ
@@ -48,7 +47,7 @@
 # PERSON CO-FIRING (Phase 1):
 #   3 QIDMs target Person. autoSelect=true, no queriesToDeselect.
 #   OLN -> DL DLIC + DH DALL co-fire (correct police workflow).
-#   Name+DOB+Sex -> DL DLICN + DH DALH + DGRP co-fire.
+#   Name+DOB+Sex -> DL DLICN + DH DALH co-fire.
 
 param(
     [string]$Version = "1.0",
@@ -555,7 +554,7 @@ $vehicleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 # Person -- 1 card
 # PERSON SEARCH: OLN + State + Image + Last + First + Middle + Suffix + DOB + Sex
-# 3 QIDMs target this form (DL, DGRP, DH). All co-fire based on filled fields.
+# 2 QIDMs target this form (DL, DH). Both co-fire based on filled fields.
 # SexCode: attributeTypeId=SEX + codeTypeProvider=NIBRS (3-layer pattern)
 # RegistrationState: attributeTypeId=STATE (NCIC pattern, no initialValue)
 # ImageIndicator: FormSelect YES_NO_UNKNOWN, default Y (officer wants photo)
@@ -586,7 +585,7 @@ $perLayout = MakeLayouts @(
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (DLIC/DLICN), DH (DALL/DALH), DGRP on shared single card. NCIC state, NIBRS sex.'
+    description  = 'Person queries -- DL (DLIC/DLICN), DH (DALL/DALH) on shared single card. NCIC state, NIBRS sex.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

@@ -79,7 +79,7 @@ FL-2: FL-specific transaction keys
   transactions.
 
 FL-3: DriverHistoryQuery (KQ) is FL-specific
-  KQ includes PurposeCode (FormSelect, DEX_INQUIRY_PURPOSE_CODE, default 'C').
+  KQ includes PurposeCode (FormInput, maxLength=1, initialValue='C').
   Not all providers have DH -- check metadata.
 
 FL-4: Boat combo priority conflict
@@ -98,6 +98,13 @@ FL-6: VehicleRegistrationQuery has no State requirement
 FL-7: DL+DH shared form (6-card design)
   Uses LIMITATION #24/#25 pattern: autoSelect + queriesToDeselect + DH-suffix fieldIds.
   Reference implementation for shared-form DL+DH.
+
+FL-8: BoatQuery ImageIndicator must be in ALL combo any[] arrays
+  BQ and FBQ combos originally omitted ImageIndicator from any[].
+  QB combos had it. Fixed 2026-05-04: all 12 BoatQuery combos now include
+  ImageIndicator in any[] for consistency with Vehicle/Person patterns.
+  Per LIMITATION #1 this is functionally harmless either way, but ensures
+  combo firing is not blocked when only set[] fields + ImageIndicator are filled.
 
 ================================================================================
 NY_NYSPIN_EJUSTICE -- New York
@@ -131,9 +138,10 @@ NY-5: BirthDate format MMddyyyy
 NY-6: RaceCode NIBRS_RACE/NIBRS confirmed
   codeTypeSource=NCIC gave empty dropdown. Fixed to NIBRS source (v1.12).
 
-NY-7: BoatQuery and DriverHistoryQuery are Out of Service
-  Confirmed in metadata: these transactions are not available on NYSPIN.
-  Do not build QIDMs for these.
+NY-7: BoatQuery and DriverHistoryQuery are ACTIVE
+  Both transactions exist in metadata with full XML definitions.
+  BoatQuery: 4 combos (RVEH/RCAR in-state, BVEH/BVIN OOS). Confirmed live.
+  DriverHistoryQuery: 2 combos (DALL OLN, DALH Name). Co-fires with DL. Confirmed live.
 
 ================================================================================
 HI_HCJDC_OFML -- Hawaii

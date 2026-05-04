@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: FL_FCIC_BASE
   Source: FL_FCIC_BASE.json
-  Generated: 2026-05-04 11:20
+  Generated: 2026-05-04 17:10
 ================================================================
 QUERY SIMULATION
 ================
@@ -398,7 +398,7 @@ QUERY SIMULATION
 
     [FIRES] BQBoatHullIdNumber
       set: [BoatHullIdNumber, RegistrationState]
-      any: [RegistrationNumber] -> matched: [RegistrationNumber]
+      any: [RegistrationNumber, ImageIndicator] -> matched: [RegistrationNumber, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -417,7 +417,7 @@ QUERY SIMULATION
 
     [FIRES] BQRegistrationNumber
       set: [RegistrationNumber, RegistrationState]
-      any: [BoatHullIdNumber] -> matched: [BoatHullIdNumber]
+      any: [BoatHullIdNumber, ImageIndicator] -> matched: [BoatHullIdNumber, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -436,7 +436,7 @@ QUERY SIMULATION
 
     [FIRES] FBQBoatHullIdNumber
       set: [BoatHullIdNumber]
-      any: [DecalNumber, RegistrationNumber, TitleLienInformation] -> matched: [DecalNumber, RegistrationNumber, TitleLienInformation]
+      any: [DecalNumber, RegistrationNumber, TitleLienInformation, ImageIndicator] -> matched: [DecalNumber, RegistrationNumber, TitleLienInformation, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -455,7 +455,7 @@ QUERY SIMULATION
 
     [FIRES] FBQRegistrationNumber
       set: [RegistrationNumber]
-      any: [BoatHullIdNumber, DecalNumber, TitleLienInformation] -> matched: [BoatHullIdNumber, DecalNumber, TitleLienInformation]
+      any: [BoatHullIdNumber, DecalNumber, TitleLienInformation, ImageIndicator] -> matched: [BoatHullIdNumber, DecalNumber, TitleLienInformation, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -474,7 +474,7 @@ QUERY SIMULATION
 
     [FIRES] FBQDecalNumber
       set: [DecalNumber]
-      any: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation] -> matched: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation]
+      any: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation, ImageIndicator] -> matched: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -493,7 +493,7 @@ QUERY SIMULATION
 
     [FIRES] FBQTitleLienInformation
       set: [TitleLienInformation]
-      any: [BoatHullIdNumber, DecalNumber, RegistrationNumber] -> matched: [BoatHullIdNumber, DecalNumber, RegistrationNumber]
+      any: [BoatHullIdNumber, DecalNumber, RegistrationNumber, ImageIndicator] -> matched: [BoatHullIdNumber, DecalNumber, RegistrationNumber, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

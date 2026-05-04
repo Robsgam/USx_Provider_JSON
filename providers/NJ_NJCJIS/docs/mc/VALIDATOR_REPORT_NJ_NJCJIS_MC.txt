@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-04 11:15
+  Generated: 2026-05-04 17:10
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -66,7 +66,6 @@ VALIDATOR RESULTS
 
 === PHASE 5: Auth / QMF / Results ===
   [PASS] AUTHENTICATION present
-  [WARN] AUTH 'NJ_NJCJIS' combination missing keyReference
   [PASS] QUERYMESSAGEFORMAT present
   [PASS] QUERYRESULTDATAMAPPING present
   [PASS] RMS AUTHENTICATION present
@@ -74,8 +73,8 @@ VALIDATOR RESULTS
   [PASS] RMS QUERYRESULTDATAMAPPING present
   [PASS] RMS QUERYRESULTSLAYOUT present
   [PASS] RMS bundle has 2 QIDM(s)
-  [WARN] RMS QIDM 'RMS Person Search query' autoSelect is not true -- RMS queries should auto-fire with CommSys
-  [WARN] RMS QIDM 'RMS Vehicle search query' autoSelect is not true -- RMS queries should auto-fire with CommSys
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQ': all set[]/any[] fields resolvable
@@ -90,9 +89,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QBN': all set[]/any[] fields resolvable
 
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 64 PASS / 0 FAIL / 3 WARN / 2 LIMITATION
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  2 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

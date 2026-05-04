@@ -549,44 +549,44 @@ $boatQuery = [PSCustomObject]@{
     combinations = @(
         # BQ combos (state-routed)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst','RegistrationState'); any = @('BoatHullIdNumber','RegistrationNumber') }
+            requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst','RegistrationState'); any = @('BoatHullIdNumber','RegistrationNumber','ImageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'BQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('RegistrationNumber') }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('RegistrationNumber','ImageIndicator') }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber','RegistrationState'); any = @('BoatHullIdNumber') }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber','RegistrationState'); any = @('BoatHullIdNumber','ImageIndicator') }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
             state                 = 'In/Out'
         }
         # FBQ combos (FCIC-only, no state)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('DecalNumber','RegistrationNumber','TitleLienInformation') }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('DecalNumber','RegistrationNumber','TitleLienInformation','ImageIndicator') }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'FBQBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('BoatHullIdNumber','DecalNumber','TitleLienInformation') }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('BoatHullIdNumber','DecalNumber','TitleLienInformation','ImageIndicator') }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'FBQRegistrationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('DecalNumber'); any = @('BoatHullIdNumber','RegistrationNumber','TitleLienInformation') }
+            requirements          = [PSCustomObject]@{ set = @('DecalNumber'); any = @('BoatHullIdNumber','RegistrationNumber','TitleLienInformation','ImageIndicator') }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FBQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('TitleLienInformation'); any = @('BoatHullIdNumber','DecalNumber','RegistrationNumber') }
+            requirements          = [PSCustomObject]@{ set = @('TitleLienInformation'); any = @('BoatHullIdNumber','DecalNumber','RegistrationNumber','ImageIndicator') }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'

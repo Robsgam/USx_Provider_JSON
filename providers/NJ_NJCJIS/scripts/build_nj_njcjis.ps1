@@ -176,6 +176,7 @@ $auth = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            keyReference = 'AUTH'
             requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
         }
     )
@@ -693,6 +694,10 @@ $rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
     $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
         'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
 })
+
+# Patch 7: RMS autoSelect=true (RMS fires alongside CommSys automatically)
+$rmsVehQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
+$rmsPersonQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
 
 # =====================================================================
 # WRITE OUTPUT
