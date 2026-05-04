@@ -63,7 +63,7 @@ FILES IN THIS FOLDER
 TOOLS
 ================================================================================
 
-  C:\Users\RobSgambellone\.local\bin\connectcic-validator\validate.ps1
+  tools/validate.ps1
     *** MANDATORY PRE-IMPORT VALIDATOR ***
     Run BEFORE every import. 6-phase validation:
       Phase 0: Encoding (BOM, UTF-16, JSON syntax)
@@ -81,43 +81,43 @@ TOOLS
 AUTHORITATIVE SOURCE FILES (read-only)
 ================================================================================
 
-  C:\Users\RobSgambellone\.local\bin\HIDLE.json
+  templates/HIDLE.json
     Structural template for all builds. Provides RMS bundle, rule handler names,
     QUERYRESULTDATAMAPPING, and AUTHENTICATION pattern.
 
-  C:\Users\RobSgambellone\.local\bin\CA_ESUN.json
+  templates/CA_ESUN.json
     Reference for single-card QUERYINPUTFORM layouts.
 
-  C:\Users\RobSgambellone\.local\bin\FL_FCIC.json
+  providers/FL_FCIC/FL_FCIC.json
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
     DH-suffix pattern, GunQuery sourceField naming).
 
-  C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\   *** CONFIRMED BASELINE ***
+  providers/NJ_NJCJIS/   *** CONFIRMED BASELINE ***
     Phase 1 standup COMPLETE -- v1.7, 25/25 PASS (2026-04-20).
-    GitHub: https://github.com/LooseConnection/NJ_NJCIS_JSON
+    Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
     NJ_NJCJIS_BASE.json = permanent Phase 1 reference (do not overwrite).
     Best reference for: NCIC state pattern, NIBRS sex pattern, RMS person state patch,
     Phase 1 single-card architecture, build script structure.
     AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
 
-  C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\
+  providers/NY_NYSPIN_EJUSTICE/
     Phase 1 reboot complete -- v1.1 built (2026-04-20), import PENDING.
-    GitHub: https://github.com/Robsgam/NY_NYSPIN_EJUSTICE
+    Legacy repo (read-only): https://github.com/Robsgam/NY_NYSPIN_EJUSTICE
     Best reference for: DGRP/NyNyspinDriverLicenseNameQuery separate transaction,
     DALL+DALH invented keyRef, DH-suffix isolation, blank-default NJ_NIBRS_STATE (NCIC unconfirmed NY),
     NIBRS_SEX CommSys-only + sex removed from RMS (when reverse-lookup unconfirmed).
     AVOID as template: old NY v1.0-v1.21 (multi-form split-entity before Phase 1 model).
 
-  C:\Users\RobSgambellone\.local\bin\AZ_AZDPS\
+  providers/AZ_AZDPS/
     Phase 1 -- v1.1 built (2026-04-20), forms confirmed rendered, tests PENDING.
-    GitHub: https://github.com/Robsgam/AZ_AZDPS
+    Legacy repo (read-only): https://github.com/Robsgam/AZ_AZDPS
     Best reference for: all-on-one-person-card design (DL + DH + Wanted + Missing),
     dexStateUserId auto-populate pattern (badge hidden, auto-filled from officer profile),
     yyyyMMdd date format, AZ NCIC/NIBRS confirmed patterns, Wanted/Missing on Person form.
     8 QIDMs: VehicleReg, DL (4 paths), DH (2 paths), GunQuery, ArticleSingle, BoatQuery (4 paths),
     WMPIWanted (2 paths), WMPIMissing (2 paths).
 
-  C:\Users\RobSgambellone\.local\bin\Source jsons\NCIC_CODE_SOURCE_TEST.json
+  templates/CODETYPE_TEST.json
     Code source dropdown test file. Shows which codeTypeCategory values
     populate under which codeTypeSource. Use before committing any new dropdown.
 
@@ -125,7 +125,7 @@ AUTHORITATIVE SOURCE FILES (read-only)
 FULL BUILD GUIDE (workflow, prompts, folder structure)
 ================================================================================
 
-  C:\Users\RobSgambellone\.local\bin\CONNECTCIC_BUILD_GUIDE.txt
+  knowledge-base/CONNECTCIC_BUILD_GUIDE.txt
 
   The build guide covers: folder structure, standup prompts, gap check process,
   build script pattern, phase transitions, test log format, documentation workflow.

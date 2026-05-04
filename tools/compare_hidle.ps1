@@ -13,7 +13,7 @@ param(
     [string]$NewHidle
 )
 
-$currentPath = "C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\source\HIDLE.json"
+$currentPath = (Resolve-Path "$PSScriptRoot\..\templates\HIDLE.json").Path
 
 if (-not (Test-Path $NewHidle))  { Write-Host "ERROR: $NewHidle not found"; exit 1 }
 if (-not (Test-Path $currentPath)) { Write-Host "ERROR: $currentPath not found"; exit 1 }

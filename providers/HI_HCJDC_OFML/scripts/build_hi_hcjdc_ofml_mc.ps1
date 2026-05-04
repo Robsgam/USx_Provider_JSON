@@ -16,7 +16,7 @@ param(
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
-$DIR      = "C:\Users\RobSgambellone\.local\bin\HI_HCJDC_OFML"
+$DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\HI_HCJDC_OFML_MC.json"
 $VEROUT   = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
@@ -581,7 +581,7 @@ Write-Host "Built HI_HCJDC_OFML_MC.json v${Version}"
 Write-Host "  -> $OUT"
 Write-Host "  -> $VEROUT"
 
-$VALIDATOR = "C:\Users\RobSgambellone\.local\bin\connectcic-validator\validate.ps1"
+$VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
 if (Test-Path $VALIDATOR) {
     Write-Host ""
     Write-Host "Running structural validation..." -ForegroundColor Cyan

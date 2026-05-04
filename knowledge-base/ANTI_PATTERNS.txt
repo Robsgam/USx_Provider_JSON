@@ -317,7 +317,7 @@ Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
     returns ArrayList which custom formatters may flatten to "elem1 elem2" instead of
     preserving the array structure.
   Confirmed broken: FL_FCIC v2.1_test, v2.1_CLEAN (2026-04-20) -- interface crash on load.
-  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+  Detection: Run tools/validate.ps1 -- catches this as FAIL.
 
 ================================================================================
 22. maxLength as NUMBER instead of STRING in QIF layout FormInput props
@@ -330,7 +330,7 @@ Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
     Reference NJ_NJCJIS.json or FL_FCIC_BASE.json for correct format.
   Root cause: Same serializer issue as AP #21. C# int types serialize as JSON numbers.
   Confirmed broken: FL_FCIC v2.1_test (2026-04-20) -- likely contributed to interface crash.
-  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+  Detection: Run tools/validate.ps1 -- catches this as FAIL.
 
 ================================================================================
 23. autoSelect=true on MULTIPLE QIDMs targeting ONE QIF (single-form entity)
@@ -343,7 +343,7 @@ Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
   Correct approach: only ONE QIDM per entity should have autoSelect=true. Others should
     be autoSelect=false (user manually selects). Match BASE export pattern.
   Confirmed pattern: FL_FCIC_BASE.json has DL autoSelect=true, DH autoSelect=false.
-  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+  Detection: Run tools/validate.ps1 -- catches this as FAIL.
 
 ================================================================================
 24. Using NCIC_FIREARM_MAKE codeTypeCategory for Vehicle Make

@@ -9,7 +9,7 @@ param(
 )
 
 $DATE    = (Get-Date -Format 'yyyy-MM-dd')
-$DIR     = "C:\Users\Gordon Hallof\LA_LETTS_OFML"
+$DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $CURRENT = "$DIR\LA_LETTS_OFML_BASE.json"
 
 if ($Phase) {

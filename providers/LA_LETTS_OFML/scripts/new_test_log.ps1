@@ -19,7 +19,7 @@ param(
 )
 
 $DATE      = (Get-Date -Format 'yyyy-MM-dd')
-$DIR       = "C:\Users\Gordon Hallof\LA_LETTS_OFML"
+$DIR       = (Resolve-Path "$PSScriptRoot\..").Path
 $LOGDIR    = "$DIR\phases\$Phase\logs"
 $FILENAME  = "${DATE}_${QueryType}_${TestNum}_${Combination}_v${Version}.txt"
 $OUTPATH   = "$LOGDIR\$FILENAME"

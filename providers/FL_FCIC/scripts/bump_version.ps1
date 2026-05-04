@@ -6,7 +6,7 @@
 param([Parameter(Mandatory)][string]$Version)
 
 $DATE    = (Get-Date -Format 'yyyy-MM-dd')
-$DIR     = "C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS"
+$DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $ARCHIVE = "$DIR\archive"
 $CURRENT = "$DIR\NJ_NJCJIS.json"
 

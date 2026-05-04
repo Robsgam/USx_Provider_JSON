@@ -40,7 +40,7 @@ BUILD PHASE MODEL (follow this order -- do not skip phases)
 BEFORE STARTING A NEW PROVIDER
 ================================================================================
 
-  [ ] Read README.txt in this folder (ConnectCIC-KB/knowledge-base)
+  [ ] Read README.txt in this folder (knowledge-base/)
   [ ] Read BUNDLE_ARCHITECTURE.txt (3-bundle structure, AUTH/QMF/QRDM/RMS patches, rule handlers)
   [ ] Read CONNECTCIC_BUILD_GUIDE.txt (workflow, prompts, folder structure)
   [ ] Read PLATFORM_LIMITATIONS.txt (especially #2, #21, #24-#25)
@@ -252,7 +252,7 @@ BEFORE EACH BUILD
   [ ] Check State initialValue: do NOT set initialValue on State when provider has
       separate in-state vs OOS keyRefs (changes combo routing). See LIMITATION #30.
       OK to use initialValue when provider has no separate in-state keyRefs (e.g., NJ).
-  [ ] Run validator: powershell.exe -ExecutionPolicy Bypass -File "C:\Users\RobSgambellone\.local\bin\connectcic-validator\validate.ps1" -Path <your-json>
+  [ ] Run validator: powershell.exe -ExecutionPolicy Bypass -File "tools/validate.ps1" -Path <your-json>
       Catches: BOM, templateColumns type (AP #21), maxLength type (AP #22),
       autoSelect conflicts (AP #23), duplicate targetField, phantom sourceField,
       LIMITATION #2 (duplicate entity+query), combination field resolution, missing Auth/QMF/Results.
@@ -282,7 +282,7 @@ BEFORE EACH IMPORT
 ================================================================================
 
   [ ] Validator passes clean (0 FAIL, 0 unexpected WARN):
-      powershell.exe -ExecutionPolicy Bypass -File "C:\Users\RobSgambellone\.local\bin\connectcic-validator\validate.ps1" -Path <your-json> -ShowDetail
+      powershell.exe -ExecutionPolicy Bypass -File "tools/validate.ps1" -Path <your-json> -ShowDetail
   [ ] CommSys provider bundle: type='BUNDLE' present on the bundle object?
   [ ] ENTITIES bundle: type='BUNDLE' present on the bundle object?
       (Both bundles require type='BUNDLE'. If omitted, platform silently ignores configs.)
@@ -314,7 +314,7 @@ TEST SESSION WORKFLOW -- MANDATORY GATES (BLOCKING)
 
   BEFORE EACH TEST (GATE 2):
   [GATE] Run shared new_test_log.ps1 to create a stub log in tests/
-         powershell.exe -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\new_test_log.ps1 `
+         powershell.exe -ExecutionPolicy Bypass -File tools/new_test_log.ps1 `
            -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
   [GATE] User opens F12 > Network before submitting query
   [GATE] CANNOT execute the test without a stub log on disk

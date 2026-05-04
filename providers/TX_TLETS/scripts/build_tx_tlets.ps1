@@ -8,7 +8,7 @@
 # Pattern reference: AZ_AZDPS scripts\build_az_azdps.ps1
 #
 # STUB -- populate this script as the TX_TLETS build is developed.
-# See ConnectCIC-KB CONNECTCIC_BUILD_GUIDE.txt for build script pattern.
+# See knowledge-base/CONNECTCIC_BUILD_GUIDE.txt for build script pattern.
 
 param(
     [Parameter(Mandatory)][string]$Version,
@@ -16,7 +16,7 @@ param(
 )
 
 $DATE = (Get-Date -Format 'yyyy-MM-dd')
-$DIR  = "C:\Users\Gordon Hallof\TX_TLETS"
+$DIR  = (Resolve-Path "$PSScriptRoot\..").Path
 
 Write-Host "TX_TLETS build script -- STUB" -ForegroundColor Yellow
 Write-Host "Version: $Version  Phase: $Phase  Date: $DATE"

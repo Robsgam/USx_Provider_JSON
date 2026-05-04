@@ -12,7 +12,6 @@ providers/{PROVIDER}/     -- 7 provider builds (NJ, AZ, FL, HI, LA, NY, TX)
 knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
-dev/                       -- Devdoc PDFs, scratch scripts
 ```
 
 ## Provider Status (updated 2026-05-04)
@@ -20,12 +19,12 @@ dev/                       -- Devdoc PDFs, scratch scripts
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.0 BASE + MC | DONE (17+57 PASS live) | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 46P/0F/15FIRE | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.0 BASE + MC | DONE (15+19 PASS live) | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 46P/0F/15FIRE import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/4LIM/18FIRE | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 68P/0F/2LIM | DL+DH shared form, 6-card Person, entity-split BLOCKED (#28) |
-| TX_TLETS | providers/TX_TLETS/ | v1.0 BASE | Imported 2026-04-29 | TX-specific queries (DPSI/REG/CPL/RSDWW) |
-| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v1.0 BASE | Imported 2026-04-29 | RMS phantom field fix (AP #27) |
+| FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 100P/0F/1W/4LIM/34FIRE | DL+DH shared form, 6-card Person, entity-split BLOCKED (#28) |
+| TX_TLETS | providers/TX_TLETS/ | v1.0 BASE | Phase 1 standup | TX-specific queries (DPSI/REG/CPL/RSDWW) |
+| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v1.0 BASE | Phase 1 standup | RMS phantom field fix (AP #27) |
 
 ## Legacy Repos (READ-ONLY)
 
@@ -491,9 +490,9 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 - Update docs/STATUS.txt test matrix row
 - Update docs/SQVR.txt — flip [PENDING] to [CONFIRMED] if PASS
 
-**TRIGGER: You update any KB file (knowledge-base/, CLAUDE.md in KB repo)**
-- Commit and push ConnectCIC-KB
-- Check: does this change affect any provider repo CLAUDE.md? If yes, update + commit + push each
+**TRIGGER: You update any KB file (knowledge-base/, CLAUDE.md)**
+- Commit and push the monorepo
+- Check: does this change affect CLAUDE.md or any build script? If yes, update those too
 - Check: does this change affect any build script? If yes, propagate
 
 **TRIGGER: You discover a new limitation, anti-pattern, or import error**
@@ -553,7 +552,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 1. Run `new_test_log.ps1` to create a stub log file in `tests/`
    ```powershell
-   powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\new_test_log.ps1 `
+   powershell -ExecutionPolicy Bypass -File tools\new_test_log.ps1 `
      -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
    ```
 2. Have the user open browser dev tools (F12 > Network) before submitting the query
@@ -583,10 +582,10 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 ### GATE 6: After Any KB Update
 
-1. Commit and push ConnectCIC-KB repo
-2. Check if the KB change affects other provider repos (CLAUDE.md, build scripts)
-3. If yes: update affected repos, commit, push each one
-4. **CANNOT finish a KB update without checking cross-repo impact**
+1. Commit and push the monorepo
+2. Check if the KB change affects CLAUDE.md or build scripts
+3. If yes: update affected files and commit
+4. **CANNOT finish a KB update without checking cross-file impact**
 
 ---
 

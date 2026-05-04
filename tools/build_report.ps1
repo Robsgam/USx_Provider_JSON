@@ -66,7 +66,7 @@ $header = @"
 # --- 1. Validator ---
 Write-Host ""
 Write-Host "  [1/$stepCount] Running validator..." -ForegroundColor Yellow
-$validatorPath = Join-Path $toolDir "connectcic-validator\validate.ps1"
+$validatorPath = Join-Path $toolDir "validate.ps1"
 $validatorOut = & powershell -ExecutionPolicy Bypass -File $validatorPath -Path $resolved 2>&1 | Out-String
 $validatorFile = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
 ($header + "VALIDATOR RESULTS`n================`n`n" + $validatorOut) | Out-File -FilePath $validatorFile -Encoding utf8

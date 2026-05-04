@@ -28,7 +28,7 @@
 
 $ErrorActionPreference = "Stop"
 $Version = '2.0'
-$DIR    = "C:\Users\RobSgambellone\.local\bin\AZ_AZDPS"
+$DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
 $VEROUT = "$DIR\phases\mc\AZ_AZDPS_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
 $hidle  = Get-Content "$DIR\source\HIDLE.json" -Raw | ConvertFrom-Json

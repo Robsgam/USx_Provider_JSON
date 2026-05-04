@@ -1,7 +1,7 @@
 # ConnectCIC — MANDATORY PROCESS RULES
 
 **This block MUST appear at the top of every provider repo CLAUDE.md.**
-**Source of truth: `C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB\PROCESS_RULES.md`**
+**Source of truth: `knowledge-base/PROCESS_RULES.md`**
 **Last synced: 2026-04-30**
 
 If this block is missing or outdated in a provider repo, copy it from the source before doing any work.
@@ -20,7 +20,7 @@ If this block is missing or outdated in a provider repo, copy it from the source
 ## 1. SESSION START — Before Any Work
 
 1. Read this CLAUDE.md completely
-2. Read the KB master rules: `C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB\CLAUDE.md`
+2. Read the KB master rules: `CLAUDE.md` (monorepo root)
 3. Run `git status` — confirm working tree is CLEAN and branch is synced with remote
 4. Verify `docs/` contains: `<PROVIDER>_STATUS.txt`, `<PROVIDER>_SQVR.txt`, `<PROVIDER>_BUILD_NOTES.txt`, `base/` with 5 report files
 5. Verify `tests/` directory exists
@@ -45,8 +45,8 @@ When a trigger fires, ALL chained actions are part of the same unit of work. You
 - Update `docs/<PROVIDER>_SQVR.txt` — flip [PENDING] to [CONFIRMED] if PASS
 
 **You update any KB file →**
-- Commit and push ConnectCIC-KB
-- Check: does this affect any provider repo CLAUDE.md or build script? If yes → update + commit + push each
+- Commit and push the monorepo
+- Check: does this affect CLAUDE.md or any build script? If yes → update + commit + push
 
 **You discover a new limitation, anti-pattern, or import error →**
 - Add to the appropriate KB file (PLATFORM_LIMITATIONS, ANTI_PATTERNS, IMPORT_ERRORS)
@@ -64,7 +64,7 @@ When a trigger fires, ALL chained actions are part of the same unit of work. You
 ### GATE 2: Before Each Live Test
 1. Run `new_test_log.ps1` to create stub in `tests/`:
    ```powershell
-   powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\new_test_log.ps1 `
+   powershell -ExecutionPolicy Bypass -File tools/new_test_log.ps1 `
      -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
    ```
 2. User opens F12 > Network before submitting
@@ -90,10 +90,10 @@ When a trigger fires, ALL chained actions are part of the same unit of work. You
 6. **BLOCKED: Cannot declare PASS or DONE until all 5 checks pass. Fix first.**
 
 ### GATE 6: After Any KB Update
-1. Commit and push ConnectCIC-KB
-2. Check cross-repo impact
-3. Update affected repos if needed
-4. **BLOCKED: Cannot finish KB update without checking cross-repo impact**
+1. Commit and push the monorepo
+2. Check if the KB change affects CLAUDE.md or build scripts
+3. Update affected files if needed
+4. **BLOCKED: Cannot finish KB update without checking cross-file impact**
 
 ## 4. END-OF-RESPONSE VERIFICATION
 
@@ -113,31 +113,31 @@ Do not output this checklist. Just do the work. Only mention it if something was
 
 ```powershell
 # Build report (validator + layout + query sim + picklist + HTML) — GATE 1
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\build_report.ps1 -Path <json>
+powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path <json>
 
 # Test log stub — GATE 2
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\new_test_log.ps1 `
+powershell -ExecutionPolicy Bypass -File tools/new_test_log.ps1 `
   -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
 
 # Validator only (quick check)
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\connectcic-validator\validate.ps1 -Path <json>
+powershell -ExecutionPolicy Bypass -File tools/validate.ps1 -Path <json>
 
 # Layout renderer (text tree)
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\render_layout.ps1 -Path <json> -Summary
+powershell -ExecutionPolicy Bypass -File tools/render_layout.ps1 -Path <json> -Summary
 
 # Query simulator
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\test_commsys.ps1 -Path <json>
+powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path <json>
 
 # Picklist scanner
-powershell -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\report_picklists.ps1 -Path <json>
+powershell -ExecutionPolicy Bypass -File tools/report_picklists.ps1 -Path <json>
 ```
 
 ## 6. KB REFERENCE
 
 **Read before every session:**
-- `C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB\CLAUDE.md` — Master build rules, anti-patterns, field rules, QIDM architecture
-- `C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB\knowledge-base\README.txt` — KB index (13 docs)
-- `C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB\knowledge-base\BUILD_CHECKLIST.txt` — Full pre-build/pre-import/test checklists
+- `CLAUDE.md` (monorepo root) — Master build rules, anti-patterns, field rules, QIDM architecture
+- `knowledge-base/README.txt` — KB index (13 docs)
+- `knowledge-base/BUILD_CHECKLIST.txt` — Full pre-build/pre-import/test checklists
 
 ## 7. CANONICAL REPO STRUCTURE
 

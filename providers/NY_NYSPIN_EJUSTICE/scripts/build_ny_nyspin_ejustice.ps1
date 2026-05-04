@@ -56,7 +56,7 @@ param(
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
-$DIR      = "C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE"
+$DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_BASE.json"
 $VEROUT   = "$PHASEDIR\NY_NYSPIN_EJUSTICE_v${Version}_${DATE}.json"

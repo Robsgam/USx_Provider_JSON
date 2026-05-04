@@ -66,7 +66,7 @@ Use HIDLE.json as the structural template, and CA_ESUN.json and NY_NYSPIN_EJUSTI
 as reference for form layouts and field naming conventions. Use NY_NYSPIN_EJUSTICE
 build scripts as the pattern reference for helpers and versioning.
 
-Create the folder C:\Users\RobSgambellone\.local\bin\[PROVIDER_NAME]\ with the
+Create the folder providers/[PROVIDER_NAME]/ with the
 standard structure: scripts/, docs/base/, docs/mc/, source/, phases/base/logs/,
 phases/mc/logs/. Move source files (XML, PDF, HIDLE.json) to source/.
 Create the build script at scripts/build_[provider].ps1 with -Version and -Phase
@@ -178,7 +178,7 @@ PARAM BLOCK (standard)
       [string]$Phase   = "01_standup"
   )
   $DATE     = (Get-Date -Format 'yyyy-MM-dd')
-  $DIR      = "C:\Users\RobSgambellone\.local\bin\[PROVIDER_NAME]"
+  $DIR      = "providers/[PROVIDER_NAME]"
   $PHASEDIR = "$DIR\phases\$Phase"
   $OUT      = "$DIR\[PROVIDER_NAME].json"
   $VEROUT   = "$PHASEDIR\[PROVIDER_NAME]_v${Version}_${DATE}.json"
@@ -582,10 +582,10 @@ WHEN A LIMITATION IS CONFIRMED
 KNOWN PLATFORM LIMITATIONS (apply to all providers)
 ================================================================================
 
-  See ConnectCIC-KB/knowledge-base/PLATFORM_LIMITATIONS.txt -- complete numbered list (#1-#26).
-  See ConnectCIC-KB/knowledge-base/BUNDLE_ARCHITECTURE.txt -- bundle structure, AUTH/QMF/RMS patches.
-  See NJ_NJCJIS/docs/NJ_NJCJIS_LIMITATIONS.txt for the most complete NJ-specific reference.
-  See NY_NYSPIN_EJUSTICE/docs/NY_NYSPIN_EJUSTICE_LIMITATIONS.txt for NY-specific items.
+  See knowledge-base/PLATFORM_LIMITATIONS.txt -- complete numbered list (#1-#26).
+  See knowledge-base/BUNDLE_ARCHITECTURE.txt -- bundle structure, AUTH/QMF/RMS patches.
+  See providers/NJ_NJCJIS/docs/NJ_NJCJIS_LIMITATIONS.txt for the most complete NJ-specific reference.
+  See providers/NY_NYSPIN_EJUSTICE/docs/NY_NYSPIN_EJUSTICE_LIMITATIONS.txt for NY-specific items.
 
   CRITICAL for every build:
 
@@ -670,17 +670,15 @@ KNOWN PLATFORM LIMITATIONS (apply to all providers)
 REFERENCE FILES
 ================================================================================
 
-  C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB/knowledge-base\
+  knowledge-base/
     Central knowledge base -- platform limitations, field rules, QIDM architecture,
     form architecture, import errors, anti-patterns, build checklist.
     READ THIS FIRST before starting any new provider or making structural changes.
 
-  C:\Users\RobSgambellone\.local\bin\HIDLE.json           Structural template
-  C:\Users\RobSgambellone\.local\bin\CA_ESUN.json         Form layout reference
-  C:\Users\RobSgambellone\.local\bin\FL_FCIC.json         Multi-combination pattern reference
-  C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\           Most complete build to reference (40 tests pass)
-  C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\  Reference for 8-query build (DGRP, WINQ/MINQ)
-  C:\Users\RobSgambellone\.local\bin\Source jsons\NCIC_CODE_SOURCE_TEST.json
-                                                          NCIC codeTypeSource dropdown test
-  This file (canonical):  C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\docs\CONNECTCIC_BUILD_GUIDE.txt
-  This file (bin root):   C:\Users\RobSgambellone\.local\bin\CONNECTCIC_BUILD_GUIDE.txt  (copy)
+  templates/HIDLE.json                    Structural template
+  templates/CA_ESUN.json                  Form layout reference
+  providers/FL_FCIC/                      Multi-combination pattern reference
+  providers/NJ_NJCJIS/                    Most complete build to reference (40 tests pass)
+  providers/NY_NYSPIN_EJUSTICE/           Reference for 8-query build (DGRP, WINQ/MINQ)
+  templates/CODETYPE_TEST.json            NCIC codeTypeSource dropdown test
+  This file:  knowledge-base/CONNECTCIC_BUILD_GUIDE.txt

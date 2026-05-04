@@ -2,7 +2,7 @@
 # Shared ConnectCIC test log generator -- works for any provider.
 #
 # Usage:
-#   powershell.exe -ExecutionPolicy Bypass -File C:\Users\RobSgambellone\.local\bin\new_test_log.ps1 `
+#   powershell.exe -ExecutionPolicy Bypass -File tools\new_test_log.ps1 `
 #     -Provider NJ_NJCJIS -Variant BASE -Version 2.0 `
 #     -Entity Vehicle -Combo RQ -Description "plate only"
 #
@@ -25,14 +25,15 @@ param(
 )
 
 if (-not $ProviderDir) {
+    $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
     $knownPaths = @{
-        'NJ_NJCJIS'           = 'C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS'
-        'NY_NYSPIN_EJUSTICE'  = 'C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE'
-        'HI_HCJDC_OFML'       = 'C:\Users\RobSgambellone\.local\bin\HI_HCJDC_OFML'
-        'AZ_AZDPS'            = 'C:\Users\RobSgambellone\.local\bin\AZ_AZDPS'
-        'FL_FCIC'             = 'C:\Users\RobSgambellone\.local\bin\FL_FCIC'
-        'TX_TLETS'            = 'C:\Users\RobSgambellone\.local\bin\TX_TLETS'
-        'LA_LETTS_OFML'       = 'C:\Users\RobSgambellone\.local\bin\LA_LETTS_OFML'
+        'NJ_NJCJIS'           = "$repoRoot\providers\NJ_NJCJIS"
+        'NY_NYSPIN_EJUSTICE'  = "$repoRoot\providers\NY_NYSPIN_EJUSTICE"
+        'HI_HCJDC_OFML'       = "$repoRoot\providers\HI_HCJDC_OFML"
+        'AZ_AZDPS'            = "$repoRoot\providers\AZ_AZDPS"
+        'FL_FCIC'             = "$repoRoot\providers\FL_FCIC"
+        'TX_TLETS'            = "$repoRoot\providers\TX_TLETS"
+        'LA_LETTS_OFML'       = "$repoRoot\providers\LA_LETTS_OFML"
     }
     if ($knownPaths.ContainsKey($Provider)) {
         $ProviderDir = $knownPaths[$Provider]

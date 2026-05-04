@@ -9,7 +9,7 @@ param(
 )
 
 $DATE    = (Get-Date -Format 'yyyy-MM-dd')
-$DIR     = "C:\Users\Gordon Hallof\TX_TLETS"
+$DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $CURRENT = "$DIR\TX_TLETS.json"
 
 if ($Phase) {

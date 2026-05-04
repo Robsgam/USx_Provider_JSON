@@ -8,7 +8,7 @@
 # Pattern reference: TX_TLETS scripts\build_tx_tlets.ps1
 #
 # STUB -- populate this script as the LA_LETTS_OFML build is developed.
-# See ConnectCIC-KB CONNECTCIC_BUILD_GUIDE.txt for build script pattern.
+# See knowledge-base/CONNECTCIC_BUILD_GUIDE.txt for build script pattern.
 
 param(
     [Parameter(Mandatory)][string]$Version,
@@ -16,7 +16,7 @@ param(
 )
 
 $DATE = (Get-Date -Format 'yyyy-MM-dd')
-$DIR  = "C:\Users\Gordon Hallof\LA_LETTS_OFML"
+$DIR  = (Resolve-Path "$PSScriptRoot\..").Path
 
 Write-Host "LA_LETTS_OFML build script -- STUB" -ForegroundColor Yellow
 Write-Host "Version: $Version  Phase: $Phase  Date: $DATE"

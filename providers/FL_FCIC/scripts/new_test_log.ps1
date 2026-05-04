@@ -22,7 +22,7 @@ param(
 )
 
 $DATE      = (Get-Date -Format 'yyyy-MM-dd')
-$DIR       = "C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS"
+$DIR       = (Resolve-Path "$PSScriptRoot\..").Path
 $LOGDIR    = "$DIR\phases\$Phase\logs"
 $DESC_SAFE = $Description -replace '[\\/:*?"<>| ]', '_'
 $FILENAME  = "${DATE}_${QueryType}_${Combination}_${DESC_SAFE}_v${Version}.txt"

@@ -30,8 +30,8 @@ All developers working on provider JSONs should have these installed.
 2. BUILD & VALIDATION TOOLS (provider-agnostic scripts)
 ========================================================
 
-All tools are in C:\Users\RobSgambellone\.local\bin\
-Run from that directory or use full paths.
+All tools are in tools/ (monorepo root).
+Run from repo root or use full paths.
 
 2a. build_report.ps1 — Master build report (runs all 5 tools below)
     Usage:  powershell -ExecutionPolicy Bypass -File build_report.ps1 -Path "<PROVIDER>\<FILE>.json"
@@ -39,8 +39,8 @@ Run from that directory or use full paths.
     Flags:  -Release bundles JSON + all reports to release/ folder
     Run:    After EVERY JSON build or edit. Do not wait to be asked.
 
-2b. validate.ps1 (via connectcic-validator/)
-    Usage:  powershell -ExecutionPolicy Bypass -File connectcic-validator/validate.ps1 -Path "<FILE>.json"
+2b. validate.ps1
+    Usage:  powershell -ExecutionPolicy Bypass -File tools/validate.ps1 -Path "<FILE>.json"
     Checks: 6-phase validation (encoding, bundles, QIF layout types, QIDM refs, autoSelect, combos)
     Target: 0 FAIL before any import. Calibrated against NJ baseline.
 
@@ -80,10 +80,10 @@ After running the build script, ALWAYS run build_report.ps1 (Section 2a).
 4. REFERENCE FILES
 ========================================================
 
-4a. ConnectCIC-KB/knowledge-base/ — Central knowledge base (11 docs)
+4a. knowledge-base/ — Central knowledge base (11+ docs)
     READ BEFORE EVERY SESSION. See README.txt for index.
 
-4b. ConnectCIC-KB/templates/HIDLE.json — RMS/AUTH base template
+4b. templates/HIDLE.json — RMS/AUTH base template
     Clone and patch per provider. Never modify the template directly.
 
 4c. <PROVIDER>/source/<PROVIDER>.XML — XML metadata (primary build authority)
