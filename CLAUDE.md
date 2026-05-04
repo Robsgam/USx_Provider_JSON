@@ -116,7 +116,7 @@ HIDLE has BOTH 'SexCode' and 'SexCodeOOS' sex attrs. Filter by targetField='sexA
 NCIC_FIREARM_MAKE contains firearm manufacturers only, NOT vehicle makes. No `NCIC_VEHICLE_MAKE` category exists. HIDLE.json incorrectly maps VehicleMakeName to NCIC_FIREARM_MAKE in result QIDM. Use `attributeTypeId='VEHICLE_MAKE'` for dropdown (works for RMS, does NOT serialize to XML). Confirmed 2026-04-24 on MK43RS.
 
 ### AP #25: Wrong queryLabel values
-Do NOT use entity names ("Vehicle", "Person"), system names ("NCIC"), or append "Query". Use the standard labels: Vehicle Registration, Driver License, Driver History, Firearm, Article, Boat, RMS. See FIELD_RULES.txt Section 6.
+Do NOT use entity names ("Vehicle", "Person"), system names ("NCIC"), or append "Query". Use the standard labels: Vehicle Registration, Driver License, Driver History, Firearm, Article, Boat, RMS. See FIELD_REFERENCE.txt Section 12.
 
 ### AP #26: Card title with non-ASCII characters (em dash, smart quotes)
 Platform renders multi-byte UTF-8 as mojibake in card titles. Em dash "—" becomes "â€"". Use ASCII hyphen-minus (U+002D) only. Confirmed 2026-04-24 on NY MC.
@@ -191,7 +191,7 @@ One field handles both CommSys (2-letter code via reverse-lookup) and RMS (dynam
 
 **CAUTION**: Do NOT set `initialValue` on State when the provider has separate in-state vs OOS keyRefs (e.g., NY: RCAR vs RVIN). The default causes OOS combos to fire instead of in-state, changing the documented query type. Use card title hints ("Leave blank for NY queries") instead. OK to set initialValue when provider has no separate in-state keyRefs (e.g., NJ). See LIMITATION #30.
 
-Fallback (when NCIC not supported): dual-field pattern — SelH for RMS + InpH for XML. See `knowledge-base/FORM_ARCHITECTURE.txt` Section 3.
+Fallback (when NCIC not supported): dual-field pattern — SelH for RMS + InpH for XML. See `knowledge-base/BUILD_RULES.txt` Section 7.
 
 ### State Field — Combination any[]
 Use the form fieldId `'RegistrationState'` in any[] — NOT the attribute name `'State'`.
@@ -340,13 +340,13 @@ Apply all patches in every build script after cloning RMS from HIDLE.json.
 
 **Patch 3 — Person state**: Add `registrationState` attribute to RMS Person QIDM: `sourceField=['RegistrationState']`, `targetField='registrationStateAttrId'`, `useAttributeId=true`. Add 'RegistrationState' to ALL person combination any[]. Note: Person uses singular `registrationStateAttrId` (string, NO ArrayWrapper). Vehicle uses plural `registrationStateAttrIds` (array, WITH ArrayWrapper).
 
-**Patch 6 — RMS cleanup (ALWAYS apply after all other patches)**: Remove unused HIDLE fields that have no matching form fieldId. Vehicle: remove `LicensePlateNumberOut`, `RegistrationStateOut`, `OwnerFirstName`, `OwnerLastName` attrs + `licensePlateOutAndState`, `OwnerFirstAndLastName` combos + clean any[] refs. Person: remove `socialSecurityNumber` + all OOS-suffixed attrs (`licenseNumberOOS`, `firstNameOOS`, `lastNameOOS`, `dateOfBirthOOS`, `sexOOS`) + SSN combo + all OOS combos. See `BUNDLE_ARCHITECTURE.txt` Section 5 Patch 6 for full list. Exception: keep OOS attrs if the provider uses DH-suffix fieldIds (e.g., FL_FCIC).
+**Patch 6 — RMS cleanup (ALWAYS apply after all other patches)**: Remove unused HIDLE fields that have no matching form fieldId. Vehicle: remove `LicensePlateNumberOut`, `RegistrationStateOut`, `OwnerFirstName`, `OwnerLastName` attrs + `licensePlateOutAndState`, `OwnerFirstAndLastName` combos + clean any[] refs. Person: remove `socialSecurityNumber` + all OOS-suffixed attrs (`licenseNumberOOS`, `firstNameOOS`, `lastNameOOS`, `dateOfBirthOOS`, `sexOOS`) + SSN combo + all OOS combos. See `BUILD_RULES.txt` Section 4 Patch 6 for full list. Exception: keep OOS attrs if the provider uses DH-suffix fieldIds (e.g., FL_FCIC).
 
 ---
 
 ## Rule Handler Reference (source: HandlerConfiguration.java)
 
-Full reference: `knowledge-base/BUNDLE_ARCHITECTURE.txt` Section 6 (22 handlers documented).
+Full reference: `knowledge-base/RULE_HANDLERS.txt` (24 handlers documented).
 
 **Directly configured in provider JSON (6 handlers):**
 
@@ -443,7 +443,7 @@ Validator must pass clean (0 FAIL) before import. Fix all failures before procee
 | State sends numeric ID | attributeTypeId='STATE' in QIDM | Use InpH with initialValue |
 | RMS 400 on sex | sexAttrId with useAttributeId on NIBRS_SEX field | Remove sex from RMS QIDM |
 | Query doesn't fire | LIMITATION #2 — second QIDM ignored | Merge QIDMs |
-| Empty dropdown | Wrong codeTypeSource | Check FIELD_RULES.txt table |
+| Empty dropdown | Wrong codeTypeSource | Check FIELD_REFERENCE.txt Section 2 |
 | "Missing attributes in query input data mapping" | RMS combo references field with no attribute | Remove orphan field from RMS combo (AP #27) |
 
 ---
@@ -496,7 +496,7 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 - Check: does this change affect any build script? If yes, propagate
 
 **TRIGGER: You discover a new limitation, anti-pattern, or import error**
-- Add to the appropriate KB file (PLATFORM_LIMITATIONS, ANTI_PATTERNS, IMPORT_ERRORS)
+- Add to the appropriate KB file (PLATFORM_CONSTRAINTS.txt, IMPORT_ERRORS.txt)
 - Fire the KB update trigger above
 
 **TRIGGER: You are about to end your response**
