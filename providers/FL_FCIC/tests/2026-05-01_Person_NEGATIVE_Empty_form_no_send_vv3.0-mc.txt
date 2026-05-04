@@ -1,0 +1,50 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : NEGATIVE (Empty form no send)
+Test type  : T5 -- negative
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  PurposeCode               C                  default (initialValue)
+  (all other fields empty)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : N/A -- no send button available
+  Transaction : N/A
+  MessageType : N/A
+  keyReference: N/A
+
+  Fields sent in XML request: NONE (no request sent)
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: NONE
+  Reason: No set[] fields populated for any Person combo; no checkboxes lit
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Empty Person form correctly produces no checkboxes and no send button
+  Detail: PurposeCode alone (initialValue=C) is not sufficient to fire any combo

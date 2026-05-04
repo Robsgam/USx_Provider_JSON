@@ -1,0 +1,60 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Firearm
+Combo      : QG+NCIC (Gun by NCIC number)
+Test type  : T2 -- alternate combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NCICNumber                NCIC44444          typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ427YRFCGDEB5WZVTC6PA7
+  MessageType : GunQuery
+  keyReference: QG+NCIC
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    NCICNumber           NCIC44444
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QG+NCIC
+  Reason: NCICNumber populated (set field)
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  NCICNumber           YES    NCIC44444       mapped from NCICNumber
+  ImageIndicator       YES    N               mapped from ImageIndicator (default)
+  GunSerialNumber      NO     --              sourceField empty
+  GunMake              NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QG+NCIC fired correctly; NCICNumber + ImageIndicator sent; no serial needed

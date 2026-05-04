@@ -1,0 +1,195 @@
+SEX CODE PATTERN -- CONNECTCIC PROVIDER BUILDS
+================================================
+How to configure sex code for CommSys XML AND RMS elastic simultaneously.
+Applies to: NJ_NJCJIS, FL_FCIC, NY_NYSPIN, and any NIBRS-based provider with a Person query.
+
+Last updated: 2026-04-20 (CORRECTED: reverse-lookup works everywhere; duplicate targetField is the failure mode)
+
+CRITICAL: codeTypeProvider=NIBRS reverse-lookup works on ALL tested instances (NJ, AZ, FL).
+  The prior "FL instance doesn't support reverse-lookup" conclusion was WRONG (2026-04-20).
+  Actual failure mode: DUPLICATE targetField in the same QIDM.
+
+  If two attributes in the same QIDM map to the same targetField (e.g., SexCode + SexCodeOOS
+  both -> targetField=SexCode), codeTypeProvider reverse-lookup BREAKS. The platform processes
+  both attributes and the second (empty) interferes with the first.
+
+  Proof (2026-04-20, same FL instance):
+    ProviderTest (no duplicate targetFields): <SexCode>M</SexCode> -- CORRECT
+    SexTest_v2 (duplicate targetFields):      <SexCode>69509804595</SexCode> -- BROKEN
+
+  Entity-split designs (InState/OOS separate QIFs) create duplicate targetFields and are
+  INCOMPATIBLE with codeTypeProvider. Merge to single-entity to use reverse-lookup.
+
+
+CONFIRMED WORKING PATTERN
+--------------------------
+Both CommSys <SexCode>M</SexCode> AND RMS sexAttrId:"69509891711" (string) confirmed working
+in a single configuration.
+
+CONFIRMED: NJ_NJCJIS v1.0, fresh import, tested 2026-04-17 16:16.
+  CommSys request: <SexCode>M</SexCode> (Female = F, Unknown = U)
+  RMS request:     {"lastName":"...","sexAttrId":"69509891711",...} -- string, no error
+
+Form field (QIF):
+
+    "SexCode_Input": {
+      "type": { "resolvedName": "FormSelect" },
+      "props": {
+        "fieldId": "SexCode",
+        "label": "Sex",
+        "attributeTypeId": "SEX",
+        "codeTypeProvider": "NIBRS"
+      }
+    }
+
+  attributeTypeId=SEX: dropdown reads from platform SEX attribute options (Male/Female/Unknown).
+  Stores the numeric platform attribute ID (e.g. 69509891711 for Male) as the field value.
+  codeTypeProvider=NIBRS: NOT a form-level reverse-lookup -- this is the QIDM-level instruction.
+
+CommSys QIDM SexCode attribute:
+
+    {
+      "name": "SexCode",
+      "size": 1,
+      "sourceField": ["SexCode"],
+      "targetField": "SexCode",
+      "codeTypeProvider": "NIBRS"
+    }
+
+  codeTypeProvider=NIBRS here performs the reverse-lookup: attr ID (69509891711) -> NIBRS code (M).
+  CommSys receives <SexCode>M</SexCode>.
+
+RMS QIDM sex attribute (use HIDLE default -- do NOT modify):
+
+    {
+      "name": "sex",
+      "sourceField": ["SexCode"],
+      "targetField": "sexAttrId",
+      "useAttributeId": true
+    }
+
+  useAttributeId=true: attr ID from form is passed as sexAttrId value.
+  Produces sexAttrId:"69509891711" (string format) which RMS accepts.
+  CRITICAL: NO AttributeArrayWrapperRuleHandler on this attribute.
+    Adding the rule handler wraps the result: sexAttrId:[69509891711] (array) -> RMS 400 error.
+    HIDLE default has no ArrayWrapper. Do NOT add it.
+
+
+COMBINATION REQUIREMENTS
+------------------------
+CommSys QIDM: SexCode in any[] (optional):
+
+    "requirements": {
+      "set": ["BirthDate", "NameLast", "NameFirst"],
+      "any": ["SexCode", "ImageIndicator", ...]
+    }
+
+RMS QIDM: SexCode also in any[] (as sourced from HIDLE). No changes needed.
+
+
+ROOT CAUSE OF PRIOR FAILURES (2026-04-17 investigation)
+---------------------------------------------------------
+All NJ v3.22-v3.29 sex failures had ONE of these causes:
+
+  1. AttributeArrayWrapperRuleHandler on RMS sex attr (added in v3.25):
+       Result: sexAttrId:[69509891711] (array) -> RMS 400 error.
+       ALL v3.25-v3.28 RMS failures were caused by this. Not a platform limitation.
+
+  2. codeTypeCategory=NIBRS_SEX on form (v3.22, v3.29, v3.30, v4.0):
+       Form stores string "M". useAttributeId=true + string -> array wrapping.
+       sexAttrId:[69509891711] -> RMS 400 error (even without ArrayWrapper rule handler).
+
+  3. Patch 3 applied (v3.23, v3.29, v3.30):
+       Removed sex attr from RMS QIDM entirely. No sex filter. No error.
+       This was a workaround for problem #2 -- unnecessary if form uses attributeTypeId=SEX.
+
+  The v3.25-v3.29 "fresh import confirms reverse-lookup broken" conclusions were WRONG.
+  Those tests had the ArrayWrapper which was the actual failure cause.
+  The codeTypeProvider=NIBRS reverse-lookup DOES work on NJ's platform instance.
+  CORRECTED 2026-04-21: It DOES work on FL's instance with single-QIF design.
+    FL_FCIC v2.2 (single Person QIF): <SexCode>F</SexCode> -- CORRECT.
+    Prior "FL doesn't support reverse-lookup" conclusion was WRONG -- actual cause was
+    entity-split design (see PLATFORM_LIMITATIONS.txt LIMITATION #28).
+  Always test on a fresh import for a new provider before assuming it works.
+
+  NJ v1.0 (2026-04-17 15:48 build, 16:16 test) had:
+    Form: attributeTypeId=SEX + codeTypeProvider=NIBRS (same as v3.25)
+    QIDM SexCode: codeTypeProvider=NIBRS (same as v3.25)
+    RMS sex: useAttributeId=true, NO ArrayWrapper (DIFFERENT from v3.25)
+    Result: BOTH CommSys and RMS working. Confirmed.
+
+  FL_FCIC_SexTest_v2 (2026-04-20 test) had same form+QIDM config BUT duplicate targetFields:
+    CommSys: <SexCode>69509804595</SexCode> -- raw attr ID, NOT "M" -- BROKEN
+    RMS: sexAttrId:"69509804595" (string) -- WORKING
+    Original conclusion: FL instance doesn't support reverse-lookup. WRONG.
+    Corrected conclusion: Duplicate targetField=SexCode (SexCode + SexCodeOOS in same QIDM)
+    breaks the reverse-lookup. ProviderTest (no duplicates) on SAME instance sent <SexCode>M</SexCode>.
+
+
+FALLBACK PATTERN (CommSys-only -- use ONLY when duplicate targetFields are unavoidable)
+---------------------------------------------------------------------------------------
+For providers where entity-split is required and duplicate targetFields cannot be eliminated:
+
+  Form: codeTypeCategory=NIBRS_SEX + codeTypeSource (stores string "M"/"F"/"U")
+  CommSys QIDM SexCode: keep codeTypeProvider=NIBRS (passes string through as-is)
+  RMS QIDM: REMOVE sex attribute from attributes[] and from combinations any[]
+  Result: CommSys <SexCode>M</SexCode> ✓, RMS no sex filter (acceptable)
+
+  PREFERRED APPROACH: Merge to single-entity design (eliminates duplicates) and use
+  the full attributeTypeId=SEX pattern for both CommSys AND RMS.
+
+
+WHAT NOT TO DO
+--------------
+1. DO NOT use codeTypeCategory=NIBRS_SEX on the form when RMS sex filter is needed.
+     -> Stores string "M". useAttributeId=true + string -> array wrapping -> RMS 400.
+     -> Confirmed broken: NJ v3.22, v3.29, v3.30, v4.0.
+     -> EXCEPTION: use NIBRS_SEX when reverse-lookup is not confirmed -- just remove sex from RMS.
+
+2. DO NOT add AttributeArrayWrapperRuleHandler to the RMS sex attribute.
+     -> Wraps output in array: sexAttrId:[69509891711] -> RMS 400 error.
+     -> Confirmed broken: NJ v3.25-v3.28, sextest.
+
+3. DO NOT split an entity into multiple QIFs if any field uses codeTypeProvider reverse-lookup.
+     -> 3 approaches tested (FL_FCIC v2.0, v2.3, v2.4), ALL BROKEN. See LIMITATION #28.
+     -> Fails regardless of fieldId strategy (same IDs, different IDs, or mixed storage).
+     -> The shared field pool (LIMITATION #26) causes the collision. No config fix exists.
+     -> Multi-CARD within a single QIF is safe. Only multi-QIF per entity breaks it.
+     -> DH-suffix fields on a separate DH QIF are isolated and work (different sourceField).
+     -> Confirmed: FL_FCIC SexTest_v2 (duplicates) vs ProviderTest (no duplicates), same instance.
+
+4. DO NOT use a plain InpH or Inp for SexCode.
+     -> LIMITATION #1: raw text has no code-type lookup.
+
+
+QUICK CHECKLIST (NJ or any new NIBRS provider)
+-----------------------------------------------
+
+Form (QIF):
+  [ ] SexCode FormSelect has attributeTypeId=SEX AND codeTypeProvider=NIBRS
+  [ ] fieldId is exactly "SexCode" (case-sensitive)
+  [ ] NO codeTypeCategory on SexCode field (do not use NIBRS_SEX)
+
+CommSys QIDM:
+  [ ] SexCode attribute: sourceField=["SexCode"], targetField="SexCode", size=1
+  [ ] codeTypeProvider=NIBRS on the QIDM SexCode attribute
+  [ ] SexCode in any[] of the Name+DOB combination (not set[])
+
+RMS QIDM (use HIDLE default -- do not modify):
+  [ ] sex attribute present: useAttributeId=true
+  [ ] NO AttributeArrayWrapperRuleHandler on sex attribute
+  [ ] SexCode in RMS combination any[] (HIDLE default)
+
+Import test:
+  [ ] Fresh import (do not test against a stale import -- results will be misleading)
+  [ ] Select Female, submit Name+DOB+Sex query
+  [ ] CommSys XML shows <SexCode>F</SexCode>
+  [ ] RMS elastic query shows sexAttrId:"<number>" (string, no brackets)
+  [ ] No RMS 400 error
+
+
+REFERENCE BUILDS
+----------------
+  NJ_NJCJIS v1.0 (confirmed working): C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.0_2026-04-17.json
+  Build script: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\scripts\build_nj_njcjis.ps1
+  Platform limitation detail: ConnectCIC-KB/knowledge-base\PLATFORM_LIMITATIONS.txt #27

@@ -1,0 +1,98 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : KQ+OLN
+Test type  : T2 (DH-suffix field isolation + autoSelect behavior)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     (empty)            --
+  RegistrationState         FL                 dropdown selection
+  ImageIndicator            Y                  default
+  NameLast                  (empty)            --
+  NameFirst                 (empty)            --
+  NameMiddle                (empty)            --
+  BirthDate                 (empty)            --
+  SexCode                   (empty)            --
+  NameSuffix                (empty)            --
+  OperatorLicenseNumberDH   S123456789012      typed
+  PurposeCode               C                  default
+  NameLastDH                (empty)            --
+  NameFirstDH               (empty)            --
+  BirthDateDH               (empty)            --
+  SexCodeDH                 (empty)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (DriverHistoryQuery):
+    Transaction : 01KQJ1D178DPY9A2GWSGPY31K0
+    MessageType : DriverHistoryQuery
+    keyReference: KQOperatorLicenseNumber
+
+    Fields sent in XML request:
+      Element                Value
+      ---------------------  -------------------
+      OperatorLicenseNumber  S123456789012
+      State                  FL
+      PurposeCode            C
+
+  DriverLicenseQuery: did NOT fire (queriesToDeselect working)
+  WantedPersonQuery: did NOT fire (name fields empty)
+
+  NOTE: ImageIndicator NOT in XML (DH QIDM has no ImageIndicator attribute — correct)
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQOperatorLicenseNumber (DriverHistoryQuery)
+  Reason: set=[OperatorLicenseNumberDH, RegistrationState, PurposeCode] all satisfied
+
+  DriverHistoryQuery attributes:
+  QIDM attribute         Sent?  Value             Note
+  ---------------------  -----  ----------------  --------------------------------
+  OperatorLicenseNumber  YES    S123456789012     from OperatorLicenseNumberDH (DH-suffix)
+  State                  YES    FL                from RegistrationState (shared)
+  PurposeCode            YES    C                 default
+  Attention              NO     --                handler-only, no combo requirement
+  Name                   NO     --                NameLastDH/NameFirstDH empty
+  BirthDate              NO     --                BirthDateDH empty
+  SexCode                NO     --                SexCodeDH empty
+
+  autoSelect behavior:
+  - autoSelect=false — checkbox was available but did NOT auto-check
+  - User had to manually check Driver History checkbox
+  - User feedback: "should light up automatically" — consider changing to autoSelect=true
+  - Current rationale for false: queriesToDeselect would silently deselect DL
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (DH does not trigger RMS)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: KQ combo fires correctly with OLN(DH) + State=FL + PurposeCode=C. DH-suffix field isolation works. queriesToDeselect working (DL not fired).
+  Detail: State required in set[] for DH combos (unlike DL which has FDQ path without State). autoSelect=false — user must manually check DH checkbox. May want to revisit autoSelect behavior.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+DriverHistoryQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1D178DPY9A2GWSGPY31K0"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KQJ1D178DPY9A2GWSGPY31K0</Id><State>FL</State><OperatorLicenseNumber>S123456789012</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

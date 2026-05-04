@@ -1,0 +1,205 @@
+CONNECTCIC IMPORT ERROR REFERENCE
+===================================
+Known import error messages with root cause and fix.
+Last updated: 2026-04-29
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
+
+================================================================================
+"Duplicate key references found in query input data mapping"
+================================================================================
+
+  Root cause: Two or more combinations within a single QUERYINPUTDATAMAPPING share
+    the same keyReference value.
+
+  When this happens:
+    - You tried to merge two QIDM configs that both use the same keyRef into one.
+    - Common scenario: MetaData XML defines two combinations in one transaction
+      (e.g., OLN path and Name path) and both use keyRef=DLIC or keyRef=DALL.
+    - Trying to merge them into one QIDM with two combinations triggers this error.
+
+  Fix options (in order of preference):
+    1. Check if MetaData defines a SEPARATE TRANSACTION for the second path.
+       Example: NyNyspinDriverLicenseNameQuery (keyRef=DGRP) for DL Name path.
+       Use that transaction with its own QIDM. Different query name = no conflict.
+    2. Use DH-suffix fieldId pattern (FL_FCIC). Give the second path unique form
+       fieldIds in set[]. Both QIDMs can now coexist with distinct keyRefs.
+    3. If neither applies: the second path is not implementable. Document it and
+       notify the vendor to assign distinct keyRefs or register a new transaction.
+
+  What NOT to do:
+    - DO NOT change the validator from FAIL to WARN and try to import anyway.
+      The platform will reject it regardless. The validator WARN change just masked
+      the problem. Always revert validator to FAIL after this error.
+    NOTE: Invented keyRefs DO work for resolving duplicate keyRef conflicts within
+    a single QIDM -- see QIDM_ARCHITECTURE.txt Section 3b. The import error only
+    occurs when two combinations in one QIDM share the SAME keyReference value.
+
+  Confirmed: NJ v3.12 (investigation), NY v1.13 (import failed 2026-04-14)
+
+================================================================================
+"QUERYINPUTFORM duplicate entity form cards"
+================================================================================
+
+  Root cause: QUERYINPUTFORM added to both ENTITIES bundle and another bundle (RMS or NY).
+
+  Fix: QUERYINPUTFORM belongs ONLY in the ENTITIES bundle (provider=MARK43).
+    Remove it from any other bundle.
+
+  Confirmed: NJ (multiple versions)
+
+================================================================================
+"Outbound XML state field sends numeric ID instead of 2-letter code"
+================================================================================
+
+  Not a hard import error but a runtime failure in the provider query.
+  Root cause: QIDM sourceField maps a field that has attributeTypeId='STATE'.
+    attributeTypeId='STATE' causes the platform to serialize the internal numeric
+    attribute ID (e.g., 69509884952) instead of the 2-letter code.
+
+  Fix: Remove attributeTypeId='STATE' from the QIDM sourceField.
+    Use InpH (FormInput hidden) with initialValue='NY' instead.
+    Map InpH's fieldId as the QIDM sourceField -> targetField='State'.
+    See FORM_ARCHITECTURE.txt for full dual-field pattern.
+
+  Also applies to SEX and RACE fields (same numeric ID issue):
+    SEX: use codeTypeCategory='NIBRS_SEX', codeTypeSource='NIBRS'
+    RACE: use codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'
+
+  Confirmed: NJ v3.x (STATE), NY v1.2 (SEX), NY v1.12 (RACE)
+
+================================================================================
+"RMS 400 error on sex attribute"
+================================================================================
+
+  Root cause: RMS QIDM combination includes sexAttrId/sexAttrIds with useAttributeId=True.
+    useAttributeId=True does NOT convert NIBRS code values (M/F/U) to attribute IDs.
+    RMS receives the literal code "M" as an attribute ID and rejects it.
+
+  Fix: Remove sexAttrId, sexAttrIds, and useAttributeId from ALL RMS person QIDM
+    combinations. Sex filtering is available through CommSys XML only.
+
+  Confirmed: NJ v3.20 (2026-04-10), NJ Patch 1
+
+================================================================================
+"Query does not fire / OOS path never fires"
+================================================================================
+
+  Root cause: LIMITATION #2 -- platform evaluates only one QIDM per (targetEntity, query).
+    A second QIDM for the same query is silently ignored.
+
+  Diagnostic: form data shows field IS populated (e.g., LicensePlateNumberOut="njtest")
+    but no XML request is built. If you see this after confirming field is filled,
+    STOP changing set[] and move to merge/split decision.
+
+  Fix: See QIDM_ARCHITECTURE.txt Section 3 (Merge vs Split Decision).
+
+  Confirmed: NJ v2.6 (DL Name cold fail), NY v1.8-v1.10 (Vehicle OOS never fired)
+
+================================================================================
+"Entity forms do not render after import (blank entity tab, no form fields visible)"
+================================================================================
+
+  Root cause: QUERYINPUTFORM configurations have provider set to the CommSys provider name
+    (e.g., 'AZ_AZDPS', 'NY_NYSPIN_EJUSTICE') instead of 'MARK43'.
+    The platform only renders QIF forms that have provider='MARK43' (the MARK43 form renderer).
+    Using a CommSys provider name silently fails -- no import error, but no form appears.
+
+  How to check before import:
+    Confirm provider='MARK43' is present on EITHER:
+    (a) every QIF config object individually, OR
+    (b) the ENTITIES bundle object itself (inherited by its configurations)
+    Both patterns work. What fails is having provider='<CommSys name>' on individual configs.
+
+  ALSO CHECK (same symptom -- forms do not render):
+    See "Bundle type='BUNDLE' missing / order format wrong" entry below.
+
+  Fix:
+    In the build script, change all QIF config definitions from
+      provider = '<PROVIDER_NAME>'  (e.g., 'AZ_AZDPS', 'NY_NYSPIN_EJUSTICE')
+      providerType = 'Commsys'
+    to
+      provider = 'MARK43'
+    OR ensure the ENTITIES bundle itself has provider = 'MARK43' and QIF configs omit provider.
+    Rebuild and re-import.
+
+  Also remove providerType = 'Commsys' from all QIF config objects if present.
+  providerType is a CommSys bundle property, not a QIF property.
+
+  Confirmed: AZ_AZDPS v2.0 (2026-04-20) -- fixed in v2.1
+
+================================================================================
+"Bundle type='BUNDLE' missing / ENTITIES order wrong format (forms do not render)"
+================================================================================
+
+  Root cause A: bundle objects assembled without type='BUNDLE'.
+    Both the CommSys provider bundle AND the ENTITIES bundle require type='BUNDLE'.
+    If omitted, the platform may not process the bundle at all -- configs are silently ignored.
+
+  Root cause B: ENTITIES bundle order is a flat array instead of a nested object.
+    WRONG:  "order": ["Vehicle","Person","Firearm","Article","Boat"]
+    RIGHT:  "order": { "default": [...], "CAD_DISPATCH": [...], "FIRST_RESPONDER": [...] }
+    Platform requires the nested object format. Flat array causes entity ordering to fail
+    and may prevent forms from rendering.
+
+  How to check (in generated JSON before import):
+    [ ] CommSys bundle: "type": "BUNDLE" present?
+    [ ] ENTITIES bundle: "type": "BUNDLE" present?
+    [ ] ENTITIES bundle: "order" is an object with "default" key, NOT a plain array?
+
+  Fix (in build script):
+    CommSys bundle:
+      [PSCustomObject]@{ name='PROVIDER_NAME'; type='BUNDLE'; configurations=... }
+    ENTITIES bundle:
+      [PSCustomObject]@{
+          name='ENTITIES'; type='BUNDLE'
+          order=[PSCustomObject]@{
+              default=@('Vehicle','Person',...); CAD_DISPATCH=@(...); FIRST_RESPONDER=@(...)
+          }
+          configurations=...; provider='MARK43'
+      }
+
+  Reference: NJ_NJCJIS_BASE.json (confirmed working, 25/25 PASS) -- use as structural reference.
+
+  Confirmed: AZ_AZDPS v2.2 (2026-04-20) -- fixed in v2.3
+
+================================================================================
+"IgnoreUserValueRuleHandler does not substitute argument"
+================================================================================
+
+  Root cause: Misuse of IgnoreUserValueRuleHandler. This handler does NOT override
+    a sourceField value when the field is populated. It passes through the raw value.
+
+  Status: DEAD END. Do not use this handler for state field hardcoding or any
+    scenario where you need to substitute a fixed value for a populated field.
+    Use InpH with initialValue instead.
+
+  Confirmed: NJ v3.10
+
+================================================================================
+"Missing attributes found in query input data mapping: [fieldname]"
+================================================================================
+
+  Root cause: An RMS QIDM combination set[] or any[] references a field name that
+    has no corresponding attribute definition in the same QIDM's attributes array.
+
+  The platform validates that every field referenced in a QIDM's combinations has
+  a matching attribute with that name as its sourceField. If the combo says
+  any:["LicensePlateYear"] but no attribute has sourceField:["LicensePlateYear"],
+  the import is rejected.
+
+  Common scenario: CommSys QIDM combo fields were copied into RMS QIDM combos,
+    but the corresponding RMS attribute was never created (because no valid RMS
+    targetField exists for that data). Example: LicensePlateYear exists in CommSys
+    but has no RMS equivalent (no vehicle.licensePlateYear in the elastic API).
+
+  How to check before import:
+    For every field name in every RMS QIDM set[]/any[] array, verify that a
+    matching attribute with sourceField:[fieldname] exists in the same QIDM.
+    The validator catches this in both CommSys QIDMs (Phase 3/6) and RMS QIDMs
+    (AP #27 cross-check in Phase 3).
+
+  Fix: Remove the orphaned field name from the RMS combination set[]/any[] array.
+    Only include fields that have a defined attribute with a valid RMS targetField.
+
+  Confirmed: LA_LETTS_OFML v1.0 (2026-04-29) -- LicensePlateYear in RMS Vehicle
+    combo any[] with no attribute definition. Removed from all 3 combo any[] arrays.

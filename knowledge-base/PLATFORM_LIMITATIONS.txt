@@ -1,0 +1,552 @@
+CONNECTCIC PLATFORM LIMITATIONS
+=================================
+Confirmed behaviors that constrain what can be built in JSON config alone.
+Newest entries at top within each section.
+Last updated: 2026-04-20
+
+Legend:  CONFIRMED = verified in live testing
+         SERVER-SIDE = no config fix available; requires platform changes
+         DEAD END = attempted fix confirmed not to work
+
+================================================================================
+SECTION 1 -- QUERY ROUTING AND COMBINATION BEHAVIOR
+================================================================================
+
+LIMITATION #1: set[] and any[] control combination selection -- not field sending
+  Confirmed: NJ v2.1 (2026-04-08), NJ v2.0-mc live test (2026-04-29)
+  Behavior: When a combination fires, ALL populated attributes in the QIDM config
+    are sent to the provider, regardless of whether they appear in set[] or any[].
+    set/any cannot filter or suppress which attributes are serialized.
+  Impact: Split configs are required for true field isolation. Single merged config
+    will send extra fields from the unused path.
+  Workaround: Server is tolerant of extra fields. OLN path sent Name/DOB/Sex as
+    extras in NJ v2.1 and still returned results. Merge is preferred unless server
+    rejects specific unknown fields.
+
+  OPERATIONAL CONCERN (flagged 2026-04-29):
+    When priority routing selects one combo over another (e.g., RQ wins over RQN
+    because both Plate and VIN are filled), the "losing" combo's SET fields still
+    appear in the XML because they are populated QIDM attributes. Examples:
+      - Plate+VIN filled: VehicleReg RQ fires but VIN is in the XML
+      - Plate+VIN filled: VehicleStolen QVP fires but VIN is in the XML
+      - OLN+Name+DOB filled: DQN fires but Name+DOB are in the XML
+      - RegNum+HullId filled: QB fires but HullId is in the XML
+    This is EXPECTED platform behavior and cannot be changed at the JSON level.
+    If a provider's CommSys endpoint rejects or misroutes queries with extra fields,
+    the only fix is entity-split (separate QIFs per search path), which introduces
+    LIMITATION #28 complexity. Monitor provider responses for signs of this issue.
+    As of 2026-04-29, NJ CommSys tolerates the extra fields with no errors.
+
+LIMITATION #2: Platform evaluates only ONE QUERYINPUTDATAMAPPING per (targetEntity, query) pair
+  Confirmed: NJ v2.6 Name path cold FAIL (2026-04-08);
+             NY v1.8-v1.10 VehicleRegistrationQuery_OOS never fired (2026-04-13);
+             NY v1.18b two-QIDM FL_FCIC pattern (2026-04-15) -- autoSelect=false does NOT
+             bypass this limitation. Second QIDM silently not surfaced as a checkbox;
+             autoSelect=true on the first QIDM also broken by presence of second QIDM.
+  Behavior: When multiple QIDMs share the same targetEntity and query value, only
+    one is evaluated. The others are silently ignored regardless of which entity
+    form is active, what fields are populated, or whether autoSelect is true or false.
+  Diagnostic trigger: form data confirms field IS populated (LicensePlateNumberOut="njtest")
+    but query still does not fire. STOP iterating set[] changes. This means the QIDM
+    itself is never evaluated. Move immediately to the merge decision below.
+  Merge decision:
+    CAN merge: all keyReferences across both configs are distinct.
+      Example: NY Vehicle -- _NY had RVEH+RCAR; _OOS had RVEH+RVIN.
+               After merge: RVEH, RCAR, RVIN -- all distinct. (NY v1.11)
+    CANNOT merge: a keyRef appears in both configs (duplicate keyRef = import error).
+      Example: NY DL -- both _OLN and _Name use keyRef=DLIC. Cannot merge.
+      Solutions:
+        a) Separate transaction in MetaData: if the provider XML defines a distinct
+           transaction for the second path (e.g., NyNyspinDriverLicenseNameQuery/DGRP),
+           use that transaction. Different query value = different pair = no LIMITATION #2.
+        b) DH-suffix fieldIds (FL_FCIC pattern): give DH form fields unique fieldIds
+           (NameFirstDH, etc.). DH QIDM references only DH fieldIds in set[]. DL and DH
+           QIDMs are separate; because their set[] fields are different, each fires
+           only when its specific fields are populated. Avoids LIMITATION #2 if the
+           platform treats them as distinct because set[] inputs differ.
+        c) No solution: if neither (a) nor (b) applies, the Name path is not implementable.
+           Example: NY DriverHistoryQuery -- both paths use keyRef=DALL; no separate
+           transaction exists. DH Name path (T8) is blocked. Document in LIMITATIONS.txt
+           and notify vendor to assign distinct keyRefs or register a separate transaction.
+  Always run T1-T4 (cold start + warm switch) before committing to split architecture.
+
+LIMITATION #3: Combination fires the first match -- all populated fields sent
+  Behavior: First combination whose set[] fields are all present fires. Its any[]
+    determines which optional fields are included in that combination's routing
+    decision only. All populated QIDM attributes are still sent.
+  Impact: Put most-specific combination first in the array.
+
+================================================================================
+SECTION 2 -- STATE FIELD AND RMS ELASTIC SEARCH
+================================================================================
+
+LIMITATION #4: attributeTypeId='STATE' sends internal numeric attribute ID
+  Confirmed: NJ v3.x, NY v1.0
+  Behavior: Any FormSelect with attributeTypeId='STATE' sends the platform's
+    internal attribute ID (e.g., NJ=69509884952, NY=69509802469) instead of
+    the 2-letter state code.
+  Correct use: ONLY on hidden SelH for RMS elastic search (fieldId='RegistrationState').
+    Never map this field in a QIDM targetField for outbound XML.
+  Fix for outbound XML: use InpH (FormInput hidden) with initialValue='NY' or 'NJ'.
+    Add InpH to QIDM as a sourceField. See FORM_ARCHITECTURE.txt.
+
+LIMITATION #5: RMS elastic search fatals on VIN/OLN when state is plain text
+  Confirmed: NJ v3.11
+  Behavior: RMS recognizes fieldId='RegistrationState' and expects an attribute ID.
+    Sending plain text (e.g., 'NJ', 'NY') causes RMS to throw a fatal local error.
+  Scope: VIN and OLN queries only. Plate-only queries do not trigger this validation.
+  Fix: Dual-field state pattern (see FORM_ARCHITECTURE.txt).
+
+LIMITATION #6: OOS RMS plate/VIN searches fire without state filter
+  Originally confirmed: NJ v3.16 (2026-04-10) -- believed SERVER-SIDE
+  STATUS: RESOLVED for NJ and AZ via NCIC state pattern (2026-04-20).
+  INSTANCE-SPECIFIC -- must test per provider before relying on this resolution.
+
+  RESOLUTION (codeTypeProvider=NCIC pattern):
+    Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=<state>)
+    CommSys QIDM State attr: sourceField=['RegistrationState'], codeTypeProvider='NCIC'
+      NCIC reverse-lookup converts stored attr ID -> 2-letter state code for outbound XML.
+    RMS QIDM: useAttributeId=true + AttributeArrayWrapperRuleHandler (HIDLE default)
+      Sends registrationStateAttrIds:[<dynamic attr id>] for any operator-selected state.
+    One visible field handles both CommSys state AND RMS state filter simultaneously.
+    CONFIRMED: NJ_NJCJIS (NJ attr 69509884952, PA attr 69509887513) -- 2026-04-20
+    CONFIRMED: AZ_AZDPS (AZ and CO attr IDs) -- 2026-04-20
+
+  WHY NJ_NIBRS FAILED BUT NCIC WORKS (NJ instance-specific):
+    codeTypeProvider=NJ_NIBRS reverse-lookup is not registered for state codes on the NJ instance.
+    codeTypeProvider=NCIC IS registered. This is an instance-specific code type registry entry.
+    Each new provider must test NCIC state pattern on first import (run in-state plate test first).
+    If CommSys <State> element is absent, NCIC reverse-lookup is not supported on that instance.
+
+  PRIOR WORKAROUNDS (still valid as fallback if NCIC pattern not confirmed):
+    Dual-field pattern: SelH RegistrationState (RMS) + InpH RegistrationStateXX (CommSys)
+    OOS: no RMS state filter (officer confirms visually). Outbound XML state always correct.
+    See FORM_ARCHITECTURE.txt Section 3.
+
+  UNCONFIRMED INSTANCES: FL, NY -- must test on first import. Default to dual-field pattern
+    until NCIC is confirmed. If confirmed: simplify to single visible RegistrationState.
+
+LIMITATION #7: Query display summary shows internal attribute ID for hidden state field
+  Confirmed: NJ v3.14 -- SERVER-SIDE (no fix found)
+  Behavior: Summary widget always surfaces raw value of any field with attributeTypeId.
+    SelH 'RegistrationState' (attributeTypeId=STATE) shows its attribute ID in the summary.
+  Attempted fixes (all FAILED): field order swap, bundle order change,
+    IgnoreUserValueRuleHandler, removing the field (breaks RMS).
+  Functional impact: NONE. Outbound XML and RMS work correctly.
+    This is cosmetic only. Do not spend time attempting to fix it.
+
+LIMITATION #8: LicensePlateNumber (generic) does not trigger RMS plate search
+  Confirmed: NJ v3.13
+  Fix: Use fieldId='LicensePlateNumberIn' (in-state) or 'LicensePlateNumberOut' (OOS).
+    These fieldIds come from HIDLE.json and must match exactly.
+    QIDM targetField remains 'LicensePlateNumber' (outbound XML element unchanged).
+
+================================================================================
+SECTION 3 -- FIELD AND FORM BEHAVIOR
+================================================================================
+
+LIMITATION #9: Blank FormInput = not sent; cleared FormSelect = not sent
+  Confirmed: NJ v1.9
+  Behavior: Platform does not serialize fields with no value.
+    Implication: use initialValue for fields that must always be sent.
+    Implication: clearing a FormSelect omits it from the request (correct for optional fields).
+
+LIMITATION #10: FormSelect YES_NO exposes N and U which may be invalid
+  Confirmed: NJ v1.7
+  For Y-only flag fields: use FormInput maxLength=1 (free text). Blank = not sent.
+    Officer types Y when needed.
+
+LIMITATION #11: Card.props.title renders plain text only
+  HTML tags appear verbatim. Use ALL CAPS for emphasis.
+
+LIMITATION #12: No conditional field visibility
+  hidden is static (true/false only). Cannot show/hide based on user input.
+  Workaround: all fields visible; QIDM set/any handles routing.
+
+LIMITATION #13: No field styling
+  No font size, color, weight props on any node type.
+  Workaround: field ordering and Card titles only.
+
+LIMITATION #14: No standalone text/label component
+  Components available: Card, Row, FormInput, FormSelect, FormDate, FormCheckbox.
+  Workaround: Card.props.title for instructional text.
+
+LIMITATION #15: FIRST_RESPONDER layout variant recognition unconfirmed
+  Included in all builds (default + CAD_DISPATCH + FIRST_RESPONDER).
+  Whether the platform renders FIRST_RESPONDER as a distinct context vs.
+  falling back to CAD_DISPATCH or default is not confirmed as of 2026-04-14.
+  Current practice: set FIRST_RESPONDER identical to CAD_DISPATCH.
+  Functional impact: NONE confirmed. Include it in all builds.
+  Source: NY STATUS.txt (2026-04-14).
+
+================================================================================
+SECTION 4 -- CODE TYPES AND DROPDOWNS
+================================================================================
+
+LIMITATION #16: YES_NO codeTypeCategory is not recognized
+  Use YES_NO_UNKNOWN instead. Confirmed NJ v1.7.
+
+LIMITATION #17: ArticleTypeCode requires codeTypeSource=CA_CLETS
+  NCIC gives empty dropdown for NCIC_ARTICLE_TYPE. Confirmed NJ v1.0.
+
+LIMITATION #18: NIBRS_RACE requires codeTypeSource=NIBRS (not NCIC)
+  Confirmed: NY v1.12 (2026-04-14)
+  NCIC gives empty dropdown for NIBRS_RACE under codeTypeSource=NCIC.
+  Correct: codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'
+  Sends single-letter NCIC race code (W/B/I/A/U/etc.) to outbound XML.
+
+LIMITATION #19: SexCode RMS filtering -- instance-specific; working pattern found for NJ
+  Confirmed attribute IDs (NJ instance): Male=69509891711, Female=69509894381, Unknown=69509886562
+  Full investigation history: RMS_SEX_ISSUE_REPORT.txt
+  UPDATED 2026-04-20: Working pattern confirmed for NJ. See SEX_CODE_PATTERN.txt.
+
+  STATUS BY INSTANCE:
+    NJ_NJCJIS: RESOLVED -- attributeTypeId=SEX + codeTypeProvider=NIBRS (form + QIDM).
+      CommSys <SexCode>M</SexCode> AND RMS sexAttrId:"69509891711" both correct.
+      CRITICAL: NO AttributeArrayWrapperRuleHandler on RMS sex attr (causes 400 error).
+      Confirmed: NJ v1.0, 2026-04-17. Active in NJ_NJCJIS v1.7.
+    AZ_AZDPS: RESOLVED -- same pattern as NJ. attributeTypeId=SEX + codeTypeProvider=NIBRS.
+      CommSys and RMS both working. Sex NOT removed from RMS QIDM.
+      Confirmed: AZ_AZDPS v1.0, 2026-04-20.
+    FL_FCIC single-QIF: RESOLVED -- same pattern as NJ/AZ. attributeTypeId=SEX + codeTypeProvider=NIBRS.
+      CommSys <SexCode>F</SexCode> AND RMS sexAttrId:"69509804595" both correct.
+      Confirmed: FL_FCIC v2.2 FDQName test, 2026-04-21.
+      PRIOR CONCLUSION ("FL instance doesn't support reverse-lookup") WAS WRONG.
+      Actual failure was duplicate targetField from entity-split design (see LIMITATION #28).
+    FL_FCIC entity-split: NOT RESOLVED -- reverse-lookup breaks with multiple Person QIFs.
+      See LIMITATION #28 for full details. No config-level fix found (2026-04-21).
+    NY_NYSPIN: NOT YET TESTED. Default: NIBRS_SEX CommSys-only + sex removed from RMS (Phase 1).
+      Test NIBRS reverse-lookup on first import. If confirmed: restore codeTypeProvider=NIBRS.
+
+  NOTE: Prior v3.x NJ test failures were caused by AttributeArrayWrapperRuleHandler on the
+    RMS sex attr (not by a fundamental platform limitation). v1.0 confirmed the handler must
+    be absent. LIMITATION #19 applies to FL and unconfirmed instances, not NJ.
+
+  PATH A: codeTypeCategory='NIBRS_SEX' + useAttributeId=True in RMS QIDM
+    CommSys XML: correct ("M"/"F"/"U")
+    RMS: receives sexAttrId:"M" -> 400 error (cannot convert NIBRS code to attribute ID)
+    Confirmed: NJ v3.20 (2026-04-13)
+
+  PATH B: attributeTypeId='SEX' + useAttributeId=True in RMS QIDM
+    CommSys XML: receives numeric attribute ID (e.g. 69509891711) -> BREAKS CommSys
+    RMS: receives sexAttrId:[69509891711] -> bad request (RMS does not accept sexAttrId)
+    Confirmed: NJ SexCode_Test build (2026-04-17)
+
+  PATH C: attributeTypeId='SEX' + codeTypeProvider='NIBRS' + internalAttributeID (form field)
+    Engineering recommendation (2026-04-17) -- NOT TESTED (Path D confirmed same base fails)
+    codeTypeProvider='NIBRS' on form field does NOT prevent numeric ID reaching CommSys.
+    internalAttributeID hardcodes Male attribute ID only -- not a general solution.
+
+  PATH D: attributeTypeId='SEX' + codeTypeProvider='NIBRS' + elasticPayloadTargetField='sexAttrId'
+    Engineering recommendation (2026-04-17) -- Confirmed: NJ SexCode_OptionB build (2026-04-17)
+    CommSys XML: <SexCode>69509891711</SexCode> -> numeric ID, BREAKS CommSys
+      codeTypeProvider='NIBRS' on form field has NO EFFECT on CommSys output.
+    RMS elastic: sexAttrId ABSENT from payload -- elasticPayloadTargetField did not inject.
+    BOTH failures -- neither property works as engineering expected.
+
+  PATH G: attributeTypeId='SEX' form + CommsysResultAttributeMappingRuleHandler on CommSys QIDM
+    CommSys XML: SexCode absent -- handler returns null outbound (INBOUND-ONLY handler) FAIL
+    RMS elastic: sexAttrId:69509891711 (integer, no error) -- scalar confirmed accepted by RMS
+    KEY FINDING: useAttributeId=True with scalar numeric ID accepted. ArrayWrapperRuleHandler
+      was incorrect; scalar is the correct pattern (matches HIDLE).
+    Confirmed: NJ SexCode_OptionG build (2026-04-17)
+
+  PATH H: attributeTypeId='SEX' form + codeTypeProvider='NIBRS' on both form and CommSys QIDM
+    CommSys XML: numeric ID -- codeTypeProvider on form has no outbound conversion effect FAIL
+    RMS elastic: sexAttrId:69509891711 (integer, no error) PASS
+    Confirmed: NJ SexCode_OptionH build (2026-04-17)
+
+  PATH I: attributeTypeId='SEX' form + codeTypeCategory=NIBRS_SEX on CommSys QIDM attribute
+    CommSys XML: numeric ID -- adding codeTypeCategory to QIDM attribute has no conversion FAIL
+    RMS elastic: sexAttrId:69509891711 (integer, no error) PASS
+    Confirmed: NJ SexCode_OptionI build (2026-04-17)
+
+  PATH J: codeTypeCategory=NIBRS_SEX / codeTypeSource=NCIC form (RMS_SEX code type, attr-ID-keyed)
+    RMS_SEX code type created with entries keyed on numeric attribute IDs.
+    JSON reference: codeTypeCategory=NIBRS_SEX + codeTypeSource=NCIC (Name=RMS_SEX is admin label).
+    CommSys XML: numeric ID -- form resolved to attribute ID, codeTypeProvider did not convert FAIL
+    RMS elastic: sexAttrId:"69509891711" (string, no error) -- value correct but string not integer
+    Dropdown shows numeric IDs first -- poor UX
+    Confirmed: NJ SexCode_OptionJ build (2026-04-17)
+
+  PATH K: NIBRS_SEX/NIBRS form + codeTypeCategory=NIBRS_SEX / codeTypeSource=NCIC on RMS QIDM attr
+    CommSys XML: "M"/"F" -- correct (form unchanged)
+    RMS elastic: sexAttrId:"M" -- codeTypeCategory on QIDM attribute has NO lookup effect FAIL
+    Confirmed: NJ SexCode_OptionK build (2026-04-17)
+
+  RMS_SEX CODE TYPE STATUS (2026-04-17):
+    Created with entries keyed on attribute IDs. Code type is accessible. No QIDM-layer
+    property activates a lookup from NIBRS code to attribute ID using it. The type is
+    correctly structured but the platform lacks a rule handler to invoke it outbound.
+
+  WHY HIDLE/FL/CA USE attributeTypeId=SEX:
+    Those providers (HI HCJDC, FL FCIC, CA DL) accept numeric attribute IDs in CommSys XML.
+    NJ NJCJIS and NY NYSPIN require NIBRS codes ("M"/"F"/"U") -- attributeTypeId approach
+    breaks their CommSys XML, making it non-viable regardless of RMS behavior.
+
+  CORRECT APPROACH (NJ/NY): codeTypeCategory='NIBRS_SEX', codeTypeSource='NIBRS'
+    CommSys XML receives "M"/"F"/"U" -- correct.
+
+  CURRENT CONFIGURATION: remove sexAttrId/sexAttrIds/useAttributeId from RMS person
+    QIDM attributes[] and all combination any[] lists.
+    Sex filtering is CommSys XML only. RMS returns unfiltered person results.
+    PERMANENT -- all config-layer paths exhausted. Do not re-investigate at config level.
+    Re-open only if engineering provides a new outbound code-type lookup rule handler.
+
+  ENGINEERING ASK: New rule handler (or extended useAttributeId=True) that accepts a NIBRS
+    code, looks up the matching RMS_SEX code type entry, and returns the linked attribute ID.
+    This is the outbound mirror of CommsysResultAttributeMappingRuleHandler (QRDM inbound).
+
+LIMITATION #20: VEHICLE_BODY_STYLE and VEHICLE_TYPE are provider-specific
+  NJ: VEHICLE_BODY_STYLE -> NJ_NIBRS (NCIC empty)
+  CA: VEHICLE_BODY_STYLE -> VEHICLE
+  HI: VEHICLE_TYPE -> HI_NIBRS (NCIC empty)
+  Always confirm codeTypeSource per provider before committing.
+
+================================================================================
+SECTION 5 -- IMPORT AND BUNDLE
+================================================================================
+
+LIMITATION #21: Duplicate keyReference rejected at import
+  Error: "Duplicate key references found in query input data mapping."
+  Each combination within a single QIDM must have a distinct keyReference.
+  For NJ+OOS in same QIDM: suffix NJ combinations with _NJ (RQ_NJ, RQN_NJ, DQN_NJ).
+  Confirmed: NJ v3.12, NY v1.13 (import failed)
+  NY DriverHistoryQuery example (CONFIRMED import test, 2026-04-15):
+    Both DALL combinations (OLN path and Name path) share keyRef=DALL.
+    Import returned: "Duplicate key references found in query input data mapping."
+    RESOLUTION (v1.19, CONFIRMED 2026-04-15): use a distinct invented keyRef for the second
+    combination (DALL + DALH). Provider routes by field content in the XML, not by keyRef.
+    Import accepted. Both OLN and Name paths fire correctly. autoSelect=true works.
+    keyRef is a platform-internal identifier only -- provider does not validate it.
+  NOTE: multi-combination QIDMs ARE valid when keyRefs are distinct (e.g. BoatQuery
+    uses RVEH/RCAR/BVEH/BVIN -- four combinations, four distinct keyRefs, one QIDM).
+    keyRefs do NOT need to match provider MetaData. They are platform-internal only.
+
+LIMITATION #22: QUERYINPUTFORM in RMS bundle causes duplicate entity cards
+  QUERYINPUTFORM belongs only in the ENTITIES bundle (provider=MARK43).
+  Adding it to the NY or RMS bundle renders each form twice.
+
+LIMITATION #23: VehicleStolenQuery (and other unregistered transactions)
+  Cannot be built until CommSys registers the transaction server-side.
+  Check at standup: confirm all target transactions are in the provider XML.
+  If missing: flag in LIMITATIONS.txt and send to CommSys in gap summary.
+
+================================================================================
+SECTION 6 -- MULTI-QUERY PERSON FORMS (confirmed FL_FCIC, 2026-04-10)
+================================================================================
+
+LIMITATION #24: Two QIDMs on same form -- use autoSelect + queriesToDeselect
+  When DL and DH are on the same Person tab (shared form), add to each QIDM:
+    autoSelect: true
+    queriesToDeselect: ["<other query name>"]
+  Prevents double-query submission when both QIDMs are active.
+  Without this: both queries fire on every submission.
+  NOTE: queriesToDeselect alone is NOT sufficient on a shared form when both QIDMs
+    have the same fieldId (e.g., OperatorLicenseNumber) in their set[].
+    Both QIDMs match simultaneously; mutual deselect creates deadlock or unpredictable
+    behavior. ALWAYS pair with LIMITATION #25 (DH-suffix fieldIds) on shared forms.
+  Source: FL_FCIC.json production pattern.
+
+LIMITATION #25: DH-suffix fieldIds needed when DL and DH share a form
+  On a shared form, DH form fields use suffixed fieldIds:
+    NameFirstDH, NameLastDH, NameMiddleDH, NameSuffixDH,
+    BirthDateDH, SexCodeDH, OperatorLicenseNumberDH
+  DH QIDM set[] references only the DH-suffixed fieldIds.
+  DH QIDM attributes map: sourceField=NameFirstDH -> targetField=Name, etc.
+  Result: DL set[] and DH set[] reference different sourceFields -- cannot co-fire.
+  Avoids need for split configs -- sidesteps LIMITATION #2 entirely.
+  Apply together with LIMITATION #24 (autoSelect + queriesToDeselect).
+  Source: FL_FCIC.json production pattern.
+
+LIMITATION #26: Separate-form DL+DH -- platform uses SHARED field pool for ALL Person QIDMs
+  CONFIRMED: NY v1.15 live test (2026-04-14)
+  Behavior: The platform evaluates ALL Person QIDMs from a single shared field-value pool,
+    regardless of which sub-form (QIF sub-tab) is currently active. Separate QIF sub-forms
+    do NOT isolate QIDM evaluation to the active form's fields only.
+  Consequence: when an OLN is entered on the DL form, the DH QIDM also matches (OLN is in
+    the shared pool). Mutual queriesToDeselect on DL + DH causes a deadlock -- DALL checkbox
+    remains checked even after OLN entry, and DH co-fires with DL.
+  Confirmed symptoms: entering OLN on DL-NY sub-form showed DALL checkbox checked; DH fired
+    alongside DL. queriesToDeselect on DL QIDMs did NOT prevent DH from matching.
+  Correct design (v1.16): embrace DH co-fire on DL OLN entry as correct police workflow.
+    Remove queriesToDeselect from DL QIDMs. DH QIDM keeps queriesToDeselect pointing at
+    both DL QIDMs (no functional isolation benefit, but no harm either).
+  CONFIRMED SYMMETRIC (NY v1.16 T7a, 2026-04-14): queriesToDeselect is ineffective in BOTH
+    directions. DH queriesToDeselect did NOT prevent DLIC from co-firing when OLN entered on
+    DH form. Platform fires all matching QIDMs simultaneously; queriesToDeselect cannot
+    intercept before firing. The property provides no query isolation benefit.
+  Net behavior: DLIC + DALL always co-fire whenever OLN is present, regardless of active form.
+    This is correct police workflow -- comprehensive DL + DH results on any OLN query.
+  Alternative if true isolation is needed: DH-suffix fieldIds (OperatorLicenseNumberDH on DH
+    form and DH QIDM) -- then DH set[] field is absent from shared pool when DL form is active.
+  Source: NY_NYSPIN_EJUSTICE v1.15 (DL side) + v1.16 T7a (DH side).
+
+
+LIMITATION #27: AttributeArrayWrapperRuleHandler on RMS sex attribute wraps sexAttrId
+                in an array -> RMS 400 error. Do NOT add this rule handler to the sex attr.
+===================================================================================
+  Confirmed: NJ_NJCJIS v3.25 regression (2026-04-17). Root cause identified 2026-04-17.
+
+  Background -- WHAT WORKS:
+    Form: attributeTypeId=SEX + codeTypeProvider=NIBRS (stores numeric attribute ID)
+    CommSys QIDM SexCode: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
+    RMS sex: useAttributeId=true, NO AttributeArrayWrapperRuleHandler
+    Result: CommSys <SexCode>M</SexCode> AND RMS sexAttrId:"69509891711" (string) BOTH CORRECT.
+    CONFIRMED WORKING: NJ_NJCJIS v1.0 fresh-import test 2026-04-17 16:16.
+
+  The failure -- AttributeArrayWrapperRuleHandler:
+    Added in NJ v3.25 (2026-04-17). Causes RMS sex attr to output sexAttrId:[69509891711]
+    (number in array instead of string). RMS elastic rejects array format with 400 error.
+    All v3.25-v3.29 failures were caused by this rule handler, not by a platform limitation.
+    The v3.22-v3.29 tests that were previously documented as "reverse-lookup broken" were
+    contaminated -- they all had either the ArrayWrapper or a stale import.
+
+  DO NOT add AttributeArrayWrapperRuleHandler to the RMS sex attribute. HIDLE default
+    (useAttributeId=true with no rule handler) produces correct string output.
+
+  RMS array-wrapping problem (separate, also confirmed):
+    Form codeTypeCategory=NIBRS_SEX stores "M" (string). useAttributeId=true with a string
+    value wraps result in array: sexAttrId:[69509891711] -> RMS 400. This is real.
+    Avoid by using attributeTypeId=SEX on the form (stores attr ID, not a string).
+
+  See SEX_CODE_PATTERN.txt for the complete working configuration and checklist.
+
+LIMITATION #28: Entity-split (multiple QIFs per entity) breaks codeTypeProvider reverse-lookup
+                SERVER-SIDE -- no config fix available
+===================================================================================
+  Confirmed: FL_FCIC v2.0, v2.3, v2.4 (2026-04-20 through 2026-04-21). 3 tests, all failed.
+  Also confirmed: FL_FCIC v2.2 single-QIF WORKS on same instance (control test).
+
+  Behavior: When multiple QIFs target the same entity (e.g. Person-FL + Person-OOS both
+    target entity=Person), codeTypeProvider reverse-lookup on QIDM attributes fails.
+    The QIDM sends the raw attribute ID instead of the resolved NIBRS code.
+    Single-QIF design with the identical QIDM config works correctly.
+
+  Root cause: The platform collects field values from ALL QIFs targeting the same entity
+    into a shared pool (see LIMITATION #26). When fieldId=SexCode exists on multiple QIFs,
+    the inactive QIF's empty value interferes with the reverse-lookup on the active QIF's
+    populated value. The exact server-side mechanism is unknown.
+
+  Three approaches tested -- ALL FAILED:
+
+    v2.0 (different fieldIds, duplicate targetField):
+      Person-InState: fieldId=SexCode     attributeTypeId=SEX  codeTypeProvider=NIBRS
+      Person-OOS:     fieldId=SexCodeOOS  attributeTypeId=SEX  codeTypeProvider=NIBRS
+      QIDM: SexCode + SexCodeOOS both -> targetField=SexCode (duplicate)
+      Result: <SexCode>69509804595</SexCode> -- BROKEN
+
+    v2.3 (same fieldIds, clean QIDM):
+      Person-FL:  fieldId=SexCode  attributeTypeId=SEX  codeTypeProvider=NIBRS
+      Person-OOS: fieldId=SexCode  attributeTypeId=SEX  codeTypeProvider=NIBRS
+      QIDM: Single SexCode attribute, no duplicate targetFields
+      Result: <SexCode>69509804595</SexCode> -- BROKEN
+
+    v2.4 (same fieldIds, mixed storage strategy):
+      Person-FL:  fieldId=SexCode  attributeTypeId=SEX      codeTypeProvider=NIBRS
+      Person-OOS: fieldId=SexCode  codeTypeCategory=NIBRS_SEX  codeTypeSource=NIBRS
+      QIDM: Single SexCode attribute, no duplicate targetFields
+      Result: <SexCode>69509804595</SexCode> -- BROKEN
+
+  The failure occurs regardless of:
+    - Whether fieldIds are the same or different across QIFs
+    - Whether the QIDM has duplicate targetFields or not
+    - Whether the form fields use the same or different storage strategies
+
+  What WORKS (control tests on same instances):
+    NJ_NJCJIS v1.0  (single Person QIF, 2 cards)  <SexCode>M</SexCode>  CORRECT
+    AZ_AZDPS  v1.0  (single Person QIF)            <SexCode>M</SexCode>  CORRECT
+    FL_FCIC   v2.2  (single Person QIF, 6 cards)   <SexCode>F</SexCode>  CORRECT
+    FL_FCIC ProviderTest (NJ config on FL instance) <SexCode>M</SexCode>  CORRECT
+
+  DEAD ENDS -- do not retry:
+    - Different fieldIds with OOS suffix (creates duplicate targetField)
+    - Same fieldIds across QIFs (shared pool collision)
+    - Mixed attributeTypeId / codeTypeCategory on same fieldId (still collides)
+
+  Design constraint: To use codeTypeProvider reverse-lookup, each entity must have
+    exactly ONE QIF. Multi-card layouts within a single QIF are unaffected.
+    DH-suffix fieldIds (SexCodeDH on a separate DH QIF) are isolated and work correctly
+    because DH QIDM references SexCodeDH, not SexCode.
+
+  Package: FL_FCIC_entity_split_investigation.zip contains v2.2 (working) and v2.3 (broken)
+    with full technical documentation of all test results.
+
+LIMITATION #29: Attention field overridden by platform with user session data
+                CONFIRMED -- SERVER-SIDE, no config fix available
+===================================================================================
+  Confirmed: FL_FCIC KQ (DriverHistoryQuery) 2026-04-23
+  Provider: FL_FCIC_BASE.json
+  Tester: Gordy Hallof (MK43GAH)
+
+  Behavior: User types a value in the Attention form field, but the platform
+    substitutes the logged-in user's name in the outbound XML <Attention> element.
+    The form correctly captures the user's input, but the platform overrides it
+    before XML generation.
+
+  CONFIRMED via XML capture (2026-04-23):
+    User typed:           "DDUCK"
+    Posted query string:  "Attention":"DDUCK"  (form captured correctly)
+    XML output:           <Attention>HALLOF G</Attention>  (user's name injected)
+    Auth section:         <UserName>MK43GAH</UserName>
+    Requestor element:    NOT PRESENT in XML (sourceField=Attention but not emitted)
+
+  The override happens AFTER the form submits and BEFORE the XML is generated.
+    CommsysTransactionRequestHandler or CommsysOriAuthenticationHandler injects the
+    user's session identity (last name + first initial) into the Attention targetField.
+
+  JSON config analysis -- NO config-level cause:
+    - QIF form: fieldId='Attention', type=FormInput, maxLength=30 -- correct
+    - QIDM attr: sourceField=['Attention'], targetField='Attention' -- no rule handler
+    - QIDM attr: sourceField=['Attention'], targetField='Requestor' -- no rule handler
+    - Attention is in set[] for KQ combo -- combo fires correctly
+    - HIDLE template has identical Attention config (no rule handler)
+
+  Additional observation: No <State> element in the XML despite RegistrationState
+    being in KQ set[]. Either State was not filled on the form, or the platform
+    omitted it. Needs separate investigation if State was populated.
+
+  Impact: Attention field on DriverHistoryQuery (KQ) forms is cosmetic only --
+    the platform will always override with the logged-in user's identity.
+    This may be intentional (audit trail / requestor identification).
+
+  Workaround: None at config level. If the Attention field must carry user-entered
+    data, this requires a platform-side change. Consider documenting this behavior
+    to end users so they understand the field is auto-populated.
+
+  OPEN QUESTIONS:
+    1. Does this apply to ALL providers or only FL_FCIC?
+    2. Is this specific to DriverHistoryQuery or any query with Attention?
+    3. Is the Requestor targetField also overridden (it was absent from the XML)?
+    4. Is this the intended platform behavior (audit/requestor tracking)?
+
+
+LIMITATION #30: initialValue on State field changes combo routing (in-state -> OOS)
+                CONFIRMED -- by design (LIMITATION #1 + #3 interaction)
+===================================================================================
+  Confirmed: NY_NYSPIN_EJUSTICE MC 2026-04-24
+  Provider: NY_NYSPIN_EJUSTICE_MC.json
+
+  Behavior: Setting initialValue (e.g., 'NY') on a State dropdown causes the
+    State field to always be populated. Because all populated QIDM attributes
+    are sent when a combo fires (LIMITATION #1), and the most-specific combo
+    fires first (LIMITATION #3), the OOS combo fires instead of the in-state combo.
+
+  Example (Vehicle):
+    Without initialValue:  VIN only -> RCAR fires (in-state, no State in XML)
+    With initialValue='NY': VIN + State(NY) -> RVIN fires (OOS combo, <State>NY</State> in XML)
+
+  Functionally, RVIN with State=NY may produce the same server result as RCAR,
+    but the documented query type changes. For providers where in-state vs OOS
+    transactions must match documented keyRefs, do NOT use initialValue on State.
+
+  Workaround: Use card title hint ("Leave blank for NY queries") to guide officers.
+    In-state combos remain as fallbacks if officer explicitly clears the State field.
+
+  Decision (NY 2026-04-24): Reverted initialValue='NY'. Blank default preserved
+    to keep documented query types (RCAR, boat-RVEH, boat-RCAR) firing correctly.
+    May revisit if agency confirms OOS combos are acceptable for in-state queries.
+
+  Applies to: Any provider with separate in-state and OOS combos on the same form.
+    NJ_NJCJIS uses initialValue='NJ' because NJ has a different combo structure
+    where State is always in set[] for the primary combo (no separate in-state keyRef).

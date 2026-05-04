@@ -1,0 +1,35 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Person Name NJ (T8-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T8-mc -- DriverLicenseQuery, DQ, Name + DOB + NJ State (from OLN card) -- PASS
+================================================================================
+
+Form    : Person QIF | OLN card State: NJ (initialValue, not changed) | Name card | Last: SMITH | First: JOHN | DOB: 01/01/1950
+Result  : No Returns (expected)
+Status  : PASS
+
+NOTE: ImageIndicator defaulted to Y -- crosses from OLN card to Name card query.
+      Same behavior as split build Person forms. Expected and correct.
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBSJ4PX9WYZEQD1MNP3TMYK"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KPBSJ4PX9WYZEQD1MNP3TMYK</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><BirthDate>01011950</BirthDate><Name>JOHN SMITH</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1950-01-01"},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=DriverLicenseQuery (DQ -- Name path) correct
+  - <Name>JOHN SMITH</Name> -- First Last concatenation correct
+  - <BirthDate>01011950</BirthDate> correct (MMDDYYYY format)
+  - <State>NJ</State> confirmed -- crossed from OLN card initialValue=NJ
+  - <ImageIndicator>Y</ImageIndicator> confirmed -- crossed from OLN card initialValue=Y
+  - RMS: lastName/firstName/dateOfBirth (YYYY-MM-DD) correct; name search fires as expected
+  - No unexpected co-fires

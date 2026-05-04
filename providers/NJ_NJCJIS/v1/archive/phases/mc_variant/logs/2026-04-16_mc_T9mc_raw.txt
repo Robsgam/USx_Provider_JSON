@@ -1,0 +1,34 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Person Name + Sex NJ (T9-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T9-mc -- DriverLicenseQuery, DQ, Name + DOB + Sex + NJ State -- PASS
+================================================================================
+
+Form    : Person QIF | OLN card State: NJ (initialValue) | Name card | Last: SMITH | First: JOHN | DOB: 01/01/1950 | Sex: M
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBSMWCRV2V9GT29DS7T7843"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KPBSMWCRV2V9GT29DS7T7843</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><SexCode>M</SexCode><BirthDate>01011950</BirthDate><Name>JOHN SMITH</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1950-01-01"},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=DriverLicenseQuery (DQ -- Name path) correct
+  - <Name>JOHN SMITH</Name> correct
+  - <BirthDate>01011950</BirthDate> correct
+  - <State>NJ</State> crossed from OLN card initialValue=NJ correct
+  - <ImageIndicator>Y</ImageIndicator> crossed from OLN card correct
+  - <SexCode>M</SexCode> confirmed in outbound XML
+  - RMS: lastName/firstName/dateOfBirth only -- sexAttrId absent (Patch 3 confirmed working in mc build)
+  - SERVER-SIDE LIMITATION: sex filters CommSys XML only; RMS search runs without sex filter
+  - No unexpected co-fires

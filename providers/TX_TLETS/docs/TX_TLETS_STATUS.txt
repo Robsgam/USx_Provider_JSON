@@ -1,0 +1,84 @@
+TX_TLETS -- Build Status
+========================
+Last updated: 2026-04-23
+Current version: 1.0 (Phase 1 -- initial standup)
+Provider: TX_TLETS
+Phase: 01_standup (initial JSON, not yet tested)
+
+ARCHITECTURE (v1.0)
+--------------------
+Bundles:  3
+  ENTITIES  (5 QUERYINPUTFORM)
+  TX_TLETS  (11 configurations)
+  RMS       (2 configurations)
+
+Entities: Vehicle, Person, Firearm, Article, Boat
+
+TX_TLETS Configurations:
+  TX_TLETS                               AUTHENTICATION
+  TX_TLETS_QueryMessageFormat            QUERYMESSAGEFORMAT
+  TX_TLETS_VehicleInsuranceRegistration  QUERYINPUTDATAMAPPING
+  RMS Vehicle search query               QUERYINPUTDATAMAPPING
+  TX_TLETS_DriverLicenseQuery            QUERYINPUTDATAMAPPING
+  TX_TLETS_DriverHistoryQuery            QUERYINPUTDATAMAPPING
+  RMS Person Search query                QUERYINPUTDATAMAPPING
+  TX_TLETS_ArticleSingleQuery            QUERYINPUTDATAMAPPING
+  TX_TLETS_BoatQuery                     QUERYINPUTDATAMAPPING
+  TX_TLETS_GunQuery                      QUERYINPUTDATAMAPPING
+  TX_TLETS_Results                       QUERYRESULTDATAMAPPING
+
+OPEN ITEMS (Phase 1)
+--------------------
+[ ] Import to ConnectCIC and verify forms render
+[ ] Confirm entity forms display correctly (5 entities)
+[ ] Confirm VehicleInsuranceRegistrationQuery fires correctly
+[ ] Confirm DriverLicenseQuery fires on OLN
+[ ] Confirm DriverHistoryQuery fires correctly
+[ ] Confirm GunQuery fires on SerialNumber
+[ ] Confirm ArticleSingleQuery fires on SerialNumber
+[ ] Confirm BoatQuery fires on registration/hull
+[ ] Confirm RMS Vehicle/Person search queries fire
+[ ] Confirm Results mapping renders response data
+[ ] Review SexCode field configuration (see KB SEX_CODE_PATTERN.txt)
+[ ] Review State field configuration across all entities
+
+TEST MATRIX
+-----------
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE
+  VEH-1: Vehicle Registration (Plate)         CommSys+RMS     [PENDING]
+  VEH-2: Vehicle Registration (VIN)           CommSys+RMS     [PENDING]
+
+  PERSON -- Driver License
+  PER-1: Driver License (OLN)                 CommSys+RMS     [PENDING]
+  PER-2: Driver License (Name)                CommSys+RMS     [PENDING]
+
+  PERSON -- Driver History
+  PER-3: Driver History (OLN)                 CommSys         [PENDING]
+  PER-4: Driver History (Name)                CommSys         [PENDING]
+
+  FIREARM
+  FA-1:  Gun Query (SerialNumber)              CommSys         [PENDING]
+
+  ARTICLE
+  ART-1: Article Query (SerialNumber)          CommSys         [PENDING]
+
+  BOAT
+  BOA-1: Boat Query (Registration)             CommSys         [PENDING]
+  BOA-2: Boat Query (Hull)                     CommSys         [PENDING]
+
+BUILD LOG (newest first)
+  v1.0  2026-04-23  queryLabel fixes -- direct JSON edit (no rebuild)
+    Change: ArticleSingleQuery "Article Query" -> "Article"
+            BoatQuery          "Boat Query"    -> "Boat"
+            GunQuery           "Firearm Query" -> "Firearm"
+    Reason: KB queryLabel standard -- label by what officer searches for.
+            Confirmed standard applied across all providers (AZ, FL, NY, TX) 2026-04-23.
+    File: TX_TLETS_BASE.json (root)
+    Committed and pushed to master.
+
+  v1.0  2026-04-21  Initial standup -- TX_TLETS.json imported into project structure
+    Output : C:\Users\Gordon Hallof\TX_TLETS\TX_TLETS.json
+    Archive: C:\Users\Gordon Hallof\TX_TLETS\phases\01_standup\TX_TLETS_v1.0_2026-04-21.json
+    Import: PENDING

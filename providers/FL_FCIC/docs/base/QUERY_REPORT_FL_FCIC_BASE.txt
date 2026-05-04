@@ -1,0 +1,613 @@
+================================================================
+  Build Report: FL_FCIC_BASE
+  Source: FL_FCIC_BASE.json
+  Generated: 2026-05-04 11:20
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- FL_FCIC_BASE.json
+================================================================
+
+--- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
+
+    [FIRES] RQLicensePlateNumber
+      set: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RQVehicleIdentificationNumber
+      set: [VehicleIdentificationNumber, RegistrationState]
+      any: [VehicleMakeCode, VehicleYear, ImageIndicator] -> matched: [VehicleMakeCode, VehicleYear, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] FRQLicensePlateNumber
+      set: [LicensePlateNumberIn]
+      any: [LicensePlateYear, ImageIndicator] -> matched: [LicensePlateYear, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FRQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] FRQVehicleIdentificationNumber
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FRQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] FRQDecalNumber
+      set: [DecalNumber, LicensePlateYear]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FRQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] FRQTitleLienInformation
+      set: [TitleLienInformation]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FRQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+--- QIDM: FL_FCIC_VehicleStolenQuery [Vehicle] ---
+    Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
+
+    [FIRES] QVLicensePlateNumber
+      set: [LicensePlateNumberIn]
+      any: [ImageIndicator, RegistrationState, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVVehicleIdentificationNumber
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator, VehicleMakeCode] -> matched: [ImageIndicator, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+--- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
+
+    [FIRES] DQOperatorLicenseNumber
+      set: [OperatorLicenseNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] FDQOperatorLicenseNumber
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FDQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQName
+      set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] FDQName
+      set: [BirthDate, NameLast, NameFirst, SexCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FDQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: FL_FCIC_WantedPersonQuery [Person] ---
+    Query: WantedPersonQuery  |  Attrs: 4  |  Combos: 2
+
+    [FIRES] QWOperatorLicenseNumber
+      set: [NameLast, NameFirst, OperatorLicenseNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+    [FIRES] QWName
+      set: [BirthDate, NameLast, NameFirst]
+      any: [OperatorLicenseNumber, ImageIndicator] -> matched: [OperatorLicenseNumber, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: FL_FCIC_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] KQOperatorLicenseNumber
+      set: [OperatorLicenseNumberDH, RegistrationState, PurposeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQName
+      set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState, PurposeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: FL_FCIC_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 3
+
+    [FIRES] QGGunSerialNumber
+      set: [GunSerialNumber]
+      any: [GunMake, ImageIndicator] -> matched: [GunMake, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+    [FIRES] QGNCICNumber
+      set: [NCICNumber]
+      any: [GunMake, ImageIndicator] -> matched: [GunMake, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+    [FIRES] QGProcessControlNumber
+      set: [ProcessControlNumber]
+      any: [GunMake, ImageIndicator] -> matched: [GunMake, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+--- QIDM: FL_FCIC_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
+
+    [FIRES] QAArticleSerialNumber
+      set: [ArticleSerialNumber, ArticleTypeCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+    [FIRES] QAOwnerAppliedNumber
+      set: [ArticleTypeCode, OwnerAppliedNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+    [FIRES] QANCICNumber
+      set: [NCICNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+    [FIRES] QAProcessControlNumber
+      set: [ProcessControlNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+      </Transaction>
+
+--- QIDM: FL_FCIC_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 11  |  Combos: 12
+    [SKIP] BQName -- missing set: BirthDate
+
+    [FIRES] BQBoatHullIdNumber
+      set: [BoatHullIdNumber, RegistrationState]
+      any: [RegistrationNumber] -> matched: [RegistrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] BQRegistrationNumber
+      set: [RegistrationNumber, RegistrationState]
+      any: [BoatHullIdNumber] -> matched: [BoatHullIdNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] FBQBoatHullIdNumber
+      set: [BoatHullIdNumber]
+      any: [DecalNumber, RegistrationNumber, TitleLienInformation] -> matched: [DecalNumber, RegistrationNumber, TitleLienInformation]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FBQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] FBQRegistrationNumber
+      set: [RegistrationNumber]
+      any: [BoatHullIdNumber, DecalNumber, TitleLienInformation] -> matched: [BoatHullIdNumber, DecalNumber, TitleLienInformation]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FBQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] FBQDecalNumber
+      set: [DecalNumber]
+      any: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation] -> matched: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FBQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] FBQTitleLienInformation
+      set: [TitleLienInformation]
+      any: [BoatHullIdNumber, DecalNumber, RegistrationNumber] -> matched: [BoatHullIdNumber, DecalNumber, RegistrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FBQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] QBCoastGuardDocumentNumber
+      set: [CoastGuardDocumentNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] QBBoatHullIdNumber
+      set: [BoatHullIdNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] QBRegistrationNumber
+      set: [RegistrationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] QBNCICNumber
+      set: [NCICNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+    [FIRES] QBProcessControlNumber
+      set: [ProcessControlNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+
+

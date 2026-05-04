@@ -1,0 +1,205 @@
+FL_FCIC Build Status
+====================
+Current version : v3.0
+Last updated    : 2026-05-01
+Output file     : FL_FCIC_BASE.json
+Build script    : scripts/build_fl_fcic_v3.ps1
+Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
+
+VALIDATOR RESULTS
+-----------------
+  100 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+  34 FIRE / 1 SKIP
+
+  1 WARN: DH QIDM has 3 non-suffixed sourceFields (Attention=handler-only,
+          PurposeCode=DH-only, RegistrationState=shared) -- all justified
+  4 LIMITATION:
+    - VehicleRegistrationQuery combo priority ordering (RQ before FRQ -- intentional)
+    - DriverLicenseQuery combo priority ordering (DQ before FDQ -- intentional)
+    - DriverHistoryQuery combo priority ordering (OLN before Name -- intentional)
+    - Vehicle: 2 QIDMs on 1 QIF, no queriesToDeselect (LIMITATION #24 -- co-fire)
+
+BUNDLE SUMMARY
+--------------
+  ENTITIES  --  5 configurations (QUERYINPUTFORM, provider=MARK43)
+  FL_FCIC   -- 11 configurations (AUTH + QRDM + QMF + 8 CommSys QIDMs)
+  RMS       --  6 configurations (cloned from HIDLE.json + Patches 1,3,6,7)
+
+FL_FCIC BUNDLE -- 8 QUERYINPUTDATAMAPPING CONFIGURATIONS
+---------------------------------------------------------
+  Name                                Query                      Combos  Entity
+  ----------------------------------  -------------------------  ------  ------
+  FL_FCIC_VehicleRegistrationQuery    VehicleRegistrationQuery   6       Vehicle
+  FL_FCIC_VehicleStolenQuery          VehicleStolenQuery         2       Vehicle
+  FL_FCIC_DriverLicenseQuery          DriverLicenseQuery         4       Person
+  FL_FCIC_WantedPersonQuery           WantedPersonQuery          2       Person
+  FL_FCIC_DriverHistoryQuery          DriverHistoryQuery         2       Person
+  FL_FCIC_GunQuery                    GunQuery                   3       Firearm
+  FL_FCIC_ArticleSingleQuery          ArticleSingleQuery         4       Article
+  FL_FCIC_BoatQuery                   BoatQuery                  12      Boat
+
+  Total: 8 QIDMs, 35 combos (33 CommSys + 2 RMS)
+
+KEY REFERENCE LEGEND
+--------------------
+  FRQ  FL FCIC Vehicle Registration (DHSMV/DMVR -- FL-only)
+  QV   NCIC Stolen Vehicle Query
+  RQ   Nlets Vehicle Registration Query (out-of-state; requires State)
+  FDQ  FL DHSMV Driver License Query
+  DQ   Nlets Driver License Query (out-of-state; requires State)
+  QW   NCIC Wanted Person Query
+  KQ   FL Driver History Query (FL-specific; requires State + PurposeCode)
+  FBQ  FL FCIC Boat Query (DMVR)
+  QB   NCIC Stolen Boat Query
+  BQ   Nlets Boat Query (requires State)
+  QG   NCIC Gun Query
+  QA   NCIC Article Query
+
+ENTITY FORM FIELDS
+------------------
+  Vehicle (7 fields):
+    Plate, VIN, RegistrationState (no default -- LIMITATION #30),
+    PlateType (PC), PlateYear (2026), NCICNumber, PCN,
+    ImageIndicator (N)
+
+  Person (15 fields, single card BASE):
+    OLN, RegistrationState (no default), ImageIndicator (Y),
+    Last, First, Middle, DOB, Sex, Suffix,
+    OLN_DH, PurposeCode (C), Last_DH, First_DH, DOB_DH, Sex_DH
+    Handler-only: Attention (CommsysGetLastNameFirstNameInitialRuleHandler)
+
+  Firearm (5 fields):
+    SerialNumber, GunMake (dropdown NCIC_FIREARM_MAKE), NCICNumber, PCN,
+    ImageIndicator (N)
+
+  Article (6 fields):
+    SerialNumber, ArticleTypeCode (NCIC_ARTICLE_TYPE), OwnerAppliedNumber,
+    NCICNumber, PCN, ImageIndicator (N)
+
+  Boat (12 fields):
+    RegNumber, HullId, RegistrationState (no default),
+    Decal, TitleLien, CoastGuardDocumentNumber,
+    NCICNumber, PCN, ImageIndicator (N),
+    Last Name (BQ), First Name (BQ), DOB (BQ)
+
+BUILD SCRIPTS
+-------------
+  build_fl_fcic_v3.ps1 -- rebuild BASE JSON from scratch (v3.0)
+  build_fl_fcic_v3_mc.ps1 -- rebuild MC JSON from scratch (v3.0-mc)
+  Run:
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+    & .\scripts\build_fl_fcic_v3.ps1 -Version "3.0"
+
+LIVE TEST STATUS -- BASE v3.0
+------------------------------
+  Date: 2026-05-01
+  Result: 21 PASS / 0 FAIL
+
+  Test Matrix:
+  #   Phase     Entity    Combo              Result  Notes
+  --  --------  --------  -----------------  ------  -----
+   1  Render    Vehicle   RENDER             PASS
+   2  Render    Person    RENDER             PASS    PurposeCode fixed: FormInput w/ initialValue=C
+   3  Render    Firearm   RENDER             PASS    GunMake fixed: FormSelect NCIC_FIREARM_MAKE
+   4  Render    Article   RENDER             PASS
+   5  Render    Boat      RENDER             PASS    12 fields incl BQ Name/DOB fields
+   6  Basic     Vehicle   FRQ+Plate          PASS    No State = FRQ path. QV + RMS co-fire
+   7  OOS       Vehicle   RQ+Plate+State     PASS    State=OK = RQ path. PlateType+PlateYear in XML
+   8  Basic     Person    FDQ+OLN            PASS    No QW co-fire (correct: needs Name)
+   9  Co-fire   Person    FDQ+Name+QW        PASS    SexCode required for DL Name combo. QW co-fires
+  10  Basic     Firearm   QG+Serial          PASS    Serial only, GunMake not required (any[])
+  11  Basic     Article   QA+Serial          PASS    Serial+Type=BBICYCL
+  12  Basic     Boat      FBQ+Hull           PASS    No State = FBQ path
+  13  Alternate Vehicle   FRQ+VIN            PASS    VIN path, no PlateYear/PlateType in XML
+  14  DH        Person    KQ+OLN             PASS    DH-suffix works. autoSelect=false (flag for MC)
+  15  Negative  Vehicle   NEGATIVE           PASS    No send button with empty form
+  16  Negative  Person    NEGATIVE           PASS    No send button with empty form
+  17  Co-fire   Person    FDQ+OLN+Name+QW    PASS    OLN priority, QW co-fires with OLN+Name
+  18  OOS       Boat      BQ+Hull+State      PASS    State=OK = BQ path (vs FBQ in Test 12)
+  19  BQ Name   Boat      BQ+Name            PASS    Name+DOB+State+Hull fires BQ Name combo
+  20  Alternate Article   QA+OAN             PASS    OAN+Type=BBICYCT
+  21  Alternate Firearm   QG+NCIC            PASS    NCIC number only
+
+  Notes:
+  - DH autoSelect=false: checkbox available but doesn't auto-check. Flag for MC testing.
+  - PurposeCode: changed from FormSelect (DEX_INQUIRY_PURPOSE_CODE) to FormInput w/ initialValue=C
+  - GunMake: fixed from FormInput to FormSelect (NCIC_FIREARM_MAKE/NCIC) — cross-provider consistency
+
+LIVE TEST STATUS -- MC v3.0-mc
+-------------------------------
+  Date: 2026-05-01
+  Result: 47 PASS / 0 FAIL / 2 LIMITATION
+
+  Test Matrix (initial 16 basic + 31 extended exhaustive):
+  #   Phase     Entity    Combo              Result  Notes
+  --  --------  --------  -----------------  ------  -----
+   1  Basic     Vehicle   FRQ+Plate          PASS    No State = FRQ path. Slow checkbox populate noted
+   2  OOS       Vehicle   RQ+Plate+State     PASS    State = RQ path
+   3  Alternate Vehicle   FRQ+VIN            PASS    VIN path, no State
+   4  Negative  Vehicle   NEGATIVE           PASS    No send button with empty form
+   5  Basic     Person    FDQ+OLN            PASS    DL by OLN, no QW co-fire (no Name)
+   6  Co-fire   Person    FDQ+Name+QW        PASS    DL Name + QW co-fire. SexCode required in set[]
+   7  Co-fire   Person    FDQ+OLN+Name+QW    PASS    OLN priority, QW co-fires with OLN+Name
+   8  DH        Person    KQ+OLN             PASS    autoSelect=true — checkbox auto-lit correctly
+   9  Negative  Person    NEGATIVE           PASS    No send button with empty form
+  10  Basic     Firearm   QG+Serial          PASS    Serial only, GunMake not required (any[])
+  11  Alternate Firearm   QG+NCIC            PASS    NCIC number only
+  12  Basic     Article   QA+Serial          PASS    Serial+Type=BBICYCT (both required in set[])
+  13  Alternate Article   QA+OAN             PASS    OAN+Type=BSHOCKS (both required in set[])
+  14  Basic     Boat      FBQ+Hull           PASS    No State = FBQ path
+  15  OOS       Boat      BQ+Hull+State      PASS    State=MO (OOS) = BQ path
+  16  BQ Name   Boat      BQ+Name            PASS    Name+DOB+State=FL; FormatStringRuleHandler ','
+  --- EXTENDED EXHAUSTIVE TESTS (17-42) ---
+  17  OOS+co    Vehicle   RQ+VIN+State       PASS    VIN+State=NJ; QV+RMS co-fire = 3 requests
+  18  Alternate Vehicle   FRQ+Decal          PASS    DecalNumber+PlateYear (FL-only)
+  19  Alternate Vehicle   FRQ+Title          PASS    TitleLienInformation (FL-only)
+  20  Any[]     Vehicle   FRQ+Plate+Make     PASS    VehicleMakeCode=TRCK_ADVS serializes to QV XML
+  21  (covered by Test 17 -- RQ+VIN+State includes QV co-fire)
+  22  OOS+RMS   Person    DQ+OLN+State       PASS    OLN+State=AL; RMS co-fire = 2 requests
+  23  OOS+co    Person    DQ+Name+State      PASS    Name+DOB+Sex+State=AR; QW+RMS co-fire = 3 req
+  24  DH        Person    KQ+Name            PASS    All 6 set[] fields; DH-suffix isolation works
+  25  (covered by Test 23 -- QW+Name co-fire included)
+  26  Alternate Firearm   QG+PCN             PASS    PCN=978679 (clean, no leftover serial)
+  27  Any[]     Firearm   QG+Serial+Make     PASS    GunMake=ABA serializes to XML (any[])
+  28  Alternate Article   QA+NCIC            PASS    NCICNumber only (no ArticleTypeCode needed)
+  29  Alternate Article   QA+PCN             PASS    ProcessControlNumber only
+  30  Alternate Boat      FBQ+Reg            PASS    RegistrationNumber (FL-only)
+  31  Alternate Boat      FBQ+Decal          PASS    DecalNumber (FL-only, no ImageIndicator in XML)
+  32  Alternate Boat      FBQ+Title          PASS    TitleLienInformation (FL-only)
+  33  OOS       Boat      BQ+Reg+State       PASS    Reg+State=GA (OOS); all 3 BQ combos confirmed
+  34  Alternate Boat      QB+CG              PASS    CoastGuardDocumentNumber=1234
+  35  Alternate Boat      QB+NCIC            PASS    NCICNumber=56744
+  36  Alternate Boat      QB+PCN             PASS    ProcessControlNumber=665566
+  37  In-state  Person    FDQ+OLN            PASS    OLN only, no State; RMS co-fire
+  38  In-state  Person    FDQ+Name           PASS    Name+DOB+Sex, no State; QW+RMS co-fire = 3 req
+  39  DH        Person    KQ+OLN             PASS    OLN_DH+State=FL+PurposeCode=C; all 3 set[]
+  40  Co-fire   Person    QW+OLN             PASS    Name+OLN = QW+OLN co-fire + FDQ+OLN + RMS
+  41  OOS+co    Vehicle   RQ+Plate+State     PASS    Plate+PC+2026+TX; all 4 set[]; QV+RMS co-fire
+  42  Any[]     Firearm   QG+NCIC+Make       PASS    NCICNumber+GunMake=AAL; any[] confirmed
+  --- GAP CLOSURE TESTS (43-47) ---
+  43  Negative  Firearm   NEGATIVE           PASS    No send button with empty form
+  44  Negative  Article   NEGATIVE           PASS    No send button with empty form
+  45  Negative  Boat      NEGATIVE           PASS    No send button with empty form
+  46  Any[]     Vehicle   RQ+VIN+State+Year  PASS    VehicleYear=2020 in RQ XML; QV+RMS co-fire
+  47  Any[]     Person    QW+Name+OLN        PASS    OLN=OLN99999 in QW XML (any[]); FDQ+RMS co-fire
+
+  LIMITATIONS (2):
+  - QB+Hull: UNREACHABLE — FBQ+Hull fires first (same set[] field, higher priority).
+    No BoatStolenQuery exists in metadata to enable co-fire.
+  - QB+Reg: UNREACHABLE — FBQ+Reg fires first (same root cause as QB+Hull).
+
+  Notes:
+  - DH autoSelect=true: checkbox auto-lights when DH fields populated (safe — separate card)
+  - Slow JSON performance: checkbox populate delay and long send time observed
+  - MC JSON rebuilt mid-testing: VehicleMakeCode FormInput→FormSelect (cross-provider fix)
+  - VehicleMakeCode DOES serialize to XML (contradicts KB FIELD_RULES — KB update needed)
+  - FBQ combos: ImageIndicator not in any[] — absent from XML on FBQ+Decal/FBQ+Title
+  - All co-fire paths confirmed: QV (Vehicle), QW (Person), RMS (Vehicle+Person)
+  - All any[] fields explicitly tested: VehicleMakeCode, VehicleYear, GunMake, OLN(QW), ImageIndicator
+  - All 5 entities have negative tests (empty form = no send button)
+
+PENDING
+-------
+  1. Production import
+  2. KB update: VehicleMakeCode serialization (contradicts FIELD_RULES)
+  3. QB+Hull/QB+Reg limitation — revisit if platform adds BoatStolenQuery

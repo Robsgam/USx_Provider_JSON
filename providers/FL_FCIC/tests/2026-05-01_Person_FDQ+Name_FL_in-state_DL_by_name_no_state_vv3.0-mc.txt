@@ -1,0 +1,74 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : FDQ+Name (FL in-state DL by name no state)
+Test type  : T2 -- FL in-state path + QW co-fire + RMS
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NameLast                  SGAMBELLONE        typed
+  NameFirst                 ROB                typed
+  BirthDate                 01/01/1985         typed (date picker)
+  SexCode                   M                  dropdown (NIBRS)
+  ImageIndicator            Y                  default (initialValue — Person=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     lastName=Sgambellone, firstName=Rob, sexAttrId=69510840269,
+     dateOfBirth=1985-01-01
+
+  2) WantedPersonQuery (QW co-fire)
+     Transaction: 01KQJ8RV8K6DVX4FYB9RT8EPAE
+     Name=SGAMBELLONE,ROB, BirthDate=19850101, ImageIndicator=Y
+
+  3) DriverLicenseQuery (FDQ)
+     Transaction: 01KQJ8RT01QWDJYYEYVZGJDM9V
+     Name=SGAMBELLONE,ROB, SexCode=M, BirthDate=19850101, ImageIndicator=Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: FDQ+Name (DL) + QW+Name (Wanted co-fire) + RMS
+  Reason: Name+DOB+Sex all populated, no State = FDQ (not DQ)
+          Name+DOB populated = QW+Name fires (set=Name+DOB)
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Name                      YES    SGAMBELLONE,ROB FormatStringRuleHandler(',') — FDQ + QW
+  BirthDate                 YES    19850101        CommsysParseDateRuleHandler — FDQ + QW
+  SexCode                   YES    M               NIBRS reverse-lookup — FDQ only
+  ImageIndicator            YES    Y               Person default — FDQ + QW
+  OperatorLicenseNumber     NO     --              sourceField empty (Name path)
+  State                     NO     --              sourceField empty (FL in-state path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: lastName=Sgambellone, firstName=Rob, sexAttrId=69510840269,
+                      dateOfBirth=1985-01-01
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQ+Name fired correctly; QW+Name co-fire confirmed; RMS co-fire confirmed
+  Detail: FL in-state path (no State). SexCode in FDQ but not QW (QW has no SexCode attr).
+          3 simultaneous requests: RMS + QW + FDQ.
+

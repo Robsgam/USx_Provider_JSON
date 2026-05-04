@@ -1,0 +1,69 @@
+﻿
+================================================================
+  CommSys Query Simulator -- AZ_AZDPS_BASE.json
+================================================================
+
+--- QIDM: AZ_AZDPS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 5  |  Combos: 4
+
+    [FIRES] ACQB
+      set: [dexStateUserId, RegistrationNumber]
+      any: [BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQB</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] ACQBH
+      set: [dexStateUserId, BoatHullIdNumber]
+      any: [RegistrationNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [RegistrationNumber, RegistrationState, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQBH</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQ
+      set: [RegistrationNumber]
+      any: [dexStateUserId, BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [dexStateUserId, BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQH
+      set: [BoatHullIdNumber]
+      any: [dexStateUserId, RegistrationNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [dexStateUserId, RegistrationNumber, RegistrationState, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+

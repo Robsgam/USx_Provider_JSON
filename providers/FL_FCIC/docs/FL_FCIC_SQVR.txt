@@ -1,0 +1,317 @@
+FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+=====================================================
+Last updated: 2026-05-01
+JSON version: v3.0 BASE + v3.0-mc MC
+Validator: 100 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+Live test: BASE 21 PASS / MC 47 PASS / 0 FAIL / 2 LIMITATION (2026-05-01)
+
+ARCHITECTURE: v3.0 uses 8 merged QIDMs (1 per entity+query pair) with invented
+keyReferences per LIMITATION #21. This replaces v2.x's 25 split QIDMs.
+Separate platform query types (VehicleStolenQuery, WantedPersonQuery) solve
+LIMITATION #2 (one QIDM per entity+query pair).
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: FL_FCIC_VehicleRegistrationQuery (6 combos)
+  QIF:  Vehicle
+  Fields: Plate, PlateType(PC), PlateYear(2026), VehicleYear, VIN, Make,
+          Decal, TitleLien, RegistrationState(no default), ImageIndicator(N)
+
+  RQ+Plate -- Nlets OOS Registration (Plate) [CONFIRMED]
+    keyReference: RQLicensePlateNumber
+    set: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+    any: [ImageIndicator]
+
+  RQ+VIN -- Nlets OOS Registration (VIN) [CONFIRMED]
+    keyReference: RQVehicleIdentificationNumber
+    set: [VehicleIdentificationNumber, RegistrationState]
+    any: [VehicleMakeCode, VehicleYear, ImageIndicator]
+
+  FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
+    keyReference: FRQLicensePlateNumber
+    set: [LicensePlateNumberIn]
+    any: [LicensePlateYear, ImageIndicator]
+
+  FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
+    keyReference: FRQVehicleIdentificationNumber
+    set: [VehicleIdentificationNumber]
+    any: [ImageIndicator]
+
+  FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
+    keyReference: FRQDecalNumber
+    set: [DecalNumber, LicensePlateYear]
+    any: [ImageIndicator]
+
+  FRQ+TitleLien -- FL DHSMV (Title/Lien) [CONFIRMED]
+    keyReference: FRQTitleLienInformation
+    set: [TitleLienInformation]
+    any: [ImageIndicator]
+
+  Combo priority: RQ combos first (more fields = narrower match), then FRQ.
+  Co-fire: VehicleStolenQuery (QV) fires alongside when Plate or VIN populated.
+
+================================================================================
+2. VehicleStolenQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: FL_FCIC_VehicleStolenQuery (2 combos)
+  QIF:  Vehicle (shared with VehicleRegistrationQuery)
+
+  QV+Plate -- NCIC Stolen Vehicle (Plate) [CONFIRMED]
+    keyReference: QVLicensePlateNumber
+    set: [LicensePlateNumberIn]
+    any: [ImageIndicator, RegistrationState, VehicleMakeCode]
+
+  QV+VIN -- NCIC Stolen Vehicle (VIN) [CONFIRMED]
+    keyReference: QVVehicleIdentificationNumber
+    set: [VehicleIdentificationNumber]
+    any: [ImageIndicator, VehicleMakeCode]
+
+  Co-fire: Always co-fires with VehicleRegistrationQuery on shared fields.
+  No queriesToDeselect (LIMITATION #24 -- both fire together).
+
+================================================================================
+3. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  QIDM: FL_FCIC_DriverLicenseQuery (4 combos, autoSelect=true)
+  QIF:  Person
+  Fields: OLN, Last, First, Middle, Suffix, DOB, Sex,
+          RegistrationState(no default), ImageIndicator(Y)
+  queriesToDeselect: [DriverHistoryQuery]
+
+  DQ+OLN -- Nlets OOS Driver License (OLN) [CONFIRMED]
+    keyReference: DQOperatorLicenseNumber
+    set: [OperatorLicenseNumber, RegistrationState]
+    any: [ImageIndicator]
+
+  FDQ+OLN -- FL DHSMV Driver License (OLN) [CONFIRMED]
+    keyReference: FDQOperatorLicenseNumber
+    set: [OperatorLicenseNumber]
+    any: [ImageIndicator]
+
+  DQ+Name -- Nlets OOS Driver License (Name) [CONFIRMED]
+    keyReference: DQName
+    set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
+    any: [ImageIndicator]
+
+  FDQ+Name -- FL DHSMV Driver License (Name) [CONFIRMED]
+    keyReference: FDQName
+    set: [BirthDate, NameLast, NameFirst, SexCode]
+    any: [ImageIndicator]
+
+  Combo priority: OLN combos before Name combos (operational priority).
+  DQ (with State) before FDQ (without State) within each group.
+
+================================================================================
+4. WantedPersonQuery -- Person Entity
+================================================================================
+
+  QIDM: FL_FCIC_WantedPersonQuery (2 combos)
+  QIF:  Person (shared with DriverLicenseQuery)
+
+  QW+OLN -- NCIC Wanted Person (OLN + Name) [CONFIRMED]
+    keyReference: QWOperatorLicenseNumber
+    set: [NameLast, NameFirst, OperatorLicenseNumber]
+    any: [ImageIndicator]
+
+  QW+Name -- NCIC Wanted Person (Name + DOB) [CONFIRMED]
+    keyReference: QWName
+    set: [BirthDate, NameLast, NameFirst]
+    any: [OperatorLicenseNumber, ImageIndicator]
+
+  Co-fire: WantedPersonQuery fires alongside DL when fields are populated.
+  Uses separate platform query type to avoid LIMITATION #2 with DriverLicenseQuery.
+
+================================================================================
+5. DriverHistoryQuery -- Person Entity
+================================================================================
+
+  QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=false BASE / true MC)
+  QIF:  Person (shared, DH card with DH-suffix fields)
+  DH fields: OperatorLicenseNumberDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
+  Shared fields: RegistrationState, PurposeCode(C)
+  Handler-only: Attention (CommsysGetLastNameFirstNameInitialRuleHandler)
+  queriesToDeselect: [DriverLicenseQuery]
+
+  KQ+OLN -- FL Driver History (OLN) [CONFIRMED]
+    keyReference: KQOperatorLicenseNumber
+    set: [OperatorLicenseNumberDH, RegistrationState, PurposeCode]
+    any: []
+
+  KQ+Name -- FL Driver History (Name) [CONFIRMED]
+    keyReference: KQName
+    set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState, PurposeCode]
+    any: []
+
+  KQ is FL-specific (not NCIC/Nlets). Requires State + PurposeCode.
+  Attention auto-filled by CommsysGetLastNameFirstNameInitialRuleHandler (not in combos).
+  Manual selection required in BASE (autoSelect=false). MC uses autoSelect=true (separate card).
+
+================================================================================
+6. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: FL_FCIC_GunQuery (3 combos)
+  QIF:  Firearm
+  Fields: SerialNumber, GunMake (FormSelect NCIC_FIREARM_MAKE/NCIC), NCICNumber, PCN, ImageIndicator(N)
+
+  QG+Serial -- NCIC Gun (Serial Number) [CONFIRMED]
+    keyReference: QGGunSerialNumber
+    set: [GunSerialNumber]
+    any: [GunMake, ImageIndicator]
+
+  QG+NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
+    keyReference: QGNCICNumber
+    set: [NCICNumber]
+    any: [GunMake, ImageIndicator]
+
+  QG+PCN -- NCIC Gun (Process Control Number) [CONFIRMED]
+    keyReference: QGProcessControlNumber
+    set: [ProcessControlNumber]
+    any: [GunMake, ImageIndicator]
+
+================================================================================
+7. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: FL_FCIC_ArticleSingleQuery (4 combos)
+  QIF:  Article
+  Fields: SerialNumber, ArticleTypeCode (CA_CLETS), OwnerAppliedNumber,
+          NCICNumber, PCN, ImageIndicator(N)
+
+  QA+Serial -- NCIC Article (Serial + Type) [CONFIRMED]
+    keyReference: QAArticleSerialNumber
+    set: [ArticleSerialNumber, ArticleTypeCode]
+    any: [ImageIndicator]
+
+  QA+Owner -- NCIC Article (Owner Applied Number) [CONFIRMED]
+    keyReference: QAOwnerAppliedNumber
+    set: [ArticleTypeCode, OwnerAppliedNumber]
+    any: [ImageIndicator]
+
+  QA+NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
+    keyReference: QANCICNumber
+    set: [NCICNumber]
+    any: [ImageIndicator]
+
+  QA+PCN -- NCIC Article (Process Control Number) [CONFIRMED]
+    keyReference: QAProcessControlNumber
+    set: [ProcessControlNumber]
+    any: [ImageIndicator]
+
+================================================================================
+8. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: FL_FCIC_BoatQuery (12 combos)
+  QIF:  Boat
+  Fields: RegNumber, HullId, RegistrationState(no default), Decal, TitleLien,
+          CoastGuardDocumentNumber, NCICNumber, PCN, ImageIndicator(N),
+          NameLast, NameFirst, BirthDate
+
+  BQ+Name -- Nlets Boat (Name+DOB+State) [CONFIRMED]
+    keyReference: BQName
+    set: [BirthDate, NameLast, NameFirst, RegistrationState]
+    any: [BoatHullIdNumber, RegistrationNumber]
+
+  BQ+Hull -- Nlets Boat (Hull+State) [CONFIRMED]
+    keyReference: BQBoatHullIdNumber
+    set: [BoatHullIdNumber, RegistrationState]
+    any: [RegistrationNumber]
+
+  BQ+Reg -- Nlets Boat (Registration+State) [CONFIRMED]
+    keyReference: BQRegistrationNumber
+    set: [RegistrationNumber, RegistrationState]
+    any: [BoatHullIdNumber]
+
+  FBQ+Hull -- FL FCIC Boat (Hull ID) [CONFIRMED]
+    keyReference: FBQBoatHullIdNumber
+    set: [BoatHullIdNumber]
+    any: [DecalNumber, RegistrationNumber, TitleLienInformation]
+
+  FBQ+Reg -- FL FCIC Boat (Registration) [CONFIRMED]
+    keyReference: FBQRegistrationNumber
+    set: [RegistrationNumber]
+    any: [BoatHullIdNumber, DecalNumber, TitleLienInformation]
+
+  FBQ+Decal -- FL FCIC Boat (Decal) [CONFIRMED]
+    keyReference: FBQDecalNumber
+    set: [DecalNumber]
+    any: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation]
+
+  FBQ+TitleLien -- FL FCIC Boat (Title/Lien) [CONFIRMED]
+    keyReference: FBQTitleLienInformation
+    set: [TitleLienInformation]
+    any: [BoatHullIdNumber, DecalNumber, RegistrationNumber]
+
+  QB+CoastGuard -- NCIC Boat (Coast Guard Document) [CONFIRMED]
+    keyReference: QBCoastGuardDocumentNumber
+    set: [CoastGuardDocumentNumber]
+    any: [ImageIndicator]
+
+  QB+Hull -- NCIC Stolen Boat (Hull) [LIMITATION]
+    keyReference: QBBoatHullIdNumber
+    set: [BoatHullIdNumber]
+    any: [ImageIndicator]
+    *** UNREACHABLE: FBQ+Hull (combo #4) shares same set[] field and fires first.
+        No separate BoatStolenQuery exists in metadata (unlike VehicleStolenQuery).
+        LIMITATION #2 prevents a second BoatQuery QIDM. Stolen boat check for Hull
+        requires using CoastGuardDocumentNumber, NCICNumber, or ProcessControlNumber instead.
+
+  QB+Reg -- NCIC Stolen Boat (Registration) [LIMITATION]
+    keyReference: QBRegistrationNumber
+    set: [RegistrationNumber]
+    any: [ImageIndicator]
+    *** UNREACHABLE: FBQ+Reg (combo #5) shares same set[] field and fires first.
+        Same root cause as QB+Hull above.
+
+  QB+NCIC -- NCIC Boat (NCIC Number) [CONFIRMED]
+    keyReference: QBNCICNumber
+    set: [NCICNumber]
+    any: [ImageIndicator]
+
+  QB+PCN -- NCIC Boat (Process Control Number) [CONFIRMED]
+    keyReference: QBProcessControlNumber
+    set: [ProcessControlNumber]
+    any: [ImageIndicator]
+
+  Combo priority: BQ (state-required, broadest) > FBQ (FL-only) > QB (NCIC stolen).
+  KNOWN LIMITATION: QB+Hull and QB+Reg unreachable — FBQ combos share same set[]
+  fields and fire first. No BoatStolenQuery exists in CommSys metadata to enable
+  co-fire (unlike VehicleStolenQuery for Vehicle). Revisit if platform adds support.
+
+================================================================================
+RMS BUNDLE (Patched from HIDLE)
+================================================================================
+
+  RMS Vehicle QIDM [CONFIRMED]
+    Patch 1: RegistrationState in licensePlateIn any[]
+    Patch 6: Removed OOS + Owner attrs/combos
+    Patch 7: autoSelect=true
+
+  RMS Person QIDM [CONFIRMED]
+    Patch 3: registrationState attr (useAttributeId=true)
+    Patch 6: Removed SSN + OOS attrs/combos
+    Patch 7: autoSelect=true (confirmed)
+
+================================================================================
+SUMMARY
+================================================================================
+
+  Architecture: 8 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
+  Total CommSys combos: 35 (6+2+4+2+2+3+4+12)
+  Total RMS combos: ~8 (after Patch 6 cleanup)
+  [CONFIRMED]: 33 CommSys + 2 RMS (all reachable combos)
+  [LIMITATION]: 2 (QB+Hull, QB+Reg — unreachable, FBQ fires first)
+  [PENDING]: 0
+  Live test: BASE 21 PASS / MC 47 PASS / 0 FAIL (2026-05-01)
+
+  v3.0 resolved:
+  - LIMITATION #2: Separate query types (VehicleStolenQuery, WantedPersonQuery)
+  - 7 validator failures from v2.x: BOM, bundle order, QIDM splits
+  - Split QIDM design: 25 QIDMs -> 8 merged QIDMs with invented keyReferences
+  - Attention in combos: removed from any[] (handler-only)
+  - RMS Vehicle autoSelect: added (Patch 7)

@@ -1,0 +1,5646 @@
+{
+  "bundles": [
+    {
+      "name": "ENTITIES",
+      "type": "BUNDLE",
+      "description": "Query forms for TX TLETS entities",
+      "provider": "MARK43",
+      "order": {
+        "default": [
+          "Vehicle",
+          "Person",
+          "Firearm",
+          "Article",
+          "Boat"
+        ],
+        "CAD_DISPATCH": [
+          "Vehicle",
+          "Person",
+          "Firearm",
+          "Article",
+          "Boat"
+        ]
+      },
+      "configurations": [
+        {
+          "name": "ENTITY_Vehicle",
+          "type": "QUERYINPUTFORM",
+          "description": "Input query layout for vehicle entity",
+          "label": "Vehicle",
+          "targetEntity": "Vehicle",
+          "layout": {
+            "default": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Vehicle"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4",
+                  "ROW_5"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "LicensePlateNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateNumber",
+                  "label": "License Plate #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "LicensePlateTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "LicensePlateTypeCode",
+                  "label": "Plate Type",
+                  "maxLength": "2"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LicensePlateYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateYear",
+                  "label": "Plate Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "3",
+                    "3"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "VehicleIdentificationNumber_Input",
+                  "VehicleYear_Input",
+                  "VehicleMakeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "VehicleIdentificationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleIdentificationNumber",
+                  "label": "VIN",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleYear",
+                  "label": "Vehicle Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleMakeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC",
+                  "fieldId": "VehicleMakeCode",
+                  "label": "Make"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "StickerNumber_Input",
+                  "FinancialResponsibilityType_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "StickerNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "StickerNumber",
+                  "label": "Sticker Number",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "FinancialResponsibilityType_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "FinancialResponsibilityType",
+                  "label": "Financial Responsibility Type",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROW_5": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "RegionId_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegionId_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegionId",
+                  "label": "Region ID",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              }
+            },
+            "CAD_DISPATCH": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Vehicle"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4",
+                  "ROW_5"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "LicensePlateNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateNumber",
+                  "label": "License Plate #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "LicensePlateTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "LicensePlateTypeCode",
+                  "label": "Plate Type",
+                  "maxLength": "2"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LicensePlateYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateYear",
+                  "label": "Plate Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "3",
+                    "3"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "VehicleIdentificationNumber_Input",
+                  "VehicleYear_Input",
+                  "VehicleMakeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "VehicleIdentificationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleIdentificationNumber",
+                  "label": "VIN",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleYear",
+                  "label": "Vehicle Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleMakeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC",
+                  "fieldId": "VehicleMakeCode",
+                  "label": "Make"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "StickerNumber_Input",
+                  "FinancialResponsibilityType_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "StickerNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "StickerNumber",
+                  "label": "Sticker Number",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "FinancialResponsibilityType_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "FinancialResponsibilityType",
+                  "label": "Financial Responsibility Type",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROW_5": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "RegionId_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegionId_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegionId",
+                  "label": "Region ID",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber",
+                  "LicensePlateYear",
+                  "LicensePlateTypeCode"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber"
+                ],
+                "any": [
+                  "RegionId",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "State",
+                  "VehicleMakeCode",
+                  "VehicleYear"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "RegionId"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "StickerNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber",
+                  "LicensePlateYear",
+                  "FinancialResponsibilityType"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber",
+                  "FinancialResponsibilityType"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ENTITY_Person",
+          "type": "QUERYINPUTFORM",
+          "description": "Input query layout for person entity",
+          "label": "Person",
+          "targetEntity": "Person",
+          "layout": {
+            "default": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Person"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_3",
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_4",
+                  "ROW_5",
+                  "ROW_6",
+                  "ROW_8"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameFirst_Input",
+                  "NameLast_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NameFirst_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameFirst",
+                  "label": "First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "NameLast_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameLast",
+                  "label": "Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameMiddle_Input",
+                  "NameSuffix_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NameMiddle_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameMiddle",
+                  "label": "Middle Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "NameSuffix_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameSuffix",
+                  "label": "Suffix"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "OperatorLicenseNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "OperatorLicenseNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OperatorLicenseNumber",
+                  "label": "Operator License #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "License State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BirthDate_Input",
+                  "SexCode_Input",
+                  "RaceCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "BirthDate_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BirthDate",
+                  "label": "Date of Birth",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "SexCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "SEX",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "SexCode",
+                  "label": "Sex"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RaceCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "RACE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "RaceCode",
+                  "label": "Race"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROW_5": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "EmailAddress_Input",
+                  "ReasonCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "EmailAddress_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "EmailAddress",
+                  "label": "Email Address",
+                  "maxLength": "80"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "ReasonCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ReasonCode",
+                  "label": "Reason Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "ROW_6": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RegionId_Input",
+                  "ExpandedBirthDateSearchCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "RegionId_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegionId",
+                  "label": "Region ID",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "ExpandedBirthDateSearchCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ExpandedBirthDateSearchCode",
+                  "label": "Expanded Birth Date Search Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "ROW_8": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "Attention_Input",
+                  "PurposeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "Attention_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "Attention",
+                  "label": "Attention",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_8",
+                "linkedNodes": {}
+              },
+              "PurposeCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "PurposeCode",
+                  "label": "Purpose Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_8",
+                "linkedNodes": {}
+              }
+            },
+            "CAD_DISPATCH": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Person"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_3",
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_4",
+                  "ROW_5",
+                  "ROW_6",
+                  "ROW_8"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameFirst_Input",
+                  "NameLast_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NameFirst_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameFirst",
+                  "label": "First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "NameLast_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameLast",
+                  "label": "Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameMiddle_Input",
+                  "NameSuffix_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NameMiddle_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameMiddle",
+                  "label": "Middle Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "NameSuffix_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameSuffix",
+                  "label": "Suffix"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "OperatorLicenseNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "OperatorLicenseNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OperatorLicenseNumber",
+                  "label": "Operator License #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "License State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BirthDate_Input",
+                  "SexCode_Input",
+                  "RaceCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "BirthDate_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BirthDate",
+                  "label": "Date of Birth",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "SexCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "SEX",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "SexCode",
+                  "label": "Sex"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RaceCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "RACE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "RaceCode",
+                  "label": "Race"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROW_5": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "EmailAddress_Input",
+                  "ReasonCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "EmailAddress_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "EmailAddress",
+                  "label": "Email Address",
+                  "maxLength": "80"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "ReasonCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ReasonCode",
+                  "label": "Reason Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "ROW_6": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RegionId_Input",
+                  "ExpandedBirthDateSearchCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "RegionId_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegionId",
+                  "label": "Region ID",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "ExpandedBirthDateSearchCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ExpandedBirthDateSearchCode",
+                  "label": "Expanded Birth Date Search Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_6",
+                "linkedNodes": {}
+              },
+              "ROW_8": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "Attention_Input",
+                  "PurposeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "Attention_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "Attention",
+                  "label": "Attention",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_8",
+                "linkedNodes": {}
+              },
+              "PurposeCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "PurposeCode",
+                  "label": "Purpose Code",
+                  "maxLength": "1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_8",
+                "linkedNodes": {}
+              },
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "SexCode",
+                  "BirthDate",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "ReasonCode",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BirthDate",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "ExpandedBirthDateSearchCode",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "RaceCode",
+                  "RegionId",
+                  "SexCode"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "MessageKey",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "ReasonCode",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "ReasonCode",
+                  "RegionId",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "ReasonCode",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "PurposeCode",
+                  "ReasonCode",
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast",
+                  "BirthDate",
+                  "SexCode"
+                ],
+                "any": [
+                  "Attention",
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "PurposeCode",
+                  "ReasonCode",
+                  "State"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ENTITY_Firearm",
+          "type": "QUERYINPUTFORM",
+          "description": "Input query layout for firearm entity",
+          "label": "Firearm",
+          "targetEntity": "Firearm",
+          "layout": {
+            "default": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Firearm"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "GunSerialNumber_Input",
+                  "GunMake_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "GunSerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunSerialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "GunMake_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunMake",
+                  "label": "Make",
+                  "maxLength": "23"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "GunCaliber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "GunCaliber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunCaliber",
+                  "label": "Caliber",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              }
+            },
+            "CAD_DISPATCH": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Firearm"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "GunSerialNumber_Input",
+                  "GunMake_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "GunSerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunSerialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "GunMake_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunMake",
+                  "label": "Make",
+                  "maxLength": "23"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "GunCaliber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "GunCaliber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "GunCaliber",
+                  "label": "Caliber",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "GunSerialNumber"
+                ],
+                "any": [
+                  "GunCaliber",
+                  "GunMake",
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ENTITY_Article",
+          "type": "QUERYINPUTFORM",
+          "description": "Input query layout for article entity",
+          "label": "Article",
+          "targetEntity": "Article",
+          "layout": {
+            "default": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Article"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ArticleSerialNumber_Input",
+                  "ArticleTypeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ArticleSerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ArticleSerialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ArticleTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "ArticleTypeCode",
+                  "label": "Article Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              }
+            },
+            "CAD_DISPATCH": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Article"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ArticleSerialNumber_Input",
+                  "ArticleTypeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ArticleSerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ArticleSerialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ArticleTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "ArticleTypeCode",
+                  "label": "Article Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "ArticleSerialNumber",
+                  "ArticleTypeCode"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ENTITY_Boat",
+          "type": "QUERYINPUTFORM",
+          "description": "Input query layout for boat entity",
+          "label": "Boat",
+          "targetEntity": "Boat",
+          "layout": {
+            "default": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Boat"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "RegistrationNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegistrationNumber",
+                  "label": "Registration #",
+                  "maxLength": "11"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BoatHullIdNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "BoatHullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BoatHullIdNumber",
+                  "label": "Hull ID #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              }
+            },
+            "CAD_DISPATCH": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Boat"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "RegistrationNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegistrationNumber",
+                  "label": "Registration #",
+                  "maxLength": "11"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "State",
+                  "label": "State",
+                  "initialValue": "TX"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BoatHullIdNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "BoatHullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BoatHullIdNumber",
+                  "label": "Hull ID #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "12"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NCICNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "NCICNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NCICNumber",
+                  "label": "NCIC #",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ImageIndicator_Input",
+                  "RelatedHitSearchIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator",
+                  "checkboxLabel": "Request Image"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "RelatedHitSearchIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "fieldId": "RelatedHitSearchIndicator",
+                  "label": "Related Hit Search",
+                  "checkboxLabel": "Related Hit Search"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "RegistrationNumber"
+                ],
+                "any": [
+                  "BoatHullIdNumber",
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BoatHullIdNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "RegistrationNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BoatHullIdNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TX_TLETS",
+      "type": "BUNDLE",
+      "description": "Texas Law Enforcement Telecommunications System (TLETS) query configurations",
+      "provider": "TX_TLETS",
+      "configurations": [
+        {
+          "name": "TX_TLETS",
+          "type": "AUTHENTICATION",
+          "description": "Authentication configuration for TX TLETS",
+          "handlerFunction": "CommsysOriAuthenticationHandler",
+          "provider": "TX_TLETS",
+          "attributes": [
+            {
+              "name": "ORI",
+              "size": 12,
+              "sourceField": [
+                "ORI"
+              ],
+              "targetField": "ORI"
+            },
+            {
+              "name": "Mnemonic",
+              "size": 25,
+              "sourceField": [
+                "Mnemonic"
+              ],
+              "targetField": "Mnemonic"
+            },
+            {
+              "name": "DeviceId",
+              "size": 25,
+              "sourceField": [
+                "DeviceId"
+              ],
+              "targetField": "DeviceId"
+            },
+            {
+              "name": "UserName",
+              "description": "dexUserStateid from RMS profile",
+              "rule": {
+                "function": "CommsysGetDexStateUserIdRuleHandler",
+                "arguments": [
+                  "true"
+                ]
+              },
+              "sourceField": [
+                "dexStateUserId"
+              ],
+              "targetField": "UserName"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "ORI",
+                  "Mnemonic",
+                  "DeviceId"
+                ],
+                "any": [
+                  "dexStateUserId"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_QueryMessageFormat",
+          "type": "QUERYMESSAGEFORMAT",
+          "description": "Configuration for TX TLETS Query format",
+          "handlerFunction": "CommsysWsiOutgoingMessageHandler",
+          "authenticationParent": "LawEnforcementTransaction",
+          "payloadParent": "LawEnforcementTransaction",
+          "provider": "TX_TLETS"
+        },
+        {
+          "name": "TX_TLETS_VehicleInsuranceRegistrationQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Vehicle Insurance Registration Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "VehicleInsuranceRegistrationQuery",
+          "queryLabel": "Vehicle Registration / Insurance",
+          "targetEntity": "Vehicle",
+          "attributes": [
+            {
+              "name": "FinancialResponsibilityType",
+              "size": 1,
+              "sourceField": [
+                "FinancialResponsibilityType"
+              ],
+              "targetField": "FinancialResponsibilityType"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "size": 10,
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "LicensePlateNumber"
+            },
+            {
+              "name": "LicensePlateTypeCode",
+              "size": 2,
+              "sourceField": [
+                "LicensePlateTypeCode"
+              ],
+              "targetField": "LicensePlateTypeCode"
+            },
+            {
+              "name": "LicensePlateYear",
+              "size": 4,
+              "sourceField": [
+                "LicensePlateYear"
+              ],
+              "targetField": "LicensePlateYear"
+            },
+            {
+              "name": "RegionId",
+              "size": 4,
+              "sourceField": [
+                "RegionId"
+              ],
+              "targetField": "RegionId"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "State"
+              ],
+              "targetField": "State"
+            },
+            {
+              "name": "StickerNumber",
+              "size": 10,
+              "sourceField": [
+                "StickerNumber"
+              ],
+              "targetField": "StickerNumber"
+            },
+            {
+              "name": "VehicleIdentificationNumber",
+              "size": 20,
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "VehicleIdentificationNumber"
+            },
+            {
+              "name": "VehicleMakeCode",
+              "size": 4,
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "VehicleMakeCode"
+            },
+            {
+              "name": "VehicleYear",
+              "size": 4,
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "VehicleYear"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber",
+                  "LicensePlateYear",
+                  "LicensePlateTypeCode"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "LicensePlateNumber",
+              "keyReference": "RQLicensePlateNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber"
+                ],
+                "any": [
+                  "RegionId",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "LicensePlateNumber",
+              "keyReference": "QVLicensePlateNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "State",
+                  "VehicleMakeCode",
+                  "VehicleYear"
+                ]
+              },
+              "primaryFieldReference": "VehicleIdentificationNumber",
+              "keyReference": "RQVehicleIdentificationNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "RegionId"
+                ]
+              },
+              "primaryFieldReference": "VehicleIdentificationNumber",
+              "keyReference": "QVVehicleIdentificationNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "StickerNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "StickerNumber",
+              "keyReference": "DPSIStickerNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber",
+                  "LicensePlateYear",
+                  "FinancialResponsibilityType"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "LicensePlateNumber",
+              "keyReference": "REGLicensePlateNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber",
+                  "FinancialResponsibilityType"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "VehicleIdentificationNumber",
+              "keyReference": "VINVehicleIdentificationNumber",
+              "state": "In/Out"
+            }
+          ]
+        },
+        {
+          "name": "RMS Vehicle search query",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for handling elastic query with various attributes.",
+          "handlerFunction": "RmsRestPayloadHandler",
+          "provider": "TX_TLETS_RMS",
+          "query": "Vehicle",
+          "queryLabel": "RMS",
+          "targetEntity": "Vehicle",
+          "attributes": [
+            {
+              "name": "yearOfManufacture",
+              "size": 60,
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "vehicle.yearOfManufacture"
+            },
+            {
+              "name": "vinNumber",
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "vehicle.vinNumber"
+            },
+            {
+              "name": "makeNcicCode",
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "vehicle.makeNcicCode"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "vehicle.tag"
+            },
+            {
+              "name": "RegistrationState",
+              "rule": {
+                "function": "AttributeArrayWrapperRuleHandler"
+              },
+              "sourceField": [
+                "State"
+              ],
+              "targetField": "vehicle.registrationStateAttrIds",
+              "useAttributeId": true
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "VehicleYear",
+                  "VehicleMakeCode",
+                  "LicensePlateNumber",
+                  "State"
+                ]
+              },
+              "keyReference": "vehicleIdentificationNumber"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber"
+                ],
+                "any": [
+                  "VehicleYear",
+                  "VehicleMakeCode",
+                  "State"
+                ]
+              },
+              "keyReference": "licensePlateNumber"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_DriverLicenseQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Driver License Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "autoSelect": true,
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "DriverLicenseQuery",
+          "queryLabel": "Driver License",
+          "queriesToDeselect": [
+            "DriverHistoryQuery"
+          ],
+          "targetEntity": "Person",
+          "attributes": [
+            {
+              "name": "BirthDate",
+              "rule": {
+                "function": "CommsysParseDateRuleHandler",
+                "arguments": [
+                  "yyyy-MM-dd",
+                  "yyyyMMdd"
+                ]
+              },
+              "size": 8,
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "EmailAddress",
+              "size": 80,
+              "sourceField": [
+                "EmailAddress"
+              ],
+              "targetField": "EmailAddress"
+            },
+            {
+              "name": "ExpandedBirthDateSearchCode",
+              "size": 1,
+              "sourceField": [
+                "ExpandedBirthDateSearchCode"
+              ],
+              "targetField": "ExpandedBirthDateSearchCode"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "MessageKey",
+              "size": 3,
+              "sourceField": [
+                "MessageKey"
+              ],
+              "targetField": "MessageKey"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "FormatStringRuleHandler",
+                "arguments": [
+                  ", ",
+                  " ",
+                  " "
+                ]
+              },
+              "size": 30,
+              "sourceField": [
+                "NameLast",
+                "NameFirst",
+                "NameMiddle",
+                "NameSuffix"
+              ],
+              "targetField": "Name"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "size": 20,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "RaceCode",
+              "size": 1,
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "RaceCode"
+            },
+            {
+              "name": "ReasonCode",
+              "size": 1,
+              "sourceField": [
+                "ReasonCode"
+              ],
+              "targetField": "ReasonCode"
+            },
+            {
+              "name": "RegionId",
+              "size": 4,
+              "sourceField": [
+                "RegionId"
+              ],
+              "targetField": "RegionId"
+            },
+            {
+              "name": "SexCode",
+              "size": 1,
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "State"
+              ],
+              "targetField": "State"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "SexCode",
+                  "BirthDate",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "ReasonCode",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "DQName",
+              "state": "In"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BirthDate",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "ExpandedBirthDateSearchCode",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "RaceCode",
+                  "RegionId",
+                  "SexCode"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "QWName",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "MessageKey",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "ReasonCode",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "CPLName",
+              "state": "In"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "ReasonCode",
+                  "RegionId",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "RSDWWOperatorLicenseNumber",
+              "state": "In"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "ReasonCode",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "DQOperatorLicenseNumber",
+              "state": "In/Out"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_DriverHistoryQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Driver History Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "autoSelect": false,
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "DriverHistoryQuery",
+          "queryLabel": "Driver History",
+          "queriesToDeselect": [
+            "DriverLicenseQuery"
+          ],
+          "targetEntity": "Person",
+          "attributes": [
+            {
+              "name": "Attention",
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "BirthDate",
+              "rule": {
+                "function": "CommsysParseDateRuleHandler",
+                "arguments": [
+                  "yyyy-MM-dd",
+                  "yyyyMMdd"
+                ]
+              },
+              "size": 8,
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "EmailAddress",
+              "size": 80,
+              "sourceField": [
+                "EmailAddress"
+              ],
+              "targetField": "EmailAddress"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "FormatStringRuleHandler",
+                "arguments": [
+                  ", ",
+                  " ",
+                  " "
+                ]
+              },
+              "size": 30,
+              "sourceField": [
+                "NameLast",
+                "NameFirst",
+                "NameMiddle",
+                "NameSuffix"
+              ],
+              "targetField": "Name"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "size": 20,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "PurposeCode",
+              "size": 1,
+              "sourceField": [
+                "PurposeCode"
+              ],
+              "targetField": "PurposeCode"
+            },
+            {
+              "name": "ReasonCode",
+              "size": 1,
+              "sourceField": [
+                "ReasonCode"
+              ],
+              "targetField": "ReasonCode"
+            },
+            {
+              "name": "SexCode",
+              "size": 1,
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "State"
+              ],
+              "targetField": "State"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "PurposeCode",
+                  "ReasonCode",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "KQOperatorLicenseNumber",
+              "state": "In"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast",
+                  "BirthDate",
+                  "SexCode"
+                ],
+                "any": [
+                  "Attention",
+                  "EmailAddress",
+                  "ImageIndicator",
+                  "NameMiddle",
+                  "NameSuffix",
+                  "PurposeCode",
+                  "ReasonCode",
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "KQName",
+              "state": "In"
+            }
+          ]
+        },
+        {
+          "name": "RMS Person Search query",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for handling elastic query with various attributes.",
+          "handlerFunction": "RmsRestPayloadHandler",
+          "provider": "TX_TLETS_RMS",
+          "query": "Person",
+          "queryLabel": "RMS",
+          "targetEntity": "Person",
+          "attributes": [
+            {
+              "name": "firstName",
+              "size": 60,
+              "sourceField": [
+                "NameFirst"
+              ],
+              "targetField": "firstName"
+            },
+            {
+              "name": "lastName",
+              "size": 60,
+              "sourceField": [
+                "NameLast"
+              ],
+              "targetField": "lastName"
+            },
+            {
+              "name": "licenseNumber",
+              "size": 60,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "dlNumber"
+            },
+            {
+              "name": "dateOfBirth",
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "dateOfBirth"
+            },
+            {
+              "name": "race",
+              "rule": {
+                "function": "AttributeArrayWrapperRuleHandler"
+              },
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "raceAttrIds",
+              "useAttributeId": true
+            },
+            {
+              "name": "sex",
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "sexAttrId",
+              "useAttributeId": true
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ]
+              },
+              "keyReference": "firstNameLastNameDriversLicenseNumber"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast",
+                  "BirthDate"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ]
+              },
+              "keyReference": "firstNameLastNameDateOfBirth"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ]
+              },
+              "keyReference": "firstNameLastName"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ]
+              },
+              "keyReference": "driversLicenseNumber"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_ArticleSingleQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Article Single Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "ArticleSingleQuery",
+          "queryLabel": "Article Query",
+          "targetEntity": "Article",
+          "attributes": [
+            {
+              "name": "ArticleSerialNumber",
+              "size": 20,
+              "sourceField": [
+                "ArticleSerialNumber"
+              ],
+              "targetField": "ArticleSerialNumber"
+            },
+            {
+              "name": "ArticleTypeCode",
+              "size": 7,
+              "sourceField": [
+                "ArticleTypeCode"
+              ],
+              "targetField": "ArticleTypeCode"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "NCICNumber",
+              "size": 10,
+              "sourceField": [
+                "NCICNumber"
+              ],
+              "targetField": "NCICNumber"
+            },
+            {
+              "name": "RelatedHitSearchIndicator",
+              "size": 1,
+              "sourceField": [
+                "RelatedHitSearchIndicator"
+              ],
+              "targetField": "RelatedHitSearchIndicator"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "ArticleSerialNumber",
+                  "ArticleTypeCode"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "ArticleSerialNumber",
+              "keyReference": "QAArticleSerialNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "NCICNumber",
+              "keyReference": "QANCICNumber",
+              "state": "In/Out"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_BoatQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Boat Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "BoatQuery",
+          "queryLabel": "Boat Query",
+          "targetEntity": "Boat",
+          "attributes": [
+            {
+              "name": "BoatHullIdNumber",
+              "size": 20,
+              "sourceField": [
+                "BoatHullIdNumber"
+              ],
+              "targetField": "BoatHullIdNumber"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "NCICNumber",
+              "size": 10,
+              "sourceField": [
+                "NCICNumber"
+              ],
+              "targetField": "NCICNumber"
+            },
+            {
+              "name": "RegistrationNumber",
+              "size": 11,
+              "sourceField": [
+                "RegistrationNumber"
+              ],
+              "targetField": "RegistrationNumber"
+            },
+            {
+              "name": "RelatedHitSearchIndicator",
+              "size": 1,
+              "sourceField": [
+                "RelatedHitSearchIndicator"
+              ],
+              "targetField": "RelatedHitSearchIndicator"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "State"
+              ],
+              "targetField": "State"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "RegistrationNumber"
+                ],
+                "any": [
+                  "BoatHullIdNumber",
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "RegistrationNumber",
+              "keyReference": "QBRegistrationNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BoatHullIdNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "BoatHullIdNumber",
+              "keyReference": "QBBoatHullIdNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "NCICNumber",
+              "keyReference": "QBNCICNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "RegistrationNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "RegistrationNumber",
+              "keyReference": "BQRegistrationNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BoatHullIdNumber"
+                ],
+                "any": [
+                  "State"
+                ]
+              },
+              "primaryFieldReference": "BoatHullIdNumber",
+              "keyReference": "BQBoatHullIdNumber",
+              "state": "In/Out"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_GunQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "description": "Configuration for TX TLETS Gun (Firearm) Query",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "query": "GunQuery",
+          "queryLabel": "Firearm Query",
+          "targetEntity": "Firearm",
+          "attributes": [
+            {
+              "name": "GunCaliber",
+              "size": 4,
+              "sourceField": [
+                "GunCaliber"
+              ],
+              "targetField": "GunCaliber"
+            },
+            {
+              "name": "GunMake",
+              "size": 23,
+              "sourceField": [
+                "GunMake"
+              ],
+              "targetField": "GunMake"
+            },
+            {
+              "name": "GunSerialNumber",
+              "size": 20,
+              "sourceField": [
+                "GunSerialNumber"
+              ],
+              "targetField": "GunSerialNumber"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "NCICNumber",
+              "size": 10,
+              "sourceField": [
+                "NCICNumber"
+              ],
+              "targetField": "NCICNumber"
+            },
+            {
+              "name": "RelatedHitSearchIndicator",
+              "size": 1,
+              "sourceField": [
+                "RelatedHitSearchIndicator"
+              ],
+              "targetField": "RelatedHitSearchIndicator"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "GunSerialNumber"
+                ],
+                "any": [
+                  "GunCaliber",
+                  "GunMake",
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "GunSerialNumber",
+              "keyReference": "QGGunSerialNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NCICNumber"
+                ],
+                "any": [
+                  "ImageIndicator",
+                  "RelatedHitSearchIndicator"
+                ]
+              },
+              "primaryFieldReference": "NCICNumber",
+              "keyReference": "QGNCICNumber",
+              "state": "In/Out"
+            }
+          ]
+        },
+        {
+          "name": "TX_TLETS_Results",
+          "type": "QUERYRESULTDATAMAPPING",
+          "description": "Results mapping for TX TLETS",
+          "handlerFunction": "CommsysResultsHandler",
+          "provider": "TX_TLETS",
+          "providerType": "Commsys",
+          "attributes": [
+            {
+              "name": "AddressCity",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "AddressCity"
+              ],
+              "targetField": "AddressCity"
+            },
+            {
+              "name": "AddressStateCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "AddressStateCode"
+              ],
+              "targetField": "AddressStateCode"
+            },
+            {
+              "name": "AddressStreet",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "AddressStreet"
+              ],
+              "targetField": "AddressStreet"
+            },
+            {
+              "name": "AddressZipCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "AddressZipCode"
+              ],
+              "targetField": "AddressZipCode"
+            },
+            {
+              "name": "ArticleSerialNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "ArticleSerialNumber"
+              ],
+              "targetField": "ArticleSerialNumber"
+            },
+            {
+              "name": "ArticleTypeCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "ArticleTypeCode"
+              ],
+              "targetField": "ArticleTypeCode"
+            },
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "BirthDate",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "BoatHullIdNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "BoatHullIdNumber"
+              ],
+              "targetField": "BoatHullIdNumber"
+            },
+            {
+              "name": "BoatMakeCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "BoatMakeCode"
+              ],
+              "targetField": "BoatMakeCode"
+            },
+            {
+              "name": "BoatYear",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "BoatYear"
+              ],
+              "targetField": "BoatYear"
+            },
+            {
+              "name": "EmailAddress",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "EmailAddress"
+              ],
+              "targetField": "EmailAddress"
+            },
+            {
+              "name": "ExpirationDate",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "ExpirationDate"
+              ],
+              "targetField": "ExpirationDate"
+            },
+            {
+              "name": "EyeColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "EyeColorCode"
+              ],
+              "targetField": "EyeColorCode"
+            },
+            {
+              "name": "FinancialResponsibilityType",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "FinancialResponsibilityType"
+              ],
+              "targetField": "FinancialResponsibilityType"
+            },
+            {
+              "name": "GunCaliber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "GunCaliber"
+              ],
+              "targetField": "GunCaliber"
+            },
+            {
+              "name": "GunMake",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "GunMake"
+              ],
+              "targetField": "GunMake"
+            },
+            {
+              "name": "GunModel",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "GunModel"
+              ],
+              "targetField": "GunModel"
+            },
+            {
+              "name": "GunSerialNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "GunSerialNumber"
+              ],
+              "targetField": "GunSerialNumber"
+            },
+            {
+              "name": "HairColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "HairColorCode"
+              ],
+              "targetField": "HairColorCode"
+            },
+            {
+              "name": "Height",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "Height"
+              ],
+              "targetField": "Height"
+            },
+            {
+              "name": "Hit",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "Hit"
+              ],
+              "targetField": "Hit"
+            },
+            {
+              "name": "ImageId",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "ImageId"
+              ],
+              "targetField": "ImageId"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "LicensePlateNumber"
+            },
+            {
+              "name": "LicensePlateStateCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "LicensePlateStateCode"
+              ],
+              "targetField": "LicensePlateStateCode"
+            },
+            {
+              "name": "LicensePlateTypeCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "LicensePlateTypeCode"
+              ],
+              "targetField": "LicensePlateTypeCode"
+            },
+            {
+              "name": "LicensePlateYear",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "LicensePlateYear"
+              ],
+              "targetField": "LicensePlateYear"
+            },
+            {
+              "name": "NCICNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "NCICNumber"
+              ],
+              "targetField": "NCICNumber"
+            },
+            {
+              "name": "NameFirst",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "NameFirst"
+              ],
+              "targetField": "NameFirst"
+            },
+            {
+              "name": "NameLast",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "NameLast"
+              ],
+              "targetField": "NameLast"
+            },
+            {
+              "name": "NameMiddle",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "NameMiddle"
+              ],
+              "targetField": "NameMiddle"
+            },
+            {
+              "name": "NameSuffix",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "NameSuffix"
+              ],
+              "targetField": "NameSuffix"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "OperatorLicenseStateCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "OperatorLicenseStateCode"
+              ],
+              "targetField": "OperatorLicenseStateCode"
+            },
+            {
+              "name": "OperatorLicenseStatusCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "OperatorLicenseStatusCode"
+              ],
+              "targetField": "OperatorLicenseStatusCode"
+            },
+            {
+              "name": "PurposeCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "PurposeCode"
+              ],
+              "targetField": "PurposeCode"
+            },
+            {
+              "name": "RaceCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "RaceCode"
+            },
+            {
+              "name": "RegistrationNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "RegistrationNumber"
+              ],
+              "targetField": "RegistrationNumber"
+            },
+            {
+              "name": "RegistrationStateCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "RegistrationStateCode"
+              ],
+              "targetField": "RegistrationStateCode"
+            },
+            {
+              "name": "RelatedHitSearchIndicator",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "RelatedHitSearchIndicator"
+              ],
+              "targetField": "RelatedHitSearchIndicator"
+            },
+            {
+              "name": "SexCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "SocialSecurityNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "SocialSecurityNumber"
+              ],
+              "targetField": "SocialSecurityNumber"
+            },
+            {
+              "name": "StickerNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "StickerNumber"
+              ],
+              "targetField": "StickerNumber"
+            },
+            {
+              "name": "VehicleColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleColorCode"
+              ],
+              "targetField": "VehicleColorCode"
+            },
+            {
+              "name": "VehicleIdentificationNumber",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "VehicleIdentificationNumber"
+            },
+            {
+              "name": "VehicleMakeCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "VehicleMakeCode"
+            },
+            {
+              "name": "VehicleMakeName",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleMakeName"
+              ],
+              "targetField": "VehicleMakeName"
+            },
+            {
+              "name": "VehicleModelCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleModelCode"
+              ],
+              "targetField": "VehicleModelCode"
+            },
+            {
+              "name": "VehicleModelName",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleModelName"
+              ],
+              "targetField": "VehicleModelName"
+            },
+            {
+              "name": "VehicleStyleCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleStyleCode"
+              ],
+              "targetField": "VehicleStyleCode"
+            },
+            {
+              "name": "VehicleYear",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "VehicleYear"
+            },
+            {
+              "name": "Weight",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler",
+                "arguments": []
+              },
+              "sourceField": [
+                "Weight"
+              ],
+              "targetField": "Weight"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "ArticleSerialNumber",
+                  "ArticleTypeCode"
+                ]
+              },
+              "primaryFieldReference": "Article",
+              "keyReference": "Article"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "BoatHullIdNumber",
+                  "BoatMakeCode",
+                  "BoatYear",
+                  "RegistrationNumber"
+                ]
+              },
+              "primaryFieldReference": "Boat",
+              "keyReference": "Boat"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "AddressCity",
+                  "AddressStateCode",
+                  "AddressStreet",
+                  "AddressZipCode",
+                  "BirthDate",
+                  "EyeColorCode",
+                  "HairColorCode",
+                  "Height",
+                  "NameFirst",
+                  "NameLast",
+                  "NameMiddle",
+                  "OperatorLicenseNumber",
+                  "OperatorLicenseStateCode",
+                  "OperatorLicenseStatusCode",
+                  "RaceCode",
+                  "SexCode",
+                  "Weight"
+                ]
+              },
+              "primaryFieldReference": "Person",
+              "keyReference": "Person"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "LicensePlateNumber",
+                  "LicensePlateStateCode",
+                  "LicensePlateTypeCode",
+                  "LicensePlateYear",
+                  "RegistrationStateCode",
+                  "StickerNumber",
+                  "VehicleColorCode",
+                  "VehicleIdentificationNumber",
+                  "VehicleMakeCode",
+                  "VehicleMakeName",
+                  "VehicleModelCode",
+                  "VehicleStyleCode",
+                  "VehicleYear"
+                ]
+              },
+              "primaryFieldReference": "Vehicle",
+              "keyReference": "Vehicle"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "GunCaliber",
+                  "GunMake",
+                  "GunModel",
+                  "GunSerialNumber"
+                ]
+              },
+              "primaryFieldReference": "Firearm",
+              "keyReference": "Firearm"
+            }
+          ],
+          "specialResultTypeMapping": {
+            "hitDetected": "1",
+            "mappings": [
+              {
+                "description": "Hit detected",
+                "m43Value": "Hit",
+                "priority": 1,
+                "providerValue": "Hit"
+              },
+              {
+                "description": "Stolen article alert",
+                "m43Value": "Stolen Article",
+                "priority": 1,
+                "providerValue": "StolenArticle"
+              },
+              {
+                "description": "Stolen boat alert",
+                "m43Value": "Stolen Boat",
+                "priority": 1,
+                "providerValue": "StolenBoat"
+              },
+              {
+                "description": "Stolen gun alert",
+                "m43Value": "Stolen Gun",
+                "priority": 1,
+                "providerValue": "StolenGun"
+              },
+              {
+                "description": "Stolen vehicle alert",
+                "m43Value": "Stolen Vehicle",
+                "priority": 1,
+                "providerValue": "StolenVehicle"
+              },
+              {
+                "description": "Wanted person alert",
+                "m43Value": "Wanted Person",
+                "priority": 1,
+                "providerValue": "WantedPerson"
+              },
+              {
+                "description": "Missing person alert",
+                "m43Value": "Missing Person",
+                "priority": 1,
+                "providerValue": "MissingPerson"
+              },
+              {
+                "description": "Violent person alert",
+                "m43Value": "Violent Person",
+                "priority": 1,
+                "providerValue": "ViolentPerson"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "RMS",
+      "type": "BUNDLE",
+      "description": "Mark43 RMS query configurations",
+      "provider": "TX_TLETS_RMS",
+      "configurations": [
+        {
+          "name": "RMS",
+          "type": "AUTHENTICATION",
+          "description": "Authentication configuration for RMS",
+          "handlerFunction": "RestAuthenticationHandler",
+          "deviceRegistrationOptional": true,
+          "provider": "TX_TLETS_RMS",
+          "attributes": [
+            {
+              "description": "Mark43 cookie",
+              "name": "M43Cookie",
+              "sourceField": [
+                "Cookie"
+              ],
+              "targetField": "cookie"
+            },
+            {
+              "description": "Mark43 API token",
+              "name": "M43APIToken",
+              "sourceField": [
+                "ApiToken"
+              ],
+              "targetField": "x-api-token"
+            },
+            {
+              "description": "M43 Authorization token",
+              "name": "M43AuthorizationToken",
+              "sourceField": [
+                "Authorization"
+              ],
+              "targetField": "Authorization"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "Authorization",
+                  "ApiToken",
+                  "Cookie"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RMS_QueryMessageFormat",
+          "type": "QUERYMESSAGEFORMAT",
+          "description": "Configuration for Query format",
+          "handlerFunction": "RestRequestHandler",
+          "url": {
+            "person": {
+              "protocol": "https",
+              "path": "/rms/api/elastic_search/persons",
+              "addDepartmentSubdomain": true
+            },
+            "vehicle": {
+              "protocol": "https",
+              "path": "/rms/api/elastic_search/vehicles",
+              "addDepartmentSubdomain": true
+            }
+          },
+          "authenticationParent": "headers",
+          "payloadParent": "body"
+        }
+      ]
+    }
+  ]
+}

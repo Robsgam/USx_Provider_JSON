@@ -1,0 +1,196 @@
+﻿
+================================================================
+  CommSys Query Simulator -- AZ_AZDPS_MC.json
+================================================================
+
+--- QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery [Person] ---
+    Query: AzAzdpsDriverLicenseQuery  |  Attrs: 7  |  Combos: 4
+
+    [FIRES] DQ
+      set: [OperatorLicenseNumber]
+      any: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix, RegistrationState, SexCode, SocialSecurityNumber] -> matched: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, RegistrationState, SexCode, SocialSecurityNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQN
+      set: [NameLast, NameFirst, SexCode, BirthDate]
+      any: [dexStateUserId, NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber] -> matched: [dexStateUserId, NameMiddle, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQSS
+      set: [SocialSecurityNumber]
+      any: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SexCode] -> matched: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, OperatorLicenseNumber, RegistrationState, SexCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] ACWL
+      set: [dexStateUserId, BirthDate, NameLast, NameFirst, SexCode]
+      any: [NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber] -> matched: [NameMiddle, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACWL</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: AZ_AZDPS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] KQ
+      set: [StateDH, OperatorLicenseNumberDH]
+      any: [Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH, NameSuffixDH, PurposeCode, SexCodeDH] -> matched: [Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH, PurposeCode, SexCodeDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>AZ</State>
+      </Transaction>
+
+    [FIRES] KQH
+      set: [StateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+      any: [Attention, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCode] -> matched: [Attention, NameMiddleDH, OperatorLicenseNumberDH, PurposeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>AZ</State>
+      </Transaction>
+
+--- QIDM: AZ_AZDPS_WMPIWantedPersonInquiry [Person] ---
+    Query: WMPIWantedPersonInquiry  |  Attrs: 8  |  Combos: 2
+
+    [FIRES] ACQW
+      set: [NameLast, NameFirst, BirthDate, SexCode, RaceCode]
+      any: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator] -> matched: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameMiddle, NCICNumber, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQW</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <Name>Doe, John A</Name>
+        <NCICNumber>W123456789</NCICNumber>
+        <RaceCode>W</RaceCode>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES] ACQWN
+      set: [NCICNumber]
+      any: [BirthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameFirst, NameLast, NameMiddle, NameSuffix, RaceCode, RelatedHitSearchIndicator, SexCode] -> matched: [BirthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameFirst, NameLast, NameMiddle, RaceCode, RelatedHitSearchIndicator, SexCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQWN</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <Name>Doe, John A</Name>
+        <NCICNumber>W123456789</NCICNumber>
+        <RaceCode>W</RaceCode>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+--- QIDM: AZ_AZDPS_WMPIMissingPersonInquiry [Person] ---
+    Query: WMPIMissingPersonInquiry  |  Attrs: 13  |  Combos: 2
+
+    [FIRES] ACQM
+      set: [Age, SexCode, RaceCode, Height, Weight, EyeColorCode, HairColorCode, NameLast, NameFirst]
+      any: [AreaCode, ExpandedNameSearchCode, FormORI, NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator] -> matched: [AreaCode, ExpandedNameSearchCode, FormORI, NameMiddle, NCICNumber, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQM</MessageKey>
+        <Age>30</Age>
+        <AreaCode>602</AreaCode>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <EyeColorCode>BRO</EyeColorCode>
+        <FormORI>MK1234567</FormORI>
+        <HairColorCode>BLK</HairColorCode>
+        <Height>510</Height>
+        <Name>Doe, John A</Name>
+        <NCICNumber>W123456789</NCICNumber>
+        <RaceCode>W</RaceCode>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+        <Weight>180</Weight>
+      </Transaction>
+
+    [FIRES] ACQMN
+      set: [NCICNumber]
+      any: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, NameFirst, NameLast, NameMiddle, NameSuffix, RaceCode, RelatedHitSearchIndicator, SexCode, Weight] -> matched: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, NameFirst, NameLast, NameMiddle, RaceCode, RelatedHitSearchIndicator, SexCode, Weight]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQMN</MessageKey>
+        <Age>30</Age>
+        <AreaCode>602</AreaCode>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <EyeColorCode>BRO</EyeColorCode>
+        <FormORI>MK1234567</FormORI>
+        <HairColorCode>BLK</HairColorCode>
+        <Height>510</Height>
+        <Name>Doe, John A</Name>
+        <NCICNumber>W123456789</NCICNumber>
+        <RaceCode>W</RaceCode>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+        <Weight>180</Weight>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+

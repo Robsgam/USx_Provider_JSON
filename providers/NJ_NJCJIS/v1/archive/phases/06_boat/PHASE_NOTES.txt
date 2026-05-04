@@ -1,0 +1,57 @@
+PHASE 06 -- BOAT / BOAT QUERY
+==============================
+Goal: Get BoatQuery fully working (registration, hull, NJ + OOS paths).
+Versions: v2.7 (baseline config)
+Date: 2026-04-09
+Status: COMPLETE -- 5/5 PASS
+
+================================================================================
+QUERIES IN SCOPE
+================================================================================
+
+  BoatQuery
+    BQ:   set=[RegistrationNumber] any=[BoatHullIdNumber, State, ImageIndicator]
+    BQN:  set=[BoatHullIdNumber]   any=[RegistrationNumber, State, ImageIndicator]
+    Note: State is optional in NJ -- blank = NJ in-state; selected = OOS routing.
+
+================================================================================
+BOAT FORM LAYOUT (v2.7)
+================================================================================
+
+  Two-card layout:
+    CARD_REG: RegistrationNumber + State (NJ_NIBRS_STATE dropdown, optional)
+    CARD_HULL: BoatHullIdNumber + ImageIndicator
+
+================================================================================
+TEST RESULTS
+================================================================================
+
+  T1  BQ registration only (NJ)         PASS  v2.7  2026-04-09
+  T2  BQ registration + State (OOS)     PASS  v2.7  2026-04-09
+  T3  BQN hull only                     PASS  v2.7  2026-04-09
+  T4  BQN hull + State (OOS)            PASS  v2.7  2026-04-09
+  T5  All fields (LIMITATION #1 check)  PASS  v2.7  2026-04-09
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+  State field on Boat form: uses visible OOS dropdown (codeTypeCategory=NJ_NIBRS_STATE,
+    codeTypeSource=NJ_NIBRS). No hidden state field needed -- boat queries do not trigger
+    RMS VIN/OLN elastic search. See FORM_ARCHITECTURE.txt Section 4.
+
+  BoatQuery keyRefs (BQ/BQN) are shared with VehicleRegistrationQuery (RVEH/RCAR naming varies).
+    Platform disambiguates by targetEntity (Boat vs Vehicle). Confirmed working.
+
+================================================================================
+LOGS
+================================================================================
+
+  logs/2026-04-09_BoatQuery_T1-T5_v2.7.txt   T1-T5 all PASS
+
+================================================================================
+FILES
+================================================================================
+
+  (Versioned JSONs stored in phases/02_person/ and phases/08_split_entities/)
+  BoatQuery uses same QIDM config in v2.7 and v3.x (no changes in split era).

@@ -1,0 +1,46 @@
+NY NYSPIN eJustice -- DevDoc vs. MetaData Differences
+======================================================
+Source: New York (NYSPIN_XML).pdf (DevDoc) | NY_NYSPIN_EJUSTICE.XML v8 (MetaData)
+Date  : 2026-04-14
+
+
+
+DIFFERENCES
+-----------
+
+1. DRIVERHISTORYQUERY -- COMBINATION STRUCTURE
+
+  DevDoc  : 4 explicit combinations -- In-OLN, In-Name, Out-OLN, Out-Name
+            PurposeCode, Requestor, State required on Out combinations
+  MetaData: 2 combinations (OLN, Name) each using a Choice structure
+            PurposeCode, Requestor, State required only within the Out Choice branch
+
+--------------------------------------------------------------------------------
+
+2. DRIVERLICENSEQUERY -- STATE FIELD
+
+  DevDoc  : State required on out-of-state combinations (OLN Out, Name Out)
+  MetaData: State optional in both combinations
+
+--------------------------------------------------------------------------------
+
+3. BOATQUERY -- OUT-OF-STATE HULL PATH
+
+  DevDoc  : State required on out-of-state hull combination
+  MetaData: State not present in RCAR combination
+
+--------------------------------------------------------------------------------
+
+4. BOATQUERY / VEHICLEREGISTRATIONQUERY -- SHARED KEY REFERENCES
+
+  DevDoc  : VehicleRegistrationQuery and BoatQuery defined as separate transactions
+  MetaData: RVEH and RCAR appear under both transactions
+
+--------------------------------------------------------------------------------
+
+5. VEHICLEREGISTRATIONQUERY -- OUT-OF-STATE PLATE COMBINATION
+
+  DevDoc  : LicensePlateTypeCode and LicensePlateYear required on out-of-state plate path
+  MetaData: Neither field present in the combination
+
+

@@ -1,0 +1,112 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v1.8
+Query type: DriverLicenseQuery (OLN path -- DQN)
+Test      : All fields filled on Person card
+Prior log : 2026-04-08_DL_OLN_DQN_allfields.txt (v1.7)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route
+    Source      : MK43RS
+    Destination : ConnectCic
+
+  Session
+    ID          : MK43RS
+    ORI         : MK1234567
+    Mnemonic    : MK1234567
+    UserName    : MK43RS
+
+  Transaction
+    ID          : 01KNPTZ17CDJP18C6GSGPVK18W
+    MessageType : DriverLicenseQuery
+    State       : NJ
+    OLN         : 123456
+
+================================================================================
+FIELD ISOLATION RESULT
+================================================================================
+
+  Expected for OLN path (DQN):  OLN + State + [ImageIndicator]
+  Received:                      OLN + State
+
+  Field                  Expected    Sent    Note
+  ---------------------  --------    ----    ------------------------------------
+  OperatorLicenseNumber  YES         YES
+  State                  YES         YES
+  ImageIndicator         optional    NO      -- still missing (see ANALYSIS)
+  BirthDate              NO          NO      split still working correctly
+  Name                   NO          NO      split still working correctly
+  SexCode                NO          NO      split still working correctly
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- OLN path (DQN) fired correctly.
+    Only OLN and State sent. Name/DOB/SexCode excluded.
+    Attribute-list split between DriverLicenseQuery_OLN and DriverLicenseQuery_Name
+    continues to work as intended.
+
+  ISSUE -- ImageIndicator still not sent despite size=1 fix in v1.8.
+    v1.8 added size=1 to the Image attribute in both DL configs.
+    Result is unchanged from v1.7: ImageIndicator absent from outgoing request.
+
+  ROOT CAUSE IDENTIFIED -- ImageIndicator FormSelect has no initialValue.
+    HIDLE.json RelatedSearchHitIndicator (the confirmed working YES_NO_UNKNOWN
+    field) has initialValue: "Y" set on the FormSelect node. Our ImageIndicator_Input
+    has no initialValue -- the field starts blank/unselected.
+    Platform does not send blank/unselected FormSelect fields regardless of size.
+    The size fix was necessary but not sufficient -- size controls serialization of
+    a non-empty value; initialValue ensures the field is never blank.
+
+  FIX -- Add initialValue: "Y" to ImageIndicator_Input FormSelect.
+    This matches the HIDLE pattern for YES_NO_UNKNOWN fields.
+    After fix: ImageIndicator will default to "Y" and always be included in
+    the request unless the user clears it. User can change to "N" (or "U" --
+    YES_NO_UNKNOWN exposes all three values; U cannot be suppressed at the
+    FormSelect level without switching to FormInput).
+
+  PENDING -- Confirm YES_NO_UNKNOWN dropdown is showing Y/N/U options.
+    codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NIBRS matches HIDLE pattern
+    exactly and should be correct. With initialValue="Y", the field will be
+    pre-populated and visible even if the dropdown options haven't been confirmed.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNPTZ17CDJP18C6GSGPVK18W">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KNPTZ17CDJP18C6GSGPVK18W</Id>
+            <State>NJ</State>
+            <OperatorLicenseNumber>123456</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

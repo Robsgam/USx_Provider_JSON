@@ -1,0 +1,74 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : RQ+Plate+State (OOS vehicle plate with state plate type year)
+Test type  : T4 -- OOS path + QV co-fire + RMS
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumberIn      DFS4546            typed
+  LicensePlateTypeCode      PC                 default (initialValue)
+  LicensePlateYear          2026               default (initialValue)
+  RegistrationState         TX                 dropdown (NCIC, OOS)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     registrationStateAttrIds=[69510836896], tag=dfs4546
+
+  2) VehicleStolenQuery (QV co-fire)
+     Transaction: 01KQJ93HVYQH4MDWE8VSY05MW6
+     LicensePlateNumber=DFS4546, State=TX, ImageIndicator=N
+
+  3) VehicleRegistrationQuery (RQ)
+     Transaction: 01KQJ93FJGSTG1WZTQ3F5KFW4Q
+     LicensePlateNumber=DFS4546, LicensePlateTypeCode=PC,
+     LicensePlateYear=2026, State=TX, ImageIndicator=N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: RQ+Plate+State (VehReg OOS) + QV+Plate (VehStolen co-fire) + RMS
+  Reason: Plate+PlateType+PlateYear+State all populated = RQ fires (all 4 set[] fields)
+          Plate populated = QV fires (set=Plate)
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  LicensePlateNumber        YES    DFS4546         mapped from LicensePlateNumberIn — RQ + QV
+  LicensePlateTypeCode      YES    PC              mapped from LicensePlateTypeCode — RQ only
+  LicensePlateYear          YES    2026            mapped from LicensePlateYear — RQ only
+  State                     YES    TX              NCIC from RegistrationState — RQ + QV
+  ImageIndicator            YES    N               mapped from ImageIndicator — RQ + QV
+  VehicleMakeCode           NO     --              sourceField empty
+  VehicleYear               NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: registrationStateAttrIds=[69510836896], tag=dfs4546
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: RQ+Plate+State fired with all 4 set[] fields; QV co-fire + RMS confirmed
+  Detail: OOS plate path confirmed (State=TX). PlateType=PC and PlateYear=2026 defaults
+          both present in RQ XML. State appears in both RQ and QV requests.
+

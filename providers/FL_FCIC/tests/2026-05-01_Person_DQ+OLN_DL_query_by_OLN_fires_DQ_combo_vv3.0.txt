@@ -1,0 +1,100 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : FDQ+OLN
+Test type  : T2 (basic combo verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     S123456789012      typed
+  RegistrationState         (empty)            --
+  ImageIndicator            Y                  default
+  NameLast                  (empty)            --
+  NameFirst                 (empty)            --
+  NameMiddle                (empty)            --
+  BirthDate                 (empty)            --
+  SexCode                   (empty)            --
+  NameSuffix                (empty)            --
+  OperatorLicenseNumberDH   (empty)            --
+  PurposeCode               C                  default
+  NameLastDH                (empty)            --
+  NameFirstDH               (empty)            --
+  BirthDateDH               (empty)            --
+  SexCodeDH                 (empty)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (DriverLicenseQuery):
+    Transaction : 01KQJ0H6FR8TXJW03GDY5G095V
+    MessageType : DriverLicenseQuery
+    keyReference: FDQOperatorLicenseNumber
+
+    Fields sent in XML request:
+      Element                Value
+      ---------------------  -------------------
+      OperatorLicenseNumber  S123456789012
+      ImageIndicator         Y
+
+  WantedPersonQuery: did NOT fire (correct — QW requires Name+OLN or Name+DOB)
+  DriverHistoryQuery: did NOT fire (correct — autoSelect=false, DH fields empty)
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQOperatorLicenseNumber (DriverLicenseQuery)
+  Reason: set=[OperatorLicenseNumber] satisfied, no State = FDQ path (not DQ)
+
+  DriverLicenseQuery attributes:
+  QIDM attribute         Sent?  Value             Note
+  ---------------------  -----  ----------------  --------------------------------
+  OperatorLicenseNumber  YES    S123456789012     typed
+  ImageIndicator         YES    Y                 default (Person=Y)
+  RegistrationState      NO     --                empty, routes to FDQ (no state)
+  Name                   NO     --                NameLast/NameFirst empty
+  BirthDate              NO     --                empty
+
+  WantedPersonQuery co-fire analysis:
+  - QWOperatorLicenseNumber requires set=[NameLast, NameFirst, OperatorLicenseNumber]
+  - NameLast and NameFirst empty — combo does NOT fire (correct)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: Person by DL number
+  RMS request: {"elasticQuery":{"dlNumber":"s123456789012"},"from":0,"size":50}
+  Response: No returns.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQ combo fires correctly with OLN only (no State), ImageIndicator=Y (Person default). No QW co-fire (correct — needs Name).
+  Detail: RMS fires with dlNumber. Confirms FDQ path (no State) vs DQ (with State, Test TBD).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+DriverLicenseQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0H6FR8TXJW03GDY5G095V"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KQJ0H6FR8TXJW03GDY5G095V</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>S123456789012</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"dlNumber":"s123456789012"},"from":0,"size":50}
+Response: No returns.

@@ -1,0 +1,54 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Boat
+Combo      : RENDER
+Test type  : T1 (render/picklist verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                       Value              Source
+  --------------------------  -----------------  --------------------------------
+  RegistrationNumber          (empty)            --
+  BoatHullIdNumber            (empty)            --
+  RegistrationState           (empty)            dropdown (STATE), no default
+  DecalNumber                 (empty)            --
+  TitleLienInformation        (empty)            --
+  CoastGuardDocumentNumber    (empty)            --
+  NCICNumber                  (empty)            --
+  ProcessControlNumber        (empty)            --
+  NameLast                    (empty)            -- label: Last Name (BQ)
+  NameFirst                   (empty)            -- label: First Name (BQ)
+  BirthDate                   (empty)            -- label: DOB (BQ)
+  ImageIndicator              N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- render test only, no query submitted.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  N/A -- render test only.
+
+  Verified:
+  - All 12 fields visible on single "BOAT QUERY" card (4 rows)
+  - RegistrationState: FormSelect dropdown with state codes, no default (LIMITATION #30)
+  - ImageIndicator default N
+  - BQ fields present: Last Name (BQ), First Name (BQ), DOB (BQ)
+  - Query label: "Boat"
+  - No console errors
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Boat form renders correctly with all 12 fields, State dropdown populated, BQ name/DOB fields present, defaults correct.

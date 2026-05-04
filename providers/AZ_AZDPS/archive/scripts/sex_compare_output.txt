@@ -1,0 +1,46 @@
+
+=== AZ_AZDPS -- QIF Sex form fields ===
+  form=ENTITY_Person layoutVariant=default node=Sex_Input
+  props={"attributeTypeId":"SEX","codeTypeProvider":"NIBRS","fieldId":"SexCode","label":"Sex"}
+  form=ENTITY_Person layoutVariant=CAD_DISPATCH node=Sex_Input
+  props={"attributeTypeId":"SEX","codeTypeProvider":"NIBRS","fieldId":"SexCode","label":"Sex"}
+  form=ENTITY_Person layoutVariant=FIRST_RESPONDER node=Sex_Input
+  props={"attributeTypeId":"SEX","codeTypeProvider":"NIBRS","fieldId":"SexCode","label":"Sex"}
+
+=== NJ_NJCJIS -- QIF Sex form fields ===
+  form=ENTITY_Person_NJ layoutVariant=default node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+  form=ENTITY_Person_NJ layoutVariant=CAD_DISPATCH node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+  form=ENTITY_Person_NJ layoutVariant=FIRST_RESPONDER node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+  form=ENTITY_Person_OOS layoutVariant=default node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+  form=ENTITY_Person_OOS layoutVariant=CAD_DISPATCH node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+  form=ENTITY_Person_OOS layoutVariant=FIRST_RESPONDER node=SexCode_Input
+  props={"fieldId":"SexCode","label":"Sex","attributeTypeId":"SEX","codeTypeProvider":"NIBRS"}
+
+=== AZ_AZDPS -- CommSys QIDM SexCode attributes ===
+  bundle=AZ_AZDPS qidm=AZ_AZDPS_AzAzdpsDriverLicenseQuery
+  attr={"name":"SexCode","size":1,"sourceField":["SexCode"],"targetField":"SexCode","codeTypeProvider":"NIBRS"}
+
+=== NJ_NJCJIS -- CommSys QIDM SexCode attributes ===
+  bundle=NJ_NJCJIS qidm=NJ_NJCJIS_DriverLicenseQuery
+  attr={"name":"SexCode","size":1,"sourceField":["SexCode"],"targetField":"SexCode","codeTypeProvider":"NIBRS"}
+
+=== AZ_AZDPS -- RMS QIDM sex attributes ===
+  qidm=RMS Person Search query  attr={"name":"sex","sourceField":["SexCode"],"targetField":"sexAttrId","useAttributeId":true}
+
+=== NJ_NJCJIS -- RMS QIDM sex attributes ===
+  qidm=RMS Person Search query  attr={"name":"sex","sourceField":["SexCode"],"targetField":"sexAttrId","useAttributeId":true}
+  qidm=RMS Person Search query  attr={"name":"sexOOS","sourceField":["SexCodeOOS"],"targetField":"sexAttrId","useAttributeId":true}
+
+=== RESULT OBSERVED ===
+  AZ CommSys: <SexCode>F</SexCode>              [codeTypeProvider=NIBRS reverse-lookup WORKED]
+  NJ CommSys: <SexCode>69585932695</SexCode>    [codeTypeProvider=NIBRS reverse-lookup DID NOT WORK]
+  AZ RMS:     sexAttrId:69585932695             [correct]
+  NJ RMS:     sexAttrId:69585932695             [correct]
+
+  JSON is identical. Behavior differs. Platform-level Sex/NIBRS code type
+  entries must exist under AZ_AZDPS but not under NJ_NJCJIS.

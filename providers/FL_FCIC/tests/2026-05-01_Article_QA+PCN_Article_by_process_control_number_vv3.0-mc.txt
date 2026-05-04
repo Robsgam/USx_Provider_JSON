@@ -1,0 +1,64 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Article
+Combo      : QA+PCN (Article by process control number)
+Test type  : T2 -- alternate combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ProcessControlNumber      987654             typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ6XXBCMAHPN4E3XFYTRX1Q
+  MessageType : ArticleSingleQuery
+  keyReference: QAProcessControlNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ProcessControlNumber 987654
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QA+PCN
+  Reason: ProcessControlNumber populated (set[]); no serial/OAN/NCIC# populated
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  ProcessControlNumber      YES    987654          mapped from ProcessControlNumber (set[])
+  ImageIndicator            YES    N               mapped from ImageIndicator (any[], default)
+  ArticleSerialNumber       NO     --              sourceField empty
+  ArticleTypeCode           NO     --              sourceField empty
+  OwnerAppliedNumber        NO     --              sourceField empty
+  NCICNumber                NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QA+PCN fired correctly; ProcessControlNumber=987654 confirmed in XML
+  Detail: Single set[] field combo — no ArticleTypeCode required. Clean path.
+

@@ -1,0 +1,63 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : FBQ+Title (FL boat by title lien)
+Test type  : T2 -- alternate FBQ combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  TitleLienInformation      TITLE              typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ75GZ7EW131KR9NH7FVXZ0
+  MessageType : BoatQuery
+  keyReference: FBQTitleLienInformation
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    TitleLienInformation TITLE
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQ+Title
+  Reason: TitleLienInformation populated (set[]); no State = FBQ path
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  TitleLienInformation      YES    TITLE           mapped from TitleLienInformation (set[])
+  ImageIndicator            NO*    --              *default N, not in FBQ any[] — not sent
+  BoatHullIdNumber          NO     --              sourceField empty
+  DecalNumber               NO     --              sourceField empty
+  RegistrationNumber        NO     --              sourceField empty
+  State                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQ+Title fired correctly; TitleLienInformation=TITLE confirmed in XML
+  Detail: FL-only path. Confirms all 4 FBQ combos work (Hull/Reg/Decal/Title).
+

@@ -1,0 +1,52 @@
+HI_HCJDC_OFML BUILD NOTES
+=========================
+Started: 2026-04-28
+Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
+Reference: HIDLE.json (hand-built HI production JSON)
+
+XML METADATA:
+  18 MessageKeys: AQ, BQ, DQ, FQ, IQ, KQ, M55L, M55S, QA, QB, QG, QH, QR, QS, QV, QW, RQ, ZR
+  Transactions in scope (Basic Queries): ArticleSingle, Boat, DriverHistory, DriverLicense, Gun, VehicleReg
+  Out of scope (Phase 1): CCH (AQ/FQ/IQ/QH/QR/ZR), Securities (QS), WantedPerson (standalone QW)
+  QW combo INSIDE DriverLicenseQuery IS in scope (per XML metadata).
+
+INVENTED keyRef MAP:
+  BoatQuery:               BQ (Reg), QB (Stolen/Hull) -- real distinct keys, no invention needed
+  DriverHistoryQuery:      KQ x2    -> KQN (OLN), KQ (Name)
+  DriverLicenseQuery:      DQ x2 + QW -> DQN (OLN), DQ (Name), QW (Wanted Person)
+  VehicleRegistrationQuery: RQ x2 + QV x2 + M55L + M55S -> M55L, M55S, RQ, QVV, QVP, RQV
+  GunQuery:                QG (no duplicate)
+  ArticleSingleQuery:      QA (no duplicate)
+
+XML <Any> INSIDE <Set> PATTERN:
+  Every <Any> element in this XML is inside <Set>, meaning optional companions.
+  Translated to empty any=@() in all combos. Platform sends ALL attributes with values
+  regardless of combo requirements. Empty any[] is correct and more robust.
+
+PDF vs XML DISCREPANCIES (metadata wins):
+  BoatQuery:  XML uses <Choice> elements, PDF shows 2 simple combos -- functionally equivalent
+  DL:         XML has QW combo (Wanted Person), PDF Basic Queries does NOT show it
+  VehicleReg: XML has QV combos (Stolen Vehicle), PDF has them in Expanded section
+  State2-5:   PDF says "submit up to 5 states" -- not implementable, excluded
+
+HIDLE.json DIFFERENCES (our build is correct per XML):
+  1. HIDLE uses old split In/Out entity model; we use NCIC state pattern
+  2. HIDLE drops QV stolen + QW wanted combos; we include per metadata
+  3. HIDLE VehicleMakeCode size=4 (wrong, XML=20)
+  4. HIDLE VIN maxLength=17 (wrong, XML=20)
+  5. HIDLE GunMake targetField=GunMakeCode (wrong, XML field=GunMake)
+  6. HIDLE Firearm codeTypeSource=NJ_NIBRS (copy-paste error from NJ)
+  7. HIDLE PurposeCode codeTypeProvider=CA_CLETS (vs DEX_INQUIRY_PURPOSE_CODE)
+  8. HIDLE has ENTTIY_Boat typo in QIF name
+
+================================================================================
+VERSION HISTORY (newest first)
+v1.0  2026-04-28  Initial BASE build
+  CHANGED
+    - Full build from XML metadata + HIDLE RMS reference
+    - 6 transactions, 15 combos, NCIC state pattern
+    - QV stolen + QW wanted combos included per metadata
+    - VehicleTypeCode default=1 (Auto) for in-state routing
+    - Empty any[] on all combos (XML <Any> inside <Set> = optional)
+    - Patch 1+3+6 applied to RMS
+================================================================================

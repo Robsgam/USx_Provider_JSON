@@ -1,0 +1,135 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.0
+Query type: DriverLicenseQuery (OLN path -- DQN)
+Test      : All fields filled on Person card
+Prior log : 2026-04-08_DL_OLN_DQN_allfields_v1.9.txt (v1.9)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route
+    Source      : MK43RS
+    Destination : ConnectCic
+
+  Session
+    ID          : MK43RS
+    ORI         : MK1234567
+    Mnemonic    : MK1234567
+    UserName    : MK43RS
+
+  Transaction
+    ID          : 01KNPVK7GQG5R0M7VVHMX6SNCD (reused ID -- likely same session)
+    MessageType : DriverLicenseQuery
+    State       : NJ
+    OLN         : 1234561
+    ImageIndicator: Y
+
+================================================================================
+FIELD ISOLATION RESULT
+================================================================================
+
+  Expected for OLN path (DQN):  OLN + State + [ImageIndicator]
+  Received:                      OLN + State + ImageIndicator
+
+  Field                  Expected    Sent    Note
+  ---------------------  --------    ----    ------------------------------------
+  OperatorLicenseNumber  YES         YES
+  State                  YES         YES
+  ImageIndicator         optional    YES     -- CONFIRMED FIXED in v2.0
+  BirthDate              NO          NO      split still correct
+  Name                   NO          NO      split still correct
+  SexCode                NO          NO      split still correct
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- OLN path (DQN) fully resolved.
+    OLN + State + ImageIndicator all present. v2.0 fix confirmed working.
+    Root cause confirmed: ImageIndicator was missing from DQN any[] (cleared in v1.5).
+    Adding ImageIndicator to any[] in v2.0 resolved the issue.
+    size=1 (v1.8) and initialValue=Y (v1.9) were both correct and necessary;
+    the any[] omission was the final missing piece.
+
+  NAME PATH FAILURE (same session, second query -- no OLN)
+    Error reported in UI: "configuration input requirements have not been met"
+    All fields except OLN were filled (NameFirst, NameLast, BirthDate, Sex, State, Image).
+    DQ combination set = [BirthDate, NameLast, NameFirst] -- all three were populated.
+    No outgoing XML was generated (error is pre-send, at platform combination-matching level).
+    See INVESTIGATION section below.
+
+================================================================================
+INVESTIGATION -- Name path (DQ) combination not matching
+================================================================================
+
+  DQ combination in NJ_NJCJIS_DriverLicenseQuery_Name:
+    set = [BirthDate, NameLast, NameFirst]
+    any = [SexCode, ImageIndicator, RegistrationState]
+
+  Fields filled by user (no OLN):
+    NameFirst        = filled
+    NameLast         = filled
+    BirthDate        = filled
+    SexCode          = filled
+    ImageIndicator   = Y (initialValue)
+    RegistrationState= NJ (initialValue)
+
+  All three set[] fields were populated. Error "configuration input requirements
+  have not been met" indicates no combination matched before the query was sent.
+
+  HYPOTHESIS -- any[] semantics require at least one actively populated field:
+    If the platform excludes initialValue-only fields from any[] matching,
+    SexCode (user-filled) should still satisfy any[]. This hypothesis does not
+    fully explain the failure.
+
+  HYPOTHESIS -- NameFirst / NameLast in set[] reference attribute names, not sourceField:
+    The Name attribute combines NameFirst+NameLast via FormatStringRuleHandler.
+    If the platform evaluates set[] against attribute names (not sourceField values),
+    'NameFirst' and 'NameLast' would not match the attribute named 'Name'.
+    This could explain the failure.
+    Test: change set[] from [BirthDate, NameLast, NameFirst] to [BirthDate, Name]
+    and see if the combination matches.
+
+  PENDING -- obtain outgoing XML from the Name path query if possible.
+    The error occurred before the query was sent; no XML may be available.
+    Next test: fill ONLY First + Last + DOB (minimum DQ requirement) and attempt query.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNPVK7GQG5R0M7VVHMX6SNCD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KNPVK7GQG5R0M7VVHMX6SNCD</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>NJ</State>
+            <OperatorLicenseNumber>1234561</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

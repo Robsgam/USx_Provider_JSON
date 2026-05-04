@@ -1,0 +1,114 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Vehicle
+Combo      : RQ+Plate+State
+Test type  : T2 (basic combo verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumber        ABC123             typed
+  RegistrationState         OK                 dropdown selection
+  VehicleIdNumber           (empty)            --
+  LicensePlateYear          2026               default
+  LicensePlateTypeCode      PC                 default
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (VehicleRegistrationQuery):
+    Transaction : 01KQJ0D5VS9YJYN2CNCZJP1NWN
+    MessageType : VehicleRegistrationQuery
+    keyReference: RQPlate
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      LicensePlateNumber   ABC123
+      LicensePlateYear     2026
+      State                OK
+      LicensePlateTypeCode PC
+      ImageIndicator       N
+
+  Request 2 (VehicleStolenQuery -- co-fire):
+    Transaction : 01KQJ0D8QB7MNPTTP6CKMB8ZRH
+    MessageType : VehicleStolenQuery
+    keyReference: QVPlate
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      LicensePlateNumber   ABC123
+      State                OK
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQPlate (VehicleRegistrationQuery)
+  Reason: set=[LicensePlateNumber, RegistrationState] satisfied — State present = RQ path (not FRQ)
+
+  VehicleRegistrationQuery attributes:
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  LicensePlateNumber     YES    ABC123          typed
+  LicensePlateYear       YES    2026            default (current year)
+  RegistrationState      YES    OK              dropdown selection — triggers RQ path
+  LicensePlateTypeCode   YES    PC              default
+  ImageIndicator         YES    N               default
+  VehicleIdNumber        NO     --              empty
+
+  VehicleStolenQuery co-fire (QVPlate):
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  LicensePlateNumber     YES    ABC123          typed
+  State                  YES    OK              from RegistrationState
+  ImageIndicator         YES    N               default
+
+  Confirms OOS routing: Test 6 (no State) = FRQ path, Test 7 (State=OK) = RQ path.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: Vehicle by plate + state
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510843059],"tag":"abc123"}},"from":0,"size":50}
+  Note: State attr ID passed to RMS. Response: no returns.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: RQ combo fires correctly with plate + State (OOS path), VehicleStolenQuery co-fires with State, RMS fires with state attr.
+  Detail: Contrasts with Test 6 (FRQ, no State). PlateType=PC and PlateYear=2026 defaults included. State=OK in both CommSys XMLs.
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+VehicleRegistrationQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0D5VS9YJYN2CNCZJP1NWN"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KQJ0D5VS9YJYN2CNCZJP1NWN</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>OK</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+VehicleStolenQuery (co-fire):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0D8QB7MNPTTP6CKMB8ZRH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KQJ0D8QB7MNPTTP6CKMB8ZRH</Id><ImageIndicator>N</ImageIndicator><State>OK</State><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510843059],"tag":"abc123"}},"from":0,"size":50}
+Response: No returns.

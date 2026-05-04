@@ -1,0 +1,31 @@
+NJ_NJCJIS Phase 3 -- Split Entity Person
+==========================================
+Started: 2026-04-21
+Base: NJ_NJCJIS_v2.0.json (v2.0, Phase 2 multi-card -- 38 PASS)
+
+CHANGES FROM PHASE 2
+  - Person QIF split into:
+    ENTITY_Person_NJ  [Person - NJ]       2 cards: LICENSE NUMBER (OLN+State+Image) + NAME (First+Last+DOB+Sex)
+    ENTITY_Person_OOS [Person - Out of State]  2 cards: same fields, State has no initialValue
+  - Vehicle, Firearm, Article, Boat: unchanged from v2.0
+
+ARCHITECTURE NOTES
+  Both Person QIFs target the same 'Person' entity. Platform groups them as sub-tabs.
+  QIDM unchanged (NJ_NJCJIS_DriverLicenseQuery with DQN + DQ combos).
+  NCIC state pattern (codeTypeProvider=NCIC) handles both forms -- State field is visible
+  on both NJ and OOS tabs. The key difference is NJ has initialValue='NJ', OOS has none.
+
+  This is functionally equivalent to the v2.0 multi-card design since NCIC state handles
+  OOS natively. The split is being tested to determine if the UX of separate tabs is
+  preferable to a single Person tab with a state dropdown.
+
+VALIDATION
+  v2.1: 39 PASS / 0 FAIL / 1 WARN (bundle order cosmetic)
+  All 18 layout trees valid (6 QIFs x 3 variants)
+  Build script: scripts/build_nj_njcjis_v2.1.ps1
+
+BUILDS
+  NJ_NJCJIS_v2.1_2026-04-21.json   39 PASS  Split entity Person
+
+TESTS
+  PENDING -- requires live NJ environment access for import testing

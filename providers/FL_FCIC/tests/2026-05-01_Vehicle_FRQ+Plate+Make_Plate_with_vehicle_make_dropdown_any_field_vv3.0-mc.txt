@@ -1,0 +1,74 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+Plate+Make (Plate with vehicle make dropdown any field)
+Test type  : T3 -- any[] field + co-fire + RMS
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumberIn      ABC231             typed
+  VehicleMakeCode           TRCK_ADVS          dropdown (VEHICLE_MAKE/NCIC)
+  LicensePlateYear          2026               default (initialValue)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     makeNcicCode=TRCK_ADVS, tag=abc231
+
+  2) VehicleStolenQuery (QV co-fire)
+     Transaction: 01KQJ66BZP5KPBC78XA1XR0TTA
+     VehicleMakeCode=TRCK_ADVS, ImageIndicator=N, LicensePlateNumber=ABC231
+
+  3) VehicleRegistrationQuery (FRQ)
+     Transaction: 01KQJ668ZRZBD5C0Z2CX1X8T7M
+     ImageIndicator=N, LicensePlateYear=2026, LicensePlateNumber=ABC231
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: FRQ+Plate (VehReg) + QV+Plate (VehStolen co-fire) + RMS
+  Reason: Plate populated = FRQ fires; QV fires on Plate+Make (any[])
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  LicensePlateNumberIn      YES    ABC231          in FRQ + QV
+  VehicleMakeCode           YES*   TRCK_ADVS       *QV only (in QV any[], NOT in FRQ any[])
+  LicensePlateYear          YES*   2026            *FRQ only (in FRQ any[], NOT in QV)
+  ImageIndicator            YES    N               in both FRQ + QV (any[])
+  State                     NO     --              sourceField empty (FL-only path)
+
+  KEY FINDING: VehicleMakeCode DOES serialize to CommSys XML!
+  - KB FIELD_RULES said VEHICLE_MAKE "does NOT serialize to XML" (tested NY 2026-04-24)
+  - FL test shows it DOES serialize: NCIC code string (TRCK_ADVS) passes through
+  - attributeTypeId=VEHICLE_MAKE stores NCIC code, QIDM passes raw value
+  - KB needs update to reflect this finding
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: makeNcicCode=TRCK_ADVS, tag=abc231
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQ+QV+RMS all fired; VehicleMakeCode dropdown works and serializes to QV XML
+  Detail: Make appears in QV (any[]) but NOT in FRQ (not in FRQ any[]).
+          RMS receives makeNcicCode correctly. Slow performance noted.

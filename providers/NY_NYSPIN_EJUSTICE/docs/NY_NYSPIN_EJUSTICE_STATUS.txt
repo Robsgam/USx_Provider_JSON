@@ -1,0 +1,71 @@
+NY_NYSPIN_EJUSTICE -- BUILD STATUS
+====================================
+Last updated: 2026-04-30
+Provider: NY_NYSPIN_EJUSTICE
+GitHub: Robsgam/NY_NYSPIN_EJUSTICE
+
+CURRENT VERSION
+---------------
+BASE: v1.1  71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
+MC:   v1.1  71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
+Simulation: 13/13 combos FIRE on both variants (2026-04-30)
+Prior live test: BASE 15/15 PASS (2026-04-24), MC 19/19 PASS (2026-04-24)
+Import: PENDING (re-import with v1.1 required for ImageIndicator + RMS autoSelect)
+
+ARCHITECTURE
+------------
+Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs)
+QIDMs:    VehicleRegistrationQuery (RVEH/RVIN/RCAR)
+          DriverLicenseQuery (DLIC/DLICN) -- autoSelect=true
+          DriverHistoryQuery (DALL/DALH) -- autoSelect=true
+          GunQuery (GINQ)
+          ArticleSingleQuery (AINQ)
+          BoatQuery (BVEH/BVIN/RVEH/RCAR)
+RMS:      Vehicle + Person QIDMs, both autoSelect=true
+Total combos: 13 CommSys + 2 RMS
+
+Standard patterns (all confirmed NJ cross-reference):
+  - ImageIndicator on ALL entities (FormSelect, NIBRS/YES_NO_UNKNOWN, Person=Y, others=N)
+  - AUTH keyReference='AUTH'
+  - RMS autoSelect=true on both QIDMs
+  - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
+  - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS on Person)
+  - queryLabel standard (Vehicle Registration, Driver License, etc.)
+  - PlateType=PC, PlateYear=2026 defaults
+
+KNOWN LIMITATIONS (5)
+---------------------
+1. DL+DH co-fire autoSelect (both DL and DH QIDMs fire on Person -- correct police workflow)
+2. DL+DH no DH-suffix fieldIds (v1.1 uses shared field pool, DH co-fires with DL)
+3. queriesToDeselect not used (platform limitation #24)
+4. Combo priority order (RVIN > RVEH > RCAR, etc. -- operational priority, not XML spec order)
+5. LIMITATION #30: State has NO initialValue (blank default, separate in-state/OOS keyRefs)
+
+AP #24: VehicleMakeCode does not serialize to CommSys XML (no NCIC_VEHICLE_MAKE codeTypeCategory)
+WINQ/MINQ: No Transaction XML in metadata. Not buildable until vendor adds XML definitions.
+
+FIXES APPLIED 2026-04-30 (v1.0 -> v1.1)
+-----------------------------------------
+1. ImageIndicator FormSelect on ALL entities (was missing from Vehicle, Firearm, Article, Boat)
+2. ImageIndicator QIDM attribute + combo any[] on ALL QIDMs that support it
+3. AUTH keyReference='AUTH' added
+4. RMS autoSelect=true on both Vehicle and Person RMS QIDMs
+5. Person ImageIndicator changed from FormInput to FormSelect (NIBRS/YES_NO_UNKNOWN)
+6. NJ cross-reference (GATE 7) verified: all standard patterns present
+
+TEST MATRIX
+-----------
+See SQVR for per-combo test results. All combos [CONFIRMED] on v1.0 live tests.
+v1.1 re-import required to verify ImageIndicator and RMS autoSelect changes.
+
+BUILD LOG  (newest first)
+  v1.1  2026-04-30  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
+    BASE: 71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
+    MC:   71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
+    Simulation logs: tests/ (10 files, 5 BASE + 5 MC)
+    Fixes: ImageIndicator all entities, AUTH keyRef, RMS autoSelect, Person Image FormSelect
+
+  v1.0  2026-04-24  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
+    BASE: 44 PASS / 0 FAIL / 15/15 live test PASS
+    MC:   44 PASS / 0 FAIL / 19/19 live test PASS
+    Patch 6 (RMS cleanup) applied

@@ -1,0 +1,323 @@
+CONNECTCIC FIELD RULES
+=======================
+Confirmed rules for field type selection, code type pairings, and attribute types.
+Last updated: 2026-04-20
+Source: NJ_NJCJIS (v1.7), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v1.0), NCIC_CODE_SOURCE_TEST (2026-04-10)
+
+================================================================================
+SECTION 1 -- FIELD TYPE SELECTION
+================================================================================
+
+  Text field (free entry, exact value to XML)  ->  FormInput   fieldId, label, maxLength from XML
+  Dropdown (code list from platform)           ->  FormSelect  fieldId, label, codeTypeCategory + codeTypeSource
+  Date field                                   ->  FormDate    fieldId, label
+  Y-only flag field (blank = omit)             ->  FormInput   maxLength=1; blank = not sent; operator types Y
+  Hidden field - state for RMS                 ->  SelH        attributeTypeId=STATE, initialValue=NY/NJ
+  Hidden field - state for outbound XML        ->  InpH        initialValue=NY/NJ (plain text)
+
+  DO NOT use FormSelect for Y-only fields.
+    FormSelect exposes N and U, which are often invalid values.
+    FormSelect with YES_NO_UNKNOWN also exposes a "clear" button -- cleared = not sent.
+
+  DO NOT use FormDate for non-date values even if the label says "date".
+    Only use FormDate when the field maps to a FormDate component in the layout.
+
+================================================================================
+SECTION 2 -- CONFIRMED codeTypeCategory + codeTypeSource PAIRINGS
+================================================================================
+
+  This table reflects confirmed working pairings from live testing and reference JSON review.
+  "Baseline" = already correct in all reference JSONs.
+  "Tested" = verified via NCIC_CODE_SOURCE_TEST.json (2026-04-10) or live test.
+
+  codeTypeCategory          codeTypeSource     Notes
+  ------------------------  -----------------  -------------------------------------------
+  NCIC_LICENSE_PLATE_TYPE   NCIC               Baseline. Confirmed working.
+  NCIC_FIREARM_TYPE         NCIC               Baseline. Confirmed working.
+  NCIC_FIREARM_MAKE         NCIC               Tested: NCIC confirmed working.
+                                                FormInput also valid (no confirmed list for NY).
+                                                WARNING: HIDLE.json incorrectly uses this for
+                                                VehicleMakeName result mapping. This category
+                                                contains FIREARM makes only, NOT vehicle makes.
+                                                Tested 2026-04-24 on MK43RS.
+  NCIC_FIREARM_CALIBER      NCIC               Tested: NCIC confirmed working.
+                                                FormInput also valid (no confirmed list for NY).
+  NCIC_ARTICLE_TYPE         CA_CLETS           NCIC gives empty dropdown -- must be CA_CLETS.
+  YES_NO_UNKNOWN            NCIC               Standardized 2026-05-04. NCIC gives Y/N only.
+                                                NIBRS also works but gives Y/N/U (3 options).
+  NIBRS_SEX                 NIBRS              Sends M/F/U to CommSys. Use ONLY if RMS sex
+                                                filtering is not needed (CommSys-only case).
+                                                If RMS sex filter is also required, use
+                                                attributeTypeId=SEX + codeTypeProvider=NIBRS
+                                                pattern instead. See SEX_CODE_PATTERN.txt.
+  NIBRS_RACE                NIBRS              Sends W/B/I/A/U etc. DO NOT use attributeTypeId=RACE.
+                                                NCIC gives empty dropdown. Confirmed NY v1.12.
+  NJ_NIBRS_STATE            NJ_NIBRS           NJ/NY state list. Sends 2-letter code.
+                                                NCIC gives empty dropdown.
+                                                Use for OOS state dropdowns (RegistrationStateOOS).
+  VEHICLE_BODY_STYLE        NJ_NIBRS (NJ)      Provider-specific. Confirm per build.
+                            VEHICLE (CA)        NCIC gives empty dropdown.
+  VEHICLE_TYPE              HI_NIBRS (HI)      Provider-specific. Confirm per build.
+
+  Rule: Only NCIC-prefixed categories (except NCIC_ARTICLE_TYPE) and YES_NO_UNKNOWN
+        resolve reliably under codeTypeSource "NCIC". All others require their origin source.
+
+  When in doubt: test with NCIC_CODE_SOURCE_TEST.json before committing.
+
+================================================================================
+SECTION 3 -- attributeTypeId RULES
+================================================================================
+
+  attributeTypeId is used WITHOUT codeTypeSource. It interacts with the RMS attribute system.
+
+  attributeTypeId     Behavior                                                Do/Don't
+  ------------------  ------------------------------------------------------  -----------------
+  STATE               Sends internal numeric attribute ID (NOT 2-letter code) ONLY on SelH for RMS.
+                      Example: NJ=69509884952, NY=69509802469                  NEVER map in CommSys QIDM.
+                      RMS Vehicle: RegistrationState -> vehicle.registrationStateAttrIds  NEVER on visible field.
+                                   (array, AttributeArrayWrapperRuleHandler, useAttributeId=true)
+                      RMS Person:  RegistrationState -> registrationStateAttrId
+                                   (string, useAttributeId=true, NO ArrayWrapper)
+                                   CONFIRMED: NJ_NJCJIS v1.2, 2026-04-20
+                                   registrationStateAttrId:"69509884952" in RMS elastic query.
+  SEX                 Stores numeric attribute ID in form field.               USE with codeTypeProvider=NIBRS.
+                      With codeTypeProvider=NIBRS on form AND QIDM attr:       See SEX_CODE_PATTERN.txt.
+                        form stores attr ID, QIDM reverse-looks up -> M/F/U,
+                        RMS useAttributeId=true passes attr ID directly.
+                      CommSys and RMS both satisfied simultaneously.
+                      DO NOT use attributeTypeId=SEX without codeTypeProvider=NIBRS on BOTH
+                        form AND QIDM -- CommSys will receive raw numeric ID.
+  RACE                Sends internal numeric attribute ID                      DO NOT use.
+                      Use codeTypeCategory=NIBRS_RACE instead.                (confirmed NY v1.12)
+  VEHICLE_MAKE        Sends attribute ID -- OK for RMS vehicle search.         CONFIRMED: does NOT serialize to XML.
+                      Tested 2026-04-24 on MK43RS (NY): CommSys XML omits VehicleMakeCode entirely.
+                      RMS receives makeNcicCode correctly (e.g. "TRLR_HIDE").
+                      No NCIC_VEHICLE_MAKE codeTypeCategory exists on the platform.
+                      NCIC_FIREARM_MAKE was tested as alternative -- populates FIREARM makes, not vehicle makes.
+                      HIDLE.json uses NCIC_FIREARM_MAKE on VehicleMakeName (result QIDM) -- INCORRECT mapping.
+                      Decision: keep attributeTypeId=VEHICLE_MAKE for RMS dropdown; accept XML limitation.
+  CAD_UNIT_SELECT_VALUE  CAD integration field -- never in QIDM by design.    CAD card only.
+  CAD_EVENT_SELECT_VALUE CAD integration field -- never in QIDM by design.    CAD card only.
+
+  Summary: attributeTypeId should be used ONLY for RMS-specific hidden fields (SelH for STATE)
+    OR for SEX with codeTypeProvider=NIBRS (see SEX_CODE_PATTERN.txt).
+    For all other fields that need to send a value to outbound XML, use codeTypeCategory + codeTypeSource.
+
+================================================================================
+SECTION 4 -- SPECIFIC FIELD PATTERNS
+================================================================================
+
+  STATE (in-state forms)
+  ----------------------
+    Two variants -- both work. Choose based on whether operator should see/change the state.
+
+    Variant A -- Visible state dropdown (NJ_NJCJIS pattern):
+      Sel   fieldId='State'  codeTypeCategory='NJ_NIBRS_STATE'  codeTypeSource='NJ_NIBRS'
+            initialValue='NJ'
+            -> Visible to operator. QIDM maps sourceField=['State'] -> targetField='State'.
+            -> Sends 2-letter code to outbound XML. Operator can change for OOS.
+      SelH  fieldId='RegistrationState'  attributeTypeId='STATE'  initialValue='NJ'
+            -> Hidden. NEVER in CommSys QIDM (would send raw attr ID to XML).
+            -> RMS Vehicle: feeds vehicle.registrationStateAttrIds (array, ArrayWrapper)
+            -> RMS Person:  feeds registrationStateAttrId (string, useAttributeId=true)
+      Reference: NJ_NJCJIS v1.2+
+
+    Variant B -- Hidden state (NY_NYSPIN pattern):
+      InpH  fieldId='RegistrationStateNY'  initialValue='NY'
+            -> Hidden plain text. QIDM: sourceField=['RegistrationStateNY'] -> targetField='State'.
+            -> Sends literal 'NY' to outbound XML.
+      SelH  fieldId='RegistrationState'  attributeTypeId='STATE'  initialValue='NY'
+            -> Hidden. NEVER in CommSys QIDM. Feeds RMS as above.
+      Reference: NY_NYSPIN_EJUSTICE v1.4+
+
+    WARNING on initialValue for State:
+      Setting initialValue on the State dropdown changes combo routing. When State
+      is populated, OOS combos (with State in set[]) fire instead of in-state combos.
+      This changes the documented query type (e.g., RCAR -> RVIN). Only use
+      initialValue on State when the provider has no separate in-state keyRefs,
+      or when the agency confirms OOS combos are acceptable for in-state queries.
+      See LIMITATION #30. Use card title hints instead (e.g., "Leave blank for NY queries").
+
+    RMS wiring (both variants -- requires explicit patches, not in HIDLE by default):
+      Vehicle QIDM: add RegistrationState to licensePlateIn combination any[]
+      Person QIDM:  add registrationState attribute (targetField=registrationStateAttrId,
+                    useAttributeId=true) + add RegistrationState to ALL combination any[]
+      CONFIRMED: NJ_NJCJIS v1.2 -- registrationStateAttrId:"69509884952" in person RMS query.
+
+  STATE (OOS forms)
+  -----------------
+    ONE visible dropdown:
+      Sel   fieldId='RegistrationStateOOS'
+            codeTypeCategory='NJ_NIBRS_STATE'  codeTypeSource='NJ_NIBRS'
+            -> Sends 2-letter state code to outbound XML.
+            -> No attributeTypeId -- does not interact with RMS state lookup.
+    Note: RMS OOS searches fire without state filter (LIMITATION #6). Functional for XML.
+
+  IMAGEINDICATOR (3 requirements -- all must be met)
+  ---------------------------------------------------
+    1. QIDM attribute: size=1
+    2. FormSelect: initialValue='Y' (or 'N' for vehicle -- check per query)
+    3. Field in set[] or any[] of each combination that should send it
+    If any of these three are missing, ImageIndicator will not appear in the outbound XML.
+
+  SEXCODE
+  -------
+    See SEX_CODE_PATTERN.txt for the full three-layer chain. Summary:
+
+    Form:       FormSelect  attributeTypeId='SEX'  codeTypeProvider='NIBRS'  fieldId='SexCode'
+    QIDM attr:  { name:'SexCode', size:1, sourceField:['SexCode'], targetField:'SexCode',
+                  codeTypeProvider:'NIBRS' }
+    RMS attr:   { name:'sex', sourceField:['SexCode'], targetField:'sexAttrId',
+                  useAttributeId:true }
+    RMS combo:  SexCode in any[] of Person Search combination
+
+    Result: CommSys <SexCode>M</SexCode> AND RMS sexAttrId:69509891711 -- both correct.
+    Confirmed: AZ_AZDPS, NJ_NJCJIS v3.25 (2026-04-17)
+
+================================================================================
+SECTION 5 -- OPERATIONAL IDENTITY FIELDS (BadgeNumber / dexStateUserId)
+================================================================================
+
+  Operational identity fields identify the querying officer (badge, state operator ID)
+  rather than describing the record being searched. They appear in provider XML query
+  transactions as required or optional fields (e.g., BadgeNumber in ACVR, ACQG, ACQA).
+
+  DECISION: ask before building -- visible or auto-populated?
+  ------------------------------------------------------------
+  The XML spec says what CAN be sent -- it does not dictate whether the officer types it
+  or the system fills it. This is a UX and deployment decision that must be made upfront.
+  See BUILD_CHECKLIST.txt OPERATIONAL IDENTITY FIELDS section.
+
+  OPTION A -- Visible (officer types badge number on every query)
+  ---------------------------------------------------------------
+    Form:         Inp 'BadgeNumber' 'Badge Number' '<maxLen>' '<rowId>'
+    QIDM attr:    { name:'BadgeNumber', sourceField:['BadgeNumber'], targetField:'BadgeNumber' }
+    Combinations: set[] / any[] reference fieldId 'BadgeNumber'
+
+    Use when: officers have different badge numbers per session, or deployment requires
+    explicit badge entry for accountability / logging purposes.
+
+  OPTION B -- Auto-populated from officer RMS profile (preferred when supported)
+  -------------------------------------------------------------------------------
+    Form:         InpH 'dexStateUserId' 'Badge (auto)' @{} '<hiddenRowId>'
+                  (hidden InpH -- platform resolves via CommsysGetDexStateUserIdRuleHandler)
+    QIDM attr:    { name:'BadgeNumber', sourceField:['dexStateUserId'], targetField:'BadgeNumber' }
+    Combinations: set[] / any[] reference fieldId 'dexStateUserId'
+    AUTH config:  CommsysGetDexStateUserIdRuleHandler is already in the AUTHENTICATION
+                  config by default (resolves dexStateUserId from officer RMS profile).
+                  No AUTH config changes needed beyond what HIDLE provides.
+
+    Use when: officers have a consistent badge/state operator ID in their RMS profile
+    and manual entry would be redundant or error-prone.
+
+    IMPORTANT: Because dexStateUserId is always present (auto-populated), combinations
+    that previously required BadgeNumber in set[] will now always see it. Routing then
+    falls to the other required fields in set[]. Verify combination ordering carefully.
+    Example: BoatQuery ACQB set=['dexStateUserId','RegistrationNumber'] -- badge is always
+    present, so RegistrationNumber becomes the effective discriminator for ACQB vs BQ.
+
+  Confirmed auto-populate pattern:
+    AZ_AZDPS v1.1 (2026-04-20) -- all 5 forms, all badge-requiring QIDMs.
+    Forms: BadgeNumber Inp removed; InpH 'dexStateUserId' added to hidden row on each form.
+    QIDMs: VehicleRegistrationQuery, AzAzdpsDriverLicenseQuery, GunQuery,
+           ArticleSingleQuery, BoatQuery -- sourceField changed to 'dexStateUserId'.
+
+  AUTHENTICATION config note:
+    ORI, Mnemonic, and dexStateUserId in the AUTHENTICATION config are ALWAYS
+    auto-resolved from the officer's session and RMS profile. They are NEVER
+    visible form fields. The BadgeNumber decision above applies only to individual
+    query transaction QIDMs -- not to the AUTH config.
+
+  Anti-pattern: see ANTI_PATTERNS.txt #20.
+
+    DO NOT use codeTypeCategory=NIBRS_SEX if RMS sex filter is required (CommSys-only fix).
+    DO NOT remove sex from RMS QIDM to "fix" CommSys (breaks RMS silently).
+
+  RACECODE
+  --------
+    FormSelect  codeTypeCategory='NIBRS_RACE'  codeTypeSource='NIBRS'
+    DO NOT use attributeTypeId='RACE'.
+    Sends single-letter NCIC code (W/B/I/A/U/etc.).
+
+  BIRTHDATE
+  ---------
+    FormDate  fieldId='BirthDate'  label='Date of Birth'
+    QIDM attribute: rule = CommsysParseDateRuleHandler, arguments = @('<input>','<output>')
+    Platform FormDate always sends ISO 8601 (yyyy-MM-dd) -- use as first argument.
+    Output format is PROVIDER-SPECIFIC -- confirm in XML before building:
+      NJ_NJCJIS:          arguments = @('yyyy-MM-dd','MMddyyyy')
+      NY_NYSPIN_EJUSTICE: arguments = @('yyyy-MM-dd','MMddyyyy')
+      AZ_AZDPS:           arguments = @('yyyy-MM-dd','yyyyMMdd')   <- 4-digit year first
+    DO NOT assume MMddyyyy. Wrong format sends garbled dates silently (no import error).
+
+  NAME (composite)
+  ----------------
+    FormInput fields: NameFirst, NameLast, NameMiddle, NameSuffix (all separate)
+    QIDM attribute: rule = FormatStringRuleHandler, arguments = @(' ',' ',' ')
+                    sourceField = @('NameFirst','NameLast','NameMiddle','NameSuffix')
+                    targetField = 'Name' (or provider's XML element)
+    Set/any combination refs use individual sourceField names (NameFirst, NameLast, etc.)
+    primaryFieldReference uses the QIDM attribute name ('Name').
+
+    ARGUMENT COUNT RULE: arguments count must equal sourceField count minus 1.
+      2-field name (NameFirst + NameLast):                   arguments = @(' ')
+      4-field name (NameFirst + NameLast + NameMiddle + NameSuffix):  arguments = @(' ',' ',' ')
+    Example: NJ_NJCJIS uses 2-field name (provider MetaData only accepts First+Last).
+             NY_NYSPIN uses 4-field name (all four components in NY MetaData).
+    ALWAYS check the provider MetaData XML to confirm which Name fields are accepted.
+    Using arguments = @(' ',' ',' ') with only 2 sourceFields will produce wrong output.
+
+  ARTICLETYPE
+  -----------
+    FormSelect  codeTypeCategory='NCIC_ARTICLE_TYPE'  codeTypeSource='CA_CLETS'
+    DO NOT use codeTypeSource='NCIC' -- empty dropdown.
+
+  LICENSEPLATENUMBER
+  ------------------
+    In-state forms: fieldId='LicensePlateNumberIn'   -> triggers RMS plate search
+    OOS forms:      fieldId='LicensePlateNumberOut'  -> triggers RMS OOS plate search
+    Generic 'LicensePlateNumber' does NOT trigger RMS plate search.
+    QIDM targetField: 'LicensePlateNumber' (XML element name -- unchanged).
+
+================================================================================
+SECTION 5 -- INITALIVALUE AND DEFAULTS
+================================================================================
+
+  Field                     initialValue      Notes
+  ------------------------  ----------------  ------------------------------------------
+  RegistrationState (SelH)  'NY' or 'NJ'      Hidden; attributeTypeId=STATE; for RMS only
+  RegistrationStateNY (InpH) 'NY'             Hidden; for outbound XML; in QIDM
+  ImageIndicator            'Y' or 'N'        Y for person queries; N or omit for vehicle
+  VehicleYear               current year      FormInput; initialValue='2026' (update yearly)
+
+  For optional dropdowns with no initialValue: blank = not sent (correct behavior).
+  For required fields: always in set[] so they are filled before submission.
+
+================================================================================
+SECTION 6 -- queryLabel STANDARD (QIDM property)
+================================================================================
+
+  The queryLabel property on each QIDM controls the label displayed in the
+  ConnectCIC UI for that query type. Use these standard values for ALL providers:
+
+  Query                      queryLabel            Notes
+  -------------------------  --------------------  ----------------------------------
+  VehicleRegistrationQuery   Vehicle Registration  Not "Vehicle", not "DMV"
+  DriverLicenseQuery         Driver License        Not "Person", not entity name
+  DriverHistoryQuery         Driver History        Same across all states
+  GunQuery                   Firearm               Not "NCIC", not "Gun"
+  ArticleSingleQuery         Article               Not "NCIC"
+  BoatQuery                  Boat                  Not "NCIC"
+  RMS (all)                  RMS                   Always "RMS" for RMS bundle QIDMs
+
+  RULE: Label by what the officer is searching for, not by backend system name.
+  "NCIC", "DMV", "FCIC" are backend details that vary by state.
+  "Firearm", "Vehicle Registration", etc. are universally understood.
+
+  DO NOT use entity names as queryLabels (e.g., "Person" for DriverLicenseQuery).
+  DO NOT use backend system names (e.g., "NCIC" for GunQuery).
+  DO NOT append "Query" to labels (e.g., "Firearm Query").
+
+  Source: HIDLE.json template. Apply consistently to all provider builds.
+  Confirmed: NJ v1.0 BASE + MC (2026-04-23), NY v1.0 BASE + MC (2026-04-24).
+  See ANTI_PATTERNS.txt #25 for common mistakes.

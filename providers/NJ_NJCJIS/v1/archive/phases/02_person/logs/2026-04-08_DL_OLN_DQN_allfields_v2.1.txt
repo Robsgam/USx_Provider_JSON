@@ -1,0 +1,87 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.1
+Query type: DriverLicenseQuery (OLN path -- DQN)
+Test      : All fields filled (OLN + Name + DOB + Sex + State + Image)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNPXKHR8N179TB2HXJDQJ8HX
+  MessageType : DriverLicenseQuery
+
+  Fields in request:
+    ImageIndicator        Y
+    State                 NJ
+    SexCode               F
+    OperatorLicenseNumber 1234
+    BirthDate             01011999
+    Name                  ROB SGAM
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQN (OLN path -- listed first, takes priority)
+  Expected for DQN:  OLN + State + [ImageIndicator]
+  Received:          OLN + State + ImageIndicator + SexCode + BirthDate + Name
+
+  Field                  In DQN set/any  Sent    Note
+  ---------------------  --------------  ----    --------------------------------
+  OperatorLicenseNumber  set             YES
+  State                  set             YES
+  ImageIndicator         any             YES     initialValue=Y
+  SexCode                NO              YES     also populated -- extra field
+  BirthDate              NO              YES     also populated -- extra field
+  Name                   NO              YES     also populated -- extra field
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- DQN combination matched and query sent. No error from ConnectCIC.
+    OLN, State, ImageIndicator all present as expected.
+
+  CRITICAL FINDING -- set/any controls matching only, not field sending.
+    SexCode, BirthDate, and Name are NOT in DQN set[] or any[], yet they were sent.
+    All populated attributes in the config are sent when a combination fires,
+    regardless of whether they are in set[] or any[] of the matched combination.
+    This reverts LIMITATION #10 to the original v1.7 understanding.
+
+  IMPLICATION -- v2.0 correction to LIMITATION #10 was incorrect.
+    v2.0 stated: "set/any controls both matching AND sending."
+    v2.1 evidence: set/any controls matching only. Field isolation through set/any
+    is NOT possible. Field isolation requires separate configs (split attribute lists).
+
+  NOTE -- Extra fields sent with OLN path do not cause rejection.
+    ConnectCIC accepted the request with Name/BirthDate/SexCode alongside OLN.
+    Server appears to ignore extra fields and use OLN for the DQN query path.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNPXKHR8N179TB2HXJDQJ8HX">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>DriverLicenseQuery</MessageType>
+          <Id>01KNPXKHR8N179TB2HXJDQJ8HX</Id>
+          <ImageIndicator>Y</ImageIndicator>
+          <State>NJ</State>
+          <SexCode>F</SexCode>
+          <OperatorLicenseNumber>1234</OperatorLicenseNumber>
+          <BirthDate>01011999</BirthDate>
+          <Name>ROB SGAM</Name>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

@@ -1,0 +1,46 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: TX_TLETS_BASE
+  Source: TX_TLETS_BASE.json
+  Generated: 2026-04-28 14:12
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    ArticleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=NCIC
+
+  Entity: Boat
+    State [State] (default=TX)
+      Config: attributeTypeId=STATE
+
+  Entity: Person
+    RaceCode [Race]
+      Config: codeTypeCategory=RACE, codeTypeSource=NCIC
+    SexCode [Sex]
+      Config: codeTypeCategory=SEX, codeTypeSource=NCIC
+    State [License State] (default=TX)
+      Config: attributeTypeId=STATE
+
+  Entity: Vehicle
+    LicensePlateTypeCode [Plate Type]
+      Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
+    State [State] (default=TX)
+      Config: attributeTypeId=STATE
+    VehicleMakeCode [Make]
+      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  (no code type attributes found)
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 8
+  QRDM code type attrs: 0

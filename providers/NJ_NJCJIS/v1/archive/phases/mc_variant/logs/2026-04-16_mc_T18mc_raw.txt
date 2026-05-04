@@ -1,0 +1,30 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Person OLN NJ + Image N (T18-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T18-mc -- DriverLicenseQuery, DQN, OLN NJ + Image N -- PASS
+================================================================================
+
+Form    : Person QIF | OLN card | OLN: UJ380-298673 | State: NJ (initialValue default) | Image: N (changed from Y default)
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBV8N8PV6HT0E0E1SGZY5FV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KPBV8N8PV6HT0E0E1SGZY5FV</Id><ImageIndicator>N</ImageIndicator><State>NJ</State><OperatorLicenseNumber>UJ380-298673</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"dlNumber":"uj380-298673"},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=DriverLicenseQuery (DQN -- OLN path) correct
+  - <OperatorLicenseNumber>UJ380-298673</OperatorLicenseNumber> correct
+  - <State>NJ</State> confirmed from initialValue=NJ on visible RegistrationStateOOS
+  - <ImageIndicator>N</ImageIndicator> confirmed -- officer override of initialValue Y works correctly
+  - RMS: dlNumber only (uj380-298673), no state filter -- server-side limitation confirmed

@@ -1,0 +1,90 @@
+﻿NJ_NJCJIS STATUS
+=================
+Last updated: 2026-04-30
+
+  BASE  v2.0     -- 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 17/17 PASS (2026-04-29)
+  MC    v2.0-mc  -- 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 57/57 PASS (2026-04-29)
+
+METADATA VERSION:
+  XML: NJ_NJCJIS.xml (2026-04-28) -- 6 transactions, 6 message keys
+  PDF: NJ_NJCJIS.pdf (2026-04-28) -- Basic Queries + WMPI (WMPI excluded per source authority)
+  Previous: NJ_NJCJIS.old.xml / NJ_NJCJIS.old.pdf (archived in v1/)
+
+CHANGES FROM v1:
+  New transaction: VehicleStolenQuery (3 combos: NCICNumber, Plate, VIN)
+  New fields: RandomRequest (VehicleReg, mandatory), GunModel, ImageIndicator (all transactions)
+  Removed: State from BoatQuery
+  Field changes: RegistrationNumber maxLength 8->20, State/PlateType moved to set[] on VehicleReg
+  keyRef changes: all invented (LIMITATION #21 -- XML has duplicates on Boat, DL, VehicleReg, VehicleStolen)
+  Combo count: 10 (was 8)
+
+LIMITATIONS (known, documented, no action needed):
+  1. QIDM combo order: DL DQN(2 set) before DQ(3 set) -- correct by operational priority (OLN before Name)
+  2. Vehicle dual QIDMs: no queriesToDeselect -- by design, RandomRequest gates co-fire (LIMITATION #24)
+
+FIXES APPLIED 2026-04-30:
+  1. AUTH combo: added keyReference "AUTH"
+  2. RMS Person/Vehicle QIDMs: added autoSelect=true (enables RMS auto-fire with CommSys)
+  3. Validator: tuned 3 false positives, added LIMITATION category for known constraints
+
+================================================================================
+BUILD LOG  (newest first)
+  v2.0  2026-05-01  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0_2026-05-01.json
+  v2.0  2026-05-01  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0_2026-05-01.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-plate-test  2026-04-30  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE_PLATE_TEST.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0-plate-test_2026-04-30.json
+  v2.0-mc  2026-04-28  build_nj_njcjis_mc.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_MC.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\mc\NJ_NJCJIS_v2.0-mc_2026-04-28.json
+    Live   : 57/57 PASS (2026-04-29) -- 8-phase exhaustive protocol
+
+  v2.0  2026-04-28  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS_BASE.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.0_2026-04-28.json
+    Live   : 17/17 PASS (2026-04-29) -- basic combo coverage
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

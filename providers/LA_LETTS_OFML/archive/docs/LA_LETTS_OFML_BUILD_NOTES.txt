@@ -1,0 +1,23 @@
+LA_LETTS_OFML -- Build Notes
+=============================
+Format per entry:
+  Version  Date        CHANGED: <what changed>  REASON: <why>
+
+v1.0  2026-04-22
+  CHANGED: Initial project setup. JSON structured into standard directory layout.
+           GitHub repo created: https://github.com/LooseConnection/LA_LETTS_OFML.git
+           Directory structure: archive/, docs/, phases/01_standup/, scripts/, source/
+           5 entity QIFs (Vehicle, Person, Firearm, Article, Boat).
+           6 CommSys QIDMs (VehicleRegistrationQuery, DriverLicenseQuery,
+           DriverHistoryQuery, GunQuery, ArticleSingleQuery, BoatQuery).
+           All QIDMs: CommsysGetLastNameFirstNameInitialRuleHandler on Attention in any[].
+           DriverHistoryQuery only: PurposeCode (FormSelect, DEX_INQUIRY_PURPOSE_CODE, initialValue='C').
+  REASON:  New state provider onboarded from source JSON LA_LETTS_OFML.json.
+  NOTE:    ENTTIY_Boat typo noted in ENTITIES bundle name field -- fixed same session.
+
+  ATTENTION PATTERN (confirmed matches CA_eSUN):
+    CommsysGetLastNameFirstNameInitialRuleHandler on Attention QIDM attribute.
+    No Attention FormInput on any form (handler reads officer session, not form field).
+    Attention in any[] on all QIDM combinations (auto-fires via handler).
+    This was validated against CommSys XML logs comparing HI (correct) vs FL (prior broken pattern).
+    LA was confirmed to use the same correct handler pattern as CA_eSUN from initial standup.

@@ -1,0 +1,67 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : FBQ+Decal (FL boat by decal number)
+Test type  : T2 -- alternate FBQ combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  DecalNumber               6342               typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ753SF440Z0DX8170XSKHC
+  MessageType : BoatQuery
+  keyReference: FBQDecalNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    DecalNumber          6342
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQ+Decal
+  Reason: DecalNumber populated (set[]); no State = FBQ path
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  DecalNumber               YES    6342            mapped from DecalNumber (set[])
+  ImageIndicator            NO*    --              *default N, not in FBQ any[] — not sent
+  BoatHullIdNumber          NO     --              sourceField empty
+  RegistrationNumber        NO     --              sourceField empty
+  TitleLienInformation      NO     --              sourceField empty
+  State                     NO     --              sourceField empty
+
+  NOTE: ImageIndicator NOT in XML despite having default value.
+  FBQ combos do not include ImageIndicator in any[]. Only QB combos do.
+  Platform appears to only send attributes referenced by the matched combo's any[].
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQ+Decal fired correctly; DecalNumber=6342 confirmed in XML
+  Detail: FL-only path. ImageIndicator absent from XML — FBQ combos don't include it in any[].
+

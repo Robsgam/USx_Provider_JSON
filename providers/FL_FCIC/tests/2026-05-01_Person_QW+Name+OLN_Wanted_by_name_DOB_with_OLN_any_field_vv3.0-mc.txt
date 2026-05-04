@@ -1,0 +1,79 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : QW+Name+OLN (Wanted by name DOB with OLN any[] field)
+Test type  : T3 -- any[] field test + co-fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NameLast                  SMITH              typed
+  NameFirst                 JOHN               typed
+  BirthDate                 06/15/1990         typed (date picker)
+  OperatorLicenseNumber     OLN99999           typed
+  ImageIndicator            Y                  default (initialValue — Person=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     dlNumber=oln99999, lastName=smith, firstName=john, dateOfBirth=1990-06-15
+
+  2) WantedPersonQuery (QW+Name)
+     Transaction: 01KQJAJAHW2P5DBK1NS4G8BWQ3
+     Name=SMITH,JOHN, BirthDate=19900615, OperatorLicenseNumber=OLN99999,
+     ImageIndicator=Y
+
+  3) DriverLicenseQuery (FDQ+OLN)
+     Transaction: 01KQJAJ8GY7CB3DTGNYGQQH465
+     OperatorLicenseNumber=OLN99999, ImageIndicator=Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: FDQ+OLN (DL) + QW+Name (Wanted co-fire) + RMS
+  Reason: Name+DOB populated = QW+Name fires (set=Name+DOB)
+          OLN populated = FDQ+OLN fires (no State)
+          OLN in QW+Name any[] — included in QW XML
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Name                      YES    SMITH,JOHN      FormatStringRuleHandler(',') — QW only
+  BirthDate                 YES    19900615        CommsysParseDateRuleHandler — QW only
+  OperatorLicenseNumber     YES    OLN99999        mapped — FDQ + QW (any[] in QW)
+  ImageIndicator            YES    Y               Person default — FDQ + QW
+  SexCode                   NO     --              sourceField empty (not entered)
+  State                     NO     --              sourceField empty (FL in-state)
+
+  KEY FINDING: OperatorLicenseNumber=OLN99999 confirmed in QW XML (any[] field).
+  QW+Name combo: set=[Name+DOB], any=[OLN, ImageIndicator]. Both any[] fields present.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: dlNumber=oln99999, lastName=smith, firstName=john,
+                      dateOfBirth=1990-06-15
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QW+Name fired with OLN any[] field confirmed in XML; FDQ+OLN + RMS co-fire
+  Detail: QW+Name set=[Name+DOB] matched; OLN sent as any[] bonus field.
+          FDQ+OLN fires separately (OLN in set[]). No SexCode = no FDQ+Name (correct).
+          All QW any[] fields now tested.
+

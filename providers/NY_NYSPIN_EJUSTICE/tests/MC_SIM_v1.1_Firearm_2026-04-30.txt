@@ -1,0 +1,21 @@
+================================================================
+NY_NYSPIN_EJUSTICE MC v1.1 — Firearm Simulation
+Date: 2026-04-30
+Tool: test_commsys.ps1
+================================================================
+
+QIDM: NY_NYSPIN_EJUSTICE_GunQuery
+Attrs: 4 (GunCaliber, GunMake, GunSerialNumber, ImageIndicator)
+Combos: 1
+
+--- GINQ ---
+[FIRES] set: [GunSerialNumber]
+         any: [ImageIndicator, GunMake, GunCaliber] -> all matched
+XML:
+  <MessageKey>GINQ</MessageKey>
+  <GunCaliber>9MM</GunCaliber>
+  <GunMake>SMTH</GunMake>
+  <GunSerialNumber>ABC12345</GunSerialNumber>
+  <ImageIndicator>Y</ImageIndicator>
+
+RESULT: 1/1 combo FIRES — ImageIndicator present in XML

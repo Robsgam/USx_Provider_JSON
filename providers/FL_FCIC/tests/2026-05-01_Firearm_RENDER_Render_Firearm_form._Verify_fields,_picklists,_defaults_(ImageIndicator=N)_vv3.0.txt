@@ -1,0 +1,46 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Firearm
+Combo      : RENDER
+Test type  : T1 (render/picklist verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  GunSerialNumber           (empty)            --
+  GunMake                   (empty)            dropdown (NCIC_FIREARM_MAKE)
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- render test only, no query submitted.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  N/A -- render test only.
+
+  Verified:
+  - All 5 fields visible on single "FIREARM QUERY" card
+  - GunMake: FormSelect dropdown with NCIC firearm make codes (fixed from FormInput)
+  - ImageIndicator default N
+  - Query label: "Firearm"
+  - No console errors
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Firearm form renders correctly with all 5 fields, GunMake dropdown populated, defaults correct.

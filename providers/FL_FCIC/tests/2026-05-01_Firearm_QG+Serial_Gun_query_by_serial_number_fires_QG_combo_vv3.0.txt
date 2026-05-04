@@ -1,0 +1,75 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Firearm
+Combo      : QG+Serial
+Test type  : T2 (basic combo verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  GunSerialNumber           ABC123             typed
+  GunMake                   (empty)            --
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (GunQuery):
+    Transaction : 01KQJ0VX8PYN4R21RKTHEHD9G6
+    MessageType : GunQuery
+    keyReference: QGGunSerialNumber
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      GunSerialNumber      ABC123
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QGGunSerialNumber (GunQuery)
+  Reason: set=[GunSerialNumber] satisfied. GunMake is in any[], not required.
+
+  GunQuery attributes:
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  GunSerialNumber        YES    ABC123          typed
+  ImageIndicator         YES    N               default
+  GunMake                NO     --              empty (in any[], not required)
+  NCICNumber             NO     --              empty
+  ProcessControlNumber   NO     --              empty
+
+  Checkbox lit up with serial number only (GunMake not needed for this combo).
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Firearm entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QG combo fires correctly with serial number only, ImageIndicator=N. No RMS (correct — no Firearm RMS config).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+GunQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0VX8PYN4R21RKTHEHD9G6"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KQJ0VX8PYN4R21RKTHEHD9G6</Id><ImageIndicator>N</ImageIndicator><GunSerialNumber>ABC123</GunSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

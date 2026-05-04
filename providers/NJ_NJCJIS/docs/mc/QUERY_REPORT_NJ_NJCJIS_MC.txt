@@ -1,0 +1,194 @@
+================================================================
+  Build Report: NJ_NJCJIS_MC
+  Source: NJ_NJCJIS_MC.json
+  Generated: 2026-05-04 11:15
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- NJ_NJCJIS_MC.json
+================================================================
+
+--- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] RQ
+      set: [LicensePlateNumberIn, RandomRequest, RegistrationState, LicensePlateTypeCode]
+      any: [ImageIndicator, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES] RQN
+      set: [VehicleIdentificationNumber, RandomRequest, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle] ---
+    Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
+
+    [FIRES] QVN
+      set: [NCICNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVP
+      set: [LicensePlateNumberIn]
+      any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVV
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator, VehicleMakeCode] -> matched: [ImageIndicator, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES] DQN
+      set: [OperatorLicenseNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQ
+      set: [BirthDate, NameLast, NameFirst]
+      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+
+    [FIRES] QG
+      set: [GunSerialNumber]
+      any: [GunCaliber, GunMake, GunModel, ImageIndicator] -> matched: [GunCaliber, GunMake, GunModel, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES] QA
+      set: [ArticleSerialNumber, ArticleTypeCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+
+    [FIRES] QB
+      set: [RegistrationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+    [FIRES] QBN
+      set: [BoatHullIdNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+
+

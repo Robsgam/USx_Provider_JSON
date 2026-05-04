@@ -1,0 +1,67 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : BQ+Reg+State (Boat registration with state OOS)
+Test type  : T4 -- OOS path
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  RegistrationNumber        GA12345            typed
+  RegistrationState         GA                 dropdown (NCIC, OOS)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ7AVXYNWA8AZ7SYHW924SX
+  MessageType : BoatQuery
+  keyReference: BQRegistrationNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    RegistrationNumber   GA12345
+    State                GA
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: BQ+Reg+State
+  Reason: RegistrationNumber+RegistrationState both populated (set[])
+          State=GA (OOS) = BQ path (Nlets)
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  RegistrationNumber        YES    GA12345         mapped from RegistrationNumber (set[])
+  State                     YES    GA              NCIC from RegistrationState (set[])
+  ImageIndicator            YES    N               mapped from ImageIndicator (default)
+  BoatHullIdNumber          NO     --              sourceField empty (any[] not populated)
+  Name                      NO     --              sourceField empty
+  BirthDate                 NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: BQ+Reg+State fired correctly; Reg+State confirmed in XML; OOS path works
+  Detail: All 3 BQ combos now confirmed (Name, Hull+State, Reg+State).
+

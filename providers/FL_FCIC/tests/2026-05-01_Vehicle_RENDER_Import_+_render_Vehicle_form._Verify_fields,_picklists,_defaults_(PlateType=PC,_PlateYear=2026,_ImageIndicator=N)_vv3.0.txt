@@ -1,0 +1,53 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Vehicle
+Combo      : RENDER
+Test type  : T1 (render/picklist verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumberIn      (empty)            --
+  LicensePlateTypeCode      PC                 default
+  LicensePlateYear          2026               default
+  VehicleIdentificationNumber (empty)          --
+  VehicleMakeCode           (empty)            --
+  VehicleYear               (empty)            --
+  DecalNumber               (empty)            --
+  TitleLienInformation      (empty)            --
+  RegistrationState         (no default)       --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- render test only, no query submitted.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  N/A -- render test only.
+
+  Verified:
+  - All 10 fields visible on single "VEHICLE SEARCH" card
+  - PlateType dropdown populates (NCIC_LICENSE_PLATE_TYPE), default PC
+  - State dropdown populates (STATE/NCIC), no default selected
+  - ImageIndicator dropdown populates (YES_NO_UNKNOWN), default N
+  - PlateYear default 2026
+  - Query label: "Vehicle Registration"
+  - No console errors on render
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Vehicle form renders correctly with all 10 fields, correct defaults, picklists populated, no errors.

@@ -1,0 +1,20 @@
+================================================================
+NY_NYSPIN_EJUSTICE BASE v1.1 — Article Simulation
+Date: 2026-04-30
+Tool: test_commsys.ps1
+================================================================
+
+QIDM: NY_NYSPIN_EJUSTICE_ArticleSingleQuery
+Attrs: 3 (ArticleSerialNumber, ArticleTypeCode, ImageIndicator)
+Combos: 1
+
+--- AINQ ---
+[FIRES] set: [ArticleSerialNumber, ArticleTypeCode]
+         any: [ImageIndicator] -> matched
+XML:
+  <MessageKey>AINQ</MessageKey>
+  <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+  <ArticleTypeCode>COMP</ArticleTypeCode>
+  <ImageIndicator>Y</ImageIndicator>
+
+RESULT: 1/1 combo FIRES — ImageIndicator present in XML

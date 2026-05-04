@@ -1,0 +1,178 @@
+LA_LETTS_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+============================================================
+Last updated: 2026-04-30
+JSON version: v1.0 BASE (AP #27 fix applied)
+Live test: NOT YET TESTED (imported 2026-04-29, live test PENDING)
+Validator: 40 PASS / 0 FAIL / 3 WARN
+Provider internal name: LA_LEMS
+
+NOTE: No per-test XML logs exist. All combos are [PENDING] until exhaustive
+testing with per-test log captures (GATE 2/3).
+
+OPEN ISSUES:
+  - WARN: ENTITIES bundle not first (reorder needed)
+  - WARN: No entity order array in ENTITIES bundle
+  - WARN: GunTypeCode sourceField missing from Firearm QIF
+  - Build script is a stub (needs completion)
+  - No MC variant
+
+ATTENTION PATTERN:
+  All QIDMs use CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute.
+  No Attention FormInput on any form -- handler reads officer session (LName FInitial).
+  Attention in any[] on all combinations (auto-fires via handler).
+  Confirmed correct pattern (matches CA_eSUN).
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: LA_LEMS_VehicleRegistrationQuery
+  QIF:  Vehicle
+  queryLabel: Vehicle Registration
+  Fields: Plate, PlateType, PlateYear, VIN, Make, Year,
+          RegistrationState
+  Attention: handler-populated (not on form)
+
+  Plate -- Vehicle Registration (Plate) [PENDING]
+    keyReference: LicensePlateNumber
+    set: LicensePlateNumber
+    any: Attention, RegistrationState, LicensePlateTypeCode, LicensePlateYear
+
+  VIN -- Vehicle Registration (VIN) [PENDING]
+    keyReference: VehicleIdentificationNumber
+    set: VehicleIdentificationNumber
+    any: Attention, RegistrationState, VehicleMakeCode, VehicleYear
+
+  RMS co-fire [PENDING]
+    RMS Vehicle combo expected to fire alongside CommSys (VIN, Plate+State, OwnerName).
+
+================================================================================
+2. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  QIDM: LA_LEMS_DriverLicenseQuery
+  QIF:  Person
+  queryLabel: Driver License
+  Fields: OLN, RegistrationState, First, Last, Middle, Suffix,
+          DOB, Sex, Race, ImageIndicator
+  Attention: handler-populated (not on form)
+
+  OLN -- Driver License (OLN) [PENDING]
+    keyReference: OperatorLicenseNumberRegistrationStateAttention
+    set: OperatorLicenseNumber
+    any: RegistrationState, ImageIndicator, Attention
+
+  Name -- Driver License (Name+DOB+Race+Sex) [PENDING]
+    keyReference: BirthDateNameRaceCodeSexCodeRegistrationStateAttention
+    set: BirthDate, NameLast, NameFirst, RaceCode, SexCode
+    any: RegistrationState, Attention, ImageIndicator
+
+  Note: LA requires RaceCode in set[] for Name-based DL query (unlike most states).
+
+  RMS co-fire [PENDING]
+    RMS Person combo expected to fire alongside CommSys.
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity
+================================================================================
+
+  QIDM: LA_LEMS_DriverHistoryQuery
+  QIF:  Person (shared with DriverLicenseQuery)
+  queryLabel: Driver History
+  autoSelect: false (manual selection required)
+  Fields: OLN, RegistrationState, First, Last, Middle, Suffix,
+          DOB, Sex, PurposeCode (FormSelect, DEX_INQUIRY_PURPOSE_CODE, default 'C')
+  Attention: handler-populated (not on form)
+
+  Name -- Driver History (Name+DOB+Sex) [PENDING]
+    keyReference: BirthDateNamePurposeCodeSexCodeRegistrationStateAttention
+    set: BirthDate, NameLast, NameFirst, SexCode
+    any: RegistrationState, PurposeCode, Attention
+
+  OLN -- Driver History (OLN) [PENDING]
+    keyReference: OperatorLicenseNumberPurposeCodeRegistrationStateAttention
+    set: OperatorLicenseNumber
+    any: RegistrationState, PurposeCode, Attention
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: LA_LEMS_GunQuery
+  QIF:  Firearm
+  queryLabel: Firearm
+  Fields: SerialNumber, FirearmMake, FirearmTypeCode (WARN: missing from QIF),
+          FirearmModel, FirearmCaliber, ImageIndicator
+  Attention: handler-populated (not on form)
+
+  Serial -- NCIC Gun (Serial Number) [PENDING]
+    keyReference: GunSerialNumber
+    set: SerialNumber
+    any: Attention, FirearmMake, FirearmTypeCode, FirearmModel, FirearmCaliber,
+         ImageIndicator
+
+  Note: GunTypeCode sourceField references FirearmTypeCode which is missing from
+  the Firearm QIF (validator WARN). Field must be added to QIF or removed from QIDM.
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: LA_LEMS_ArticleSingleQuery
+  QIF:  Article
+  queryLabel: Article
+  Fields: SerialNumber, ArticleTypeCode
+  Attention: handler-populated (not on form)
+
+  Serial -- NCIC Article (Serial + Type) [PENDING]
+    keyReference: ArticleSerialNumber
+    set: SerialNumber, ArticleTypeCode
+    any: Attention
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: LA_LEMS_BoatQuery
+  QIF:  Boat
+  queryLabel: Boat
+  Fields: BoatHullIdNumber, RegistrationNumber, RegistrationState
+  Attention: handler-populated (not on form)
+
+  Hull -- Boat (Hull ID) [PENDING]
+    keyReference: BoatHullIdNumberAttentionRegistrationState
+    set: BoatHullIdNumber
+    any: Attention, RegistrationState
+
+  Reg -- Boat (Registration Number) [PENDING]
+    keyReference: RegistrationNumberAttentionRegistrationState
+    set: RegistrationNumber
+    any: Attention, RegistrationState
+
+================================================================================
+RMS BUNDLE
+================================================================================
+
+  RMS Vehicle co-fire [PENDING]
+    Combos: VIN, Plate+State, OwnerName
+  RMS Person co-fire [PENDING]
+    Combos: SSN+Name, OLN+Name, Name+DOB, Name, OLN
+
+================================================================================
+SUMMARY
+================================================================================
+
+  CommSys QIDMs: 6 (VehicleReg, DriverLicense, DriverHistory,
+                     GunQuery, ArticleSingle, BoatQuery)
+  Total CommSys combos: 9
+  Total RMS combos: 8 (3 Vehicle + 5 Person)
+  [CONFIRMED]: NONE
+  [PENDING]: ALL
+  Missing: Per-test XML logs (no live tests performed yet)
+
+  OPEN ITEMS:
+  - ENTITIES bundle order (must be first)
+  - Entity order array missing
+  - GunTypeCode/FirearmTypeCode sourceField missing from Firearm QIF
+  - AP #27 fix applied (anti-pattern correction)
+  - No MC variant

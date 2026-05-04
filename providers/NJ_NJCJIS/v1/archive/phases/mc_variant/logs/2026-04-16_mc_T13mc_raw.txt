@@ -1,0 +1,27 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Boat registration NJ (T13-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T13-mc -- BoatQuery, BQ, Registration + NJ State (default) -- PASS
+================================================================================
+
+Form    : Boat QIF | Reg card | Reg: NJ123345 | State: NJ (initialValue default)
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBT0J4DRZKYYG7ZSGZ5Q120"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KPBT0J4DRZKYYG7ZSGZ5Q120</Id><State>NJ</State><RegistrationNumber>NJ123345</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+(none -- no RMS query for Boat)
+
+Analysis:
+  - MessageType=BoatQuery (BQ -- registration path) correct
+  - <RegistrationNumber>NJ123345</RegistrationNumber> correct
+  - <State>NJ</State> confirmed from initialValue=NJ on visible RegistrationStateOOS
+  - No RMS query fires for Boat (confirmed -- same as main build)
+  - Unchanged from main build; spot check confirms mc bundle intact

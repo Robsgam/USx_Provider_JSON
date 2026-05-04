@@ -1,0 +1,94 @@
+PHASE 02 -- PERSON / DRIVER LICENSE QUERY
+==========================================
+Goal: Get DriverLicenseQuery fully working -- both OLN and Name paths, in-state and out-of-state.
+Versions: v1.4 to v2.1; v2.6-v2.7 split DL testing + revert
+Date: 2026-04-08
+Status: COMPLETE (v2.7 merged config). Split config (v2.6) abandoned -- see docs/SPLITDL_REFERENCE.txt
+
+================================================================================
+PHASE SUMMARY
+================================================================================
+
+  v1.4  Add ImageIndicator to Person form
+  v1.5  Fix DriverLicenseQuery combination routing (DQN first, State in set)
+  v1.6  Full XML re-evaluation; fix DQ any[] to include ImageIndicator
+  v1.7  Split DriverLicenseQuery into OLN and Name configs; fix YES_NO dropdown
+  v1.8  Add size=1 to Image attribute (ImageIndicator still not sent)
+  v1.9  Add initialValue=Y to ImageIndicator FormSelect (still not sent -- not root cause)
+  v2.0  ImageIndicator in DQN any[] (root fix); remove M.I./Suffix from Person form
+  v2.1  Merge OLN + Name configs back to single config; confirm set/any = matching only
+
+================================================================================
+FILES
+================================================================================
+
+  JSONs (v1.4-v2.1 in this folder)
+  logs/ subfolder contains all DL query test logs
+
+================================================================================
+LOGS
+================================================================================
+
+  --- ImageIndicator debug sequence ---
+  2026-04-08_DL_OLN_DQN_allfields.txt      v1.7  ImageIndicator absent; size=1 fix tried
+  2026-04-08_DL_OLN_DQN_allfields_v1.8.txt v1.8  ImageIndicator still absent; initialValue tried
+  2026-04-08_DL_OLN_DQN_allfields_v1.9.txt v1.9  ImageIndicator still absent; any[] fix tried
+  2026-04-08_DL_OLN_DQN_allfields_v2.0.txt v2.0  ImageIndicator PRESENT -- any[] was root cause
+
+  --- splitDL LIMITATION #2 test (4 logs, 2026-04-08) ---
+  2026-04-08_DL_splitDL_T1_cold_name.txt        T1 Cold Name        PASS
+  2026-04-08_DL_splitDL_T2_cold_oln.txt         T2 Cold OLN         PASS
+  2026-04-08_DL_splitDL_T3_warm_oln_to_name.txt T3 Warm OLN->Name   PASS
+  2026-04-08_DL_splitDL_T4_warm_name_to_oln.txt T4 Warm Name->OLN   PASS
+
+  --- v2.6 split DL production validation ---
+  2026-04-08_DL_OLN_DQN_v2.6.txt    OLN path cold    PASS -- field isolation confirmed (no Name/DOB/Sex)
+  2026-04-08_DL_Name_DQ_v2.6.txt    Name path        FAIL -- DQ combination did not fire in isolation
+  2026-04-08_DL_Name_DQ_v2.7.txt     Name path        PASS -- DQ fires correctly in merged config
+  v2.7 merged config fully validated. Split architecture abandoned; see docs/SPLITDL_REFERENCE.txt
+
+  --- v2.1 validation batch (5 logs) ---
+  2026-04-08_DL_OLN_DQN_allfields_v2.1.txt  OLN path in-state      PASS
+  2026-04-08_DL_Name_DQ_nooln_v2.1.txt       Name path in-state     PASS
+  2026-04-08_DL_Name_DQ_noimage_v2.1.txt     Name path, img blank   PASS
+  2026-04-08_DL_OLN_DQN_OOS_v2.1.txt         OLN path out-of-state  PASS
+  2026-04-08_DL_Name_DQ_OOS_v2.1.txt         Name path out-of-state PASS
+
+================================================================================
+PERSON FORM AT PHASE END  (v2.1)
+================================================================================
+
+  ROW_1  cols (5,5,2)   OLN | License State (NJ default) | Image (Y default)
+  ROW_2  cols (6,6)     First Name | Last Name
+  ROW_3  cols (6,6)     Date of Birth | Sex
+  (M.I. and Suffix removed -- not in NJ_NJCJIS.xml)
+
+================================================================================
+KEY LEARNINGS  (see NJ_NJCJIS_LIMITATIONS.txt for full list)
+================================================================================
+
+  LIMITATION #1: set/any controls matching only -- not field sending.
+    All populated attributes in the config are sent when a combination fires.
+    Confirmed v2.1: OLN path sent Name, BirthDate, SexCode despite not in DQN set/any.
+
+  LIMITATION #2: NOT CONFIRMED -- controlled test 2026-04-08 shows auto-switching works.
+    Original inference: platform kept OLN config active when user switched to Name input.
+    Applied fix in v2.1: merged _OLN + _Name into single config.
+    Controlled test (splitDL_test.json, 4 tests) showed all warm switches PASS.
+    The v1.7 failure had a different root cause. Split configs are a viable architecture.
+    See SPLITDL_TEST_PLAN.txt and T1-T4 logs in logs/ for full test detail.
+
+  LIMITATION #3: Blank FormSelect is not serialized.
+    User clearing ImageIndicator means "omit from request" -- correct behavior.
+
+  LIMITATION #8: YES_NO codeTypeCategory not recognized -- use YES_NO_UNKNOWN (NIBRS).
+
+  IMAGEINDCATOR FIX (three things, all needed):
+    size=1      on the Image attribute (v1.8)
+    initialValue=Y  on the FormSelect  (v1.9)
+    ImageIndicator in DQN any[]         (v2.0) -- this was the actual root cause
+
+  SET/ANY HISTORY:
+    v1.7 (original): set/any = matching only
+    v2.0 (wrong correction): set/any = matching AND sending
+    v2.1 (confirmed back to original): set/any = matching only

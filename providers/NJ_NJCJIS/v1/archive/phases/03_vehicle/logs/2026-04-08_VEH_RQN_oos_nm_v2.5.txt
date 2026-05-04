@@ -1,0 +1,49 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.5
+Query type: VehicleRegistrationQuery (RQN -- out-of-state VIN)
+Test      : VIN + State=NM (New Mexico). Image=N (default).
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ6AA26JNJWY17WXXZ23T0J
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    VehicleIdentificationNumber 12345763
+    ImageIndicator              N
+    State                       NM
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQN (VIN path)
+
+  Field                        Sent    Note
+  ---------------------------  ----    -----------------------------------------------
+  VehicleIdentificationNumber  YES     12345763
+  State                        YES     NM (New Mexico -- out-of-state)
+  ImageIndicator               YES     N (default)
+  RandomRequest                NO      blank FormInput -- not sent
+  LicensePlateNumber           NO      not filled -- RQN fires correctly
+  LicensePlateTypeCode         NO      not filled
+  LicensePlateYear             NO      not filled
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- RQN out-of-state VIN query.
+    State=NM accepted. VIN path fires correctly when plate absent.
+    Same behavior as in-state RQN (v2.4 Log 4) -- only State value differs.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KNQ6AA26JNJWY17WXXZ23T0J"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KNQ6AA26JNJWY17WXXZ23T0J</Id><VehicleIdentificationNumber>12345763</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NM</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

@@ -1,0 +1,45 @@
+FL_FCIC — Boat Query Limitations
+==================================
+Date: 2026-05-01
+
+QB+Hull and QB+Reg combos are unreachable in the current BoatQuery QIDM.
+
+THE PROBLEM
+-----------
+Our BoatQuery QIDM has 12 combos. FBQ+Hull (combo #4) and QB+Hull (combo #9)
+both have set=[BoatHullIdNumber]. The platform evaluates combos in order —
+FBQ+Hull always wins. QB+Hull never fires. Same for FBQ+Reg vs QB+Reg.
+
+WHY VEHICLE DOESN'T HAVE THIS PROBLEM
+--------------------------------------
+Vehicle has TWO separate query types in the CommSys metadata:
+  - VehicleRegistrationQuery — holds FRQ/RQ combos (one QIDM)
+  - VehicleStolenQuery — holds QV combos (separate QIDM)
+
+Both QIDMs evaluate independently, which is why we see co-fire (FRQ + QV both
+send requests simultaneously).
+
+WHY BOAT DOES HAVE THIS PROBLEM
+--------------------------------
+The CommSys metadata only defines ONE query type for boats: BoatQuery. There is
+no BoatStolenQuery or equivalent. So all 12 combos (BQ + FBQ + QB) are in ONE
+QIDM. Only the first match fires — no co-fire possible within a single QIDM.
+
+If the platform ever adds a separate stolen boat query type (like it has for
+Vehicle), we could split QB combos into their own QIDM and they would co-fire
+alongside FBQ. But that query type doesn't exist today — it's a platform gap,
+not something we can fix in the JSON.
+
+IMPACT
+------
+The QB+Hull and QB+Reg combos are not harmful to keep — they just cannot fire
+in practice. Stolen boat checks still work via three other QB combos that have
+unique set[] fields with no FBQ conflict:
+  - QB+CG (CoastGuardDocumentNumber) — confirmed PASS
+  - QB+NCIC (NCICNumber) — confirmed PASS
+  - QB+PCN (ProcessControlNumber) — confirmed PASS
+
+RESOLUTION
+----------
+None available. Requires platform support for a separate BoatStolenQuery type.
+Revisit if CommSys metadata is updated to include one.

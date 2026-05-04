@@ -1,0 +1,23 @@
+FL_FCIC -- Phase 01_standup Notes
+===================================
+Phase goal: Initial import and standup verification.
+            Confirm all entity forms render and all query paths fire correctly.
+
+Status: COMPLETE (superseded by v2.x development)
+
+Archive in this phase:
+  FL_FCIC_v2.0_2026-04-09.json  -- Entity-split era snapshot (changes 1-34 applied to BASE v1.4)
+
+Current active version: v2.2 (see root FL_FCIC_v2.2_test.json)
+  - 6-card Person layout
+  - Merged Vehicle, Firearm + NCIC/PCN
+  - 65 PASS / 0 FAIL
+  - Imported and tested
+
+Log files (add as tests are run):
+  (see docs/TEST_LOG_v2.2.md for current test results)
+
+Key findings:
+  - Entity-split approach caused duplicate targetField bug (v2.0 dead end)
+  - Type safety issues in v2.1 (AP #21-23): templateColumns as string, maxLength as number, dual autoSelect
+  - v2.2 resolved all issues; 6-card Person layout confirmed working

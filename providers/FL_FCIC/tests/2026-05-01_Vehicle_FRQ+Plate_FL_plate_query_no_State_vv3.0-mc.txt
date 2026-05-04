@@ -1,0 +1,57 @@
+FL_FCIC MC v3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+Plate
+Test type  : T2 (basic combo)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumber        ABC123             typed
+  RegistrationState         (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  VehicleRegistrationQuery: Plate=ABC123, PlateYear=2026, ImageIndicator=N
+  VehicleStolenQuery (co-fire): Plate=ABC123, ImageIndicator=N
+  RMS: tag=abc123, no state
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  FRQ path (no State). Matches BASE Test 6.
+  NOTE: Slow checkbox population and long send time observed.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQ fires correctly, QV co-fires, RMS fires. Functionally identical to BASE.
+  Detail: Performance note — slow checkbox populate + slow send. May be MC JSON size or instance load.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+VehicleRegistrationQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ2JXJ66N9W0P6076Y7DGPJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KQJ2JXJ66N9W0P6076Y7DGPJ</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+VehicleStolenQuery (co-fire):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ2K0VG5XCNXQ36RTWVVV7E"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KQJ2K0VG5XCNXQ36RTWVVV7E</Id><ImageIndicator>N</ImageIndicator><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}

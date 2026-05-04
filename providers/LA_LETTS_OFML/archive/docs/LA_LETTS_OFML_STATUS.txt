@@ -1,0 +1,91 @@
+LA_LETTS_OFML -- Build Status
+==============================
+Last updated: 2026-04-23
+Current version: 1.0 (Phase 1 -- initial standup)
+Provider: LA_LEMS (internal name) / LA_LETTS_OFML (repo name)
+Phase: 01_standup (initial JSON, not yet tested)
+
+ARCHITECTURE (v1.0)
+--------------------
+Bundles:  3
+  LA_LEMS   (9 configurations)
+  ENTITIES  (5 QUERYINPUTFORM)
+  RMS       (6 configurations)
+
+Entities: Vehicle, Person, Firearm, Article, Boat
+
+LA_LEMS Configurations:
+  LA_LEMS                              AUTHENTICATION
+  LA_LEMS_Results                      QUERYRESULTDATAMAPPING
+  LA_LEMS_QueryMessageFormat           QUERYMESSAGEFORMAT
+  LA_LEMS_GunQuery                     QUERYINPUTDATAMAPPING
+  LA_LEMS_VehicleRegistrationQuery     QUERYINPUTDATAMAPPING
+  LA_LEMS_DriverLicenseQuery           QUERYINPUTDATAMAPPING
+  LA_LEMS_DriverHistoryQuery           QUERYINPUTDATAMAPPING
+  LA_LEMS_BoatQuery                    QUERYINPUTDATAMAPPING
+  LA_LEMS_ArticleSingleQuery           QUERYINPUTDATAMAPPING
+
+RMS Configurations:
+  RMS                                  AUTHENTICATION
+  RMS_QueryMessageFormat               QUERYMESSAGEFORMAT
+  RMS Person Search query              QUERYINPUTDATAMAPPING
+  RMS Vehicle search query             QUERYINPUTDATAMAPPING
+  RMS_Results                          QUERYRESULTDATAMAPPING
+  RMS_ResultsLayout                    QUERYRESULTSLAYOUT
+
+ATTENTION FIELD PATTERN
+-----------------------
+  CommsysGetLastNameFirstNameInitialRuleHandler on Attention QIDM attribute (all QIDMs).
+  No Attention FormInput on any form -- handler reads officer session (LName FInitial).
+  Attention in any[] on all combinations. Confirmed correct pattern (matches CA_eSUN).
+  This pattern was cross-validated against CommSys XML logs vs HI/FL comparison 2026-04-22.
+
+KNOWN ISSUES (v1.0)
+--------------------
+[x] ENTTIY_Boat typo in ENTITIES bundle QUERYINPUTFORM name field -- fixed 2026-04-22
+
+OPEN ITEMS (Phase 1)
+--------------------
+[ ] Import to ConnectCIC and verify forms render
+[ ] Confirm entity forms display correctly (5 entities)
+[ ] Confirm VehicleRegistrationQuery fires correctly
+[ ] Confirm DriverLicenseQuery fires correctly
+[ ] Confirm DriverHistoryQuery fires correctly
+[ ] Confirm GunQuery fires on SerialNumber
+[ ] Confirm ArticleSingleQuery fires on SerialNumber
+[ ] Confirm BoatQuery fires correctly
+[ ] Confirm RMS Vehicle/Person search queries fire
+[ ] Confirm Results mapping renders response data
+[ ] Review SexCode field configuration (see KB SEX_CODE_PATTERN.txt)
+[ ] Review State field configuration across all entities
+[ ] Review Attention field in DriverHistoryQuery (set[] vs any[] -- see FL_FCIC issue)
+
+TEST MATRIX
+-----------
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE
+  VEH-1: Vehicle Registration (Plate)         CommSys+RMS     [PENDING]
+  VEH-2: Vehicle Registration (VIN)           CommSys+RMS     [PENDING]
+
+  PERSON -- Driver License
+  PER-1: Driver License (OLN)                 CommSys+RMS     [PENDING]
+  PER-2: Driver License (Name)                CommSys+RMS     [PENDING]
+
+  PERSON -- Driver History
+  PER-3: Driver History (OLN/Name)            CommSys         [PENDING]
+
+  FIREARM
+  FA-1:  Gun Query (SerialNumber)              CommSys         [PENDING]
+
+  ARTICLE
+  ART-1: Article Query (SerialNumber)          CommSys         [PENDING]
+
+  BOAT
+  BOA-1: Boat Query                            CommSys         [PENDING]
+
+BUILD LOG (newest first)
+  v1.0  2026-04-22  Initial standup -- LA_LETTS_OFML.json imported into project structure
+    Output : C:\Users\Gordon Hallof\LA_LETTS_OFML\LA_LETTS_OFML_BASE.json
+    Archive: C:\Users\Gordon Hallof\LA_LETTS_OFML\phases\01_standup\LA_LETTS_OFML_v1.0_2026-04-22.json
+    Import: PENDING

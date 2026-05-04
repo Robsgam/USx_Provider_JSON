@@ -1,0 +1,61 @@
+================================================================
+NY_NYSPIN_EJUSTICE BASE v1.1 — Person Simulation
+Date: 2026-04-30
+Tool: test_commsys.ps1
+================================================================
+
+QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery
+Attrs: 6 | Combos: 2
+
+--- DLIC (OLN) ---
+[FIRES] set: [OperatorLicenseNumber]
+         any: [ImageIndicator, RegistrationState] -> all matched
+XML:
+  <MessageKey>DLIC</MessageKey>
+  <BirthDate>01151990</BirthDate>
+  <ImageIndicator>Y</ImageIndicator>
+  <Name>Doe, John A</Name>
+  <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+  <SexCode>M</SexCode>
+  <State>NJ</State>
+
+--- DLICN (Name+DOB+Sex) ---
+[FIRES] set: [BirthDate, NameLast, NameFirst, SexCode]
+         any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: ImageIndicator, RegistrationState, NameMiddle
+XML:
+  <MessageKey>DLICN</MessageKey>
+  <BirthDate>01151990</BirthDate>
+  <ImageIndicator>Y</ImageIndicator>
+  <Name>Doe, John A</Name>
+  <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+  <SexCode>M</SexCode>
+  <State>NJ</State>
+
+QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery
+Attrs: 6 | Combos: 2
+
+--- DALL (OLN) ---
+[FIRES] set: [OperatorLicenseNumber]
+         any: [ImageIndicator, RegistrationState] -> all matched
+XML:
+  <MessageKey>DALL</MessageKey>
+  <BirthDate>01151990</BirthDate>
+  <ImageIndicator>Y</ImageIndicator>
+  <Name>Doe, John A</Name>
+  <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+  <SexCode>M</SexCode>
+  <State>NJ</State>
+
+--- DALH (Name+DOB+Sex) ---
+[FIRES] set: [BirthDate, NameLast, NameFirst, SexCode]
+         any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: ImageIndicator, RegistrationState, NameMiddle
+XML:
+  <MessageKey>DALH</MessageKey>
+  <BirthDate>01151990</BirthDate>
+  <ImageIndicator>Y</ImageIndicator>
+  <Name>Doe, John A</Name>
+  <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+  <SexCode>M</SexCode>
+  <State>NJ</State>
+
+RESULT: 4/4 combos FIRE (DL+DH co-fire) — ImageIndicator present in all XML

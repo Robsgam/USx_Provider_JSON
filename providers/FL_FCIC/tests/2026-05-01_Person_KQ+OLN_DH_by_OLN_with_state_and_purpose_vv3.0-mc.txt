@@ -1,0 +1,69 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : KQ+OLN (DH by OLN with state and purpose)
+Test type  : T2 -- alternate DH combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumberDH   335634567567       typed (DH-suffix field)
+  RegistrationState         FL                 dropdown (NCIC)
+  PurposeCode               C                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ8X8ZHVVD8PJJDAMCQJ2B3
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    OperatorLicenseNumber 335634567567
+    State                FL
+    PurposeCode          C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQ+OLN
+  Reason: OperatorLicenseNumberDH+RegistrationState+PurposeCode all populated (set[])
+          any[] is empty for KQ combos — no optional fields
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber     YES    335634567567    mapped from OperatorLicenseNumberDH (DH-suffix)
+  State                     YES    FL              NCIC from RegistrationState (shared field)
+  PurposeCode               YES    C               mapped from PurposeCode (initialValue)
+  Name                      NO     --              sourceField empty (OLN path)
+  BirthDate                 NO     --              sourceField empty
+  SexCode                   NO     --              sourceField empty
+  Attention                 NO     --              handler-only (not in combos)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: KQ+OLN fired correctly; all 3 set[] fields confirmed in XML; DH-suffix isolation works
+  Detail: Both KQ combos now confirmed (OLN and Name). No OOS-specific path needed — KQ
+          uses same combo for all states (unlike DL which splits DQ/FDQ by State presence).
+

@@ -1,0 +1,63 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : QB+CG (Stolen boat by Coast Guard document number)
+Test type  : T2 -- alternate QB combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  CoastGuardDocumentNumber  1234               typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ7B9FVGGTH36JBE13DVMRW
+  MessageType : BoatQuery
+  keyReference: QBCoastGuardDocumentNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    CoastGuardDocumentNumber 1234
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QB+CG
+  Reason: CoastGuardDocumentNumber populated (set[]); unique field — no higher-priority combo conflict
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  CoastGuardDocumentNumber  YES    1234            mapped from CoastGuardDocumentNumber (set[])
+  ImageIndicator            YES    N               mapped from ImageIndicator (any[], default)
+  BoatHullIdNumber          NO     --              sourceField empty
+  RegistrationNumber        NO     --              sourceField empty
+  State                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QB+CG fired correctly; CoastGuardDocumentNumber=1234 confirmed in XML
+  Detail: Unique set[] field — no combo priority conflict. ImageIndicator in any[].
+

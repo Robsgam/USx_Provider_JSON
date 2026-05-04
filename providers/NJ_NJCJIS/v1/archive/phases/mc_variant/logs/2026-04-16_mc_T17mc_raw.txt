@@ -1,0 +1,32 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Vehicle VIN OOS + optional fields (T17-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T17-mc -- VehicleRegistrationQuery, RQN, VIN OOS + optional fields -- PASS
+================================================================================
+
+Form    : Vehicle QIF | VIN: 086749733 | State: MS (changed from NJ default) | Image: Y | Random: Y
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBV5S6ZBZRABFTP8PW94TSG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KPBV5S6ZBZRABFTP8PW94TSG</Id><VehicleIdentificationNumber>086749733</VehicleIdentificationNumber><ImageIndicator>Y</ImageIndicator><State>MS</State><RandomRequest>Y</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"vehicle":{"vinNumber":"086749733"}},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=VehicleRegistrationQuery (RQN -- VIN path) correct
+  - <VehicleIdentificationNumber>086749733</VehicleIdentificationNumber> correct
+  - <State>MS</State> confirmed -- OOS state changed from NJ default
+  - <ImageIndicator>Y</ImageIndicator> correct
+  - <RandomRequest>Y</RandomRequest> correct
+  - RMS: vinNumber only (086749733), no registrationStateAttrIds -- mc trade-off confirmed for OOS VIN path with optionals
+  - All VIN optional paths now confirmed; VehicleRegistrationQuery FULLY VALIDATED in mc build

@@ -1,0 +1,146 @@
+================================================================
+  TEST RESULTS: NY_NYSPIN_EJUSTICE_MC
+  JSON: NY_NYSPIN_EJUSTICE_MC.json (rebuilt 2026-04-24, RMS cleanup applied)
+  Tested: 2026-04-24
+  Instance: MK43RS
+  Result: 19/19 PASS (15 base + 4 optional field tests)
+================================================================
+
+ARCHITECTURE
+============
+  QIDMs: 6 (Vehicle, DL, DH, Gun, Article, Boat) -- identical to BASE
+  Combos: 13 (RVEH, RVIN, RCAR, DLIC, DLICN, DALL, DALH, GINQ, AINQ, BVEH, BVIN, boat-RVEH, boat-RCAR)
+  QIFs: 5 (Vehicle, Person, Firearm, Article, Boat)
+  MC Layout:
+    Vehicle: 3 cards (OPTIONS + PLATE SEARCH + VIN SEARCH)
+    Person:  3 cards (OPTIONS + OLN SEARCH + NAME SEARCH)
+    Firearm: 1 card (FIREARM QUERY)
+    Article: 1 card (ARTICLE QUERY)
+    Boat:    3 cards (OPTIONS + REGISTRATION + HULL)
+  Card title hint: "OPTIONS - Leave blank for NY queries" on Vehicle, Person, Boat
+  State: blank default (no initialValue) -- LIMITATION #30
+
+CONFIRMED PATTERNS
+==================
+  NCIC state: CONFIRMED on NY MC (T3, T11, T12, T13, T14, T15)
+  NIBRS sex: CONFIRMED (T6, T15 -- reverse-lookup attr ID -> M/F)
+  DL+DH co-fire: CONFIRMED (T5 OLN, T6 Name, T14 OOS OLN, T15 OOS Name)
+  Single DL checkbox: CONFIRMED (DLICN in DriverLicenseQuery, no DGRP)
+  Name format: CONFIRMED "LAST, FIRST" (T6, T15)
+  Date format: CONFIRMED MMddyyyy (T6, T15)
+  MC card titles: CONFIRMED rendering (T1)
+  Card title encoding: ASCII hyphen required (em dash renders as mojibake)
+
+TEST DETAIL
+===========
+
+T1 -- Import, Entities, Forms, Fields, Dropdowns & MC Layout    PASS
+  5 entities: Vehicle, Person, Firearm, Article, Boat
+  All forms render correctly with MC card layout
+  All dropdowns populate (VehicleMake, State, Sex, PlateType, GunMake, GunCaliber, ArticleType)
+  Single "Driver License" + "Driver History" checkboxes on Person
+  Card titles display correctly: "OPTIONS - Leave blank for NY queries"
+  Vehicle: 3 cards, Person: 3 cards, Boat: 3 cards, Firearm: 1 card, Article: 1 card
+
+T2 -- Vehicle Plate Query (RVEH)                                PASS
+  Input: Plate only, State blank
+  XML: <LicensePlateNumber>ABC2354</LicensePlateNumber>
+  No <State> element
+  RMS: vehicle.tag
+
+T3 -- Vehicle VIN + State OOS (RVIN)                            PASS
+  Input: VIN + State(NV)
+  XML: <VehicleIdentificationNumber> + <State>NV</State>
+  RMS: vehicle.vinNumber + vehicle.registrationStateAttrIds
+
+T4 -- Vehicle VIN Only (RCAR)                                   PASS
+  Input: VIN only, State blank
+  XML: <VehicleIdentificationNumber>VINTEST38634</VehicleIdentificationNumber>
+  No <State> element
+  RMS: vehicle.vinNumber
+
+T5 -- DL by OLN (DLIC + DALL co-fire)                          PASS
+  Input: OLN only, State blank
+  XML: DL <OperatorLicenseNumber>07KH944</OperatorLicenseNumber>
+       DH <OperatorLicenseNumber>07KH944</OperatorLicenseNumber>
+  No <State> element
+  RMS: dlNumber
+  Firing order: DL first, DH second
+
+T6 -- DL by Name+DOB+Sex (DLICN + DALH co-fire)                PASS
+  Input: Last, First, DOB, Sex(M), State blank
+  XML: DL <Name>SGAMBELLONE, ROB</Name><BirthDate>01011985</BirthDate><SexCode>M</SexCode>
+       DH same fields
+  No <State> element
+  RMS: lastName, firstName, sexAttrId:"69509804595", dateOfBirth
+
+T7 -- Gun Serial Query (GINQ)                                  PASS
+  Input: Serial only
+  XML: <GunSerialNumber>9786234</GunSerialNumber>
+
+T8 -- Article Query (AINQ)                                      PASS
+  Input: Serial + ArticleType
+  XML: <ArticleSerialNumber>123456</ArticleSerialNumber> + <ArticleTypeCode>CBACK</ArticleTypeCode>
+
+T9 -- Boat Registration InState (RVEH)                          PASS
+  Input: Registration only, State blank
+  XML: <RegistrationNumber>123456857</RegistrationNumber>
+  No <State> element
+
+T10 -- Boat Hull InState (RCAR)                                 PASS
+  Input: Hull only, State blank
+  XML: <BoatHullIdNumber>12345685</BoatHullIdNumber>
+  No <State> element
+
+T11 -- Boat Registration + State OOS (BVEH)                     PASS
+  Input: Registration + State(IN)
+  XML: <RegistrationNumber>12546785</RegistrationNumber> + <State>IN</State>
+
+T12 -- Boat Hull + State OOS (BVIN)                             PASS
+  Input: Hull + State(KS)
+  XML: <BoatHullIdNumber>LJHDF08907093</BoatHullIdNumber> + <State>KS</State>
+
+T13 -- Vehicle Plate OOS (RVEH with optional fields)            PASS
+  Input: Plate + State(NV) + PlateType(AT) + PlateYear(2025)
+  XML: <LicensePlateNumber>1245685</LicensePlateNumber> + <State>NV</State> + <LicensePlateTypeCode>AT</LicensePlateTypeCode> + <LicensePlateYear>2025</LicensePlateYear>
+  RMS: vehicle.tag + vehicle.registrationStateAttrIds
+
+T14 -- DL OLN + State OOS (DLIC + DALL)                        PASS
+  Input: OLN + State(CA)
+  XML: DL <OperatorLicenseNumber>7458964</OperatorLicenseNumber> + <State>CA</State>
+       DH <OperatorLicenseNumber>7458964</OperatorLicenseNumber> + <State>CA</State>
+  RMS: dlNumber + registrationStateAttrId:"69509793456"
+
+T15 -- DL Name+DOB+Sex+State OOS (DLICN + DALH)                PASS
+  Input: Last, First, DOB, Sex(F), State(CA)
+  XML: DL <Name>SGAMBELLONE, ROB</Name><BirthDate>01011985</BirthDate><SexCode>F</SexCode><State>CA</State>
+       DH same fields
+  RMS: lastName, firstName, sexAttrId:"69509804592", dateOfBirth, registrationStateAttrId:"69509793456"
+
+T16 -- Vehicle VIN + State + Make + Year (RVIN all optionals)   PASS
+  Input: VIN + State(NV) + VehicleMake(TRLR) + VehicleYear(2024)
+  XML: <VehicleIdentificationNumber>57I65875</VehicleIdentificationNumber> + <State>NV</State> + <VehicleYear>2024</VehicleYear>
+  RMS: vehicle.vinNumber + vehicle.registrationStateAttrIds + vehicle.makeNcicCode:"TRLR_HIDE" + vehicle.yearOfManufacture:"2024"
+
+T17 -- Person OLN + ImageIndicator (DLIC + DALL)                PASS
+  Input: OLN + ImageIndicator(Y), State blank
+  XML: DL <OperatorLicenseNumber>386037562</OperatorLicenseNumber> + <ImageIndicator>Y</ImageIndicator>
+       DH same fields
+  RMS: dlNumber
+
+T18 -- Person Full Name 4-field (DLICN + DALH)                  PASS
+  Input: Last, First, Middle(M), Suffix(JR), DOB, Sex(M), State blank
+  XML: DL <Name>LAST, FIRST M JR</Name><BirthDate>01011985</BirthDate><SexCode>M</SexCode>
+       DH same fields
+  RMS: lastName, firstName, sexAttrId:"69509804595", dateOfBirth
+  FormatStringRuleHandler 4-field format CONFIRMED: "LAST, FIRST MIDDLE SUFFIX"
+
+T19 -- Firearm Serial + Make + Caliber (GINQ all optionals)     PASS
+  Input: Serial + GunMake(AAC) + GunCaliber(13)
+  XML: <GunSerialNumber>12366564</GunSerialNumber> + <GunCaliber>13</GunCaliber> + <GunMake>AAC</GunMake>
+
+================================================================
+  MC TESTING COMPLETE -- 19/19 PASS
+  NY_NYSPIN_EJUSTICE MC v1.0 fully tested on MK43RS
+  RMS cleanup (Patch 6) confirmed working -- re-imported after cleanup
+================================================================

@@ -1,0 +1,64 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : FBQ+Reg (FL boat by registration number)
+Test type  : T2 -- alternate FBQ combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  RegistrationNumber        FL123345           typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ74RFKQT6XKY0X4NV4FYBH
+  MessageType : BoatQuery
+  keyReference: FBQRegistrationNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    RegistrationNumber   FL123345
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQ+Reg
+  Reason: RegistrationNumber populated (set[]); no State = FBQ path (not BQ)
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  RegistrationNumber        YES    FL123345        mapped from RegistrationNumber (set[])
+  ImageIndicator            YES    N               mapped from ImageIndicator (default)
+  BoatHullIdNumber          NO     --              sourceField empty
+  DecalNumber               NO     --              sourceField empty
+  TitleLienInformation      NO     --              sourceField empty
+  State                     NO     --              sourceField empty (FL-only path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQ+Reg fired correctly; RegistrationNumber=FL123345 confirmed in XML
+  Detail: FL-only path (no State). Single set[] field combo.
+

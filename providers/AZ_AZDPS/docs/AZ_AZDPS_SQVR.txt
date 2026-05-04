@@ -1,0 +1,312 @@
+AZ_AZDPS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+=====================================================
+Last updated: 2026-04-30
+JSON version: v2.0 BASE + MC
+Validator: 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE / 0 SKIP
+Live test: PENDING (import not yet performed)
+
+Architecture: 8 CommSys QIDMs + 2 RMS QIDMs + AUTH, 5 QIFs, 18 combos
+Badge: dexStateUserId (hidden InpH, auto-populated via CommsysGetDexStateUserIdRuleHandler)
+State: NCIC pattern (RegistrationState, attributeTypeId=STATE, codeTypeProvider=NCIC, initialValue=AZ)
+Sex: NIBRS (attributeTypeId=SEX, codeTypeProvider=NIBRS)
+Race: NIBRS (attributeTypeId=RACE, codeTypeProvider=NIBRS) -- AP #3 validator fix applied
+Date: yyyyMMdd (AZ format)
+DH: DH-suffix fieldIds (LIMITATION #26 isolation)
+WMPI: WantedPerson + MissingPerson inquiry paths on Person entity
+
+NJ CROSS-REFERENCE (GATE 7): Applied 2026-04-30
+  AUTH keyReference='AUTH' -- [PENDING]
+  PlateType=PC, PlateYear=2026 -- [PENDING]
+  LicensePlateNumberIn (LIMITATION #8) -- [PENDING]
+  RaceCode attributeTypeId=RACE + codeTypeProvider=NIBRS -- [PENDING]
+  RMS Patch 3 (registrationState) -- [PENDING]
+  RMS Patch 6 (dead HIDLE cleanup, SSN kept) -- [PENDING]
+  queryLabel standard -- [PENDING]
+  ImageIndicator: NOT APPLICABLE (AZ metadata does not support it)
+
+KNOWN LIMITATIONS (4):
+  1. DL combo priority: DQ (OLN) fires before DQN (Name). Correct operational priority.
+  2. DH combo priority: KQ (OLN) fires before KQH (Name). Correct operational priority.
+  3. DL+DH co-fire: Both DL and DH QIDMs have autoSelect=true on shared Person QIF.
+     Standard police workflow -- officer enters OLN, gets both license and history.
+  4. queriesToDeselect (#24): 4 Person QIDMs, none use queriesToDeselect. Checkbox toggling
+     may not auto-deselect other queries. Platform limitation.
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: AZ_AZDPS_VehicleRegistrationQuery
+  QIF:  ENTITY_Vehicle
+  queryLabel: Vehicle Registration
+  Combos: ACVR (plate+badge), ACVRV (VIN+badge)
+  Defaults: State=AZ, PlateType=PC, PlateYear=2026
+
+  ACVR -- Plate + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, LicensePlateNumberIn
+    any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
+         VehicleIdentificationNumber, VehicleMakeCode, VehicleYear
+    keyReference: ACVR
+
+  ACVRV -- VIN + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, VehicleIdentificationNumber
+    any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
+         LicensePlateNumberIn, VehicleMakeCode, VehicleYear
+    keyReference: ACVRV (invented)
+
+  OOS -- Plate with non-AZ state [PENDING]
+  Priority -- Plate+VIN both filled: ACVR fires (plate wins) [PENDING]
+  RMS co-fire: RMS Vehicle combo fires alongside CommSys [PENDING]
+
+================================================================================
+2. AzAzdpsDriverLicenseQuery -- Person Entity (DL)
+================================================================================
+
+  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+  QIF:  ENTITY_Person
+  queryLabel: Driver License
+  Combos: DQ (OLN), DQN (Name+DOB+Sex), DQSS (SSN), ACWL (Badge+Name)
+  autoSelect: true (co-fires with DH)
+
+  DQ -- OLN [PENDING]
+    set: OperatorLicenseNumber
+    any: dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix,
+         SexCode, SocialSecurityNumber, RegistrationState
+    keyReference: DQ
+
+  DQN -- Name + DOB + Sex [PENDING]
+    set: NameLast, NameFirst, SexCode, BirthDate
+    any: dexStateUserId, NameMiddle, NameSuffix, OperatorLicenseNumber,
+         SocialSecurityNumber, RegistrationState
+    keyReference: DQN (invented)
+    Name: FormatStringRuleHandler "Last, First Middle Suffix"
+    BirthDate: CommsysParseDateRuleHandler yyyy-MM-dd -> yyyyMMdd
+    Sex: NIBRS reverse-lookup -> M/F/U
+
+  DQSS -- SSN [PENDING]
+    set: SocialSecurityNumber
+    any: dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix,
+         OperatorLicenseNumber, SexCode, RegistrationState
+    keyReference: DQSS (invented)
+
+  ACWL -- Badge + Name + DOB + Sex [PENDING]
+    set: dexStateUserId, BirthDate, NameLast, NameFirst, SexCode
+    any: NameMiddle, NameSuffix, OperatorLicenseNumber, SocialSecurityNumber,
+         RegistrationState
+    keyReference: ACWL
+    Notes: MVD/ACIC badge-required path.
+
+  OOS -- OLN with non-AZ state [PENDING]
+  Priority -- OLN+Name both filled: DQ fires (OLN wins) [PENDING]
+  RMS co-fire: RMS Person combo fires alongside CommSys [PENDING]
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity (DH)
+================================================================================
+
+  QIDM: AZ_AZDPS_DriverHistoryQuery
+  QIF:  ENTITY_Person (DH-suffix fieldIds)
+  queryLabel: Driver History
+  Combos: KQ (OLN), KQH (Name+DOB+Sex)
+  autoSelect: true (co-fires with DL)
+
+  KQ -- OLN (OperatorLicenseNumberDH) + StateDH [PENDING]
+    set: StateDH, OperatorLicenseNumberDH
+    any: Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH,
+         NameSuffixDH, PurposeCode, SexCodeDH
+    keyReference: KQ
+    StateDH: hidden InpH initialValue='AZ' (plain text, no NCIC conversion)
+
+  KQH -- Name + DOB + Sex (DH-suffix) + StateDH [PENDING]
+    set: StateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
+    any: Attention, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCode
+    keyReference: KQH (invented)
+    DH-suffix isolation: LIMITATION #26
+
+  Priority -- DH OLN + DH Name both filled: KQ fires [PENDING]
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: AZ_AZDPS_GunQuery
+  QIF:  ENTITY_Firearm
+  queryLabel: Firearm
+  Combos: ACQG (Serial+Badge)
+  RelatedHitSearchIndicator: optional field (not ImageIndicator)
+
+  ACQG -- Serial + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, GunSerialNumber
+    any: GunCaliber, GunMake, GunModel, RelatedHitSearchIndicator
+    keyReference: ACQG
+    GunMake/GunModel/GunCaliber: free-text inputs (no AZ code list)
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: AZ_AZDPS_ArticleSingleQuery
+  QIF:  ENTITY_Article
+  queryLabel: Article
+  Combos: ACQA (TypeCode+Serial+Badge)
+  RelatedHitSearchIndicator: optional field (not ImageIndicator)
+
+  ACQA -- TypeCode + Serial + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, ArticleTypeCode, ArticleSerialNumber
+    any: RelatedHitSearchIndicator
+    keyReference: ACQA
+    ArticleTypeCode: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: AZ_AZDPS_BoatQuery
+  QIF:  ENTITY_Boat
+  queryLabel: Boat
+  Combos: ACQB (Reg+Badge), ACQBH (Hull+Badge), BQ (Reg), BQH (Hull)
+  RelatedHitSearchIndicator: optional field (not ImageIndicator)
+
+  ACQB -- Registration + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, RegistrationNumber
+    any: BoatHullIdNumber, RelatedHitSearchIndicator, RegistrationState
+    keyReference: ACQB
+    Notes: dexStateUserId always auto-populated, so ACQB fires when Reg filled.
+
+  ACQBH -- Hull + Badge (dexStateUserId) [PENDING]
+    set: dexStateUserId, BoatHullIdNumber
+    any: RegistrationNumber, RelatedHitSearchIndicator, RegistrationState
+    keyReference: ACQBH (invented)
+
+  BQ -- Registration (no badge required) [PENDING]
+    set: RegistrationNumber
+    any: dexStateUserId, BoatHullIdNumber, RelatedHitSearchIndicator, RegistrationState
+    keyReference: BQ
+    Notes: With dexStateUserId always present, BQ and ACQB co-fire on Reg.
+
+  BQH -- Hull (no badge required) [PENDING]
+    set: BoatHullIdNumber
+    any: dexStateUserId, RegistrationNumber, RelatedHitSearchIndicator, RegistrationState
+    keyReference: BQH (invented)
+
+  Priority -- Reg+Hull both filled: ACQB fires (Reg wins with badge) [PENDING]
+
+================================================================================
+7. WMPIWantedPersonInquiry -- Person Entity (Wanted)
+================================================================================
+
+  QIDM: AZ_AZDPS_WMPIWantedPersonInquiry
+  QIF:  ENTITY_Person
+  queryLabel: Wanted Person
+  Combos: ACQW (Name+DOB+Sex+Race), ACQWN (NCICNumber)
+
+  ACQW -- Name + DOB + Sex + Race [PENDING]
+    set: NameLast, NameFirst, BirthDate, SexCode, RaceCode
+    any: dexStateUserId, ExpandedBirthDateSearchCode, ExpandedNameSearchCode,
+         NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator
+    keyReference: ACQW
+    Race: attributeTypeId=RACE, codeTypeProvider=NIBRS
+
+  ACQWN -- NCICNumber [PENDING]
+    set: NCICNumber
+    any: dexStateUserId, BirthDate, ExpandedBirthDateSearchCode,
+         ExpandedNameSearchCode, NameFirst, NameLast, NameMiddle, NameSuffix,
+         RaceCode, RelatedHitSearchIndicator, SexCode
+    keyReference: ACQWN (invented)
+
+  Priority -- Name+NCICNumber both filled: ACQW fires [PENDING]
+
+================================================================================
+8. WMPIMissingPersonInquiry -- Person Entity (Missing)
+================================================================================
+
+  QIDM: AZ_AZDPS_WMPIMissingPersonInquiry
+  QIF:  ENTITY_Person
+  queryLabel: Missing Person
+  Combos: ACQM (Name+descriptors), ACQMN (NCICNumber)
+
+  ACQM -- Name + Age + Sex + Race + Height + Weight + Eye + Hair [PENDING]
+    set: NameLast, NameFirst, Age, SexCode, RaceCode, Height, Weight,
+         EyeColorCode, HairColorCode
+    any: dexStateUserId, AreaCode, ExpandedNameSearchCode, FormORI,
+         NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator
+    keyReference: ACQM
+    Discriminating fields (Age/Height/Weight/Eye/Hair) prevent
+    cross-firing with WantedPerson (BirthDate/SexCode/RaceCode only).
+
+  ACQMN -- NCICNumber [PENDING]
+    set: NCICNumber
+    any: dexStateUserId, Age, AreaCode, ExpandedNameSearchCode, EyeColorCode,
+         FormORI, HairColorCode, Height, NameFirst, NameLast, NameMiddle,
+         NameSuffix, RaceCode, RelatedHitSearchIndicator, SexCode, Weight
+    keyReference: ACQMN (invented)
+
+  Priority -- Name+descriptors+NCICNumber all filled: ACQM fires [PENDING]
+
+================================================================================
+RMS QUERIES (auto-fire alongside CommSys)
+================================================================================
+
+  RMS Vehicle Search: autoSelect=true, fires on LicensePlateNumberIn + VehicleIdentificationNumber
+  RMS Person Search:  autoSelect=true, fires on OperatorLicenseNumber + NameFirst + NameLast
+  RMS Patch 3: registrationState attr on Person QIDM
+  RMS Patch 6: dead HIDLE OOS fields removed (SSN intentionally kept for AZ)
+  RMS autoSelect=true on both QIDMs
+
+================================================================================
+MC VARIANT -- Multi-Card Layout
+================================================================================
+
+  QIDMs: identical to BASE (all 11)
+  Cards:
+    Vehicle: 3 cards (OPTIONS + PLATE SEARCH + VIN SEARCH)
+    Person: 7 cards (OPTIONS + DL-LICENSE# + NAME SEARCH + DH-LICENSE# + DH-NAME SEARCH + WANTED/MISSING + MISSING PHYSICAL)
+    Firearm: 1 card (same as BASE)
+    Article: 1 card (same as BASE)
+    Boat: 3 cards (OPTIONS + REGISTRATION + HULL)
+  No duplicate fieldId across cards (ISE prevention).
+  Shared fields (RegistrationState, dexStateUserId) on OPTIONS cards.
+
+================================================================================
+TEST MATRIX SUMMARY
+================================================================================
+
+  VEHICLE (5 tests)
+    VEH-1: Plate + Badge (AZ)            ACVR     [PENDING]
+    VEH-2: Plate + Badge + OOS state     ACVR     [PENDING]
+    VEH-3: VIN + Badge (AZ)              ACVRV    [PENDING]
+    VEH-4: VIN + Badge + OOS state       ACVRV    [PENDING]
+    VEH-5: Plate + Badge -- RMS trigger  ACVR     [PENDING]
+
+  PERSON -- Driver License (8 tests)
+    PER-1: OLN only                      DQ       [PENDING]
+    PER-2: OLN + state                   DQ       [PENDING]
+    PER-3: Name + DOB + Sex              DQN      [PENDING]
+    PER-4: Name + DOB + Sex + Badge      ACWL     [PENDING]
+    PER-5: SSN only                      DQSS     [PENDING]
+    PER-6: DH OLN                        KQ       [PENDING]
+    PER-7: DH OLN + Attention + Purpose  KQ       [PENDING]
+    PER-8: DH Name + DOB + Sex           KQH      [PENDING]
+
+  FIREARM (2 tests)
+    FA-1:  Serial + Badge                ACQG     [PENDING]
+    FA-2:  Serial + Badge + Make/Model   ACQG     [PENDING]
+
+  ARTICLE (1 test)
+    ART-1: Serial + Badge + TypeCode     ACQA     [PENDING]
+
+  BOAT (4 tests)
+    BOA-1: Reg + Badge                   ACQB     [PENDING]
+    BOA-2: Hull + Badge                  ACQBH    [PENDING]
+    BOA-3: Reg only                      BQ       [PENDING]
+    BOA-4: Hull only                     BQH      [PENDING]
+
+  WANTED PERSON (2 tests)
+    WNT-1: Name + DOB + Sex + Race       ACQW     [PENDING]
+    WNT-2: NCICNumber only               ACQWN    [PENDING]
+
+  MISSING PERSON (2 tests)
+    MSN-1: Name + Age + descriptors      ACQM     [PENDING]
+    MSN-2: NCICNumber only               ACQMN    [PENDING]
+
+  TOTAL: 24 tests -- 0 CONFIRMED / 24 PENDING / 0 FAIL

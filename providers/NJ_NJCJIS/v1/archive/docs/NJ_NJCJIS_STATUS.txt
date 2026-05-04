@@ -1,0 +1,438 @@
+NJ_NJCJIS -- Project Status
+=============================
+Last updated: 2026-04-20
+Current version: v1.7 (Phase 1 standup -- single card per entity, NCIC state)
+
+================================================================================
+OVERALL STATUS
+================================================================================
+
+  Phase 1 standup (v1.7)   COMPLETE   25/25 PASS (2026-04-20) -- NJ_NJCJIS_BASE.json saved
+  NCIC state pattern        CONFIRMED  Single visible RegistrationState (AZ initialValue=NJ)
+                                       NJ + OOS both confirmed: CommSys <State> + RMS registrationStateAttrIds
+  NIBRS sex pattern         CONFIRMED  attributeTypeId=SEX + codeTypeProvider=NIBRS (form + QIDM)
+                                       CommSys <SexCode>M</SexCode> + RMS sexAttrId:69509891711 (string)
+  QRDM validation           SHELVED    Requires live NJ response payload; deferred to live testing phase
+  Vendor gap summary        SENT       PDF_XML_GAPS_SUMMARY.txt sent; awaiting feedback
+  Phase 2 (multi-card)      PENDING    Promote from Phase 1 after environment access for live testing
+
+  Active import file: NJ_NJCJIS/NJ_NJCJIS.json  (v1.7, Phase 1 single-card, 25/25 PASS)
+  Phase 1 archive:    phases/01_standup/NJ_NJCJIS_v1.7_2026-04-20.json
+  Phase 1 reference:  NJ_NJCJIS_BASE.json  (permanent reference -- do not overwrite)
+
+  Blockers cleared:
+    AWS AppConfig quota           Resolved 2026-04-08
+    Server-side XML registration  Resolved 2026-04-08
+    State field / RMS conflict    RESOLVED v1.7 (NCIC state pattern, single visible field)
+    OOS state gap                 RESOLVED v1.7 (NCIC reverse-lookup handles all states)
+    Plate RMS trigger             Resolved v3.13 (LicensePlateNumberIn)
+    Sex attr / RMS 400 error      RESOLVED v1.0 (no ArrayWrapper; NIBRS reverse-lookup confirmed)
+
+================================================================================
+BUNDLE STRUCTURE (v1.7 -- Phase 1 single-card)
+================================================================================
+
+  NJ_NJCJIS bundle (8 configurations)
+    NJ_NJCJIS                          AUTHENTICATION
+    NJ_NJCJIS_Results                  QUERYRESULTDATAMAPPING
+    NJ_NJCJIS_QueryMessageFormat       QUERYMESSAGEFORMAT
+    NJ_NJCJIS_GunQuery                 QUERYINPUTDATAMAPPING    key:  QG
+    NJ_NJCJIS_VehicleRegistrationQuery QUERYINPUTDATAMAPPING    keys: RQ (Plate), RQN (VIN)
+    NJ_NJCJIS_DriverLicenseQuery       QUERYINPUTDATAMAPPING    keys: DQN (OLN), DQ (Name)
+    NJ_NJCJIS_BoatQuery                QUERYINPUTDATAMAPPING    keys: BQ (Reg), BQN (Hull)
+    NJ_NJCJIS_ArticleSingleQuery       QUERYINPUTDATAMAPPING    key:  QA
+
+  ENTITIES bundle (5 QUERYINPUTFORM configurations, provider=MARK43)
+    Vehicle    1 card: VEHICLE SEARCH (Plate+RegistrationState+TypeCode+Year+VIN+Image+Random)
+    Person     1 card: PERSON SEARCH (OLN+RegistrationState+Image | NameFirst+NameLast+DOB+Sex)
+    Firearm    1 card: NCIC FIREARM QUERY (Serial+Make+Caliber)
+    Article    1 card: NCIC ARTICLE QUERY (Serial+TypeCode)
+    Boat       1 card: BOAT SEARCH (RegNumber+HullId+RegistrationState)
+
+  ENTITIES order: default=[Person,Vehicle,Firearm,Article,Boat]
+                  CAD/FR=[Vehicle,Person,Firearm,Article,Boat]
+
+  RMS bundle -- cloned from HIDLE.json; patches: RegistrationState added to Vehicle+Person QIDMs;
+    sex KEPT (NIBRS confirmed); autoSelect=true on all RMS QIDMs.
+
+  Note: v3.x series (split entity Vehicle-NJ/OOS, Person-NJ/OOS, 7 QIFs) archived in
+    phases/08_split_entities/. Those builds are RETIRED. Phase 1 single-card is the baseline.
+
+================================================================================
+PHASE 1 STANDUP TEST MATRIX (v1.7 -- 25/25 PASS 2026-04-20)
+================================================================================
+
+  Entity     Path                        KeyRef  Status   Notes
+  ---------  --------------------------  ------  -------  ----------------------------------------
+  Vehicle    Plate NJ (initialValue)     RQ      [PASS]   <State>NJ</State> from initialValue
+  Vehicle    Plate OOS (visible Sel)     RQ      [PASS]   <State>MT</State> from dropdown
+  Vehicle    Plate + all optionals       RQ      [PASS]   Image Y, TypeCode PP, Year 2024 confirmed
+  Vehicle    Plate OOS + all optionals   RQ      [PASS]   State=ND, all 6 optional fields
+  Vehicle    VIN NJ                      RQN     [PASS]   <State>NJ</State> from initialValue
+  Vehicle    VIN NJ + optionals          RQN     [PASS]   Image=Y, Random=Y confirmed
+  Vehicle    VIN OOS                     RQN     [PASS]   <State>VA</State> from visible dropdown
+  Vehicle    VIN OOS + optionals         RQN     [PASS]   State=MS OOS, Image=Y, Random=Y
+  Person     OLN NJ                      DQN     [PASS]   <State>NJ</State> from initialValue
+  Person     OLN NJ + Image=N override   DQN     [PASS]   Image=N override confirmed
+  Person     OLN OOS                     DQN     [PASS]   <State>VT</State> from dropdown
+  Person     OLN OOS + Image=N          DQN     [PASS]   State=MS OOS + Image=N both confirmed
+  Person     Name + DOB NJ              DQ      [PASS]   State+Image cross from OLN card; RMS fires
+  Person     Name + DOB OOS             DQ      [PASS]   OOS State=MT + Image cross confirmed
+  Person     Name + DOB + Sex M         DQ      [PASS]   SexCode in XML; no sexAttrId in RMS (Patch 3)
+  Person     Name + DOB + Sex OOS       DQ      [PASS]   OOS State=MT cross + SexCode in XML
+  Firearm    Serial only                QG      [PASS]   GunSerialNumber confirmed
+  Firearm    Serial + Make + Caliber    QG      [PASS]   all fields confirmed
+  Article    Serial + TypeCode          QA      [PASS]   BBICYCL from CA_CLETS dropdown confirmed
+  Boat       Reg NJ                     BQ      [PASS]   <State>NJ</State> from initialValue
+  Boat       Reg OOS                    BQ      [PASS]   State=MS OOS confirmed
+  Boat       Hull + State cross         BQN     [PASS]   State=NJ crossed from Reg card
+  Boat       Hull OOS cross             BQN     [PASS]   State=FL OOS crossed from Reg card; confirmed
+  StateTest  ST2-1 NJ NCIC              RQ      [PASS]   <State>NJ</State> + RMS registrationStateAttrIds:[69509884952]
+  StateTest  ST2-2 PA OOS NCIC         RQ      [PASS]   <State>PA</State> + RMS registrationStateAttrIds:[69509887513]
+
+  TOTAL: 25/25 PASS
+  Full test log: phases/01_standup/logs/2026-04-20_full_standup_v1.7.txt
+
+================================================================================
+DOCUMENTATION (SQVRs)
+================================================================================
+
+  docs/NJ_NJCJIS_SQVR_main.txt  -- v3.23 main build (7 QIFs, split entity) -- FULLY VALIDATED
+  docs/NJ_NJCJIS_SQVR_mc.txt    -- v1.0-mc variant (5 QIFs) -- FULLY VALIDATED (23/23)
+
+  Note: SQVR_main entries reconstructed from test log data (no raw XML envelopes in phase 08 logs).
+  All 40 test paths confirmed; XML content correct per log analysis.
+
+================================================================================
+MC VARIANT (v1.0-mc) -- TEST STATUS
+================================================================================
+
+  Import file : NJ_NJCJIS_mc.json (v1.0-mc)
+  Archive     : phases/mc_variant/NJ_NJCJIS_mc_v1.0-mc_2026-04-16.json
+  Imported    : 2026-04-16
+  QIFs        : 5 (Vehicle + Person + Firearm + Article + Boat)
+  Key diff    : Single Vehicle card + single Person QIF; visible State (initialValue=NJ)
+  Test status : FULLY VALIDATED -- 23/23 PASS (2026-04-16)
+
+  MC Test Matrix:
+
+  Query / Path                     Test    Status
+  -------------------------------  ------  ------------------------------------------
+  VehicleReg RQ Plate NJ           T1-mc   PASS (2026-04-16) -- <State>NJ</State> confirmed from initialValue
+  VehicleReg RQ Plate OOS          T2-mc   PASS (2026-04-16) -- <State>MT</State> confirmed from visible dropdown
+  VehicleReg RQ Plate all optionals T3-mc  PASS (2026-04-16) -- Image Y, TypeCode PP, Year 2024, Random Y confirmed
+                                            NOTE: Earlier failure was CommSys server outage; retry confirmed PASS
+  VehicleReg RQ Plate OOS+optionals T15-mc PASS (2026-04-16) -- State=ND OOS, all 6 optional fields correct
+  VehicleReg RQN VIN NJ              T4-mc  PASS (2026-04-16) -- <State>NJ</State> from initialValue; vinNumber RMS only
+  VehicleReg RQN VIN NJ+optionals   T16-mc PASS (2026-04-16) -- Image=Y, Random=Y confirmed; vinNumber RMS only
+  VehicleReg RQN VIN OOS+optionals  T17-mc PASS (2026-04-16) -- State=MS OOS, Image=Y, Random=Y; vinNumber RMS only
+  VehicleReg RQN VIN OOS             T5-mc  PASS (2026-04-16) -- <State>VA</State> from visible dropdown; vinNumber RMS only
+  DriverLicense DQN OLN NJ          T6-mc  PASS (2026-04-16) -- <State>NJ</State> from initialValue; dlNumber RMS only
+  DriverLicense DQN OLN NJ+ImageN   T18-mc PASS (2026-04-16) -- Image=N override confirmed; dlNumber RMS only
+  DriverLicense DQN OLN OOS         T7-mc  PASS (2026-04-16) -- <State>VT</State> from visible dropdown; dlNumber RMS only
+  DriverLicense DQN OLN OOS+ImageN  T19-mc PASS (2026-04-16) -- State=MS OOS + Image=N override both confirmed
+  DriverLicense DQ  Name+DOB NJ     T8-mc  PASS (2026-04-16) -- State+Image cross from OLN card; RMS name/DOB fires
+  DriverLicense DQ  Name+DOB OOS    T20-mc PASS (2026-04-16) -- OOS State=MT + Image cross from OLN card confirmed
+  DriverLicense DQ  Name+DOB+Sex    T9-mc  PASS (2026-04-16) -- SexCode in XML; no sexAttrId in RMS (Patch 3 confirmed)
+  DriverLicense DQ  Name+DOB+Sex OOS T21-mc PASS (2026-04-16) -- OOS State=MT cross + SexCode in XML; no sexAttrId RMS
+  GunQuery QG Serial only           T10-mc PASS (2026-04-16) -- GunSerialNumber confirmed; no RMS fires
+  GunQuery QG Serial+Make+Caliber   T11-mc PASS (2026-04-16) -- all fields confirmed; no RMS fires
+  ArticleSingleQuery QA Serial+Type T12-mc PASS (2026-04-16) -- BBICYCL from CA_CLETS dropdown confirmed
+  BoatQuery BQ Reg NJ               T13-mc PASS (2026-04-16) -- <State>NJ</State> from initialValue; no RMS fires
+  BoatQuery BQ Reg OOS              T22-mc PASS (2026-04-16) -- State=MS OOS confirmed; no RMS fires
+  BoatQuery BQN Hull + State cross  T14-mc PASS (2026-04-16) -- State=NJ crossed from Reg card; cross-card confirmed
+  BoatQuery BQN Hull OOS cross      T23-mc PASS (2026-04-16) -- State=FL OOS crossed from Reg card; OOS cross confirmed
+
+  -- Gap audit 2026-04-16: 9 missing paths identified, tested, and confirmed PASS --
+  Vehicle: T15-mc Plate OOS+all-optionals | T16-mc VIN NJ+optionals | T17-mc VIN OOS+optionals
+  Person:  T18-mc OLN NJ+ImageN | T19-mc OLN OOS+ImageN | T20-mc Name+DOB OOS | T21-mc Name+DOB+Sex OOS
+  Boat:    T22-mc Reg OOS | T23-mc Hull OOS cross
+
+  MC TEST TOTAL: 23/23 PASS -- FULLY VALIDATED
+
+================================================================================
+PHASE 2 -- MULTI-CARD (v2.0, 2026-04-21)
+================================================================================
+
+  Build: scripts/build_nj_njcjis_v2.0.ps1 (reads BASE, replaces layouts)
+  JSON:  NJ_NJCJIS_v2.0.json
+  Archive: phases/02_multicard/NJ_NJCJIS_v2.0_2026-04-21.json
+
+  Layout changes (QIDM UNCHANGED):
+    Vehicle: 1 card -> 2 cards (VEHICLE SEARCH - PLATE / VEHICLE SEARCH - VIN)
+    Person:  1 card -> 2 cards (DRIVER LICENSE - LICENSE NUMBER / DRIVER LICENSE - NAME)
+    Boat:    1 card -> 2 cards (BOAT SEARCH - REGISTRATION / BOAT SEARCH - HULL)
+    Firearm: no change (single search path)
+    Article: no change (single search path)
+
+  Validator: 38 PASS / 0 FAIL / 1 WARN (bundle order cosmetic)
+  Layout:    15/15 trees valid (5 entities x 3 variants)
+  Import:    PENDING -- requires live NJ environment access
+
+================================================================================
+PHASE 3 -- SPLIT ENTITY PERSON (v2.1, 2026-04-21)
+================================================================================
+
+  Split Person QIF into Person-NJ (OLN+Name, state=NJ default) and Person-OOS (OLN+Name, no default).
+  Purpose: test whether split entity gives better UX for OOS person queries.
+  Note: NCIC state pattern handles OOS in single QIF. Split may be unnecessary.
+  Both QIFs use same QIDM (DriverLicenseQuery). Platform groups as sub-tabs.
+
+  Build: scripts/build_nj_njcjis_v2.1.ps1 (reads v2.0, splits Person)
+  JSON:  NJ_NJCJIS_v2.1.json (6 QIFs: Vehicle + Person-NJ + Person-OOS + Firearm + Article + Boat)
+  Archive: phases/03_split_entity/NJ_NJCJIS_v2.1_2026-04-21.json
+  Validator: 39 PASS / 0 FAIL / 1 WARN (bundle order cosmetic)
+  Layout:    18/18 trees valid (6 QIFs x 3 variants)
+  Import:    PENDING
+
+================================================================================
+NEXT STEPS (in order)
+================================================================================
+
+  1.  Complete v2.1 split entity Person build
+  2.  Gain live NJ environment access for import testing (v2.0 or v2.1)
+  3.  Validate QUERYRESULTDATAMAPPING against live NJ response payload
+  4.  Await vendor feedback on PDF/XML gap summary (sent 2026-04-13)
+  4.  Phase 2 (multi-card): promote from Phase 1 baseline after live testing confirms all paths
+      -> Vehicle: Plate card + VIN card (2-card per NJ pattern)
+      -> Person: OLN card + Name/DOB card
+      -> All other entities: already single-path, no change needed
+
+================================================================================
+POST-IMPORT VALIDATION CHECKLIST
+================================================================================
+
+  [ ] All 8 NJ_NJCJIS configurations visible in ConnectCIC
+  [ ] 7 entity tabs render with correct form fields
+  [ ] Vehicle NJ: LicensePlateNumberIn + hidden state fields + ImageIndicator + RandomRequest
+  [ ] Vehicle OOS: LicensePlateNumberOut + NJ_NIBRS_STATE dropdown
+  [ ] Person NJ: OLN + hidden state fields + ImageIndicator defaults to Y
+  [ ] Person OOS: OLN + NJ_NIBRS_STATE dropdown
+  [ ] VehicleRegistrationQuery routes RQ_NJ/RQN_NJ (NJ) and RQ/RQN (OOS)
+  [ ] DriverLicenseQuery routes DQN_NJ (NJ OLN), DQN (OOS OLN), DQ (Name)
+  [ ] GunQuery routes QG (serial number)
+  [ ] ArticleSingleQuery routes QA (serial + article type)
+  [ ] BoatQuery routes BQ (registration) and BQN (hull ID)
+  [ ] Article Type dropdown populates (codeTypeSource CA_CLETS)
+  [ ] NJ state hidden fields do not appear in outbound XML
+  [ ] RMS plate search fires on Vehicle NJ and OOS plate paths
+  [ ] RMS VIN search fires without fatal error on Vehicle NJ and OOS VIN paths
+  [ ] Query summary cosmetic: displays attribute ID for hidden NJ state field (known -- acceptable)
+
+================================================================================
+OPEN / DEFERRED ITEMS
+================================================================================
+
+  - QUERYRESULTDATAMAPPING: inherited from HI_HCJDC; not validated against live NJ response
+  - VehicleStolenQuery: not in NJ_NJCJIS.xml; requires CommSys server-side registration
+  - RandomRequest: currently FormSelect (YES_NO_UNKNOWN/NIBRS); consider converting to
+    FormInput to prevent invalid N/U submissions (valid value is Y only per PDF)
+  - FIRST_RESPONDER layout variant: not confirmed as platform-recognized key
+  - Firearm Make/Caliber: free-text FormInput; upgrade to dropdown if code list confirmed
+  - Query display shows internal attribute ID (69509884952) for hidden NJ state SelH
+    Raise with CommSys vendor for platform aliasing support (cosmetic only)
+
+================================================================================
+KEY DESIGN DECISIONS (summary -- see docs/NJ_NJCJIS_BUILD_NOTES.txt for full history)
+================================================================================
+
+  Phase 1 single-card (v1.7 current)
+    5 QIFs, 1 card per entity. All search paths on one card.
+    Confirmed 25/25 PASS. NJ_NJCJIS_BASE.json saved as permanent reference.
+
+  NCIC state pattern (v1.7 -- single visible Sel handles NJ + OOS)
+    Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=NJ).
+    CommSys QIDM: codeTypeProvider=NCIC converts attr ID to 2-letter code.
+    RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (HIDLE default).
+    OOS: operator changes state dropdown. All states confirmed working (NJ + PA tested).
+    No hidden state fields needed. No dual-field architecture needed.
+    This REPLACES the v3.x dual-field pattern (SelH + InpH).
+
+  LicensePlateNumberIn/Out fieldIds
+    LicensePlateNumberIn triggers RMS licensePlateIn combination.
+    Generic 'LicensePlateNumber' does NOT trigger RMS plate search.
+    QIDM targetField remains 'LicensePlateNumber' (outbound XML unchanged).
+
+  NIBRS sex (v1.7 -- attributeTypeId=SEX + codeTypeProvider=NIBRS)
+    Form stores attr ID. CommSys QIDM codeTypeProvider=NIBRS converts to M/F/U.
+    RMS sex: useAttributeId=true, NO ArrayWrapper. Both CommSys and RMS work.
+
+  ArticleTypeCode codeTypeSource = CA_CLETS
+    NCIC_ARTICLE_TYPE lives under CA_CLETS. "NCIC" gives empty dropdown.
+
+  GunMake/GunCaliber as FormInput free-text
+    No confirmed platform code list for NJ. Upgrade to dropdown if code list confirmed.
+    NCIC_FIREARM_MAKE under NCIC confirmed working in test.
+
+  QUERYRESULTDATAMAPPING cloned from HIDLE.json
+    Pending validation against live NJ response format.
+
+  Retired approaches (do not use as templates):
+    v3.x split entity (Vehicle-NJ/OOS + Person-NJ/OOS, 7 QIFs) -- archived in phases/08_split_entities/
+    Dual-field state (SelH + InpH) -- replaced by NCIC pattern in v1.7
+    queriesToDeselect on Person QIDMs -- confirmed ineffective (LIMITATION #26)
+
+================================================================================
+BUILD LOG (newest first -- full history in docs/NJ_NJCJIS_BUILD_NOTES.txt)
+================================================================================
+
+  v3.14  2026-04-10  Swap hidden state field order; InpH before SelH on NJ forms (summary fix)
+  v3.13  2026-04-09  LicensePlateNumberIn/Out fieldIds; RMS plate search fix
+  v3.12  2026-04-09  Dual-field state pattern; keyReference uniqueness fix (_NJ suffix)
+  v3.11  2026-04-09  RMS state fatal investigation; IgnoreUserValueRuleHandler test
+  v3.10  2026-04-09  IgnoreUserValueRuleHandler dead-end test
+  v3.9   2026-04-09  State field architecture refinement
+  v3.8t  2026-04-09  State field test variant
+  v3.8   2026-04-09  Split entity form iteration
+  v3.7   2026-04-09  Split entity form iteration
+  v3.6   2026-04-09  Split entity form iteration (test plan based on this version)
+  v3.5   2026-04-09  Split entity form iteration
+  v3.4   2026-04-09  Split entity form iteration
+  v3.3   2026-04-09  Split entity form iteration
+  v3.2   2026-04-09  Split entity form iteration
+  v3.1   2026-04-09  Split entity form iteration
+  v3.0   2026-04-09  Split entity forms introduced
+  v2.9   2026-04-09  Split entity forms initial
+  v2.8   2026-04-09  Multi-card ENTITIES layout (Vehicle, Person with dual cards)
+  v2.7   2026-04-08  FINAL standard config; DriverLicense merged back; all 5 queries working
+  v2.6   2026-04-08  Split DriverLicenseQuery test (Name path FAILED -- reverted)
+  v2.5   2026-04-08  Vehicle phase complete; RandomRequest/ImageIndicator final
+  v2.4   2026-04-08  Vehicle phase; ImageIndicator fix
+  v2.3   2026-04-08  Vehicle phase; ImageIndicator added despite XML silence
+  v2.2   2026-04-08  Vehicle phase start
+  v2.1   2026-04-08  Person phase complete; LIMITATION #1 confirmed; merged DL config
+  v2.0   2026-04-08  Person phase; ImageIndicator fix (size attribute)
+  v1.9   2026-04-08  Person phase; ImageIndicator fix (initialValue)
+  v1.8   2026-04-08  Person phase; ImageIndicator fix (any[] inclusion)
+  v1.7   2026-04-08  Person phase; split DL test (LIMITATION #2 inferred)
+  v1.6   2026-04-08  Person phase; VehicleStolenQuery flagged (not in XML)
+  v1.5   2026-04-08  Person phase; GunQuery sourceField fix
+  v1.4   2026-04-08  Person phase start
+  v1.3   2026-04-07  Standup; ROOT parent field fix
+  v1.2   2026-04-07  Standup; nodes array serialization fix
+  v1.1   2026-04-07  Standup; JSON structural fix
+  v1.0   2026-04-07  Initial build from XML/PDF (full rebuild from scratch)
+
+  v3.14  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.14_2026-04-10.json
+
+  v3.15  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.15_2026-04-10.json
+
+  v3.16  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.16_2026-04-10.json
+
+  v3.17  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.17_2026-04-10.json
+
+  v3.18  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.18_2026-04-10.json
+
+  v3.19  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.19_2026-04-10.json
+
+  v3.20  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.20_2026-04-10.json
+
+  v3.21  2026-04-10  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.21_2026-04-10.json
+
+  v3.22  2026-04-13  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.22_2026-04-13.json
+
+  v3.23  2026-04-13  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.23_2026-04-13.json
+
+  v3.24  2026-04-16  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.24_2026-04-16.json
+
+  v1.0  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v1.0_2026-04-17.json
+
+  v1.0  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v1.0_2026-04-17.json
+
+  v3.25  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v3.25_2026-04-17.json
+
+  v3.26  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\08_split_entities\NJ_NJCJIS_v3.26_2026-04-17.json
+
+  v3.28  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v3.28_2026-04-17.json
+
+  v3.28  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v3.28_2026-04-17.json
+
+  v3.29  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v3.29_2026-04-17.json
+
+  v3.30  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v3.30_2026-04-17.json
+
+  v4.0  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\02_person\NJ_NJCJIS_v4.0_2026-04-17.json
+
+  v1.0  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.0_2026-04-17.json
+
+  v1.1  2026-04-17  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.1_2026-04-17.json
+
+  v1.2  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.2_2026-04-20.json
+
+  v1.3  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.3_2026-04-20.json
+
+  v1.4  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.4_2026-04-20.json
+
+  v1.4  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.4_2026-04-20.json
+
+  v1.5  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.5_2026-04-20.json
+
+  v1.6  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.6_2026-04-20.json
+
+  v1.7  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.7_2026-04-20.json
+
+  v1.7  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.7_2026-04-20.json
+
+  v1.7  2026-04-20  build_nj_njcjis.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\NJ_NJCJIS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\phases\01_standup\NJ_NJCJIS_v1.7_2026-04-20.json

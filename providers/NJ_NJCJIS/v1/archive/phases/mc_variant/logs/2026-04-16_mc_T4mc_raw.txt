@@ -1,0 +1,31 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Vehicle VIN NJ (T4-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T4-mc -- VehicleRegistrationQuery, RQN, VIN + NJ State (default) -- PASS
+================================================================================
+
+Form    : Vehicle QIF (single card) | VIN: 98765432 | State: NJ (initialValue default) | Image: N
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBS36BW3CHBR27TFBJKYZMT"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KPBS36BW3CHBR27TFBJKYZMT</Id><VehicleIdentificationNumber>98765432</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NJ</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"vehicle":{"vinNumber":"98765432"}},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=VehicleRegistrationQuery (RQN -- VIN path) correct
+  - <VehicleIdentificationNumber>98765432</VehicleIdentificationNumber> correct
+  - <State>NJ</State> confirmed from initialValue=NJ on visible RegistrationStateOOS
+  - <ImageIndicator>N</ImageIndicator> correct
+  - RMS: vinNumber only, no registrationStateAttrIds -- expected mc trade-off (no SelH field)
+  - No unexpected co-fires

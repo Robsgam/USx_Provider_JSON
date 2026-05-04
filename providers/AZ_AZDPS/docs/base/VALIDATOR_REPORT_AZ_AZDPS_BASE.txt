@@ -1,0 +1,106 @@
+﻿================================================================
+  Build Report: AZ_AZDPS_BASE
+  Source: AZ_AZDPS_BASE.json
+  Generated: 2026-05-01 10:33
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'AZ_AZDPS': 11 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 35 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [LIMITATION] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' -> Person : 7 attrs, 4 combos
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [LIMITATION] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'AZ_AZDPS_GunQuery' -> Firearm : 6 attrs, 1 combos
+  [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' -> Article : 4 attrs, 1 combos
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' -> Boat : 5 attrs, 4 combos
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' -> Person : 8 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' -> Person : 13 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr (Patch 3)
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[] (Patch 1)
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
+         AZ_AZDPS_AzAzdpsDriverLicenseQuery (query=AzAzdpsDriverLicenseQuery)
+         AZ_AZDPS_DriverHistoryQuery (query=DriverHistoryQuery)
+  [LIMITATION] Person : 4 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Person : 4 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVR': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVRV': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQSS': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'ACWL': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQH': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_GunQuery' combo 'ACQG': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' combo 'ACQA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'ACQB': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'ACQBH': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQH': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQW': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQWN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQM': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQMN': all set[]/any[] fields resolvable
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  4 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
+

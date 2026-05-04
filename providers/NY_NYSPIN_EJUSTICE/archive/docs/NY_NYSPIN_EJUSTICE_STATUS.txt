@@ -1,0 +1,107 @@
+﻿NY_NYSPIN_EJUSTICE -- BUILD STATUS
+====================================
+Phase 1 reboot: 2026-04-20
+Prior build history (v1.0-v1.21) archived in git. Clean restart from XML as sole source.
+Current version: 1.1 (0 errors, 0 warnings -- READY TO IMPORT)
+Provider: NY_NYSPIN_EJUSTICE
+Phase: 01_standup (single entity, single card)
+GitHub: Robsgam/NY_NYSPIN_EJUSTICE
+
+ARCHITECTURE (Phase 1)
+----------------------
+Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs, single card each)
+QIDMs:    VehicleRegistrationQuery (RVEH/RVIN/RCAR)
+          BoatQuery (BVEH/BVIN/RVEH/RCAR)
+          DriverLicenseQuery (DLIC)
+          NyNyspinDriverLicenseNameQuery (DGRP)
+          DriverHistoryQuery (DALL+DALH)
+          GunQuery (GINQ)
+          ArticleSingleQuery (AINQ)
+
+WINQ/MINQ: EXCLUDED. WantedPersonQuery and MissingPersonQuery appear as MessageKeys
+           in the XML but have NO Transaction definition. Not buildable until vendor adds XML.
+
+State:    Dual-field (NCIC unconfirmed on NY instance)
+          Visible 'State' (NJ_NIBRS_STATE/NJ_NIBRS, blank-default) -> CommSys XML
+          Hidden SelH 'RegistrationState' (STATE, initialValue=NY) -> RMS
+
+Sex:      NIBRS_SEX CommSys-only (NIBRS reverse-lookup unconfirmed on NY instance)
+          Form: codeTypeCategory=NIBRS_SEX -> stores M/F/U text
+          CommSys QIDM: no codeTypeProvider (plain text passthrough)
+          RMS: sex attribute removed entirely
+
+DH:       DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.) isolate DH from DL.
+          Single DriverHistoryQuery QIDM: DALL (OLN) + DALH (Name, invented keyRef).
+
+OPEN ITEMS (Phase 1)
+--------------------
+[ ] NCIC state pattern -- test on first import (in-state plate -> <State>NY</State>?)
+    If confirmed: simplify to single visible RegistrationState (NCIC) in Phase 2
+[ ] NIBRS sex reverse-lookup -- test on first person search (<SexCode>M</SexCode>?)
+    If confirmed: restore codeTypeProvider=NIBRS on CommSys QIDM + useAttributeId in RMS
+[ ] Vehicle RCAR vs RVIN disambiguation -- test blank-state VIN vs populated-state VIN
+[ ] Boat NY (RVEH/RCAR) vs OOS (BVEH/BVIN) routing via blank-default state
+[ ] DALL OLN path -- confirm OperatorLicenseNumberDH fires DALL, not DLIC
+[ ] DALH Name path -- confirm NameLastDH+NameFirstDH fire DALH (invented keyRef)
+[ ] WINQ/MINQ Transaction XML -- track with vendor; add if provided
+
+TEST MATRIX
+-----------
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE
+  VEH-1: Plate + NY (blank state)              RVEH     CommSys          [PENDING]
+  VEH-2: Plate + OOS state                     RVEH     CommSys          [PENDING]
+  VEH-3: VIN only (blank state = NY DMV)       RCAR     CommSys          [PENDING]
+  VEH-4: VIN + OOS state (NCIC/Nlets)          RVIN     CommSys          [PENDING]
+  VEH-5: Plate + PlateType + Year              RVEH     CommSys          [PENDING]
+  VEH-6: Plate -- RMS trigger check            RVEH     RMS              [PENDING]
+
+  PERSON -- Driver License (OLN)
+  PER-1: OLN + blank state (NY)                DLIC     CommSys+RMS      [PENDING]
+  PER-2: OLN + OOS state                       DLIC     CommSys          [PENDING]
+  PER-3: OLN + Image Y                         DLIC     CommSys          [PENDING]
+
+  PERSON -- Driver License (Name)
+  PER-4: Name + DOB (no sex)                   DGRP     CommSys          [PENDING]
+  PER-5: Name + DOB + Sex M                    DGRP     CommSys          [PENDING]
+
+  PERSON -- Driver History (OLN)
+  PER-6: DH OLN + blank state                  DALL     CommSys          [PENDING]
+  PER-7: DH OLN + extras (TxnName/Purpose)     DALL     CommSys          [PENDING]
+
+  PERSON -- Driver History (Name)
+  PER-8: DH Name + DOB + Sex                   DALH     CommSys          [PENDING]
+
+  FIREARM
+  FA-1:  Serial only                            GINQ     CommSys          [PENDING]
+  FA-2:  Serial + Make + Caliber                GINQ     CommSys          [PENDING]
+  FA-3:  Serial + RelatedHit Y                  GINQ     CommSys          [PENDING]
+
+  ARTICLE
+  ART-1: Serial + TypeCode                      AINQ     CommSys          [PENDING]
+  ART-2: Serial + TypeCode + Image + RelHit     AINQ     CommSys          [PENDING]
+
+  BOAT -- NY (blank state)
+  BOA-1: Reg Number (NY)                        RVEH     CommSys          [PENDING]
+  BOA-2: Hull ID (NY)                           RCAR     CommSys          [PENDING]
+
+  BOAT -- OOS
+  BOA-3: Reg Number + OOS state                 BVEH     CommSys          [PENDING]
+  BOA-4: Hull ID + OOS state                    BVIN     CommSys          [PENDING]
+
+BUILD LOG  (newest first)
+  v1.1  2026-04-20  build_ny_nyspin_ejustice.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\phases\01_standup\NY_NYSPIN_EJUSTICE_v1.1_2026-04-20.json
+    Fix: RMS sex removal now strips SexCodeOOS from combination any[] (AP #18)
+    Validator: 0 errors, 0 warnings
+    Import: PENDING
+
+  v1.0  2026-04-20  build_ny_nyspin_ejustice.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json
+    Archive: C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\phases\01_standup\NY_NYSPIN_EJUSTICE_v1.0_2026-04-20.json
+    FAILED import: "Missing attributes found in query input data mapping: [sexcodeoos]"
+    Root cause: sex removal stripped 'sex' attr but left 'SexCodeOOS' in OOS combination any[]
+
+

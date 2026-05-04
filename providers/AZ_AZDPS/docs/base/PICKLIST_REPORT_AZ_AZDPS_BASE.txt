@@ -1,0 +1,128 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: AZ_AZDPS_BASE
+  Source: AZ_AZDPS_BASE.json
+  Generated: 2026-05-01 10:33
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    ArticleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+
+  Entity: Boat
+    RegistrationState [State] (default=AZ)
+      Config: attributeTypeId=STATE
+
+  Entity: Firearm
+    GunMake [Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+
+  Entity: Person
+    EyeColorCode [Eye Color]
+      Config: codeTypeCategory=NCIC_EYE_COLOR, codeTypeSource=NCIC
+    HairColorCode [Hair Color]
+      Config: codeTypeCategory=NCIC_HAIR_COLOR, codeTypeSource=NCIC
+    RaceCode [Race]
+      Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
+    RegistrationState [State (DL)] (default=AZ)
+      Config: attributeTypeId=STATE
+    SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+
+  Entity: Vehicle
+    LicensePlateTypeCode [Plate Type] (default=PC)
+      Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
+    RegistrationState [State] (default=AZ)
+      Config: attributeTypeId=STATE
+    VehicleMakeCode [Make]
+      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: AZ_AZDPS_VehicleRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: AZ_AZDPS_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+    Config: AZ_AZDPS_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: AZ_AZDPS_WMPIWantedPersonInquiry
+      RaceCode -> RaceCode
+        codeTypeProvider=NIBRS
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+    Config: AZ_AZDPS_WMPIMissingPersonInquiry
+      RaceCode -> RaceCode
+        codeTypeProvider=NIBRS
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: AZ_AZDPS_Results
+      AddressStateCode -> AddressStateCode
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NIBRS
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMakeName -> VehicleMakeName
+        codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+      VehicleStyleCode -> BodyStyle
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+  QIDM: AZ_AZDPS_VehicleRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: AZ_AZDPS_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: AZ_AZDPS_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: AZ_AZDPS_WMPIWantedPersonInquiry
+    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
+
+  QIDM: AZ_AZDPS_WMPIWantedPersonInquiry
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: AZ_AZDPS_WMPIMissingPersonInquiry
+    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
+
+  QIDM: AZ_AZDPS_WMPIMissingPersonInquiry
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 12
+  QRDM code type attrs: 18

@@ -1,0 +1,39 @@
+AZ_AZDPS -- Phase 01: Standup
+==============================
+Status: BUILD COMPLETE -- PENDING IMPORT
+Goal:   Initial structural build -- AUTH + QMF + QRDM shell; confirm import succeeds.
+
+CHECKLIST
+---------
+[x] Review source/AZ_AZDPS.XML -- list all transactions and keyRefs
+[x] Review source/AZ_AZDPS.pdf -- field classifications and valid values
+[ ] Fill AZ_AZDPS_PDF_XML_INCONSISTENCIES.txt (in progress)
+[x] Design QIDM structure and ENTITIES layout
+[x] Populate build_az_azdps.ps1
+[x] Run build -- v1.0 (2026-04-15 -- 0 errors, 1 warning [QIF count info only])
+[ ] Import into ConnectCIC
+[ ] Confirm all bundles visible
+[ ] Log result below
+
+BUILD SUMMARY (v1.0 -- 2026-04-15)
+------------------------------------
+Output:  AZ_AZDPS.json
+QIDMs:   8 (VehicleRegistration, AzAzdpsDriverLicense, DriverHistory, Gun, Article, Boat, WMPIWanted, WMPIMissing)
+QIFs:    8 (Vehicle, Person-DL, Person-DH, Firearm, Article, Boat, Wanted Person, Missing Person)
+Validator: 0 errors, 1 warning (QIF count check skipped -- now set to 8)
+
+INVENTED keyRefs (duplicate keyRef resolution):
+  ACVRV -- VIN path VehicleRegistrationQuery
+  DQN   -- Name path AzAzdpsDriverLicenseQuery
+  DQSS  -- SSN path AzAzdpsDriverLicenseQuery
+  KQH   -- Name path DriverHistoryQuery
+  ACQBH -- Hull+Badge path BoatQuery
+  BQH   -- Hull path BoatQuery
+  ACQWN -- NCICNumber path WMPIWantedPersonInquiry
+  ACQMN -- NCICNumber path WMPIMissingPersonInquiry
+
+DH isolation: DriverHistoryQuery uses DH-suffix fieldIds; StateDH hidden initialValue='AZ'
+
+TEST LOG
+--------
+(Results added here as tests are run)

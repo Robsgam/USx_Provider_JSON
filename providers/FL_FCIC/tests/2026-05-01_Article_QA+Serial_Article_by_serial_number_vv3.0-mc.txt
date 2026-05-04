@@ -1,0 +1,65 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Article
+Combo      : QA+Serial (Article by serial number)
+Test type  : T2 -- basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ArticleSerialNumber       083907234-         typed
+  ArticleTypeCode           BBICYCT            typed (dropdown)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ45TJ56XCBB2GVNH5P1B75
+  MessageType : ArticleSingleQuery
+  keyReference: QAArticleSerialNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ArticleSerialNumber  083907234-
+    ArticleTypeCode      BBICYCT
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QA+Serial
+  Reason: ArticleSerialNumber+ArticleTypeCode both populated (set[])
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  ArticleSerialNumber  YES    083907234-      mapped from ArticleSerialNumber
+  ArticleTypeCode      YES    BBICYCT         mapped from ArticleTypeCode
+  ImageIndicator       YES    N               mapped from ImageIndicator (default)
+  OwnerAppliedNumber   NO     --              sourceField empty
+  NCICNumber           NO     --              sourceField empty
+  ProcessControlNumber NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QA+Serial fired correctly; Serial+Type+ImageIndicator sent
+  Detail: ArticleTypeCode required in set[] — serial alone does not fire combo

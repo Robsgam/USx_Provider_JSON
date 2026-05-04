@@ -1,0 +1,107 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Vehicle
+Combo      : FRQ+VIN
+Test type  : T2 (alternate field combo)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value                    Source
+  ------------------------  -----------------------  --------------------------------
+  LicensePlateNumber        (empty)                  --
+  RegistrationState         (empty)                  --
+  VehicleIdNumber           1HGCM82633A004352        typed
+  LicensePlateYear          2026                     default
+  LicensePlateTypeCode      PC                       default
+  NCICNumber                (empty)                  --
+  ProcessControlNumber      (empty)                  --
+  ImageIndicator            N                        default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (VehicleRegistrationQuery):
+    Transaction : 01KQJ12HQPVFB7T385BYVKW1H4
+    MessageType : VehicleRegistrationQuery
+    keyReference: FRQVIN
+
+    Fields sent in XML request:
+      Element                       Value
+      ----------------------------  -------------------
+      VehicleIdentificationNumber   1HGCM82633A004352
+      ImageIndicator                N
+
+  Request 2 (VehicleStolenQuery -- co-fire):
+    Transaction : 01KQJ12MCD1YCHDF9938003ZR1
+    MessageType : VehicleStolenQuery
+    keyReference: QVVIN
+
+    Fields sent in XML request:
+      Element                       Value
+      ----------------------------  -------------------
+      VehicleIdentificationNumber   1HGCM82633A004352
+      ImageIndicator                N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQVIN (VehicleRegistrationQuery)
+  Reason: set=[VehicleIdNumber] satisfied, no State = FRQ path
+
+  VehicleRegistrationQuery attributes:
+  QIDM attribute              Sent?  Value                  Note
+  --------------------------  -----  ---------------------  --------------------------------
+  VehicleIdentificationNumber YES    1HGCM82633A004352      typed (mapped from VehicleIdNumber)
+  ImageIndicator              YES    N                      default
+  RegistrationState           NO     --                     empty, routes to FRQ
+  LicensePlateNumber          NO     --                     empty
+  LicensePlateYear            NO     --                     not sent (plate combo only)
+  LicensePlateTypeCode        NO     --                     not sent (plate combo only)
+
+  VehicleStolenQuery co-fire (QVVIN):
+  QIDM attribute              Sent?  Value                  Note
+  --------------------------  -----  ---------------------  --------------------------------
+  VehicleIdentificationNumber YES    1HGCM82633A004352      typed
+  ImageIndicator              YES    N                      default
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: Vehicle by VIN
+  RMS request: {"elasticQuery":{"vehicle":{"vinNumber":"1HGCM82633A004352"}},"from":0,"size":50}
+  Response: No returns.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQ VIN combo fires correctly with VIN only (no State), VehicleStolenQuery co-fires, RMS fires with VIN. All 3 requests correct.
+  Detail: No PlateYear/PlateType in VIN XML (correct — those are plate-combo-only fields).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+VehicleRegistrationQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ12HQPVFB7T385BYVKW1H4"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KQJ12HQPVFB7T385BYVKW1H4</Id><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+VehicleStolenQuery (co-fire):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ12MCD1YCHDF9938003ZR1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KQJ12MCD1YCHDF9938003ZR1</Id><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"vinNumber":"1HGCM82633A004352"}},"from":0,"size":50}
+Response: No returns.

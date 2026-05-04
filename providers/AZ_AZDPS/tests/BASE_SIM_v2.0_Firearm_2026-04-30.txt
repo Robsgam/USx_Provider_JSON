@@ -1,0 +1,28 @@
+﻿
+================================================================
+  CommSys Query Simulator -- AZ_AZDPS_BASE.json
+================================================================
+
+--- QIDM: AZ_AZDPS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 6  |  Combos: 1
+
+    [FIRES] ACQG
+      set: [dexStateUserId, GunSerialNumber]
+      any: [GunCaliber, GunMake, GunModel, RelatedHitSearchIndicator] -> matched: [GunCaliber, GunMake, GunModel, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACQG</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+

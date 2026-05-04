@@ -1,0 +1,170 @@
+NJ_NJCJIS -- Vehicle - Out of State Phase Log
+===============================================
+Date    : 2026-04-09
+Version : v3.6
+Tab     : Vehicle - Out of State
+Queries : VehicleRegistrationQuery (RQ = Plate, RQN = VIN)
+
+NEW ISSUE FOUND: State sent as internal option ID (69509887513) instead of 'PA'.
+  Root cause: Visible FormSelect with attributeTypeId='STATE' sends platform's
+              internal dropdown option ID -- same bug pattern as hidden SelH.
+              The issue is NOT limited to hidden fields. Any FormSelect using
+              attributeTypeId='STATE' sends an internal ID.
+  Fix       : Replace all State FormSelect (Sel) fields with FormInput (Inp),
+              maxLength=2. Operator types 2-letter state code directly.
+              Affects: Vehicle OOS, Person OOS, Boat Registration card.
+              Fixed in v3.8.
+
+NOTE -- T16 deviation: Operator did not clear PlateType and PlateYear between
+  T15 and T16. Those fields were sent alongside Random=Y. Combination still
+  fired as RQ correctly. Noted but does not affect pass/fail verdict on
+  combination routing or Random field behavior.
+
+================================================================================
+T11 -- Plate OOS minimum  (Image=N default, State=PA visible)
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  ImageIndicator       N               SENT (default)
+  State                69509887513     SENT -- WRONG (should be PA)
+Combination fired: RQ (Plate set[] satisfied)
+Result: FAIL -- State value incorrect
+
+================================================================================
+T12 -- Plate OOS + Image Y
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  ImageIndicator       Y               SENT
+  State                69509887513     SENT -- WRONG
+Combination fired: RQ
+Result: FAIL -- State value incorrect
+
+================================================================================
+T13 -- Plate OOS + Plate Type
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  LicensePlateTypeCode PP              SENT
+  ImageIndicator       N               SENT (default)
+  State                69509887513     SENT -- WRONG
+Combination fired: RQ
+Result: FAIL -- State value incorrect
+
+================================================================================
+T14 -- Plate OOS + Plate Year
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  LicensePlateYear     2024            SENT
+  ImageIndicator       N               SENT (default)
+  State                69509887513     SENT -- WRONG
+Combination fired: RQ
+Result: FAIL -- State value incorrect
+
+================================================================================
+T15 -- Plate OOS + all optional fields
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  LicensePlateTypeCode PP              SENT
+  LicensePlateYear     2024            SENT
+  ImageIndicator       Y               SENT
+  State                69509887513     SENT -- WRONG
+Combination fired: RQ
+Result: FAIL -- State value incorrect
+
+================================================================================
+T16 -- Plate OOS + Random Y  (deviation: PlateType/PlateYear not cleared from T15)
+================================================================================
+Fields sent:
+  LicensePlateNumber   PAX1234         SENT
+  LicensePlateTypeCode PP              SENT (from T15 -- not cleared)
+  LicensePlateYear     2024            SENT (from T15 -- not cleared)
+  ImageIndicator       N               SENT (default)
+  RandomRequest        Y               SENT -- correct
+  State                69509887513     SENT -- WRONG
+Combination fired: RQ
+Result: FAIL -- State value incorrect; Random=Y confirmed sent correctly
+Notes : Extra PlateType/PlateYear from T15 not cleared -- LIMITATION #1 expected.
+        RQ combination still fires correctly. Random=Y behavior confirmed.
+
+================================================================================
+T17 -- VIN OOS minimum  (Image=N default, State=PA visible, Plate blank)
+================================================================================
+Fields sent:
+  VehicleIdentificationNumber  1HGCM82633A004352  SENT
+  ImageIndicator               N                  SENT (default)
+  State                        69509887513        SENT -- WRONG
+Combination fired: RQN (Plate blank; VIN set[] satisfied)
+Result: FAIL -- State value incorrect
+
+================================================================================
+T18 -- VIN OOS + Random Y
+================================================================================
+Fields sent:
+  VehicleIdentificationNumber  1HGCM82633A004352  SENT
+  ImageIndicator               N                  SENT (default)
+  RandomRequest                Y                  SENT -- correct
+  State                        69509887513        SENT -- WRONG
+Combination fired: RQN
+Result: FAIL -- State value incorrect; Random=Y confirmed sent correctly
+
+================================================================================
+T19 -- VIN OOS + Image Y
+================================================================================
+Fields sent:
+  VehicleIdentificationNumber  1HGCM82633A004352  SENT
+  ImageIndicator               Y                  SENT
+  State                        69509887513        SENT -- WRONG
+Combination fired: RQN
+Result: FAIL -- State value incorrect
+
+================================================================================
+T20 -- VIN OOS + all optional fields
+================================================================================
+Fields sent:
+  VehicleIdentificationNumber  1HGCM82633A004352  SENT
+  ImageIndicator               Y                  SENT
+  RandomRequest                Y                  SENT -- correct
+  State                        69509887513        SENT -- WRONG
+Combination fired: RQN
+Result: FAIL -- State value incorrect
+
+================================================================================
+T21 -- All fields OOS  (LIMITATION #1)
+================================================================================
+Fields sent:
+  VehicleIdentificationNumber  1HGCM82633A004352  SENT
+  LicensePlateNumber           PAX1234            SENT
+  LicensePlateTypeCode         PP                 SENT
+  LicensePlateYear             2024               SENT
+  ImageIndicator               Y                  SENT
+  RandomRequest                Y                  SENT -- correct
+  State                        69509887513        SENT -- WRONG
+Combination fired: RQ (both Plate and VIN populated; RQ first in combinations)
+Result: FAIL -- State value incorrect
+Notes : LIMITATION #1 confirmed -- VIN sent as extra field; server accepts without error.
+        All optional fields (PlateType, PlateYear, Image, Random) sent correctly.
+
+================================================================================
+PHASE SUMMARY -- v3.6  (Vehicle - Out of State)
+================================================================================
+
+Combination routing : PASS -- RQ and RQN fire correctly in all 11 tests
+Optional fields     : PASS -- Image, PlateType, PlateYear, Random all send correctly
+LIMITATION #1       : PASS -- Server tolerates extra fields (T21 confirmed)
+State               : FAIL -- All 11 tests sent State=69509887513 (internal option ID for PA)
+
+Root cause confirmed: Visible FormSelect (Sel) with attributeTypeId='STATE' sends
+  platform's internal dropdown option ID -- same behavior as hidden SelH.
+  The bug is NOT limited to hidden fields.
+  All FormSelect fields using attributeTypeId='STATE' are affected.
+  (codeTypeCategory fields -- Image, PlateType, Random -- are NOT affected.)
+
+Scope of fix (v3.8):
+  - Vehicle OOS: Sel 'RegistrationState' → Inp 'RegistrationState' maxLength=2
+  - Person OOS:  Sel 'RegistrationState' → Inp 'RegistrationState' maxLength=2
+  - Boat:        Sel 'RegistrationState' → Inp 'RegistrationState' maxLength=2, initialValue='NJ'
+
+Retest T11-T21 against v3.8 to confirm State=PA.

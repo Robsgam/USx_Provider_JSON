@@ -1,0 +1,165 @@
+RMS SEX FILTERING ISSUE REPORT — NJ NJCJIS / NY NYSPIN / FL FCIC
+=================================================================
+Date: 2026-04-17 (final -- all config options exhausted)
+Affects: NJ NJCJIS, NY NYSPIN, FL FCIC (all NIBRS-based providers)
+
+
+THE PROBLEM
+-----------
+CommSys XML requires NIBRS codes (M/F/U) for <SexCode>. RMS elastic requires
+a numeric attribute ID for sexAttrId (Male=69509891711, Female=69509894381,
+Unknown=69509886562).
+
+
+THE MECHANISM (confirmed working -- HIDLE test 2026-04-17)
+-----------------------------------------------------------
+Three-layer chain:
+
+  1. Form field: attributeTypeId=SEX, codeTypeProvider=NIBRS
+     -> User selects from dropdown. Form stores the attribute ID as the value
+        (e.g. Female = 69509894381).
+
+  2. CommSys QIDM SexCode attribute: codeTypeProvider=NIBRS
+     -> Performs reverse lookup: attribute ID 69509894381 -> NIBRS code "F"
+     -> CommSys XML: <SexCode>F</SexCode>  [CORRECT]
+
+  3. RMS QIDM sex attribute: useAttributeId=True
+     -> Receives the attribute ID and passes it through directly.
+     -> RMS elastic: sexAttrId:"69509894381"  [CORRECT]
+
+Confirmed with HIDLE (HI_HCJDC) on 2026-04-17:
+  - Male selected:   CommSys <SexCode>M</SexCode>,  RMS sexAttrId:69509891711
+  - Female selected: CommSys <SexCode>F</SexCode>,  RMS sexAttrId:69509894381
+  - Both correct simultaneously for active user selection (not just initialValue).
+  - HIDLE initialValue=M is NOT the mechanism -- female test proved the conversion
+    is real and general, not a pre-set string bypass.
+
+
+RESOLUTION (2026-04-17) -- FULLY CONFIRMED
+------------------------------------------
+NIBRS registration is PLATFORM-WIDE, not per-provider. The codeTypeProvider=NIBRS
+reverse lookup works for all providers without separate admin registration.
+
+Confirmed working on AZ_AZDPS (2026-04-17): attributeTypeId=SEX + codeTypeProvider=NIBRS
+on form, codeTypeProvider=NIBRS on QIDM SexCode attribute, useAttributeId=true on RMS.
+CommSys received <SexCode>F</SexCode> and RMS received sexAttrId:69585932695. Both correct.
+
+Confirmed working on NJ_NJCJIS (2026-04-17, v3.25): same configuration.
+CommSys received <SexCode>M</SexCode> and RMS received sexAttrId:69509891711. Both correct.
+
+Earlier "NJ failures" were caused by stale imports -- the production JSON had been rebuilt
+with the correct config but not reimported. Also: a Name format bug (FIRST LAST instead of
+LAST, FIRST) was present and fixed in v3.25 (arguments=[", "], sourceField=[NameLast,NameFirst]).
+
+NJ_NJCJIS v3.25 production configuration (confirmed working):
+  Form:         attributeTypeId=SEX, codeTypeProvider=NIBRS
+  QIDM SexCode: codeTypeProvider=NIBRS
+  RMS:          { name:"sex", sourceField:["SexCode"], targetField:"sexAttrId", useAttributeId:true }
+
+NY_NYSPIN updated 2026-04-17 to same pattern -- reimport and confirm still required.
+
+
+WHAT NEEDS TO HAPPEN (specific admin task -- no engineering required)
+----------------------------------------------------------------------
+In ConnectCIC admin, find the Sex/NIBRS code type entries registered under the
+HI_HCJDC provider. These entries map NIBRS codes to attribute IDs:
+  M (Male)    -> 69509891711
+  F (Female)  -> 69509894381
+  U (Unknown) -> 69509886562
+
+Add equivalent entries under the NJ_NJCJIS provider for the same Sex/NIBRS code
+type. Repeat for NY_NYSPIN and FL_FCIC.
+
+Once registered, import NJ_NJCJIS_SexCode_OptionL.json and verify:
+  CommSys XML: <SexCode>M</SexCode> or <SexCode>F</SexCode>
+  RMS elastic: sexAttrId:69509891711 or sexAttrId:69509894381
+
+Option L is the correct production JSON once the admin registration is done:
+  phases/sexcode_testing/NJ_NJCJIS_SexCode_OptionL.json
+  Form:         attributeTypeId=SEX, codeTypeProvider=NIBRS
+  CommSys QIDM: codeTypeProvider=NIBRS (unchanged from current production)
+  RMS QIDM:     { name:"sex", sourceField:["SexCode"], targetField:"sexAttrId",
+                  useAttributeId:true }
+
+
+CURRENT CONFIGURATION (production -- do not change until admin task complete)
+-------------------------------------------------------------------------------
+Form: codeTypeCategory=NIBRS_SEX, codeTypeSource=NIBRS
+CommSys XML: receives correct NIBRS codes (M/F/U). sexAttrId removed from RMS
+Person QIDM. RMS searches return unfiltered results. Sex filtered by CommSys only.
+This is operationally acceptable as a temporary state.
+
+
+ALL OPTIONS TESTED (19 total, 2026-04-17)
+------------------------------------------
+Options A-K: Original 11 options. All failed.
+Option L:    HIDLE pattern -- RMS PASS, CommSys FAIL (no NJ registration).
+Option M:    L + initialValue=M. No difference.
+Option N:    NIBRS_SEX + attributeTypeId=SEX together. attributeTypeId overrides.
+Option O:    CommSys QIDM provider=HI_HCJDC. Broke routing.
+Option P:    codeTypeProvider=NJ_NIBRS. No registration. Failed.
+Option Q:    codeTypeProvider=NIBRS + codeTypeCategory=Sex. Failed.
+Option R:    Exact HIDLE prop order on form (attributeTypeId first, codeTypeProvider second).
+             No difference from Option L. Prop order is not the mechanism.
+Option S:    NOPD pattern -- attributeTypeId=SEX only (no codeTypeProvider on form).
+             CommSys QIDM codeTypeProvider=NIBRS unchanged. RMS useAttributeId=True.
+             Result: CommSys still received 69509891711 (attribute ID). FAIL.
+             Confirms: attributeTypeId=SEX alone also stores attribute ID for NJ.
+             NOPD (LA_LEMS) CommSys must accept attribute IDs directly -- NJ CommSys does not.
+
+All 19 option JSONs + HIDLE_NoInitialValue + simple_rmssex:
+  phases/sexcode_testing/OptionA through OptionS (21 files total).
+
+
+FUNDAMENTAL CONSTRAINT (confirmed after Options A-S)
+-----------------------------------------------------
+For NJ_NJCJIS, two form configurations are possible:
+
+  codeTypeCategory=NIBRS_SEX, codeTypeSource=NIBRS
+    -> Form stores NIBRS code "M"/"F"/"U"
+    -> CommSys XML: <SexCode>M</SexCode>  [CORRECT]
+    -> RMS useAttributeId=True: receives "M", cannot convert to attribute ID  [FAIL]
+
+  attributeTypeId=SEX (with or without codeTypeProvider=NIBRS)
+    -> Form stores numeric attribute ID (69509891711)
+    -> CommSys XML: <SexCode>69509891711</SexCode>  [FAIL -- no NJ registration]
+    -> RMS useAttributeId=True: passes attribute ID through  [CORRECT]
+
+These two paths are mutually exclusive without platform registration.
+No rule handler, prop ordering, or codeTypeProvider variant resolves this.
+The fix is the admin registration task below -- no engineering required.
+
+CONFIRMED ATTRIBUTE IDs:
+  Male:    sexAttrId=69509891711
+  Female:  sexAttrId=69509894381
+  Unknown: sexAttrId=69509886562
+
+REGISTERED PLATFORM CODE TYPES FOR SEX (admin, 2026-04-17):
+  codeTypeSource=NIBRS,        codeTypeCategory=Sex
+  codeTypeSource=NCIC,         codeTypeCategory=Sex
+  codeTypeSource=MMUCC,        codeTypeCategory=Sex
+  codeTypeSource=USE_OF_FORCE, codeTypeCategory=UseOfForceOfficerGender
+
+
+NCIC SEX OPTION -- NOT TESTED BUT AVAILABLE (noted 2026-04-20)
+---------------------------------------------------------------
+codeTypeCategory=Sex, codeTypeSource=NCIC is registered on the platform (see above).
+It was not included in the 19-option investigation because that investigation was focused
+on the NJ RMS attribute ID problem, not FL form display.
+
+For FL specifically:
+  Form:         codeTypeCategory=Sex, codeTypeSource=NCIC
+  CommSys QIDM: codeTypeProvider=NCIC
+  RMS QIDM:     remove sex attrs (same as NIBRS_SEX fallback -- neither path supports RMS
+                sex filtering on FL's instance)
+
+Functionally identical to NIBRS_SEX fallback:
+  Both store string "M"/"F"/"U". Neither goes through attributeTypeId reverse-lookup.
+  Both produce <SexCode>M</SexCode> in CommSys XML.
+  NCIC sex codes are M/F -- same options visible to officer.
+
+Priority: LOW. NIBRS_SEX is confirmed working on FL. Use NCIC Sex only if NIBRS_SEX
+causes a broken or empty form dropdown on FL's instance (same failure mode as
+NIBRS_RACE under NCIC). Document result here if tested.
+
+See SEX_CODE_PATTERN.txt "NCIC SEX -- BACKUP OPTION" section for full detail.

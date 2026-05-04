@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InterfaceSchema version="3.0" xsi:schemaLocation="http://schema.commsys.com/xml/ConnectCic/Api/InterfaceSchema ../ApiInterfaceSchema.xsd" xmlns="http://schema.commsys.com/xml/ConnectCic/Api/InterfaceSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<States>
+		<State name="NJ">
+			<Systems>
+				<System name="NJCJIS" version="1">
+					<MessageKeys>
+						<MessageKey name="FULL" type="Inquiry" description="Full Information Inquiry"/>
+						<MessageKey name="QA" type="Inquiry" description="Stolen Article Inquiry"/>
+						<MessageKey name="QB" type="Inquiry" description="Stolen Boat Inquiry"/>
+						<MessageKey name="QG" type="Inquiry" description="Stolen Gun Inquiry"/>
+						<MessageKey name="QV" type="Inquiry" description="Stolen Vehicle Inquiry"/>
+						<MessageKey name="RAND" type="Inquiry" description="License Plate Inquiry"/>
+					</MessageKeys>
+					<Transactions>
+						<Transaction name="ArticleSingleQuery" version="1">
+							<Fields>
+								<Field name="ArticleSerialNumber" type="Alphanumeric" maxLength="20" description="Serial Number"/>
+								<Field name="ArticleTypeCode" type="Alphanumeric" maxLength="7" description="Type Code"/>
+								<Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="QA" primaryFieldReference="ArticleSerialNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="ArticleSerialNumber"/>
+											<Field reference="ArticleTypeCode"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+						<Transaction name="BoatQuery" version="1">
+							<Fields>
+								<Field name="BoatHullIdNumber" type="Alphanumeric" maxLength="20" description="Hull Identification Number"/>
+								<Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator"/>
+								<Field name="RegistrationNumber" type="Alphanumeric" maxLength="20" description="Registration Number"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="QB" primaryFieldReference="RegistrationNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Current" system="Unknown" class="Unknown"/>
+										<ResponseType geoscope="Other" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="RegistrationNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="QB" primaryFieldReference="BoatHullIdNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Current" system="Unknown" class="Unknown"/>
+										<ResponseType geoscope="Other" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="BoatHullIdNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+						<Transaction name="DriverLicenseQuery" version="1">
+							<Fields>
+								<Field name="BirthDate" type="Alphanumeric" maxLength="8" description="Birth Date">
+									<Components>
+										<Component name="Day" type="Numeric"/>
+										<Component name="Month" type="Numeric"/>
+										<Component name="Year" type="Numeric"/>
+									</Components>
+								</Field>
+								<Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator"/>
+								<Field name="Name" type="Alphanumeric" maxLength="30" description="Name">
+									<Components>
+										<Component name="First" type="Alphabetic"/>
+										<Component name="Last" type="Alphabetic"/>
+										<Component name="Middle" type="Alphabetic"/>
+										<Component name="Suffix" type="Alphabetic"/>
+									</Components>
+								</Field>
+								<Field name="OperatorLicenseNumber" type="Alphanumeric" maxLength="20" description="Operator License Number"/>
+								<Field name="SexCode" type="Alphanumeric" maxLength="1" description="Sex"/>
+								<Field name="State" type="Alphanumeric" maxLength="2" description="State"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="FULL" primaryFieldReference="Name">
+									<ResponseTypes>
+										<ResponseType geoscope="Current" system="Unknown" class="Unknown"/>
+										<ResponseType geoscope="Other" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="BirthDate"/>
+											<Field reference="Name"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="SexCode"/>
+												<Field reference="State"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="FULL" primaryFieldReference="OperatorLicenseNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+										<ResponseType geoscope="Current" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="OperatorLicenseNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="State"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+						<Transaction name="GunQuery" version="1">
+							<Fields>
+								<Field name="GunCaliber" type="Alphanumeric" maxLength="4" description="Caliber"/>
+								<Field name="GunMake" type="Alphanumeric" maxLength="23" description="Make"/>
+								<Field name="GunModel" type="Alphanumeric" maxLength="20" description="Model"/>
+								<Field name="GunSerialNumber" type="Alphanumeric" maxLength="11" description="Serial Number"/>
+								<Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="QG" primaryFieldReference="GunSerialNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="GunSerialNumber"/>
+											<Any>
+												<Field reference="GunCaliber"/>
+												<Field reference="GunMake"/>
+												<Field reference="GunModel"/>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+						<Transaction name="VehicleRegistrationQuery" version="1">
+							<Fields>
+								<Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator"/>
+								<Field name="LicensePlateNumber" type="Alphanumeric" maxLength="10" description="License Plate Number"/>
+								<Field name="LicensePlateTypeCode" type="Alphanumeric" maxLength="2" description="License Plate Type"/>
+								<Field name="LicensePlateYear" type="Year" maxLength="4" description="License Plate Year"/>
+								<Field name="RandomRequest" type="Alphanumeric" maxLength="1" description="Random Request"/>
+								<Field name="State" type="Alphanumeric" maxLength="2" description="State"/>
+								<Field name="VehicleIdentificationNumber" type="Alphanumeric" maxLength="20" description="Vehicle Identification Number"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="RAND" primaryFieldReference="LicensePlateNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="LicensePlateNumber"/>
+											<Field reference="RandomRequest"/>
+											<Field reference="State"/>
+											<Field reference="LicensePlateTypeCode"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="LicensePlateYear"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="RAND" primaryFieldReference="VehicleIdentificationNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="VehicleIdentificationNumber"/>
+											<Field reference="RandomRequest"/>
+											<Field reference="State"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="FULL" primaryFieldReference="LicensePlateNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="LicensePlateNumber"/>
+											<Field reference="State"/>
+											<Field reference="LicensePlateTypeCode"/>
+											<Field reference="RandomRequest"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="LicensePlateYear"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="FULL" primaryFieldReference="VehicleIdentificationNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="VehicleIdentificationNumber"/>
+											<Field reference="State"/>
+											<Field reference="RandomRequest"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+						<Transaction name="VehicleStolenQuery" version="1">
+							<Fields>
+								<Field name="ImageIndicator" type="Alphanumeric" maxLength="1" description="Image Indicator"/>
+								<Field name="LicensePlateNumber" type="Alphanumeric" maxLength="10" description="License Plate Number"/>
+								<Field name="NCICNumber" type="Alphanumeric" maxLength="10" description="NCIC Number"/>
+								<Field name="State" type="Alphanumeric" maxLength="2" description="State"/>
+								<Field name="VehicleIdentificationNumber" type="Alphanumeric" maxLength="20" description="Vehicle Identification Number"/>
+								<Field name="VehicleMakeCode" type="Alphanumeric" maxLength="24" description="Vehicle Make Code"/>
+							</Fields>
+							<Combinations>
+								<Combination keyReference="QV" primaryFieldReference="NCICNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="NCICNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="QV" primaryFieldReference="LicensePlateNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="LicensePlateNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="State"/>
+												<Field reference="VehicleIdentificationNumber"/>
+												<Field reference="VehicleMakeCode"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+								<Combination keyReference="QV" primaryFieldReference="VehicleIdentificationNumber">
+									<ResponseTypes>
+										<ResponseType geoscope="Global" system="Unknown" class="Unknown"/>
+									</ResponseTypes>
+									<Requirements>
+										<Set>
+											<Field reference="VehicleIdentificationNumber"/>
+											<Any>
+												<Field reference="ImageIndicator"/>
+												<Field reference="VehicleMakeCode"/>
+											</Any>
+										</Set>
+									</Requirements>
+								</Combination>
+							</Combinations>
+						</Transaction>
+					</Transactions>
+					<ResponseTypes>
+						<ResponseType system="Unknown" class="Unknown" description="Unknown" version="0"/>
+					</ResponseTypes>
+				</System>
+			</Systems>
+		</State>
+	</States>
+</InterfaceSchema>

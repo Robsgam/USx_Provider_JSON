@@ -1,0 +1,161 @@
+﻿================================================================
+  Build Report: LA_LETTS_OFML_BASE
+  Source: LA_LETTS_OFML_BASE.json
+  Generated: 2026-04-24 16:24
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- LA_LETTS_OFML_BASE.json
+================================================================
+
+--- QIDM: LA_LEMS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 7  |  Combos: 1
+    [SKIP] GunSerialNumber -- missing set: SerialNumber
+
+--- QIDM: LA_LEMS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
+
+    [FIRES] LicensePlateNumber
+      set: [LicensePlateNumber]
+      any: [Attention, RegistrationState, LicensePlateTypeCode, LicensePlateYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>LicensePlateNumber</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] VehicleIdentificationNumber
+      set: [VehicleIdentificationNumber]
+      any: [Attention, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [RegistrationState, VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>VehicleIdentificationNumber</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+--- QIDM: LA_LEMS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 2
+
+    [FIRES] OperatorLicenseNumberRegistrationStateAttention
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState, ImageIndicator, Attention] -> matched: [RegistrationState, ImageIndicator, Attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>OperatorLicenseNumberRegistrationStateAttention</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] BirthDateNameRaceCodeSexCodeRegistrationStateAttention
+      set: [BirthDate, NameLast, NameFirst, RaceCode, SexCode]
+      any: [RegistrationState, Attention, ImageIndicator] -> matched: [RegistrationState, Attention, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BirthDateNameRaceCodeSexCodeRegistrationStateAttention</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: LA_LEMS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] BirthDateNamePurposeCodeSexCodeRegistrationStateAttention
+      set: [BirthDate, NameLast, NameFirst, SexCode]
+      any: [RegistrationState, PurposeCode, Attention] -> matched: [RegistrationState, PurposeCode, Attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BirthDateNamePurposeCodeSexCodeRegistrationStateAttention</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] OperatorLicenseNumberPurposeCodeRegistrationStateAttention
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState, PurposeCode, Attention] -> matched: [RegistrationState, PurposeCode, Attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>OperatorLicenseNumberPurposeCodeRegistrationStateAttention</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: LA_LEMS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+
+    [FIRES] BoatHullIdNumberAttentionRegistrationState
+      set: [BoatHullIdNumber]
+      any: [Attention, RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BoatHullIdNumberAttentionRegistrationState</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] RegistrationNumberAttentionRegistrationState
+      set: [RegistrationNumber]
+      any: [Attention, RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RegistrationNumberAttentionRegistrationState</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+--- QIDM: LA_LEMS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+    [SKIP] ArticleSerialNumber -- missing set: SerialNumber
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+
+

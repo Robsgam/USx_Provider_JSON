@@ -1,0 +1,35 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Person Name + DOB + OOS State (T20-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T20-mc -- DriverLicenseQuery, DQ, Name + DOB + OOS State cross -- PASS
+================================================================================
+
+Form    : Person QIF | OLN card State: MT (changed from NJ default) | Name card | Last: SMITH | First: JOHN | DOB: 01/01/1950
+Result  : No Returns (expected)
+Status  : PASS
+
+Setup: OLN card State changed to MT (OOS) first; Name card filled second.
+       State and Image (Y) both crossed from OLN card to Name path query.
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBVFK5RME2KG01MQECX91JH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KPBVFK5RME2KG01MQECX91JH</Id><ImageIndicator>Y</ImageIndicator><State>MT</State><BirthDate>01011950</BirthDate><Name>JOHN SMITH</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1950-01-01"},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=DriverLicenseQuery (DQ -- Name path) correct
+  - <Name>JOHN SMITH</Name> correct
+  - <BirthDate>01011950</BirthDate> correct
+  - <State>MT</State> confirmed -- OOS state set on OLN card crosses to Name path query
+  - <ImageIndicator>Y</ImageIndicator> confirmed -- Image crosses from OLN card (same as NJ state test T8-mc)
+  - Cross-card mechanism confirmed for OOS state: OLN card State field feeds both DQN and DQ paths
+  - RMS: lastName/firstName/dateOfBirth only -- no state filter, no sexAttrId (Patch 3 confirmed)

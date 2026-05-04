@@ -1,0 +1,33 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Boat Hull ID + OOS State cross (T23-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T23-mc -- BoatQuery, BQN, Hull ID + OOS State cross from Reg card -- PASS
+================================================================================
+
+Form    : Boat QIF | Reg card State: FL (changed from NJ default) | Hull card | Hull: LHD80707234
+Result  : No Returns (expected)
+Status  : PASS
+
+Setup: Reg card State changed to FL (OOS) first; Hull card filled second.
+       OOS State crossed from Registration card to Hull query.
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBVS3054RRK8M9V7JPRXX58"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234767</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KPBVS3054RRK8M9V7JPRXX58</Id><BoatHullIdNumber>LHD80707234</BoatHullIdNumber><State>FL</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+(none -- no RMS query for Boat)
+
+Analysis:
+  - MessageType=BoatQuery (BQN -- Hull path) correct
+  - <BoatHullIdNumber>LHD80707234</BoatHullIdNumber> correct
+  - <State>FL</State> confirmed -- OOS state set on Reg card crosses to Hull query
+  - Cross-card OOS state mechanism confirmed for Boat QIF (same as NJ cross confirmed in T14-mc)
+  - No RMS query fires for Boat (confirmed)
+
+FINAL NOTE: T23-mc completes the mc variant gap audit test sequence.
+  All 23 mc tests PASS. NJ_NJCJIS_mc.json v1.0-mc FULLY VALIDATED (23/23).

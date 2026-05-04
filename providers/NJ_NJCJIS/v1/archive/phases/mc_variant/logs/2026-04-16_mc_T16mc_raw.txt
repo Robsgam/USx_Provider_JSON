@@ -1,0 +1,31 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Vehicle VIN NJ + optional fields (T16-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T16-mc -- VehicleRegistrationQuery, RQN, VIN NJ + optional fields -- PASS
+================================================================================
+
+Form    : Vehicle QIF | VIN: 1236547855 | State: NJ (initialValue default) | Image: Y | Random: Y
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBV2XTY1SCBKPZAWARXANEX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KPBV2XTY1SCBKPZAWARXANEX</Id><VehicleIdentificationNumber>1236547855</VehicleIdentificationNumber><ImageIndicator>Y</ImageIndicator><State>NJ</State><RandomRequest>Y</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"vehicle":{"vinNumber":"1236547855"}},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=VehicleRegistrationQuery (RQN -- VIN path) correct
+  - <VehicleIdentificationNumber>1236547855</VehicleIdentificationNumber> correct
+  - <State>NJ</State> confirmed from initialValue=NJ on visible RegistrationStateOOS
+  - <ImageIndicator>Y</ImageIndicator> correct
+  - <RandomRequest>Y</RandomRequest> correct
+  - RMS: vinNumber only (1236547855), no registrationStateAttrIds -- mc trade-off confirmed for NJ VIN path with optionals

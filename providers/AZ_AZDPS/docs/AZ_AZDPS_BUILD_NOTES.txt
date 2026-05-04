@@ -1,0 +1,161 @@
+AZ_AZDPS -- Build Notes
+========================
+Last updated: 2026-04-30
+Current version: v2.0 (NJ cross-reference rebuild + MC variant)
+
+================================================================================
+2026-04-30  v2.0 -- NJ Cross-Reference Rebuild (BASE + MC)
+================================================================================
+
+CHANGED
+  Complete from-scratch rebuild with NJ cross-reference (GATE 7) standards.
+  Both BASE and MC variants built from same QIDM/combo definitions.
+
+  1. AUTH keyReference='AUTH' added to authentication config
+  2. PlateType default=PC, PlateYear default=2026 (safe -- no combo routing impact)
+  3. LicensePlateNumber -> LicensePlateNumberIn on form, QIDM sourceField, and all combo refs
+     (LIMITATION #8: RMS plate search requires 'In' suffix)
+  4. RaceCode: changed from codeTypeCategory='NIBRS_RACE'/codeTypeSource='NIBRS' to
+     attributeTypeId='RACE'/codeTypeProvider='NIBRS' (same pattern as Sex)
+     Required validator AP #3 fix to not false-positive on codeTypeProvider race.
+  5. Provider bundle: added description='AZ AZDPS CommSys Provider' and provider='AZ_AZDPS'
+  6. RMS Patch 3: registrationState attribute + combo any[] on RMS Person QIDM
+  7. RMS Patch 6: removed dead HIDLE OOS fields from RMS Vehicle+Person QIDMs
+     (kept SocialSecurityNumber for AZ -- DQSS combo uses it)
+  8. queryLabel standard applied to all 8 CommSys QIDMs
+  9. MC variant created with multi-card layouts:
+     Vehicle (3 cards), Person (7 cards), Firearm (1), Article (1), Boat (3 cards)
+  10. Person form ROW layout fixes: ROW_PER_1B @('6','6') -> @('6'), ROW_PER_10 @('6','6') -> @('6')
+
+RESULT
+  BASE: 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE / 0 SKIP
+  MC:   69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE / 0 SKIP
+  Import: PENDING
+
+VALIDATOR FIXES (applied during AZ rebuild)
+  1. ImageIndicator: validator now only WARNs if a QIDM maps ImageIndicator but the
+     form doesn't have it. If no QIDM maps it (scope difference), no warning.
+  2. Attention: validator now only WARNs if the QIDM has CommsysGetLastNameFirstName
+     handler (auto-fill style). If no handler (user-typed style like AZ), no warning.
+  3. RMS SSN: validator now skips SocialSecurityNumber dead-HIDLE check if the
+     provider's Person form actually has an SSN field. AZ uses SSN (DQSS combo).
+  All fixes verified: AZ 0 WARN, NJ 0 WARN, NY 0 WARN (all 6 JSONs clean).
+
+INSIGHTS FOR OTHER BUILDS
+  1. Validator AP #3 Race false positive: fixed in validator (added codeTypeProvider check).
+     Applies to any future provider using attributeTypeId=RACE + codeTypeProvider=NIBRS.
+  2. LicensePlateNumberIn: all providers should use 'In' suffix for RMS plate compatibility.
+     Verify NJ/NY use LicensePlateNumberIn (NJ confirmed, NY should be checked).
+  3. ImageIndicator is NOT universal: per-provider metadata determines support.
+     AZ has RelatedHitSearchIndicator instead on Gun/Article/Boat.
+  4. RMS SSN handling: if provider DL form has SSN, keep SSN in RMS Person QIDM.
+
+================================================================================
+2026-04-23  v1.1 -- queryLabel standardization (direct JSON edit)
+================================================================================
+
+CHANGED: VehicleRegistrationQuery queryLabel "Vehicle" -> "Vehicle Registration"
+REASON:  KB queryLabel standard adopted across all providers.
+SCOPE:   AZ_AZDPS_BASE.json only -- no rebuild, no QIDM/combination changes.
+
+================================================================================
+2026-04-20  v1.1 -- dexStateUserId (Badge hidden/auto-populated)
+================================================================================
+
+CHANGED
+  - BadgeNumber visible Inp removed from all 5 QIF forms
+  - Hidden InpH 'dexStateUserId' added to each form
+  - QIDM BadgeNumber attribute sourceField changed to @('dexStateUserId')
+  - All QIDM combination set[]/any[] refs: 'BadgeNumber' -> 'dexStateUserId'
+  - Column widths adjusted per form
+RESULT: 0 errors, 0 warnings. Import: PENDING
+
+================================================================================
+2026-04-20  v1.0 -- Phase 1 rebuild (from HIDLE.json template)
+================================================================================
+
+CHANGED
+  Complete Phase 1 rebuild: 5 QIFs (1 card each), 8 CommSys QIDMs, all paths on
+  single card per entity. Matches NJ/NY Phase 1 model.
+RESULT: 0 errors, 0 warnings. Import: PENDING
+
+================================================================================
+BUNDLE STRUCTURE (v2.0)
+================================================================================
+
+Bundle 1: ENTITIES (provider=MARK43)
+  ENTITY_Vehicle                         QUERYINPUTFORM  Vehicle
+  ENTITY_Person                          QUERYINPUTFORM  Person
+  ENTITY_Firearm                         QUERYINPUTFORM  Firearm
+  ENTITY_Article                         QUERYINPUTFORM  Article
+  ENTITY_Boat                            QUERYINPUTFORM  Boat
+
+Bundle 2: AZ_AZDPS (CommSys provider)
+  AZ_AZDPS                              AUTHENTICATION
+  AZ_AZDPS_Results                      QUERYRESULTDATAMAPPING
+  AZ_AZDPS_QueryMessageFormat           QUERYMESSAGEFORMAT
+  AZ_AZDPS_VehicleRegistrationQuery     QUERYINPUTDATAMAPPING   Vehicle (ACVR + ACVRV)
+  AZ_AZDPS_AzAzdpsDriverLicenseQuery    QUERYINPUTDATAMAPPING   Person  (DQ + DQN + DQSS + ACWL)
+  AZ_AZDPS_DriverHistoryQuery           QUERYINPUTDATAMAPPING   Person  (KQ + KQH)
+  AZ_AZDPS_GunQuery                     QUERYINPUTDATAMAPPING   Firearm (ACQG)
+  AZ_AZDPS_ArticleSingleQuery           QUERYINPUTDATAMAPPING   Article (ACQA)
+  AZ_AZDPS_BoatQuery                    QUERYINPUTDATAMAPPING   Boat    (ACQB + ACQBH + BQ + BQH)
+  AZ_AZDPS_WMPIWantedPersonInquiry      QUERYINPUTDATAMAPPING   Person  (ACQW + ACQWN)
+  AZ_AZDPS_WMPIMissingPersonInquiry     QUERYINPUTDATAMAPPING   Person  (ACQM + ACQMN)
+
+Bundle 3: RMS
+  RMS AUTHENTICATION, QUERYMESSAGEFORMAT, QUERYRESULTDATAMAPPING, QUERYRESULTSLAYOUT
+  RMS Vehicle search query              QUERYINPUTDATAMAPPING   Vehicle
+  RMS Person Search query               QUERYINPUTDATAMAPPING   Person
+  Patches: 1 (LicensePlateYear), 2 (autoSelect), 3 (registrationState), 6 (dead HIDLE cleanup, SSN kept)
+
+================================================================================
+DESIGN DECISIONS
+================================================================================
+
+STATE (NCIC confirmed for AZ):
+  Form: FormSelect fieldId='RegistrationState', attributeTypeId='STATE', initialValue='AZ'
+  QIDM: sourceField=@('RegistrationState'), targetField='State', codeTypeProvider='NCIC'
+  DH hidden state: InpH fieldId='StateDH', initialValue='AZ' (mandatory in KQ/KQH set[])
+
+SEX (NIBRS confirmed):
+  Form: FormSelect fieldId='SexCode', attributeTypeId='SEX', codeTypeProvider='NIBRS'
+  RMS: useAttributeId=True passes attribute ID directly
+  DH: SexCodeDH (DH-suffix isolation)
+
+RACE (NIBRS confirmed -- AP #3 fix):
+  Form: FormSelect fieldId='RaceCode', attributeTypeId='RACE', codeTypeProvider='NIBRS'
+  QIDM: codeTypeProvider='NIBRS' triggers reverse-lookup
+  Validator AP #3 updated to skip when codeTypeProvider present (same logic as Sex)
+
+BIRTHDATE (AZ uses yyyyMMdd):
+  CommsysParseDateRuleHandler arguments = @('yyyy-MM-dd','yyyyMMdd')
+
+NAME FORMAT:
+  FormatStringRuleHandler arguments = @(', ',' ',' ')
+  Produces: "Last, First Middle Suffix"
+
+INVENTED keyRefs:
+  ACVRV, DQN, DQSS, KQH, ACQBH, BQH, ACQWN, ACQMN
+
+DH-SUFFIX ISOLATION (LIMITATION #26):
+  OperatorLicenseNumberDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH,
+  BirthDateDH, SexCodeDH, StateDH
+
+BADGE (dexStateUserId):
+  Hidden InpH on all 5 forms, auto-populated via CommsysGetDexStateUserIdRuleHandler.
+  QIDM BadgeNumber attribute sourceField='dexStateUserId'.
+
+RELATEDHITSEARCHINDICATOR:
+  AZ uses RelatedHitSearchIndicator (not ImageIndicator) on Gun, Article, Boat.
+  Metadata-confirmed. Different from NJ/NY ImageIndicator pattern.
+
+================================================================================
+VERSION HISTORY (newest first)
+================================================================================
+
+  v2.0  2026-04-30  NJ cross-reference rebuild (BASE + MC)
+  v1.1  2026-04-23  queryLabel standardization
+  v1.1  2026-04-20  dexStateUserId (Badge hidden/auto-populated)
+  v1.0  2026-04-20  Phase 1 rebuild (from-scratch)
+  --- v2.x prior series retired ---

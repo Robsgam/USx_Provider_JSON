@@ -1,0 +1,266 @@
+CONNECTCIC RULE HANDLERS -- Complete Reference
+===================================================
+Last updated: 2026-04-28
+Source: HIDLE.json + CA_ESUN.json + all built provider JSONs
+
+24 unique handlers across the ConnectCIC provider JSON ecosystem.
+Found at 4 property paths in the JSON structure.
+
+================================================================================
+  PROPERTY PATHS
+================================================================================
+
+  1. handlerFunction       Top-level on configuration objects
+                           e.g. bundles[].configurations[].handlerFunction
+                           Used on: AUTHENTICATION, QIDM, QMF, QRDM, QUERYRESULTSLAYOUT
+
+  2. rule.function         Inside attribute definitions (primary rule)
+                           e.g. bundles[].configurations[].attributes[].rule.function
+                           Used on: AUTHENTICATION, QIDM, QRDM attrs
+
+  3. fallbackRule.function Inside attribute definitions (fallback rule)
+                           e.g. bundles[].configurations[].attributes[].fallbackRule.function
+                           Used on: QRDM attrs (regex fallback parsing)
+
+  4. ParallelQuery.function Top-level on bundle (not configuration)
+                           e.g. bundles[].ParallelQuery.function
+                           Used on: RMS bundle only
+
+================================================================================
+  HANDLER FUNCTIONS (9) -- handlerFunction on configs
+================================================================================
+
+  These are top-level handlers that control how entire configs process data.
+  Build scripts set these when creating QIDM/Auth/QMF/QRDM configs.
+
+  1. CommsysOriAuthenticationHandler
+     Config type:  AUTHENTICATION
+     Bundle:       Auth (provider-named, e.g. HI_HCJDC, NJ_NJCJIS)
+     Purpose:      ORI-based authentication for CommSys queries
+     Source:       HIDLE.json (cloned by build scripts, name overridden)
+     All builds:   YES -- every provider has this
+
+  2. RestAuthenticationHandler
+     Config type:  AUTHENTICATION
+     Bundle:       RMS
+     Purpose:      REST API authentication for RMS queries
+     Source:       HIDLE.json (RMS bundle, unchanged)
+     All builds:   YES -- inherited from HIDLE
+
+  3. CommsysTransactionRequestHandler
+     Config type:  QUERYINPUTDATAMAPPING (QIDM)
+     Bundle:       Provider (e.g. NJ_NJCJIS, NY_NYSPIN_EJUSTICE)
+     Purpose:      Builds CommSys XML transaction request from form fields
+     Source:       Build script creates each QIDM with this handler
+     All builds:   YES -- one per QIDM (6-11 per provider)
+
+  4. CommsysWsiOutgoingMessageHandler
+     Config type:  QUERYMESSAGEFORMAT (QMF)
+     Bundle:       Provider
+     Purpose:      Formats WSI outgoing message envelope for CommSys
+     Source:       HIDLE.json (cloned, name overridden)
+     All builds:   YES -- exactly one per provider
+
+  5. CommsysResultsHandler
+     Config type:  QUERYRESULTDATAMAPPING (QRDM)
+     Bundle:       Provider
+     Purpose:      Parses CommSys result set into field values
+     Source:       HIDLE.json (cloned, name overridden)
+     All builds:   YES -- exactly one per provider
+
+  6. RmsRestPayloadHandler
+     Config type:  QUERYINPUTDATAMAPPING (QIDM)
+     Bundle:       RMS
+     Purpose:      Builds JSON/REST payload for RMS search queries
+     Source:       HIDLE.json (RMS bundle, unchanged)
+     All builds:   YES -- one per RMS QIDM (Person + Vehicle)
+
+  7. RmsRestResultsHandler
+     Config type:  QUERYRESULTDATAMAPPING (QRDM)
+     Bundle:       RMS
+     Purpose:      Parses JSON response from RMS REST API
+     Source:       HIDLE.json (RMS bundle, unchanged)
+     All builds:   YES -- exactly one
+
+  8. RestRequestHandler
+     Config type:  QUERYMESSAGEFORMAT (QMF)
+     Bundle:       RMS
+     Purpose:      Builds HTTP request for RMS REST queries
+     Source:       HIDLE.json (RMS bundle, unchanged)
+     All builds:   YES -- exactly one
+
+  9. QueryResultsLayoutHandler
+     Config type:  QUERYRESULTSLAYOUT
+     Bundle:       RMS
+     Purpose:      Controls result display layout in UI
+     Source:       HIDLE.json (RMS bundle, unchanged)
+     All builds:   YES -- exactly one
+
+================================================================================
+  RULE HANDLERS (14) -- rule.function / fallbackRule.function on attrs
+================================================================================
+
+  These are attribute-level transformation handlers that modify field values
+  during query building (QIDM) or result parsing (QRDM).
+
+  --- QIDM (outbound query building) ---
+
+  10. CommsysGetDexStateUserIdRuleHandler
+      Config type:  AUTHENTICATION attribute (UserName)
+      Arguments:    ['true']
+      Purpose:      Extracts DEX state user ID from officer RMS profile
+      Source:       HIDLE.json (Auth config)
+      All builds:   YES
+
+  11. CommsysParseDateRuleHandler
+      Config type:  QIDM attribute (BirthDate)
+      Arguments:    ['yyyy-MM-dd', '<provider-format>']
+      Purpose:      Converts ISO date to provider-specific format
+      Source:       Build script (on BirthDate attrs in DL/DH QIDMs)
+      All builds:   YES (any provider with Person DL/DH queries)
+      Note:         Second argument is provider-specific (MMddyyyy, yyyyMMdd)
+
+  12. FormatStringRuleHandler
+      Config type:  QIDM attribute (Name), also QRDM
+      Arguments:    separators (count = sourceField count - 1)
+      Purpose:      Concatenates multiple sourceFields with separators
+      Source:       Build script (on Name attrs with Last,First,Middle format)
+      All builds:   YES (any provider with Name queries)
+      AP #15:       Arguments count MUST equal sourceField count minus 1
+
+  13. CommsysGetLastNameFirstNameInitialRuleHandler
+      Config type:  QIDM attribute (Attention)
+      Arguments:    none
+      Purpose:      Formats officer name as "LastName, FirstName Initial"
+      Source:       CA_ESUN template only
+      All builds:   NO -- CA_ESUN/LA_LETTS_OFML pattern only
+
+  14. IgnoreUserValueRuleHandler
+      Config type:  QIDM attribute
+      Arguments:    varies
+      Purpose:      Ignores user input, passes raw sourceField value
+      Source:       CA_ESUN template only
+      All builds:   NO -- DEAD END (AP #4). Does NOT substitute argument.
+      Status:       DO NOT USE in new builds
+
+  15. CommsysArticleAttributeRuleHandler
+      Config type:  QIDM attribute (ArticleTypeCode)
+      Arguments:    none
+      Purpose:      Maps article-specific attributes for CommSys
+      Source:       CA_ESUN template only
+      All builds:   NO -- CA_ESUN/FL pattern only
+
+  --- QRDM (inbound result parsing) ---
+
+  16. CommsysResultAttributeMappingRuleHandler
+      Config type:  QRDM attribute (primary rule)
+      Arguments:    none (uses codeTypeCategory/codeTypeSource on attr)
+      Purpose:      Maps CommSys result codes back to RMS attributes
+      Source:       HIDLE.json (QRDM config)
+      All builds:   YES -- used on State, Sex, Race, Eye, Hair, Color, Make, Style
+
+  17. CommysResultFallbackRegexRuleHandler
+      Config type:  QRDM attribute (fallbackRule)
+      Arguments:    regex pattern, replacement, optional 'rule'/'trim'
+      Purpose:      Regex-based fallback field extraction from raw text
+      Source:       HIDLE.json (QRDM config)
+      All builds:   YES -- paired with primary rules as fallback
+      Note:         Typo in name (Commys not Commsys) is correct -- do not fix
+
+  18. HeightParserRuleHandler
+      Config type:  QRDM attribute (Height, HeightFeet, HeightInches, HeightDisplay)
+      Arguments:    format array + output type ('height'/'feet'/'inches'/'total')
+      Purpose:      Parses height values (e.g. "510" to feet/inches)
+      Source:       HIDLE.json (QRDM + RMS Results)
+      All builds:   YES
+
+  19. ParseCommsysNameRuleHandler
+      Config type:  QRDM attribute (NameFirst, NameLast, NameMiddle, Name)
+      Arguments:    format arrays for name parsing
+      Purpose:      Parses "LAST, FIRST MIDDLE" format from CommSys
+      Source:       HIDLE.json (QRDM config)
+      All builds:   YES
+
+  20. ParseCommsysVehicleYearRuleHandler
+      Config type:  QRDM attribute (VehicleYear)
+      Arguments:    ['50'] (century cutoff)
+      Purpose:      Parses 2-digit or 4-digit vehicle year
+      Source:       HIDLE.json (QRDM config)
+      All builds:   YES
+
+  21. truncate
+      Config type:  QRDM attribute (SocialSecurityNumber)
+      Arguments:    none (uses size property on attribute)
+      Purpose:      Truncates field value to attribute size
+      Source:       HIDLE.json (QRDM config)
+      All builds:   YES
+      Note:         Lowercase name -- not a typo
+
+  --- RMS result parsing ---
+
+  22. FormatArrayRuleHandler
+      Config type:  RMS QRDM attribute (Cautions, WarrantDetails, Addresses, etc.)
+      Arguments:    format arrays for nested object display
+      Purpose:      Formats array/nested result values for display
+      Source:       HIDLE.json (RMS Results)
+      All builds:   YES
+
+  23. FormatNameRuleHandler
+      Config type:  RMS QRDM attribute (Name)
+      Arguments:    format arrays
+      Purpose:      Formats name fields from RMS response
+      Source:       HIDLE.json (RMS Results)
+      All builds:   YES
+
+  --- RMS query building ---
+
+  24. AttributeArrayWrapperRuleHandler
+      Config type:  RMS QIDM attribute (registrationStateAttrIds, raceAttrIds)
+      Arguments:    none
+      Purpose:      Wraps single attribute ID value in array format
+      Source:       HIDLE.json (RMS QIDMs)
+      All builds:   YES
+      LIMITATION #27: Do NOT use on sexAttrId -- causes RMS 400
+
+================================================================================
+  SPECIAL HANDLER
+================================================================================
+
+  parallelQueryHandler
+      Property:     ParallelQuery.function (top-level on RMS bundle)
+      Purpose:      Fires Person + Vehicle RMS queries simultaneously
+      Source:       HIDLE.json (RMS bundle)
+      All builds:   YES
+
+================================================================================
+  HANDLER ORIGIN MAP
+================================================================================
+
+  HIDLE.json provides:     21 handlers (all builds inherit these)
+  CA_ESUN.json adds:       3 handlers (IgnoreUserValue, CommsysArticle, GetLastNameFirstName)
+  Build scripts configure: CommsysTransactionRequestHandler on each QIDM
+                           CommsysParseDateRuleHandler on BirthDate attrs
+                           FormatStringRuleHandler on Name attrs
+
+  Total ecosystem:         24 unique handlers
+
+================================================================================
+  DEAD ENDS / DO NOT USE
+================================================================================
+
+  IgnoreUserValueRuleHandler -- AP #4. Does not substitute argument value.
+                                Only found in CA_ESUN. Do not add to new builds.
+
+================================================================================
+  BUILD SCRIPT CHECKLIST
+================================================================================
+
+  Every QIDM must have:    handlerFunction = 'CommsysTransactionRequestHandler'
+  BirthDate attrs:          rule.function = 'CommsysParseDateRuleHandler'
+  Name attrs:               rule.function = 'FormatStringRuleHandler'
+  Auth config:              handlerFunction = 'CommsysOriAuthenticationHandler'
+  QMF config:               handlerFunction = 'CommsysWsiOutgoingMessageHandler'
+  QRDM config:              handlerFunction = 'CommsysResultsHandler'
+
+  All RMS/Auth/QMF/QRDM handlers are inherited from HIDLE.json.
+  Build scripts only need to explicitly set handlers on QIDM attrs they create.

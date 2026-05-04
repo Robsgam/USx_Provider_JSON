@@ -1,0 +1,76 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Article
+Combo      : QA+Serial
+Test type  : T2 (basic combo verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ArticleSerialNumber       ABC123             typed
+  ArticleTypeCode           BBICYCL            dropdown selection
+  OwnerAppliedNumber        (empty)            --
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (ArticleSingleQuery):
+    Transaction : 01KQJ0XXMCQR13KS4J1D9MGRW3
+    MessageType : ArticleSingleQuery
+    keyReference: QAArticleSerialNumber
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      ArticleSerialNumber  ABC123
+      ArticleTypeCode      BBICYCL
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QAArticleSerialNumber (ArticleSingleQuery)
+  Reason: set=[ArticleSerialNumber, ArticleTypeCode] both satisfied
+
+  ArticleSingleQuery attributes:
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  ArticleSerialNumber    YES    ABC123          typed
+  ArticleTypeCode        YES    BBICYCL         dropdown (NCIC_ARTICLE_TYPE)
+  ImageIndicator         YES    N               default (any[])
+  OwnerAppliedNumber     NO     --              empty
+  NCICNumber             NO     --              empty
+  ProcessControlNumber   NO     --              empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Article entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QA combo fires correctly with Serial+ArticleType, ImageIndicator=N. No RMS (correct — no Article RMS config).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+ArticleSingleQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0XXMCQR13KS4J1D9MGRW3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KQJ0XXMCQR13KS4J1D9MGRW3</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCL</ArticleTypeCode><ArticleSerialNumber>ABC123</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

@@ -1,0 +1,130 @@
+NJ_NJCJIS v1.3 -- Full Standup Test Run
+========================================
+Date    : 2026-04-20
+Version : v1.3 (2-card layouts for Vehicle, Person, Boat)
+File    : NJ_NJCJIS.json -> phases/01_standup/NJ_NJCJIS_v1.3_2026-04-20.json
+All tests: No Returns (expected -- test data)
+Result  : ALL 9 PATHS PASS
+
+CHANGES FROM v1.2
+  Form layout only -- no QIDM changes.
+  Vehicle: 1 card -> 2 cards (PLATE SEARCH + VIN SEARCH)
+  Person:  1 card -> 2 cards (LICENSE NUMBER SEARCH + NAME SEARCH)
+  Firearm: card title uppercased (NCIC FIREARM QUERY)
+  Article: card title uppercased (NCIC ARTICLE QUERY)
+  Boat:    1 card -> 2 cards (REGISTRATION SEARCH + HULL ID SEARCH)
+
+KEY v1.3 CONFIRMATIONS (cross-card state carry)
+  Test 2: State defined on PLATE SEARCH card carries to VIN SEARCH card -- CommSys + RMS CONFIRMED
+  Test 4: State defined on LICENSE NUMBER SEARCH card carries to NAME SEARCH card -- CommSys + RMS CONFIRMED
+  Test 9: State defined on REGISTRATION SEARCH card carries to HULL ID SEARCH card -- CommSys CONFIRMED
+
+PATCHES ACTIVE
+  Patch 1: RegistrationState added to RMS Vehicle licensePlateIn any[]
+  Patch 2: RegistrationStateOut dropped from RMS Vehicle licensePlateOutAndState set[]
+  Patch 3: registrationStateAttrId added to RMS Person QIDM
+
+================================================================================
+TEST 1 -- Vehicle Plate (RQ)
+================================================================================
+Form    : Vehicle | PLATE SEARCH card | Plate: ABC123 | State: NJ | VIN: blank
+CommSys : <MessageType>VehicleRegistrationQuery</MessageType>
+          <LicensePlateNumber>ABC123</LicensePlateNumber>
+          <State>NJ</State>
+RMS     : {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"tag":"abc123"}}}
+Result  : PASS -- plate + state (array) correct
+
+================================================================================
+TEST 2 -- Vehicle VIN (RQN)  [KEY v1.3 TEST -- cross-card state]
+================================================================================
+Form    : Vehicle | VIN SEARCH card | VIN: 123546585 | Plate: blank
+          State: NJ (on PLATE SEARCH card, untouched)
+CommSys : <MessageType>VehicleRegistrationQuery</MessageType>
+          <VehicleIdentificationNumber>123546585</VehicleIdentificationNumber>
+          <State>NJ</State>
+RMS     : {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"123546585"}}}
+Result  : PASS -- State crossed from PLATE SEARCH card to VIN SEARCH card (CommSys + RMS CONFIRMED)
+NOTE    : VIN SEARCH card has no State field. State carry from PLATE SEARCH card via shared field pool.
+          Both CommSys <State>NJ</State> and RMS registrationStateAttrIds confirmed present.
+
+================================================================================
+TEST 3 -- Person OLN (DQN)
+================================================================================
+Form    : Person | LICENSE NUMBER SEARCH card | OLN: 12345685 | State: NJ | Image: Y
+CommSys : <MessageType>DriverLicenseQuery</MessageType>
+          <OperatorLicenseNumber>12345685</OperatorLicenseNumber>
+          <ImageIndicator>Y</ImageIndicator>
+          <State>NJ</State>
+RMS     : {"elasticQuery":{"dlNumber":"12345685","registrationStateAttrId":"69509884952"}}
+Result  : PASS -- dlNumber + registrationStateAttrId (string) confirmed
+
+================================================================================
+TEST 4 -- Person Name+DOB (DQ, no sex)  [KEY v1.3 TEST -- cross-card state]
+================================================================================
+Form    : Person | NAME SEARCH card | First: ROB | Last: SGAMBELLONE | DOB: 1952-01-01 | Sex: blank
+          State: NJ | Image: Y (both on LICENSE NUMBER SEARCH card, untouched) | OLN: blank
+CommSys : <MessageType>DriverLicenseQuery</MessageType>
+          <Name>SGAMBELLONE, ROB</Name>
+          <BirthDate>01011952</BirthDate>
+          <ImageIndicator>Y</ImageIndicator>
+          <State>NJ</State>
+RMS     : {"elasticQuery":{"lastName":"sgambellone","firstName":"rob","dateOfBirth":"1952-01-01",
+           "registrationStateAttrId":"69509884952"}}
+Result  : PASS -- State + ImageIndicator crossed from LICENSE NUMBER SEARCH card to NAME SEARCH card
+NOTE    : NAME SEARCH card has no State or Image fields. All three (State, Image, registrationStateAttrId)
+          confirmed present. Cross-card carry via shared field pool CONFIRMED.
+
+================================================================================
+TEST 5 -- Person Name+DOB+Sex (DQ + sex)
+================================================================================
+Form    : Person | NAME SEARCH card | First: ROB | Last: SGAMBELLONE | DOB: 1952-01-01 | Sex: Female
+          State: NJ | Image: Y (on LICENSE NUMBER SEARCH card) | OLN: blank
+CommSys : <MessageType>DriverLicenseQuery</MessageType>
+          <Name>SGAMBELLONE, ROB</Name>
+          <BirthDate>01011952</BirthDate>
+          <SexCode>F</SexCode>
+          <ImageIndicator>Y</ImageIndicator>
+          <State>NJ</State>
+RMS     : {"elasticQuery":{"lastName":"sgambellone","firstName":"rob","sexAttrId":"69509894381",
+           "dateOfBirth":"1952-01-01","registrationStateAttrId":"69509884952"}}
+Result  : PASS -- CommSys <SexCode>F</SexCode> + RMS sexAttrId (string) + registrationStateAttrId
+          All confirmed simultaneously. State crossed from LICENSE NUMBER SEARCH card.
+
+================================================================================
+TEST 6 -- Firearm Serial (QG)
+================================================================================
+Form    : Firearm | NCIC FIREARM QUERY card | Serial: 1236545 | Make/Caliber: blank
+CommSys : <MessageType>GunQuery</MessageType>
+          <GunSerialNumber>1236545</GunSerialNumber>
+RMS     : (none -- Firearm has no RMS QIDM)
+Result  : PASS
+
+================================================================================
+TEST 7 -- Article Serial+Type (QA)
+================================================================================
+Form    : Article | NCIC ARTICLE QUERY card | Serial: 1236548 | Type: BBICYCL (Bicycle)
+CommSys : <MessageType>ArticleSingleQuery</MessageType>
+          <ArticleSerialNumber>1236548</ArticleSerialNumber>
+          <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+Result  : PASS -- ArticleTypeCode codeTypeSource=CA_CLETS confirmed populated
+
+================================================================================
+TEST 8 -- Boat Registration (BQ)
+================================================================================
+Form    : Boat | REGISTRATION SEARCH card | Reg: BOATREG1 | State: NJ | Hull: blank
+CommSys : <MessageType>BoatQuery</MessageType>
+          <RegistrationNumber>BOATREG1</RegistrationNumber>
+          <State>NJ</State>
+RMS     : (none -- Boat has no RMS QIDM)
+Result  : PASS
+
+================================================================================
+TEST 9 -- Boat Hull (BQN)  [KEY v1.3 TEST -- cross-card state]
+================================================================================
+Form    : Boat | HULL ID SEARCH card | Hull: HULLNUMBER2 | Reg: blank
+          State: NJ (on REGISTRATION SEARCH card, untouched)
+CommSys : <MessageType>BoatQuery</MessageType>
+          <BoatHullIdNumber>HULLNUMBER2</BoatHullIdNumber>
+          <State>NJ</State>
+RMS     : (none -- Boat has no RMS QIDM)
+Result  : PASS -- State crossed from REGISTRATION SEARCH card to HULL ID SEARCH card CONFIRMED

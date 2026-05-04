@@ -1,0 +1,41 @@
+================================================================
+  CommSys Query Simulation Log
+  Provider: NJ_NJCJIS  |  Variant: BASE  |  Version: v2.0
+  Entity: Person  |  Date: 2026-04-30
+  Tool: test_commsys.ps1
+================================================================
+
+--- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES] DQN
+      set: [OperatorLicenseNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQ
+      set: [BirthDate, NameLast, NameFirst]
+      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+RESULT: 2/2 combos FIRE (DQN, DQ)

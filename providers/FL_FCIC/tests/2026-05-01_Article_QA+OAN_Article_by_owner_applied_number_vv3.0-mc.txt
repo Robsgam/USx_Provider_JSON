@@ -1,0 +1,65 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Article
+Combo      : QA+OAN (Article by owner applied number)
+Test type  : T2 -- alternate combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OwnerAppliedNumber        12345456           typed
+  ArticleTypeCode           BSHOCKS            typed (dropdown)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ4R4A8FZ86GT4YYKR90QBR
+  MessageType : ArticleSingleQuery
+  keyReference: QAOwnerAppliedNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    OwnerAppliedNumber   12345456
+    ArticleTypeCode      BSHOCKS
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QA+OAN
+  Reason: ArticleTypeCode+OwnerAppliedNumber both populated (set[])
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  OwnerAppliedNumber   YES    12345456        mapped from OwnerAppliedNumber
+  ArticleTypeCode      YES    BSHOCKS         mapped from ArticleTypeCode
+  ImageIndicator       YES    N               mapped from ImageIndicator (default)
+  ArticleSerialNumber  NO     --              sourceField empty
+  NCICNumber           NO     --              sourceField empty
+  ProcessControlNumber NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QA+OAN fired correctly; OAN+Type+ImageIndicator sent
+  Detail: ArticleTypeCode required in set[] for both Serial and OAN combos

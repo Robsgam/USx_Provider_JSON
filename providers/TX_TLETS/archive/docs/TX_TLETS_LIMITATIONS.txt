@@ -1,0 +1,33 @@
+TX_TLETS -- Known Limitations and Provider-Specific Notes
+==========================================================
+Last updated: 2026-04-21
+Status: Initial standup -- limitations not yet confirmed through live testing.
+
+See ConnectCIC-KB knowledge-base/PLATFORM_LIMITATIONS.txt for platform-wide limitations.
+This file tracks TX_TLETS-specific findings only.
+
+--------------------------------------------------------------------------------
+INSTANCE-SPECIFIC NOTES (confirm on first import)
+--------------------------------------------------------------------------------
+
+[ ] #1 -- SexCode / NIBRS reverse-lookup (UNCONFIRMED)
+    The codeTypeProvider=NIBRS reverse-lookup (attr ID -> M/F/U) is instance-specific.
+    Confirmed working: NJ_NJCJIS, AZ_AZDPS
+    Confirmed NOT working: FL_FCIC
+    TX_TLETS: NOT YET TESTED
+    Action: On first import, test SexCode with attributeTypeId=SEX + codeTypeProvider=NIBRS.
+    If CommSys XML shows raw attr ID (not M/F/U): switch to NIBRS_SEX fallback and
+    remove sex from RMS QIDM. See KB SEX_CODE_PATTERN.txt.
+
+[ ] #2 -- State / NCIC code translation (UNCONFIRMED)
+    Confirm RegistrationState sends 2-letter NCIC code in outbound XML (not attribute ID).
+    Pattern: attributeTypeId=STATE + codeTypeProvider=NCIC on QIDM attribute.
+
+[ ] #3 -- dexStateUserId / Badge auto-population (UNCONFIRMED)
+    If TX_TLETS requires a badge/ORI field, confirm CommsysGetDexStateUserIdRuleHandler
+    auto-populates it from the officer RMS profile. See AZ_AZDPS pattern.
+
+--------------------------------------------------------------------------------
+CONFIRMED FINDINGS (add as testing progresses)
+--------------------------------------------------------------------------------
+(none yet)

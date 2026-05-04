@@ -1,0 +1,29 @@
+NY_NYSPIN_EJUSTICE -- Phase 01_standup Notes
+=============================================
+Phase goal: Phase 1 reboot -- clean restart from XML as sole source.
+            Single entity, single card per QIF. Confirm import succeeds.
+
+Status: BUILD COMPLETE -- PENDING IMPORT
+
+Prior history: v1.0-v1.21 archived in git (multi-card/split-entity era, retired).
+
+Archive versions in this phase:
+  NY_NYSPIN_EJUSTICE_v1.0_2026-04-20.json  -- FAILED import (sexcodeoos in combination any[])
+  NY_NYSPIN_EJUSTICE_v1.1_2026-04-20.json  -- RMS sex removal fix applied. 0 errors, 0 warnings.
+
+Tests in this phase (23 total):
+  VEH-1..VEH-6   Vehicle Registration (Plate/VIN, NY/OOS, RMS)
+  PER-1..PER-5   Driver License (OLN/Name, NY/OOS, Image)
+  PER-6..PER-8   Driver History (OLN/Name, DH-suffix isolation)
+  FA-1..FA-3     Firearm (Serial, Make+Caliber, RelatedHit)
+  ART-1..ART-2   Article (Serial+TypeCode, Image+RelHit)
+  BOA-1..BOA-4   Boat (NY Reg/Hull, OOS Reg/Hull)
+
+Log files (add as tests are run):
+  (none yet)
+
+Key findings:
+  - WINQ/MINQ excluded: no Transaction XML from vendor
+  - DH-suffix fieldIds isolate DriverHistory from DriverLicense
+  - Dual-field state: NCIC unconfirmed on NY instance (test on first import)
+  - NIBRS sex reverse-lookup unconfirmed on NY instance (test on first import)

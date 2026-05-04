@@ -1,0 +1,64 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : QB+NCIC (Stolen boat by NCIC number)
+Test type  : T2 -- alternate QB combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NCICNumber                56744              typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ7CBN1MNE0FQ3MRP7Z2CXQ
+  MessageType : BoatQuery
+  keyReference: QBNCICNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    NCICNumber           56744
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QB+NCIC
+  Reason: NCICNumber populated (set[]); unique field — no higher-priority combo conflict
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  NCICNumber                YES    56744           mapped from NCICNumber (set[])
+  ImageIndicator            YES    N               mapped from ImageIndicator (any[], default)
+  BoatHullIdNumber          NO     --              sourceField empty
+  RegistrationNumber        NO     --              sourceField empty
+  CoastGuardDocumentNumber  NO     --              sourceField empty
+  State                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QB+NCIC fired correctly; NCICNumber=56744 confirmed in XML
+  Detail: Unique set[] field — no combo priority conflict.
+

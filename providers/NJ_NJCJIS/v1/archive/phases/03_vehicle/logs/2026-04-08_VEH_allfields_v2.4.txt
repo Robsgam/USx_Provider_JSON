@@ -1,0 +1,81 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.4
+Query type: VehicleRegistrationQuery (all fields filled)
+Test      : Plate + VIN + PlateType + PlateYear + Image=Y + Random=N + State
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ0VXKN1QQ5395VWZ6DCMAE
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    VehicleIdentificationNumber VINONLY
+    ImageIndicator              Y
+    LicensePlateYear            2026
+    State                       NJ
+    LicensePlateTypeCode        PC
+    RandomRequest               N
+    LicensePlateNumber          EVERYTHING
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQ (LicensePlateNumber + State present; RQ is first in config)
+  All populated attributes sent per LIMITATION #1.
+
+  Field                        Sent    Note
+  ---------------------------  ----    ------------------------------------------------
+  LicensePlateNumber           YES     EVERYTHING
+  State                        YES     NJ
+  ImageIndicator               YES     Y
+  LicensePlateTypeCode         YES     PC (optional RQ field, filled)
+  LicensePlateYear             YES     2026 (optional RQ field, filled)
+  RandomRequest                YES     N
+  VehicleIdentificationNumber  YES     VINONLY (EXTRA -- not in RQ set/any; sent per LIM #1)
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  LIMITATION #1 CONFIRMED again. Same behavior as v2.2 all-fields log and DL tests.
+    VehicleIdentificationNumber sent on the RQ path because it was populated.
+    set/any controls matching only -- all populated attributes always sent.
+
+  EDGE CASE -- operator filled both plate and VIN simultaneously.
+    In normal use this will not occur. Operators fill plate OR VIN, not both.
+    Logs 1-4 confirm correct isolated behavior for each path.
+
+  Server accepted without error (consistent with DL extra-field behavior).
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNQ0VXKN1QQ5395VWZ6DCMAE">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>VehicleRegistrationQuery</MessageType>
+          <Id>01KNQ0VXKN1QQ5395VWZ6DCMAE</Id>
+          <VehicleIdentificationNumber>VINONLY</VehicleIdentificationNumber>
+          <ImageIndicator>Y</ImageIndicator>
+          <LicensePlateYear>2026</LicensePlateYear>
+          <State>NJ</State>
+          <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+          <RandomRequest>N</RandomRequest>
+          <LicensePlateNumber>EVERYTHING</LicensePlateNumber>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

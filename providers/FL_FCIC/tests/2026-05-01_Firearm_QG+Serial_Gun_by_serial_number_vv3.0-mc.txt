@@ -1,0 +1,61 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Firearm
+Combo      : QG+Serial (Gun by serial number)
+Test type  : T2 -- basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  GunSerialNumber           ABC1254638         typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ403JVZHF5Y6QDS9VEFSVV
+  MessageType : GunQuery
+  keyReference: QG+Serial
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    GunSerialNumber      ABC1254638
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QG+Serial
+  Reason: GunSerialNumber populated (set field); GunMake/ImageIndicator in any[]
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  GunSerialNumber      YES    ABC1254638      mapped from GunSerialNumber
+  ImageIndicator       YES    N               mapped from ImageIndicator (default)
+  GunMake              NO     --              sourceField empty (any[], not required)
+  NCICNumber           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QG+Serial fired correctly; serial + ImageIndicator sent; GunMake optional
+  Detail: Slow JSON performance noted (checkbox populate + send time)

@@ -1,0 +1,56 @@
+PHASE 05 -- ARTICLE / ARTICLE SINGLE QUERY
+==========================================
+Goal: Get ArticleSingleQuery fully working (serial + type).
+Versions: v2.7 (baseline config)
+Date: 2026-04-09
+Status: COMPLETE (T1 PASS confirmed; see log)
+
+================================================================================
+QUERIES IN SCOPE
+================================================================================
+
+  ArticleSingleQuery
+    QA:  set=[ArticleSerialNumber, ArticleTypeCode]  any=[ImageIndicator, RelatedHitSearchIndicator]
+    Note: ArticleTypeCode requires codeTypeSource=CA_CLETS (not NCIC -- NCIC gives empty dropdown).
+
+================================================================================
+ARTICLE FORM LAYOUT (v2.7)
+================================================================================
+
+  CARD_ART
+    ROW_1: ArticleSerialNumber + ArticleTypeCode (dropdown)
+    ROW_2: ImageIndicator + RelatedHitSearchIndicator
+
+================================================================================
+TEST RESULTS
+================================================================================
+
+  T1  QA serial + type (minimum required)  PASS  v2.7  2026-04-09
+      Fill: ArticleSerialNumber + ArticleTypeCode selected
+      XML: both required fields sent; dropdowns confirmed populated (CA_CLETS source)
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+  CRITICAL: ArticleTypeCode codeTypeSource MUST be CA_CLETS (not NCIC).
+    codeTypeSource='NCIC' gives an empty dropdown for NCIC_ARTICLE_TYPE.
+    This has been confirmed on NJ and applies to all providers (CA_CLETS is platform-wide).
+    See PLATFORM_LIMITATIONS.txt #17 and ANTI_PATTERNS.txt #7.
+
+  RelatedHitSearchIndicator: use FormInput maxLength=1 (Y-only flag).
+    DO NOT use FormSelect -- YES_NO_UNKNOWN exposes N and U which are not valid.
+    See PLATFORM_LIMITATIONS.txt #10.
+
+================================================================================
+LOGS
+================================================================================
+
+  logs/2026-04-09_ArticleSingleQuery_T1_v2.7.txt   T1 PASS
+
+================================================================================
+FILES
+================================================================================
+
+  (Versioned JSONs stored in phases/02_person/ and phases/08_split_entities/)
+  ArticleSingleQuery uses same QIDM config in v2.7 and v3.x (no changes in split era).

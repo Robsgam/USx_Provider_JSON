@@ -1,0 +1,45 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : NEGATIVE (Empty form no send)
+Test type  : T8 -- negative test
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  (all fields empty)        --                 --
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  No request sent — Send button not lit (no combo set[] fields populated)
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: NONE
+  Reason: No set[] fields populated; ImageIndicator default alone insufficient
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Send button correctly disabled with empty form
+

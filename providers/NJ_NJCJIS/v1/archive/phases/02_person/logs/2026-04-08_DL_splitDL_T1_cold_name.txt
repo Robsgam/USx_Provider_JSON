@@ -1,0 +1,58 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : NJ_NJCJIS_splitDL_test.json (LIMITATION #2 test build)
+Config    : NJ_NJCJIS_DriverLicenseQuery_Name
+Query type: DriverLicenseQuery -- T1 Cold Start, Name path
+Test      : Fresh session. Name+DOB filled. OLN blank.
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ5YDFNA6SWW13Z6VVW61GX
+  MessageType : DriverLicenseQuery
+
+  Fields in request:
+    ImageIndicator  Y
+    State           NJ
+    BirthDate       01011960
+    Name            TEST QUERY
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQ (Name path)
+
+  Field                  Sent    Note
+  ---------------------  ----    -----------------------------------------------
+  BirthDate              YES     01011960
+  Name                   YES     TEST QUERY (First=TEST, Last=QUERY)
+  ImageIndicator         YES     Y
+  State                  YES     NJ
+  SexCode                NO      not filled by operator (in any[] -- optional)
+  OperatorLicenseNumber  NO      not in Name config attribute list -- correctly absent
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- cold start Name path.
+    Name config activated on first use in a fresh session.
+    DQ combination fired correctly: BirthDate+Name present (set[] satisfied).
+
+  KEY FINDING -- true field isolation confirmed.
+    OLN is absent from the request even though the form has an OLN field.
+    OLN is not in the Name config's attribute list, so it is never sent
+    regardless of what the operator fills. This is field isolation working correctly.
+
+  LIMITATION #2 STATUS: Not triggered. Name config activated on cold start.
+    Compare with T3 (warm switch) for the critical auto-switch test.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KNQ5YDFNA6SWW13Z6VVW61GX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KNQ5YDFNA6SWW13Z6VVW61GX</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><BirthDate>01011960</BirthDate><Name>TEST QUERY</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

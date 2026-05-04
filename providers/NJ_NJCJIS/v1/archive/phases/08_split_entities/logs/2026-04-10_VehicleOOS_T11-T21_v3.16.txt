@@ -1,0 +1,68 @@
+NJ_NJCJIS -- Split Entity Test Log
+Tab   : Vehicle - Out of State
+Tests : T11-T21
+Version: v3.16
+Date  : 2026-04-10
+Tester: Rob Sgambellone
+
+NOTE: v3.16 patches RMS licensePlateOutAndState combination to require LicensePlateNumberOut only.
+      OOS plate searches fire RMS without state filter (tag only).
+      Root cause: codeTypeCategory dropdown sends 2-letter code; RMS useAttributeId=True expects
+      an attribute ID -- incompatible. State filtering on OOS RMS plate searches is a known limitation.
+      CommSys XML sends State correctly for all OOS queries.
+
+================================================================================
+
+T11  Plate OOS -- minimum                                                PASS
+  Sent : LicensePlateNumber(PAPLATE), State(PA), ImageIndicator(N)
+  RMS  : {"vehicle":{"tag":"paplate"}}  [no state -- known limitation]
+  Notes: No Returns (test data -- expected)
+
+T12  Plate OOS + Image Y                                                 PASS
+  Sent : LicensePlateNumber(ABC123), State(PA), ImageIndicator(Y)
+  RMS  : {"vehicle":{"tag":"abc123"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T13  Plate OOS + PlateType=PP                                            PASS
+  Sent : LicensePlateNumber(PAX1234), State(PA), ImageIndicator(N), LicensePlateTypeCode(PP)
+  RMS  : {"vehicle":{"tag":"pax1234"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T14  Plate OOS + PlateYear=2024                                          PASS
+  Sent : LicensePlateNumber(PAX1234), State(PA), ImageIndicator(N), LicensePlateYear(2024)
+  RMS  : {"vehicle":{"tag":"pax1234"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T15  Plate OOS -- all optional fields                                    PASS
+  Sent : LicensePlateNumber(PAX1234), State(PA), ImageIndicator(Y), LicensePlateTypeCode(PP),
+         LicensePlateYear(2024), RandomRequest(Y)
+  RMS  : {"vehicle":{"tag":"pax1234"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T16  Plate OOS + Random=Y                                                PASS
+  Sent : LicensePlateNumber(12345), State(PA), ImageIndicator(N), RandomRequest(Y)
+  RMS  : {"vehicle":{"tag":"12345"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T17  VIN OOS -- minimum                                                  PASS
+  Sent : VehicleIdentificationNumber(1HGCM82633A004352), State(PA), ImageIndicator(N)
+  RMS  : {"vehicle":{"vinNumber":"1HGCM82633A004352"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T18  VIN OOS + Random=Y                                                  PASS
+  Sent : VehicleIdentificationNumber(1HGCM82633A004352), State(PA), ImageIndicator(N), RandomRequest(Y)
+  RMS  : {"vehicle":{"vinNumber":"1HGCM82633A004352"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T19  VIN OOS + Image=Y                                                   PASS
+  Sent : VehicleIdentificationNumber(1HGCM82633A004352), State(PA), ImageIndicator(Y)
+  RMS  : {"vehicle":{"vinNumber":"1HGCM82633A004352"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T20  VIN OOS -- all optional fields                                      PASS
+  Sent : VehicleIdentificationNumber(1HGCM82633A004352), State(PA), ImageIndicator(Y), RandomRequest(Y)
+  RMS  : {"vehicle":{"vinNumber":"1HGCM82633A004352"}}  [no state -- server-side limitation]
+  Notes: No Returns (test data -- expected)
+T21  All fields OOS (LIMITATION #1 -- RQ fires first)                    PASS
+  Sent : LicensePlateNumber(54632), VehicleIdentificationNumber(1HGCM82633A004352),
+         State(PA), ImageIndicator(Y), LicensePlateTypeCode(PP), LicensePlateYear(2024),
+         RandomRequest(Y)
+  RMS  : {"vehicle":{"vinNumber":"1HGCM82633A004352","tag":"54632"}}  [no state -- server-side limitation]
+  Notes: Plate combination fired first (expected). Server accepted extra VIN without error.
+
+================================================================================
+SUMMARY
+  T11-T21  ALL PASS
+  Vehicle - OOS tab: COMPLETE on v3.16

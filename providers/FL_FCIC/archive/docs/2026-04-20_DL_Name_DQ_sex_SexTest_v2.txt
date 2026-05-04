@@ -1,0 +1,39 @@
+FL_FCIC Sex Code Test -- SexTest_v2
+====================================
+Date:    2026-04-20
+Build:   FL_FCIC_SexTest_v2.json
+Change:  All 3 sex form fields changed from codeTypeCategory=NIBRS_SEX
+         to attributeTypeId=SEX + codeTypeProvider=NIBRS (9 nodes, 3 fields x 3 layouts)
+Query:   DriverLicenseQuery -- Name+DOB+Sex (FDQ / InState)
+Subject: Name=REES, LOU  DOB=1959-01-01  Sex=Male (attr ID 69585921178)
+
+RESULT: MIXED -- RMS fixed, CommSys broken
+
+CommSys request:
+  <SexCode>69585921178</SexCode>
+  -- Raw attr ID sent instead of NIBRS code "M"
+  -- STATUS: BROKEN
+
+RMS elastic query:
+  {"elasticQuery":{"lastName":"rees","firstName":"lou","sexAttrId":"69585921178","dateOfBirth":"1959-01-01"}}
+  -- sexAttrId as string (no array brackets) -- no RMS 400 error
+  -- STATUS: WORKING
+
+CONCLUSION
+----------
+FL's ConnectCIC instance does NOT perform the codeTypeProvider=NIBRS reverse-lookup
+(attr ID -> NIBRS code "M"/"F"/"U") on the CommSys QIDM SexCode attribute.
+
+The same configuration (attributeTypeId=SEX + codeTypeProvider=NIBRS) was confirmed
+working on NJ_NJCJIS v1.1 (2026-04-17). This is an instance-specific difference.
+
+FL sex decision: CommSys-only
+  Form: codeTypeCategory=NIBRS_SEX (stores string "M"/"F"/"U")
+  CommSys QIDM: codeTypeProvider=NIBRS (passes string through -> <SexCode>M</SexCode>)
+  RMS QIDM: remove sexAttrId attribute entirely (Patch 3 equivalent)
+
+ARCHITECTURE NOTE
+-----------------
+v2.0 split entity (3 Person QIFs: InState/OOS/DH) is unnecessary complexity.
+Recommended: rebuild as single Person QIF (v1.4 pattern) for v2.1.
+See project_fl_fcic.md for full architectural recommendation.

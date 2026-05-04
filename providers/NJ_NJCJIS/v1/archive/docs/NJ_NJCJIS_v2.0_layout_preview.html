@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Layout Preview: NJ_NJCJIS_v2.0</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+  h1 { color: #e94560; margin-bottom: 20px; font-size: 18px; }
+  h2 { color: #0f3460; background: #e94560; padding: 8px 16px; margin: 20px 0 10px; border-radius: 4px; font-size: 14px; }
+  h3 { color: #ccc; margin: 10px 0 5px; font-size: 13px; border-bottom: 1px solid #333; padding-bottom: 4px; }
+  .entity-section { margin-bottom: 30px; }
+  .layout-group { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .layout-panel { flex: 1; min-width: 400px; background: #16213e; border: 1px solid #0f3460; border-radius: 8px; padding: 12px; }
+  .layout-label { font-size: 11px; color: #e94560; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .page { margin: 4px 0; }
+  .page-title { font-size: 10px; color: #666; margin-bottom: 4px; }
+  .card { background: #1a1a3e; border: 1px solid #0f3460; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+  .card-title { font-size: 12px; font-weight: bold; color: #e94560; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px; }
+  .card-title-auto { font-size: 10px; color: #555; margin-bottom: 6px; }
+  .row { display: grid; gap: 8px; margin-bottom: 6px; }
+  .col { min-width: 0; }
+  .field { padding: 4px; }
+  .field label { display: block; font-size: 11px; color: #aaa; margin-bottom: 2px; }
+  .field input, .field select { width: 100%; padding: 4px 6px; font-size: 12px; border: 1px solid #333; border-radius: 3px; background: #0a0a1a; color: #888; }
+  .field-id { font-size: 9px; color: #555; display: block; margin-top: 1px; }
+  .input-field input { border-left: 3px solid #3498db; }
+  .select-field select { border-left: 3px solid #e67e22; }
+  .date-field input { border-left: 3px solid #2ecc71; }
+  .badge { font-size: 9px; padding: 1px 4px; border-radius: 2px; margin-left: 4px; }
+  .badge.attr { background: #0f3460; color: #3498db; }
+  .badge.code { background: #4a1942; color: #e67e22; }
+  .error { color: #e74c3c; font-size: 11px; padding: 4px; background: #2c0b0e; border-radius: 3px; margin: 2px 0; }
+  .validation { margin: 10px 0; padding: 8px; border-radius: 4px; font-size: 11px; }
+  .validation.pass { background: #0b2c0b; color: #2ecc71; border: 1px solid #1a5c1a; }
+  .validation.fail { background: #2c0b0e; color: #e74c3c; border: 1px solid #5c1a1a; }
+  .unknown-node { color: #e67e22; font-size: 11px; padding: 2px; border: 1px dashed #e67e22; margin: 2px; }
+  .stats { font-size: 11px; color: #888; margin: 4px 0; }
+  .legend { display: flex; gap: 16px; margin: 10px 0; font-size: 11px; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend .swatch { width: 12px; height: 12px; border-radius: 2px; }
+</style>
+</head><body>
+<h1>Layout Preview: NJ_NJCJIS_v2.0</h1>
+<div class="legend">
+  <span><div class="swatch" style="background:#3498db"></div> Input (FormInput)</span>
+  <span><div class="swatch" style="background:#e67e22"></div> Select (FormSelect)</span>
+  <span><div class="swatch" style="background:#2ecc71"></div> Date (FormDate)</span>
+</div>
+<div class='entity-section'>
+<h2>ENTITY_Vehicle [Vehicle]</h2>
+<div class='layout-group'>
+<div class='layout-panel'>
+<div class='layout-label'>CAD_DISPATCH</div>
+<div class='stats'>18 nodes | 3 cards | 3 inputs, 5 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div></div><div class='card'><div class='card-title'>VEHICLE SEARCH - PLATE</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>Plate Number</label><input type='text' placeholder='LicensePlateNumberIn max=10' disabled /><span class='field-id'>LicensePlateNumberIn</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Plate Type <span class='badge code'>codeType=NCIC_LICENSE_PLATE_TYPE</span></label><select disabled><option>LicensePlateTypeCode</option></select><span class='field-id'>LicensePlateTypeCode</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Plate Year</label><input type='text' placeholder='LicensePlateYear max=4' disabled /><span class='field-id'>LicensePlateYear</span></div></div></div></div><div class='card'><div class='card-title'>VEHICLE SEARCH - VIN</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>VIN</label><input type='text' placeholder='VehicleIdentificationNumber max=20' disabled /><span class='field-id'>VehicleIdentificationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>default</div>
+<div class='stats'>14 nodes | 2 cards | 3 inputs, 3 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title'>VEHICLE SEARCH - PLATE</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>Plate Number</label><input type='text' placeholder='LicensePlateNumberIn max=10' disabled /><span class='field-id'>LicensePlateNumberIn</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Plate Type <span class='badge code'>codeType=NCIC_LICENSE_PLATE_TYPE</span></label><select disabled><option>LicensePlateTypeCode</option></select><span class='field-id'>LicensePlateTypeCode</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Plate Year</label><input type='text' placeholder='LicensePlateYear max=4' disabled /><span class='field-id'>LicensePlateYear</span></div></div></div></div><div class='card'><div class='card-title'>VEHICLE SEARCH - VIN</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>VIN</label><input type='text' placeholder='VehicleIdentificationNumber max=20' disabled /><span class='field-id'>VehicleIdentificationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>FIRST_RESPONDER</div>
+<div class='stats'>20 nodes | 3 cards | 3 inputs, 5 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='unknown-node'>[FormCheckbox] LinkToEvent_Input</div></div></div></div><div class='card'><div class='card-title'>VEHICLE SEARCH - PLATE</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>Plate Number</label><input type='text' placeholder='LicensePlateNumberIn max=10' disabled /><span class='field-id'>LicensePlateNumberIn</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Plate Type <span class='badge code'>codeType=NCIC_LICENSE_PLATE_TYPE</span></label><select disabled><option>LicensePlateTypeCode</option></select><span class='field-id'>LicensePlateTypeCode</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Plate Year</label><input type='text' placeholder='LicensePlateYear max=4' disabled /><span class='field-id'>LicensePlateYear</span></div></div></div></div><div class='card'><div class='card-title'>VEHICLE SEARCH - VIN</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>VIN</label><input type='text' placeholder='VehicleIdentificationNumber max=20' disabled /><span class='field-id'>VehicleIdentificationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div></div>
+</div>
+</div></div>
+<div class='entity-section'>
+<h2>ENTITY_Person [Person]</h2>
+<div class='layout-group'>
+<div class='layout-panel'>
+<div class='layout-label'>CAD_DISPATCH</div>
+<div class='stats'>19 nodes | 3 cards | 3 inputs, 5 selects, 1 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div></div><div class='card'><div class='card-title'>DRIVER LICENSE - LICENSE NUMBER</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>License Number</label><input type='text' placeholder='OperatorLicenseNumber max=20' disabled /><span class='field-id'>OperatorLicenseNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Image <span class='badge code'>codeType=YES_NO_UNKNOWN</span></label><select disabled><option>ImageIndicator</option></select><span class='field-id'>ImageIndicator</span></div></div></div></div><div class='card'><div class='card-title'>DRIVER LICENSE - NAME</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>First Name</label><input type='text' placeholder='NameFirst max=30' disabled /><span class='field-id'>NameFirst</span></div></div><div class='col'><div class='field input-field'><label>Last Name</label><input type='text' placeholder='NameLast max=30' disabled /><span class='field-id'>NameLast</span></div></div></div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field date-field'><label>Date of Birth</label><input type='date' disabled /><span class='field-id'>BirthDate</span></div></div><div class='col'><div class='field select-field'><label>Sex <span class='badge attr'>attrType=SEX</span></label><select disabled><option>SexCode</option></select><span class='field-id'>SexCode</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>default</div>
+<div class='stats'>15 nodes | 2 cards | 3 inputs, 3 selects, 1 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title'>DRIVER LICENSE - LICENSE NUMBER</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>License Number</label><input type='text' placeholder='OperatorLicenseNumber max=20' disabled /><span class='field-id'>OperatorLicenseNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Image <span class='badge code'>codeType=YES_NO_UNKNOWN</span></label><select disabled><option>ImageIndicator</option></select><span class='field-id'>ImageIndicator</span></div></div></div></div><div class='card'><div class='card-title'>DRIVER LICENSE - NAME</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>First Name</label><input type='text' placeholder='NameFirst max=30' disabled /><span class='field-id'>NameFirst</span></div></div><div class='col'><div class='field input-field'><label>Last Name</label><input type='text' placeholder='NameLast max=30' disabled /><span class='field-id'>NameLast</span></div></div></div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field date-field'><label>Date of Birth</label><input type='date' disabled /><span class='field-id'>BirthDate</span></div></div><div class='col'><div class='field select-field'><label>Sex <span class='badge attr'>attrType=SEX</span></label><select disabled><option>SexCode</option></select><span class='field-id'>SexCode</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>FIRST_RESPONDER</div>
+<div class='stats'>21 nodes | 3 cards | 3 inputs, 5 selects, 1 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='unknown-node'>[FormCheckbox] LinkToEvent_Input</div></div></div></div><div class='card'><div class='card-title'>DRIVER LICENSE - LICENSE NUMBER</div><div class='row' style='grid-template-columns: 6fr 3fr 3fr;'><div class='col'><div class='field input-field'><label>License Number</label><input type='text' placeholder='OperatorLicenseNumber max=20' disabled /><span class='field-id'>OperatorLicenseNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div><div class='col'><div class='field select-field'><label>Image <span class='badge code'>codeType=YES_NO_UNKNOWN</span></label><select disabled><option>ImageIndicator</option></select><span class='field-id'>ImageIndicator</span></div></div></div></div><div class='card'><div class='card-title'>DRIVER LICENSE - NAME</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>First Name</label><input type='text' placeholder='NameFirst max=30' disabled /><span class='field-id'>NameFirst</span></div></div><div class='col'><div class='field input-field'><label>Last Name</label><input type='text' placeholder='NameLast max=30' disabled /><span class='field-id'>NameLast</span></div></div></div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field date-field'><label>Date of Birth</label><input type='date' disabled /><span class='field-id'>BirthDate</span></div></div><div class='col'><div class='field select-field'><label>Sex <span class='badge attr'>attrType=SEX</span></label><select disabled><option>SexCode</option></select><span class='field-id'>SexCode</span></div></div></div></div></div>
+</div>
+</div></div>
+<div class='entity-section'>
+<h2>ENTITY_Firearm [Firearm]</h2>
+<div class='layout-group'>
+<div class='layout-panel'>
+<div class='layout-label'>CAD_DISPATCH</div>
+<div class='stats'>13 nodes | 2 cards | 3 inputs, 2 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Requesting Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div></div><div class='card'><div class='card-title'>NCIC FIREARM QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='GunSerialNumber max=11' disabled /><span class='field-id'>GunSerialNumber</span></div></div><div class='col'><div class='field input-field'><label>Make</label><input type='text' placeholder='GunMake max=23' disabled /><span class='field-id'>GunMake</span></div></div></div><div class='row' style='grid-template-columns: 6fr;'><div class='col'><div class='field input-field'><label>Caliber</label><input type='text' placeholder='GunCaliber max=4' disabled /><span class='field-id'>GunCaliber</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>default</div>
+<div class='stats'>9 nodes | 1 cards | 3 inputs, 0 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title'>NCIC FIREARM QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='GunSerialNumber max=11' disabled /><span class='field-id'>GunSerialNumber</span></div></div><div class='col'><div class='field input-field'><label>Make</label><input type='text' placeholder='GunMake max=23' disabled /><span class='field-id'>GunMake</span></div></div></div><div class='row' style='grid-template-columns: 6fr;'><div class='col'><div class='field input-field'><label>Caliber</label><input type='text' placeholder='GunCaliber max=4' disabled /><span class='field-id'>GunCaliber</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>FIRST_RESPONDER</div>
+<div class='stats'>11 nodes | 2 cards | 3 inputs, 0 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='unknown-node'>[FormCheckbox] LinkToEvent_Input</div></div><div class='card'><div class='card-title'>NCIC FIREARM QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='GunSerialNumber max=11' disabled /><span class='field-id'>GunSerialNumber</span></div></div><div class='col'><div class='field input-field'><label>Make</label><input type='text' placeholder='GunMake max=23' disabled /><span class='field-id'>GunMake</span></div></div></div><div class='row' style='grid-template-columns: 6fr;'><div class='col'><div class='field input-field'><label>Caliber</label><input type='text' placeholder='GunCaliber max=4' disabled /><span class='field-id'>GunCaliber</span></div></div></div></div></div>
+</div>
+</div></div>
+<div class='entity-section'>
+<h2>ENTITY_Article [Article]</h2>
+<div class='layout-group'>
+<div class='layout-panel'>
+<div class='layout-label'>CAD_DISPATCH</div>
+<div class='stats'>11 nodes | 2 cards | 1 inputs, 3 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Requesting Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div></div><div class='card'><div class='card-title'>NCIC ARTICLE QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='ArticleSerialNumber max=20' disabled /><span class='field-id'>ArticleSerialNumber</span></div></div><div class='col'><div class='field select-field'><label>Article Type <span class='badge code'>codeType=NCIC_ARTICLE_TYPE</span></label><select disabled><option>ArticleTypeCode</option></select><span class='field-id'>ArticleTypeCode</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>default</div>
+<div class='stats'>7 nodes | 1 cards | 1 inputs, 1 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title'>NCIC ARTICLE QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='ArticleSerialNumber max=20' disabled /><span class='field-id'>ArticleSerialNumber</span></div></div><div class='col'><div class='field select-field'><label>Article Type <span class='badge code'>codeType=NCIC_ARTICLE_TYPE</span></label><select disabled><option>ArticleTypeCode</option></select><span class='field-id'>ArticleTypeCode</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>FIRST_RESPONDER</div>
+<div class='stats'>9 nodes | 2 cards | 1 inputs, 1 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='unknown-node'>[FormCheckbox] LinkToEvent_Input</div></div><div class='card'><div class='card-title'>NCIC ARTICLE QUERY</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field input-field'><label>Serial Number</label><input type='text' placeholder='ArticleSerialNumber max=20' disabled /><span class='field-id'>ArticleSerialNumber</span></div></div><div class='col'><div class='field select-field'><label>Article Type <span class='badge code'>codeType=NCIC_ARTICLE_TYPE</span></label><select disabled><option>ArticleTypeCode</option></select><span class='field-id'>ArticleTypeCode</span></div></div></div></div></div>
+</div>
+</div></div>
+<div class='entity-section'>
+<h2>ENTITY_Boat [Boat]</h2>
+<div class='layout-group'>
+<div class='layout-panel'>
+<div class='layout-label'>CAD_DISPATCH</div>
+<div class='stats'>14 nodes | 3 cards | 2 inputs, 3 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div></div><div class='card'><div class='card-title'>BOAT SEARCH - REGISTRATION</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>Registration Number</label><input type='text' placeholder='RegistrationNumber max=8' disabled /><span class='field-id'>RegistrationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div><div class='card'><div class='card-title'>BOAT SEARCH - HULL</div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Hull ID Number</label><input type='text' placeholder='BoatHullIdNumber max=20' disabled /><span class='field-id'>BoatHullIdNumber</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>default</div>
+<div class='stats'>10 nodes | 2 cards | 2 inputs, 1 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title'>BOAT SEARCH - REGISTRATION</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>Registration Number</label><input type='text' placeholder='RegistrationNumber max=8' disabled /><span class='field-id'>RegistrationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div><div class='card'><div class='card-title'>BOAT SEARCH - HULL</div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Hull ID Number</label><input type='text' placeholder='BoatHullIdNumber max=20' disabled /><span class='field-id'>BoatHullIdNumber</span></div></div></div></div></div>
+</div>
+<div class='layout-panel'>
+<div class='layout-label'>FIRST_RESPONDER</div>
+<div class='stats'>16 nodes | 3 cards | 2 inputs, 3 selects, 0 dates</div>
+<div class='validation pass'>Tree OK - all parent/child refs valid, no orphans</div>
+<div class='page'><div class='page-title'>Page 1</div><div class='card'><div class='card-title-auto'>CONTEXT_INFO_CARD</div><div class='row' style='grid-template-columns: 6fr 6fr;'><div class='col'><div class='field select-field'><label>Unit <span class='badge attr'>attrType=CAD_UNIT_SELECT_VALUE</span></label><select disabled><option>CAD_UNIT_SELECT_VALUE</option></select><span class='field-id'>CAD_UNIT_SELECT_VALUE</span></div></div><div class='col'><div class='field select-field'><label>Event <span class='badge attr'>attrType=CAD_EVENT_SELECT_VALUE</span></label><select disabled><option>CAD_EVENT_SELECT_VALUE</option></select><span class='field-id'>CAD_EVENT_SELECT_VALUE</span></div></div></div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='unknown-node'>[FormCheckbox] LinkToEvent_Input</div></div></div></div><div class='card'><div class='card-title'>BOAT SEARCH - REGISTRATION</div><div class='row' style='grid-template-columns: 8fr 4fr;'><div class='col'><div class='field input-field'><label>Registration Number</label><input type='text' placeholder='RegistrationNumber max=8' disabled /><span class='field-id'>RegistrationNumber</span></div></div><div class='col'><div class='field select-field'><label>State <span class='badge attr'>attrType=STATE</span></label><select disabled><option>RegistrationState</option></select><span class='field-id'>RegistrationState</span></div></div></div></div><div class='card'><div class='card-title'>BOAT SEARCH - HULL</div><div class='row' style='grid-template-columns: 12fr;'><div class='col'><div class='field input-field'><label>Hull ID Number</label><input type='text' placeholder='BoatHullIdNumber max=20' disabled /><span class='field-id'>BoatHullIdNumber</span></div></div></div></div></div>
+</div>
+</div></div>
+</body></html>

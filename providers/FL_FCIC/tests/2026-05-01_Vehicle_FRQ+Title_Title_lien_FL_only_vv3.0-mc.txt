@@ -1,0 +1,66 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+Title (Title lien FL only)
+Test type  : T2 -- alternate combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  TitleLienInformation      80430897           typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ5RN2RZS7RJ6YGSAP4YF1J
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQTitleLienInformation
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    TitleLienInformation 80430897
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQ+Title
+  Reason: TitleLienInformation populated (set[] — single field); no State = FL-only FRQ
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  TitleLienInformation      YES    80430897        mapped from TitleLienInformation
+  ImageIndicator            YES    N               mapped from ImageIndicator (default)
+  LicensePlateNumberIn      NO     --              sourceField empty
+  VehicleIdentificationNumber NO   --              sourceField empty
+  DecalNumber               NO     --              sourceField empty
+  State                     NO     --              sourceField empty (FL-only path)
+  LicensePlateTypeCode      NO     --              sourceField empty
+  LicensePlateYear          NO     --              not sent (not in set[] for this combo)
+  VehicleMakeCode           NO     --              sourceField empty
+  VehicleYear               NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQ+Title fired correctly; TitleLien+ImageIndicator sent; single set[] field combo

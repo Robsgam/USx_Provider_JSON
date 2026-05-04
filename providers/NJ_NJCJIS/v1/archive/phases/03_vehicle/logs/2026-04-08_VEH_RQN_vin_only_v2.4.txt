@@ -1,0 +1,70 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.4
+Query type: VehicleRegistrationQuery (RQN -- VIN only)
+Test      : VIN + State only; Image=N (default); Random=N (default); no plate fields
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ0T3C37HNBSAW07DRDA27X
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    VehicleIdentificationNumber VINONLY
+    ImageIndicator              N
+    State                       NJ
+    RandomRequest               N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQN (VehicleIdentificationNumber + State present; LicensePlateNumber absent)
+  RQ evaluated first but did not fire -- LicensePlateNumber missing from set[].
+
+  Field                        Sent    Note
+  ---------------------------  ----    ------------------------------------------------
+  VehicleIdentificationNumber  YES     VINONLY
+  State                        YES     NJ
+  ImageIndicator               YES     N (default)
+  RandomRequest                YES     N (default)
+  LicensePlateNumber           NO      not filled -- correctly excluded (RQN fired)
+  LicensePlateTypeCode         NO      not filled
+  LicensePlateYear             NO      not filled
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- RQN combination matched. VIN-only path works correctly.
+    Platform correctly skipped RQ (plate not filled) and fired RQN.
+    All plate fields correctly absent from request.
+    Combination priority logic (RQ first, RQN second) working as designed.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNQ0T3C37HNBSAW07DRDA27X">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>VehicleRegistrationQuery</MessageType>
+          <Id>01KNQ0T3C37HNBSAW07DRDA27X</Id>
+          <VehicleIdentificationNumber>VINONLY</VehicleIdentificationNumber>
+          <ImageIndicator>N</ImageIndicator>
+          <State>NJ</State>
+          <RandomRequest>N</RandomRequest>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

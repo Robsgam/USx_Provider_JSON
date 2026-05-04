@@ -1,0 +1,50 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Vehicle Plate all optional fields (T3-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T3-mc -- VehicleRegistrationQuery, RQ, Plate + all optional fields -- PASS
+================================================================================
+
+Form    : Vehicle QIF (single card) | Plate: NCJ321 | State: NJ (initialValue) | Image: Y | TypeCode: PP | Year: 2024 | Random: Y
+Result  : No Returns (expected)
+Status  : PASS
+
+NOTE: Earlier "failure" was due to CommSys server outage, not configuration.
+      Retry confirmed all 6 optional fields serialize correctly.
+      mc single-card Vehicle form confirmed viable for all optional plate fields.
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBM269BQXH8R1QTC8JRBNAX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KPBM269BQXH8R1QTC8JRBNAX</Id><ImageIndicator>Y</ImageIndicator><LicensePlateYear>2024</LicensePlateYear><State>NJ</State><RandomRequest>Y</RandomRequest><LicensePlateTypeCode>PP</LicensePlateTypeCode><LicensePlateNumber>NCJ321</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"vehicle":{"tag":"ncj321"}},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+***** Retest (XML) -- txn 01KPBS6VM5V2MJBMYB4G10F3KJ *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBS6VM5V2MJBMYB4G10F3KJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KPBS6VM5V2MJBMYB4G10F3KJ</Id><ImageIndicator>Y</ImageIndicator><LicensePlateYear>2024</LicensePlateYear><State>NJ</State><RandomRequest>Y</RandomRequest><LicensePlateTypeCode>PP</LicensePlateTypeCode><LicensePlateNumber>NCJ321</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Retest (RMS) *****
+{"elasticQuery":{"vehicle":{"tag":"ncj321"}},"from":0,"size":50}
+
+***** Retest Response *****
+No Returns  (CommSys stable -- retest PASS confirmed)
+
+Analysis:
+  - MessageType=VehicleRegistrationQuery (RQ -- plate path) correct
+  - <LicensePlateNumber>NCJ321</LicensePlateNumber> correct
+  - <State>NJ</State> confirmed from initialValue=NJ on visible RegistrationStateOOS
+  - <ImageIndicator>Y</ImageIndicator> correct
+  - <LicensePlateTypeCode>PP</LicensePlateTypeCode> correct
+  - <LicensePlateYear>2024</LicensePlateYear> correct
+  - <RandomRequest>Y</RandomRequest> correct
+  - All 6 fields confirmed in outbound XML
+  - RMS: tag only, no registrationStateAttrIds -- expected mc trade-off
+  - No unexpected co-fires
+  - Previous failure was transient; mc single-card Vehicle form confirmed viable
+    for all optional plate fields

@@ -1,0 +1,66 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Article
+Combo      : QA+OAN
+Test type  : T2 (alternate combo)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ArticleSerialNumber       (empty)            --
+  ArticleTypeCode           BBICYCT            dropdown selection
+  OwnerAppliedNumber        OAN12345           typed
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (ArticleSingleQuery):
+    Transaction : 01KQJ1W96QKE1FYVXFW2DKJ74T
+    MessageType : ArticleSingleQuery
+    keyReference: QAOwnerAppliedNumber
+
+    Fields sent:
+      OwnerAppliedNumber   OAN12345
+      ArticleTypeCode      BBICYCT
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QAOwnerAppliedNumber (ArticleSingleQuery)
+  Reason: set=[ArticleTypeCode, OwnerAppliedNumber] satisfied
+
+  Alternate combo from Test 11 (Serial+Type). Both QA combos confirmed working.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Article entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QA OAN combo fires correctly with OAN+Type=BBICYCT, ImageIndicator=N.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+ArticleSingleQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1W96QKE1FYVXFW2DKJ74T"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KQJ1W96QKE1FYVXFW2DKJ74T</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCT</ArticleTypeCode><OwnerAppliedNumber>OAN12345</OwnerAppliedNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

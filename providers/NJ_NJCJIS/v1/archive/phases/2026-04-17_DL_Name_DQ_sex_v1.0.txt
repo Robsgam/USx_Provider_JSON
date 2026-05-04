@@ -1,0 +1,30 @@
+﻿NJ_NJCJIS v1.0 -- DriverLicenseQuery DQ (Name+DOB+Sex) -- 2026-04-17
+======================================================================
+Build: phases/01_standup/NJ_NJCJIS_v1.0_2026-04-17.json
+Test:  Name=SGAMBELLONE ROB, DOB=1958-01-01, Sex=Male
+
+***** CommSys Request *****
+<MessageType>DriverLicenseQuery</MessageType>
+<ImageIndicator>Y</ImageIndicator>
+<State>NJ</State>
+<SexCode>M</SexCode>                     <- CORRECT (NIBRS code, not attr ID)
+<BirthDate>01011958</BirthDate>
+<Name>SGAMBELLONE, ROB</Name>
+
+***** RMS Elastic *****
+{"lastName":"sgambellone","firstName":"rob","sexAttrId":"69509891711","dateOfBirth":"1958-01-01"}
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+                                          CORRECT: string format, no array, no error
+
+***** Response *****
+No Returns (expected -- test data not in DB)
+
+RESULT: PASS
+  CommSys <SexCode>M</SexCode>    CONFIRMED
+  RMS sexAttrId:"69509891711"    CONFIRMED (string)
+  No RMS 400 error                CONFIRMED
+
+Sex config (confirmed working):
+  Form:         attributeTypeId=SEX + codeTypeProvider=NIBRS
+  CommSys QIDM: SexCode codeTypeProvider=NIBRS (reverse-lookup)
+  RMS:          useAttributeId=true, NO AttributeArrayWrapperRuleHandler

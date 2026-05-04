@@ -1,0 +1,59 @@
+NJ_NJCJIS Provider JSON -- Build Notes
+
+================================================================
+  v1.0 BASE  (2026-04-22)
+================================================================
+  CHANGED
+    - UTF-8 BOM fix (WriteAllText with UTF8Encoding($false))
+    - ENTITIES-first bundle order (@($entitiesBundle, $njBundle, $rmsBundle))
+    - GunMake dropdown: NCIC_FIREARM_MAKE / NJ_NIBRS (code 06 confirmed)
+    - GunCaliber dropdown: NCIC_FIREARM_CALIBER / NJ_NIBRS (code 13 confirmed)
+    - Output renamed to NJ_NJCJIS_BASE.json convention
+    - Option C: selective State set[] on RQ/RQN/DQN
+  RESULT
+    - 38 PASS / 0 FAIL / 0 WARN
+    - Live import 6/6 PASS (import, 5 tabs, dropdowns, plate, OLN, name, firearm)
+
+================================================================
+  v1.0-mc MC  (2026-04-22)
+================================================================
+  CHANGED
+    - Rebuilt MC from confirmed BASE build script
+    - Vehicle: 3 cards (OPTIONS + PLATE SEARCH + VIN SEARCH)
+    - Person: 3 cards (OPTIONS + OLN SEARCH + NAME SEARCH)
+    - Boat: 3 cards (OPTIONS + REGISTRATION + HULL)
+    - Firearm/Article: single card (no split needed)
+    - Fixed GunSerialNumber/ArticleSerialNumber fieldIds (was duplicate SerialNumber)
+    - Removed ImageIndicator/RandomRequest from Vehicle QIDM (not in XML)
+    - Applied Option C set[] on RQ/RQN/DQN
+    - Single NCIC state pattern (removed OOS/NJ dual-state)
+  RESULT
+    - 38 PASS / 0 FAIL / 0 WARN
+    - 8/8 FIRE (query sim)
+    - Live import 14/14 PASS (2026-04-23)
+
+================================================================
+  v1.0 queryLabel fix  (2026-04-24)
+================================================================
+  CHANGED
+    - queryLabel standard applied: Vehicle Registration, Driver License, Firearm, Article, Boat, RMS
+    - Build scripts updated (was using entity/system names)
+    - Patch 6 (RMS cleanup) applied
+  RESULT
+    - Rebuilt BASE + MC, byte-identical to v1.0 except version string
+    - 30/30 live PASS confirmed
+
+================================================================
+  v1.0 defaults + new HIDLE  (2026-04-27 / 2026-04-28)
+================================================================
+  CHANGED
+    - PlateType default set to PC (passenger car)
+    - PlateYear default set to 2026 (current year)
+    - New HIDLE.json ingested (2026-04-28)
+    - HIDLE change: RMS combos gain null conditions/defaults properties (no-op)
+    - All QIDMs, attributes, set/any arrays unchanged from prior build
+  RESULT
+    - 38 PASS / 0 FAIL / 0 WARN (BASE and MC)
+    - 8 FIRE / 0 SKIP (BASE and MC)
+    - BASE live retest 2026-04-28: defaults submit (PC/2026), override (CO/2025), Person DQN — all PASS
+    - MC live retest 2026-04-28: defaults submit (PC/2026), override (MY/2025), Person DQN — all PASS

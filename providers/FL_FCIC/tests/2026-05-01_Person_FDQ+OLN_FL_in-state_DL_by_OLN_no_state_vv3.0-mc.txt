@@ -1,0 +1,63 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : FDQ+OLN (FL in-state DL by OLN no state)
+Test type  : T2 -- FL in-state path (no State = FDQ not DQ)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     908369374          typed
+  ImageIndicator            Y                  default (initialValue — Person=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  2 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     dlNumber=908369374
+
+  2) DriverLicenseQuery (FDQ)
+     Transaction: 01KQJ8R1E1XD84HRZ0W3X3Z19V
+     OperatorLicenseNumber=908369374, ImageIndicator=Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQ+OLN (FL in-state — no State populated)
+  Reason: OperatorLicenseNumber populated (set[]); no RegistrationState = FDQ not DQ
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber     YES    908369374       mapped from OperatorLicenseNumber (set[])
+  ImageIndicator            YES    Y               mapped from ImageIndicator (any[], Person default)
+  Name                      NO     --              sourceField empty
+  BirthDate                 NO     --              sourceField empty
+  SexCode                   NO     --              sourceField empty
+  State                     NO     --              sourceField empty (FL in-state path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: dlNumber=908369374
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQ+OLN fired correctly; FL in-state path confirmed (no State in XML); RMS co-fire
+  Detail: No QW co-fire (QW requires Name — not populated). Person ImageIndicator=Y default.
+

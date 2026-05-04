@@ -1,0 +1,71 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : FDQ+Name+QW (DL by Name plus QW co-fire)
+Test type  : T2 -- basic combo + co-fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NameLast                  [test last]        typed
+  NameFirst                 [test first]       typed
+  BirthDate                 [test DOB]         typed
+  SexCode                   M                  typed (required for DL Name combo)
+  PurposeCode               C                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : DriverLicenseQuery + WantedPersonQuery
+  MessageType : DriverLicenseQuery + WantedPersonQuery
+  keyReference: FDQ+Name+QW
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    NameLast             [test last]
+    NameFirst            [test first]
+    BirthDate            [test DOB]
+    SexCode              M
+    PurposeCode          C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQ+Name (DL) + QW co-fire (Wanted)
+  Reason: NameLast+NameFirst+BirthDate+SexCode all populated (DL Name set[])
+          NameLast+NameFirst populated (QW Name set[])
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  NameLast             YES    [test last]     mapped from NameLast
+  NameFirst            YES    [test first]    mapped from NameFirst
+  BirthDate            YES    [test DOB]      mapped from BirthDate
+  SexCode              YES    M               mapped from SexCode
+  PurposeCode          YES    C               mapped from PurposeCode
+  OLN                  NO     --              sourceField empty
+  State                NO     --              sourceField empty (FL-only path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DL + QW both fired; Name/DOB/Sex sent correctly; no OLN = Name path
+  Detail: SexCode required in DL Name combo set[] — without it only QW fires (confirmed in BASE)

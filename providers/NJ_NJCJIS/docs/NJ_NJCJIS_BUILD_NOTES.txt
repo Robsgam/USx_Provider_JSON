@@ -1,0 +1,126 @@
+﻿NJ_NJCJIS BUILD NOTES -- v2.x Line
+====================================
+Started: 2026-04-28
+Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
+
+v1.x line archived in v1/ folder. v1.0 BASE (30/30 PASS) and MC (30/30 PASS) confirmed 2026-04-28.
+
+NEW METADATA CHANGES (v2 vs v1):
+  1. VehicleStolenQuery -- new transaction, 3 combos (QV x3 in XML -> QVN/QVP/QVV invented)
+  2. RandomRequest -- new mandatory field on VehicleRegistrationQuery (Y=random, N=full per NJ A-134-97)
+  3. ImageIndicator -- added to all 6 transactions (was only on DL in v1 XML)
+  4. GunModel -- new optional field on GunQuery
+  5. State REMOVED from BoatQuery entirely
+  6. RegistrationNumber maxLength 8->20 on BoatQuery
+  7. State + LicensePlateTypeCode moved from any[] to set[] on VehicleRegistrationQuery
+  8. All keyRefs changed -- XML has duplicates, all need invented distinct keyRefs
+
+INVENTED keyRef MAP (XML duplicate -> build keyRef):
+  BoatQuery:               QB, QB     -> QB (Reg), QBN (Hull)
+  DriverLicenseQuery:      FULL, FULL -> DQ (Name), DQN (OLN)
+  VehicleRegistrationQuery: RAND x2, FULL x2 -> RQ (Plate), RQN (VIN)
+  VehicleStolenQuery:      QV x3     -> QVN (NCIC#), QVP (Plate), QVV (VIN)
+  ArticleSingleQuery:      QA        -> QA (unchanged)
+  GunQuery:                QG        -> QG (unchanged)
+
+PDF vs XML DISCREPANCIES (metadata wins):
+  BoatQuery: PDF shows cross-optional IDs in combos; XML does not
+  DriverLicenseQuery: PDF shows 3 combos (in/out split); XML has 2
+  VehicleRegistrationQuery: PDF shows State optional for plate; XML has State in set[]
+
+================================================================================
+VERSION HISTORY  (newest first)
+v2.0  2026-05-01  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0  2026-05-01  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-plate-test  2026-04-30  [describe change here]
+  CHANGED
+    -
+  REASON
+    -
+v2.0-mc  2026-04-28  MC variant of v2.0 BASE
+  CHANGED
+    - Multi-card layout: Vehicle (OPTIONS+PLATE+VIN), Person (OPTIONS+LICENSE+NAME)
+    - Firearm, Article, Boat single-card (same as BASE)
+    - QIDMs identical to BASE (6 QIDMs, 11 combos)
+    - RMS identical to BASE (HIDLE + Patch 1+3+6)
+  REASON
+    - Standard MC variant per build methodology
+
+v2.0  2026-04-28  Full rebuild from new 2026-04-28 XML metadata
+  CHANGED
+    - New VehicleStolenQuery (3 combos: QVN/QVP/QVV)
+    - RandomRequest mandatory on VehicleRegistrationQuery (default N)
+    - ImageIndicator on all 6 transactions
+    - GunModel added to GunQuery
+    - State removed from BoatQuery, RegistrationNumber maxLength 8->20
+    - All keyRefs reinvented (LIMITATION #21)
+    - Patch 1+3+6 applied to RMS
+  REASON
+    - New XML metadata (2026-04-28) adds VehicleStolenQuery, RandomRequest, ImageIndicator
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

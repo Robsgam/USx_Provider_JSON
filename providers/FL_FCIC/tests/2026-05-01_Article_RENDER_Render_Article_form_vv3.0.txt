@@ -1,0 +1,47 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Article
+Combo      : RENDER
+Test type  : T1 (render/picklist verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ArticleSerialNumber       (empty)            --
+  ArticleTypeCode           (empty)            dropdown (NCIC_ARTICLE_TYPE)
+  OwnerAppliedNumber        (empty)            --
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- render test only, no query submitted.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  N/A -- render test only.
+
+  Verified:
+  - All 6 fields visible on single "ARTICLE QUERY" card
+  - ArticleTypeCode: FormSelect dropdown with NCIC article type codes
+  - ImageIndicator default N
+  - Query label: "Article"
+  - No console errors
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Article form renders correctly with all 6 fields, ArticleTypeCode dropdown populated, defaults correct.

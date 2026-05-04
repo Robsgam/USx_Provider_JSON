@@ -1,0 +1,73 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : KQ+Name (DH by name DOB sex state purpose)
+Test type  : T2 -- alternate DH combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NameLastDH                SMITHH             typed (DH-suffix field)
+  NameFirstDH               JOHN               typed (DH-suffix field)
+  BirthDateDH               10/11/1985         typed (date picker, DH-suffix)
+  SexCodeDH                 F                  dropdown (NIBRS, DH-suffix)
+  RegistrationState         AL                 dropdown (NCIC)
+  PurposeCode               C                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KQJ6GTMFWHXVW7F3Y4GQGFRX
+  MessageType : DriverHistoryQuery
+  keyReference: KQName
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    Name                 SMITHH,JOHN
+    BirthDate            19851011
+    SexCode              F
+    State                AL
+    PurposeCode          C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQ+Name
+  Reason: NameLastDH+NameFirstDH+BirthDateDH+SexCodeDH+RegistrationState+PurposeCode
+          all 6 set[] fields populated
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Name                      YES    SMITHH,JOHN     FormatStringRuleHandler(',') from NameLastDH+NameFirstDH
+  BirthDate                 YES    19851011        CommsysParseDateRuleHandler from BirthDateDH
+  SexCode                   YES    F               NIBRS reverse-lookup from SexCodeDH
+  State                     YES    AL              NCIC from RegistrationState
+  PurposeCode               YES    C               from PurposeCode (initialValue)
+  OperatorLicenseNumber     NO     --              OperatorLicenseNumberDH empty (Name path)
+  Attention                 NO     --              handler-only (CommsysGetLastNameFirstNameInitialRuleHandler)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: KQ+Name fired correctly; all 6 set[] fields sent; DH-suffix isolation works
+  Detail: DH checkbox auto-lit (autoSelect=true). Attention handler not visible in XML
+          (handler-only field, not in combo set[]/any[]).

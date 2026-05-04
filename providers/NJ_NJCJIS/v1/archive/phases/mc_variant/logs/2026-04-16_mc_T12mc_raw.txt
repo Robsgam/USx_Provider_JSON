@@ -1,0 +1,27 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Article serial + type (T12-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T12-mc -- ArticleSingleQuery, QA, Serial + Type -- PASS
+================================================================================
+
+Form    : Article QIF | Serial: ART1234 | Type: BBICYCL (from dropdown)
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBSYKRK2FBPEDMCVYBZ9E8S"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KPBSYKRK2FBPEDMCVYBZ9E8S</Id><ArticleTypeCode>BBICYCL</ArticleTypeCode><ArticleSerialNumber>ART1234</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+(none -- no RMS query for Article)
+
+Analysis:
+  - MessageType=ArticleSingleQuery (QA) correct
+  - <ArticleSerialNumber>ART1234</ArticleSerialNumber> correct
+  - <ArticleTypeCode>BBICYCL</ArticleTypeCode> correct -- CA_CLETS dropdown confirmed populated in mc build
+  - No RMS query fires for Article (confirmed)
+  - Unchanged from main build; spot check confirms mc bundle intact

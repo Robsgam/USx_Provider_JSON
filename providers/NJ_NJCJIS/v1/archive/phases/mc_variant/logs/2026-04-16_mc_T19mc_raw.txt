@@ -1,0 +1,31 @@
+NJ_NJCJIS -- MC Variant Raw Query Log
+=======================================
+Date     : 2026-04-16
+Version  : v1.0-mc
+Session  : MC variant testing -- Person OLN OOS + Image N (T19-mc)
+Tester   : Rob Sgambellone
+
+================================================================================
+T19-mc -- DriverLicenseQuery, DQN, OLN OOS + Image N -- PASS
+================================================================================
+
+Form    : Person QIF | OLN card | OLN: UJ380-298673 | State: MS (changed from NJ default) | Image: N (changed from Y default)
+Result  : No Returns (expected)
+Status  : PASS
+
+***** Request (XML) *****
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KPBVB64XG0QY73B3VQTQ31GM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KPBVB64XG0QY73B3VQTQ31GM</Id><ImageIndicator>N</ImageIndicator><State>MS</State><OperatorLicenseNumber>UJ380-298673</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+***** Request (RMS) *****
+{"elasticQuery":{"dlNumber":"uj380-298673"},"from":0,"size":50}
+
+***** Response *****
+No Returns
+
+Analysis:
+  - MessageType=DriverLicenseQuery (DQN -- OLN path) correct
+  - <OperatorLicenseNumber>UJ380-298673</OperatorLicenseNumber> correct
+  - <State>MS</State> confirmed -- OOS state changed from NJ default
+  - <ImageIndicator>N</ImageIndicator> confirmed -- both state change and Image override work simultaneously
+  - RMS: dlNumber only (uj380-298673), no state filter -- server-side limitation confirmed
+  - All 4 OLN paths now confirmed (NJ+ImageY, OOS+ImageY, NJ+ImageN, OOS+ImageN)

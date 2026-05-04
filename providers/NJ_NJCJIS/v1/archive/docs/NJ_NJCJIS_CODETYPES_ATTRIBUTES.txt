@@ -1,0 +1,228 @@
+NJ_NJCJIS -- CodeTypes and Attributes Reference
+=================================================
+Source : NJ_NJCJIS.json (v3.13, 2026-04-09)
+Purpose: Compare codeType and attributeTypeId usage against other provider JSONs
+
+================================================================================
+CODETYPES (codeTypeCategory + codeTypeSource)
+================================================================================
+
+  fieldId                codeTypeCategory          codeTypeSource   Notes
+  ---------------------  ------------------------  ---------------  ----------------------------
+  ArticleTypeCode        NCIC_ARTICLE_TYPE         CA_CLETS         NCIC gives empty dropdown
+  GunMake                NCIC_FIREARM_MAKE         NCIC             NJ_NIBRS also works
+  LicensePlateTypeCode   NCIC_LICENSE_PLATE_TYPE   NCIC
+  SexCode                NIBRS_RACE *              NIBRS            * category name confirmed
+  RegistrationStateOOS   NJ_NIBRS_STATE            NJ_NIBRS         NJ-specific code list
+  BodyStyle              VEHICLE_BODY_STYLE        NJ_NIBRS         NCIC gives empty dropdown
+  ImageIndicator         YES_NO_UNKNOWN            NIBRS            NCIC also works
+  RandomRequest          YES_NO_UNKNOWN            NIBRS            NCIC also works
+
+--------------------------------------------------------------------------------
+UNIQUE codeTypeCategory VALUES (all)
+--------------------------------------------------------------------------------
+
+  NCIC_ARTICLE_TYPE
+  NCIC_FIREARM_MAKE
+  NCIC_LICENSE_PLATE_TYPE
+  NIBRS_RACE
+  NJ_NIBRS_STATE
+  VEHICLE_BODY_STYLE
+  YES_NO_UNKNOWN
+
+--------------------------------------------------------------------------------
+UNIQUE codeTypeSource VALUES (all)
+--------------------------------------------------------------------------------
+
+  CA_CLETS
+  NCIC
+  NIBRS
+  NJ_NIBRS
+
+================================================================================
+ATTRIBUTE TYPES (attributeTypeId)
+================================================================================
+
+  fieldId                  attributeTypeId
+  -----------------------  ----------------------
+  CAD_EVENT_SELECT_VALUE   CAD_EVENT_SELECT_VALUE
+  CAD_UNIT_SELECT_VALUE    CAD_UNIT_SELECT_VALUE
+  RegistrationState        STATE
+  SexCode                  SEX
+
+  Notes:
+    CAD_EVENT_SELECT_VALUE and CAD_UNIT_SELECT_VALUE -- inherited from HIDLE/RMS bundle.
+    RegistrationState (STATE) -- NJ in-state forms only. Hidden field (SelH).
+      Feeds RMS elastic search with internal attribute ID. NOT mapped in QIDM.
+      Never appears in outbound XML. See STATE FIELD ARCHITECTURE below.
+    SexCode (SEX) -- Person forms. Sends internal attribute ID for sex value.
+
+================================================================================
+FIELDS WITH initialValue SET
+================================================================================
+
+  fieldId               initialValue   Form / Usage
+  --------------------  -------------  ----------------------------------------
+  ImageIndicator        Y              Person NJ + OOS OLN card (image on by default)
+  RegistrationState     NJ             NJ in-state forms -- hidden SelH (RMS only)
+  RegistrationStateNJ   NJ             NJ in-state forms -- hidden InpH (outbound XML)
+  RegistrationStateOOS  NJ             Boat form only -- State defaults to NJ,
+                                       operator changes for OOS boat queries
+
+================================================================================
+STATE FIELD ARCHITECTURE (NJ_NJCJIS-specific)
+================================================================================
+
+  NJ in-state forms (Vehicle NJ, Person NJ):
+    Field 1: SelH  fieldId='RegistrationState'    attributeTypeId='STATE'  initialValue='NJ'
+             -- Hidden. Sends internal attribute ID (69509884952) to RMS elastic search.
+             -- NOT in QIDM. Never reaches outbound XML.
+    Field 2: InpH  fieldId='RegistrationStateNJ'  initialValue='NJ'
+             -- Hidden. QIDM sourceField for StateNJ attribute. Sends 'NJ' to outbound XML.
+
+  OOS forms (Vehicle OOS, Person OOS):
+    Field:   Sel   fieldId='RegistrationStateOOS'  codeTypeCategory='NJ_NIBRS_STATE'
+                   codeTypeSource='NJ_NIBRS'
+             -- Visible dropdown. Sends 2-letter state code to outbound XML.
+             -- No attributeTypeId -- does not interact with RMS attribute lookup.
+
+  Boat form:
+    Field:   Sel   fieldId='RegistrationStateOOS'  codeTypeCategory='NJ_NIBRS_STATE'
+                   codeTypeSource='NJ_NIBRS'  initialValue='NJ'
+             -- Visible dropdown, defaults to NJ. Changed by operator for OOS boat queries.
+
+  Why this matters (for comparison):
+    attributeTypeId='STATE' on any FormSelect causes the platform to send the
+    internal numeric attribute ID (e.g., 69509884952) instead of the 2-letter code.
+    This is correct for RMS elastic search but wrong for outbound XML.
+    codeTypeCategory='NJ_NIBRS_STATE' sends the 2-letter code -- safe for outbound XML
+    and does not cause RMS fatal errors.
+
+================================================================================
+QIDM ATTRIBUTE NAMES (name field in QUERYINPUTDATAMAPPING attributes)
+================================================================================
+
+  VehicleRegistrationQuery:
+    LicensePlateNumberIn      sourceField: LicensePlateNumberIn      targetField: LicensePlateNumber
+    LicensePlateNumberOut     sourceField: LicensePlateNumberOut     targetField: LicensePlateNumber
+    LicensePlateTypeCode      sourceField: LicensePlateTypeCode      targetField: LicensePlateTypeCode
+    LicensePlateYear          sourceField: LicensePlateYear          targetField: LicensePlateYear
+    ImageIndicator            sourceField: ImageIndicator            targetField: ImageIndicator
+    RandomRequest             sourceField: RandomRequest             targetField: RandomRequest
+    StateNJ                   sourceField: RegistrationStateNJ       targetField: State
+    StateOOS                  sourceField: RegistrationStateOOS      targetField: State
+    VehicleIdentificationNumber sourceField: VehicleIdentificationNumber targetField: VehicleIdentificationNumber
+
+  DriverLicenseQuery:
+    OperatorLicenseNumber     sourceField: OperatorLicenseNumber     targetField: OperatorLicenseNumber
+    BirthDate                 sourceField: BirthDate                 targetField: BirthDate
+    Name                      sourceField: Name                      targetField: Name
+    SexCode                   sourceField: SexCode                   targetField: SexCode
+    ImageIndicator            sourceField: ImageIndicator            targetField: ImageIndicator
+    StateNJ                   sourceField: RegistrationStateNJ       targetField: State
+    StateOOS                  sourceField: RegistrationStateOOS      targetField: State
+
+  GunQuery:
+    GunSerialNumber           sourceField: GunSerialNumber           targetField: GunSerialNumber
+    GunMake                   sourceField: GunMake                   targetField: GunMake
+    GunCaliber                sourceField: GunCaliber                targetField: GunCaliber
+
+  BoatQuery:
+    RegistrationNumber        sourceField: RegistrationNumber        targetField: RegistrationNumber
+    BoatHullIdNumber          sourceField: BoatHullIdNumber          targetField: BoatHullIdNumber
+    StateOOS                  sourceField: RegistrationStateOOS      targetField: State
+
+  ArticleSingleQuery:
+    ArticleSerialNumber       sourceField: ArticleSerialNumber       targetField: ArticleSerialNumber
+    ArticleTypeCode           sourceField: ArticleTypeCode           targetField: ArticleTypeCode
+
+================================================================================
+QIDM COMBINATION keyReferences (must be unique per mapping)
+================================================================================
+
+  VehicleRegistrationQuery:
+    RQ_NJ   -- Vehicle NJ plate  (set: LicensePlateNumberIn + RegistrationStateNJ)
+    RQN_NJ  -- Vehicle NJ VIN    (set: VehicleIdentificationNumber + RegistrationStateNJ)
+    RQ      -- Vehicle OOS plate (set: LicensePlateNumberOut + RegistrationStateOOS)
+    RQN     -- Vehicle OOS VIN   (set: VehicleIdentificationNumber + RegistrationStateOOS)
+
+  DriverLicenseQuery:
+    DQN_NJ  -- Person NJ OLN     (set: OperatorLicenseNumber + RegistrationStateNJ)
+    DQN     -- Person OOS OLN    (set: OperatorLicenseNumber + RegistrationStateOOS)
+    DQ      -- Name search both  (set: BirthDate + NameLast + NameFirst)
+
+  BoatQuery:
+    BQ      -- Boat registration  (set: RegistrationNumber)
+    BQN     -- Boat hull ID       (set: BoatHullIdNumber)
+
+  GunQuery:
+    QG      -- Firearm serial     (set: GunSerialNumber)
+
+  ArticleSingleQuery:
+    QA      -- Article serial     (set: ArticleSerialNumber + ArticleTypeCode)
+
+================================================================================
+OUTBOUND XML ELEMENT NAMES (QIDM targetField -- all unique values)
+================================================================================
+
+  From NJ_NJCJIS bundle:
+    ArticleSerialNumber, ArticleTypeCode, BirthDate, BoatHullIdNumber,
+    GunCaliber, GunMake, GunSerialNumber, ImageIndicator,
+    LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+    Name, OperatorLicenseNumber, RandomRequest, RegistrationNumber,
+    SexCode, State, VehicleIdentificationNumber
+
+  From RMS bundle (inherited from HIDLE -- not NJ-specific):
+    AddressCity, AddressState, AddressStateCode, AddressStreet,
+    AddressStreetName, AddressStreetNumber, AddressZipCode,
+    Age, Alias, AliasBirthDate, ArticleBrand, ArticleModel,
+    Authorization, AutoInsuranceCarrier, BodyStyle, Build, BuildAttrId,
+    Caliber, Cautions, cookie, dateOfBirth, DateVulnerableTo, dlNumber,
+    Ethnicity, EthnicityAttrId, EthnicityCode, ExpirationDate,
+    EyeColorAttrId, EyeColorCode, FacialHairType, FacialHairTypeAttrId,
+    FirearmMake, firstName, GunModel, GunTypeCode,
+    HairColor, HairColorAttrId, HairColorCode, HairLength, HairLengthAttrId,
+    HairStyle, HairStyleAttrId, HasPotentialActiveWarrant, Height,
+    HeightDisplay, HeightFeet, HeightInches, hit, IdentifyingMarks,
+    imageId, IntInterfaceName, IntSystemName, IsActiveTarget,
+    IsJuvenile, IsStolen, IsSuspectedGangMember, IsVulnerable,
+    lastName, LicensePlateStateCode, Mark43Id, Mnemonic,
+    NameFirst, NameLast, NameMiddle, OperatorLicenseRestrictions,
+    OperatorLicenseStateCode, OperatorLicenseStatusCode, OrganDonor,
+    ORI, Phone, PhoneNumbers,
+    propertyPersons[0].person.firstName, propertyPersons[0].person.lastName,
+    RaceAttrId, raceAttrIds, RaceCode, RaceCode,
+    RegistrationStateAttrId, RegistrationStateCode, RegistrationYear,
+    RelatedSearchHitIndicator, SecondaryRequests, SerialNumber,
+    sexAttrId, SkinTone, SkinToneAttrId, SocialSecurityNumber, ssn,
+    System, UserName,
+    vehicle.makeNcicCode, vehicle.modelNcicCode,
+    vehicle.registrationStateAttrIds, vehicle.tag,
+    vehicle.vinNumber, vehicle.yearOfManufacture,
+    VehicleColorAttrId, VehicleColorCode, VehicleMakeCode, VehicleMakeName,
+    VehicleModelCode, VehicleModelName, VehicleTypeCode, VehicleYear,
+    VehicleInsurance, Vision, VisionAttrId, WarrantDetails,
+    Weight, x-api-token
+
+================================================================================
+PLATFORM BEHAVIOR NOTES (for comparisons with other JSONs)
+================================================================================
+
+  1. NJ_NIBRS_STATE is an NJ-specific code list -- other providers will use a different
+     codeTypeCategory/codeTypeSource for state dropdowns (or attributeTypeId='STATE').
+
+  2. attributeTypeId='STATE' always sends an internal numeric ID, not a 2-letter code.
+     Only use on hidden fields for RMS; never map in QIDM for outbound XML.
+
+  3. YES_NO_UNKNOWN / NIBRS is the platform's standard boolean dropdown.
+     Shared across providers -- safe to compare directly.
+
+  4. NCIC_LICENSE_PLATE_TYPE / NCIC and VEHICLE_BODY_STYLE / NCIC are standard NCIC
+     code lists -- should be the same across any NCIC-sourced provider JSON.
+
+  5. CA_CLETS codeTypeSource on ArticleTypeCode: inherited from HIDLE base;
+     may not be correct for NJ -- flag for CommSys vendor review.
+
+  6. LicensePlateNumberIn and LicensePlateNumberOut are NJ_NJCJIS-specific fieldIds.
+     Other providers may use generic LicensePlateNumber if they do not need RMS plate
+     search differentiation.

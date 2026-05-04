@@ -1,0 +1,83 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: LA_LETTS_OFML_BASE
+  Source: LA_LETTS_OFML_BASE.json
+  Generated: 2026-04-24 16:24
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    ArticleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+
+  Entity: Boat
+    RegistrationState [License State] (default=LA)
+      Config: attributeTypeId=STATE
+
+  Entity: Firearm
+    FirearmCaliber [Firearm Caliber]
+      Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NJ_NIBRS
+    FirearmMake [Firearm Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+    ImageIndicator [Image Indicator]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Person
+    ImageIndicator [Image Indicator] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    PurposeCode [Driver History Purpose] (default=C)
+      Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
+    RaceCode [Race]
+      Config: attributeTypeId=RACE
+    RegistrationState [License State] (default=LA)
+      Config: attributeTypeId=STATE
+    SexCode [Sex]
+      Config: attributeTypeId=SEX
+
+  Entity: Vehicle
+    LicensePlateTypeCode [Plate Type] (default=PC)
+      Config: attributeTypeId=LICENSE_PLATE_TYPE_CODE
+    RegistrationState [State] (default=LA)
+      Config: attributeTypeId=STATE
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: LA_LEMS_DriverLicenseQuery
+      State -> State
+        codeTypeProvider=NCIC
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: LA_LEMS_Results
+      AddressStateCode -> AddressStateCode
+        attributeType=STATE | codeTypeSource=NCIC
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        attributeType=RACE | codeTypeSource=NCIC
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NCIC
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMake -> VehicleMakeName
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
+      VehicleStyleCode -> BodyStyle
+        attributeType=VEHICLE_BODY_STYLE | codeTypeSource=VEHICLE
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+  QIDM: LA_LEMS_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 12
+  QRDM code type attrs: 10

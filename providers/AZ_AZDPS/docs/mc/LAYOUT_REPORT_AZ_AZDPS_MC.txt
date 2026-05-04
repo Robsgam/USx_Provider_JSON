@@ -1,0 +1,167 @@
+﻿================================================================
+  Build Report: AZ_AZDPS_MC
+  Source: AZ_AZDPS_MC.json
+  Generated: 2026-05-01 10:33
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== AZ_AZDPS_MC.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=3 fields=5
+  Person | entity=Person | qidm= | cards=7 fields=24
+  Firearm | entity=Firearm | qidm= | cards=1 fields=5
+  Article | entity=Article | qidm= | cards=1 fields=3
+  Boat | entity=Boat | qidm= | cards=3 fields=4
+QIDMs: 8
+  AZ_AZDPS_VehicleRegistrationQuery | attrs=8 combos=2 autoSelect=
+  AZ_AZDPS_AzAzdpsDriverLicenseQuery | attrs=7 combos=4 autoSelect=True
+  AZ_AZDPS_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
+  AZ_AZDPS_GunQuery | attrs=6 combos=1 autoSelect=
+  AZ_AZDPS_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
+  AZ_AZDPS_BoatQuery | attrs=5 combos=4 autoSelect=
+  AZ_AZDPS_WMPIWantedPersonInquiry | attrs=8 combos=2 autoSelect=
+  AZ_AZDPS_WMPIMissingPersonInquiry | attrs=13 combos=2 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH_OPT"
+      ROW ROW_VEH_OPT_1 [6]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
+      ROW ROW_VEH_OPT_BADGE [12]
+        dexStateUserId (Text)
+    CARD "CARD_VEH_PLATE"
+      ROW ROW_VEH_PLATE_1 [6 3 3]
+        LicensePlateNumberIn (Text | maxLen=10)
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2026)
+    CARD "CARD_VEH_VIN"
+      ROW ROW_VEH_VIN_1 [6 3 3]
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        VehicleYear (Text | maxLen=4)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER_OPT"
+      ROW ROW_PER_OPT_1 [6]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
+      ROW ROW_PER_OPT_BADGE [12]
+        dexStateUserId (Text)
+      ROW ROW_PER_OPT_STEDH [12]
+        StateDH (Text | default=AZ)
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_DL_1 [6 6]
+        OperatorLicenseNumber (Text | maxLen=20)
+        SocialSecurityNumber (Text | maxLen=9)
+    CARD "CARD_PER_NAME"
+      ROW ROW_PER_NAME_1 [6 6]
+        NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=20)
+      ROW ROW_PER_NAME_2 [3 3 3 3]
+        NameMiddle (Text | maxLen=20)
+        NameSuffix (Text | maxLen=4)
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+    CARD "CARD_PER_DH_OLN"
+      ROW ROW_PER_DH_OLN_1 [8 4]
+        OperatorLicenseNumberDH (Text | maxLen=20)
+        PurposeCode (Text | maxLen=1)
+      ROW ROW_PER_DH_OLN_2 [12]
+        Attention (Text | maxLen=30)
+    CARD "CARD_PER_DH_NAME"
+      ROW ROW_PER_DH_NAME_1 [6 6]
+        NameLastDH (Text | maxLen=30)
+        NameFirstDH (Text | maxLen=20)
+      ROW ROW_PER_DH_NAME_2 [3 3 3 3]
+        NameMiddleDH (Text | maxLen=20)
+        NameSuffixDH (Text | maxLen=4)
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+    CARD "CARD_PER_WM"
+      ROW ROW_PER_WM_1 [4 4 4]
+        NCICNumber (Text | maxLen=10)
+        RaceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+        RelatedHitSearchIndicator (Text | maxLen=1)
+      ROW ROW_PER_WM_2 [4 4]
+        ExpandedNameSearchCode (Text | maxLen=1)
+        ExpandedBirthDateSearchCode (Text | maxLen=1)
+    CARD "CARD_PER_MP"
+      ROW ROW_PER_MP_1 [2 2 2 3 3]
+        Age (Text | maxLen=2)
+        Height (Text | maxLen=3)
+        Weight (Text | maxLen=3)
+        EyeColorCode (Dropdown | codeTypeCategory=NCIC_EYE_COLOR | codeTypeSource=NCIC)
+        HairColorCode (Dropdown | codeTypeCategory=NCIC_HAIR_COLOR | codeTypeSource=NCIC)
+      ROW ROW_PER_MP_2 [4 4]
+        AreaCode (Text | maxLen=3)
+        FormORI (Text | maxLen=9)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [12]
+        GunSerialNumber (Text | maxLen=11)
+      ROW ROW_GUN_BADGE [12]
+        dexStateUserId (Text)
+      ROW ROW_GUN_2 [4 4 4]
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        GunModel (Text | maxLen=11)
+        GunCaliber (Text | maxLen=4)
+      ROW ROW_GUN_3 [4]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [5 7]
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        ArticleSerialNumber (Text | maxLen=11)
+      ROW ROW_ART_BADGE [12]
+        dexStateUserId (Text)
+      ROW ROW_ART_2 [4]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA_OPT"
+      ROW ROW_BOA_OPT_1 [6]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
+      ROW ROW_BOA_OPT_BADGE [12]
+        dexStateUserId (Text)
+    CARD "CARD_BOA_REG"
+      ROW ROW_BOA_REG_1 [8]
+        RegistrationNumber (Text | maxLen=8)
+    CARD "CARD_BOA_HULL"
+      ROW ROW_BOA_HULL_1 [8 4]
+        BoatHullIdNumber (Text | maxLen=20)
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    SocialSecurityNumber -> ssn
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    RaceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    SexCode -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleYear -> vehicle.yearOfManufacture
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    VehicleMakeCode -> vehicle.makeNcicCode
+    VehicleModelCode -> vehicle.modelNcicCode
+    LicensePlateNumberIn -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

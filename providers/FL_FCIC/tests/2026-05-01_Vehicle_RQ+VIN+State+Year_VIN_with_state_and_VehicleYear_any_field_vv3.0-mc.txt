@@ -1,0 +1,77 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : RQ+VIN+State+Year (VIN with state and VehicleYear any[] field)
+Test type  : T3 -- any[] field test + co-fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  VehicleIdentificationNumber 1HGBH41JXMN109186 typed
+  RegistrationState         GA                 dropdown (NCIC, OOS)
+  VehicleYear               2020               typed
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     vinNumber=1HGBH41JXMN109186, yearOfManufacture=2020,
+     registrationStateAttrIds=[69510834680]
+
+  2) VehicleStolenQuery (QV co-fire)
+     Transaction: 01KQJAGS3GTZ3XPJKDE1RJM9M1
+     VehicleIdentificationNumber=1HGBH41JXMN109186, ImageIndicator=N
+
+  3) VehicleRegistrationQuery (RQ)
+     Transaction: 01KQJAGPH6J2G8378BYFWC7D6V
+     VehicleIdentificationNumber=1HGBH41JXMN109186, State=GA,
+     VehicleYear=2020, ImageIndicator=N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: RQ+VIN+State (VehReg OOS) + QV+VIN (VehStolen co-fire) + RMS
+  Reason: VIN+State populated = RQ+VIN fires (set[]); VehicleYear in any[] — included
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  VehicleIdentificationNumber YES  1HGBH41JXMN109186 mapped — RQ + QV
+  State                     YES    GA              NCIC from RegistrationState — RQ only
+  VehicleYear               YES    2020            mapped from VehicleYear (any[] — RQ only)
+  ImageIndicator            YES    N               mapped — RQ + QV
+  VehicleMakeCode           NO     --              sourceField empty (not populated this test)
+  LicensePlateNumberIn      NO     --              sourceField empty
+
+  KEY FINDING: VehicleYear=2020 confirmed in RQ XML (any[] field).
+  QV does NOT include VehicleYear (not in QV attributes). RMS receives yearOfManufacture.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: vinNumber=1HGBH41JXMN109186, yearOfManufacture=2020,
+                      registrationStateAttrIds=[69510834680]
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: RQ+VIN fired with VehicleYear any[] field confirmed in XML; QV+RMS co-fire
+  Detail: VehicleYear appears in RQ but not QV (not a QV attribute). RMS receives
+          yearOfManufacture correctly. All RQ+VIN any[] fields now tested (Make in
+          Test 20, Year here, ImageIndicator throughout).
+

@@ -1,0 +1,172 @@
+NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+===============================================================
+Provider:   NY_NYSPIN_EJUSTICE
+Phase:      01_standup (Phase 1 reboot -- 2026-04-20)
+Source:     NY_NYSPIN_EJUSTICE.XML (MetaData authority)
+Status key: [CONFIRMED] = tested, XML captured  |  [PENDING] = not yet tested
+
+NOTE ON WINQ/MINQ
+-----------------
+WantedPersonQuery and MissingPersonQuery appear as MessageKeys in the XML but have
+NO Transaction element (no MetaData, no field definitions). These queries are NOT
+implemented in Phase 1. See LIMITATIONS.txt for tracking and vendor contact note.
+
+================================================================================
+VEHICLE QUERIES
+================================================================================
+Transaction: VehicleRegistrationQuery
+QIDM:        NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery (single QIDM -- RVEH+RVIN+RCAR)
+
+--- RVEH: Plate search (NY or OOS) ---
+[PENDING] VEH-1
+  Combination: RVEH  set[LicensePlateNumberIn]  any[State, PlateType, Year, Image]
+  Test: Plate + blank state (NY)
+  CommSys expected: <LicensePlateNumber>...</LicensePlateNumber>  (no <State> element)
+  RMS expected:     licensePlateIn combination fires; registrationStateAttrIds:[NY_attr_id]
+
+[PENDING] VEH-2
+  Combination: RVEH
+  Test: Plate + OOS state selected
+  CommSys expected: <LicensePlateNumber>...</LicensePlateNumber>  <State>XX</State>
+
+--- RVIN: VIN + state (OOS / NCIC/Nlets) ---
+[PENDING] VEH-4
+  Combination: RVIN  set[VehicleIdentificationNumber, State]
+  Test: VIN + OOS state selected
+  CommSys expected: <VehicleIdentificationNumber>...</VehicleIdentificationNumber>  <State>XX</State>
+
+--- RCAR: VIN only (NY DMV -- no state required) ---
+[PENDING] VEH-3
+  Combination: RCAR  set[VehicleIdentificationNumber]
+  Test: VIN + blank state
+  CommSys expected: <VehicleIdentificationNumber>...</VehicleIdentificationNumber>  (no <State>)
+
+================================================================================
+BOAT QUERIES
+================================================================================
+Transaction: BoatQuery
+QIDM:        NY_NYSPIN_EJUSTICE_BoatQuery (single QIDM -- BVEH+BVIN+RVEH+RCAR)
+
+--- RVEH: Registration number, NY (no state) ---
+[PENDING] BOA-1
+  Combination: RVEH  set[RegistrationNumber]
+  Test: Reg Number + blank state
+  CommSys expected: <RegistrationNumber>...</RegistrationNumber>  (no <State>)
+
+--- RCAR: Hull ID, NY (no state) ---
+[PENDING] BOA-2
+  Combination: RCAR  set[BoatHullIdNumber]
+  Test: Hull ID + blank state
+  CommSys expected: <BoatHullIdNumber>...</BoatHullIdNumber>  (no <State>)
+
+--- BVEH: Registration number + OOS state ---
+[PENDING] BOA-3
+  Combination: BVEH  set[RegistrationNumber, State]
+  Test: Reg Number + OOS state selected
+  CommSys expected: <RegistrationNumber>...</RegistrationNumber>  <State>XX</State>
+
+--- BVIN: Hull ID + OOS state ---
+[PENDING] BOA-4
+  Combination: BVIN  set[BoatHullIdNumber, State]
+  Test: Hull ID + OOS state selected
+  CommSys expected: <BoatHullIdNumber>...</BoatHullIdNumber>  <State>XX</State>
+
+================================================================================
+DRIVER LICENSE QUERIES
+================================================================================
+
+--- DLIC: OLN path ---
+Transaction: DriverLicenseQuery
+QIDM:        NY_NYSPIN_EJUSTICE_DriverLicenseQuery  (autoSelect=true)
+
+[PENDING] PER-1
+  Combination: DLIC  set[OperatorLicenseNumber]  any[State, ImageIndicator]
+  Test: OLN + blank state (NY)
+  CommSys expected: <OperatorLicenseNumber>...</OperatorLicenseNumber>  (no <State>)
+  RMS expected:     person combination fires; registrationStateAttrId:"[NY_attr_id]"
+
+[PENDING] PER-2
+  Combination: DLIC
+  Test: OLN + OOS state
+  CommSys expected: <OperatorLicenseNumber>...</OperatorLicenseNumber>  <State>XX</State>
+
+[PENDING] PER-3
+  Combination: DLIC
+  Test: OLN + Image Y
+  CommSys expected: <OperatorLicenseNumber>...</OperatorLicenseNumber>  <ImageIndicator>Y</ImageIndicator>
+
+--- DGRP: Name/DOB path ---
+Transaction: NyNyspinDriverLicenseNameQuery
+QIDM:        NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery  (autoSelect=true)
+
+[PENDING] PER-4
+  Combination: DGRP  set[NameLast, NameFirst]  any[BirthDate, NameMiddle, NameSuffix, SexCode]
+  Test: First + Last + DOB (no sex)
+  CommSys expected: <Name>First Last</Name>  <BirthDate>MMDDYYYY</BirthDate>
+
+[PENDING] PER-5
+  Combination: DGRP
+  Test: First + Last + DOB + Sex M
+  CommSys expected: <Name>...</Name>  <BirthDate>...</BirthDate>  <SexCode>M</SexCode>
+
+================================================================================
+DRIVER HISTORY QUERIES
+================================================================================
+Transaction: DriverHistoryQuery
+QIDM:        NY_NYSPIN_EJUSTICE_DriverHistoryQuery  (autoSelect=true)
+             Single QIDM -- DALL (OLN) + DALH (Name -- invented keyRef, confirmed v1.19)
+
+--- DALL: OLN path ---
+[PENDING] PER-6
+  Combination: DALL  set[OperatorLicenseNumberDH]  any[all DH-suffix fields + extras]
+  Test: OLNdh + blank state
+  CommSys expected: <OperatorLicenseNumber>...</OperatorLicenseNumber>
+  Verify: DLIC does NOT fire simultaneously (OLN is in DH field, DH-suffix isolation)
+
+[PENDING] PER-7
+  Combination: DALL
+  Test: OLNdh + NyNyspinTransactionName + PurposeCode + Requestor
+  CommSys expected: all optional fields present in XML
+
+--- DALH: Name path (invented keyRef) ---
+[PENDING] PER-8
+  Combination: DALH  set[NameLastDH, NameFirstDH]  any[BirthDateDH, SexCodeDH, ...]
+  Test: NameLastDH + NameFirstDH + BirthDateDH + SexCodeDH
+  CommSys expected: <Name>FirstDH LastDH</Name>  <BirthDate>MMDDYYYY</BirthDate>  <SexCode>M</SexCode>
+
+================================================================================
+FIREARM QUERIES
+================================================================================
+Transaction: GunQuery
+QIDM:        NY_NYSPIN_EJUSTICE_GunQuery
+
+[PENDING] FA-1
+  Combination: GINQ  set[GunSerialNumber]  any[GunCaliber, GunMake, RelatedHitSearchIndicator]
+  Test: Serial only (minimum required)
+  CommSys expected: <GunSerialNumber>...</GunSerialNumber>
+
+[PENDING] FA-2
+  Combination: GINQ
+  Test: Serial + Make + Caliber
+  CommSys expected: <GunSerialNumber>...</GunSerialNumber>  <GunMake>...</GunMake>  <GunCaliber>...</GunCaliber>
+
+[PENDING] FA-3
+  Combination: GINQ
+  Test: Serial + RelatedHitSearchIndicator Y
+  CommSys expected: <GunSerialNumber>...</GunSerialNumber>  <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+
+================================================================================
+ARTICLE QUERIES
+================================================================================
+Transaction: ArticleSingleQuery
+QIDM:        NY_NYSPIN_EJUSTICE_ArticleSingleQuery
+
+[PENDING] ART-1
+  Combination: AINQ  set[ArticleSerialNumber, ArticleTypeCode]  any[ImageIndicator, RelatedHitSearchIndicator]
+  Test: Serial + TypeCode (minimum required)
+  CommSys expected: <ArticleSerialNumber>...</ArticleSerialNumber>  <ArticleTypeCode>...</ArticleTypeCode>
+
+[PENDING] ART-2
+  Combination: AINQ
+  Test: Serial + TypeCode + Image + RelatedHit
+  CommSys expected: all 4 fields in XML

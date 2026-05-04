@@ -1,0 +1,5055 @@
+{
+  "bundles": [
+    {
+      "configurations": [
+        {
+          "attributes": [
+            {
+              "name": "ORI",
+              "size": 12,
+              "sourceField": [
+                "ORI"
+              ],
+              "targetField": "ORI"
+            },
+            {
+              "name": "Mnemonic",
+              "size": 25,
+              "sourceField": [
+                "mnemonic"
+              ],
+              "targetField": "Mnemonic"
+            },
+            {
+              "description": "dexUserStateid from RMS profile",
+              "name": "UserName",
+              "rule": {
+                "function": "CommsysGetDexStateUserIdRuleHandler",
+                "arguments": [
+                  "true"
+                ]
+              },
+              "sourceField": [
+                "dexStateUserId"
+              ],
+              "targetField": "UserName"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "ORI",
+                  "Mnemonic"
+                ],
+                "any": [
+                  "dexStateUserId"
+                ],
+                "conditions": null,
+                "defaults": null
+              }
+            }
+          ],
+          "description": "Authentication configuration for LA LEMS",
+          "handlerFunction": "CommsysOriAuthenticationHandler",
+          "name": "LA_LEMS",
+          "type": "AUTHENTICATION",
+          "deviceRegistrationOptional": false,
+          "provider": "LA_LEMS"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Image",
+              "sourceField": [
+                "Image"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "AddressCity",
+              "sourceField": [
+                "AddressCity"
+              ],
+              "targetField": "AddressCity"
+            },
+            {
+              "name": "AddressStateCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "AddressStateCode"
+              ],
+              "targetField": "AddressStateCode",
+              "attributeType": "STATE",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "AddressStreet",
+              "sourceField": [
+                "AddressStreet"
+              ],
+              "targetField": "AddressStreet"
+            },
+            {
+              "name": "AddressStreetName",
+              "sourceField": [
+                "AddressStreetName"
+              ],
+              "targetField": "AddressStreetName"
+            },
+            {
+              "name": "AddressStreetNumber",
+              "sourceField": [
+                "AddressStreetNumber"
+              ],
+              "targetField": "AddressStreetNumber"
+            },
+            {
+              "name": "AddressZipCode",
+              "sourceField": [
+                "AddressZipCode"
+              ],
+              "targetField": "AddressZipCode"
+            },
+            {
+              "name": "ArticleBrand",
+              "sourceField": [
+                "ArticleBrand"
+              ],
+              "targetField": "ArticleBrand"
+            },
+            {
+              "name": "ArticleModel",
+              "sourceField": [
+                "ArticleModel"
+              ],
+              "targetField": "ArticleModel"
+            },
+            {
+              "name": "ArticleSerialNumber",
+              "sourceField": [
+                "ArticleSerialNumber"
+              ],
+              "targetField": "ArticleSerialNumber"
+            },
+            {
+              "name": "ArticleTypeCode",
+              "sourceField": [
+                "ArticleTypeCode"
+              ],
+              "targetField": "ArticleTypeCode"
+            },
+            {
+              "name": "AutoInsuranceCarrier",
+              "sourceField": [
+                "AutoInsuranceCarrier"
+              ],
+              "targetField": "AutoInsuranceCarrier"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:DOB\\s(\\d{8})",
+                  "trim"
+                ]
+              },
+              "name": "BirthDate",
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "BoatBrand",
+              "sourceField": [
+                "BoatBrand"
+              ],
+              "targetField": "BoatBrand"
+            },
+            {
+              "name": "BoatHullIdNumber",
+              "sourceField": [
+                "BoatHullIdNumber"
+              ],
+              "targetField": "BoatHullIdNumber"
+            },
+            {
+              "name": "BoatMakeCode",
+              "sourceField": [
+                "BoatMakeCode"
+              ],
+              "targetField": "BoatMakeCode"
+            },
+            {
+              "name": "BoatName",
+              "sourceField": [
+                "BoatName"
+              ],
+              "targetField": "BoatName"
+            },
+            {
+              "name": "BoatSerialNumber",
+              "sourceField": [
+                "BoatSerialNumber"
+              ],
+              "targetField": "BoatSerialNumber"
+            },
+            {
+              "name": "EthnicityCode",
+              "sourceField": [
+                "EthnicityCode"
+              ],
+              "targetField": "EthnicityCode"
+            },
+            {
+              "name": "ExpirationDate",
+              "sourceField": [
+                "ExpirationDate"
+              ],
+              "targetField": "ExpirationDate"
+            },
+            {
+              "name": "EyeColor",
+              "sourceField": [
+                "EyeColor"
+              ],
+              "targetField": "EyeColor"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:EYE/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "EyeColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "EyeColorCode"
+              ],
+              "targetField": "EyeColorCode",
+              "attributeType": "EYE_COLOR",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "GunCaliber",
+              "sourceField": [
+                "GunCaliber"
+              ],
+              "targetField": "Caliber"
+            },
+            {
+              "name": "GunMake",
+              "sourceField": [
+                "GunMake"
+              ],
+              "targetField": "FirearmMake"
+            },
+            {
+              "name": "GunModel",
+              "sourceField": [
+                "GunModel"
+              ],
+              "targetField": "GunModel"
+            },
+            {
+              "name": "GunSerialNumber",
+              "sourceField": [
+                "GunSerialNumber"
+              ],
+              "targetField": "GunSerialNumber"
+            },
+            {
+              "name": "GunTypeCode",
+              "sourceField": [
+                "GunTypeCode"
+              ],
+              "targetField": "GunTypeCode"
+            },
+            {
+              "name": "HairColor",
+              "sourceField": [
+                "HairColor"
+              ],
+              "targetField": "HairColor"
+            },
+            {
+              "name": "HairColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "HairColorCode"
+              ],
+              "targetField": "HairColorCode",
+              "attributeType": "HAIR_COLOR",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "Hit",
+              "sourceField": [
+                "Hit"
+              ],
+              "targetField": "hit"
+            },
+            {
+              "name": "ImageId",
+              "sourceField": [
+                "ImageId"
+              ],
+              "targetField": "imageId"
+            },
+            {
+              "name": "ImpliedLicensePlateStateCode",
+              "sourceField": [
+                "ImpliedLicensePlateStateCode"
+              ],
+              "targetField": "LicensePlateStateCode"
+            },
+            {
+              "name": "IntInterfaceName",
+              "sourceField": [
+                "IntInterfaceName"
+              ],
+              "targetField": "IntInterfaceName"
+            },
+            {
+              "name": "IntSystemName",
+              "sourceField": [
+                "IntSystemName"
+              ],
+              "targetField": "IntSystemName"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:LIC/\\s*([^\\s]+)",
+                  "regex:LIC/([^\\s]+)",
+                  "trim"
+                ]
+              },
+              "name": "LicensePlateNumber",
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "LicensePlateNumber"
+            },
+            {
+              "name": "LicensePlateStateCode",
+              "sourceField": [
+                "LicensePlateStateCode"
+              ],
+              "targetField": "RegistrationStateCode"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:OLN/\\s*([^\\s]+)",
+                  "regex:OLN/([^\\s]+)",
+                  "trim"
+                ]
+              },
+              "name": "OperatorLicenseNumber",
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "OperatorLicenseRestrictions",
+              "sourceField": [
+                "OperatorLicenseRestrictions"
+              ],
+              "targetField": "OperatorLicenseRestrictions"
+            },
+            {
+              "name": "OperatorLicenseStateCode",
+              "sourceField": [
+                "OperatorLicenseStateCode"
+              ],
+              "targetField": "OperatorLicenseStateCode"
+            },
+            {
+              "name": "OperatorLicenseStatusCode",
+              "sourceField": [
+                "OperatorLicenseStatusCode"
+              ],
+              "targetField": "OperatorLicenseStatusCode"
+            },
+            {
+              "name": "OrganDonor",
+              "sourceField": [
+                "OrganDonor"
+              ],
+              "targetField": "OrganDonor"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:HGT/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "HeightDisplay",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "Height"
+                  ],
+                  "height"
+                ]
+              },
+              "sourceField": [
+                "Height"
+              ],
+              "targetField": "HeightDisplay"
+            },
+            {
+              "name": "HeightFeet",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "Height"
+                  ],
+                  "feet"
+                ]
+              },
+              "sourceField": [
+                "HeightFeet"
+              ],
+              "targetField": "HeightFeet"
+            },
+            {
+              "name": "HeightInches",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "Height"
+                  ],
+                  "inches"
+                ]
+              },
+              "sourceField": [
+                "HeightInches"
+              ],
+              "targetField": "HeightInches"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:HGT/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "Height",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "Height"
+                  ],
+                  "total"
+                ]
+              },
+              "sourceField": [
+                "Height"
+              ],
+              "targetField": "Height"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:RAC/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "RaceCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "RaceCode",
+              "attributeType": "RACE",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "SerialNumber",
+              "sourceField": [
+                "SerialNumber"
+              ],
+              "targetField": "SerialNumber"
+            },
+            {
+              "name": "SecondaryRequests",
+              "sourceField": [
+                "SecondaryRequests"
+              ],
+              "targetField": "SecondaryRequests"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:SEX/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "SexCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode",
+              "attributeType": "SEX",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:SSN/([^\\s]+)",
+                  "regex:SSN ([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "SocialSecurityNumber",
+              "rule": {
+                "function": "truncate"
+              },
+              "size": 11,
+              "sourceField": [
+                "SocialSecurityNumber"
+              ],
+              "targetField": "SocialSecurityNumber"
+            },
+            {
+              "name": "System",
+              "sourceField": [
+                "System"
+              ],
+              "targetField": "System"
+            },
+            {
+              "name": "VehicleColor",
+              "sourceField": [
+                "VehicleColor"
+              ],
+              "targetField": "VehicleColor"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VCO/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "VehicleColorCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "VehicleColorCode"
+              ],
+              "targetField": "VehicleColorCode",
+              "attributeType": "ITEM_COLOR",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VIN/([^\\s]+)",
+                  "trim"
+                ]
+              },
+              "name": "VehicleIdentificationNumber",
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "VehicleIdentificationNumber"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VMA/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "VehicleMake",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "VehicleMakeName",
+              "attributeType": "VEHICLE_MAKE",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "VehicleMakeCode",
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "VehicleMakeCode"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VMO/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "VehicleModelName",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "VehicleModelCode"
+              ],
+              "targetField": "VehicleModelName",
+              "attributeType": "VEHICLE_MODEL",
+              "codeTypeSource": "NCIC"
+            },
+            {
+              "name": "VehicleModelCode",
+              "sourceField": [
+                "VehicleModelCode"
+              ],
+              "targetField": "VehicleModelCode"
+            },
+            {
+              "name": "VehicleStyleCode",
+              "sourceField": [
+                "VehicleStyleCode"
+              ],
+              "targetField": "VehicleStyleCode"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VST/([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "VehicleStyleCode",
+              "rule": {
+                "function": "CommsysResultAttributeMappingRuleHandler"
+              },
+              "sourceField": [
+                "VehicleStyleCode"
+              ],
+              "targetField": "BodyStyle",
+              "attributeType": "VEHICLE_BODY_STYLE",
+              "codeTypeSource": "VEHICLE"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:VYR/([^\\s]+)",
+                  "regex:YRMD:([^\\s]+)",
+                  "trim",
+                  "rule"
+                ]
+              },
+              "name": "VehicleYear",
+              "rule": {
+                "function": "ParseCommsysVehicleYearRuleHandler",
+                "arguments": [
+                  "50"
+                ]
+              },
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "VehicleYear"
+            },
+            {
+              "fallbackRule": {
+                "function": "CommysResultFallbackRegexRuleHandler",
+                "arguments": [
+                  "regex:WGT/([^\\s]+)",
+                  "trim"
+                ]
+              },
+              "name": "Weight",
+              "sourceField": [
+                "Weight"
+              ],
+              "targetField": "Weight"
+            },
+            {
+              "name": "NameLast",
+              "rule": {
+                "function": "ParseCommsysNameRuleHandler",
+                "arguments": [
+                  [
+                    "NormalizedNameLast",
+                    "NormalizedNameFirst",
+                    "NormalizedNameMiddle"
+                  ],
+                  [
+                    "NormalizedName"
+                  ],
+                  [
+                    "Name"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]
+                ]
+              },
+              "sourceField": [
+                "NormalizedNameLast"
+              ],
+              "targetField": "NameLast"
+            },
+            {
+              "name": "NameFirst",
+              "rule": {
+                "function": "ParseCommsysNameRuleHandler",
+                "arguments": [
+                  [
+                    "NormalizedNameLast",
+                    "NormalizedNameFirst",
+                    "NormalizedNameMiddle"
+                  ],
+                  [
+                    "NormalizedName"
+                  ],
+                  [
+                    "Name"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]
+                ]
+              },
+              "sourceField": [
+                "NormalizedNameFirst"
+              ],
+              "targetField": "NameFirst"
+            },
+            {
+              "name": "NameMiddle",
+              "rule": {
+                "function": "ParseCommsysNameRuleHandler",
+                "arguments": [
+                  [
+                    "NormalizedNameLast",
+                    "NormalizedNameFirst",
+                    "NormalizedNameMiddle"
+                  ],
+                  [
+                    "NormalizedName"
+                  ],
+                  [
+                    "Name"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]
+                ]
+              },
+              "sourceField": [
+                "NormalizedNameMiddle"
+              ],
+              "targetField": "NameMiddle"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "ParseCommsysNameRuleHandler",
+                "arguments": [
+                  [
+                    "NormalizedNameLast",
+                    "NormalizedNameFirst",
+                    "NormalizedNameMiddle"
+                  ],
+                  [
+                    "NormalizedName"
+                  ],
+                  [
+                    "Name"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]
+                ]
+              },
+              "sourceField": [
+                "Name"
+              ],
+              "targetField": "Name"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "ArticleBrand",
+                  "ArticleModel",
+                  "ArticleTypeCode",
+                  "ArticleSerialNumber"
+                ],
+                "any": [
+                  "ArticleBrand",
+                  "ArticleModel",
+                  "SerialNumber",
+                  "ArticleTypeCode",
+                  "ArticleSerialNumber",
+                  "Img",
+                  "ImageId",
+                  "System",
+                  "IntSystemName"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Article",
+              "keyReference": "Article"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "Img",
+                  "ImageId",
+                  "BoatBrand",
+                  "BoatHullIdNumber",
+                  "BoatMakeCode",
+                  "BoatName",
+                  "BoatSerialNumber",
+                  "LicensePlateNumber",
+                  "LicensePlateStateCode",
+                  "System",
+                  "IntSystemName"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Boat",
+              "keyReference": "Boat"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "AddressCity",
+                  "AddressStateCode",
+                  "AddressStreet",
+                  "AddressStreetName",
+                  "AddressStreetNumber",
+                  "AddressZipCode",
+                  "AutoInsuranceCarrier",
+                  "BirthDate",
+                  "EnableSecondaryInquiry",
+                  "EyeColorCode",
+                  "HairColorCode",
+                  "IntInterfaceName",
+                  "IntSystemName",
+                  "LicensePlateNumber",
+                  "LicensePlateStateCode",
+                  "OperatorLicenseClassCode",
+                  "OperatorLicenseNumber",
+                  "OperatorLicenseRestrictions",
+                  "OperatorLicenseStateCode",
+                  "OperatorLicenseStatusCode",
+                  "OrganDonor",
+                  "Height",
+                  "HeightDisplay",
+                  "HeightFeet",
+                  "HeightInches",
+                  "RaceCode",
+                  "SecondaryRequests",
+                  "SexCode",
+                  "SocialSecurityNumber",
+                  "System",
+                  "Weight",
+                  "Name",
+                  "NormalizedNameLast",
+                  "NormalizedNameFirst",
+                  "NormalizedNameMiddle"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Person",
+              "keyReference": "Person"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "Img",
+                  "ImageId",
+                  "IntSystemName",
+                  "RegistrationYear",
+                  "VehicleColor",
+                  "VehicleMakeName",
+                  "VehicleMakeCode",
+                  "VehicleModelName",
+                  "VehicleModelCode",
+                  "VehicleIdentificationNumber",
+                  "VehicleYear",
+                  "LicensePlateNumber",
+                  "LicensePlateStateCode",
+                  "LicensePlateYear",
+                  "OperatorLicenseClassCode",
+                  "System",
+                  "VehicleColorCode",
+                  "Weight",
+                  "VehicleStyleCode",
+                  "BodyStyle"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Vehicle",
+              "keyReference": "Vehicle"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "Img",
+                  "ImageId",
+                  "Caliber",
+                  "FirearmMake",
+                  "SerialNumber",
+                  "FreeText",
+                  "GunModel",
+                  "GunSerialNumber",
+                  "GunType",
+                  "GunTypeCode",
+                  "System",
+                  "IntSystemName"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Firearm",
+              "keyReference": "Firearm"
+            }
+          ],
+          "description": "Results mapping for LA LEMS",
+          "handlerFunction": "CommsysResultsHandler",
+          "name": "LA_LEMS_Results",
+          "type": "QUERYRESULTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "specialResultTypeMapping": {
+            "hitDetected": "1",
+            "mappings": [
+              {
+                "description": "Used for hit special result",
+                "m43Value": "Hit",
+                "priority": 1,
+                "providerValue": "Hit"
+              },
+              {
+                "description": "",
+                "m43Value": "SVS STOLEN VEHICLE",
+                "priority": 1,
+                "providerValue": "SVS STOLEN VEHICLE"
+              },
+              {
+                "description": "",
+                "m43Value": "NCIC STOLEN VEHICLE",
+                "priority": 1,
+                "providerValue": "NCIC STOLEN VEHICLE"
+              },
+              {
+                "description": "",
+                "m43Value": "NCIC WANTED PERSON",
+                "priority": 1,
+                "providerValue": "NCIC WANTED PERSON"
+              }
+            ]
+          }
+        },
+        {
+          "description": "Configuration for Query format",
+          "handlerFunction": "CommsysWsiOutgoingMessageHandler",
+          "name": "LA_LEMS_QueryMessageFormat",
+          "type": "QUERYMESSAGEFORMAT",
+          "authenticationParent": "LawEnforcementTransaction",
+          "payloadParent": "LawEnforcementTransaction",
+          "provider": "LA_LEMS"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "GunMake",
+              "size": 3,
+              "sourceField": [
+                "FirearmMake"
+              ],
+              "targetField": "GunMake"
+            },
+            {
+              "name": "GunTypeCode",
+              "size": 3,
+              "sourceField": [
+                "FirearmTypeCode"
+              ],
+              "targetField": "GunTypeCode"
+            },
+            {
+              "name": "GunModel",
+              "size": 20,
+              "sourceField": [
+                "FirearmModel"
+              ],
+              "targetField": "GunModel"
+            },
+            {
+              "name": "GunSerialNumber",
+              "size": 20,
+              "sourceField": [
+                "SerialNumber"
+              ],
+              "targetField": "GunSerialNumber"
+            },
+            {
+              "name": "GunCaliber",
+              "size": 4,
+              "sourceField": [
+                "FirearmCaliber"
+              ],
+              "targetField": "GunCaliber"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "SerialNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "FirearmMake",
+                  "FirearmTypeCode",
+                  "FirearmModel",
+                  "FirearmCaliber",
+                  "ImageIndicator"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "GunSerialNumber",
+              "keyReference": "GunSerialNumber",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for GunQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_GunQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "GunQuery",
+          "queryLabel": "LA_LEMS",
+          "targetEntity": "Firearm"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "size": 10,
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "LicensePlateNumber"
+            },
+            {
+              "name": "LicensePlateTypeCode",
+              "size": 2,
+              "sourceField": [
+                "LicensePlateTypeCode"
+              ],
+              "targetField": "LicensePlateTypeCode"
+            },
+            {
+              "name": "LicensePlateYear",
+              "size": 4,
+              "sourceField": [
+                "LicensePlateYear"
+              ],
+              "targetField": "LicensePlateYear"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "RegistrationState"
+              ],
+              "targetField": "State"
+            },
+            {
+              "name": "VehicleIdentificationNumber",
+              "size": 20,
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "VehicleIdentificationNumber"
+            },
+            {
+              "name": "VehicleMakeCode",
+              "size": 4,
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "VehicleMakeCode"
+            },
+            {
+              "name": "VehicleYear",
+              "size": 4,
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "VehicleYear"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "RegistrationState",
+                  "LicensePlateTypeCode",
+                  "LicensePlateYear"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "LicensePlateNumber",
+              "keyReference": "LicensePlateNumber",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "RegistrationState",
+                  "VehicleMakeCode",
+                  "VehicleYear"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "VehicleIdentificationNumber",
+              "keyReference": "VehicleIdentificationNumber",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for VehicleRegistrationQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_VehicleRegistrationQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "VehicleRegistrationQuery",
+          "queryLabel": "LA_LEMS",
+          "targetEntity": "Vehicle"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "BirthDate",
+              "rule": {
+                "function": "CommsysParseDateRuleHandler",
+                "arguments": [
+                  "yyyy-MM-dd",
+                  "yyyyMMdd"
+                ]
+              },
+              "size": 8,
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "ImageIndicator",
+              "size": 1,
+              "sourceField": [
+                "ImageIndicator"
+              ],
+              "targetField": "ImageIndicator"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "FormatStringRuleHandler",
+                "arguments": [
+                  ", ",
+                  " ",
+                  " "
+                ]
+              },
+              "size": 30,
+              "sourceField": [
+                "NameLast",
+                "NameFirst",
+                "NameMiddle",
+                "NameSuffix"
+              ],
+              "targetField": "Name"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "size": 20,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "RaceCode",
+              "size": 1,
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "RaceCode"
+            },
+            {
+              "name": "SexCode",
+              "size": 1,
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "RegistrationState"
+              ],
+              "targetField": "State",
+              "codeTypeProvider": "NCIC"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "RegistrationState",
+                  "ImageIndicator",
+                  "Attention"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "OperatorLicenseNumberRegistrationStateAttention",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "BirthDate",
+                  "NameLast",
+                  "NameFirst",
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "any": [
+                  "RegistrationState",
+                  "Attention",
+                  "ImageIndicator"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "BirthDateNameRaceCodeSexCodeRegistrationStateAttention",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for DriverLicenseQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_DriverLicenseQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "DriverLicenseQuery",
+          "queryLabel": "LA_LEMS DL",
+          "targetEntity": "Person"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "BirthDate",
+              "rule": {
+                "function": "CommsysParseDateRuleHandler",
+                "arguments": [
+                  "yyyy-MM-dd",
+                  "yyyyMMdd"
+                ]
+              },
+              "size": 8,
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "FormatStringRuleHandler",
+                "arguments": [
+                  ", ",
+                  " ",
+                  " "
+                ]
+              },
+              "sourceField": [
+                "NameLast",
+                "NameFirst",
+                "NameMiddle",
+                "NameSuffix"
+              ],
+              "targetField": "Name"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "size": 20,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "PurposeCode",
+              "size": 1,
+              "sourceField": [
+                "PurposeCode"
+              ],
+              "targetField": "PurposeCode"
+            },
+            {
+              "name": "SexCode",
+              "size": 1,
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "RegistrationState"
+              ],
+              "targetField": "State"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "BirthDate",
+                  "NameLast",
+                  "NameFirst",
+                  "SexCode"
+                ],
+                "any": [
+                  "RegistrationState",
+                  "PurposeCode",
+                  "Attention"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "BirthDateNamePurposeCodeSexCodeRegistrationStateAttention",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "RegistrationState",
+                  "PurposeCode",
+                  "Attention"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "OperatorLicenseNumberPurposeCodeRegistrationStateAttention",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for DriverHistoryQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_DriverHistoryQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "autoSelect": false,
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "DriverHistoryQuery",
+          "queryLabel": "LA_LEMS Driver History",
+          "targetEntity": "Person"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "BoatHullIdNumber",
+              "size": 20,
+              "sourceField": [
+                "BoatHullIdNumber"
+              ],
+              "targetField": "BoatHullIdNumber"
+            },
+            {
+              "name": "RegistrationNumber",
+              "size": 8,
+              "sourceField": [
+                "RegistrationNumber"
+              ],
+              "targetField": "RegistrationNumber"
+            },
+            {
+              "name": "State",
+              "size": 2,
+              "sourceField": [
+                "RegistrationState"
+              ],
+              "targetField": "State"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "BoatHullIdNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "RegistrationState"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "BoatHullIdNumber",
+              "keyReference": "BoatHullIdNumberAttentionRegistrationState",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "RegistrationNumber"
+                ],
+                "any": [
+                  "Attention",
+                  "RegistrationState"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "RegistrationNumber",
+              "keyReference": "RegistrationNumberAttentionRegistrationState",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for BoatQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_BoatQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "BoatQuery",
+          "queryLabel": "LA_LEMS",
+          "targetEntity": "Boat"
+        },
+        {
+          "attributes": [
+            {
+              "name": "Attention",
+              "rule": {
+                "function": "CommsysGetLastNameFirstNameInitialRuleHandler"
+              },
+              "size": 30,
+              "sourceField": [
+                "Attention"
+              ],
+              "targetField": "Attention"
+            },
+            {
+              "name": "ArticleSerialNumber",
+              "size": 20,
+              "sourceField": [
+                "SerialNumber"
+              ],
+              "targetField": "ArticleSerialNumber"
+            },
+            {
+              "name": "ArticleTypeCode",
+              "size": 7,
+              "sourceField": [
+                "ArticleTypeCode"
+              ],
+              "targetField": "ArticleTypeCode"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "SerialNumber",
+                  "ArticleTypeCode"
+                ],
+                "any": [
+                  "Attention"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "ArticleSerialNumber",
+              "keyReference": "ArticleSerialNumber",
+              "state": "In/Out"
+            }
+          ],
+          "description": "Mapping for ArticleSingleQuery in LA LEMS",
+          "handlerFunction": "CommsysTransactionRequestHandler",
+          "name": "LA_LEMS_ArticleSingleQuery",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "LA_LEMS",
+          "providerType": "Commsys",
+          "query": "ArticleSingleQuery",
+          "queryLabel": "LA_LEMS",
+          "targetEntity": "Article"
+        }
+      ],
+      "description": "Provider configuration for LA_LEMS",
+      "name": "LA_LEMS",
+      "type": "BUNDLE",
+      "codeTypeProvider": "LA_LEMS",
+      "provider": "LA_LEMS"
+    },
+    {
+      "configurations": [
+        {
+          "description": "Input query layout for article entity",
+          "label": "Article",
+          "layout": {
+            "default": {
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Article"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "SerialNumber_Input",
+                  "TypeCode_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "SerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "SerialNumber",
+                  "label": "Serial Number / OAN",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "TypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "CA_CLETS",
+                  "fieldId": "ArticleTypeCode",
+                  "label": "Article Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "name": "ENTITY_Article",
+          "type": "QUERYINPUTFORM",
+          "targetEntity": "Article"
+        },
+        {
+          "description": "Input query layout for vehicle entity",
+          "label": "Vehicle",
+          "layout": {
+            "CAD_DISPATCH": {
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "LicensePlateNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateNumber",
+                  "label": "Plate Number",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "LicensePlateTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "LICENSE_PLATE_TYPE_CODE",
+                  "fieldId": "LicensePlateTypeCode",
+                  "initialValue": "PC",
+                  "label": "Plate Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LicensePlateYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateYear",
+                  "initialValue": "2025",
+                  "label": "Plate Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "OwnerFirstName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerFirstName",
+                  "label": "Owner First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "OwnerLastName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerLastName",
+                  "label": "Owner Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Vehicle"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "CONTEXT_INFO_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "VehicleIdentificationNumber_Input",
+                  "VechicleMake_Input",
+                  "VechicleYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "OwnerFirstName_Input",
+                  "OwnerLastName_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "VechicleMake_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleMakeCode",
+                  "label": "Vehicle Make",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VechicleYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleYear",
+                  "label": "Vehicle Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleIdentificationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleIdentificationNumber",
+                  "label": "VIN / OAN / Serial Number",
+                  "maxLength": "17"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              }
+            },
+            "FIRST_RESPONDER": {
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LinkToEvent_Input"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "LicensePlateNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateNumber",
+                  "label": "Plate Number",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "LicensePlateTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "LICENSE_PLATE_TYPE_CODE",
+                  "fieldId": "LicensePlateTypeCode",
+                  "initialValue": "PC",
+                  "label": "Plate Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LicensePlateYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateYear",
+                  "initialValue": "2025",
+                  "label": "Plate Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LinkToEvent_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "checkboxLabel": "Link to the current assigned event",
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " "
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "CONTEXT_INFO_CARD",
+                "linkedNodes": {}
+              },
+              "OwnerFirstName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerFirstName",
+                  "label": "Owner First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "OwnerLastName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerLastName",
+                  "label": "Owner Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Vehicle"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "VehicleIdentificationNumber_Input",
+                  "VechicleMake_Input",
+                  "VechicleYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "OwnerFirstName_Input",
+                  "OwnerLastName_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "VechicleMake_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleMakeCode",
+                  "label": "Vehicle Make",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VechicleYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleYear",
+                  "label": "Vehicle Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleIdentificationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleIdentificationNumber",
+                  "label": "VIN / OAN / Serial Number",
+                  "maxLength": "17"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              }
+            },
+            "default": {
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "LicensePlateNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateNumber",
+                  "label": "Plate Number",
+                  "maxLength": "10"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "LicensePlateTypeCode_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "LICENSE_PLATE_TYPE_CODE",
+                  "fieldId": "LicensePlateTypeCode",
+                  "initialValue": "PC",
+                  "label": "Plate Type"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "LicensePlateYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "LicensePlateYear",
+                  "initialValue": "2025",
+                  "label": "Plate Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "OwnerFirstName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerFirstName",
+                  "label": "Owner First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "OwnerLastName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OwnerLastName",
+                  "label": "Owner Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Vehicle"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateNumber_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "VehicleIdentificationNumber_Input",
+                  "VechicleMake_Input",
+                  "VechicleYear_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "OwnerFirstName_Input",
+                  "OwnerLastName_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "VechicleMake_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleMakeCode",
+                  "label": "Vehicle Make",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VechicleYear_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleYear",
+                  "label": "Vehicle Year",
+                  "maxLength": "4"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "VehicleIdentificationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "VehicleIdentificationNumber",
+                  "label": "VIN / OAN / Serial Number",
+                  "maxLength": "17"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "name": "ENTITY_Vehicle",
+          "type": "QUERYINPUTFORM",
+          "targetEntity": "Vehicle"
+        },
+        {
+          "description": "Input query layout for person entity",
+          "label": "Person",
+          "layout": {
+            "default": {
+              "DateOfBirth_Input": {
+                "type": {
+                  "resolvedName": "FormDate"
+                },
+                "displayName": "Date",
+                "props": {
+                  "fieldId": "BirthDate",
+                  "label": "Date Of Birth"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "FirstName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameFirst",
+                  "label": "First Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "ImageIndicator",
+                  "initialValue": "Y",
+                  "label": "Image Indicator"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "LastName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameLast",
+                  "label": "Last Name"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "MiddleName_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameMiddle",
+                  "label": "M.I."
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "OLN_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "OperatorLicenseNumber",
+                  "label": "OLN"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "Purpose_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "DEX_INQUIRY_PURPOSE_CODE",
+                  "fieldId": "PurposeCode",
+                  "initialValue": "C",
+                  "label": "Driver History Purpose"
+                },
+                "isCanvas": false,
+                "hidden": true,
+                "nodes": [],
+                "parent": "ROW_5",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Person"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3",
+                  "ROW_4",
+                  "ROW_5"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "OLN_Input",
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "FirstName_Input",
+                  "LastName_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "3",
+                    "3",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "MiddleName_Input",
+                  "Suffix_Input",
+                  "DateOfBirth_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_4": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "Sex_Input",
+                  "Race_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_5": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "Purpose_Input",
+                  "ImageIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "Race_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "RACE",
+                  "fieldId": "RaceCode",
+                  "label": "Race"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "Sex_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "SEX",
+                  "fieldId": "SexCode",
+                  "label": "Sex"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_4",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "License State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "Suffix_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "NameSuffix",
+                  "label": "Suffix"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "name": "ENTITY_Person",
+          "type": "QUERYINPUTFORM",
+          "targetEntity": "Person"
+        },
+        {
+          "description": "Input query layout for firearm entity",
+          "label": "Firearm",
+          "layout": {
+            "default": {
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "GunCaliber_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
+                  "codeTypeSource": "NJ_NIBRS",
+                  "fieldId": "FirearmCaliber",
+                  "label": "Firearm Caliber"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "GunMake_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
+                  "codeTypeSource": "NJ_NIBRS",
+                  "fieldId": "FirearmMake",
+                  "label": "Firearm Make"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              },
+              "GunModel_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "FirearmModel",
+                  "label": "Firearm Model"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ImageIndicator_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC",
+                  "fieldId": "ImageIndicator",
+                  "label": "Image Indicator"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_3",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Firearm"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2",
+                  "ROW_3"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "SerialNumber_Input",
+                  "ImageIndicator_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "GunMake_Input",
+                  "GunCaliber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "GunModel_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "SerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "SerialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "name": "ENTITY_Firearm",
+          "type": "QUERYINPUTFORM",
+          "targetEntity": "Firearm"
+        },
+        {
+          "description": "Input query layut for boat entity",
+          "label": "Boat",
+          "layout": {
+            "CAD_DISPATCH": {
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "ROW_0"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "CadEvent_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "fieldId": "CAD_EVENT_SELECT_VALUE",
+                  "label": "Event",
+                  "performSearchAhead": true
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "CadUnit_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "CAD_UNIT_SELECT_VALUE",
+                  "fieldId": "CAD_UNIT_SELECT_VALUE",
+                  "label": "Requesting Unit"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_0",
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "HullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BoatHullIdNumber",
+                  "label": "Boat Hull ID #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Boat"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_0": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "CadUnit_Input",
+                  "CadEvent_Input"
+                ],
+                "parent": "CONTEXT_INFO_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "HullIdNumber_Input",
+                  "RegistrationNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegistrationNumber",
+                  "label": "Registration #",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "License State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              }
+            },
+            "FIRST_RESPONDER": {
+              "CONTEXT_INFO_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {},
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "LinkToEvent_Input"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "HullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BoatHullIdNumber",
+                  "label": "Boat Hull ID #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "LinkToEvent_Input": {
+                "type": {
+                  "resolvedName": "FormCheckbox"
+                },
+                "displayName": "Checkbox",
+                "props": {
+                  "checkboxLabel": "Link to the current assigned event",
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " "
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "CONTEXT_INFO_CARD",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Boat"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "CONTEXT_INFO_CARD",
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "HullIdNumber_Input",
+                  "RegistrationNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegistrationNumber",
+                  "label": "Registration #",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "License State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              }
+            },
+            "default": {
+              "FORM_ROOT": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "displayName": "Form",
+                "props": {
+                  "hidePageItems": true,
+                  "layout": "page"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_PAGE"
+                ],
+                "parent": "ROOT",
+                "linkedNodes": {}
+              },
+              "HullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "BoatHullIdNumber",
+                  "label": "Boat Hull ID #",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Root"
+                },
+                "displayName": "Root",
+                "props": {},
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "FORM_ROOT"
+                ],
+                "linkedNodes": {}
+              },
+              "ROOT_CARD": {
+                "type": {
+                  "resolvedName": "Card"
+                },
+                "displayName": "Card",
+                "props": {
+                  "title": "Boat"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROW_1",
+                  "ROW_2"
+                ],
+                "parent": "ROOT_PAGE",
+                "linkedNodes": {}
+              },
+              "ROOT_PAGE": {
+                "type": {
+                  "resolvedName": "Page"
+                },
+                "displayName": "Page",
+                "props": {
+                  "title": "Page 1"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "ROOT_CARD"
+                ],
+                "parent": "FORM_ROOT",
+                "linkedNodes": {}
+              },
+              "ROW_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "HullIdNumber_Input",
+                  "RegistrationNumber_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "ROW_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6"
+                  ]
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [
+                  "State_Input"
+                ],
+                "parent": "ROOT_CARD",
+                "linkedNodes": {}
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "RegistrationNumber",
+                  "label": "Registration #",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_1",
+                "linkedNodes": {}
+              },
+              "State_Input": {
+                "type": {
+                  "resolvedName": "FormSelect"
+                },
+                "displayName": "Select",
+                "props": {
+                  "attributeTypeId": "STATE",
+                  "fieldId": "RegistrationState",
+                  "initialValue": "LA",
+                  "label": "License State"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "parent": "ROW_2",
+                "linkedNodes": {}
+              }
+            }
+          },
+          "name": "ENTTIY_Boat",
+          "type": "QUERYINPUTFORM",
+          "targetEntity": "Boat"
+        }
+      ],
+      "description": "Query forms of entities",
+      "name": "ENTITIES",
+      "type": "BUNDLE",
+      "codeTypeProvider": "NCIC",
+      "provider": "MARK43"
+    },
+    {
+      "configurations": [
+        {
+          "attributes": [
+            {
+              "description": "Mark43 cookie",
+              "name": "M43Cookie",
+              "sourceField": [
+                "Cookie"
+              ],
+              "targetField": "cookie"
+            },
+            {
+              "description": "Mark43 API token",
+              "name": "M43APIToken",
+              "sourceField": [
+                "ApiToken"
+              ],
+              "targetField": "x-api-token"
+            },
+            {
+              "description": "M43 Authorization token",
+              "name": "M43AuthorizationToken",
+              "sourceField": [
+                "Authorization"
+              ],
+              "targetField": "Authorization"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "Authorization",
+                  "ApiToken",
+                  "Cookie"
+                ],
+                "conditions": null,
+                "defaults": null
+              }
+            }
+          ],
+          "description": "Authentication configuration for RMS",
+          "handlerFunction": "RestAuthenticationHandler",
+          "name": "RMS",
+          "type": "AUTHENTICATION",
+          "deviceRegistrationOptional": true,
+          "provider": "RMS"
+        },
+        {
+          "description": "Configuration for Query format",
+          "handlerFunction": "RestRequestHandler",
+          "name": "RMS_QueryMessageFormat",
+          "type": "QUERYMESSAGEFORMAT",
+          "url": {
+            "person": {
+              "protocol": "https",
+              "path": "/rms/api/elastic_search/persons",
+              "addDepartmentSubdomain": true
+            },
+            "vehicle": {
+              "protocol": "https",
+              "path": "/rms/api/elastic_search/vehicles",
+              "addDepartmentSubdomain": true
+            }
+          },
+          "authenticationParent": "headers",
+          "payloadParent": "body"
+        },
+        {
+          "attributes": [
+            {
+              "name": "firstName",
+              "size": 60,
+              "sourceField": [
+                "NameFirst"
+              ],
+              "targetField": "firstName"
+            },
+            {
+              "name": "lastName",
+              "size": 60,
+              "sourceField": [
+                "NameLast"
+              ],
+              "targetField": "lastName"
+            },
+            {
+              "name": "socialSecurityNumber",
+              "size": 60,
+              "sourceField": [
+                "SocialSecurityNumber"
+              ],
+              "targetField": "ssn"
+            },
+            {
+              "name": "licenseNumber",
+              "size": 60,
+              "sourceField": [
+                "OperatorLicenseNumber"
+              ],
+              "targetField": "dlNumber"
+            },
+            {
+              "name": "dateOfBirth",
+              "sourceField": [
+                "BirthDate"
+              ],
+              "targetField": "dateOfBirth"
+            },
+            {
+              "name": "race",
+              "rule": {
+                "function": "AttributeArrayWrapperRuleHandler"
+              },
+              "sourceField": [
+                "RaceCode"
+              ],
+              "targetField": "raceAttrIds",
+              "useAttributeId": true
+            },
+            {
+              "name": "sex",
+              "sourceField": [
+                "SexCode"
+              ],
+              "targetField": "sexAttrId",
+              "useAttributeId": true
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "SocialSecurityNumber",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "firstNameLastNameSocialSecurityNumber"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber",
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "firstNameLastNameDriversLicenseNumber"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast",
+                  "BirthDate"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "firstNameLastNameDateOfBirth"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "NameFirst",
+                  "NameLast"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "firstNameLastName"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OperatorLicenseNumber"
+                ],
+                "any": [
+                  "RaceCode",
+                  "SexCode"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "driversLicenseNumber"
+            }
+          ],
+          "description": "Configuration for handling elastic query with various attributes.",
+          "handlerFunction": "RmsRestPayloadHandler",
+          "name": "RMS Person Search query",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "RMS",
+          "query": "Person",
+          "queryLabel": "RMS",
+          "targetEntity": "Person"
+        },
+        {
+          "attributes": [
+            {
+              "name": "yearOfManufacture",
+              "size": 60,
+              "sourceField": [
+                "VehicleYear"
+              ],
+              "targetField": "vehicle.yearOfManufacture"
+            },
+            {
+              "name": "vinNumber",
+              "sourceField": [
+                "VehicleIdentificationNumber"
+              ],
+              "targetField": "vehicle.vinNumber"
+            },
+            {
+              "name": "makeNcicCode",
+              "sourceField": [
+                "VehicleMakeCode"
+              ],
+              "targetField": "vehicle.makeNcicCode"
+            },
+            {
+              "name": "modelNcicCode",
+              "sourceField": [
+                "VehicleModelCode"
+              ],
+              "targetField": "vehicle.modelNcicCode"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "sourceField": [
+                "LicensePlateNumber"
+              ],
+              "targetField": "vehicle.tag"
+            },
+            {
+              "name": "RegistrationState",
+              "rule": {
+                "function": "AttributeArrayWrapperRuleHandler"
+              },
+              "sourceField": [
+                "RegistrationState"
+              ],
+              "targetField": "vehicle.registrationStateAttrIds",
+              "useAttributeId": true
+            },
+            {
+              "name": "OwnerFirstName",
+              "sourceField": [
+                "OwnerFirstName"
+              ],
+              "targetField": "propertyPersons[0].person.firstName"
+            },
+            {
+              "name": "OwnerLastName",
+              "sourceField": [
+                "OwnerLastName"
+              ],
+              "targetField": "propertyPersons[0].person.lastName"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": [
+                  "VehicleIdentificationNumber"
+                ],
+                "any": [
+                  "VehicleYear",
+                  "VehicleMakeCode",
+                  "VehicleModelCode",
+                  "LicensePlateNumber",
+                  "RegistrationState",
+                  "LicensePlateYear",
+                  "OwnerFirstName",
+                  "OwnerLastName"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "vehicleIdentificationNumber"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "LicensePlateNumber",
+                  "RegistrationState"
+                ],
+                "any": [
+                  "VehicleYear",
+                  "VehicleMakeCode",
+                  "VehicleModelCode",
+                  "LicensePlateYear",
+                  "OwnerFirstName",
+                  "OwnerLastName"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "licensePlateAndState"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "OwnerFirstName",
+                  "OwnerLastName"
+                ],
+                "any": [
+                  "VehicleYear",
+                  "VehicleMakeCode",
+                  "VehicleModelCode",
+                  "LicensePlateYear",
+                  "LicensePlateNumber",
+                  "RegistrationState",
+                  "VehicleIdentificationNumber"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "keyReference": "OwnerFirstAndLastName"
+            }
+          ],
+          "description": "Configuration for handling elastic query with various attributes.",
+          "handlerFunction": "RmsRestPayloadHandler",
+          "name": "RMS Vehicle search query",
+          "type": "QUERYINPUTDATAMAPPING",
+          "provider": "RMS",
+          "query": "Vehicle",
+          "queryLabel": "RMS",
+          "targetEntity": "Vehicle"
+        },
+        {
+          "attributes": [
+            {
+              "name": "AddressCity",
+              "sourceField": [
+                "mainLocation.locationAddress.locality"
+              ],
+              "targetField": "AddressCity"
+            },
+            {
+              "name": "AddressState",
+              "sourceField": [
+                "mainLocation.locationAddress.administrativeAreaLevel1"
+              ],
+              "targetField": "AddressState"
+            },
+            {
+              "name": "AddressStreet",
+              "sourceField": [
+                "mainLocation.locationAddress.streetAddress"
+              ],
+              "targetField": "AddressStreet"
+            },
+            {
+              "name": "AddressZipCode",
+              "sourceField": [
+                "mainLocation.locationAddress.postalCode"
+              ],
+              "targetField": "AddressZipCode"
+            },
+            {
+              "name": "BirthDate",
+              "sourceField": [
+                "dateOfBirth"
+              ],
+              "targetField": "BirthDate"
+            },
+            {
+              "name": "EyeColorCode",
+              "sourceField": [
+                "eyeColorAttrDetail.displayValue"
+              ],
+              "targetField": "EyeColorCode"
+            },
+            {
+              "name": "HairColorCode",
+              "sourceField": [
+                "hairColorAttrDetail.displayValue"
+              ],
+              "targetField": "HairColorCode"
+            },
+            {
+              "name": "NameFirst",
+              "sourceField": [
+                "firstName"
+              ],
+              "targetField": "NameFirst"
+            },
+            {
+              "name": "NameLast",
+              "sourceField": [
+                "lastName"
+              ],
+              "targetField": "NameLast"
+            },
+            {
+              "name": "RaceCode",
+              "sourceField": [
+                "raceAttrDetail.displayValue"
+              ],
+              "targetField": "RaceCode"
+            },
+            {
+              "name": "SexCode",
+              "sourceField": [
+                "sexAttrDetail.displayValue"
+              ],
+              "targetField": "SexCode"
+            },
+            {
+              "name": "SocialSecurityNumber",
+              "sourceField": [
+                "ssn"
+              ],
+              "targetField": "SocialSecurityNumber"
+            },
+            {
+              "name": "VehicleColorCode",
+              "sourceField": [
+                "primaryColorAttrDetail.displayValue"
+              ],
+              "targetField": "VehicleColorCode"
+            },
+            {
+              "name": "VehicleIdentificationNumber",
+              "sourceField": [
+                "vinNumber"
+              ],
+              "targetField": "VehicleIdentificationNumber"
+            },
+            {
+              "name": "VehicleMakeCode",
+              "sourceField": [
+                "makeNcicCode"
+              ],
+              "targetField": "VehicleMakeCode"
+            },
+            {
+              "name": "VehicleModelCode",
+              "sourceField": [
+                "modelNcicCode"
+              ],
+              "targetField": "VehicleModelCode"
+            },
+            {
+              "name": "VehicleYear",
+              "sourceField": [
+                "yearOfManufacture"
+              ],
+              "targetField": "VehicleYear"
+            },
+            {
+              "name": "RegistrationYear",
+              "sourceField": [
+                "registrationYear"
+              ],
+              "targetField": "RegistrationYear"
+            },
+            {
+              "name": "BodyStyle",
+              "sourceField": [
+                "itemCategoryAttrDetail.displayValue"
+              ],
+              "targetField": "BodyStyle"
+            },
+            {
+              "name": "LicensePlateNumber",
+              "sourceField": [
+                "tag"
+              ],
+              "targetField": "LicensePlateNumber"
+            },
+            {
+              "name": "RegistrationStateCode",
+              "sourceField": [
+                "registrationStateAttrDetail.displayValue"
+              ],
+              "targetField": "RegistrationStateCode"
+            },
+            {
+              "name": "VehicleInsurance",
+              "sourceField": [
+                "insuranceProviderName"
+              ],
+              "targetField": "VehicleInsurance"
+            },
+            {
+              "name": "VehicleMakeName",
+              "sourceField": [
+                "vehicleMakeOther"
+              ],
+              "targetField": "VehicleMakeName"
+            },
+            {
+              "name": "VehicleModelName",
+              "sourceField": [
+                "vehicleModelOther"
+              ],
+              "targetField": "VehicleModelName"
+            },
+            {
+              "name": "Weight",
+              "sourceField": [
+                "weight"
+              ],
+              "targetField": "Weight"
+            },
+            {
+              "name": "OperatorLicenseNumber",
+              "sourceField": [
+                "dlNumber"
+              ],
+              "targetField": "OperatorLicenseNumber"
+            },
+            {
+              "name": "Age",
+              "sourceField": [
+                "age"
+              ],
+              "targetField": "Age"
+            },
+            {
+              "name": "Mark43Id",
+              "sourceField": [
+                "id"
+              ],
+              "targetField": "Mark43Id"
+            },
+            {
+              "name": "Alias",
+              "sourceField": [
+                "nicknames.0"
+              ],
+              "targetField": "Alias"
+            },
+            {
+              "name": "AliasBirthDate",
+              "sourceField": [
+                "dateOfBirthOthers.0"
+              ],
+              "targetField": "AliasBirthDate"
+            },
+            {
+              "name": "Phone",
+              "sourceField": [
+                "phoneNumbers.0"
+              ],
+              "targetField": "Phone"
+            },
+            {
+              "name": "Cautions",
+              "rule": {
+                "function": "FormatArrayRuleHandler",
+                "arguments": [
+                  [
+                    "entityType",
+                    "nameId",
+                    "nameAttrDetail.id",
+                    "nameAttrDetail.displayValue",
+                    "nameAttrDetail.type"
+                  ],
+                  [
+                    "entityType",
+                    "id",
+                    "attributeId",
+                    "displayValue",
+                    "type"
+                  ]
+                ]
+              },
+              "sourceField": [
+                "nameAttributes"
+              ],
+              "targetField": "Cautions"
+            },
+            {
+              "name": "HasPotentialActiveWarrant",
+              "sourceField": [
+                "hasPotentialActiveWarrant"
+              ],
+              "targetField": "HasPotentialActiveWarrant"
+            },
+            {
+              "name": "Warrants",
+              "rule": {
+                "function": "FormatArrayRuleHandler",
+                "arguments": [
+                  [
+                    "warrantId",
+                    "warrantNumber",
+                    "warrantTypeAttrDetail.displayValue",
+                    "warrantStatusAttrDetail.displayValue",
+                    "warrantIssuedDateUtc",
+                    "warrantCharges[chargeName,chargeCount,offenseClassificationAttrDetail.displayValue,offenseDateUtc]"
+                  ],
+                  [
+                    "Id",
+                    "Number",
+                    "Type",
+                    "Status",
+                    "IssuedDateUtc",
+                    "Charges[Name,Count,OffenseClassification,OffenseDateUtc]"
+                  ]
+                ]
+              },
+              "sourceField": [
+                "warrantDetails"
+              ],
+              "targetField": "WarrantDetails"
+            },
+            {
+              "name": "IsJuvenile",
+              "sourceField": [
+                "isJuvenile"
+              ],
+              "targetField": "IsJuvenile"
+            },
+            {
+              "name": "IsSuspectedGangMember",
+              "sourceField": [
+                "isSuspectedGangMember"
+              ],
+              "targetField": "IsSuspectedGangMember"
+            },
+            {
+              "name": "IsVulnerable",
+              "sourceField": [
+                "isVulnerable"
+              ],
+              "targetField": "IsVulnerable"
+            },
+            {
+              "name": "IsActiveTarget",
+              "sourceField": [
+                "isActiveTarget"
+              ],
+              "targetField": "IsActiveTarget"
+            },
+            {
+              "name": "DateVulnerableTo",
+              "sourceField": [
+                "dateVulnerableTo"
+              ],
+              "targetField": "DateVulnerableTo"
+            },
+            {
+              "name": "IsStolen",
+              "sourceField": [
+                "isStolen"
+              ],
+              "targetField": "IsStolen"
+            },
+            {
+              "name": "Cautions",
+              "rule": {
+                "function": "FormatArrayRuleHandler",
+                "arguments": [
+                  [
+                    "entityType",
+                    "itemProfileId",
+                    "itemAttrDetail.id",
+                    "itemAttrDetail.displayValue",
+                    "itemAttrDetail.type"
+                  ],
+                  [
+                    "entityType",
+                    "id",
+                    "attributeId",
+                    "displayValue",
+                    "type"
+                  ]
+                ]
+              },
+              "sourceField": [
+                "itemAttributes"
+              ],
+              "targetField": "Cautions"
+            },
+            {
+              "name": "Addresses",
+              "rule": {
+                "function": "FormatArrayRuleHandler",
+                "arguments": [
+                  [
+                    "type",
+                    "id",
+                    "locationAddress.streetAddress",
+                    "locationAddress.streetNumber",
+                    "locationAddress.locality",
+                    "locationAddress.country",
+                    "locationAddress.postalCode"
+                  ],
+                  [
+                    "type",
+                    "attributeId",
+                    "streetAddress",
+                    "streetNumber",
+                    "locality",
+                    "country",
+                    "postalCode"
+                  ]
+                ]
+              },
+              "sourceField": [
+                "involvedLocations"
+              ],
+              "targetField": "Addresses"
+            },
+            {
+              "name": "IdentifyingMarks",
+              "rule": {
+                "function": "FormatArrayRuleHandler",
+                "arguments": [
+                  [
+                    "id",
+                    "description",
+                    "bodyPartAttrDetail.displayValue",
+                    "identifyingMarkTypeAttrDetail.displayValue"
+                  ],
+                  [
+                    "attributeId",
+                    "description",
+                    "bodyPart",
+                    "identifyingMarkType"
+                  ]
+                ]
+              },
+              "sourceField": [
+                "identifyingMarks"
+              ],
+              "targetField": "IdentifyingMarks"
+            },
+            {
+              "name": "Ethnicity",
+              "sourceField": [
+                "ethnicityAttrDetail.displayValue"
+              ],
+              "targetField": "Ethnicity"
+            },
+            {
+              "name": "EthnicityAttrId",
+              "sourceField": [
+                "ethnicityAttrDetail.id"
+              ],
+              "targetField": "EthnicityAttrId"
+            },
+            {
+              "name": "FacialHairType",
+              "sourceField": [
+                "facialHairTypeAttrDetail.displayValue"
+              ],
+              "targetField": "FacialHairType"
+            },
+            {
+              "name": "FacialHairTypeAttrId",
+              "sourceField": [
+                "facialHairTypeAttrDetail.id"
+              ],
+              "targetField": "FacialHairTypeAttrId"
+            },
+            {
+              "name": "HairColor",
+              "sourceField": [
+                "hairColorAttrDetail.displayValue"
+              ],
+              "targetField": "HairColor"
+            },
+            {
+              "name": "HairColorAttrId",
+              "sourceField": [
+                "hairColorAttrDetail.id"
+              ],
+              "targetField": "HairColorAttrId"
+            },
+            {
+              "name": "HairStyle",
+              "sourceField": [
+                "hairStyleAttrDetail.displayValue"
+              ],
+              "targetField": "HairStyle"
+            },
+            {
+              "name": "HairStyleAttrId",
+              "sourceField": [
+                "hairStyleAttrDetail.id"
+              ],
+              "targetField": "HairStyleAttrId"
+            },
+            {
+              "name": "HairLength",
+              "sourceField": [
+                "hairLengthAttrDetail.displayValue"
+              ],
+              "targetField": "HairLength"
+            },
+            {
+              "name": "HairLengthAttrId",
+              "sourceField": [
+                "hairLengthAttrDetail.id"
+              ],
+              "targetField": "HairLengthAttrId"
+            },
+            {
+              "name": "SkinTone",
+              "sourceField": [
+                "skinToneAttrDetail.displayValue"
+              ],
+              "targetField": "SkinTone"
+            },
+            {
+              "name": "SkinToneAttrId",
+              "sourceField": [
+                "skinToneAttrDetail.id"
+              ],
+              "targetField": "SkinToneAttrId"
+            },
+            {
+              "name": "Build",
+              "sourceField": [
+                "buildAttrDetail.displayValue"
+              ],
+              "targetField": "Build"
+            },
+            {
+              "name": "BuildAttrId",
+              "sourceField": [
+                "buildAttrDetail.id"
+              ],
+              "targetField": "BuildAttrId"
+            },
+            {
+              "name": "Vision",
+              "sourceField": [
+                "visionAttrDetail.displayValue"
+              ],
+              "targetField": "Vision"
+            },
+            {
+              "name": "VisionAttrId",
+              "sourceField": [
+                "visionAttrDetail.id"
+              ],
+              "targetField": "VisionAttrId"
+            },
+            {
+              "name": "HeightDisplay",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "heightFeet",
+                    "heightInches"
+                  ],
+                  "height"
+                ]
+              },
+              "sourceField": [
+                "HeightDisplay"
+              ],
+              "targetField": "HeightDisplay"
+            },
+            {
+              "name": "HeightFeet",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "heightFeet",
+                    "heightInches"
+                  ],
+                  "feet"
+                ]
+              },
+              "sourceField": [
+                "HeightFeet"
+              ],
+              "targetField": "HeightFeet"
+            },
+            {
+              "name": "HeightInches",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "heightFeet",
+                    "heightInches"
+                  ],
+                  "inches"
+                ]
+              },
+              "sourceField": [
+                "HeightInches"
+              ],
+              "targetField": "HeightInches"
+            },
+            {
+              "name": "Height",
+              "rule": {
+                "function": "HeightParserRuleHandler",
+                "arguments": [
+                  [
+                    "heightFeet",
+                    "heightInches"
+                  ],
+                  "total"
+                ]
+              },
+              "sourceField": [
+                "Height"
+              ],
+              "targetField": "Height"
+            },
+            {
+              "name": "PhoneNumbers",
+              "sourceField": [
+                "phoneNumbers"
+              ],
+              "targetField": "PhoneNumbers"
+            },
+            {
+              "name": "RegistrationStateAttrId",
+              "sourceField": [
+                "registrationStateAttrDetail.id"
+              ],
+              "targetField": "RegistrationStateAttrId"
+            },
+            {
+              "name": "VehicleColorAttrId",
+              "sourceField": [
+                "primaryColorAttrDetail.id"
+              ],
+              "targetField": "VehicleColorAttrId"
+            },
+            {
+              "name": "EyeColorAttrId",
+              "sourceField": [
+                "eyeColorAttrDetail.id"
+              ],
+              "targetField": "EyeColorAttrId"
+            },
+            {
+              "name": "BodyStyle",
+              "sourceField": [
+                "itemCategoryAttrDetail.id"
+              ],
+              "targetField": "BodyStyle"
+            },
+            {
+              "name": "RaceAttrId",
+              "sourceField": [
+                "raceAttrDetail.id"
+              ],
+              "targetField": "RaceAttrId"
+            },
+            {
+              "name": "SexAttrId",
+              "sourceField": [
+                "sexAttrDetail.id"
+              ],
+              "targetField": "SexAttrId"
+            },
+            {
+              "name": "NameMiddle",
+              "sourceField": [
+                "middleNameAnalyzed"
+              ],
+              "targetField": "NameMiddle"
+            },
+            {
+              "name": "Name",
+              "rule": {
+                "function": "FormatNameRuleHandler",
+                "arguments": [
+                  [
+                    "firstName",
+                    "lastName",
+                    "middleNameAnalyzed"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]
+                ]
+              },
+              "sourceField": [
+                "name"
+              ],
+              "targetField": "Name"
+            }
+          ],
+          "combinations": [
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "mainLocation.locationAddress.locality",
+                  "mainLocation.locationAddress.administrativeAreaLevel1",
+                  "mainLocation.locationAddress.streetAddress",
+                  "mainLocation.locationAddress.postalCode",
+                  "dateOfBirth",
+                  "eyeColorAttrDetail.displayValue",
+                  "eyeColorAttrDetail.id",
+                  "hairColorAttrDetail.displayValue",
+                  "hairColorAttrDetail.id",
+                  "height",
+                  "heightDisplay",
+                  "heightFeet",
+                  "heightInches",
+                  "firstName",
+                  "lastName",
+                  "race",
+                  "sex",
+                  "ssn",
+                  "vinNumber",
+                  "weight",
+                  "sexAttrDetail.displayValue",
+                  "sexAttrDetail.id",
+                  "raceAttrDetail.displayValue",
+                  "raceAttrDetail.id",
+                  "dlNumber",
+                  "age",
+                  "nicknames.0",
+                  "phoneNumbers.0",
+                  "id",
+                  "dateOfBirthOthers.0",
+                  "hasPotentialActiveWarrant",
+                  "warrantDetails",
+                  "isJuvenile",
+                  "isSuspectedGangMember",
+                  "isVulnerable",
+                  "isActiveTarget",
+                  "nameAttributes",
+                  "dateVulnerableTo",
+                  "involvedLocations",
+                  "identifyingMarks",
+                  "phoneNumbers",
+                  "ethnicityAttrDetail.displayValue",
+                  "hairStyleAttrDetail.displayValue",
+                  "hairLengthAttrDetail.displayValue",
+                  "skinToneAttrDetail.displayValue",
+                  "buildAttrDetail.displayValue",
+                  "visionAttrDetail.displayValue",
+                  "facialHairTypeAttrDetail.displayValue",
+                  "facialHairTypeAttrDetail.id",
+                  "ethnicityAttrDetail.id",
+                  "hairStyleAttrDetail.id",
+                  "hairLengthAttrDetail.id",
+                  "skinToneAttrDetail.id",
+                  "buildAttrDetail.id",
+                  "visionAttrDetail.id",
+                  "middleNameAnalyzed",
+                  "name"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Person",
+              "keyReference": "Person"
+            },
+            {
+              "requirements": {
+                "set": null,
+                "any": [
+                  "primaryColor",
+                  "vinNumber",
+                  "makeNcicCode",
+                  "modelNcicCode",
+                  "vehicleYear",
+                  "itemAttributes",
+                  "id",
+                  "tag",
+                  "registrationStateAttrDetail.displayValue",
+                  "registrationStateAttrDetail.id",
+                  "registrationYear",
+                  "yearOfManufacture",
+                  "itemCategoryAttrDetail.displayValue",
+                  "itemCategoryAttrDetail.id",
+                  "insuranceProviderName",
+                  "primaryColorAttrDetail.displayValue",
+                  "primaryColorAttrDetail.id",
+                  "vehicleMakeOther",
+                  "vehicleModelOther",
+                  "isStolen",
+                  "isActiveTarget"
+                ],
+                "conditions": null,
+                "defaults": null
+              },
+              "primaryFieldReference": "Vehicle",
+              "keyReference": "Vehicle"
+            }
+          ],
+          "description": "Results mapping for RMS search",
+          "handlerFunction": "RmsRestResultsHandler",
+          "label": "RMS",
+          "name": "RMS_Results",
+          "type": "QUERYRESULTDATAMAPPING",
+          "provider": "RMS",
+          "providerType": "RMS"
+        },
+        {
+          "description": "Results layout for RMS",
+          "handlerFunction": "QueryResultsLayoutHandler",
+          "label": "Results layout",
+          "name": "RMS_ResultsLayout",
+          "type": "QUERYRESULTSLAYOUT",
+          "layouts": {},
+          "provider": "RMS",
+          "providerType": "RMS"
+        }
+      ],
+      "description": "Provider configuration for RMS",
+      "name": "RMS",
+      "type": "BUNDLE",
+      "provider": "RMS"
+    }
+  ],
+  "behaviors": {
+    "ParallelQuery": {
+      "description": "run parallel queries",
+      "function": "parallelQueryHandler",
+      "isEnabled": false,
+      "name": "ParallelQuery"
+    }
+  }
+}

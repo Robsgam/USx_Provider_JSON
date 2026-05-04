@@ -1,0 +1,67 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : KQ+OLN (DH by OLN autoSelect=true)
+Test type  : T2 -- basic combo (autoSelect validation)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumberDH   [test OLN]         typed (DH-suffix field)
+  RegistrationState         FL                 typed (required in DH set[])
+  PurposeCode               C                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : DriverHistoryQuery
+  MessageType : DriverHistoryQuery
+  keyReference: KQ+OLN
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    OperatorLicenseNumber  [test OLN]
+    RegistrationState      FL
+    PurposeCode            C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQ+OLN
+  Reason: OperatorLicenseNumberDH+RegistrationState+PurposeCode all populated (set[])
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  OLN                  YES    [test OLN]      mapped from OperatorLicenseNumberDH
+  State                YES    FL              mapped from RegistrationState
+  PurposeCode          YES    C               mapped from PurposeCode
+  NameLastDH           NO     --              sourceField empty
+  NameFirstDH          NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DH checkbox auto-lit with autoSelect=true; KQ+OLN combo fired; query sent and returned
+  Detail: First test with autoSelect=false — checkbox available but did NOT auto-light.
+          Rebuilt MC with autoSelect=true, re-imported, re-tested — checkbox auto-lit correctly.
+          Safe because MC uses separate DH card, so DL fields are empty when DH fields populated.
+          queriesToDeselect ensures DH and DL are mutually exclusive.

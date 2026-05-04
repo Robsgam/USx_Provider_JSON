@@ -1,0 +1,121 @@
+OOS STATE FIELD -- RMS DUAL-VALUE PROBLEM
+==========================================
+Date: 2026-04-10
+Status: OPEN -- alternatives under investigation
+
+================================================================================
+THE PROBLEM
+================================================================================
+
+For OOS queries, two consumers need the state value in different formats:
+
+  CommSys (NJCJIS outbound XML) needs: 2-letter code   e.g. "PA"
+  RMS (elastic query)           needs: attribute ID    e.g. 69509884952
+
+These are mutually exclusive outputs from a single user-selected value.
+The platform has no field dependency or on-change sync mechanism.
+
+================================================================================
+HOW EACH VERSION HANDLED IT
+================================================================================
+
+Non-split v2.7 (single Vehicle form):
+  Field type : attributeTypeId=STATE (visible dropdown)
+  Officer    : selects PA
+  CommSys    : receives attribute ID (69509884952) --> WRONG
+  RMS        : receives attribute ID               --> CORRECT
+  Net        : RMS state filtering works; CommSys state field broken
+
+Split entity OOS form (current v3.16):
+  Field type : codeTypeCategory=NJ_NIBRS_STATE (visible dropdown)
+  Officer    : selects PA
+  CommSys    : receives "PA"                        --> CORRECT
+  RMS        : receives nothing usable              --> BROKEN
+  Net        : CommSys correct; RMS fires without state filter
+
+Split entity NJ form (current v3.16):
+  Fields     : SelH attributeTypeId=STATE (initialValue=NJ) + InpH (initialValue=NJ)
+  CommSys    : receives "NJ" from InpH              --> CORRECT
+  RMS        : receives attribute ID from SelH      --> CORRECT
+  Net        : Both correct -- works ONLY because NJ is hardcoded
+
+================================================================================
+WHY THE NJ TRICK DOESN'T EXTEND TO OOS
+================================================================================
+
+NJ works because both hidden fields are hardcoded (initialValue=NJ / initialValue=NJ).
+No user input is needed on the NJ tab state fields.
+
+For OOS, the officer must select the state. To replicate the NJ pattern we'd need:
+  - A hidden SelH (attributeTypeId=STATE) that somehow mirrors the officer's selection
+  - There is no platform mechanism to copy/sync one field's value to another
+
+================================================================================
+ALTERNATIVES UNDER INVESTIGATION
+================================================================================
+
+Option A: attributeTypeId=STATE as visible field + code lookup rule in QIDM
+  Hypothesis: HI_HCJDC uses attributeTypeId=STATE for OOS state and maps it to
+  CommSys without useAttributeId -- if this sends the code "PA", one field could
+  serve both CommSys and RMS.
+  Result: TESTED 2026-04-10. CommSys received <State>69509887513</State> (PA attr ID).
+  CONFIRMED FAIL. attributeTypeId=STATE always sends the numeric attribute ID to
+  CommSys regardless of useAttributeId setting in the QIDM.
+  Note: 69509887513 = PA attribute ID, 69509884952 = NJ attribute ID (state-specific).
+  HI implication: HI's OOS state queries likely send attribute IDs to their CommSys
+  endpoint. Either HI CommSys accepts attribute IDs or HI OOS state is silently broken.
+
+Option B: RMS elastic string-based state filter (not attribute ID)
+  Hypothesis: if RMS elastic supports vehicle.registrationState as a plain string,
+  we could map the codeTypeCategory value ("PA") directly.
+  Result: RMS QIDM only exposes vehicle.registrationStateAttrIds (requires attr ID).
+  No string-based state target field found. CLOSED -- not viable in config.
+
+Option C: Two visible state fields (bad UX, last resort)
+  One codeTypeCategory field (for CommSys) + one attributeTypeId field (for RMS).
+  Officer selects state twice. Messy but functional.
+  Status: NOT PURSUED -- unacceptable UX.
+
+Option D: Server-side rule handler (not a config fix)
+  A server-side rule handler that converts attribute ID to state code (or vice versa)
+  would unblock this pattern. This is a server/platform limitation -- not solvable
+  in JSON config. Logged as a server-side limitation.
+  Status: CLOSED for config purposes.
+
+================================================================================
+CONFIRMED FINDINGS (2026-04-10)
+================================================================================
+
+  1. attributeTypeId=STATE ALWAYS sends the numeric attribute ID to CommSys XML,
+     regardless of whether useAttributeId is set in the QIDM.
+     PA = 69509887513, NJ = 69509884952.
+
+  2. The useAttributeId=True flag in the RMS QIDM does NOT convert a code value
+     to an attribute ID. It is only meaningful when the source field already
+     provides an attribute ID (i.e., from an attributeTypeId-based form field).
+
+  3. codeTypeCategory fields (NJ_NIBRS_STATE) send 2-letter code to CommSys.
+     This value is NOT usable by RMS (expects attribute ID, not code string).
+
+  4. There is no config-only mechanism to serve both CommSys (code) and RMS
+     (attribute ID) from a single user-selected OOS state field.
+
+  5. The HI_HCJDC pattern (attributeTypeId=STATE without useAttributeId for
+     CommSys) does not work for NJ. HI's CommSys deployment may differ.
+
+================================================================================
+RESOLUTION
+================================================================================
+
+Config-only fix is NOT POSSIBLE. The dual-value problem (CommSys needs code,
+RMS needs attribute ID) cannot be solved from a single user-selected field
+without a custom rule handler built into the platform.
+
+Current workaround (v3.16): OOS plate/VIN RMS searches fire without state filter.
+Tag/vinNumber sent correctly. Officer confirms state visually in results.
+Outbound XML sends correct 2-letter state code on all OOS queries.
+
+Server-side limitation: resolving this would require a platform-level rule handler
+that can serve both consumers (outbound XML needs code, RMS needs attribute ID) from
+a single user-selected value. This is beyond JSON config scope and is logged as a
+known server-side limitation.

@@ -1,0 +1,60 @@
+NJ_NJCJIS -- PRE-RELEASE NOTES
+================================
+Date: 2026-04-10
+
+================================================================================
+NON-SPLIT BASELINE (v2.7 + RMS fixes)
+================================================================================
+
+  File: NJ_NJCJIS_v2.7_NONSPLIT_BASELINE_2026-04-10.json
+
+  This is the authoritative non-split (single-card-per-entity) configuration.
+  All 5 query types tested and passing. Contains two post-v2.7 fixes that were
+  validated during split entity testing and backported to this baseline.
+
+  What's in it:
+    - Standard v2.7 config (all 5 queries: Vehicle, Person/DL, Firearm, Article, Boat)
+    - LicensePlateNumberIn fieldId fix (required to trigger RMS plate elastic search)
+    - Dual-field state pattern for NJ in-state plate/OLN forms:
+        SelH 'RegistrationState' (attributeTypeId=STATE) -- hidden, feeds RMS, NOT in QIDM
+        InpH 'RegistrationStateNJ' (initialValue=NJ)    -- hidden, in QIDM as 'StateNJ'
+
+  Test coverage (v2.7 or earlier, all PASS):
+    Vehicle RQ/RQN:       phases/03_vehicle/logs/  (v2.4, v2.5)
+    Person DQ/DQN:        phases/02_person/logs/   (v2.1 through v2.7)
+    GunQuery QG:          phases/04_firearm/logs/  (v2.7)
+    ArticleSingleQuery QA: phases/05_article/logs/ (v2.7)
+    BoatQuery BQ/BQN:     phases/06_boat/logs/     (v2.7)
+
+  LicensePlateNumberIn fix validation: split entity v3.12/v3.13 (phases/08_split_entities/logs/)
+  Dual-field state fix validation:     split entity v3.12/v3.13 (phases/08_split_entities/logs/)
+
+  Use case: fallback / reference if split entity config causes problems in production.
+  Do not use as the active import -- current active file is NJ_NJCJIS.json (v3.x split).
+
+================================================================================
+SPLIT ENTITY STATUS (as of 2026-04-10)
+================================================================================
+
+  Active file: NJ_NJCJIS/NJ_NJCJIS.json  (v3.14)
+
+  Tab              Tests      Status
+  ---------------  ---------  ----------------------------------------
+  Vehicle - NJ     T01-T10    PENDING re-run on v3.13/v3.14
+  Vehicle - OOS    T11-T21    NOT STARTED
+  Person - NJ      T22-T25    NOT STARTED
+  Person - OOS     T26-T30    NOT STARTED
+  Firearm          T31-T34    NOT STARTED
+  Article          T35        NOT STARTED
+  Boat             T36-T40    NOT STARTED
+
+  Full test plan: phases/08_split_entities/NJ_NJCJIS_v3.6_TEST_PLAN.txt
+
+================================================================================
+RELEASE CRITERIA
+================================================================================
+
+  [ ] All T01-T40 split entity tests pass on current version
+  [ ] QUERYRESULTDATAMAPPING validated against live NJ response
+  [ ] CommSys gap document sent (docs/NJ_NJCJIS_PDF_XML_GAPS_SUMMARY.txt)
+  [ ] NJ_NJCJIS.json confirmed as final import file

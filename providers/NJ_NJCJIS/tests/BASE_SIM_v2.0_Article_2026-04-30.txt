@@ -1,0 +1,23 @@
+================================================================
+  CommSys Query Simulation Log
+  Provider: NJ_NJCJIS  |  Variant: BASE  |  Version: v2.0
+  Entity: Article  |  Date: 2026-04-30
+  Tool: test_commsys.ps1
+================================================================
+
+--- QIDM: NJ_NJCJIS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES] QA
+      set: [ArticleSerialNumber, ArticleTypeCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+RESULT: 1/1 combos FIRE (QA)

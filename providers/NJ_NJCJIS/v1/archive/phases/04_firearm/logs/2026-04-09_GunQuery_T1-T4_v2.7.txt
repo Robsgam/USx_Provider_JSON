@@ -1,0 +1,66 @@
+NJ_NJCJIS -- GunQuery Phase Log
+=================================
+Date    : 2026-04-09
+Version : v2.7
+Phase   : 04_firearm
+Query   : GunQuery (keyRef: QG)
+
+================================================================================
+TEST 1 -- Serial only (minimum required)
+================================================================================
+
+Operator input: GunSerialNumber=123456
+
+Fields sent:
+  GunSerialNumber   123456    SENT
+  GunMake           (blank)   NOT SENT
+  GunCaliber        (blank)   NOT SENT
+
+Result: PASS
+Notes : QG fires on serial alone. Optional fields correctly absent when blank.
+
+================================================================================
+TEST 2 -- Serial + Make
+================================================================================
+
+Operator input: GunSerialNumber=123456, GunMake=GLOCK
+
+Fields sent:
+  GunSerialNumber   123456    SENT
+  GunMake           GLOCK     SENT
+  GunCaliber        (blank)   NOT SENT
+
+Result: PASS
+Notes : GunMake included when populated. GunCaliber correctly absent.
+
+================================================================================
+TEST 3 -- Serial + Make + Caliber (all fields)
+================================================================================
+
+Operator input: GunSerialNumber=123456, GunMake=GLOCK, GunCaliber=.45
+
+Fields sent:
+  GunSerialNumber   123456    SENT
+  GunMake           GLOCK     SENT
+  GunCaliber        .45       SENT
+
+Result: PASS
+Notes : All three fields sent correctly. Server accepted without error.
+
+================================================================================
+TEST 4 -- Same as Test 3 (edge case confirmation)
+================================================================================
+
+Result: PASS (confirmed same as T3)
+
+================================================================================
+PHASE SUMMARY
+================================================================================
+
+GunQuery (QG): COMPLETE -- 4/4 PASS
+  - Serial required field fires combination correctly
+  - Make and Caliber optional fields sent only when populated
+  - No extra fields sent (clean requests)
+  - Server accepts all combinations without error
+
+Proceed to: 05_article (ArticleSingleQuery -- QA)

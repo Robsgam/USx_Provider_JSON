@@ -1,0 +1,227 @@
+HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+==========================================================
+Last updated: 2026-04-30
+JSON version: v1.0 BASE / v1.0-mc MC
+Validator: 46 PASS / 0 FAIL / 15 FIRE / 0 SKIP (both variants)
+Live test: PENDING (not yet imported)
+
+NOTE: No live tests have been performed. All combos are [PENDING].
+Import has not occurred. XML capture will happen during first live test
+session following GATE 2/3 (per-test log with XML capture).
+
+Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
+Reference: HIDLE.json (hand-built HI production JSON, comparison only)
+Devdoc: HI_HCJDC_OFML.pdf (CommSys devdoc)
+
+Architecture notes:
+  - 6 transactions, 15 combos
+  - NCIC state pattern (single RegistrationState, codeTypeProvider=NCIC, initialValue=HI)
+  - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS)
+  - Empty any[] on all combos (XML <Any> inside <Set> = optional companions)
+  - VehicleTypeCode default=1 (Auto) for in-state M55L/M55S routing
+  - DL/DH share Person entity: autoSelect + queriesToDeselect bidirectional
+  - Name format: 4 components (First Last Middle Suffix) with space separators
+  - Date format: MMddyyyy
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: VehicleRegistrationQueryQIDM
+  QIF:  Vehicle
+  Combos: M55L (in-state plate), M55S (in-state VIN), RQ (OOS plate),
+          QVV (stolen VIN), QVP (stolen plate), RQV (VIN fallback)
+  Optional fields: VehicleMakeCode, VehicleModelCode, VehicleYear,
+                   ImageIndicator, VehicleTypeCode (default=1)
+
+  M55L -- Plate + State(HI) + VehicleTypeCode [PENDING]
+    set: LicensePlateNumberIn, RegistrationState, VehicleTypeCode
+    any: (empty)
+    keyReference: M55L
+    Fires when: State=HI (in-state) and Plate present
+    Defaults: State=HI, VehicleTypeCode=1 (Auto), ImageIndicator=N
+
+  M55S -- VIN + State(HI) + VehicleTypeCode [PENDING]
+    set: VehicleIdentificationNumber, RegistrationState, VehicleTypeCode
+    any: (empty)
+    keyReference: M55S
+    Fires when: State=HI (in-state) and VIN present, no Plate
+
+  RQ -- Plate + State(non-HI) [PENDING]
+    set: LicensePlateNumberIn, RegistrationState
+    any: (empty)
+    keyReference: RQ
+    Fires when: State != HI (out-of-state) and Plate present
+
+  QVV -- VIN + VehicleMakeCode [PENDING]
+    set: VehicleIdentificationNumber, VehicleMakeCode
+    any: (empty)
+    keyReference: QVV
+    Stolen vehicle by VIN
+
+  QVP -- Plate + State [PENDING]
+    set: LicensePlateNumberIn, RegistrationState
+    any: (empty)
+    keyReference: QVP
+    Stolen vehicle by Plate (co-fires with M55L/RQ on shared fields)
+
+  RQV -- VIN [PENDING]
+    set: VehicleIdentificationNumber
+    any: (empty)
+    keyReference: RQV
+    VIN fallback (lowest priority)
+
+  Priority order: M55L > M55S > RQ > QVV > QVP > RQV [PENDING]
+    M55 in-state first, then OOS plate, then stolen, then VIN fallback
+
+  OOS routing -- State != HI [PENDING]
+    Non-HI state should route to RQ instead of M55L
+
+  RMS co-fire [PENDING]
+    RMS Vehicle combo should fire alongside CommSys
+
+================================================================================
+2. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  QIDM: DriverLicenseQueryQIDM
+  QIF:  Person (shared with DriverHistory)
+  Combos: DQN (OLN), DQ (Name+Sex+DOB), QW (Wanted Person)
+  Optional fields: SexCode, RelatedSearchHitIndicator (default=Y)
+
+  DQN -- OLN + State [PENDING]
+    set: OperatorLicenseNumber, RegistrationState
+    any: (empty)
+    keyReference: DQN
+    Defaults: State=HI
+
+  DQ -- Name + SexCode + DOB [PENDING]
+    set: Name, SexCode, BirthDate
+    any: (empty)
+    keyReference: DQ
+    Name uses FormatStringRuleHandler: arguments=[' ',' ',' ']
+    BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
+
+  QW -- Wanted Person: Name + DOB (no SexCode) [PENDING]
+    set: Name, BirthDate
+    any: (empty)
+    keyReference: QW
+    Fires when: Name+DOB present but SexCode absent
+    NOTE: In XML metadata inside DriverLicenseQuery but NOT in PDF Basic Queries.
+    Included per source authority rule (metadata wins).
+
+  Priority order: DQN > DQ > QW [PENDING]
+    OLN first; Name+Sex+DOB second; Name+DOB without Sex falls to QW
+
+  Sex optional behavior [PENDING]
+    SexCode present -> DQ fires (Name+Sex+DOB)
+    SexCode absent  -> QW fires (Wanted Person on Name+DOB)
+    NIBRS reverse-lookup on SexCode
+
+  OOS routing -- State != HI [PENDING]
+    Non-HI state on OLN query
+
+  RMS co-fire [PENDING]
+    RMS Person combo should fire alongside CommSys
+
+  DL/DH mutual exclusion [PENDING]
+    autoSelect + queriesToDeselect bidirectional between DL and DH
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity (DH-suffix)
+================================================================================
+
+  QIDM: DriverHistoryQueryQIDM
+  QIF:  Person (shared with DriverLicense, DH-suffix fieldIds)
+  Combos: KQN (OLN), KQ (Name+Sex+DOB)
+  Optional fields: SexCode
+
+  KQN -- OLN + State [PENDING]
+    set: OperatorLicenseNumber, RegistrationState
+    any: (empty)
+    keyReference: KQN
+    Uses DH-suffix fieldIds to avoid collision with DL QIDM
+
+  KQ -- Name + SexCode + DOB [PENDING]
+    set: Name, SexCode, BirthDate
+    any: (empty)
+    keyReference: KQ
+    Name uses FormatStringRuleHandler: arguments=[' ',' ',' ']
+    BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
+
+  Priority order: KQN > KQ [PENDING]
+    OLN before Name
+
+  DH/DL mutual exclusion [PENDING]
+    autoSelect + queriesToDeselect bidirectional between DH and DL
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: GunQueryQIDM
+  QIF:  Firearm
+  Combos: QG
+  Optional fields: GunMake, GunCaliber, GunModel,
+                   RelatedSearchHitIndicator (default=Y)
+
+  QG -- Serial Number [PENDING]
+    set: SerialNumber
+    any: (empty)
+    keyReference: QG
+
+  QG + all optionals [PENDING]
+    Serial + Make + Caliber + Model all present
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: ArticleSingleQueryQIDM
+  QIF:  Article
+  Combos: QA
+  Optional fields: RelatedSearchHitIndicator (default=Y)
+
+  QA -- Serial + ArticleType [PENDING]
+    set: SerialNumber, ArticleTypeCode
+    any: (empty)
+    keyReference: QA
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: BoatQueryQIDM
+  QIF:  Boat
+  Combos: BQ (Registration), QB (Stolen/Hull)
+  Optional fields: RelatedSearchHitIndicator (default=Y)
+
+  BQ -- Registration Number [PENDING]
+    set: RegistrationNumber
+    any: (empty)
+    keyReference: BQ
+
+  QB -- Hull ID [PENDING]
+    set: HullIdentificationNumber
+    any: (empty)
+    keyReference: QB
+
+  Priority order: BQ > QB [PENDING]
+    Registration before Hull
+
+================================================================================
+RMS BUNDLE
+================================================================================
+
+  RMS co-fire not yet tested [PENDING]
+  Patches applied: 1 (Vehicle state), 3 (Person state), 6 (cleanup)
+  6 RMS configs (one per entity + shared)
+
+================================================================================
+SUMMARY
+================================================================================
+
+  Total combos: 15 CommSys + RMS co-fires
+  [CONFIRMED]: NONE
+  [PENDING]: ALL (no live tests performed)
+  Next step: Import JSON and run 8-phase live test protocol

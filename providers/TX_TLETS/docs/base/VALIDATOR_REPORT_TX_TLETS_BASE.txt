@@ -1,0 +1,91 @@
+﻿================================================================
+  Build Report: TX_TLETS_BASE
+  Source: TX_TLETS_BASE.json
+  Generated: 2026-04-28 14:12
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'TX_TLETS': 11 configurations
+  [PASS] Bundle 'RMS': 2 configurations
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
+  [PASS] QIDM 'RMS Vehicle search query' -> Vehicle : 5 attrs, 2 combos
+  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' has 1 sourceField(s) not found in Person QIF:
+         MessageKey (sourceField='MessageKey')
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 12 attrs, 5 combos
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
+  [PASS] QIDM 'RMS Person Search query' -> Person : 6 attrs, 4 combos
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_BoatQuery' -> Boat : 6 attrs, 5 combos
+  [PASS] QIDM 'TX_TLETS_GunQuery' -> Firearm : 6 attrs, 2 combos
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs,  QIF(s)
+  [PASS] Person : 3 QIDMs,  QIF(s)
+  [PASS] Vehicle : 2 QIDMs,  QIF(s)
+  [PASS] Boat : 1 QIDMs,  QIF(s)
+  [PASS] Firearm : 1 QIDMs,  QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQLicensePlateNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'DPSIStickerNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'REGLicensePlateNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'VINVehicleIdentificationNumber': all set[] fields resolvable
+  [PASS] QIDM 'RMS Vehicle search query' combo 'vehicleIdentificationNumber': all set[] fields resolvable
+  [PASS] QIDM 'RMS Vehicle search query' combo 'licensePlateNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'RSDWWOperatorLicenseNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDriversLicenseNumber': all set[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDateOfBirth': all set[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastName': all set[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'driversLicenseNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QANCICNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBRegistrationNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBBoatHullIdNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQRegistrationNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQBoatHullIdNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[] fields resolvable
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 60 PASS / 0 FAIL / 1 WARN
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  Review WARN items -- they may cause runtime issues.
+

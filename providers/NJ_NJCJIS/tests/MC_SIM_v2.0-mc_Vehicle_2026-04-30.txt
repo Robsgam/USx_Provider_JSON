@@ -1,0 +1,91 @@
+================================================================
+  CommSys Query Simulation Log
+  Provider: NJ_NJCJIS  |  Variant: MC  |  Version: v2.0-mc
+  Entity: Vehicle  |  Date: 2026-04-30
+  Tool: test_commsys.ps1
+================================================================
+
+--- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] RQ
+      set: [LicensePlateNumberIn, RandomRequest, RegistrationState, LicensePlateTypeCode]
+      any: [ImageIndicator, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES] RQN
+      set: [VehicleIdentificationNumber, RandomRequest, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle] ---
+    Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
+
+    [FIRES] QVN
+      set: [NCICNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVP
+      set: [LicensePlateNumberIn]
+      any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVV
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator, VehicleMakeCode] -> matched: [ImageIndicator, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+RESULT: 5/5 combos FIRE (RQ, RQN, QVN, QVP, QVV)

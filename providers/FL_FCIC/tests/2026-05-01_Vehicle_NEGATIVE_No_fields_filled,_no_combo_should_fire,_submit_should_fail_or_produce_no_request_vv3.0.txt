@@ -1,0 +1,45 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Vehicle
+Combo      : NEGATIVE
+Test type  : T5 (negative/guard test)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumber        (empty)            --
+  RegistrationState         (empty)            --
+  VehicleIdNumber           (empty)            --
+  LicensePlateYear          2026               default
+  LicensePlateTypeCode      PC                 default
+  NCICNumber                (empty)            --
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- no send button available. No requests sent.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  No combination matched. Defaults alone (PlateYear, PlateType, ImageIndicator)
+  are in any[] fields and do not satisfy any set[] requirements.
+
+  Platform correctly blocked submission — send button not available.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: No send button available with empty form. Platform correctly prevents submission when no combo requirements are met.

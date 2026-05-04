@@ -1,0 +1,189 @@
+NY_NYSPIN_EJUSTICE / ConnectCIC JSON Limitations
+==================================================
+Last updated: 2026-04-20
+Current version: Phase 1 reboot (v1.0 pending build)
+
+FORM LAYOUT LIMITATIONS
+-----------------------
+1. No conditional field visibility
+   - Field/Row/Card nodes only support static hidden: true/false.
+   - Cannot show or hide fields based on user input, checkbox selection, or query type.
+   - Workaround: Single card with all fields visible; QUERYINPUTDATAMAPPING combinations
+     handle query routing automatically based on what is populated.
+
+2. No field styling
+   - No font size, color, weight, or emphasis props on any node type.
+   - Cannot highlight the most common query fields or de-emphasize optional ones.
+   - Workaround: Field ordering and Card titles only.
+
+3. No text/label component
+   - Available components: Card, Row, FormInput, FormSelect, FormDate, FormCheckbox only.
+   - There is no standalone text or label element.
+   - Workaround: Use Card.props.title for section headers in sections variant.
+
+4. Card title prop does not render HTML
+   - The platform renders Card.props.title as literal text.
+   - HTML tags such as <strong> appear verbatim in the UI, they are not interpreted.
+   - Workaround: Use ALL CAPS for query/section names in card titles (plain text only).
+
+5. Article Type dropdown requires CA_CLETS as codeTypeSource
+   - NCIC_ARTICLE_TYPE code list lives under codeTypeSource: "CA_CLETS" in this system.
+   - Using codeTypeSource: "NCIC" results in an empty dropdown.
+   - Resolution: Set codeTypeSource: "CA_CLETS" on the ArticleTypeCode FormSelect.
+
+6. Firearm Make and Caliber fields use FormInput (not FormSelect)
+   - No confirmed code list backing for GunMake/GunCaliber dropdowns in NY.
+   - Resolution: Using free-text input with maxLength from XML spec.
+   - Can be upgraded to FormSelect if a valid codeTypeSource/codeTypeCategory is confirmed.
+
+NY-SPECIFIC LIMITATIONS
+-----------------------
+7. WINQ / MINQ -- NO TRANSACTION DEFINITION IN XML (Phase 1 -- EXCLUDED)
+   WantedPersonQuery and MissingPersonQuery appear as MessageKeys in
+   NY_NYSPIN_EJUSTICE.XML but have NO Transaction element.
+   No MetaData = no field definitions = cannot build a QIDM or form.
+   Excluded from Phase 1. Track with vendor for future Transaction XML.
+   If vendor provides Transaction XML, add to Phase 1+ build as additional QIDMs.
+
+8. BoatQuery and VehicleRegistrationQuery share RVEH and RCAR keyRefs
+   - NY_NYSPIN_EJUSTICE.XML assigns RVEH and RCAR to both BoatQuery and
+     VehicleRegistrationQuery transactions.
+   - Platform must disambiguate by targetEntity (Boat vs Vehicle).
+   - Potential routing conflict if the platform resolves keyRef before targetEntity.
+   - Resolution: Confirm with live testing; may need separate keyRefs if conflict occurs.
+
+8. DriverLicenseQuery and DriverHistoryQuery -- Name path architecture (RESOLVED / NOT IMPLEMENTABLE)
+   - DLIC: both OLN and Name paths share keyRef=DLIC. Cannot merge (duplicate keyRef error).
+     RESOLUTION (v1.14): NY MetaData registers a separate transaction NyNyspinDriverLicenseNameQuery
+     (keyRef=DGRP). DL Name path uses this transaction. Different (Person, NyNyspinDriverLicenseNameQuery)
+     pair bypasses LIMITATION #2. T6 PASS confirmed 2026-04-14.
+     Configs: NY_NYSPIN_EJUSTICE_DriverLicenseQuery_OLN (DLIC) +
+              NY_NYSPIN_EJUSTICE_DriverLicenseQuery_Name (DGRP/NyNyspinDriverLicenseNameQuery)
+   - DALL: both OLN and Name paths share keyRef=DALL in MetaData. Cannot use duplicate keyRefs
+     in a single QIDM (import error). Two QIDMs blocked by LIMITATION #2.
+     RESOLUTION (v1.19): invented distinct keyRef DALH for Name combination. Provider routes by
+     XML field content, not keyRef. Single QIDM (DALL + DALH) confirmed working 2026-04-15.
+     See: docs/NY_NYSPIN_EJUSTICE_DriverHistoryQuery_NamePath.txt
+
+9. Person form architecture -- shared field pool and DH-suffix isolation (RESOLVED v1.17/v1.19)
+   - CONFIRMED (v1.15 live test): platform evaluates ALL Person QIDMs from a shared field pool
+     regardless of which QIF sub-tab is active. Mutual queriesToDeselect deadlocks.
+   - RESOLUTION (v1.17): DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.)
+     on DH form and DH QIDM sourceFields. DL forms never put DH-suffix fields in the pool.
+     Structural isolation -- no queriesToDeselect needed.
+   - queriesToDeselect removed from DL QIDMs (v1.16). DH QIDM has no queriesToDeselect (v1.19).
+   - DH co-fires alongside DL on OLN entry = correct police workflow (comprehensive results).
+   - See PLATFORM_LIMITATIONS.txt #26.
+
+10. RaceCode -- FIXED v1.12
+    - attributeTypeId='RACE' confirmed to send numeric ID (same bug as SEX/STATE).
+    - FIXED: changed to codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'.
+    - Confirmed working in WINQ/MINQ (T15/T16 PASS 2026-04-14).
+
+PLATFORM BEHAVIORS CONFIRMED IN NJ (applicable to NY)
+------------------------------------------------------
+10. LIMITATION #1 -- Combination routing controls query selection only
+    - set[] and any[] define what fields are REQUIRED for a combination to match.
+    - Once a combination fires, ALL populated attributes IN THAT CONFIG are sent,
+      regardless of whether each attribute is in set[] or any[].
+    - Field isolation within a single config is not possible.
+    - Split configs with isolated attribute lists DO achieve true field isolation
+      (see item 11 -- auto-switching is not a blocker).
+    - Confirmed in NJ (DL and Vehicle) 2026-04-08.
+
+11. LIMITATION #2 -- Split config cold-start failure -- CONFIRMED RISK (updated 2026-04-10)
+    - CONTROLLED TEST (2026-04-08): 4 tests on split DL configs showed all PASS.
+    - NJ PRODUCTION TEST (v2.6, 2026-04-08): With merged config removed, split configs only:
+        OLN path cold    PASS
+        Name path cold   FAIL -- DQ combination did not fire; no XML request built
+    - Root cause unknown. Hypothesis: platform locks onto first-listed config
+      and does not fall through to second config for the same query.
+    - NJ resolution: merged back to single config (Name + OLN in one QIDM). NY cannot
+      merge because the duplicate keyRef constraint (item 8) forces split configs.
+    - IMPLICATION FOR NY: _OLN and _Name split configs for DriverLicenseQuery and
+      DriverHistoryQuery are at risk of Name path cold-start failure.
+      Monitor closely during live DL/DH testing.
+    - See NJ docs/SPLITDL_REFERENCE.txt (in archive) for full investigation and source.
+
+12. Y-only flag fields must use FormInput (not FormSelect)
+    - YES_NO_UNKNOWN (NIBRS) dropdown exposes Y, N, and U.
+    - If a field only accepts Y as a valid value (e.g. RandomRequest in NJ), using
+      FormSelect exposes invalid values. Use FormInput with no initialValue instead.
+    - Blank FormInput = field not sent. Operator types Y to include.
+    - Confirmed in NJ 2026-04-08. Check any NY flag fields against the PDF/XML.
+
+13. Mandatory (M) fields belong in set[], not any[]
+    - Fields marked M (Mandatory) in the PDF/XML must appear in set[] for every
+      combination that uses them. Placing them in any[] is incorrect -- they would
+      not be required for combination matching.
+    - Confirmed in NJ (State field for VehicleRegistrationQuery) 2026-04-08.
+
+NY-CONFIRMED PLATFORM BEHAVIORS (from NJ_NJCJIS testing 2026-04-10)
+----------------------------------------------------------------------
+14. attributeTypeId=STATE on FormSelect sends internal numeric attribute ID -- CONFIRMED
+    Any FormSelect with attributeTypeId=STATE sends the platform's internal attribute ID
+    (e.g., NY=69509884952, PA=69509887513) instead of the 2-letter state code.
+    Wrong for CommSys outbound XML (expects 2-letter code).
+    FIXED v1.2: all State fields changed to codeTypeCategory=NJ_NIBRS_STATE / NJ_NIBRS.
+    RMS state behavior unknown until live testing -- may need dual-field pattern if RMS
+    VIN searches fatal on plain text state (same as NJ LIMITATION #14).
+    See NJ docs/NJ_NJCJIS_LIMITATIONS.txt items #13-#15 for full investigation.
+
+15. attributeTypeId=SEX on FormSelect sends internal numeric attribute ID -- CONFIRMED
+    Same behavior as STATE. attributeTypeId=SEX sends platform numeric ID (e.g., 69509891711
+    for M) instead of "M" to CommSys outbound XML.
+    FIXED v1.2: SexCode changed to codeTypeCategory=NIBRS_SEX, codeTypeSource=NIBRS.
+    Sends correct M/F/U codes to CommSys XML.
+
+16. attributeTypeId=RACE on FormSelect -- CONFIRMED + FIXED v1.12
+    Confirmed to send numeric attribute ID instead of NCIC race code.
+    FIXED: codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'. T15/T16 PASS confirmed.
+
+17. useAttributeId=True in RMS QIDM does NOT convert code values to attribute IDs -- CONFIRMED
+    Tested NJ v3.20: NIBRS_SEX "M" sent to RMS sexAttrId -> 400 error.
+    useAttributeId=True only passes through an already-resolved attribute ID from an
+    attributeTypeId field. It does NOT convert code strings to numeric IDs.
+    Fix: sex attributes removed from RMS person QIDM (Patch 1 in build script).
+    RMS person searches run without sex filter. Sex filters CommSys XML only.
+    SERVER-SIDE LIMITATION: no config mechanism converts code values to RMS attribute IDs.
+
+18. YES_NO codeTypeCategory is not recognized -- use YES_NO_UNKNOWN
+    YES_NO results in an empty dropdown. YES_NO_UNKNOWN (NIBRS) is confirmed working.
+    Exposes Y, N, U options. U cannot be suppressed at the FormSelect level.
+    Confirmed NJ v1.7.
+
+19. CA_CLETS has no sex code categories (tested 2026-04-10)
+    Tested: NIBRS_SEX, SEX, SEX_CODE, CA_CLETS_SEX, CLETS_SEX -- all empty under CA_CLETS.
+    Only working sex dropdown: codeTypeCategory=NIBRS_SEX, codeTypeSource=NIBRS.
+    See NJ archive/CODESOURCE_TESTS.json for test reference.
+
+VERSION HISTORY
+---------------
+Phase 1 reboot  2026-04-20  Complete clean restart. Build script rewritten (single-card Phase 1).
+  Added #7 (WINQ/MINQ no Transaction XML). Old limitations 7-9 renumbered 8-10.
+  State pattern: dual-field NJ_NIBRS_STATE (NCIC unconfirmed on NY instance).
+  Sex pattern: NIBRS_SEX CommSys-only (NIBRS reverse-lookup unconfirmed on NY instance).
+  Prior limitations (8-19) retained as platform reference -- still applicable.
+
+v1.0  2026-04-07  Full build from scratch using NY_NYSPIN_EJUSTICE.XML + HIDLE.json template.
+                  3 bundles: NY_NYSPIN_EJUSTICE (11 configs), ENTITIES (5 QUERYINPUTFORM), RMS.
+                  Single-card layout per entity. All 3 layouts: default, CAD_DISPATCH, FIRST_RESPONDER.
+v1.1  2026-04-08  Added items 10-13 from NJ platform testing results.
+v1.2  2026-04-10  Applied NJ-confirmed fixes: SexCode -> NIBRS_SEX/NIBRS, all State fields ->
+                  codeTypeCategory=NJ_NIBRS_STATE, RMS sex attrs removed (Patch 1).
+                  Updated LIMITATION #2 to reflect NJ v2.6 production failure.
+                  Added limitations #14-19 from NJ testing.
+v1.4-v1.12  2026-04-13  Split entity architecture, vehicle QIDM merge, dual-field state pattern,
+                  RaceCode fixed (v1.12 -> NIBRS_RACE/NIBRS), RVIN OOS VIN, entity display order.
+                  T1-T7, T15-T16 all PASS.
+v1.13 2026-04-14  FAILED import -- duplicate keyRef DLIC in merged DL QIDM.
+                  Root cause: attempted to merge OLN+Name into one QIDM; both combinations
+                  used keyRef=DLIC. Platform rejected. Reverted.
+v1.14 2026-04-14  DL Name via NyNyspinDriverLicenseNameQuery/DGRP (separate transaction, no
+                  LIMITATION #2). Validator reverted: duplicate keyRef back to FAIL.
+                  T6 PASS (Name+DOB DGRP). DH Name documented NOT IMPLEMENTABLE (T8).
+                  Updated limitation #8 accordingly.
+v1.15 2026-04-14  Person entity split: 4 dedicated forms (DL-NY, DL-OOS, DH, NCIC).
+                  queriesToDeselect added to DL/DH QIDMs. autoSelect on DH.
+                  OPEN: separate-form queriesToDeselect behavior unconfirmed -- pending T5/T6/T7.
+                  Added limitation #9 (separate-form open question).

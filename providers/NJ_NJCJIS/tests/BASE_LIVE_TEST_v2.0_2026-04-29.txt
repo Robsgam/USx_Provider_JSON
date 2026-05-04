@@ -1,0 +1,42 @@
+NJ_NJCJIS BASE v2.0 -- Live Import Test Results
+=================================================
+Date: 2026-04-29
+JSON: NJ_NJCJIS_BASE.json (v2.0, built 2026-04-28)
+
+RESULT: 17 PASS / 0 FAIL
+
+| #  | Phase    | Entity  | Combo/Check                          | Result |
+|----|----------|---------|--------------------------------------|--------|
+| 1  | Basic    | Vehicle | Plate (RQ) + defaults                | PASS   |
+| 2  | Basic    | Vehicle | VIN (RQN)                            | PASS   |
+| 3  | Basic    | Vehicle | NCIC# (QVN)                          | PASS   |
+| 4  | Basic    | Person  | OLN (DQN)                            | PASS   |
+| 5  | Basic    | Person  | Name+DOB (DQ)                        | PASS   |
+| 6  | Optional | Person  | Name+DOB+Sex (DQ ANY)                | PASS   |
+| 7  | Basic    | Firearm | Serial (QG)                          | PASS   |
+| 8  | Optional | Firearm | Serial+Make+Caliber+Model (QG ANYs)  | PASS   |
+| 9  | Basic    | Article | Serial+Type (QA)                     | PASS   |
+| 10 | Basic    | Boat    | Registration (QB)                    | PASS   |
+| 11 | Basic    | Boat    | Hull ID (QBN)                        | PASS   |
+| 12 | OOS      | Vehicle | Plate OOS PA (RQ)                    | PASS   |
+| 13 | OOS      | Person  | OLN OOS NY (DQN)                     | PASS   |
+| 14 | Priority | Vehicle | Plate+VIN (RQ wins over RQN)         | PASS   |
+| 15 | Priority | Person  | OLN+Name+DOB (DQN wins over DQ)     | PASS   |
+| 16 | Override | Vehicle | Image=Y override                     | PASS   |
+| 17 | Override | Vehicle | Random=Y override                    | PASS   |
+
+VERIFIED:
+  - All 11 combos fire correctly (6 CommSys QIDMs)
+  - RMS co-fire: Vehicle (plate/VIN) + Person (OLN/Name)
+  - Defaults: State=NJ, PlateType=PC, PlateYear=2026, Random=N, Image=N (Person=Y)
+  - NCIC state reverse-lookup: NJ=69509884952, PA=69509887513, NY=69509888105
+  - NIBRS sex reverse-lookup: M=69509891711
+  - Name format: "LAST, FIRST" (FormatStringRuleHandler)
+  - BirthDate format: MMddyyyy (CommsysParseDateRuleHandler)
+  - RandomRequest: N default, Y override confirmed
+  - No State on Boat (v2 removal confirmed)
+  - Combo priority: Plate>VIN (Vehicle), OLN>Name (Person)
+  - VehicleReg/VehicleStolen co-fire on shared fields
+
+NOTE: BASE is proof-of-concept for query paths. Full exhaustive testing
+performed on MC variant (production). See MC_LIVE_TEST_v2.0-mc_2026-04-29.txt.

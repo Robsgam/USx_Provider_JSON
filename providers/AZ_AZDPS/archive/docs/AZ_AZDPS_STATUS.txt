@@ -1,0 +1,143 @@
+AZ_AZDPS -- Build Status
+=========================
+Last updated: 2026-04-23
+Current version: 1.1 (Phase 1 -- dexStateUserId; Badge hidden/auto-populated)
+Provider: AZ_AZDPS
+Phase: 01_standup (single entity, single card per QIF -- all paths on one card)
+
+ARCHITECTURE (v1.1 -- Phase 1)
+--------------------
+Entities: Vehicle, Person, Firearm, Article, Boat
+QIFs:     5 total (one per entity, single card each)
+QIDMs:    8 CommSys QIDMs (all targetEntity + query pairs confirmed unique)
+
+  VehicleRegistrationQuery   ACVR (Plate+Badge) + ACVRV (VIN+Badge -- invented keyRef)
+  AzAzdpsDriverLicenseQuery  DQ (OLN) + DQN (Name -- inv) + DQSS (SSN -- inv) + ACWL (Badge+Name)
+  DriverHistoryQuery         KQ (OLN+StateDH) + KQH (Name+StateDH -- inv) [DH-suffix isolation]
+  GunQuery                   ACQG (Badge+Serial)
+  ArticleSingleQuery         ACQA (Badge+Serial+TypeCode)
+  BoatQuery                  ACQB (Reg+Badge) + ACQBH (Hull+Badge -- inv) + BQ (Reg) + BQH (Hull -- inv)
+  WMPIWantedPersonInquiry    ACQW (Name+DOB+Sex+Race) + ACQWN (NCICNumber -- inv)
+  WMPIMissingPersonInquiry   ACQM (Name+descriptors) + ACQMN (NCICNumber -- inv)
+
+Badge:   dexStateUserId hidden InpH on all 5 QIF forms. Auto-populated via
+         CommsysGetDexStateUserIdRuleHandler from officer RMS profile.
+         QIDM BadgeNumber attribute sourceField='dexStateUserId' on all badge-required QIDMs.
+         Badge field removed from all visible form layouts.
+
+State:   NCIC confirmed. Single visible RegistrationState (attributeTypeId=STATE, initialValue=AZ).
+         QIDM: sourceField=RegistrationState, codeTypeProvider=NCIC.
+         DH: hidden StateDH (initialValue='AZ') -- State mandatory in KQ/KQH set[].
+
+Sex:     NIBRS confirmed. attributeTypeId=SEX + codeTypeProvider=NIBRS.
+         -> Form stores attribute ID; CommSys QIDM converts to M/F/U via NIBRS.
+         -> RMS useAttributeId=True passes attribute ID directly (sex filtering works).
+
+Race:    codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS (avoids AP #3 numeric ID issue).
+
+Date:    yyyyMMdd (AZ-specific -- NOT MMddyyyy like NJ).
+
+DH:      DH-suffix fieldIds (OperatorLicenseNumberDH, NameLastDH, NameFirstDH,
+         NameMiddleDH, NameSuffixDH, BirthDateDH, SexCodeDH, StateDH).
+         KQ/KQH single QIDM with invented KQH keyRef (DALL+DALH pattern from NY).
+
+OPEN ITEMS (Phase 1)
+--------------------
+[ ] Confirm dexStateUserId auto-populates correctly from officer RMS profile (all 5 forms)
+[ ] Confirm VehicleRegistrationQuery ACVR fires (plate -- badge auto via dexStateUserId)
+[ ] Confirm ACVRV fires on VIN (badge auto -- not conflicting with ACVR)
+[ ] Confirm AzAzdpsDriverLicenseQuery DQ fires on OLN
+[ ] Confirm DQN fires on Name+DOB+Sex (ACWL requires badge auto; DQN does not)
+[ ] Confirm DriverHistoryQuery KQ fires on OperatorLicenseNumberDH
+[ ] Confirm KQH fires on NameLastDH+NameFirstDH+BirthDateDH+SexCodeDH (invented keyRef)
+[ ] Confirm BoatQuery ACQB vs BQ routing (dexStateUserId always present -- ACQB fires when Reg filled)
+[ ] Confirm WMPIWantedPersonInquiry ACQW fires on Name+DOB+Sex+Race
+[ ] Confirm WMPIMissingPersonInquiry ACQM fires on Name+Age+descriptors
+[ ] Confirm NIBRS sex RMS filtering works (attributeTypeId=SEX path)
+[ ] Confirm NCIC state sends correct 2-letter code in outbound XML
+
+TEST MATRIX
+-----------
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE
+  VEH-1: Plate + Badge (AZ)                ACVR     CommSys          [PENDING]
+  VEH-2: Plate + Badge + OOS state         ACVR     CommSys          [PENDING]
+  VEH-3: VIN + Badge (AZ)                  ACVRV    CommSys          [PENDING]
+  VEH-4: VIN + Badge + OOS state           ACVRV    CommSys          [PENDING]
+  VEH-5: Plate + Badge -- RMS trigger      ACVR     RMS              [PENDING]
+
+  PERSON -- Driver License (OLN)
+  PER-1: OLN only                           DQ       CommSys+RMS      [PENDING]
+  PER-2: OLN + state                        DQ       CommSys          [PENDING]
+
+  PERSON -- Driver License (Name)
+  PER-3: Name + DOB + Sex                   DQN      CommSys+RMS      [PENDING]
+  PER-4: Name + DOB + Sex + Badge           ACWL     CommSys          [PENDING]
+
+  PERSON -- Driver License (SSN)
+  PER-5: SSN only                           DQSS     CommSys          [PENDING]
+
+  PERSON -- Driver History (OLN)
+  PER-6: DH OLN (OperatorLicenseNumberDH)  KQ       CommSys          [PENDING]
+  PER-7: DH OLN + Attention + Purpose      KQ       CommSys          [PENDING]
+
+  PERSON -- Driver History (Name)
+  PER-8: DH Name + DOB + Sex               KQH      CommSys          [PENDING]
+
+  FIREARM
+  FA-1:  Serial + Badge                     ACQG     CommSys          [PENDING]
+  FA-2:  Serial + Badge + Make + Model      ACQG     CommSys          [PENDING]
+
+  ARTICLE
+  ART-1: Serial + Badge + TypeCode          ACQA     CommSys          [PENDING]
+
+  BOAT -- With Badge (ACIC)
+  BOA-1: Reg + Badge                        ACQB     CommSys          [PENDING]
+  BOA-2: Hull + Badge                       ACQBH    CommSys          [PENDING]
+
+  BOAT -- Without Badge (MVD)
+  BOA-3: Reg only                           BQ       CommSys          [PENDING]
+  BOA-4: Hull only                          BQH      CommSys          [PENDING]
+
+  WANTED PERSON
+  WNT-1: Name + DOB + Sex + Race            ACQW     CommSys          [PENDING]
+  WNT-2: NCICNumber only                    ACQWN    CommSys          [PENDING]
+
+  MISSING PERSON
+  MSN-1: Name + Age + Sex + Race + Physical ACQM     CommSys          [PENDING]
+  MSN-2: NCICNumber only                    ACQMN    CommSys          [PENDING]
+
+BUILD LOG (newest first)
+  v1.1  2026-04-23  queryLabel fix -- direct JSON edit (no rebuild)
+    Change: VehicleRegistrationQuery queryLabel "Vehicle" -> "Vehicle Registration"
+    Reason: KB queryLabel standard -- label by what the officer searches for,
+            not entity or system name. Confirmed standard: NJ (Rob), FL, TX, NY also fixed.
+    File: AZ_AZDPS_BASE.json (root)
+    Committed and pushed to master.
+
+  v1.1  2026-04-20  build_az_azdps.ps1
+    Output : C:\Users\RobSgambellone\.local\bin\AZ_AZDPS\AZ_AZDPS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\AZ_AZDPS\phases\01_standup\AZ_AZDPS_v1.1_2026-04-20.json
+    Validator: 0 errors, 0 warnings (8 QIDMs, 5 QIFs, all sourceFields resolved)
+    Change: dexStateUserId hidden InpH added to all 5 forms; Badge visible field removed from all forms;
+            QIDM BadgeNumber attribute sourceField changed from 'BadgeNumber' to 'dexStateUserId';
+            combination set[]/any[] 'BadgeNumber' refs replaced with 'dexStateUserId' throughout.
+    Import: PENDING
+
+  v1.0  2026-04-20  build_az_azdps.ps1 (PHASE 1 REBUILD)
+    Output : C:\Users\RobSgambellone\.local\bin\AZ_AZDPS\AZ_AZDPS.json
+    Archive: C:\Users\RobSgambellone\.local\bin\AZ_AZDPS\phases\01_standup\AZ_AZDPS_v1.0_2026-04-20.json
+    Validator: 0 errors, 0 warnings (8 QIDMs, 5 QIFs, all sourceFields resolved)
+    Design: 5 QIFs (1 card each), all paths on single card per entity
+    Import: PENDING (superseded by v1.1)
+
+  --- v2.x series (prior approach -- multi-card/split-entity, retired) ---
+  v2.3  2026-04-20  build_az_azdps.ps1
+    Validator: 0 errors (8 QIDMs, 8 QIFs)
+    Fix: type='BUNDLE' on both bundles; ENTITIES order as nested object
+    Import: forms rendered but wrong layout (split entity + multi-card) -> triggered Phase 1 rebuild
+  v2.2  2026-04-20  build_az_azdps.ps1  FAILED: forms did not render (type='BUNDLE' missing; order flat array)
+  v2.1  2026-04-20  build_az_azdps.ps1  FAILED: forms did not render (type='BUNDLE' missing; order flat array)
+  v2.0  2026-04-20  build_az_azdps.ps1  FAILED: forms did not render (QIF provider='AZ_AZDPS')
+  v1.0  2026-04-15  build_az_azdps_basic.ps1  (original basic build -- see build_az_azdps_basic.ps1)

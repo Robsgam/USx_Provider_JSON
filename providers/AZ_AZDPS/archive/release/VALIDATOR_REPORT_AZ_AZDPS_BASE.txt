@@ -1,0 +1,81 @@
+﻿================================================================
+  Build Report: AZ_AZDPS_BASE
+  Source: AZ_AZDPS_BASE.json
+  Generated: 2026-04-21 16:21
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [FAIL] UTF-8 BOM detected (bytes EF BB BF). Strip before import.
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'AZ_AZDPS': 11 configurations
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [WARN] ENTITIES bundle is not first. Some platforms expect ENTITIES first.
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'AZ_AZDPS_VehicleForm' -> Vehicle : 11 fieldIds
+  [PASS] QIF 'AZ_AZDPS_PersonForm' -> Person : 35 fieldIds
+  [PASS] QIF 'AZ_AZDPS_FirearmForm' -> Firearm : 9 fieldIds
+  [PASS] QIF 'AZ_AZDPS_ArticleForm' -> Article : 7 fieldIds
+  [PASS] QIF 'AZ_AZDPS_BoatForm' -> Boat : 8 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' -> Person : 7 attrs, 4 combos
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_GunQuery' -> Firearm : 6 attrs, 1 combos
+  [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' -> Article : 4 attrs, 1 combos
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' -> Boat : 5 attrs, 4 combos
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' -> Person : 8 attrs, 2 combos
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' -> Person : 13 attrs, 2 combos
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs,  QIF(s)
+  [PASS] Person : 4 QIDMs,  QIF(s)
+  [PASS] Vehicle : 1 QIDMs,  QIF(s)
+  [PASS] Boat : 1 QIDMs,  QIF(s)
+  [PASS] Firearm : 1 QIDMs,  QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVR': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVRV': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQ': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQN': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQSS': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'ACWL': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQ': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQH': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_GunQuery' combo 'ACQG': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' combo 'ACQA': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'ACQB': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'ACQBH': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQ': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQH': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQW': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQWN': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQM': all set[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQMN': all set[] fields resolvable
+
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 50 PASS / 1 FAIL / 1 WARN
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  FIX all FAIL items before importing.
+

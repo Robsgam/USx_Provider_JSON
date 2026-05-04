@@ -1,0 +1,73 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : FDQ+OLN+Name+QW (DL by OLN plus QW co-fire)
+Test type  : T3 -- all fields populated
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     [test OLN]         typed
+  NameLast                  [test last]        typed
+  NameFirst                 [test first]       typed
+  BirthDate                 [test DOB]         typed
+  SexCode                   M                  typed
+  PurposeCode               C                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : DriverLicenseQuery + WantedPersonQuery
+  MessageType : DriverLicenseQuery + WantedPersonQuery
+  keyReference: FDQ+OLN+Name+QW
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    OperatorLicenseNumber  [test OLN]
+    NameLast               [test last]
+    NameFirst              [test first]
+    BirthDate              [test DOB]
+    SexCode                M
+    PurposeCode            C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQ+OLN (DL, highest priority) + QW co-fire (Wanted)
+  Reason: OLN populated = FDQ+OLN fires first (priority over FDQ+Name)
+          NameLast+NameFirst+OLN populated = QW OLN co-fire
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  OLN                  YES    [test OLN]      mapped from OperatorLicenseNumber
+  NameLast             YES    [test last]     mapped from NameLast
+  NameFirst            YES    [test first]    mapped from NameFirst
+  BirthDate            YES    [test DOB]      mapped from BirthDate
+  SexCode              YES    M               mapped from SexCode
+  PurposeCode          YES    C               mapped from PurposeCode
+  State                NO     --              sourceField empty (FL-only path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DL (OLN path) + QW both fired; all fields sent; OLN combo takes priority over Name combo
+  Detail: QW OLN combo needs Name+OLN (not OLN alone) — confirmed co-fire with all populated

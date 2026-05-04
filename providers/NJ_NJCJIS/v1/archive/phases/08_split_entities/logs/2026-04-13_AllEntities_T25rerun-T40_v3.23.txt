@@ -1,0 +1,190 @@
+NJ_NJCJIS Phase 08 Split Entity Test Log
+==========================================
+Date    : 2026-04-13
+Version : v3.23
+Tester  : Rob Sgambellone
+Scope   : T25 re-run (Patch 3 fix verification) + T26-T40 (Person OOS, Firearm, Article, Boat)
+
+PATCH 3 FIX (v3.23)
+  Bug   : Original Patch 3 (v3.21) iterated $combo.attributes -- combinations have no attributes
+          property. Loop was always empty; sex/sexOOS attributes were never removed from RMS QIDM.
+  Fix   : Filter $rmsPersonQidm.attributes where targetField != 'sexAttrId'.
+          Remove SexCode/SexCodeOOS from all combination any[] lists.
+  Result: sexAttrId absent from built JSON (confirmed grep -c = 0 on v3.23).
+
+================================================================================
+PERSON - NJ  (tab: Person - NJ)  -- T25 RE-RUN
+================================================================================
+
+T25  Name -- all fields (v3.23 Patch 3 verification)
+  Card   : Name Search
+  Fill   : NameFirst=TESDT, NameLast=RECORD, BirthDate=01/11/1960, Sex=M
+  Fires  : DQ
+  XML    : <MessageType>DriverLicenseQuery</MessageType>
+           <ImageIndicator>Y</ImageIndicator>
+           <State>NJ</State>
+           <SexCode>M</SexCode>
+           <BirthDate>01111960</BirthDate>
+           <Name>TESDT RECORD</Name>
+  RMS    : {"elasticQuery":{"lastName":"record","firstName":"tesdt","dateOfBirth":"1960-01-11"},"from":0,"size":50}
+  Result : No Returns -- no RMS error
+  RESULT : PASS  (sexAttrId absent from RMS query -- Patch 3 fix confirmed)
+
+================================================================================
+PERSON - OUT OF STATE  (tab: Person - Out of State)
+================================================================================
+
+T26  OLN OOS -- minimum
+  Card   : Driver License Number
+  Fill   : OperatorLicenseNumber=B9876543210, State=PA
+  Fires  : DQN
+  XML    : <OperatorLicenseNumber>B9876543210</OperatorLicenseNumber>
+           <State>PA</State> <ImageIndicator>Y</ImageIndicator>
+  RMS    : {"elasticQuery":{"dlNumber":"B9876543210"},"from":0,"size":50}
+  RESULT : PASS
+
+T27  OLN OOS + Image N
+  Fill   : OperatorLicenseNumber=B9876543210, State=PA, Image=N
+  Fires  : DQN
+  XML    : <OperatorLicenseNumber>B9876543210</OperatorLicenseNumber>
+           <State>PA</State> <ImageIndicator>N</ImageIndicator>
+  RMS    : {"elasticQuery":{"dlNumber":"B9876543210"},"from":0,"size":50}
+  RESULT : PASS
+
+T28  OLN OOS + Image Y (confirm default)
+  Fill   : OperatorLicenseNumber=B9876543210, State=PA, Image=Y
+  Fires  : DQN
+  XML    : <OperatorLicenseNumber>B9876543210</OperatorLicenseNumber>
+           <State>PA</State> <ImageIndicator>Y</ImageIndicator>
+  RMS    : {"elasticQuery":{"dlNumber":"B9876543210"},"from":0,"size":50}
+  RESULT : PASS
+
+T29  Name OOS -- minimum
+  Setup  : State=PA set in DL Number card
+  Card   : Name Search
+  Fill   : NameFirst=JOHN, NameLast=SMITH, BirthDate=01/15/1985
+  Fires  : DQ
+  XML    : <Name>JOHN SMITH</Name> <BirthDate>01151985</BirthDate>
+           <State>PA</State> <ImageIndicator>Y</ImageIndicator>
+  RMS    : {"elasticQuery":{"lastName":"Smith","firstName":"John","dateOfBirth":"1985-01-15"},"from":0,"size":50}
+  RESULT : PASS  (State(PA) crossed from OLN card to Name card confirmed)
+
+T30  Name OOS -- all fields
+  Setup  : State=PA set in DL Number card
+  Card   : Name Search
+  Fill   : NameFirst=JOHN, NameLast=SMITH, BirthDate=01/15/1985, Sex=M
+  Fires  : DQ
+  XML    : <Name>JOHN SMITH</Name> <BirthDate>01151985</BirthDate>
+           <SexCode>M</SexCode> <State>PA</State> <ImageIndicator>Y</ImageIndicator>
+  RMS    : {"elasticQuery":{"lastName":"Smith","firstName":"John","dateOfBirth":"1985-01-15"},"from":0,"size":50}
+  RESULT : PASS  (SexCode in XML; no sexAttrId in RMS)
+
+================================================================================
+FIREARM  (tab: Firearm)
+================================================================================
+
+T31  Serial only -- minimum
+  Fill   : SerialNumber=GXY123456
+  Fires  : QG
+  XML    : <MessageType>GunQuery</MessageType>
+           <GunSerialNumber>GXY123456</GunSerialNumber>
+  RMS    : (none -- no RMS query for Firearm)
+  RESULT : PASS
+
+T32  Serial + Make
+  Fill   : SerialNumber=GXY123456, GunMake=GLOCK
+  Fires  : QG
+  XML    : <GunSerialNumber>GXY123456</GunSerialNumber> <GunMake>GLOCK</GunMake>
+  RESULT : PASS
+
+T33  Serial + Caliber
+  Fill   : SerialNumber=GXY123456, GunCaliber=9MM
+  Fires  : QG
+  XML    : <GunSerialNumber>GXY123456</GunSerialNumber> <GunCaliber>9MM</GunCaliber>
+  RESULT : PASS
+
+T34  All fields
+  Fill   : SerialNumber=GXY123456, GunMake=GLOCK, GunCaliber=9MM
+  Fires  : QG
+  XML    : <GunSerialNumber>GXY123456</GunSerialNumber> <GunMake>GLOCK</GunMake>
+           <GunCaliber>9MM</GunCaliber>
+  RESULT : PASS
+
+================================================================================
+ARTICLE  (tab: Article)
+================================================================================
+
+T35  Serial + Article Type -- only test
+  Fill   : ArticleSerialNumber=ART132, ArticleTypeCode=BBICYCL (from dropdown)
+  Fires  : QA
+  XML    : <MessageType>ArticleSingleQuery</MessageType>
+           <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+           <ArticleSerialNumber>ART132</ArticleSerialNumber>
+  RESULT : PASS  (Article Type dropdown populated -- CA_CLETS codeTypeSource confirmed)
+
+================================================================================
+BOAT  (tab: Boat)
+================================================================================
+
+T36  Registration -- in-state (State=NJ default)
+  Fill   : RegistrationNumber=NJ1234AB (State=NJ default)
+  Fires  : BQ
+  XML    : <MessageType>BoatQuery</MessageType>
+           <State>NJ</State> <RegistrationNumber>NJ1234AB</RegistrationNumber>
+  RESULT : PASS
+
+T37  Registration -- out-of-state
+  Fill   : RegistrationNumber=PA987234, State=PA
+  Fires  : BQ
+  XML    : <State>PA</State> <RegistrationNumber>PA987234</RegistrationNumber>
+  RESULT : PASS
+
+T38  Hull ID -- in-state (State=NJ from Reg card)
+  Fill   : BoatHullIdNumber=AVC123456789001 (State=NJ from Reg card)
+  Fires  : BQN
+  XML    : <BoatHullIdNumber>AVC123456789001</BoatHullIdNumber> <State>NJ</State>
+  RESULT : PASS  (State(NJ) carried from Registration card)
+
+T39  Hull ID -- out-of-state (State=PA set in Reg card first)
+  Setup  : Changed State to PA in Registration card
+  Fill   : BoatHullIdNumber=AVC123456789001
+  Fires  : BQN
+  XML    : <BoatHullIdNumber>AVC123456789001</BoatHullIdNumber> <State>PA</State>
+  RESULT : PASS  (State(PA) crossed from Registration card to Hull card)
+
+T40  All fields (LIMITATION #1)
+  Fill   : RegistrationNumber=NJ1237AB, State=NJ, BoatHullIdNumber=AVC123456789001
+  Fires  : BQ  (Registration set[] satisfied first)
+  XML    : <BoatHullIdNumber>AVC123456789001</BoatHullIdNumber>
+           <State>NJ</State> <RegistrationNumber>NJ1237AB</RegistrationNumber>
+  RESULT : PASS  (server tolerated extra BoatHullIdNumber -- LIMITATION #1 confirmed OK)
+
+================================================================================
+TEST SUMMARY
+================================================================================
+
+  T25 re-run    PASS  (Patch 3 fix confirmed -- sexAttrId absent from RMS)
+  T26-T30       PASS  Person OOS (5/5)
+  T31-T34       PASS  Firearm (4/4)
+  T35           PASS  Article (1/1)
+  T36-T40       PASS  Boat (5/5)
+
+  Phase 08 total:  T01-T40  40/40 PASS  (v3.23 final)
+
+================================================================================
+CUMULATIVE TEST STATUS (all phases, all versions)
+================================================================================
+
+  Vehicle NJ   T01-T10  ALL PASS  v3.15  2026-04-10
+  Vehicle OOS  T11-T21  ALL PASS  v3.16  2026-04-10
+  Person NJ    T22-T25  ALL PASS  v3.23  2026-04-13  (T25 re-run confirmed Patch 3)
+  Person OOS   T26-T30  ALL PASS  v3.23  2026-04-13
+  Firearm      T31-T34  ALL PASS  v3.23  2026-04-13
+  Article      T35      PASS      v3.23  2026-04-13
+  Boat         T36-T40  ALL PASS  v3.23  2026-04-13
+
+  TOTAL: 40/40 PASS
+
+OPEN ITEMS REMAINING
+  1. Validate QUERYRESULTDATAMAPPING against live NJ response
+  2. PDF/XML gap summary sent to vendor 2026-04-13 -- awaiting feedback

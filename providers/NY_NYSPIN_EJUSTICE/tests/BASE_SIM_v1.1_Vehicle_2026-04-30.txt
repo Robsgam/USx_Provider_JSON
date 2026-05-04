@@ -1,0 +1,53 @@
+================================================================
+NY_NYSPIN_EJUSTICE BASE v1.1 — Vehicle Simulation
+Date: 2026-04-30
+Tool: test_commsys.ps1
+================================================================
+
+QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery
+Attrs: 8 (LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, State, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear, ImageIndicator)
+Combos: 3
+
+--- RVIN (VIN + State OOS) ---
+[FIRES] set: [VehicleIdentificationNumber, RegistrationState]
+         any: [ImageIndicator, VehicleMakeCode, VehicleYear] -> all matched
+XML:
+  <MessageKey>RVIN</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2024</LicensePlateYear>
+  <State>NJ</State>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <VehicleMakeCode>FORD</VehicleMakeCode>
+  <VehicleYear>2023</VehicleYear>
+  <ImageIndicator>Y</ImageIndicator>
+
+--- RVEH (Plate) ---
+[FIRES] set: [LicensePlateNumberIn]
+         any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState] -> all matched
+XML:
+  <MessageKey>RVEH</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2024</LicensePlateYear>
+  <State>NJ</State>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <VehicleMakeCode>FORD</VehicleMakeCode>
+  <VehicleYear>2023</VehicleYear>
+  <ImageIndicator>Y</ImageIndicator>
+
+--- RCAR (VIN NY DMV) ---
+[FIRES] set: [VehicleIdentificationNumber]
+         any: [ImageIndicator] -> matched
+XML:
+  <MessageKey>RCAR</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2024</LicensePlateYear>
+  <State>NJ</State>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <VehicleMakeCode>FORD</VehicleMakeCode>
+  <VehicleYear>2023</VehicleYear>
+  <ImageIndicator>Y</ImageIndicator>
+
+RESULT: 3/3 combos FIRE — ImageIndicator present in all XML

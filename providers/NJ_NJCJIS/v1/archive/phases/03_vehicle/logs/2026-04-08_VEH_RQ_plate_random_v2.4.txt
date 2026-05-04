@@ -1,0 +1,74 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.4
+Query type: VehicleRegistrationQuery (RQ -- plate + Random=Y)
+Test      : Plate Number + State; Random changed to Y; Image=N (default)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ0RR90FSN51MWYK58XV5YY
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    ImageIndicator     N
+    State              NJ
+    RandomRequest      Y
+    LicensePlateNumber PLATERANDO
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQ (LicensePlateNumber + State present)
+
+  Field                        Sent    Note
+  ---------------------------  ----    ------------------------------------------------
+  LicensePlateNumber           YES     PLATERANDO
+  State                        YES     NJ
+  RandomRequest                YES     Y (operator changed from default N)
+  ImageIndicator               YES     N (default)
+  LicensePlateTypeCode         NO      not filled
+  LicensePlateYear             NO      not filled
+  VehicleIdentificationNumber  NO      not filled -- correctly excluded
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- RandomRequest=Y sent correctly. Server accepted without error.
+    Operator changed default N to Y. Y serialized and accepted by ConnectCIC.
+    Confirms RandomRequest Y path works despite PDF size=5-5 spec.
+    N value (Logs 1-2) also accepted -- server treats N as "not a random request."
+
+  RandomRequest behavior summary:
+    Y (operator change) -- sent as Y, server accepts (random request flagged)
+    N (default)         -- sent as N, server accepts (treated as not random)
+    blank (cleared)     -- not sent (pending blank-test phase)
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNQ0RR90FSN51MWYK58XV5YY">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>VehicleRegistrationQuery</MessageType>
+          <Id>01KNQ0RR90FSN51MWYK58XV5YY</Id>
+          <ImageIndicator>N</ImageIndicator>
+          <State>NJ</State>
+          <RandomRequest>Y</RandomRequest>
+          <LicensePlateNumber>PLATERANDO</LicensePlateNumber>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

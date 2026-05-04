@@ -1,0 +1,117 @@
+﻿================================================================
+  Build Report: LA_LETTS_OFML_BASE
+  Source: LA_LETTS_OFML_BASE.json
+  Generated: 2026-04-24 16:24
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== LA_LETTS_OFML_BASE.json ===
+QIFs: 5
+  Article | entity=Article | qidm= | cards=1 fields=1
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
+  Person | entity=Person | qidm= | cards=1 fields=5
+  Firearm | entity=Firearm | qidm= | cards=1 fields=2
+  Boat | entity=Boat | qidm= | cards=1 fields=2
+QIDMs: 6
+  LA_LEMS_GunQuery | attrs=7 combos=1 autoSelect=
+  LA_LEMS_VehicleRegistrationQuery | attrs=8 combos=2 autoSelect=
+  LA_LEMS_DriverLicenseQuery | attrs=8 combos=2 autoSelect=
+  LA_LEMS_DriverHistoryQuery | attrs=7 combos=2 autoSelect=False
+  LA_LEMS_BoatQuery | attrs=4 combos=2 autoSelect=
+  LA_LEMS_ArticleSingleQuery | attrs=3 combos=1 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "ROOT_CARD"
+      ROW ROW_1 [6 6]
+        SerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "ROOT_CARD"
+      ROW ROW_1 [6 6]
+        LicensePlateNumber (Text | maxLen=10)
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+      ROW ROW_2 [6 6]
+        LicensePlateTypeCode (Dropdown | attributeTypeId=LICENSE_PLATE_TYPE_CODE | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2025)
+      ROW ROW_3 [4 4 4]
+        VehicleIdentificationNumber (Text | maxLen=17)
+        VehicleMakeCode (Text | maxLen=4)
+        VehicleYear (Text | maxLen=4)
+      ROW ROW_4 [6 6]
+        OwnerFirstName (Text)
+        OwnerLastName (Text)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "ROOT_CARD"
+      ROW ROW_1 [6 6]
+        OperatorLicenseNumber (Text)
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+      ROW ROW_2 [6 6]
+        NameFirst (Text)
+        NameLast (Text)
+      ROW ROW_3 [3 3 6]
+        NameMiddle (Text)
+        NameSuffix (Text)
+        BirthDate (FormDate)
+      ROW ROW_4 [6 6]
+        SexCode (Dropdown | attributeTypeId=SEX)
+        RaceCode (Dropdown | attributeTypeId=RACE)
+      ROW ROW_5 [6 6]
+        PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "ROOT_CARD"
+      ROW ROW_1 [6 6]
+        SerialNumber (Text | maxLen=20)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+      ROW ROW_2 [6 6]
+        FirearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NJ_NIBRS)
+        FirearmCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NJ_NIBRS)
+      ROW ROW_3 [6 6]
+        FirearmModel (Text)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "ROOT_CARD"
+      ROW ROW_1 [6 6]
+        BoatHullIdNumber (Text | maxLen=20)
+        RegistrationNumber (Text | maxLen=8)
+      ROW ROW_2 [6]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    SocialSecurityNumber -> ssn
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    RaceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    SexCode -> sexAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleYear -> vehicle.yearOfManufacture
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    VehicleMakeCode -> vehicle.makeNcicCode
+    VehicleModelCode -> vehicle.modelNcicCode
+    LicensePlateNumber -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    OwnerFirstName -> propertyPersons[0].person.firstName
+    OwnerLastName -> propertyPersons[0].person.lastName
+

@@ -1,0 +1,72 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : QW+OLN (Wanted person by OLN plus name co-fire)
+Test type  : T5 -- cross-QIDM co-fire test
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  NameLast                  SGAMBELLONE        typed
+  NameFirst                 ROB                typed
+  OperatorLicenseNumber     12345685           typed
+  ImageIndicator            Y                  default (initialValue — Person=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     dlNumber=12345685, lastName=Sgambellone, firstName=Rob
+
+  2) WantedPersonQuery (QW+OLN)
+     Transaction: 01KQJ90VDC2KR2K0AAFMM8HVJ6
+     Name=SGAMBELLONE,ROB, OperatorLicenseNumber=12345685, ImageIndicator=Y
+
+  3) DriverLicenseQuery (FDQ+OLN)
+     Transaction: 01KQJ90T2BRGTCF4TT273331EK
+     OperatorLicenseNumber=12345685, ImageIndicator=Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combinations fired: FDQ+OLN (DL) + QW+OLN (Wanted co-fire) + RMS
+  Reason: Name+OLN populated = QW+OLN fires (set=Name+OLN)
+          OLN populated, no State = FDQ+OLN fires (set=OLN)
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Name                      YES    SGAMBELLONE,ROB FormatStringRuleHandler(',') — QW only
+  OperatorLicenseNumber     YES    12345685        mapped — FDQ + QW
+  ImageIndicator            YES    Y               Person default — FDQ + QW
+  BirthDate                 NO     --              sourceField empty (not needed for QW+OLN)
+  SexCode                   NO     --              sourceField empty
+  State                     NO     --              sourceField empty (FL in-state path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: dlNumber=12345685, lastName=Sgambellone, firstName=Rob
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QW+OLN co-fire confirmed; FDQ+OLN + QW+OLN + RMS = 3 requests
+  Detail: Both QW combo paths now confirmed (QW+Name in Test 38, QW+OLN here).
+          Name appears in QW XML but NOT in FDQ XML (FDQ+OLN only needs OLN).
+          RMS receives both dlNumber and name fields.
+

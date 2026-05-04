@@ -1,0 +1,413 @@
+CONNECTCIC ANTI-PATTERNS
+=========================
+Things confirmed broken or dead-end. Do not attempt these.
+Last updated: 2026-04-29 (AP #27: phantom RMS combo field reference)
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, LA_LETTS_OFML
+
+Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
+
+================================================================================
+1. attributeTypeId='STATE' in a QIDM sourceField
+================================================================================
+  What: mapping a SelH/Sel with attributeTypeId='STATE' to a QIDM attribute
+    (i.e., using fieldId='RegistrationState' as a QIDM sourceField).
+  Why it fails: platform serializes the internal numeric attribute ID into outbound XML
+    instead of the 2-letter state code. Provider receives "69509884952" instead of "NY".
+  Correct approach: Use InpH (hidden FormInput) with initialValue='NY'. Map that
+    fieldId as the QIDM sourceField -> targetField='State'.
+    Keep SelH 'RegistrationState' (attributeTypeId=STATE) in the form for RMS only --
+    DO NOT include it in the QIDM.
+  Confirmed broken: NJ, NY (multiple versions)
+
+================================================================================
+2. attributeTypeId='SEX' WITHOUT codeTypeProvider='NIBRS'
+================================================================================
+  What: using attributeTypeId='SEX' on a SexCode FormSelect without also adding
+    codeTypeProvider='NIBRS' on the form field AND the QIDM SexCode attribute.
+  Why it fails: form stores numeric attribute ID; QIDM without codeTypeProvider writes
+    the raw ID into outbound XML. CommSys receives <SexCode>69509891711</SexCode>.
+  Correct approach: attributeTypeId='SEX' + codeTypeProvider='NIBRS' on BOTH the form
+    field AND the QIDM SexCode attribute. See SEX_CODE_PATTERN.txt.
+  Confirmed broken (attributeTypeId alone): NY v1.2, NJ various versions
+  Confirmed working (with codeTypeProvider=NIBRS): AZ_AZDPS, NJ_NJCJIS v3.25 (2026-04-17)
+
+  NOTE: codeTypeCategory=NIBRS_SEX satisfies CommSys only. It does NOT work for RMS
+    sex filtering (useAttributeId=true cannot convert NIBRS code to attribute ID).
+    Use the attributeTypeId + codeTypeProvider pattern when both CommSys and RMS are needed.
+
+================================================================================
+3. attributeTypeId='RACE' on a form field that sends to outbound XML
+================================================================================
+  What: using attributeTypeId='RACE' on a RaceCode FormSelect.
+  Why it fails: same numeric ID issue as STATE and SEX. Sends internal ID.
+  Correct approach: codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'
+  Confirmed broken: NY v1.11 (discovered during T15/T16 investigation, fixed v1.12)
+
+================================================================================
+4. IgnoreUserValueRuleHandler for state field hardcoding
+================================================================================
+  What: using IgnoreUserValueRuleHandler with a fixed state code as the argument,
+    hoping to override the sourceField value with a hardcoded 'NJ' or 'NY'.
+  Why it fails: handler passes the raw sourceField value through unchanged when
+    the field is populated. The argument is not substituted.
+  Correct approach: InpH hidden FormInput with initialValue='NY'.
+  Confirmed dead end: NJ v3.10
+
+================================================================================
+5. Two QIDM combinations sharing the same keyReference in one QIDM
+================================================================================
+  What: creating a single QIDM with two or more combinations that both use
+    the same keyReference (e.g., two combinations both with keyReference='DLIC').
+  Why it fails: platform rejects the import with:
+    "Duplicate key references found in query input data mapping"
+  Correct approach: use DISTINCT keyRefs for the two combinations.
+    keyRef is a platform-internal identifier only -- the provider (NYSPIN, NJCJIS, etc.)
+    does NOT receive or validate the keyRef. Provider routes by field content in the XML.
+    Invented keyRefs (e.g., DALL + DALH) are valid as long as they are unique within the QIDM.
+    CONFIRMED: NY v1.19 (2026-04-15) -- DALL (OLN path) + DALH (Name path) in single QIDM.
+    Import accepted; both paths fire correctly; autoSelect=true works.
+  If invented keyRef not desired: separate transaction (DGRP/NyNyspinDriverLicenseNameQuery)
+  Confirmed broken: NY v1.13 (duplicate DLIC, 2026-04-14); NY v1.18a (duplicate DALL, 2026-04-15)
+
+================================================================================
+6. YES_NO codeTypeCategory
+================================================================================
+  What: using codeTypeCategory='YES_NO' on a FormSelect.
+  Why it fails: not a recognized platform code type. Results in empty dropdown.
+  Correct approach: codeTypeCategory='YES_NO_UNKNOWN', codeTypeSource='NCIC'
+  Confirmed broken: NJ v1.7
+
+================================================================================
+7. NCIC_ARTICLE_TYPE with codeTypeSource='NCIC'
+================================================================================
+  What: using codeTypeCategory='NCIC_ARTICLE_TYPE', codeTypeSource='NCIC'.
+  Why it fails: empty dropdown. NCIC_ARTICLE_TYPE lives under CA_CLETS in this system.
+  Correct approach: codeTypeSource='CA_CLETS'
+  Confirmed broken: NJ v1.0
+
+================================================================================
+8. fieldId='LicensePlateNumber' (generic) expecting RMS plate search
+================================================================================
+  What: using fieldId='LicensePlateNumber' on a plate input field.
+  Why it fails: RMS elastic search does not recognize this fieldId for plate queries.
+    Plate query fires to CommSys correctly but RMS does not return local records.
+  Correct approach: fieldId='LicensePlateNumberIn' (in-state) or
+    fieldId='LicensePlateNumberOut' (OOS). QIDM targetField stays 'LicensePlateNumber'.
+  Confirmed broken: NJ v3.13
+
+================================================================================
+9. QUERYINPUTFORM in RMS bundle
+================================================================================
+  What: adding a QUERYINPUTFORM to the RMS bundle (or any bundle other than ENTITIES).
+  Why it fails: causes each entity form card to render twice in the UI.
+  Correct approach: QUERYINPUTFORM belongs ONLY in the ENTITIES bundle (provider=MARK43).
+  Confirmed broken: NJ (multiple versions)
+
+================================================================================
+10. Merging two QIDMs when they share a keyReference
+================================================================================
+  What: attempting to resolve LIMITATION #2 by combining two split QIDMs into one
+    when those QIDMs have combinations with the same keyReference.
+  Why it fails: the merge itself causes import error #5 above (duplicate keyRef).
+  Correct approach: use separate transaction or DH-suffix pattern (see #5 above).
+  Confirmed broken: NY v1.13
+
+================================================================================
+11. useAttributeId=True with codeTypeCategory fields in RMS QIDM
+================================================================================
+  What: adding useAttributeId=True to an RMS QIDM combination mapping,
+    expecting the platform to convert NIBRS code values (M/F/U) to attribute IDs.
+  Why it fails: useAttributeId=True only passes through attribute IDs that are
+    already resolved (e.g., from a field with attributeTypeId=STATE). It does NOT
+    perform code-to-ID conversion. RMS receives the raw code and returns 400 error.
+  Correct approach: remove sexAttrId/sexAttrIds/useAttributeId from RMS person combos.
+    Sex/race filtering is available through CommSys XML only.
+  Confirmed broken: NJ v3.20 (2026-04-10)
+
+================================================================================
+12. Split QIDM configs without verifying LIMITATION #2 first
+================================================================================
+  What: creating two separate QIDMs for the same (targetEntity, query) and
+    assuming both will fire depending on what the user fills in.
+  Why it fails: platform picks one QIDM per (targetEntity, query) pair. The second
+    is silently ignored regardless of which form fields are populated.
+  Correct approach: always run the LIMITATION #2 check (cold start T1 and T2 for
+    each path) before committing to split architecture. Default to merged unless
+    keyRefs are duplicated.
+  Confirmed broken: NJ v2.6, NY v1.8-v1.10, NY v1.18b (FL_FCIC two-QIDM pattern, 2026-04-15 --
+    autoSelect=false does not bypass LIMITATION #2; second QIDM not surfaced, first QIDM
+    autoSelect=true broken by presence of second QIDM targeting same query)
+
+================================================================================
+13. NIBRS_RACE under codeTypeSource='NCIC'
+================================================================================
+  What: using codeTypeCategory='NIBRS_RACE', codeTypeSource='NCIC'.
+  Why it fails: NCIC gives an empty dropdown for NIBRS_RACE.
+  Correct approach: codeTypeSource='NIBRS'
+  Confirmed broken: NJ NCIC_CODE_SOURCE_TEST (2026-04-10)
+
+================================================================================
+14. queriesToDeselect alone on a shared form where DL and DH share OLN fieldId
+================================================================================
+  What: adding queriesToDeselect to DL and DH QIDMs but not using DH-suffix fieldIds,
+    when both QIDMs reference the same OperatorLicenseNumber fieldId in their set[].
+  Why it fails: when the officer enters an OLN, BOTH QIDMs match simultaneously.
+    DL tries to deselect DH and DH tries to deselect DL. Mutual deselect deadlocks --
+    result is undefined (neither fires, or unpredictable firing order).
+  Correct approach on a SHARED form: always pair queriesToDeselect with DH-suffix fieldIds.
+    Give DH form field OperatorLicenseNumberDH (different fieldId). DH QIDM set[] references
+    OperatorLicenseNumberDH. DL QIDM set[] references OperatorLicenseNumber. They cannot
+    match simultaneously. Source: FL_FCIC.json.
+  On SEPARATE forms (distinct QIFs): SAME PROBLEM CONFIRMED (NY v1.15 live test, 2026-04-14).
+    Platform uses a shared field-value pool for ALL Person QIDMs regardless of active sub-form.
+    Mutual queriesToDeselect deadlocks even when DL and DH are on separate QIF sub-tabs.
+    See PLATFORM_LIMITATIONS.txt #26.
+  Resolution (v1.16): remove queriesToDeselect from DL QIDMs.
+    queriesToDeselect on DH QIDM also confirmed ineffective (T7a, 2026-04-14) -- DLIC still
+    co-fires from DH form despite DH deselecting it. Confirmed symmetric: queriesToDeselect
+    cannot prevent co-fire in either direction when shared field pool is active.
+    Embrace DLIC+DALL co-fire as correct workflow (comprehensive OLN search).
+    If true isolation needed: DH-suffix fieldIds (OperatorLicenseNumberDH on DH form + QIDM).
+
+================================================================================
+15. FormatStringRuleHandler argument count mismatch
+================================================================================
+  What: using arguments = @(' ',' ',' ') (3 separators) with only 2 sourceFields,
+    or arguments = @(' ') (1 separator) with 4 sourceFields.
+  Why it fails: argument count must equal sourceField count minus 1. Mismatch causes
+    malformed Name output in outbound XML.
+  Correct approach: count your sourceFields, then provide (count - 1) separator arguments.
+    2 fields (NameFirst + NameLast):                       arguments = @(' ')
+    4 fields (NameFirst + NameLast + NameMiddle + NameSuffix): arguments = @(' ',' ',' ')
+  Always check provider MetaData to confirm which Name fields are accepted.
+  NJ_NJCJIS: 2-field name (confirmed v3.23). NY_NYSPIN: 4-field name (confirmed v1.14).
+
+================================================================================
+16. Assuming separate QIF sub-forms isolate QIDM evaluation
+================================================================================
+  What: placing DL and DH on separate QUERYINPUTFORM sub-tabs (distinct QIFs under the
+    Person entity) and expecting the platform to evaluate each QIDM only when its
+    own sub-form is active.
+  Why it fails: CONFIRMED (NY v1.15 live test, 2026-04-14). The platform evaluates ALL
+    Person QIDMs from a single shared field-value pool regardless of which sub-form is
+    active. Entering OLN on the DL sub-form causes the DH QIDM to also match, and vice versa.
+    Mutual queriesToDeselect between DL and DH causes deadlock -- both checkboxes remain
+    checked, DH fires alongside DL.
+  Correct approach -- option A (embrace co-fire): remove queriesToDeselect from DL QIDMs.
+    DH fires as a co-query when OLN is entered (correct police workflow). Keep
+    queriesToDeselect on DH QIDM so the DH sub-form can suppress DL for specialized use.
+  Correct approach -- option B (true isolation): add OperatorLicenseNumberDH to the DH form
+    and DH QIDM set[]. DH set[] field is absent from the shared pool when only DL form
+    fields are populated. queriesToDeselect not needed -- isolation is structural.
+  Applied: NY_NYSPIN_EJUSTICE v1.17 uses Option B (OperatorLicenseNumberDH -- confirmed clean build).
+  Applied: NY_NYSPIN_EJUSTICE v1.16 used Option A (embraced co-fire as correct workflow).
+  Confirmed broken: NY v1.15 separate-form architecture with mutual queriesToDeselect.
+
+================================================================================
+17. Declaring a query path not implementable without exhausting all QIDM options
+================================================================================
+  What: seeing one blocker (e.g. LIMITATION #2 -- one QIDM per targetEntity+query) and
+    concluding the path is not implementable without checking whether a single QIDM with
+    multiple combinations could handle both paths, or whether DH-suffix fieldIds could
+    provide the required isolation.
+  Why it fails: LIMITATION #2 blocks TWO QIDMs for the same transaction, but one QIDM
+    with multiple combinations is not blocked -- as long as each combination has a distinct
+    keyReference (LIMITATION #21). The BoatQuery in every NY/NJ build demonstrates this:
+    one QIDM, four combinations (RVEH/RCAR/BVEH/BVIN). The reasoning gap is seeing
+    "can't split into two QIDMs" and stopping there.
+  Correct approach -- before declaring not implementable, check in order:
+    1. Can one QIDM cover both paths with multiple combinations + distinct keyRefs?
+       (Only blocked if both paths share the same keyRef -- e.g. both DALL.)
+    2. Can DH-suffix fieldIds (LIMITATION #25) give structural isolation so the QIDM
+       only fires when its own form is active?
+    3. Does an existing reference build (BoatQuery, NJ QIDM) already demonstrate the
+       pattern? Read the working analogues before reasoning from first principles.
+    4. Only after all three checks fail: declare not implementable and notify vendor.
+  UPDATE (NY v1.19, 2026-04-15): DH Name path WAS blocked by duplicate DALL, but resolved
+    by using invented distinct keyRefs (DALL OLN + DALH Name) in a single QIDM.
+    Provider does not validate keyRef -- routes by field content. Both paths confirmed working.
+  Confirmed dead end: duplicate DALL (v1.18a); two QIDMs (v1.18b LIMITATION #2).
+  Confirmed working: DALL+DALH single QIDM (v1.19).
+  Source: NY_NYSPIN_EJUSTICE v1.17-v1.19 investigation, 2026-04-14/15.
+
+================================================================================
+18. Removing RMS sex attribute without also removing SexCodeOOS from combinations
+================================================================================
+  What: when removing sex from the RMS Person QIDM (for instances where NIBRS
+    reverse-lookup is not supported), only filtering 'SexCode' from combination any[]
+    while leaving 'SexCodeOOS' in OOS combinations.
+  Why it fails: HIDLE's RMS Person QIDM has TWO sex attributes:
+    'sex'    -> sourceField=SexCode,    targetField=sexAttrId  (in-state combinations)
+    'sexOOS' -> sourceField=SexCodeOOS, targetField=sexAttrId  (OOS combinations)
+    The OOS combinations (driversLicenseNumberOOS, firstNameLastNameOOS, etc.) reference
+    'SexCodeOOS' in their any[] arrays. Removing the sexOOS attribute but leaving
+    'SexCodeOOS' in any[] causes import error:
+    "Missing attributes found in query input data mapping: [sexcodeoos]"
+  Correct approach: filter by targetField='sexAttrId' to remove BOTH sex attributes,
+    AND remove BOTH 'SexCode' AND 'SexCodeOOS' from all combination any[]/set[] arrays.
+    PowerShell pattern:
+      $rmsPersonQidm.attributes = @($rmsPersonQidm.attributes | Where-Object { $_.targetField -ne 'sexAttrId' })
+      foreach ($combo in $rmsPersonQidm.combinations) {
+          $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'SexCode' -and $_ -ne 'SexCodeOOS' })
+          $combo.requirements.set = @($combo.requirements.set | Where-Object { $_ -ne 'SexCode' -and $_ -ne 'SexCodeOOS' })
+      }
+  Confirmed broken: NY_NYSPIN_EJUSTICE v1.0 (2026-04-20).
+  Confirmed working: NY_NYSPIN_EJUSTICE v1.1 (2026-04-20).
+
+================================================================================
+19. Building multi-card or split-entity layout before Phase 1 standup is confirmed
+================================================================================
+  What: introducing multiple cards per QIF (multi-card) or multiple QIFs per entity
+    (split-entity) during the Phase 1 standup build, before all QIDM combinations
+    have been tested and confirmed working.
+  Why it fails: when a query path fails in Phase 2+ layout (multi-card or split-entity),
+    it is impossible to isolate whether the failure is a QIDM problem or a layout problem.
+    You end up debugging two variables simultaneously, which is slow and error-prone.
+    Additionally, building layout before confirming QIDMs creates unnecessary rework --
+    if a QIDM needs redesign, the layout work is wasted.
+    Specific failure modes observed:
+    - AZ v2.3 forms rendered but showed split entity and multi-card (wrong Phase 1 design).
+      Required complete rebuild from scratch (v1.0 Phase 1 = correct result).
+    - NJ v1.0-v1.6 multi-card variants abandoned. Single-card became the confirmed baseline.
+    - NY old build (v1.0-v1.21) built multi-card/split-entity before QIDMs confirmed.
+      Phase 1 reboot (2026-04-20) threw away all that work and started clean.
+  Correct approach:
+    Phase 1: single entity, single card per QIF. All fields on that card.
+    Phase 2: promote to multi-card only after Phase 1 standup passes 100%.
+    Phase 3: split entity only if Phase 2 reveals a genuine state model conflict.
+    Save <PROVIDER>_BASE.json after Phase 1 completes. This is the reference forever.
+  See BUILD_CHECKLIST.txt for the phase model and FORM_ARCHITECTURE.txt Section 2b.
+  Confirmed dead end: AZ_AZDPS v2.3 (2026-04-20), NJ v1.x (2026-04-20), NY old build.
+
+================================================================================
+20. Building BadgeNumber as a visible Inp without deciding auto-populate vs manual entry
+================================================================================
+  What: defaulting to Inp 'BadgeNumber' on all forms because it appears in the provider XML,
+    without asking whether it should be visible (officer types it) or hidden (auto-populated
+    from the officer's RMS profile via dexStateUserId).
+  Why it fails: if the deployment supports dexStateUserId (officer has badge/state ID in
+    RMS profile), a visible BadgeNumber field forces officers to type their badge on every
+    single query -- redundant, error-prone, and inconsistent with how ORI/Mnemonic work.
+    Discovered after AZ_AZDPS v1.0 was built with visible BadgeNumber on all 5 forms;
+    required a full rebuild to v1.1 to switch to dexStateUserId.
+  Correct approach:
+    1. When you see BadgeNumber (or equivalent identity field) in provider XML combinations,
+       STOP. Do not default to visible Inp.
+    2. Ask explicitly: "Should badge be typed by the officer or auto-filled from their profile?"
+    3. If auto-populated: use InpH 'dexStateUserId'; set QIDM sourceField = @('dexStateUserId');
+       update all combination set/any refs from 'BadgeNumber' to 'dexStateUserId'.
+    4. If visible: use Inp 'BadgeNumber' as normal.
+    This decision is in BUILD_CHECKLIST.txt (OPERATIONAL IDENTITY FIELDS) and
+    FIELD_RULES.txt Section 5. Ask it at the start of every new provider build.
+  Confirmed bad default: AZ_AZDPS v1.0 (2026-04-20) -- all 5 forms built with visible badge.
+  Confirmed correct: AZ_AZDPS v1.1 (2026-04-20) -- dexStateUserId hidden on all 5 forms.
+
+================================================================================
+21. templateColumns as STRING instead of ARRAY in QIF layout Row nodes
+================================================================================
+  What: serializing templateColumns as a space-delimited string (e.g., "6 6") instead of
+    an array of strings (e.g., ["6", "6"]) in Row node props.
+  Why it fails: Craft.js layout engine iterates templateColumns as an array to build CSS
+    grid-template-columns. A string breaks Array.map() or similar -- entities render briefly,
+    then the interface crashes with a JavaScript error. The error appears as "the whole module
+    that loads the json threw an error."
+  Correct approach: ALWAYS use array of strings: ["6", "6"], ["3", "3", "3", "3"], ["12"].
+    Reference NJ_NJCJIS.json or FL_FCIC_BASE.json for correct format.
+  Root cause: PowerShell/C# custom serializers that stringify arrays. JavaScriptSerializer
+    returns ArrayList which custom formatters may flatten to "elem1 elem2" instead of
+    preserving the array structure.
+  Confirmed broken: FL_FCIC v2.1_test, v2.1_CLEAN (2026-04-20) -- interface crash on load.
+  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+
+================================================================================
+22. maxLength as NUMBER instead of STRING in QIF layout FormInput props
+================================================================================
+  What: serializing maxLength as a JSON number (e.g., 20) instead of a string (e.g., "20")
+    in FormInput node props.
+  Why it fails: platform form input handlers expect string constraints. Numeric maxLength
+    may cause type coercion failures or silent constraint bypass.
+  Correct approach: ALWAYS use string: "maxLength": "20", NOT "maxLength": 20.
+    Reference NJ_NJCJIS.json or FL_FCIC_BASE.json for correct format.
+  Root cause: Same serializer issue as AP #21. C# int types serialize as JSON numbers.
+  Confirmed broken: FL_FCIC v2.1_test (2026-04-20) -- likely contributed to interface crash.
+  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+
+================================================================================
+23. autoSelect=true on MULTIPLE QIDMs targeting ONE QIF (single-form entity)
+================================================================================
+  What: setting autoSelect=true on two or more QIDMs that both target the same entity
+    when that entity has only ONE QIF (single form).
+  Why it fails: both QIDMs try to auto-select on form load. With queriesToDeselect,
+    they deselect each other creating a conflict. On separate QIFs (tabs) this works
+    because only one tab is active. On a single merged form, both fire simultaneously.
+  Correct approach: only ONE QIDM per entity should have autoSelect=true. Others should
+    be autoSelect=false (user manually selects). Match BASE export pattern.
+  Confirmed pattern: FL_FCIC_BASE.json has DL autoSelect=true, DH autoSelect=false.
+  Detection: Run connectcic-validator/validate.ps1 -- catches this as FAIL.
+
+================================================================================
+24. Using NCIC_FIREARM_MAKE codeTypeCategory for Vehicle Make
+================================================================================
+  What: using codeTypeCategory='NCIC_FIREARM_MAKE' on a VehicleMakeCode FormSelect dropdown
+    (or in a CommSys QIDM attribute) expecting it to contain vehicle manufacturers.
+  Why it fails: NCIC_FIREARM_MAKE contains FIREARM manufacturers only (Beretta, Colt, etc.),
+    NOT vehicle manufacturers (Ford, Chevy, etc.). No NCIC_VEHICLE_MAKE category exists on
+    the platform. HIDLE.json incorrectly uses NCIC_FIREARM_MAKE on VehicleMakeName in the
+    result QIDM (CommsysResultAttributeMappingRuleHandler) -- this is a HIDLE bug.
+  Correct approach: Use attributeTypeId='VEHICLE_MAKE' + codeTypeProvider='NCIC' on the form
+    for a dropdown of vehicle makes. Accept that this stores an attribute ID (works for RMS
+    makeNcicCode) but does NOT serialize to CommSys XML. Keep codeTypeProvider='NCIC' on the
+    QIDM attribute so the failed reverse-lookup causes graceful field omission rather than
+    sending a raw numeric attribute ID.
+  Confirmed broken: MK43RS 2026-04-24 -- NCIC_FIREARM_MAKE dropdown showed firearms, not vehicles.
+
+================================================================================
+25. Wrong queryLabel values (entity names, system names, generic labels)
+================================================================================
+  What: using queryLabel values like "Vehicle", "Person", "NCIC", or "Query" instead of
+    the standard labels defined in FIELD_RULES.txt Section 6.
+  Why it matters: queryLabel appears on result cards in the UI. Officers see "NCIC" for every
+    non-vehicle/non-person query instead of "Firearm", "Article", "Boat". Multiple queries with
+    the same label are indistinguishable in results.
+  Correct approach: Use the queryLabel standard:
+    VehicleRegistrationQuery -> "Vehicle Registration"
+    DriverLicenseQuery       -> "Driver License"
+    DriverHistoryQuery       -> "Driver History"
+    GunQuery                 -> "Firearm"
+    ArticleSingleQuery       -> "Article"
+    BoatQuery                -> "Boat"
+    RMS (all)                -> "RMS"
+  Label by what the officer is searching for, not by entity name or backend system.
+  Confirmed broken: NJ_NJCJIS had "Vehicle"/"Person"/"NCIC" -- fixed 2026-04-24.
+
+================================================================================
+26. Card title with non-ASCII characters (em dash, smart quotes, etc.)
+================================================================================
+  What: using Unicode characters like em dash (U+2014), en dash (U+2013), or smart quotes
+    in Card.props.title strings.
+  Why it fails: platform renders multi-byte UTF-8 characters as mojibake in card titles.
+    Em dash "—" renders as "â€"". Title becomes unreadable.
+  Correct approach: Use ASCII-only characters in card titles. Use hyphen-minus (U+002D)
+    instead of em dash. Use straight quotes (U+0022) instead of smart quotes.
+  Confirmed broken: NY_NYSPIN_EJUSTICE MC 2026-04-24 -- "OPTIONS — Leave blank" rendered as
+    "OPTIONS â€" Leave blank". Fixed by replacing with ASCII hyphen.
+
+================================================================================
+27. Phantom field reference in RMS QIDM combination set[]/any[]
+================================================================================
+  What: an RMS QIDM combination references a field name in set[] or any[] that has
+    no corresponding attribute definition in the same QIDM's attributes array.
+  Why it fails: platform validates that every combo field reference maps to a defined
+    attribute. Missing reference -> import error: "Missing attributes found in query
+    input data mapping: [fieldname]"
+  Common cause: copying CommSys QIDM combo field lists into RMS QIDM combos without
+    verifying each field has an RMS attribute. CommSys fields like LicensePlateYear have
+    no RMS elastic API equivalent (no vehicle.licensePlateYear target exists).
+  Correct approach: for every field in an RMS QIDM set[]/any[], confirm a matching
+    attribute with sourceField:[fieldname] exists in the same QIDM. If no valid RMS
+    targetField exists for that data, do not include it in the combo.
+  Also check: OwnerFirstName, OwnerLastName (from HIDLE) -- remove if no Owner fields
+    on the provider's Vehicle form (Patch 6). socialSecurityNumber on Person -- remove
+    if no SSN field (Patch 6).
+  Confirmed broken: LA_LETTS_OFML v1.0 (2026-04-29) -- LicensePlateYear in RMS Vehicle
+    combo any[] with no attribute. Import rejected until removed.

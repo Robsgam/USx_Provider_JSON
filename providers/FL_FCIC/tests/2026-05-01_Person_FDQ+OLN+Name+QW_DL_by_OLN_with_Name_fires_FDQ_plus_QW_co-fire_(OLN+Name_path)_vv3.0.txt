@@ -1,0 +1,91 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : FDQ+OLN + QW co-fire
+Test type  : T3 (co-fire verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     S123456789012      typed
+  RegistrationState         (empty)            --
+  ImageIndicator            Y                  default
+  NameLast                  SMITH              typed
+  NameFirst                 JOHN               typed
+  NameMiddle                (empty)            --
+  BirthDate                 (empty)            --
+  SexCode                   (empty)            --
+  NameSuffix                (empty)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (DriverLicenseQuery — auto-selected):
+    Transaction : 01KQJ1MC5K8F4RMEGV6TE9483N
+    MessageType : DriverLicenseQuery
+    keyReference: FDQOperatorLicenseNumber
+
+    Fields sent:
+      OperatorLicenseNumber  S123456789012
+      ImageIndicator         Y
+
+  Request 2 (WantedPersonQuery — co-fire):
+    Transaction : 01KQJ1MD8QBTMJM5Q2JP1WE73B
+    MessageType : WantedPersonQuery
+    keyReference: QWOperatorLicenseNumber
+
+    Fields sent:
+      OperatorLicenseNumber  S123456789012
+      Name                   SMITH,JOHN
+      ImageIndicator         Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  DL fires FDQ by OLN (priority combo — OLN before Name).
+  QW co-fires QWOperatorLicenseNumber: set=[NameLast, NameFirst, OperatorLicenseNumber] all satisfied.
+
+  Key observation: DL XML has OLN only (no Name — FDQ OLN combo doesn't include Name).
+  QW XML has both OLN + Name (QW OLN combo includes Name in its attributes).
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: Person by OLN + name
+  RMS request: {"elasticQuery":{"dlNumber":"s123456789012","lastName":"smith","firstName":"john"},"from":0,"size":50}
+  Response: No returns.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQ by OLN fires (priority), QW co-fires with OLN+Name, RMS fires with OLN+name. All 3 requests correct.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+DriverLicenseQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1MC5K8F4RMEGV6TE9483N"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KQJ1MC5K8F4RMEGV6TE9483N</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>S123456789012</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+WantedPersonQuery (co-fire):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1MD8QBTMJM5Q2JP1WE73B"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>WantedPersonQuery</MessageType><Id>01KQJ1MD8QBTMJM5Q2JP1WE73B</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>S123456789012</OperatorLicenseNumber><Name>SMITH,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"dlNumber":"s123456789012","lastName":"smith","firstName":"john"},"from":0,"size":50}
+Response: No returns.

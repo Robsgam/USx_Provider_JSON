@@ -1,0 +1,63 @@
+﻿FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : DQ+OLN+State (OOS DL by OLN with state)
+Test type  : T4 -- OOS path + RMS co-fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     3072349023         typed
+  RegistrationState         AL                 typed (dropdown, OOS)
+  ImageIndicator            Y                  default (initialValue — Person=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  2 REQUESTS FIRED:
+
+  1) RMS elasticQuery
+     dlNumber=3072349023, registrationStateAttrId=69510832211
+
+  2) DriverLicenseQuery (DQ)
+     Transaction: 01KQJ6ACH4CEK5VETB058CBD1K
+     OperatorLicenseNumber=3072349023, State=AL, ImageIndicator=Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQ+OLN+State (OOS DL path — State present = DQ priority over FDQ)
+  Reason: OperatorLicenseNumber+RegistrationState both populated (set[])
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber     YES    3072349023      mapped from OperatorLicenseNumber
+  State                     YES    AL              mapped from RegistrationState (OOS)
+  ImageIndicator            YES    Y               mapped from ImageIndicator (Person default)
+  Name                      NO     --              sourceField empty
+  BirthDate                 NO     --              sourceField empty
+  SexCode                   NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: YES — elasticQuery
+  RMS request fields: dlNumber=3072349023, registrationStateAttrId=69510832211
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DQ+OLN+State fired correctly; OOS path confirmed; RMS co-fire confirmed
+  Detail: State=AL routes to DQ (Nlets) instead of FDQ (FCIC). Person ImageIndicator=Y default.

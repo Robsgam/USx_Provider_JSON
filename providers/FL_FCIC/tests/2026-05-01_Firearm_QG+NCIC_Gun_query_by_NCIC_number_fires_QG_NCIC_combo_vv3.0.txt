@@ -1,0 +1,64 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Firearm
+Combo      : QG+NCIC
+Test type  : T2 (alternate combo)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  GunSerialNumber           (empty)            --
+  GunMake                   (empty)            --
+  NCICNumber                G123456789         typed
+  ProcessControlNumber      (empty)            --
+  ImageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (GunQuery):
+    Transaction : 01KQJ1ZNCC1KYGYMTNBCT28FDV
+    MessageType : GunQuery
+    keyReference: QGNCICNumber
+
+    Fields sent:
+      NCICNumber           G123456789
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QGNCICNumber (GunQuery)
+  Reason: set=[NCICNumber] satisfied
+
+  Alternate combo from Test 10 (Serial). Both QG combos confirmed working.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Firearm entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QG NCIC combo fires correctly with NCIC number only, ImageIndicator=N.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+GunQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1ZNCC1KYGYMTNBCT28FDV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KQJ1ZNCC1KYGYMTNBCT28FDV</Id><ImageIndicator>N</ImageIndicator><NCICNumber>G123456789</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

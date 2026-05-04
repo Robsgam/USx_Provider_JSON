@@ -1,0 +1,47 @@
+NJ_NJCJIS -- Split Entity Test Log
+Tab   : Person - NJ
+Tests : T22-T25
+Version: v3.16
+Date  : 2026-04-10
+Tester: Rob Sgambellone
+
+NOTE: State=NJ is hidden via dual-field pattern (SelH + InpH initialValue=NJ).
+      RMS DL search fires on dlNumber only -- no state filter (server-side limitation,
+      same root cause as OOS vehicle RMS state issue).
+
+================================================================================
+
+T22  OLN -- minimum (Image=Y default)                                   PASS
+  Sent : OperatorLicenseNumber(A1234567890), State(NJ), ImageIndicator(Y)
+  RMS  : {"elasticQuery":{"dlNumber":"a1234567890"}}
+  Notes: No Returns (test data -- expected)
+
+T23  OLN + Image N                                                       PASS
+  Sent : OperatorLicenseNumber(A1234567890), State(NJ), ImageIndicator(N)
+  RMS  : {"elasticQuery":{"dlNumber":"a1234567890"}}
+  Notes: No Returns (test data -- expected)
+T24  Name -- minimum                                                     PASS
+  Sent : Name(JOHN SMITH), BirthDate(01011985), State(NJ), ImageIndicator(Y)
+  RMS  : {"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1985-01-01"}}
+  Notes: Name concatenated correctly. RMS name/DOB search fires (better than expected).
+         No Returns (test data -- expected)
+T25  Name -- all fields                                                   PASS
+  Version: v3.21 (sex permanently removed from RMS QIDM)
+  Sent : Name(JOHN SMITH), BirthDate(01011985), State(NJ), ImageIndicator(Y), SexCode(M)
+  CommSys XML: <SexCode>M</SexCode> (correct -- NIBRS_SEX sends "M")
+  RMS  : {"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1985-01-01"}}
+         (no sexAttrId -- SERVER-SIDE LIMITATION, see below)
+  Notes: v3.17 attempt failed -- FormInput sent "M" but RMS 400 errored on sexAttrId="M"
+         v3.18 patched RMS person QIDM to remove sex attributes (no more 400 error)
+         v3.19 restored Sex as FormSelect with codeTypeCategory=NIBRS_SEX (found in FL_FCIC)
+         v3.20 tested useAttributeId=True with NIBRS_SEX "M" value -- RMS still received
+               sexAttrId:"M" and 400 errored. useAttributeId=True does NOT convert codes.
+         v3.21 Patch 3 permanently removes sexAttrId/useAttributeId from RMS person QIDM.
+         SERVER-SIDE LIMITATION: RMS sexAttrId requires numeric attribute ID. No config
+         mechanism converts a codeTypeCategory code value. Sex filters CommSys XML only.
+         No Returns (test data -- expected)
+
+================================================================================
+SUMMARY
+  T22-T25  ALL PASS (on v3.21)
+  Person - NJ tab: COMPLETE on v3.21

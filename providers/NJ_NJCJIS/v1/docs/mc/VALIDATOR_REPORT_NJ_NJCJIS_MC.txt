@@ -1,0 +1,67 @@
+﻿================================================================
+  Build Report: NJ_NJCJIS_MC
+  Source: NJ_NJCJIS_MC.json
+  Generated: 2026-04-28 13:50
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'NJ_NJCJIS': 8 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 8 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 10 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' -> Vehicle : 5 attrs, 2 combos
+  [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
+  [PASS] QIDM 'NJ_NJCJIS_GunQuery' -> Firearm : 3 attrs, 1 combos
+  [PASS] QIDM 'NJ_NJCJIS_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [PASS] QIDM 'NJ_NJCJIS_BoatQuery' -> Boat : 3 attrs, 2 combos
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs,  QIF(s)
+  [PASS] Person : 1 QIDMs,  QIF(s)
+  [PASS] Vehicle : 1 QIDMs,  QIF(s)
+  [PASS] Boat : 1 QIDMs,  QIF(s)
+  [PASS] Firearm : 1 QIDMs,  QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQ': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQN': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo 'DQN': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo 'DQ': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_GunQuery' combo 'QG': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_ArticleSingleQuery' combo 'QA': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'BQ': all set[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'BQN': all set[] fields resolvable
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 38 PASS / 0 FAIL / 0 WARN
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  Ready for import.
+

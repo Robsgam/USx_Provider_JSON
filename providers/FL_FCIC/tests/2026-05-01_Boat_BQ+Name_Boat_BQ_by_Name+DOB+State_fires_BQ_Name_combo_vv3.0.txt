@@ -1,0 +1,76 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Boat
+Combo      : BQ+Name
+Test type  : T3 (BQ name combo)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                       Value              Source
+  --------------------------  -----------------  --------------------------------
+  RegistrationNumber          (empty)            --
+  BoatHullIdNumber            FLH12345A999       typed
+  RegistrationState           MO                 dropdown selection
+  DecalNumber                 (empty)            --
+  TitleLienInformation        (empty)            --
+  CoastGuardDocumentNumber    (empty)            --
+  NCICNumber                  (empty)            --
+  ProcessControlNumber        (empty)            --
+  NameLast                    SMITH              typed
+  NameFirst                   JOHN               typed
+  BirthDate                   01/01/1985         typed
+  ImageIndicator              N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (BoatQuery):
+    Transaction : 01KQJ1T63KVNZWE9VXMW12ZKYM
+    MessageType : BoatQuery
+    keyReference: BQName
+
+    Fields sent:
+      Name                 SMITH,JOHN
+      BirthDate            19850101
+      State                MO
+      BoatHullIdNumber     FLH12345A999
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: BQName (BoatQuery)
+  Reason: set=[BirthDate, NameLast, NameFirst, RegistrationState] satisfied,
+          any=[BoatHullIdNumber] satisfied (Hull provided)
+
+  Name formatted as SMITH,JOHN (FL comma pattern). Date as 19850101 (yyyyMMdd).
+  Hull included in XML because it's populated (any[] field).
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Boat entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: BQ Name combo fires correctly with Name+DOB+State+Hull. Name/date formatting correct (FL patterns).
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+BoatQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ1T63KVNZWE9VXMW12ZKYM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KQJ1T63KVNZWE9VXMW12ZKYM</Id><BoatHullIdNumber>FLH12345A999</BoatHullIdNumber><ImageIndicator>N</ImageIndicator><State>MO</State><BirthDate>19850101</BirthDate><Name>SMITH,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

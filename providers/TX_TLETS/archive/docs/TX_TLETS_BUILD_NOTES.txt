@@ -1,0 +1,42 @@
+TX_TLETS -- Build Notes
+=======================
+Provider: TX_TLETS
+State: Texas
+Network: TLETS (Texas Law Enforcement Telecommunications System)
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+2026-04-23  queryLabel standardization (direct JSON edit)
+--------------------------------------------------------------------------------
+CHANGED : ArticleSingleQuery "Article Query"->"Article", BoatQuery "Boat Query"->"Boat",
+          GunQuery "Firearm Query"->"Firearm".
+REASON  : KB queryLabel standard adopted across all providers. Labels must describe
+          what the officer searches for, not append "Query" or use system names.
+          Standard: VehicleRegistrationQuery="Vehicle Registration",
+          DriverLicenseQuery="Driver License", GunQuery="Firearm",
+          ArticleSingleQuery="Article", BoatQuery="Boat".
+          Applied to AZ, FL, NY, TX in same session.
+SCOPE   : TX_TLETS_BASE.json queryLabel fields only. No rebuild, no QIDM changes.
+
+--------------------------------------------------------------------------------
+v1.0  2026-04-21
+--------------------------------------------------------------------------------
+CHANGED : Initial project standup. TX_TLETS.json placed into structured repo.
+REASON  : Establishing TX_TLETS as a tracked ConnectCIC JSON project following
+          the FL_FCIC / NY_NYSPIN_EJUSTICE / NJ_NJCJIS / AZ_AZDPS baseline standard.
+
+Structure created:
+  TX_TLETS.json                        -- working JSON (v1.0)
+  phases/01_standup/                   -- initial snapshot + PHASE_NOTES
+  docs/                                -- STATUS, BUILD_NOTES, LIMITATIONS stubs
+  scripts/                             -- validate, bump_version, inspect_layout,
+                                          new_test_log, build stub
+  source/                              -- for TX_TLETS spec docs (PDF/XML)
+
+Next steps:
+  1. Import TX_TLETS.json into ConnectCIC (fresh import).
+  2. Verify all 5 entity forms render.
+  3. Run through TEST MATRIX in docs/TX_TLETS_STATUS.txt.
+  4. Log results to phases/01_standup/logs/.
+  5. Review SexCode and State field configurations against KB patterns.
+  6. Add TX_TLETS source XML/PDF to source/ directory.

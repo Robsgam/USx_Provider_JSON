@@ -1,0 +1,331 @@
+CONNECTCIC FORM ARCHITECTURE
+==============================
+Design rules for QUERYINPUTFORM (entity form) configurations.
+Last updated: 2026-04-20
+Source: NJ_NJCJIS (v1.7), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v1.0), FL_FCIC (2026-04-10)
+
+================================================================================
+SECTION 1 -- FORM STRUCTURE
+================================================================================
+
+  Each QUERYINPUTFORM targets one entity (Vehicle, Person, Boat, Firearm, Article).
+  Multiple QIFs can target the same entity (e.g., Vehicle-NY and Vehicle-OOS).
+  Platform groups all QIFs sharing a targetEntity into one tab/display group.
+
+  Required QIF properties:
+    type          'QUERYINPUTFORM'
+    name          unique name (e.g., 'ENTITY_Vehicle_NY')
+    label         display label (e.g., 'Vehicle - NY')
+    targetEntity  entity name ('Vehicle','Person','Boat','Firearm','Article')
+    provider      'MARK43'
+    layout        object with default, CAD_DISPATCH, FIRST_RESPONDER variants
+
+  ENTITIES bundle order array:
+    Use targetEntity VALUES (not entity names, not config names).
+    Example: @('Vehicle','Person','Firearm','Article','Boat')
+    Confirmed: NJ + NY -- using entity names or config names does NOT produce
+    correct display order. targetEntity values are required.
+
+================================================================================
+SECTION 2 -- LAYOUT STRUCTURE
+================================================================================
+
+  All three layout variants required: default, CAD_DISPATCH, FIRST_RESPONDER.
+  CAD_DISPATCH: same as default with CONTEXT_INFO_CARD (CAD unit + event dropdowns) prepended.
+  FIRST_RESPONDER: same as CAD_DISPATCH.
+
+  Node hierarchy:
+    ROOT -> FORM_ROOT (Form, hidePageItems=true, layout='page')
+         -> ROOT_PAGE (Page, title='Page 1')
+         -> CARD_xxx (Card, optional title)
+            -> ROW_xxx (Row, templateColumns=[...])
+               -> FIELD_xxx (FormInput / FormSelect / FormDate / etc.)
+
+  Multi-card layout: one card per query path (OLN card, Name/DOB card, etc.)
+  BuildMultiCardLayout helper builds this automatically from cardDefs array.
+
+================================================================================
+SECTION 2b -- BUILD PHASE MODEL: SINGLE-CARD → MULTI-CARD → SPLIT ENTITY
+================================================================================
+
+  PHASE 1 (standup): Always single card.
+    Every QIF gets exactly one card. ALL fields for that entity on that card.
+    Goal: confirm all query paths and QIDM combinations before introducing layout complexity.
+    This is the only baseline that isolates QIDM problems from layout problems cleanly.
+    CONFIRMED baseline: NJ_NJCJIS v1.7 (2026-04-20) -- 25/25 PASS, all entities, single-card.
+    Save a <PROVIDER>_BASE.json copy when Phase 1 standup is complete.
+
+  PHASE 2: Multi-card (one card per search path).
+    Promote from single-card AFTER Phase 1 standup passes 100%.
+    Entities with 2+ distinct search paths get one card per path.
+    QIDM does NOT change -- layout only.
+    Retest only affected entities. QIDM issues will not appear (already confirmed).
+
+    Which entities benefit from multi-card:
+      PROMOTE:  Any entity where two paths use mutually exclusive required fields
+                (Plate vs VIN, OLN vs Name+DOB). Multi-card prevents accidental
+                dual-population and gives operators clear search path navigation.
+      SKIP:     Entities with one required field set (Firearm: Serial only; Article:
+                Serial+Type). No structural search path separation to offer.
+
+    Card titles: use ALL CAPS (platform renders plain text only).
+      Good: 'DRIVER LICENSE - LICENSE NUMBER', 'VEHICLE SEARCH - PLATE'
+      Bad:  'OLN search', 'Search by plate'
+
+    RegistrationState on multi-card forms:
+      If state is needed on multiple cards (e.g. Person OLN card + Name card),
+      put RegistrationState on both cards. Same fieldId -- shared field pool keeps them
+      in sync. Operator sets state once; it carries to all cards.
+
+  PHASE 3: Split entity (multiple QIFs per targetEntity -- most providers never need this).
+    Promote from multi-card ONLY when multi-card reveals a genuine state model conflict:
+    two search paths require fundamentally different hidden state fields that cannot
+    coexist in one QIF.
+    If NCIC state pattern is confirmed on this instance: Phase 3 is rarely needed.
+
+    Use SPLIT ENTITY when:
+      - In-state path needs SelH+InpH (dual-field); OOS path needs visible RegistrationStateOOS.
+      - Paths are logically different enough to be navigated as separate sub-tabs.
+    Use MULTI-CARD (stay in Phase 2) when:
+      - Paths share a common state model (NCIC pattern covers both).
+      - Paths are logically grouped under one query type.
+
+  WHY THIS ORDER (lessons from NJ v1.0--v1.6 and NY v1.0--v1.10):
+    NJ built multi-card and split-entity before QIDM combinations were confirmed.
+    When OOS state failed it was impossible to isolate: was it the QIDM, the layout,
+    or the state model? Re-investigating took multiple phases and dead ends.
+    NY added multi-card during standup. Same confusion.
+    Single-card Phase 1 eliminates layout as a variable. Every failure in Phase 1
+    is unambiguously a QIDM or combination problem -- not a form layout problem.
+
+  Decision reference for Person forms (after Phase 1):
+    DL only (NJ pattern): one QIF, two cards (OLN + Name)
+    DL + DH (AZ/FL pattern): single QIF with all paths on one card; Phase 2 may split cards
+    DL + DH + WINQ/MINQ (AZ pattern): all on single Person QIF; cross-fire prevented by
+      distinct required fields (RaceCode in ACQW set[], Age in ACQM set[], DH-suffix fieldIds)
+    DL + DH (separate QIFs, NY pre-2026-04-20 pattern): CONFIRMED layout complexity
+      causes QIDM isolation issues (LIMITATION #26 shared field pool). Prefer single QIF.
+
+  templateColumns: array of strings representing grid column widths.
+    Single field: ['12']   (full width)
+    Two fields:   ['6','6']  (equal width)
+    Three fields: ['4','4','4'] or ['3','3','6'] (asymmetric)
+    Four fields:  ['3','3','3','3']
+
+================================================================================
+SECTION 3 -- STATE FIELD PATTERNS
+================================================================================
+
+  Two confirmed patterns for state handling. Choose based on instance support.
+  ALWAYS test NCIC pattern on first import (ST-1: in-state query) before relying on it.
+  If CommSys <State> element is absent on ST-1, fall back to dual-field pattern (Section 3a).
+
+--------------------------------------------------------------------------------
+SECTION 3a -- NCIC STATE PATTERN (preferred when supported)
+--------------------------------------------------------------------------------
+
+  CONFIRMED: NJ_NJCJIS (2026-04-20), AZ_AZDPS (2026-04-20)
+  UNCONFIRMED: FL, NY -- test before using.
+
+  Single visible Sel 'RegistrationState':
+    type: FormSelect
+    props: { fieldId: 'RegistrationState', attributeTypeId: 'STATE', initialValue: '<state>' }
+    visible: true (operator selects any state including OOS)
+
+  CommSys QIDM State attribute:
+    { name: 'State', sourceField: ['RegistrationState'], targetField: 'State',
+      codeTypeProvider: 'NCIC', size: 2 }
+    NCIC reverse-lookup: stored attr ID -> 2-letter state code for outbound XML.
+
+  CommSys combination any[]:
+    'RegistrationState'  (form fieldId, not attribute name 'State')
+
+  RMS QIDM (HIDLE default -- no changes needed):
+    useAttributeId=true + AttributeArrayWrapperRuleHandler
+    Sends registrationStateAttrIds:[<dynamic attr id>] for any selected state.
+
+  RESULT: One field. Operator selects once. CommSys receives <State>XX</State> and RMS
+    receives registrationStateAttrIds:[<attr id>] for any state including OOS.
+  No hidden fields. No dual-field architecture needed.
+
+  INSTANCE TEST: Run in-state plate query first. If <State>XX</State> present → NCIC confirmed.
+    If absent → codeTypeProvider=NCIC not registered for state on this instance.
+    Fall back to Section 3b.
+
+--------------------------------------------------------------------------------
+SECTION 3b -- DUAL-FIELD STATE PATTERN (fallback when NCIC not supported)
+--------------------------------------------------------------------------------
+
+  Use when NCIC state pattern is not confirmed on the target instance.
+  Two hidden fields -- both in the form layout, both hidden=true:
+
+  FIELD 1: SelH 'RegistrationState'
+    type: FormSelect
+    hidden: true
+    props: { fieldId: 'RegistrationState', attributeTypeId: 'STATE', initialValue: 'NY' }
+    Purpose: RMS reads fieldId='RegistrationState' and gets the attribute ID for state filtering.
+    Rule: DO NOT add to QIDM. Must not reach outbound XML.
+
+  FIELD 2: InpH 'RegistrationStateNY' (or 'RegistrationStateNJ', etc.)
+    type: FormInput
+    hidden: true
+    props: { fieldId: 'RegistrationStateNY', initialValue: 'NY' }
+    Purpose: QIDM sourceField -> targetField='State'. Sends literal 'NY' to outbound XML.
+    Rule: Add to QIDM as an attribute with targetField='State'.
+
+  DO NOT use attributeTypeId='STATE' on a field that is mapped in the QIDM.
+  DO NOT use InpH for the RMS field -- RMS needs attributeTypeId=STATE to recognize the value.
+  LIMITATION: OOS state not achievable for RMS with this pattern. See LIMITATION #6.
+
+================================================================================
+SECTION 4 -- OOS STATE FIELD PATTERN
+================================================================================
+
+  One visible dropdown:
+    Sel 'RegistrationStateOOS'
+    codeTypeCategory='NJ_NIBRS_STATE'  codeTypeSource='NJ_NIBRS'
+    No attributeTypeId -- does not interact with RMS state attribute lookup.
+
+  Add to QIDM with targetField='State' (or provider's XML element name).
+  RMS fires without state filter on OOS queries -- this is expected (LIMITATION #6).
+
+================================================================================
+SECTION 5 -- KNOWN FORM FIELD PATTERNS PER ENTITY
+================================================================================
+
+  VEHICLE
+  -------
+  Two valid approaches for plate fieldIds. Choose based on provider requirements.
+
+  APPROACH A: Shared plate fieldId (NY v1.11 pattern -- recommended when OOS doesn't need state)
+    Both Vehicle-NY and Vehicle-OOS forms use fieldId='LicensePlateNumberIn' for plate.
+    RVEH combination: set=['LicensePlateNumberIn'] -- fires from either form.
+    OOS form: State is optional in RVEH (OOS plate search without state filter).
+    Vehicle-NY hidden fields: RegistrationState (SelH), RegistrationStateNY (InpH)
+    Vehicle-OOS visible field: RegistrationStateOOS (Sel, optional)
+    Advantage: simpler QIDM -- one RVEH combination covers both forms.
+    Confirmed: NY v1.11-v1.15 T1-T4 all PASS.
+
+  APPROACH B: Separate plate fieldIds (NJ pattern -- when NJ and OOS combos must be distinct)
+    Vehicle-NJ form uses fieldId='LicensePlateNumberIn' for plate.
+    Vehicle-OOS form uses fieldId='LicensePlateNumberOut' for plate.
+    QIDM has separate combinations:
+      RQ_NJ: set=['LicensePlateNumberIn','RegistrationStateNJ'] (NJ plate, state required)
+      RQ:    set=['LicensePlateNumberOut','RegistrationStateOOS'] (OOS plate, state required)
+    Advantage: distinguishes NJ vs OOS plate by fieldId; state is required in set[] for each.
+    Confirmed: NJ v3.23 all plate tests PASS.
+
+  Both approaches keep all combinations in ONE merged QIDM (avoids LIMITATION #2).
+  Both require RegistrationState SelH (for RMS) and RegistrationStateNJ/NY InpH (for XML).
+
+  Common fields (both approaches):
+    LicensePlateTypeCode: FormSelect, codeTypeCategory='NCIC_LICENSE_PLATE_TYPE', NCIC
+    LicensePlateYear: FormInput (4 chars)
+    VehicleIdentificationNumber: FormInput, maxLength=20
+    VehicleMakeCode: field purpose unconfirmed for outbound XML -- use FormInput as fallback
+    VehicleYear: FormInput, initialValue=current year
+      NOTE: Update initialValue='YYYY' at the start of each new year. Hardcoded value
+      will be off by one year if not updated. NJ and NY both use this field.
+    ImageIndicator: FormSelect, YES_NO_UNKNOWN/NCIC, initialValue='N' (vehicle default)
+
+  PERSON -- Architecture decision: 2-form vs. 4-form
+  ----------------------------------------------------
+  Use 2-form (NJ pattern) when provider has DL only (no DH, no WINQ/MINQ).
+  Use 4-form (NY pattern) when provider has DL + DH + WINQ/MINQ.
+
+  SINGLE-FORM PATTERN -- Phase 1 standup (NJ v1.7, NY v1.1, AZ v1.0)
+    One Person QIF. Single card. ALL person query paths on that card.
+    DL (OLN, Name, SSN if applicable) + DH-suffix section + Wanted/Missing if applicable.
+    Cross-fire prevented by distinct required fields in each QIDM's set[]:
+      DL: OperatorLicenseNumber (or NameLast+NameFirst -- no DH-suffix)
+      DH: OperatorLicenseNumberDH (DH-suffix isolates from DL in shared field pool)
+      Wanted: RaceCode + SexCode (Wanted-specific -- differentiates from DL Name search)
+      Missing: Age (Missing-specific -- differentiates from Wanted and DL)
+    queriesToDeselect: NOT needed with DH-suffix isolation (structural, not behavioral).
+    autoSelect=true on all QIDMs for automatic firing.
+    This is Phase 1 baseline. Promote to multi-card in Phase 2 after 100% standup tests pass.
+    CONFIRMED WORKING: NJ v1.7 (25/25 PASS 2026-04-20), AZ v1.0 (forms rendered 2026-04-20).
+    Save <PROVIDER>_BASE.json after Phase 1 complete.
+
+  2-FORM PATTERN (NJ_NJCJIS Phase 2 -- after Phase 1 confirmed)
+    Two QIFs both targeting 'Person': Person - NJ + Person - OOS
+    Each QIF has two cards (OLN card + Name card).
+    NCIC state pattern (confirmed NJ): single visible RegistrationState handles both NJ and OOS.
+    No split is needed just for state when NCIC is confirmed.
+    Source: NJ_NJCJIS_BASE.json (v1.7 Phase 1 confirmed, Phase 2 TBD).
+
+  NOTE: The old NJ v3.23 "4-form" and NY v1.15-v1.19 "4-form" patterns (Vehicle-NJ/OOS,
+    Person-NJ/OOS, separate DH form) are RETIRED. They were built before Phase 1 standup
+    was established as the correct starting point. Those builds demonstrated the problems
+    (impossible-to-isolate failures) that led to the Phase 1 model. Do not use them as
+    templates. Use NJ_NJCJIS_BASE.json (Phase 1 v1.7) as the reference.
+
+    QIDM wiring for single-form (CONFIRMED NJ v1.7, AZ v1.0):
+      VehicleRegistrationQuery   -- autoSelect=true
+      DriverLicenseQuery (OLN)   -- autoSelect=true, NO queriesToDeselect
+      DriverLicenseQuery (Name)  -- autoSelect=true, NO queriesToDeselect
+      DriverHistoryQuery (DALL+DALH) -- autoSelect=true, single QIDM, DH-suffix isolation
+        DALL: set=[OperatorLicenseNumberDH]           fires OLN DH
+        DALH (or KQH for AZ): set=[NameLastDH,NameFirstDH,...]  fires Name DH
+
+    PLATFORM BEHAVIOR (shared field pool -- LIMITATION #26):
+      Platform evaluates ALL Person QIDMs from one shared field-value pool regardless of
+      which card is active. queriesToDeselect is ineffective in both directions (CONFIRMED v1.16).
+      DH co-fires with DL on OLN entry = correct police workflow (comprehensive results).
+      DH-suffix fieldIds (OperatorLicenseNumberDH) provide structural isolation:
+        DL QIDM set[] references OperatorLicenseNumber (no DH-suffix).
+        DH QIDM set[] references OperatorLicenseNumberDH (absent from DL sections).
+        Cross-fire structurally impossible in either direction.
+      See PLATFORM_LIMITATIONS.txt #26.
+
+  SexCode: INSTANCE-SPECIFIC -- see SEX_CODE_PATTERN.txt for full decision tree.
+    Confirmed NIBRS reverse-lookup (NJ, AZ):
+      Form: FormSelect attributeTypeId='SEX' codeTypeProvider='NIBRS'
+      CommSys QIDM: codeTypeProvider='NIBRS' (attr ID -> M/F/U)
+      RMS: useAttributeId=true, no ArrayWrapper
+    Unconfirmed / reverse-lookup broken (NY Phase 1, FL):
+      Form: FormSelect codeTypeCategory='NIBRS_SEX' codeTypeSource='NIBRS' (stores M/F/U text)
+      CommSys QIDM: no codeTypeProvider (passthrough)
+      RMS: sex attr removed entirely
+    Test on first import before choosing pattern.
+  RaceCode: FormSelect, codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'  (NCIC forms only)
+  BirthDate: FormDate -- date output format is PROVIDER-SPECIFIC (AZ=yyyyMMdd, NJ/NY=MMddyyyy).
+    Always check XML before setting CommsysParseDateRuleHandler arguments.
+  NameMiddle + NameSuffix: confirm per provider MetaData (NY: confirmed; NJ: 2-field only).
+
+  FIREARM
+  -------
+  GunSerialNumber: FormInput, maxLength from XML (NY=20)
+  GunMake: FormInput (no confirmed code list -- NY) or FormSelect NCIC_FIREARM_MAKE/NCIC (NJ)
+  GunCaliber: FormInput or FormSelect NCIC_FIREARM_CALIBER/NCIC
+  RelatedHitSearchIndicator: FormInput, maxLength=1 (Y-only flag, not FormSelect)
+  Note: NY provider uses 'GunSerialNumber' (NJ uses 'SerialNumber').
+
+  ARTICLE
+  -------
+  ArticleSerialNumber: FormInput, maxLength from XML
+  ArticleTypeCode: FormSelect, codeTypeCategory='NCIC_ARTICLE_TYPE', codeTypeSource='CA_CLETS'
+  ImageIndicator: FormSelect, YES_NO_UNKNOWN/NCIC, initialValue='Y'
+  RelatedHitSearchIndicator: FormInput, maxLength=1 (Y-only)
+  Note: NY uses 'ArticleSerialNumber' (NJ uses 'SerialNumber').
+
+  BOAT
+  ----
+  RegistrationNumber: FormInput
+  BoatHullIdNumber: FormInput
+  RegistrationStateOOS: Sel, codeTypeCategory='NJ_NIBRS_STATE', codeTypeSource='NJ_NIBRS'
+    No initialValue -- blank fires NY (RVEH/RCAR), selected state fires OOS (BVEH/BVIN).
+  ImageIndicator: FormSelect, YES_NO_UNKNOWN/NCIC
+
+================================================================================
+SECTION 6 -- ENTITIES BUNDLE ENTITY ORDER
+================================================================================
+
+  The ENTITIES bundle order.default array controls entity tab display order.
+  Must use targetEntity values -- not config names, not entity labels.
+  Standard orders:
+    default:          @('Person','Vehicle','Firearm','Article','Boat')
+    CAD_DISPATCH:     @('Vehicle','Person','Firearm','Article','Boat')
+    FIRST_RESPONDER:  @('Vehicle','Person','Firearm','Article','Boat')
+  Confirmed: NJ + NY -- any other value type produces incorrect/alphabetical sort.
+  Always check NJ_NJCJIS.json as reference before debugging entity order.

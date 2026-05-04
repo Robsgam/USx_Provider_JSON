@@ -1,0 +1,37 @@
+FL_FCIC Phase 2 -- Split Entity Person
+========================================
+Started: 2026-04-21
+Base: FL_FCIC_v2.2_test.json (v2.2, merged Person 6-card -- FDQName CONFIRMED)
+
+CHANGES FROM v2.2
+  - Person QIF split into 3 QIFs (all target entity=Person):
+    ENTITY_Person_FL   [Person - FL]             3 cards: Image, OLN, Name+DOB+Sex
+    ENTITY_Person_OOS  [Person - Out of State]   3 cards: State+Image, OLN, Name+DOB+Sex
+    ENTITY_Person_DH   [Person - Driver History]  3 cards: State(FL)+Purpose+Attention+Image, DH-OLN, DH-Name
+  - Vehicle, Firearm, Article, Boat: unchanged from v2.2
+
+CRITICAL DESIGN DIFFERENCE FROM v2.0
+  v2.0 used OOS-suffix field IDs (OperatorLicenseNumberOOS, SexCodeOOS, etc.)
+  This created duplicate targetFields in the DLQ QIDM, breaking codeTypeProvider.
+
+  v2.3 uses SAME base field IDs on both FL and OOS forms.
+  No OOS-suffix. No duplicate targetFields. DLQ QIDM unchanged (13 attrs, 6 combos).
+  Routing works via RegistrationState presence:
+    Person-FL: no State field → only FDQ/QW combos match
+    Person-OOS: has State → DQ combos match when State filled
+    Person-DH: DH-suffix fields + State(FL) → only KQ combos match
+
+QIDM NOTES
+  DLQ: 13 attrs, 6 combos, autoSelect=True (fires on FL + OOS tabs)
+  DHQ: 10 attrs, 2 combos, autoSelect=False (user manually selects on DH tab)
+  RMS: Dead OOS-suffix attrs removed (was 16, now 11). DH-suffix attrs kept.
+
+VALIDATION
+  v2.3: 67 PASS / 0 FAIL / 0 WARN
+  Build script: build_v2.3_split.ps1
+
+BUILDS
+  FL_FCIC_v2.3_2026-04-21.json   67 PASS  Split entity Person (3 QIFs)
+
+TESTS
+  PENDING -- requires live FL environment access for import testing

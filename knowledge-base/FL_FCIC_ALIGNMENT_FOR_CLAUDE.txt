@@ -1,0 +1,433 @@
+FL_FCIC -- ALIGNMENT BRIEF FOR CLAUDE INSTANCE
+================================================
+Created: 2026-04-14
+Purpose: Bring a new Claude instance up to speed on FL_FCIC so it can continue
+         build work aligned with the NY_NYSPIN_EJUSTICE baseline standard.
+         Do NOT modify FL_FCIC project files unless explicitly instructed.
+         Read this file first, then read the KB before touching anything.
+
+================================================================================
+1. WHERE EVERYTHING LIVES
+================================================================================
+
+  Working directory:
+    C:\Users\RobSgambellone\.local\bin\
+
+  FL_FCIC project folder:
+    C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\
+
+  Knowledge Base (read this before every session):
+    C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB/knowledge-base\README.txt
+      -- index of all 9 KB files; read README first, then the relevant files
+      -- Files: BUNDLE_ARCHITECTURE.txt, PLATFORM_LIMITATIONS.txt, FIELD_RULES.txt,
+                QIDM_ARCHITECTURE.txt, FORM_ARCHITECTURE.txt, IMPORT_ERRORS.txt,
+                ANTI_PATTERNS.txt, BUILD_CHECKLIST.txt, RMS_PATCHES.txt
+
+  Workflow reference:
+    C:\Users\RobSgambellone\.local\bin\CONNECTCIC_BUILD_GUIDE.txt
+      -- prompt templates, build script pattern, test sequences, doc workflow
+
+  Baseline reference (the standard FL_FCIC should match):
+    C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\
+      -- NY_NYSPIN_EJUSTICE is the NEW BASELINE for all ConnectCIC provider JSON work
+      -- Read NY docs/NY_NYSPIN_EJUSTICE_STATUS.txt for current state
+      -- Read NY scripts/build_ny_nyspin_ejustice.ps1 for script pattern to follow
+
+  NJ reference (NJ-specific patterns):
+    C:\Users\RobSgambellone\.local\bin\NJ_NJCJIS\
+      -- Use for dual-field state pattern, split-entity decisions, RMS plate fix
+
+================================================================================
+2. FL_FCIC CURRENT STATE (as of 2026-04-14)
+================================================================================
+
+  Base build version:    v1.4  (FL_FCIC_BASE.json)
+  Entity-split version:  v2.0+ (FL_FCIC.json -- applies changes 1-34 on top of v1.4)
+  Build date:            2026-04-07 (v1.4), 2026-04-09 (v2.0 entity split started)
+  Test status:           NOT TESTED against live system
+  Import status:         NOT IMPORTED to ConnectCIC
+
+  Active output files:
+    FL_FCIC_CLEANUP_TEMP\FL_FCIC_BASE.json  -- v1.4 base (25 configs)
+    FL_FCIC_CLEANUP_TEMP\FL_FCIC.json       -- v2.0+ entity-split working file
+
+  NOTE: The project lives in FL_FCIC_CLEANUP_TEMP\ (not a final folder name).
+        This reflects that cleanup/alignment work is in progress.
+
+================================================================================
+3. BUNDLE STRUCTURE (v1.4 BASE)
+================================================================================
+
+  Three bundles in FL_FCIC_BASE.json:
+
+  Bundle 1 -- FL_FCIC (25 configurations, provider=FL_FCIC):
+    FL_FCIC                               AUTHENTICATION
+    FL_FCIC_QueryMessageFormat            QUERYMESSAGEFORMAT
+    FL_FCIC_Results                       QUERYRESULTDATAMAPPING
+    FL_FCIC_GunQuery                      QUERYINPUTDATAMAPPING  QG (SerialNumber)
+    FL_FCIC_GunNCICQuery                  QUERYINPUTDATAMAPPING  QG (NCICNumber)
+    FL_FCIC_GunProcessControlQuery        QUERYINPUTDATAMAPPING  QG (ProcessControlNumber)
+    FL_FCIC_VehicleRegistrationQuery      QUERYINPUTDATAMAPPING  FRQ, QV, RQ (Plate)
+    FL_FCIC_VehicleVINQuery               QUERYINPUTDATAMAPPING  FRQ, QV (VIN)
+    FL_FCIC_VehicleDecalQuery             QUERYINPUTDATAMAPPING  FRQ (Decal)
+    FL_FCIC_VehicleTitleLienQuery         QUERYINPUTDATAMAPPING  FRQ (TitleLien)
+    FL_FCIC_DriverLicenseOLN              QUERYINPUTDATAMAPPING  FDQ, DQ (OLN)
+    FL_FCIC_DriverLicenseQuery            QUERYINPUTDATAMAPPING  FDQ, QW, DQ (Name)
+    FL_FCIC_DriverHistoryQuery            QUERYINPUTDATAMAPPING  KQ (Name)
+    FL_FCIC_DriverHistoryOLN              QUERYINPUTDATAMAPPING  KQ (OLN)
+    FL_FCIC_BoatQuery                     QUERYINPUTDATAMAPPING  FBQ (RegNumber)
+    FL_FCIC_BoatHullQuery                 QUERYINPUTDATAMAPPING  FBQ, QB (HullId)
+    FL_FCIC_BoatDecalQuery                QUERYINPUTDATAMAPPING  FBQ (Decal)
+    FL_FCIC_BoatTitleLienQuery            QUERYINPUTDATAMAPPING  FBQ (TitleLien)
+    FL_FCIC_BoatCoastGuardQuery           QUERYINPUTDATAMAPPING  QB (CoastGuardDocumentNumber)
+    FL_FCIC_BoatNCICQuery                 QUERYINPUTDATAMAPPING  QB (NCICNumber)
+    FL_FCIC_BoatProcessControlQuery       QUERYINPUTDATAMAPPING  QB (ProcessControlNumber)
+    FL_FCIC_ArticleSingleQuery            QUERYINPUTDATAMAPPING  QA (SerialNumber)
+    FL_FCIC_ArticleOwnerQuery             QUERYINPUTDATAMAPPING  QA (OwnerAppliedNumber)
+    FL_FCIC_ArticleNCICQuery              QUERYINPUTDATAMAPPING  QA (NCICNumber)
+    FL_FCIC_ArticleProcessControlQuery    QUERYINPUTDATAMAPPING  QA (ProcessControlNumber)
+
+  Bundle 2 -- ENTITIES (5 configurations, provider=MARK43):
+    Vehicle                               QUERYINPUTFORM
+    Person                                QUERYINPUTFORM
+    Firearm                               QUERYINPUTFORM
+    Article                               QUERYINPUTFORM
+    Boat                                  QUERYINPUTFORM
+
+  Bundle 3 -- RMS (6 configurations, cloned unchanged from HIDLE.json):
+    Shared RMS configurations -- not FL-specific.
+
+================================================================================
+4. FL-SPECIFIC TRANSACTION KEYS
+================================================================================
+
+  Key   Description
+  ----  ------------------------------------------------------------------
+  FRQ   FL FCIC Vehicle Registration (DHSMV/DMVR -- FL-only)
+  FDQ   FL DHSMV Driver License Query (FL-only)
+  KQ    FL Driver History Query (FL-specific; requires State=FL)
+  FBQ   FL FCIC Boat Query (DMVR -- FL-only)
+
+  Standard NCIC/Nlets keys also in FL_FCIC:
+  Key   Description
+  ----  ------------------------------------------------------------------
+  QG    NCIC Gun Query
+  QA    NCIC Article Query
+  QV    NCIC Stolen Vehicle Query
+  QW    NCIC Wanted Person / FCIC
+  RQ    Nlets Vehicle Registration (out-of-state; requires State)
+  DQ    Nlets Driver License Query (out-of-state; requires State)
+  QB    NCIC Stolen Boat Query
+
+  KQ (Driver History) is FL-ONLY -- no equivalent in NJ, NY, or most other providers.
+  FIRST check the FL_FCIC.xml for every key; do not assume a key exists.
+
+================================================================================
+5. ENTITY FORM FIELDS (v1.4 single-card layout)
+================================================================================
+
+  Vehicle:
+    Plate / PlateType / PlateYear / Decal /
+    VIN / Make / Year /
+    RegistrationState (NO default -- blank = FL-only FRQ, filled = out-of-state RQ)
+    TitleLienInformation
+
+  Person:
+    OLN / RegistrationState (default=FL) /
+    NameFirst / NameLast / NameMiddle / NameSuffix / BirthDate /
+    SexCode (FormSelect, attributeTypeId='SEX' -- SEE BUG BELOW) /
+    PurposeCode (1 char) / Attention (30 chars)
+    Note: PurposeCode and Attention are required by DriverHistoryQuery (KQ)
+
+  Firearm:
+    SerialNumber / GunMake (FormInput, free text) /
+    NCICNumber / ProcessControlNumber
+
+  Article:
+    SerialNumber / ArticleTypeCode (FormSelect, codeTypeSource=CA_CLETS) /
+    OwnerAppliedNumber / NCICNumber / ProcessControlNumber
+
+  Boat:
+    RegNumber / RegistrationState (default=FL) / HullId /
+    CoastGuardDocumentNumber / NCICNumber /
+    TitleLienInformation / DecalNumber / ProcessControlNumber
+
+================================================================================
+6. CONFIRMED BUGS -- MUST FIX BEFORE IMPORT
+================================================================================
+
+  BUG #1 -- SexCode uses attributeTypeId='SEX' (CONFIRMED BUG)
+  -----------------------------------------------------------------
+  Location: build_fl_fcic.ps1 line ~928:
+      Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX' } 'ROW_3'
+
+  Also in:
+    - change8_instate_subcards.ps1 (InState form)
+    - change9_oos_subcards.ps1 (OOS form, SexCodeOOS)
+    - change12_add_person_dh.ps1 (DH form, SexCodeDH)
+
+  What it does wrong:
+    attributeTypeId='SEX' causes the platform to send the internal numeric
+    attribute ID instead of the human-readable sex code (M/F/U).
+    The outbound XML receives a number like "69509884952" instead of "M".
+
+  Fix (apply everywhere SexCode appears):
+    Remove: @{ attributeTypeId = 'SEX' }
+    Add:    @{ codeTypeCategory = 'NIBRS_SEX'; codeTypeSource = 'NIBRS' }
+
+  This was fixed in both NJ_NJCJIS and NY_NYSPIN_EJUSTICE. Same bug.
+  See KB: PLATFORM_LIMITATIONS.txt #19, ANTI_PATTERNS.txt #2, FIELD_RULES.txt
+
+  BUG #2 -- queriesToDeselect confirmed ineffective (PLATFORM-WIDE)
+  -----------------------------------------------------------------
+  v1.4 added autoSelect + queriesToDeselect to DL/DH mappings.
+  Platform live testing (NY v1.15/v1.16) confirmed: queriesToDeselect
+  CANNOT prevent co-fire. Platform evaluates all matching QIDMs simultaneously
+  from a shared field pool BEFORE deselect can intercept.
+
+  Current state: v1.4 has queriesToDeselect on ALL 4 DL/DH QIDMs.
+  Correct design (NY baseline): remove queriesToDeselect from DL QIDMs;
+  keep on DH QIDM only (no isolation benefit but no harm).
+
+  See KB: PLATFORM_LIMITATIONS.txt #26, QIDM_ARCHITECTURE.txt Scenario B,
+          ANTI_PATTERNS.txt #14 and #16.
+
+================================================================================
+7. ENTITY SPLIT (v2.0) -- WHAT WAS DONE AND WHAT IS INCOMPLETE
+================================================================================
+
+  v2.0 entity split applied via changes 1-34 in FL_FCIC_CLEANUP_TEMP\changes\
+  The changes/ directory contains scripts 8-29 (changes 1-7, 17, 30-34 are
+  documented in docs/FL_FCIC_BUILD_LIST.txt but not present as .ps1 files).
+
+  What entity split created (Person split into InState / OOS / DH sub-tabs):
+    InState entity: CARD_INSTATE_DL (OLN path) + CARD_INSTATE_NAM (Name path)
+    OOS entity:     OOS sub-cards with SexCodeOOS fieldId suffix
+    DH sub-form:    CARD_DH_NAM with SexCodeDH, BirthDateDH fieldId suffixes
+
+  Vehicle was also split:
+    Vehicle InState: plate-centric layout
+    Vehicle OOS:     OOS variant with different State field behavior
+
+  IMPORTANT: The entity-split work in v2.0 is on top of v1.4. The changes/
+  scripts load from a HARDCODED PATH: 'D:\JSON BACKUP\FL_FCIC.json'
+  This path does NOT exist on this machine. The scripts cannot be run
+  directly -- they need the path updated to:
+    C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\FL_FCIC.json
+
+================================================================================
+8. HARDCODED PATH PROBLEMS IN SCRIPTS
+================================================================================
+
+  build_fl_fcic.ps1 line 8:
+    $DIR = "C:\Users\Gordon Hallof\FL_FCIC"
+    >> WRONG PATH -- must be updated to current machine path
+
+  ALL scripts in changes/ directory:
+    Hardcode 'D:\JSON BACKUP\FL_FCIC.json' as input
+    >> Must be updated to correct path before any change script can run
+
+  inspect_*.ps1 scripts:
+    Also hardcode D:\JSON BACKUP\ path
+    >> Update before use
+
+  The NY baseline pattern (build_ny_nyspin_ejustice.ps1) uses:
+    $DIR = "C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE"
+  Apply the same pattern to FL_FCIC.
+
+================================================================================
+9. WHAT FL_FCIC IS MISSING vs NY BASELINE
+================================================================================
+
+  NY has these scripts; FL_FCIC does not:
+
+  validate_ny_nyspin_ejustice.ps1
+    -- Validates JSON structure (bundle count, config types, keyReferences)
+    -- Run after every build to catch structural errors before import
+    -- Create an equivalent: validate_fl_fcic.ps1
+
+  new_test_log.ps1
+    -- Scaffolds a new test log file with standard header
+    -- Saves to the correct phase folder automatically
+    -- Create an equivalent: new_test_log_fl_fcic.ps1
+
+  NY has these docs; FL_FCIC has partial equivalents:
+    NY: NY_NYSPIN_EJUSTICE_STATUS.txt     FL: docs\STATUS.txt (outdated, v1.4 only)
+    NY: NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt FL: docs\BUILD_NOTES.txt (exists)
+    NY: phases\02_person\PHASE_NOTES.txt   FL: phases\ (no per-entity phase notes)
+    NY: phases\02_person\logs\            FL: phases\ (no logs subfolder structure)
+
+================================================================================
+10. PHASE FOLDER STRUCTURE -- WHAT SHOULD EXIST (NY BASELINE)
+================================================================================
+
+  NY pattern (replicate for FL_FCIC):
+    phases\
+      02_person\
+        PHASE_NOTES.txt    -- test history, key findings, all test results
+        logs\              -- one log file per test session
+      03_vehicle\
+        PHASE_NOTES.txt
+        logs\
+      04_firearm\
+        PHASE_NOTES.txt
+        logs\
+      05_article\
+        PHASE_NOTES.txt
+        logs\
+      06_boat\
+        PHASE_NOTES.txt
+        logs\
+
+  FL_FCIC current phases\ content:
+    phases\FL_FCIC_v2.0_2026-04-09.json  -- just a versioned snapshot
+
+  ALL phase folders and PHASE_NOTES.txt files need to be created.
+
+  Log file naming convention (from NY/NJ):
+    YYYY-MM-DD_EntityQuery_T#-T#_vX.X.txt
+    Example: 2026-04-14_DriverLicense_T1-T3_v1.4.txt
+
+================================================================================
+11. FL-SPECIFIC DESIGN DECISIONS (do not change without understanding why)
+================================================================================
+
+  Vehicle RegistrationState -- NO initialValue:
+    Blank = FL-only (FRQ fires); filled = out-of-state (RQ fires).
+    NJ/NY use dual-field state (SelH hidden + InpH initialValue). FL does NOT --
+    FL uses a visible State dropdown, blank=FL, no hidden state needed.
+    Reason: FRQ+RQ routing controlled by whether State is populated.
+    DO NOT add initialValue='FL' unless you confirm this doesn't break RQ routing.
+
+  BoatHullIdNumber maxLength=62:
+    FL spec specifies 62-char hull ID. NJ/NY use shorter. Do not shorten.
+
+  GunCaliber: NOT in FL_FCIC.xml spec:
+    FL XML has no GunCaliber field. NJ has it as FormInput. Do not add.
+
+  KQ (Driver History) requires State:
+    KQ always sends State=FL. Person form has RegistrationState with default FL.
+    If entity split moves DH to its own form, that form needs State populated.
+
+  FIRST_RESPONDER layout:
+    FL_FCIC includes FIRST_RESPONDER as a third layout variant alongside
+    default and CAD_DISPATCH. Platform recognition of FIRST_RESPONDER as a
+    key is UNCONFIRMED. NJ/NY also include it. Do not remove until confirmed.
+
+  Article: codeTypeSource=CA_CLETS (same as all providers):
+    NCIC_ARTICLE_TYPE lives under CA_CLETS, not NCIC. Confirmed platform-wide.
+    See KB PLATFORM_LIMITATIONS.txt #17.
+
+  BoatQuery keyRef disambiguation:
+    BQ vs BQN are shared with VehicleRegistrationQuery in some providers.
+    FL uses FBQ+QB -- no disambiguation conflict. This is FL-specific.
+
+================================================================================
+12. WHAT THE NY BASELINE STANDARD REQUIRES
+================================================================================
+
+  To bring FL_FCIC to NY baseline standard, complete these tasks (in order):
+
+  TASK 1 -- Fix build script path and rebuild
+    Update $DIR in build_fl_fcic.ps1 to correct path.
+    Rebuild FL_FCIC_BASE.json from scratch with fixed path.
+
+  TASK 2 -- Fix SexCode bug (BUG #1 above)
+    In build_fl_fcic.ps1 and all change scripts:
+    Replace: @{ attributeTypeId = 'SEX' }
+    With:    @{ codeTypeCategory = 'NIBRS_SEX'; codeTypeSource = 'NIBRS' }
+    Affects: Person (main form), InState, OOS, DH sub-forms.
+
+  TASK 3 -- Fix queriesToDeselect (BUG #2 above)
+    In build_fl_fcic.ps1:
+    Remove queriesToDeselect from DL QIDMs (DriverLicenseOLN, DriverLicenseQuery).
+    Keep queriesToDeselect on DH QIDMs (DriverHistoryQuery, DriverHistoryOLN).
+    Update queryLabels to match NY pattern (e.g. 'Driver License (OLN)').
+
+  TASK 4 -- Fix hardcoded paths in change scripts
+    Update D:\JSON BACKUP\ to C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\
+    in ALL scripts in changes\ and scripts\.
+
+  TASK 5 -- Create validate_fl_fcic.ps1
+    Port from validate_ny_nyspin_ejustice.ps1. Adjust for FL bundle names and counts.
+    Save to: FL_FCIC_CLEANUP_TEMP\scripts\validate_fl_fcic.ps1
+
+  TASK 6 -- Create new_test_log_fl_fcic.ps1
+    Port from NY equivalent. Adjust paths to FL_FCIC_CLEANUP_TEMP\phases\.
+
+  TASK 7 -- Create phase folder structure
+    Create phases\02_person\, 03_vehicle\, 04_firearm\, 05_article\, 06_boat\
+    Each with logs\ subfolder and stub PHASE_NOTES.txt.
+
+  TASK 8 -- Consolidate build approach
+    FL currently uses two files (FL_FCIC_BASE.json + entity-split changes/).
+    NY uses a SINGLE versioned build script that outputs one JSON.
+    Goal: port to single build_fl_fcic.ps1 that builds the full split-entity
+    FL_FCIC.json in one pass (like NY's build_ny_nyspin_ejustice.ps1).
+    This eliminates the fragile chain of change scripts.
+
+  TASK 9 -- Update STATUS.txt and BUILD_NOTES.txt
+    Status should reflect current version, all open issues, and test status.
+    Use NY docs\NY_NYSPIN_EJUSTICE_STATUS.txt as the template.
+
+  TASK 10 -- Import and test
+    Import to ConnectCIC. Run each query type. Log to correct phase folders.
+    Update PHASE_NOTES.txt and STATUS.txt after each test.
+
+================================================================================
+13. KB FILES MOST RELEVANT TO FL_FCIC WORK
+================================================================================
+
+  Read these before starting:
+    ConnectCIC-KB/knowledge-base\README.txt          -- file index
+    ConnectCIC-KB/knowledge-base\BUNDLE_ARCHITECTURE.txt -- 3-bundle structure
+    ConnectCIC-KB/knowledge-base\PLATFORM_LIMITATIONS.txt -- all 26+ limitations
+      Key limitations for FL: #1, #2, #10, #17, #19, #21, #26
+    ConnectCIC-KB/knowledge-base\FIELD_RULES.txt     -- SexCode, State, dates
+    ConnectCIC-KB/knowledge-base\ANTI_PATTERNS.txt   -- bugs #2, #14, #16
+    ConnectCIC-KB/knowledge-base\BUILD_CHECKLIST.txt -- pre-import checklist
+
+  Limitation #19: attributeTypeId=SEX sends numeric ID (BUG #1 above)
+  Limitation #26: shared field pool -- queriesToDeselect ineffective (BUG #2)
+  Limitation #17: NCIC_ARTICLE_TYPE lives under CA_CLETS
+  Limitation #10: RelatedHitSearchIndicator must be FormInput maxLength=1
+  Limitation #2:  One QIDM per (targetEntity, query) pair -- confirmed
+  Limitation #1:  All populated QIDM attributes always sent
+
+================================================================================
+14. COMMUNICATION PROTOCOL
+================================================================================
+
+  User expectations for this project:
+  - Save test results and doc updates IMMEDIATELY after each test.
+    Do not batch. Do not wait to be asked.
+  - Logs go in the correct PHASE folder (02_person, 03_vehicle, etc.),
+    NOT in a generic logs\ or 03_updated_sources\ folder.
+  - Update STATUS.txt, PHASE_NOTES.txt, and BUILD_NOTES.txt in real time.
+  - All scripts and processes go into the KB when confirmed working.
+  - All projects (NJ, NY, FL) should look and behave identically.
+    Use NY as the standard; check NJ for NJ-specific patterns.
+
+================================================================================
+15. QUICK REFERENCE -- HOW TO START
+================================================================================
+
+  Step 1: Read the KB
+    Read C:\Users\RobSgambellone\.local\bin\ConnectCIC-KB/knowledge-base\README.txt
+    Then read PLATFORM_LIMITATIONS.txt and FIELD_RULES.txt at minimum.
+
+  Step 2: Read NY baseline
+    Read C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\docs\NY_NYSPIN_EJUSTICE_STATUS.txt
+    Read C:\Users\RobSgambellone\.local\bin\NY_NYSPIN_EJUSTICE\scripts\build_ny_nyspin_ejustice.ps1
+    This is the template for what FL_FCIC should look like.
+
+  Step 3: Read FL_FCIC current state
+    Read C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\docs\STATUS.txt
+    Read C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\docs\BUILD_NOTES.txt
+    Read C:\Users\RobSgambellone\.local\bin\FL_FCIC_CLEANUP_TEMP\scripts\build_fl_fcic.ps1
+
+  Step 4: Confirm task with user before touching any files.
+    Ask: "Which task from Section 12 should I start with?"
+    Do not assume -- FL_FCIC is being worked on by a separate person and
+    some tasks may already be in progress or have a different priority.
+

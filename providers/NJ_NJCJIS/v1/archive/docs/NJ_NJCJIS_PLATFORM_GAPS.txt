@@ -1,0 +1,249 @@
+NJ_NJCJIS -- Platform Gap Analysis
+=====================================
+Author  : Rob Sgambellone
+Date    : 2026-04-20
+Build   : NJ_NJCJIS v1.7
+Status  : GAP 1 RESOLVED (v1.7 -- NCIC pattern confirmed 2026-04-20)
+          GAP 2 -- Sex RMS instance-specific (still applies to other providers)
+
+PURPOSE
+-------
+This document explains in plain language the development decisions made during
+the NJ_NJCJIS ConnectCIC JSON build, why state handling became a blocker, and
+how it was resolved. Also documents the sex field pattern and its limitations.
+
+================================================================================
+BACKGROUND
+================================================================================
+
+A ConnectCIC JSON bundle tells the platform two things:
+
+  1. How to build the outbound XML message sent to the state system (CommSys).
+     Example: <State>PA</State>  <LicensePlateNumber>ABC123</LicensePlateNumber>
+
+  2. How to build the RMS elastic search query run against the local Mark43 RMS.
+     Example: {"vehicle":{"registrationStateAttrIds":[69509887513],"tag":"abc123"}}
+
+Both fire simultaneously on every query. Both must be correct for the query to
+return complete results.
+
+The problem: CommSys and RMS speak different languages for state.
+
+  CommSys needs: a 2-letter state code ("NJ", "PA", "NY")
+  RMS needs:     an internal platform attribute ID (69509884952 for NJ, different for each state)
+
+These are two different representations of the same value. The challenge was
+finding a single JSON configuration field that could supply both simultaneously.
+
+================================================================================
+WHAT WE BUILT AND TESTED
+================================================================================
+
+PHASE 1 -- Single-entity, single-card (v1.0 through v1.2)
+----------------------------------------------------------
+Built one form per entity (Vehicle, Person, Firearm, Article, Boat). All fields
+on one card. Used two state fields:
+
+  Visible dropdown "State" (codeTypeCategory=NJ_NIBRS_STATE):
+    Stores and sends a 2-letter code. CommSys receives <State>NJ</State>. Works.
+
+  Hidden dropdown "RegistrationState" (attributeTypeId=STATE, initialValue=NJ):
+    Stores the platform's internal attribute ID for NJ (69509884952).
+    RMS receives registrationStateAttrIds:[69509884952]. Works -- for NJ.
+
+All 9 standard query paths confirmed working for NJ. Sex confirmed working
+for both CommSys and RMS (see Sex section below).
+
+FINDING: The hidden RegistrationState field has a hardcoded initial value of NJ.
+It is completely independent of the visible State dropdown. Changing the visible
+dropdown to PA does not change what the hidden field sends to RMS. RMS always
+receives NJ's attribute ID regardless of what the operator selects.
+
+Result for OOS plate search (State=PA):
+  CommSys: <State>PA</State>  -- CORRECT
+  RMS:     registrationStateAttrIds:[69509884952]  -- WRONG (NJ, not PA)
+
+PHASE 2 -- Multi-card layout exploration (v1.3)
+-----------------------------------------------
+Reorganized forms into multiple cards per entity to improve operator navigation.
+Confirmed that field values defined on one card carry to other cards via the
+platform's shared field pool. No impact on the state problem.
+
+PHASE 3 -- OOS plate card separation (v1.4)
+-------------------------------------------
+Split Vehicle into three cards using LicensePlateNumberOut field for OOS plate.
+LicensePlateNumberOut triggers RMS licensePlateOutAndState combination which
+omits the state filter entirely for OOS plates.
+
+Result for OOS plate search (State=PA):
+  CommSys: <State>PA</State>  -- CORRECT
+  RMS:     no registrationStateAttrIds  -- no state filter at all
+
+User requirement: state must reach RMS for OOS searches. This approach rejected.
+
+PHASE 4 -- State reverse-lookup test (StateTest v1 -- NJ_NIBRS)
+----------------------------------------------------------------
+Attempted to make the visible State dropdown behave like the Sex field by using
+attributeTypeId=STATE + codeTypeProvider=NJ_NIBRS. The theory: if the platform
+can reverse-lookup a sex attribute ID back to "M"/"F"/"U" for CommSys, perhaps
+it can reverse-lookup a state attribute ID back to "NJ"/"PA" as well.
+
+Result:
+  RMS:     registrationStateAttrIds:[69509884952]  -- CORRECT (attr ID sent)
+  CommSys: <State> element absent  -- FAILED (reverse-lookup returned nothing)
+
+The state reverse-lookup is not supported on the NJ instance for
+codeTypeProvider=NJ_NIBRS. Unlike sex, the NJ_NIBRS mapping does not perform
+outbound attr ID -> code conversion.
+
+PHASE 5 -- Dual visible state fields (v1.5)
+--------------------------------------------
+Placed two visible dropdowns on the form: one standard State field (2-letter code,
+for CommSys) and one RegistrationState field (attributeTypeId=STATE, for RMS).
+Operator would need to set both to the same state for OOS searches.
+
+Result: technically functional but rejected -- requiring operators to select
+the same state twice is not an acceptable user experience for a law enforcement tool.
+
+PHASE 6 -- Revert to v1.6 single-card baseline; OOS confirmed as limitation
+---------------------------------------------------------------------------
+Reverted to single-card, single visible State field. Ran OOS test (PA) which
+confirmed CommSys correct but RMS always receives NJ attr ID. Engineering
+escalation initiated. Build placed on hold.
+
+PHASE 7 -- AZ_AZDPS investigation reveals NCIC pattern (StateTest v2)
+----------------------------------------------------------------------
+AZ_AZDPS uses a different codeTypeProvider: NCIC (not NJ_NIBRS). AZ confirmed:
+  Single visible RegistrationState (attributeTypeId=STATE, initialValue=AZ)
+  CommSys State attr: sourceField=RegistrationState, codeTypeProvider=NCIC
+    -> CommSys receives <State>AZ</State> for AZ, <State>CO</State> for CO
+  RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler
+    -> RMS receives registrationStateAttrIds:[AZ attr id] or [CO attr id] dynamically
+
+NJ had only tried codeTypeProvider=NJ_NIBRS (Option 1). NCIC had not been tested.
+StateTest v2 was built using codeTypeProvider=NCIC on NJ.
+
+PHASE 8 -- StateTest v2 confirmed (v1.7) -- GAP RESOLVED
+---------------------------------------------------------
+ST2-1: Vehicle | Plate: ABC123 | State: NJ
+  CommSys: <State>NJ</State>  -- CORRECT
+  RMS: registrationStateAttrIds:[69509884952]  -- CORRECT
+
+ST2-2: Vehicle | Plate: ABC123 | State: PA (OOS)
+  CommSys: <State>PA</State>  -- CORRECT
+  RMS: registrationStateAttrIds:[69509887513]  -- CORRECT (PA attr ID, not NJ)
+
+NCIC codeTypeProvider reverse-lookup IS supported on the NJ instance.
+The OOS state gap is fully resolved at the JSON configuration layer.
+No server-side engineering changes required.
+
+================================================================================
+RESOLUTION -- NCIC STATE PATTERN (v1.7)
+================================================================================
+
+The working pattern for state on NJ (and confirmed AZ):
+
+  FORM:
+    Sel 'RegistrationState' (visible, attributeTypeId='STATE', initialValue='NJ')
+    Operator selects any state from dropdown. Field stores platform attr ID internally.
+
+  CommSys QIDM State attribute:
+    sourceField=['RegistrationState'], targetField='State', codeTypeProvider='NCIC'
+    Platform reverse-lookups attr ID -> 2-letter state code for outbound XML.
+
+  CommSys combination any[]:
+    'RegistrationState'  (form fieldId, not attribute name)
+
+  RMS (from HIDLE template):
+    useAttributeId=true + AttributeArrayWrapperRuleHandler
+    sourceField=['RegistrationState'] -> targetField='vehicle.registrationStateAttrIds'
+    Dynamic attr ID wrapped in array: registrationStateAttrIds:[<attr id>]
+
+  RESULT: One field. One selection by the operator. Both CommSys and RMS receive
+  the correct state representation for any state, including OOS.
+
+WHY NJ_NIBRS FAILED BUT NCIC WORKS:
+  The platform's code type registry supports multiple codeTypeProviders. On the
+  NJ instance, NCIC-based state codes are registered with reverse-lookup support
+  (attr ID -> 2-letter NCIC state abbreviation). The NJ_NIBRS provider does not
+  have this registration for state codes on the NJ instance. This is an
+  instance-specific registration gap, not a general platform limitation.
+
+================================================================================
+SEX CODE LIMITATIONS -- RMS
+================================================================================
+
+Sex presents a similar but distinct problem. CommSys and RMS require different
+representations:
+
+  CommSys needs: NIBRS sex code ("M", "F", "U")
+  RMS needs:     platform attribute ID (Male=69509891711, Female=69509894381)
+
+WHAT WORKS (confirmed NJ v1.0, 2026-04-17):
+  Form field: attributeTypeId=SEX + codeTypeProvider=NIBRS
+    Stores the platform attribute ID internally, shows NIBRS codes in dropdown.
+  CommSys QIDM: codeTypeProvider=NIBRS
+    Reverse-lookups the attribute ID back to "M"/"F"/"U" for outbound XML.
+    THIS WORKS ON THE NJ INSTANCE.
+  RMS: useAttributeId=true (no ArrayWrapper rule handler)
+    Sends the attribute ID as a string (sexAttrId:"69509891711"). RMS accepts this.
+
+Result: CommSys receives <SexCode>F</SexCode> AND RMS receives sexAttrId:"69509894381".
+Both correct simultaneously. Sex is confirmed working on NJ.
+
+WHY SEX WORKS:
+  The codeTypeProvider=NIBRS reverse-lookup is supported by the NJ instance for
+  NIBRS sex codes (M/F/U). This is an instance-specific registration, not guaranteed
+  on all providers.
+
+IMPORTANT WARNINGS -- SEX FIELD:
+  DO NOT add AttributeArrayWrapperRuleHandler to the RMS sex attribute.
+    This wraps the attribute ID in an array (sexAttrId:[69509891711]) which RMS
+    rejects with a 400 error. HIDLE default (useAttributeId=true, no rule handler)
+    produces the correct string output.
+  DO NOT use codeTypeCategory=NIBRS_SEX on the form field.
+    This stores a string code ("M") instead of an attribute ID. When useAttributeId=true
+    tries to use a string as an attribute ID, the result is wrapped in an array -> 400 error.
+  The working pattern is fragile. Follow the confirmed configuration exactly.
+
+SEX RMS LIMITATION:
+  The above working pattern is specific to the NJ instance. On FL (FL_FCIC), the
+  codeTypeProvider=NIBRS reverse-lookup does not work and CommSys receives the raw
+  attribute ID in the XML, breaking the FL CommSys integration. Each instance must
+  be tested independently to confirm reverse-lookup support.
+
+================================================================================
+SUMMARY OF OPEN GAPS
+================================================================================
+
+  GAP 1 -- OOS RMS State (Vehicle, Person, Boat)
+    STATUS: RESOLVED (v1.7, 2026-04-20)
+    Resolution: Single visible RegistrationState (attributeTypeId=STATE) with
+    codeTypeProvider=NCIC on CommSys State attr. NCIC reverse-lookup IS supported
+    on NJ instance. CommSys and RMS both receive correct state for any operator
+    selection including OOS.
+
+  GAP 2 -- Sex RMS (instance-specific)
+    STATUS: OPEN for other providers
+    Sex works on NJ. Not confirmed on other instances (FL confirmed broken).
+    Each new provider instance must be tested before relying on the NIBRS reverse-lookup.
+    If reverse-lookup fails on a given instance, sex RMS filtering is not achievable
+    at the JSON config layer without a new engineering-provided rule handler.
+
+  GAP 3 -- State pattern portability (instance-specific)
+    STATUS: NEW -- requires verification per instance
+    NCIC state reverse-lookup confirmed on NJ and AZ. Not confirmed on FL, NY, or other
+    instances. Each provider must test the NCIC state pattern on import. If NCIC
+    reverse-lookup fails on a given instance, the OOS state gap re-opens for that provider.
+
+================================================================================
+FILES REFERENCED
+================================================================================
+
+  Build script : scripts/build_nj_njcjis.ps1
+  Current JSON : NJ_NJCJIS.json (v1.7)
+  SQVR         : docs/NJ_NJCJIS_SQVR_main.txt
+  KB reference : C:/Users/RobSgambellone/.local/bin/CONNECTCIC_KNOWLEDGE_BASE/
+                   PLATFORM_LIMITATIONS.txt  (LIMITATION #6 -- OOS state -- RESOLVED for NJ)
+                   PLATFORM_LIMITATIONS.txt  (LIMITATION #19 -- sex RMS)
+                   FORM_ARCHITECTURE.txt     (NCIC state pattern)

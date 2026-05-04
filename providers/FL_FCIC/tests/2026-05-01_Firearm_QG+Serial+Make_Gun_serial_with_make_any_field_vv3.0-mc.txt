@@ -1,0 +1,67 @@
+FL_FCIC MC vv3.0-mc -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_MC.json
+Entity     : Firearm
+Combo      : QG+Serial+Make (Gun serial with make any[] field)
+Test type  : T3 -- any[] field test
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  GunSerialNumber           1233245            typed
+  GunMake                   ABA                dropdown (GUN_MAKE/NCIC)
+  ImageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : [from XML]
+  MessageType : GunQuery
+  keyReference: QGGunSerialNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    GunSerialNumber      1233245
+    GunMake              ABA
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QG+Serial (GunMake is any[], not in set[])
+  Reason: GunSerialNumber populated = QG+Serial fires (combo #1 priority)
+          GunMake populated from any[] — included in XML payload
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  GunSerialNumber           YES    1233245         mapped from GunSerialNumber (set[])
+  GunMake                   YES    ABA             mapped from GunMake (any[] — NCIC code)
+  ImageIndicator            YES    N               mapped from ImageIndicator (any[], default)
+  ProcessControlNumber      NO     --              sourceField empty
+  NCICNumber                NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE
+  RMS request fields: N/A
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QG+Serial fired with GunMake any[] field confirmed in XML
+  Detail: GunMake=ABA (NCIC code from GUN_MAKE dropdown) serializes to CommSys XML.
+          Confirms any[] fields on Firearm QIDM work correctly.
+

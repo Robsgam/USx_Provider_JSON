@@ -1,0 +1,73 @@
+﻿================================================================
+  Build Report: LA_LETTS_OFML_BASE
+  Source: LA_LETTS_OFML_BASE.json
+  Generated: 2026-04-24 16:24
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'LA_LEMS': 9 configurations
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [WARN] ENTITIES bundle is not first. Some platforms expect ENTITIES first.
+
+=== PHASE 2: Entity QIFs ===
+  [WARN] No entity order array defined
+  [PASS] QIF 'ENTITY_Article' -> Article : 2 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 11 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 5 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [WARN] QIDM 'LA_LEMS_GunQuery' has 1 sourceField(s) not found in Firearm QIF:
+         GunTypeCode (sourceField='FirearmTypeCode')
+  [PASS] QIDM 'LA_LEMS_GunQuery' -> Firearm : 7 attrs, 1 combos
+  [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 2 combos
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' -> Person : 8 attrs, 2 combos
+  [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
+  [PASS] QIDM 'LA_LEMS_BoatQuery' -> Boat : 4 attrs, 2 combos
+  [PASS] QIDM 'LA_LEMS_ArticleSingleQuery' -> Article : 3 attrs, 1 combos
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs,  QIF(s)
+  [PASS] Person : 2 QIDMs,  QIF(s)
+  [PASS] Vehicle : 1 QIDMs,  QIF(s)
+  [PASS] Boat : 1 QIDMs,  QIF(s)
+  [PASS] Firearm : 1 QIDMs,  QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'LA_LEMS_GunQuery' combo 'GunSerialNumber': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' combo 'LicensePlateNumber': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' combo 'VehicleIdentificationNumber': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'OperatorLicenseNumberRegistrationStateAttention': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'BirthDateNameRaceCodeSexCodeRegistrationStateAttention': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' combo 'BirthDateNamePurposeCodeSexCodeRegistrationStateAttention': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' combo 'OperatorLicenseNumberPurposeCodeRegistrationStateAttention': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'BoatHullIdNumberAttentionRegistrationState': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'RegistrationNumberAttentionRegistrationState': all set[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_ArticleSingleQuery' combo 'ArticleSerialNumber': all set[] fields resolvable
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 40 PASS / 0 FAIL / 3 WARN
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  Review WARN items -- they may cause runtime issues.
+

@@ -1,0 +1,121 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : FDQ+Name + QW co-fire
+Test type  : T2 (basic combo + co-fire verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     (empty)            --
+  RegistrationState         (empty)            --
+  ImageIndicator            Y                  default
+  NameLast                  SMITH              typed
+  NameFirst                 JOHN               typed
+  NameMiddle                (empty)            --
+  BirthDate                 01/01/1985         typed
+  SexCode                   M                  dropdown selection
+  NameSuffix                (empty)            --
+  OperatorLicenseNumberDH   (empty)            --
+  PurposeCode               C                  default
+  NameLastDH                (empty)            --
+  NameFirstDH               (empty)            --
+  BirthDateDH               (empty)            --
+  SexCodeDH                 (empty)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (DriverLicenseQuery — auto-selected):
+    Transaction : 01KQJ0QXS87EJ0M15KK8A284JM
+    MessageType : DriverLicenseQuery
+    keyReference: FDQName
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      Name                 SMITH,JOHN
+      BirthDate            19850101
+      SexCode              M
+      ImageIndicator       Y
+
+  Request 2 (WantedPersonQuery — co-fire):
+    Transaction : 01KQJ0QZ4F2ZKJHRSW8M4DJ342
+    MessageType : WantedPersonQuery
+    keyReference: QWName
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      Name                 SMITH,JOHN
+      BirthDate            19850101
+      ImageIndicator       Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQName (DriverLicenseQuery, autoSelect=true)
+  Reason: set=[BirthDate, NameLast, NameFirst, SexCode] all satisfied, no State = FDQ path
+
+  DriverLicenseQuery attributes:
+  QIDM attribute         Sent?  Value             Note
+  ---------------------  -----  ----------------  --------------------------------
+  Name                   YES    SMITH,JOHN        FormatStringRuleHandler(',')
+  BirthDate              YES    19850101          CommsysParseDateRuleHandler
+  SexCode                YES    M                 NIBRS reverse-lookup
+  ImageIndicator         YES    Y                 default (Person=Y)
+  OperatorLicenseNumber  NO     --                empty
+  State                  NO     --                empty, routes to FDQ
+
+  WantedPersonQuery co-fire (QWName):
+  QIDM attribute         Sent?  Value             Note
+  ---------------------  -----  ----------------  --------------------------------
+  Name                   YES    SMITH,JOHN        FormatStringRuleHandler(',')
+  BirthDate              YES    19850101          CommsysParseDateRuleHandler
+  ImageIndicator         YES    Y                 default
+
+  NOTE: First attempt without SexCode — only QW fired (correct: FDQ Name combo
+  requires SexCode in set[]). Re-tested with SexCode=M and both DL + QW fired.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: Person by name + sex + DOB
+  RMS request: {"elasticQuery":{"lastName":"smith","firstName":"john","sexAttrId":"69510840269","dateOfBirth":"1985-01-01"},"from":0,"size":50}
+  Response: No returns.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQ Name combo fires with Name+DOB+Sex (autoSelect=true), QW co-fires with Name+DOB. All 3 requests correct.
+  Detail: SexCode is required for DL Name combo (in set[]). Without it, only QW fires. Name formatted as SMITH,JOHN (comma, no space — FL pattern). Date formatted as 19850101 (yyyyMMdd — FL pattern).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+DriverLicenseQuery (auto-selected):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0QXS87EJ0M15KK8A284JM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KQJ0QXS87EJ0M15KK8A284JM</Id><ImageIndicator>Y</ImageIndicator><SexCode>M</SexCode><BirthDate>19850101</BirthDate><Name>SMITH,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+WantedPersonQuery (co-fire):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ0QZ4F2ZKJHRSW8M4DJ342"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>WantedPersonQuery</MessageType><Id>01KQJ0QZ4F2ZKJHRSW8M4DJ342</Id><ImageIndicator>Y</ImageIndicator><BirthDate>19850101</BirthDate><Name>SMITH,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"lastName":"smith","firstName":"john","sexAttrId":"69510840269","dateOfBirth":"1985-01-01"},"from":0,"size":50}
+Response: No returns.

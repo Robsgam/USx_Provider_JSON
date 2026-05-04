@@ -1,0 +1,341 @@
+﻿================================================================
+  Build Report: TX_TLETS_BASE
+  Source: TX_TLETS_BASE.json
+  Generated: 2026-04-28 14:12
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- TX_TLETS_BASE.json
+================================================================
+
+--- QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery [Vehicle] ---
+    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
+
+    [FIRES] RQLicensePlateNumber
+      set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
+      any: [State] -> matched: [State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] QVLicensePlateNumber
+      set: [LicensePlateNumber]
+      any: [RegionId, State] -> matched: [State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RQVehicleIdentificationNumber
+      set: [VehicleIdentificationNumber]
+      any: [State, VehicleMakeCode, VehicleYear] -> matched: [State, VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+    [SKIP] QVVehicleIdentificationNumber -- no any[] match
+    [SKIP] DPSIStickerNumber -- missing set: StickerNumber
+    [SKIP] REGLicensePlateNumber -- missing set: FinancialResponsibilityType
+    [SKIP] VINVehicleIdentificationNumber -- missing set: FinancialResponsibilityType
+
+--- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 5
+
+    [FIRES] DQName
+      set: [SexCode, BirthDate, NameFirst, NameLast]
+      any: [EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, State] -> matched: [ImageIndicator, NameMiddle, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+    [FIRES] QWName
+      set: [BirthDate, NameFirst, NameLast]
+      any: [ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode] -> matched: [ExpandedBirthDateSearchCode, NameMiddle, RaceCode, SexCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+    [FIRES] CPLName
+      set: [NameFirst, NameLast]
+      any: [EmailAddress, ImageIndicator, MessageKey, NameMiddle, NameSuffix, ReasonCode, State] -> matched: [ImageIndicator, NameMiddle, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>CPLName</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+    [FIRES] RSDWWOperatorLicenseNumber
+      set: [OperatorLicenseNumber]
+      any: [EmailAddress, ImageIndicator, ReasonCode, RegionId, State] -> matched: [ImageIndicator, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RSDWWOperatorLicenseNumber</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+    [FIRES] DQOperatorLicenseNumber
+      set: [OperatorLicenseNumber]
+      any: [EmailAddress, ImageIndicator, ReasonCode, State] -> matched: [ImageIndicator, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+--- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
+
+    [FIRES] KQOperatorLicenseNumber
+      set: [OperatorLicenseNumber]
+      any: [Attention, EmailAddress, ImageIndicator, PurposeCode, ReasonCode, State] -> matched: [Attention, ImageIndicator, PurposeCode, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+    [FIRES] KQName
+      set: [NameFirst, NameLast, BirthDate, SexCode]
+      any: [Attention, EmailAddress, ImageIndicator, NameMiddle, NameSuffix, PurposeCode, ReasonCode, State] -> matched: [Attention, ImageIndicator, NameMiddle, PurposeCode, State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NY</State>
+      </Transaction>
+
+--- QIDM: TX_TLETS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
+
+    [FIRES] QAArticleSerialNumber
+      set: [ArticleSerialNumber, ArticleTypeCode]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QANCICNumber
+      set: [NCICNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: TX_TLETS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 6  |  Combos: 5
+
+    [FIRES] QBRegistrationNumber
+      set: [RegistrationNumber]
+      any: [BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator] -> matched: [BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QBBoatHullIdNumber
+      set: [BoatHullIdNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QBNCICNumber
+      set: [NCICNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQRegistrationNumber
+      set: [RegistrationNumber]
+      any: [State] -> matched: [State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQBoatHullIdNumber
+      set: [BoatHullIdNumber]
+      any: [State] -> matched: [State]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+--- QIDM: TX_TLETS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES] QGGunSerialNumber
+      set: [GunSerialNumber]
+      any: [GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator] -> matched: [GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QGNCICNumber
+      set: [NCICNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+
+

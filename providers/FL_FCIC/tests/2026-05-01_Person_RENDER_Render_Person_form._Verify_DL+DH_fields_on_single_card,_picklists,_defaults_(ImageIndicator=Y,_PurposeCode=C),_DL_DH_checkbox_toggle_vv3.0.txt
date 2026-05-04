@@ -1,0 +1,62 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : RENDER
+Test type  : T1 (render/picklist verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     (empty)            --
+  RegistrationState         (no default)       --
+  ImageIndicator            Y                  default
+  NameLast                  (empty)            --
+  NameFirst                 (empty)            --
+  NameMiddle                (empty)            --
+  BirthDate                 (empty)            --
+  SexCode                   (empty)            dropdown (NIBRS)
+  NameSuffix                (empty)            --
+  OperatorLicenseNumberDH   (empty)            --
+  PurposeCode               C                  default (FormInput)
+  NameLastDH                (empty)            --
+  NameFirstDH               (empty)            --
+  BirthDateDH               (empty)            --
+  SexCodeDH                 (empty)            dropdown (NIBRS)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- render test only, no query submitted.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  N/A -- render test only.
+
+  Verified:
+  - All 15 fields visible on single "PERSON SEARCH" card
+  - ImageIndicator default Y (Person wants photo)
+  - PurposeCode: FormInput with default C (was empty FormSelect, fixed to FormInput)
+  - Sex dropdown populates (NIBRS reverse-lookup) on both DL and DH
+  - State dropdown populates (STATE/NCIC), no default
+  - Driver License checkbox checked by default (autoSelect=true)
+  - Driver History checkbox unchecked by default (autoSelect=false)
+  - DL/DH toggle: queriesToDeselect working
+  - Query labels: "Driver License" and "Driver History"
+  - No console errors
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Person form renders correctly with all 15 fields, correct defaults, DL/DH toggle works.
+  Detail: PurposeCode changed from FormSelect (DEX_INQUIRY_PURPOSE_CODE not on instance) to FormInput with initialValue=C.

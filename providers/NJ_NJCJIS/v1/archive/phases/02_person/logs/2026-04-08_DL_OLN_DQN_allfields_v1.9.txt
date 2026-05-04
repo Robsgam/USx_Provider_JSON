@@ -1,0 +1,132 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v1.9
+Query type: DriverLicenseQuery (OLN path -- DQN)
+Test      : All fields filled on Person card
+Prior log : 2026-04-08_DL_OLN_DQN_allfields_v1.8.txt (v1.8)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route
+    Source      : MK43RS
+    Destination : ConnectCic
+
+  Session
+    ID          : MK43RS
+    ORI         : MK1234567
+    Mnemonic    : MK1234567
+    UserName    : MK43RS
+
+  Transaction
+    ID          : 01KNPVK7GQG5R0M7VVHMX6SNCD
+    MessageType : DriverLicenseQuery
+    State       : NJ
+    OLN         : 12345
+
+================================================================================
+FIELD ISOLATION RESULT
+================================================================================
+
+  Expected for OLN path (DQN):  OLN + State + [ImageIndicator]
+  Received:                      OLN + State
+
+  Field                  Expected    Sent    Note
+  ---------------------  --------    ----    ------------------------------------
+  OperatorLicenseNumber  YES         YES
+  State                  YES         YES
+  ImageIndicator         optional    NO      -- see ANALYSIS
+  BirthDate              NO          NO      split still correct
+  Name                   NO          NO      split still correct
+  SexCode                NO          NO      split still correct
+
+================================================================================
+FORM OBSERVATIONS (user-reported)
+================================================================================
+
+  ImageIndicator dropdown  -- now shows Y, N, U (YES_NO_UNKNOWN confirmed working)
+                              also has a click spot that clears the selection back
+                              to blank. This is a platform FormSelect behavior.
+                              The blank state is the issue -- cleared field = not sent.
+
+  M.I. / Suffix fields     -- display on the Person card but are NOT defined in
+                              the NJ_NJCJIS PDF. These fields should be removed
+                              from the form. See FIX #2 below.
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- OLN path (DQN) fired correctly.
+    Only OLN and State sent. Name/DOB/SexCode excluded.
+    Attribute-list split continues to work as intended.
+
+  ISSUE -- ImageIndicator still not sent despite initialValue=Y (v1.9) and size=1 (v1.8).
+    Root cause (revised): initialValue='Y' pre-populates the field but the platform
+    also requires the field to be listed in the combination's any[] array to include
+    it in the outgoing request. Fields defined as attributes but absent from set[] and
+    any[] are not serialized even when populated.
+
+    DQN combination currently:
+      set = [OperatorLicenseNumber, RegistrationState]
+      any = []   <-- ImageIndicator is missing here
+
+    Fix: add ImageIndicator to any[] of the DQN combination.
+    This corrects our earlier understanding of LIMITATION #10.
+
+  FIX #1 -- Add ImageIndicator to DQN any[].
+    Revised DQN: set=[OLN, State]  any=[ImageIndicator]
+    ImageIndicator will then be sent when populated (Y or N selected).
+    Blank/cleared field will still not be sent -- this is acceptable behavior
+    for an optional field.
+
+  FIX #2 -- Remove M.I. and Suffix from Person form.
+    NameMiddle and NameSuffix are not defined in the NJ_NJCJIS PDF.
+    Remove NameMiddle_Input and NameSuffix_Input from ROW_3.
+    ROW_3 changes from 4-column (3,3,3,3) to 2-column (6,6): BirthDate + Sex only.
+    Remove NameMiddle and NameSuffix from Name attribute sourceField in
+    DriverLicenseQuery_Name config. FormatStringRuleHandler drops to 1 separator.
+
+  LIMITATION #10 REVISED:
+    Prior understanding: set/any controls matching only; all populated attributes sent.
+    Corrected: set[] and any[] control both matching AND sending. Attributes defined
+    in the config but not listed in set or any of the matched combination are NOT sent.
+    To send an optional field, it must appear in the any[] of the relevant combination.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNPVK7GQG5R0M7VVHMX6SNCD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KNPVK7GQG5R0M7VVHMX6SNCD</Id>
+            <State>NJ</State>
+            <OperatorLicenseNumber>12345</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

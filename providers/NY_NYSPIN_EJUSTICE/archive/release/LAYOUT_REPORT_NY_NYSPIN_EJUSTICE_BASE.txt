@@ -1,0 +1,141 @@
+﻿================================================================
+  Build Report: NY_NYSPIN_EJUSTICE_BASE
+  Source: NY_NYSPIN_EJUSTICE_BASE.json
+  Generated: 2026-04-21 16:21
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== NY_NYSPIN_EJUSTICE_BASE.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
+  Person | entity=Person | qidm= | cards=1 fields=15
+  Firearm | entity=Firearm | qidm= | cards=1 fields=4
+  Article | entity=Article | qidm= | cards=1 fields=3
+  Boat | entity=Boat | qidm= | cards=1 fields=3
+QIDMs: 7
+  NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery | attrs=8 combos=3 autoSelect=True
+  NY_NYSPIN_EJUSTICE_DriverLicenseQuery | attrs=3 combos=1 autoSelect=True
+  NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery | attrs=3 combos=1 autoSelect=True
+  NY_NYSPIN_EJUSTICE_DriverHistoryQuery | attrs=9 combos=2 autoSelect=True
+  NY_NYSPIN_EJUSTICE_GunQuery | attrs=4 combos=1 autoSelect=
+  NY_NYSPIN_EJUSTICE_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
+  NY_NYSPIN_EJUSTICE_BoatQuery | attrs=4 combos=4 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH"
+      ROW ROW_VEH_1 [8 4]
+        LicensePlateNumberIn (Text | maxLen=10)
+        State (Dropdown | codeTypeCategory=NJ_NIBRS_STATE | codeTypeSource=NJ_NIBRS)
+      ROW ROW_VEH_2 [5 5 2]
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
+        LicensePlateYear (Text | maxLen=4)
+        ImageIndicator (Text | maxLen=1)
+      ROW ROW_VEH_3 [12]
+        VehicleIdentificationNumber (Text | maxLen=20)
+      ROW ROW_VEH_4 [8 4]
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        VehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_STATE [12]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=NY)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER"
+      ROW ROW_PER_1 [8 2 2]
+        OperatorLicenseNumber (Text | maxLen=20)
+        State (Dropdown | codeTypeCategory=NJ_NIBRS_STATE | codeTypeSource=NJ_NIBRS)
+        ImageIndicator (Text | maxLen=1)
+      ROW ROW_PER_2 [6 6]
+        NameFirst (Text | maxLen=20)
+        NameLast (Text | maxLen=30)
+      ROW ROW_PER_3 [3 3 3 3]
+        NameMiddle (Text | maxLen=20)
+        NameSuffix (Text | maxLen=4)
+        BirthDate (FormDate)
+        SexCode (Dropdown | codeTypeCategory=NIBRS_SEX | codeTypeSource=NIBRS)
+      ROW ROW_PER_4 [8 4]
+        OperatorLicenseNumberDH (Text | maxLen=20)
+        NyNyspinTransactionName (Text | maxLen=4)
+      ROW ROW_PER_5 [4 4 4]
+        PurposeCode (Text | maxLen=1)
+        Requestor (Text | maxLen=35)
+        ImageIndicator (Text | maxLen=1)
+      ROW ROW_PER_6 [6 6]
+        NameFirstDH (Text | maxLen=20)
+        NameLastDH (Text | maxLen=30)
+      ROW ROW_PER_7 [3 3 3 3]
+        NameMiddleDH (Text | maxLen=20)
+        NameSuffixDH (Text | maxLen=4)
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | codeTypeCategory=NIBRS_SEX | codeTypeSource=NIBRS)
+      ROW ROW_PER_STATE [12]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=NY)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [12]
+        GunSerialNumber (Text | maxLen=20)
+      ROW ROW_GUN_2 [6 6]
+        GunMake (Text | maxLen=23)
+        GunCaliber (Text | maxLen=4)
+      ROW ROW_GUN_3 [12]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+      ROW ROW_ART_2 [6 6]
+        ImageIndicator (Text | maxLen=1)
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA"
+      ROW ROW_BOA_1 [8 4]
+        RegistrationNumber (Text | maxLen=10)
+        State (Dropdown | codeTypeCategory=NJ_NIBRS_STATE | codeTypeSource=NJ_NIBRS)
+      ROW ROW_BOA_2 [10 2]
+        BoatHullIdNumber (Text | maxLen=20)
+        ImageIndicator (Text | maxLen=1)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    SocialSecurityNumber -> ssn
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    RaceCode -> raceAttrIds (useAttrId)
+    OperatorLicenseNumberOOS -> dlNumber
+    NameFirstOOS -> firstName
+    NameLastOOS -> lastName
+    BirthDateOOS -> dateOfBirth
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleYear -> vehicle.yearOfManufacture
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    VehicleMakeCode -> vehicle.makeNcicCode
+    VehicleModelCode -> vehicle.modelNcicCode
+    LicensePlateNumberIn -> vehicle.tag
+    LicensePlateNumberOut -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId)
+    RegistrationStateOut -> vehicle.registrationStateAttrIds (useAttrId)
+    OwnerFirstName -> propertyPersons[0].person.firstName
+    OwnerLastName -> propertyPersons[0].person.lastName
+

@@ -1,0 +1,103 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.2
+Query type: VehicleRegistrationQuery (all fields filled)
+Test      : Plate Number + Plate Type + Plate Year + VIN + State all filled
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNPZTGFCB7JY9NABFEVB5XX3
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    VehicleIdentificationNumber  1233454564
+    LicensePlateYear             2024
+    State                        NJ
+    LicensePlateTypeCode         PC
+    LicensePlateNumber           1234
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQ (LicensePlateNumber present -- first in config, takes priority)
+  All populated attributes sent regardless of combination.
+
+  Field                        Sent    Note
+  ---------------------------  ----    ------------------------------------------------
+  LicensePlateNumber           YES     1234
+  LicensePlateTypeCode         YES     PC (optional RQ field)
+  LicensePlateYear             YES     2024 (optional RQ field)
+  State                        YES     NJ
+  VehicleIdentificationNumber  YES     1233454564 (EXTRA -- not in RQ set/any)
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  LIMITATION #1 CONFIRMED for VehicleRegistrationQuery.
+    set/any controls matching only. ALL populated attributes in the config are
+    sent when a combination fires, regardless of set/any membership.
+    VehicleIdentificationNumber is not in RQ set[] or any[], but was sent because
+    the field was populated and the platform serializes all populated attributes.
+
+  THIS IS THE SAME BEHAVIOR AS DL (OLN path sent Name+BirthDate+SexCode extra).
+    For DL, ConnectCIC accepted extra fields without error (PASS on all 5 logs).
+    For Vehicle, behavior with conflicting required fields (both Plate AND VIN in
+    the same request) is UNKNOWN -- server may accept or may reject.
+
+================================================================================
+IMPLICATION
+================================================================================
+
+  A single QUERYINPUTDATAMAPPING config cannot achieve field isolation between
+  RQ (plate path) and RQN (VIN path). Both paths share the same attribute list.
+  When both plate and VIN fields are populated, both are sent regardless of which
+  combination fires.
+
+  In practice, an operator will fill EITHER the plate fields OR the VIN -- not both.
+  If only one set is filled, only those fields are populated and sent:
+    Plate-only fill --> LicensePlateNumber + optional plate fields + State sent; VIN blank/not sent
+    VIN-only fill   --> VehicleIdentificationNumber + State sent; plate fields blank/not sent
+
+  The "all fields" test is an edge case. Whether it returns results or an error
+  depends on ConnectCIC server behavior with conflicting required fields in one request.
+
+================================================================================
+NEXT TESTS NEEDED
+================================================================================
+
+  Log 2: RQ -- Plate only (no VIN); confirm only plate fields sent
+  Log 3: RQ -- Plate + optional fields (no VIN)
+  Log 4: RQN -- VIN only (no plate fields); confirm only VIN + State sent
+  Log 5: RQ out-of-state
+  Log 6: RQN out-of-state
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNPZTGFCB7JY9NABFEVB5XX3">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>VehicleRegistrationQuery</MessageType>
+          <Id>01KNPZTGFCB7JY9NABFEVB5XX3</Id>
+          <VehicleIdentificationNumber>1233454564</VehicleIdentificationNumber>
+          <LicensePlateYear>2024</LicensePlateYear>
+          <State>NJ</State>
+          <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+          <LicensePlateNumber>1234</LicensePlateNumber>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

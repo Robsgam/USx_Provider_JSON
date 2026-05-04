@@ -1,0 +1,475 @@
+CONNECTCIC BUNDLE ARCHITECTURE
+================================
+Standard 3-bundle structure used in every ConnectCIC provider JSON.
+Last updated: 2026-04-28
+Source: NJ_NJCJIS (v1.7), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v1.0)
+
+================================================================================
+SECTION 1 -- THE 3-BUNDLE STRUCTURE
+================================================================================
+
+  Every provider JSON contains exactly 3 bundles in this order:
+
+  1. ENTITIES BUNDLE     name='ENTITIES', provider='MARK43'
+     Contains all QUERYINPUTFORM configurations (entity input forms):
+       - One QIF per entity sub-form (Vehicle-NY, Vehicle-OOS, Person-DL-NY, etc.)
+       - Also contains the entity display order array.
+     Rule: QUERYINPUTFORM belongs ONLY here. Never in the provider or RMS bundle.
+       Adding a QIF to any other bundle causes duplicate entity form cards in the UI.
+     ENTITIES MUST BE FIRST. Confirmed AZ v2.0: forms do not render when ENTITIES
+       is not the first bundle in the array.
+
+  2. PROVIDER BUNDLE     name=[PROVIDER_NAME], provider=[PROVIDER_NAME]
+     Contains all provider-specific configurations:
+       - AUTHENTICATION (1)
+       - QUERYRESULTDATAMAPPING (1)
+       - QUERYMESSAGEFORMAT (1)
+       - QUERYINPUTDATAMAPPING (1 per query/path -- most of the work)
+
+  3. RMS BUNDLE          name='RMS', provider='RMS' (or inherited from HIDLE)
+     Contains RMS-specific QIDMs for local record matching.
+     Cloned from HIDLE.json and patched for the target provider.
+     See Section 5 for standard RMS patches.
+
+  Top-level JSON structure:
+    {
+      "bundles": [ <provider_bundle>, <entities_bundle>, <rms_bundle> ]
+    }
+
+  Bundle-level properties (required on each bundle):
+    configurations   array of config objects
+    description      human-readable string (e.g., "Provider configuration for AZ_AZDPS v1.0")
+    name             bundle name
+    type             'BUNDLE'   *** REQUIRED -- if omitted, platform silently ignores the bundle. ***
+                                Both the CommSys provider bundle AND the ENTITIES bundle require this.
+                                Confirmed failure mode: AZ_AZDPS v2.1/v2.2 (forms did not render).
+    provider         provider name (or 'MARK43' for ENTITIES, 'RMS' for RMS bundle)
+
+================================================================================
+SECTION 2 -- AUTHENTICATION CONFIG
+================================================================================
+
+  One per provider bundle. Handles login/credential authentication.
+
+  Standard structure (NY pattern -- identical in NJ):
+    type                        'AUTHENTICATION'
+    name                        [PROVIDER_NAME]  (e.g., 'NY_NYSPIN_EJUSTICE')
+    description                 'Authentication configuration for [PROVIDER]'
+    handlerFunction             'CommsysOriAuthenticationHandler'
+    provider                    [PROVIDER_NAME]
+    providerType                'Commsys'
+    signInRequired              false
+    deviceRegistrationOptional  false
+
+  Attributes (standard -- same for NJ and NY):
+    ORI       size=12  sourceField=['ORI']          targetField='ORI'
+    Mnemonic  size=25  sourceField=['mnemonic']     targetField='Mnemonic'
+    UserName  rule=CommsysGetDexStateUserIdRuleHandler(['true'])
+              sourceField=['dexStateUserId']        targetField='UserName'
+              description='dexUserStateid from RMS profile'
+
+  Combination:
+    requirements: set=['ORI','Mnemonic']  any=['dexStateUserId']
+
+  Note: UserName uses CommsysGetDexStateUserIdRuleHandler to look up the
+    dexStateUserId from the RMS user profile. The argument 'true' is a flag --
+    exact semantics are platform-internal. Use as-is; do not modify.
+
+================================================================================
+SECTION 3 -- QUERYMESSAGEFORMAT CONFIG
+================================================================================
+
+  One per provider bundle. Defines the XML message wrapper structure.
+  This config is IDENTICAL across NJ and NY -- copy as-is, change name and provider.
+
+  Standard structure:
+    type                'QUERYMESSAGEFORMAT'
+    name                '[PROVIDER_NAME]_QueryMessageFormat'
+    description         'Configuration for Query format'
+    handlerFunction     'CommsysWsiOutgoingMessageHandler'
+    provider            [PROVIDER_NAME]
+    authenticationParent  'LawEnforcementTransaction'
+    payloadParent         'LawEnforcementTransaction'
+
+  No attributes or combinations. This config is structural only.
+
+================================================================================
+SECTION 4 -- QUERYRESULTDATAMAPPING CONFIG
+================================================================================
+
+  One per provider bundle. Defines how provider XML responses are mapped to
+  the ConnectCIC result display.
+
+  Standard approach: CLONE from HIDLE.json, change name and provider only.
+    $hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
+    $results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+    $results.name        = '[PROVIDER_NAME]_Results'
+    $results.description = 'Results mapping for [PROVIDER]'
+    $results.provider    = '[PROVIDER_NAME]'
+
+  Do NOT modify the field mappings at build time. The HIDLE template mappings are
+  generic. They may not perfectly match the provider's actual response format.
+  STATUS: Pending validation against live response XML for every new provider.
+
+  When to validate: after first successful query returns data (not "No Returns").
+    Compare HIDLE mapping field names against actual XML element names in the response.
+    Update any mismatched field names. This is provider-specific work.
+
+================================================================================
+SECTION 5 -- RMS BUNDLE STANDARD PATCHES
+================================================================================
+
+  The RMS bundle is cloned from HIDLE.json for every build.
+  Required patches depend on the provider instance. See each patch for when to apply.
+  HIDLE.json must be present in the provider's source/ folder before running the build script.
+
+  HIDLE VERSION NOTES:
+    2026-04-28 update: New HIDLE adds "conditions": null and "defaults": null
+    to RMS combination requirements objects. These are no-op properties —
+    all attributes, set/any arrays, keyReferences, Auth, QMF, and QRDM are
+    unchanged from previous version. Rebuilds with new HIDLE produce
+    semantically identical output. No re-import or re-testing required
+    solely for this HIDLE update.
+
+  PATCH 1 -- Vehicle: LicensePlateYear removed from licensePlateIn any[]
+  -------------------------------------------------------------------------
+    Problem: HIDLE RMS Vehicle QIDM includes LicensePlateYear in the licensePlateIn
+      any[] combination. On instances without elastic mapping for this field, the
+      combination may reject or misbehave.
+    Fix: Remove LicensePlateYear from the licensePlateIn combination any[].
+    Applies to: AZ_AZDPS (confirmed -- LicensePlateYear has no elastic mapping).
+    Does NOT apply to: NJ, NY (LicensePlateYear not removed in those builds).
+
+  PATCH 2 -- Vehicle: Add RegistrationState to licensePlateIn any[]
+  ------------------------------------------------------------------
+    Problem: HIDLE RMS Vehicle QIDM licensePlateIn combination does not include
+      RegistrationState in any[]. The hidden SelH 'RegistrationState' is populated
+      but the RMS combination doesn't recognize it for state filtering.
+    Fix: Add 'RegistrationState' to the any[] of the licensePlateIn combination.
+    Applies to: NJ, NY, AZ (always apply).
+    Confirmed: NY v1.4, NJ v1.2, AZ v1.0.
+
+  PATCH 3 -- Vehicle: Drop RegistrationStateOut from licensePlateOutAndState set[]
+  ----------------------------------------------------------------------------------
+    Problem: HIDLE RMS Vehicle QIDM has a licensePlateOutAndState combination with
+      set=['LicensePlateNumberOut','RegistrationStateOut']. When OOS plate uses
+      LicensePlateNumberIn instead of LicensePlateNumberOut, this combination
+      can never fire.
+    Fix: Remove RegistrationStateOut from set[] or remove the combination entirely.
+    Applies to: NY, AZ (where LicensePlateNumberIn is used for all plates).
+    Does NOT apply to: NJ (NJ uses LicensePlateNumberOut on OOS forms -- leave as-is).
+    Confirmed: NY v1.4.
+
+  PATCH 4 -- Person: registrationStateAttrId (ALWAYS required)
+  -------------------------------------------------------------
+    Problem: HIDLE RMS Person QIDM does NOT include a registrationState attribute.
+      Without this, person searches (OLN, Name) fire without a state filter in the
+      RMS elastic query.
+    Fix: Add registrationState attribute to RMS Person QIDM:
+      name='registrationState', sourceField=['RegistrationState'],
+      targetField='registrationStateAttrId', useAttributeId=true
+      Add 'RegistrationState' to ALL person combination any[] arrays.
+    IMPORTANT: registrationStateAttrId is a SINGULAR string (no ArrayWrapper).
+      This differs from Vehicle which uses registrationStateAttrIds (array + ArrayWrapper).
+    Applies to: all providers (always apply).
+    Confirmed: NJ_NJCJIS v1.2 (2026-04-20) -- registrationStateAttrId:"69509884952" (string).
+    autoSelect=true: add to all RMS QIDMs so they fire automatically.
+    Confirmed: AZ_AZDPS v1.0, NJ_NJCJIS v1.7, NY_NYSPIN_EJUSTICE v1.1.
+
+  PATCH 5 -- Person: Sex attribute handling (INSTANCE-SPECIFIC)
+  -------------------------------------------------------------
+    The HIDLE RMS Person QIDM includes sex (sexAttrId) and sexOOS attributes with
+    useAttributeId=true. Whether to keep or remove these depends on the instance.
+
+    KEEP (NIBRS reverse-lookup confirmed -- instance supports attr ID -> M/F/U):
+      Form uses attributeTypeId=SEX + codeTypeProvider=NIBRS.
+      Form stores numeric attr ID. CommSys QIDM codeTypeProvider=NIBRS converts to M/F/U.
+      RMS useAttributeId=true passes attr ID as-is. sexAttrId:"69509891711" (string) CORRECT.
+      DO NOT add AttributeArrayWrapperRuleHandler. DO NOT remove sex from RMS QIDM.
+      CONFIRMED: NJ_NJCJIS (all versions), AZ_AZDPS v1.0.
+
+    REMOVE (NIBRS reverse-lookup not confirmed or known broken):
+      Form uses codeTypeCategory=NIBRS_SEX (stores string "M"/"F"/"U").
+      useAttributeId=true + string -> wraps in array -> sexAttrId:[69509891711] -> RMS 400 error.
+      Fix: remove BOTH sex attributes from RMS QIDM attributes[] AND remove 'SexCode' AND
+        'SexCodeOOS' from ALL combination any[]/set[] arrays.
+      Pattern: filter by targetField='sexAttrId' (catches both 'sex' and 'sexOOS' attributes).
+      REQUIRED: NY_NYSPIN_EJUSTICE v1.1 (2026-04-20).
+      CONFIRMED BROKEN (reverse-lookup fails): FL_FCIC instance (2026-04-20).
+      UNCONFIRMED: any new instance -- test before assuming keep or remove.
+      See ANTI_PATTERNS.txt #18 for both-attr removal detail.
+      See SEX_CODE_PATTERN.txt for full per-instance status.
+
+  PATCH 6 -- RMS CLEANUP: Remove unused HIDLE fields (ALWAYS apply)
+  ---------------------------------------------------------------------
+    HIDLE.json is a universal template containing fields for all possible providers.
+    Most providers only use a subset. Dead fields (no matching form fieldId) add JSON
+    bloat and their combos never fire. Apply AFTER all other patches.
+
+    Vehicle -- remove these attrs:
+      LicensePlateNumberOut     (OOS dual-field plate pattern -- not used with NCIC single-field)
+      RegistrationStateOut      (same)
+      OwnerFirstName            (no owner search on form)
+      OwnerLastName             (same)
+    Vehicle -- remove these combos:
+      licensePlateOutAndState   (references LicensePlateNumberOut + RegistrationStateOut)
+      OwnerFirstAndLastName     (references OwnerFirstName + OwnerLastName)
+    Vehicle -- clean any[] in remaining combos:
+      Remove LicensePlateNumberOut, RegistrationStateOut, OwnerFirstName, OwnerLastName
+
+    Person -- remove these attrs:
+      socialSecurityNumber      (no SSN field on form)
+      licenseNumberOOS          (no OOS-suffixed fieldIds on form)
+      firstNameOOS              (same)
+      lastNameOOS               (same)
+      dateOfBirthOOS            (same)
+      sexOOS                    (same)
+    Person -- remove these combos:
+      firstNameLastNameSocialSecurityNumber           (references SocialSecurityNumber)
+      driversLicenseNumberOOS                         (references OOS fieldIds)
+      firstNameLastNameDriversLicenseNumberOOS         (same)
+      firstNameLastNameDateOfBirthOOS                  (same)
+      firstNameLastNameOOS                             (same)
+
+    Result: Vehicle goes from 10 attrs/4 combos to 6 attrs/2 combos.
+            Person goes from 13 attrs/9 combos to 7 attrs/4 combos.
+    Applies to: NJ, NY (confirmed 2026-04-24). Apply to all new providers.
+    Exception: if a provider DOES use OOS-suffixed fieldIds (e.g., FL_FCIC DH-suffix),
+      keep the OOS attrs/combos that match those fieldIds.
+
+  Summary of AZ_AZDPS patches (as reference -- applied in build_az_azdps.ps1):
+    PATCH 1: LicensePlateYear removed from Vehicle QIDM licensePlateIn any[]
+    PATCH 2: RegistrationState added to Vehicle QIDM licensePlateIn any[]
+    PATCH 3: RegistrationStateOut removed from licensePlateOutAndState set[]
+    PATCH 4: registrationStateAttrId + RegistrationState added to all Person combos
+    PATCH 5 (KEEP): sex retained in RMS (NIBRS confirmed AZ); autoSelect=true applied
+
+================================================================================
+SECTION 6 -- HANDLER REFERENCE  (source: HandlerConfiguration.java)
+================================================================================
+
+  Authoritative source (Confluence):
+  https://mark43.atlassian.net/wiki/spaces/SEARCH/pages/6649839718/Universal+Search+Configuration+Handlers
+  Last synced: 2026-04-22
+
+  Complete handler registry. Names are server-side registered -- use exactly as shown.
+  Grouped by function: message lifecycle, REST, and attribute/rule handlers.
+
+  --- 6A. MAIN MESSAGE HANDLERS (CommSys query lifecycle) ---
+
+  HANDLER: CommsysOriAuthenticationHandler
+    Used in: AUTHENTICATION config (handlerFunction)
+    Purpose: Generates the <Authentication> XML element with ORI, Mnemonic, and DEX
+      credentials for every outbound CommSys request.
+    We use: YES -- every provider JSON.
+
+  HANDLER: CommsysTransactionRequestHandler
+    Used in: QUERYINPUTDATAMAPPING configs (handlerFunction)
+    Purpose: Maps form field values through QIDM attributes into the <Transaction> XML
+      element. Reads combo set[]/any[], applies codeTypeProvider reverse-lookups, and
+      builds the query payload.
+    Apply to: EVERY QUERYINPUTDATAMAPPING in the provider bundle.
+    We use: YES -- every QIDM (5 per NJ, 7 per NY, 8 per AZ).
+
+  HANDLER: CommsysWsiOutgoingMessageHandler
+    Used in: QUERYMESSAGEFORMAT config (handlerFunction)
+    Purpose: Assembles the full <LawEnforcementTransaction> XML document by combining
+      the auth element and transaction payload into the final outbound message.
+    We use: YES -- every provider JSON.
+
+  HANDLER: CommsysResultsHandler
+    Used in: QUERYRESULTDATAMAPPING config (handlerFunction, inherited from HIDLE)
+    Purpose: Parses CommSys XML responses and maps them to QueryResult objects for
+      display in the results panel.
+    We use: INHERITED -- cloned from HIDLE, not manually configured.
+
+  HANDLER: CommsysAuthorizationResultHandler
+    Used in: Authorization response processing
+    Purpose: Processes login/logout authorization responses and extracts auth metadata.
+    We use: NO -- not part of provider JSON configuration.
+
+  HANDLER: QueryResultLayoutHandler
+    Used in: Result layout formatting
+    Purpose: Formats the final query result layout. Currently a stub per engineering.
+    We use: NO -- not part of provider JSON configuration.
+
+  --- 6B. REST RESULT HANDLERS (parse JSON responses) ---
+
+  HANDLER: RecordsArchiveRestResultsHandler
+    Purpose: Converts Records Archive REST JSON responses into QueryResult objects.
+    We use: NO -- Records Archive is a separate provider type.
+
+  HANDLER: RmsRestResultsHandler
+    Purpose: Converts RMS REST JSON responses (persons/vehicles with photos) into
+      QueryResult objects.
+    We use: INHERITED -- part of RMS bundle from HIDLE, not manually configured.
+
+  --- 6C. REST PAYLOAD HANDLERS (build JSON request bodies) ---
+
+  HANDLER: RecordsArchiveRestPayloadHandler
+    Purpose: Builds paginated JSON POST payloads for Records Archive queries.
+    We use: NO -- Records Archive is a separate provider type.
+
+  HANDLER: RmsRestPayloadHandler
+    Purpose: Builds JSON POST payloads for RMS queries. Converts dot-notation config
+      keys (e.g. 'vehicle.tag') to nested JSON structures.
+    We use: INHERITED -- part of RMS bundle from HIDLE, not manually configured.
+
+  --- 6D. ATTRIBUTE / RULE HANDLERS (field-level transforms) ---
+  Registered via registerAttributeHandler(). Applied per-attribute via the 'rule' property.
+  Syntax: rule = @{ function = '<handler-name>'; arguments = @('<arg1>', ...) }
+
+  HANDLER: CommsysGetDexStateUserIdRuleHandler
+    Used in: AUTHENTICATION config, UserName attribute rule
+    Signature: arguments = @('true')
+    Purpose: Retrieves and validates a DEX state user ID from the operator's RMS profile.
+      Checks certification expiration. The 'true' argument enables validation.
+    We use: YES -- every provider JSON (AUTHENTICATION bundle).
+    Do not modify the argument.
+
+  HANDLER: CommsysParseDateRuleHandler
+    Used in: QUERYINPUTDATAMAPPING attribute rule (BirthDate)
+    Signature: arguments = @('<input-format>', '<output-format>')
+    Purpose: Converts platform FormDate output (ISO 8601) to provider's expected format.
+    Input format (first arg): always 'yyyy-MM-dd' (platform FormDate sends ISO 8601).
+    Output format (second arg): provider-specific -- CONFIRM IN XML before building.
+      NJ_NJCJIS:          arguments = @('yyyy-MM-dd', 'MMddyyyy')   (2-digit month first)
+      NY_NYSPIN_EJUSTICE:  arguments = @('yyyy-MM-dd', 'MMddyyyy')  (same as NJ)
+      AZ_AZDPS:            arguments = @('yyyy-MM-dd', 'yyyyMMdd')   (4-digit year first)
+    IMPORTANT: Do NOT assume MMddyyyy. Read the XML spec for the target provider.
+      Using NJ format on AZ sends wrong date order. Confirmed: AZ v2.0 fix (2026-04-20).
+    We use: YES -- every provider with a BirthDate field.
+
+  HANDLER: FormatStringRuleHandler
+    Used in: QUERYINPUTDATAMAPPING attribute rule (Name composite)
+    Signature: arguments = array of separator strings; count = sourceField count minus 1
+    Purpose: Concatenates multiple sourceField values with separator characters.
+    Examples:
+      2-field name (Last, First):              sourceField = @('NameLast','NameFirst')
+                                               arguments = @(', ')
+      4-field name (First Last MI Sfx):        sourceField = @('NameFirst','NameLast','MI','Sfx')
+                                               arguments = @(' ', ' ', ' ')
+    CRITICAL: argument count must equal sourceField count minus 1. Mismatch = malformed output.
+    Confirmed: NJ 2-field (v3.23), NY 4-field (v1.14).
+    We use: YES -- every provider with a composite Name field.
+
+  HANDLER: FormatArrayRuleHandler
+    Purpose: Joins array values with a config-defined separator.
+    Signature: arguments = @('<separator>')
+    We use: NO -- not currently used in any provider build. Available if needed for
+      multi-value result fields.
+
+  HANDLER: FormatNameRuleHandler
+    Purpose: Formats person name components (first, last, middle initial) into a
+      display string.
+    We use: NO -- we use FormatStringRuleHandler for name composition instead.
+
+  HANDLER: CommsysGetLastNameFirstNameInitialRuleHandler
+    Purpose: Formats a name as "Last Name, First Initial" (e.g. "SMITH, J").
+    Reads from the logged-in officer's user session -- does NOT require a form field.
+    We use: YES -- on Attention attribute in any QIDM that sends <Attention>.
+    Pattern (confirmed CA_eSUN, LA_LETTS_OFML, FL_FCIC v2.6):
+      - Add to Attention QIDM attribute: rule = { function: 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+      - sourceField: ['Attention'] (platform resolves via handler, not form)
+      - Put Attention in any[] (not set[]) -- handler fires automatically
+      - Do NOT add an Attention FormInput to the form layout
+    Anti-pattern: Attention in set[] without this handler forces platform to
+      auto-fill via implicit behavior. Works but is not explicitly configured.
+      See AP #26 in CLAUDE.md.
+
+  HANDLER: ParseCommsysNameRuleHandler
+    Purpose: Parses CommSys-formatted name strings into first/last/middle components.
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  HANDLER: ParseCommsysVehicleYearRuleHandler
+    Purpose: Extracts vehicle year from CommSys-encoded vehicle data in responses.
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  HANDLER: AttributeArrayWrapperRuleHandler
+    Purpose: Wraps a single attribute value into an array structure.
+    Used by: RMS Vehicle QIDM (registrationStateAttrIds) -- inherited from HIDLE.
+    We use: INHERITED -- do NOT manually add.
+    WARNING: Do NOT add to RMS Person sex. sexAttrId expects string, not array.
+      Adding ArrayWrapper wraps result -> RMS 400 error. Confirmed NJ v1.0 (2026-04-17).
+
+  HANDLER: CommsysResultAttributeMappingRuleHandler
+    Purpose: Maps a CommSys result attribute to a different value via config-defined
+      mappings (key-value lookup table).
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  HANDLER: HeightParserRuleHandler
+    Purpose: Parses height values from both RMS (feet/inches) and CommSys
+      (3-digit encoded, e.g. "511" = 5'11") formats.
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  HANDLER: CommysResultFallbackRegexRuleHandler
+    Purpose: Applies a regex fallback to extract values from CommSys result fields
+      when standard parsing fails.
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  HANDLER: IgnoreUserValueRuleHandler
+    Status: DEAD END for outbound use -- do not use in QIDM.
+    Behavior: Conditionally suppresses user-provided input values based on config rules.
+      Passes through raw sourceField value unchanged. Does NOT substitute argument.
+    Confirmed non-functional for state hardcoding: NJ v3.10.
+    Known bug: CA_ESUN OOS DL -- IgnoreUserValueRuleHandler was one of 3 causes of OOS
+      queries returning in-state results. See ANTI_PATTERNS.txt #4.
+
+  HANDLER: CommsysArticleAttributeRuleHandler
+    Purpose: Handles article-specific attribute extraction for CommSys results.
+    We use: NO -- response-side handler (QRDM), not outbound QIDM.
+
+  --- 6E. HANDLER USAGE SUMMARY ---
+
+  Directly configured in provider JSON (7 handlers):
+    CommsysOriAuthenticationHandler                  AUTHENTICATION handlerFunction
+    CommsysTransactionRequestHandler                 QIDM handlerFunction (every QIDM)
+    CommsysWsiOutgoingMessageHandler                 QUERYMESSAGEFORMAT handlerFunction
+    CommsysGetDexStateUserIdRuleHandler              AUTHENTICATION UserName attribute rule
+    CommsysParseDateRuleHandler                      QIDM BirthDate attribute rule
+    FormatStringRuleHandler                          QIDM Name attribute rule
+    CommsysGetLastNameFirstNameInitialRuleHandler    QIDM Attention attribute rule (any QIDM with Attention)
+
+  Inherited from HIDLE (do not manually configure):
+    CommsysResultsHandler                QRDM (response parsing)
+    RmsRestResultsHandler                RMS bundle (response parsing)
+    RmsRestPayloadHandler                RMS bundle (request building)
+    AttributeArrayWrapperRuleHandler     RMS Vehicle registrationStateAttrIds
+
+  Not used / response-side only:
+    All remaining handlers (Parse*, Format{Array,Name}, Height*, Regex*, Article*)
+
+================================================================================
+SECTION 7 -- ENTITIES BUNDLE PROPERTIES
+================================================================================
+
+  The ENTITIES bundle contains all QIFs and the entity display order.
+  It is the second bundle in the JSON, placed between provider and RMS bundles.
+
+  Bundle-level properties:
+    name             'ENTITIES'
+    type             'BUNDLE'
+    provider         'MARK43'
+    description      'Entity input form configurations'
+    configurations   array of QUERYINPUTFORM objects
+    order            entity display order object (see below)
+
+  Entity display order object -- MUST be a nested object, NOT a flat array:
+    WRONG:  "order": ["Vehicle","Person","Firearm","Article","Boat"]    <- flat array, FAILS
+    RIGHT:  "order": { "default": [...], "CAD_DISPATCH": [...], "FIRST_RESPONDER": [...] }
+
+    order: {
+      default:          ['Person','Vehicle','Firearm','Article','Boat']
+      CAD_DISPATCH:     ['Vehicle','Person','Firearm','Article','Boat']
+      FIRST_RESPONDER:  ['Vehicle','Person','Firearm','Article','Boat']
+    }
+  Values MUST be targetEntity values. Not entity names, not config names.
+  CONFIRMED: NJ, NY, AZ. See FORM_ARCHITECTURE.txt Section 6.
+  Failure mode: flat array causes entity ordering failure; forms may not render.
+    Confirmed: AZ_AZDPS v2.2 (2026-04-20). Fixed in v2.3 / v1.0 Phase 1.
+
+  FIRST_RESPONDER layout key:
+    Included in all three layout variants of each QIF.
+    Whether FIRST_RESPONDER is actually recognized as a distinct rendering context
+    by the platform is UNCONFIRMED as of 2026-04-14 (NY STATUS.txt).
+    Include it in all builds (same as CAD_DISPATCH) -- functionally harmless.

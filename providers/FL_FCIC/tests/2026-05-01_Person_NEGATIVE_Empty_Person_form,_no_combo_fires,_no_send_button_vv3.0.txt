@@ -1,0 +1,34 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Person
+Combo      : NEGATIVE
+Test type  : T5 (negative/guard test)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  All fields empty (defaults only: ImageIndicator=Y, PurposeCode=C)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  N/A -- no send button available. No requests sent.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  No combination matched. Defaults alone (ImageIndicator, PurposeCode)
+  are in any[] fields and do not satisfy any set[] requirements.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: No send button with empty Person form. Platform correctly blocks submission.

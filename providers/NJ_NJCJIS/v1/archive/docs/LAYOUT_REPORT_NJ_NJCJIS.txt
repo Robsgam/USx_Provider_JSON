@@ -1,0 +1,110 @@
+﻿================================================================
+  Build Report: NJ_NJCJIS
+  Source: NJ_NJCJIS.json
+  Generated: 2026-04-22 13:13
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== NJ_NJCJIS.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=3
+  Person | entity=Person | qidm= | cards=1 fields=3
+  Firearm | entity=Firearm | qidm= | cards=1 fields=1
+  Article | entity=Article | qidm= | cards=1 fields=1
+  Boat | entity=Boat | qidm= | cards=1 fields=2
+QIDMs: 5
+  NJ_NJCJIS_VehicleRegistrationQuery | attrs=5 combos=2 autoSelect=
+  NJ_NJCJIS_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
+  NJ_NJCJIS_GunQuery | attrs=3 combos=1 autoSelect=
+  NJ_NJCJIS_ArticleSingleQuery | attrs=2 combos=1 autoSelect=
+  NJ_NJCJIS_BoatQuery | attrs=3 combos=2 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH"
+      ROW ROW_VEH_1 [8 4]
+        LicensePlateNumberIn (Text | maxLen=10)
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=NJ)
+      ROW ROW_VEH_2 [6 6]
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
+        LicensePlateYear (Text | maxLen=4)
+      ROW ROW_VEH_3 [12]
+        VehicleIdentificationNumber (Text | maxLen=20)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER"
+      ROW ROW_PER_1 [8 2 2]
+        OperatorLicenseNumber (Text | maxLen=20)
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=NJ)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=Y)
+      ROW ROW_PER_2 [6 6]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+      ROW ROW_PER_3 [6 6]
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [6 6]
+        GunSerialNumber (Text | maxLen=11)
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NJ_NIBRS)
+      ROW ROW_GUN_2 [6]
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NJ_NIBRS)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA"
+      ROW ROW_BOA_1 [8 4]
+        RegistrationNumber (Text | maxLen=8)
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=NJ)
+      ROW ROW_BOA_2 [12]
+        BoatHullIdNumber (Text | maxLen=20)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    SocialSecurityNumber -> ssn
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    RaceCode -> raceAttrIds (useAttrId)
+    SexCode -> sexAttrId (useAttrId)
+    OperatorLicenseNumberOOS -> dlNumber
+    NameFirstOOS -> firstName
+    NameLastOOS -> lastName
+    BirthDateOOS -> dateOfBirth
+    SexCodeOOS -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleYear -> vehicle.yearOfManufacture
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    VehicleMakeCode -> vehicle.makeNcicCode
+    VehicleModelCode -> vehicle.modelNcicCode
+    LicensePlateNumberIn -> vehicle.tag
+    LicensePlateNumberOut -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId)
+    RegistrationStateOut -> vehicle.registrationStateAttrIds (useAttrId)
+    OwnerFirstName -> propertyPersons[0].person.firstName
+    OwnerLastName -> propertyPersons[0].person.lastName
+

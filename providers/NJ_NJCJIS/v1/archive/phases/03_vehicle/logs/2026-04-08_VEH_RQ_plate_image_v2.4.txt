@@ -1,0 +1,71 @@
+NJ_NJCJIS -- Query Log
+======================
+Date      : 2026-04-08
+JSON ver  : v2.4
+Query type: VehicleRegistrationQuery (RQ -- plate + Image=Y)
+Test      : Plate Number + State; Image changed to Y; Random=N (default)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KNQ0Q4MQNXKZE0SYAFCDS3PH
+  MessageType : VehicleRegistrationQuery
+
+  Fields in request:
+    ImageIndicator     Y
+    State              NJ
+    RandomRequest      N
+    LicensePlateNumber PLATEIMAGE
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQ (LicensePlateNumber + State present)
+
+  Field                        Sent    Note
+  ---------------------------  ----    ------------------------------------------------
+  LicensePlateNumber           YES     PLATEIMAGE
+  State                        YES     NJ
+  ImageIndicator               YES     Y (operator changed from default N)
+  RandomRequest                YES     N (default)
+  LicensePlateTypeCode         NO      not filled
+  LicensePlateYear             NO      not filled
+  VehicleIdentificationNumber  NO      not filled -- correctly excluded
+
+================================================================================
+ANALYSIS
+================================================================================
+
+  PASS -- ImageIndicator=Y sent correctly.
+    Operator changed default N to Y. Y serialized into request as expected.
+    Confirms full Y/N behavior for ImageIndicator on Vehicle form:
+      Y (operator change) -- sent as Y
+      N (default)         -- sent as N
+      blank (cleared)     -- not sent (pending blank-test phase)
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KNQ0Q4MQNXKZE0SYAFCDS3PH">
+      <LawEnforcementTransaction version="1.0">
+        <Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session>
+        <Transaction><Request>
+          <MessageType>VehicleRegistrationQuery</MessageType>
+          <Id>01KNQ0Q4MQNXKZE0SYAFCDS3PH</Id>
+          <ImageIndicator>Y</ImageIndicator>
+          <State>NJ</State>
+          <RandomRequest>N</RandomRequest>
+          <LicensePlateNumber>PLATEIMAGE</LicensePlateNumber>
+        </Request></Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>

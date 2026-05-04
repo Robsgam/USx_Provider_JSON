@@ -1,0 +1,60 @@
+﻿NY_NYSPIN_EJUSTICE -- BUILD NOTES
+===================================
+Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
+Clean restart from XML metadata as sole source of truth.
+See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+
+LESSONS FROM PRIOR BUILDS (applied in Phase 1 reboot)
+------------------------------------------------------
+Phase model: Phase 1 (single card) confirmed all QIDMs before Phase 2 (multi-card UX).
+  NJ and NY v1.x built multi-card / split-entity before QIDMs were confirmed.
+  Failures were impossible to isolate. Single-card Phase 1 eliminates layout as a variable.
+
+LIMITATION #2 (platform evaluates only ONE QIDM per (targetEntity, query) pair):
+  Discovered NJ v2.6, confirmed NY v1.11. Split configs silently ignored.
+  Vehicle QIDM: merged RVEH+RVIN+RCAR into single QIDM (all distinct keyRefs).
+  DL: DLIC (OLN) + DGRP (separate transaction NyNyspinDriverLicenseNameQuery) -- no conflict.
+  DH: DALL+DALH in single QIDM (DALH = invented distinct keyRef). Confirmed v1.19.
+
+DH-suffix fieldIds: OperatorLicenseNumberDH, NameFirstDH, NameLastDH, NameMiddleDH,
+  NameSuffixDH, BirthDateDH, SexCodeDH. Confirmed v1.17/v1.19. Do not rename.
+
+WINQ/MINQ: discovered not to have Transaction XML definitions -- excluded from Phase 1.
+
+State dual-field: NCIC codeTypeProvider unconfirmed on NY instance. Using NJ_NIBRS_STATE
+  (blank-default) + hidden SelH RegistrationState (initialValue=NY). Test NCIC on Phase 1 import.
+
+Sex NIBRS_SEX CommSys-only: NIBRS reverse-lookup unconfirmed on NY instance.
+  Using codeTypeCategory=NIBRS_SEX (stores text M/F/U). No codeTypeProvider in CommSys QIDM.
+  Sex removed from RMS person QIDM entirely. Same pattern as FL_FCIC.
+
+VERSION HISTORY  (newest first)
+v1.1  2026-04-20  Fix RMS import error: sexcodeoos missing attribute
+  CHANGED
+    - build_ny_nyspin_ejustice.ps1: RMS sex removal patch now strips 'SexCodeOOS'
+      from combination any[] in addition to 'SexCode'.
+    - Filter condition changed from name-based to targetField-based (targetField -ne 'sexAttrId')
+      so both 'sex' (sourceField=SexCode) and 'sexOOS' (sourceField=SexCodeOOS) attrs are removed.
+  REASON
+    - Import failed: "Missing attributes found in query input data mapping: [sexcodeoos]"
+    - HIDLE RMS Person QIDM has 4 OOS combinations (driversLicenseNumberOOS etc.) that include
+      'SexCodeOOS' in any[]. When we removed the sexOOS attribute but not the combination
+      reference, the platform rejected the bundle (unresolved sourceField reference).
+    - Fix: filter both SexCode and SexCodeOOS from combination any[]/set[].
+
+v1.0  2026-04-20  Phase 1 reboot -- single-card single-entity build from XML metadata
+  CHANGED
+    - Complete rewrite of build_ny_nyspin_ejustice.ps1 (Phase 1 architecture).
+    - 5 QIFs (single card each): Vehicle, Person, Firearm, Article, Boat.
+    - 7 QIDMs: VehicleRegistrationQuery (RVEH/RVIN/RCAR), BoatQuery (BVEH/BVIN/RVEH/RCAR),
+      DriverLicenseQuery (DLIC), NyNyspinDriverLicenseNameQuery (DGRP),
+      DriverHistoryQuery (DALL+DALH), GunQuery (GINQ), ArticleSingleQuery (AINQ).
+    - WINQ/MINQ excluded (no Transaction XML in metadata).
+    - State: blank-default NJ_NIBRS_STATE + hidden SelH RegistrationState (RMS).
+    - Sex: NIBRS_SEX CommSys-only, removed from RMS Person QIDM.
+    - DH-suffix fieldIds on all DH fields.
+  REASON
+    - Prior builds (v1.0-v1.21) built multi-card/split-entity before QIDMs were confirmed.
+      Phase 1 single-card isolates QIDM problems from layout problems (NJ lesson).
+
+

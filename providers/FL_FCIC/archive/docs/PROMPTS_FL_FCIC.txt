@@ -1,0 +1,208 @@
+FL_FCIC Build Session Prompts
+==============================
+Version: 1.0
+Date: 2026-04-10
+Session covers: 2026-04-08 through current
+
+These are the user prompts that drove the design and build of FL_FCIC.json (entity-split era,
+v2.0+). Responses and technical detail are in VERSIONS.txt and docs/FL_FCIC_BUILD_LIST.txt.
+Prompts marked [RECONSTRUCTED] were not captured verbatim -- reconstructed from BUILD_LIST
+REQUEST sections and git commit messages.
+
+================================================================================
+SESSION 1  2026-04-08  Entity split work (Changes 1-29)
+================================================================================
+
+[1] [RECONSTRUCTED] "add a new entity named IN State between Person and Vehicle.
+     Move the IN STATE by NAME and IN STATE by DRIVER LICENSE cards from the
+     Person entity into the new IN State entity."
+     -- Change 1: ENTITY_InState added, driver query mappings split
+
+[2] [RECONSTRUCTED] "the in state entity tab is not appearing"
+     -- Change 2: targetEntity 'InState' → 'In State' (platform requires registered name with space)
+
+[3] [RECONSTRUCTED] "undo all in state entity work"
+     -- Change 3: Reverted Changes 1 and 2
+
+[4] [RECONSTRUCTED] "split the person entity into two separate tabs: Person (In State)
+     and Person (Out of State)"
+     -- Change 4: ENTITY_PersonInState + ENTITY_PersonOOS with custom targetEntity names
+        (superseded before validation)
+
+[5] [RECONSTRUCTED] "undo Change 4 entity work. Rebuild with one QUERYINPUTFORM per
+     distinct query path, each form paired 1:1 with its mapping"
+     -- Change 5: ENTITY_FL_DL, ENTITY_OOS_DL, ENTITY_FL_DH, ENTITY_OOS_DH
+        (required new entity type registrations -- not viable)
+
+[6] [RECONSTRUCTED] "undo last change"
+     -- Change 6: Reverted Change 5, back to starting state
+
+[7] [RECONSTRUCTED] "split ENTITY_Person into two QUERYINPUTFORMs using the NJ_NJCJIS
+     pattern -- both share targetEntity='Person', label is the tab name"
+     -- Change 7: ENTITY_Person_InState + ENTITY_Person_OOS (NJ pattern, no mapping changes needed)
+
+[8] [RECONSTRUCTED] "rebuild Person (In State) with two titled sub-cards.
+     Remove RegistrationState, Attention, and PurposeCode fields.
+     Remove Driver History capability from this form."
+     -- Change 8: Sub-card layout for ENTITY_Person_InState (FL_FCIC native pattern)
+
+[9] [RECONSTRUCTED] "same sub-card restructure for Person (Out of State).
+     Keep State fields. Remove only Attention and PurposeCode fields."
+     -- Change 9: Sub-card layout for ENTITY_Person_OOS
+
+[10] [RECONSTRUCTED] "add a shared Image Indicator field above both In State sub-cards.
+      Card title Image Indicator Choice. Field dropdown Y/N default Y."
+      -- Change 10: CARD_IMGIND added to ENTITY_Person_InState
+
+[11] [RECONSTRUCTED] "add a shared Select First card above both OOS sub-cards with
+      ImageIndicator and a single State field. Remove State from each sub-card."
+      -- Change 11: CARD_SELECT_FIRST added to ENTITY_Person_OOS; RegistrationState consolidated
+
+[12] [RECONSTRUCTED] "add a third Person split entity for FL in-state Driver History queries"
+      -- Change 12: ENTITY_Person_DH added
+
+[13] [RECONSTRUCTED] "add a shared Select First card to Person (Driver History) above both
+      sub-cards. Fields: Image Indicator, State, Purpose Code, Attention.
+      State default FL. Attention defaults to signed-in user's LName, FInitial."
+      -- Change 13: CARD_SELECT_FIRST added to ENTITY_Person_DH; Attention/PurposeCode consolidated
+
+[14] [RECONSTRUCTED] "show the auto-populated Attention value ahead of submission"
+      -- Change 14: performSearchAhead=true on Attention_Input in ENTITY_Person_DH
+
+[15] [RECONSTRUCTED] "restrict Driver History checkbox to the DH form only"
+      -- Change 15: entityForms property added (not recognized by platform)
+      -- Change 15 FIX: Missing ImageIndicator attribute added to FL_FCIC_DriverHistoryQuery
+      -- Change 15b: targetEntity='PersonDH' approach tried (DH tab disappeared -- reverted)
+      -- Change 15c: targetEntity restored to 'Person'
+
+[16] [RECONSTRUCTED] "prevent Driver License from lighting on the DH form"
+      -- Change 16: DH-specific fieldIds (NameFirstDH, BirthDateDH, SexCodeDH, etc.)
+         DL combinations can never be satisfied on the DH form
+
+[17] [RECONSTRUCTED] "Driver History checkbox should auto-light when combination is satisfied"
+      -- Change 17: FL_FCIC_DriverHistoryQuery autoSelect false → true
+
+[18] [RECONSTRUCTED] "RMS Person Search is broken after the DH fieldId rename"
+      -- Change 18: RMS Person Search query updated with DH-specific attributes and combinations
+
+[19] [RECONSTRUCTED] "split the Vehicle entity into Vehicle (In State) and Vehicle (Out of State)"
+      -- Change 19: ENTITY_Vehicle_InState + ENTITY_Vehicle_OOS
+
+[20] [RECONSTRUCTED] "add a shared plate year field with default current year"
+      -- Change 20: LicensePlateYear fieldId shared across PLATE and DECAL cards, initialValue=2026
+      -- Change 20 FIX: Single-element set arrays re-wrapped after PowerShell unwrapped them
+
+[21] [RECONSTRUCTED] "use a single RegistrationState fieldId for both OOS state fields"
+      -- Change 21: RegistrationStateOut → RegistrationState in ENTITY_Vehicle_OOS
+
+[22] "update the OUT OF STATE card titles to Either.../Or..."
+      -- Change 22: ENTITY_Vehicle_OOS card titles updated
+
+[23] "update the IN STATE card titles to Either.../Or..."
+      -- Change 23: ENTITY_Vehicle_InState card titles updated
+
+[24] "update the DH card titles to Either.../Or..."
+      -- Change 24: ENTITY_Person_DH card titles updated
+
+[25] "update the OOS person card titles to Either.../Or..."
+      -- Change 25: ENTITY_Person_OOS card titles updated
+
+[26] "update the IN STATE person card titles to Either.../Or..."
+      -- Change 26: ENTITY_Person_InState card titles updated
+
+[27] "swap the Select First field positions on the OOS form"
+      -- Change 27: State | ImageIndicator order on ENTITY_Person_OOS
+
+[28] "swap the Select First field positions on the DH form"
+      -- Change 28: State | ImageIndicator order on ENTITY_Person_DH
+
+[29] "add clearable=true on the Plate Year fields so the user can clear the default year"
+      -- Change 29: clearable=true on LicensePlateYear fields in ENTITY_Vehicle_InState
+
+================================================================================
+SESSION 2  2026-04-09  Firearm/State cleanup + SexCode investigation (Changes 30-34)
+================================================================================
+
+[30] [RECONSTRUCTED] "on the Firearm form remove the NCIC number and process control number
+      fields and convert the indicator checkboxes to dropdowns"
+      -- Change 30: ENTITY_Firearm cleaned up; ImageIndicator + RelatedHitSearchIndicator
+         converted to FormSelect (YES_NO_UNKNOWN/NIBRS)
+
+[31] [RECONSTRUCTED] "align all State fields to use attributeTypeId=STATE"
+      -- Change 31: ENTITY_Vehicle_OOS state fields converted to FormSelect;
+         ENTITY_Boat state field given attributeTypeId=STATE
+
+[32] [RECONSTRUCTED] "the SexCode is transmitting as an attribute ID number instead of M/F/U"
+      -- Change 32: codeTypeProvider: NIBRS added to SexCode attributes in FL_FCIC mappings
+         (did not fix the issue -- codeTypeProvider cannot resolve platform attribute IDs)
+
+[33] [RECONSTRUCTED] "the Sex dropdown shows no values"
+      -- Change 33: form field changed to attributeTypeId: SEX (dropdown shows values now,
+         but still sends attribute ID to outbound query)
+
+[34] [RECONSTRUCTED] "still transmitting attribute ID -- need code value M/F/U"
+      -- Change 34: form field changed to codeTypeSource: NIBRS / codeTypeCategory: SEX
+         FL FCIC now receives code value -- WORKING
+         RMS sexAttrId now receives code value instead of attribute ID -- FAILING (new problem)
+
+[35] [RECONSTRUCTED] "investigate whether the RMS mapping can reverse-lookup the code value
+      back to attribute ID so we don't need dual fields"
+      -- Investigated all provider JSONs (FL_FCIC, TX_TLETS, HIDLE, SDSO_USX, NJ_NJCJIS)
+         No reverse lookup mechanism confirmed -- no path forward without dual fields or removing
+         sex from RMS
+
+[36] [RECONSTRUCTED] "document the conflict and defer -- accept as platform limitation"
+      -- SexCode dual-value conflict documented in BUILD_LIST and deferred.
+         No further action planned unless a platform-side fix becomes available.
+
+================================================================================
+SESSION 3  2026-04-10  Repository setup and protocol
+================================================================================
+
+[37] "please pick up where we left off last night"
+      -- Oriented to last session state; identified working repo as C:/Users/Gordon Hallof/FL_FCIC/
+         (not D:/JSON BACKUP/)
+
+[38] "I want to be sure that ALL FL_FCIC work is done entirely within the FL_FCIC directory
+      within my local directory. This should be the one that I set up with git pull and push."
+      -- Confirmed C:/Users/Gordon Hallof/FL_FCIC/ as the working repo.
+         Remote: https://github.com/LooseConnection/FL_FCIC_JSON.git
+
+[39] "Push"
+      -- Pushed 1 pending commit (6079be0) to origin/master.
+
+[40] "Going forward I want to be sure you are keeping track of ALL work in this directory
+      that occurs. All prompts that are given, the build list, versions of JSON."
+      -- Created this PROMPTS_FL_FCIC.txt file.
+      -- Protocol established: snapshot JSON before each change, update BUILD_LIST,
+         update VERSIONS.txt, commit + push after every change.
+
+================================================================================
+SESSION 3 (continued)  2026-04-10  SexCode re-investigation
+================================================================================
+
+[41] "I need to find out in the RMS query what controls setting the sexAttrID"
+      -- Examined RMS Person Search query in FL_FCIC.json.
+         Three sex attributes: sex/sexOOS/sexDH, each sourced from SexCode/SexCodeOOS/SexCodeDH,
+         all targeting sexAttrId with useAttributeId: true.
+
+[42] "I am trying to figure out why this was working as expected previously.
+      In other words FL_FCIC query was being sent the actual value which is expected
+      and at the same time RMS query was being sent the attribute id."
+      -- Examined HIDLE.json (Hawaii production config).
+         Found HIDLE uses: attributeTypeId: SEX + codeTypeProvider: NIBRS on the form field,
+         codeTypeProvider: NIBRS in the FL FCIC mapping attribute, useAttributeId: true in RMS.
+         This is the exact combination that should satisfy both consumers simultaneously.
+         Our test commit 6446041 applied this pattern but was reverted.
+         Open question: was 6446041 actually live-tested before revert, or was it
+         reverted based on a prior inconclusive test (Change 32, different form config)?
+         See BUILD_LIST HIDLE.json INVESTIGATION section for full detail.
+
+[43] "Please add all these notes appropriately"
+      -- Updated BUILD_LIST: added HIDLE.json INVESTIGATION section after DECISION block.
+      -- Updated PROMPTS_FL_FCIC.txt with prompts 41-43.
+      -- Committed and pushed.
+
+================================================================================
+[New prompts go here]
+================================================================================

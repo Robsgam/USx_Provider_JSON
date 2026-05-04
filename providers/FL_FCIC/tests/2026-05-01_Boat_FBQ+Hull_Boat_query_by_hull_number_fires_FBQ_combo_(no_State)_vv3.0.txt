@@ -1,0 +1,86 @@
+FL_FCIC BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-01
+JSON       : FL_FCIC_BASE.json
+Entity     : Boat
+Combo      : FBQ+Hull
+Test type  : T2 (basic combo verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                       Value              Source
+  --------------------------  -----------------  --------------------------------
+  RegistrationNumber          (empty)            --
+  BoatHullIdNumber            FLH12345A999       typed
+  RegistrationState           (empty)            --
+  DecalNumber                 (empty)            --
+  TitleLienInformation        (empty)            --
+  CoastGuardDocumentNumber    (empty)            --
+  NCICNumber                  (empty)            --
+  ProcessControlNumber        (empty)            --
+  NameLast                    (empty)            --
+  NameFirst                   (empty)            --
+  BirthDate                   (empty)            --
+  ImageIndicator              N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  Request 1 (BoatQuery):
+    Transaction : 01KQJ108511FRPJ3BGMVRAVM87
+    MessageType : BoatQuery
+    keyReference: FBQBoatHullIdNumber
+
+    Fields sent in XML request:
+      Element              Value
+      -------------------  -------------------
+      BoatHullIdNumber     FLH12345A999
+      ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQBoatHullIdNumber (BoatQuery)
+  Reason: set=[BoatHullIdNumber] satisfied, no State = FBQ path (not BQ)
+
+  BoatQuery attributes:
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  BoatHullIdNumber            YES    FLH12345A999    typed
+  ImageIndicator              YES    N               default
+  RegistrationState           NO     --              empty, routes to FBQ
+  RegistrationNumber          NO     --              empty
+  DecalNumber                 NO     --              empty
+  TitleLienInformation        NO     --              empty
+  CoastGuardDocumentNumber    NO     --              empty
+  NCICNumber                  NO     --              empty
+  ProcessControlNumber        NO     --              empty
+  Name                        NO     --              NameLast/NameFirst empty
+  BirthDate                   NO     --              empty
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: NONE (no RMS config for Boat entity)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQ combo fires correctly with hull number only (no State), ImageIndicator=N. No RMS (correct — no Boat RMS config).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+BoatQuery:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KQJ108511FRPJ3BGMVRAVM87"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KQJ108511FRPJ3BGMVRAVM87</Id><BoatHullIdNumber>FLH12345A999</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
