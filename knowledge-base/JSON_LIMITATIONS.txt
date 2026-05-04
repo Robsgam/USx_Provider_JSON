@@ -1,0 +1,187 @@
+CONNECTCIC JSON STRUCTURAL LIMITATIONS
+========================================
+Rules for constructing valid provider JSON that imports and renders correctly.
+Build scripts must enforce these. Violation causes import errors, broken forms,
+or incorrect query behavior.
+Last updated: 2026-05-04
+
+See also:
+  PLATFORM_LIMITATIONS.txt  -- Immutable platform behaviors (can't change)
+  TESTING_LIMITATIONS.txt   -- Instance-specific verification requirements
+  PROVIDER_LIMITATIONS.txt  -- Per-provider exceptions and constraints
+  ANTI_PATTERNS.txt         -- Confirmed broken patterns (AP #1-27)
+  SEX_CODE_PATTERN.txt      -- Full SexCode configuration reference
+
+================================================================================
+SECTION 1 -- BUNDLE STRUCTURE
+================================================================================
+
+LIMITATION #22: QUERYINPUTFORM in RMS bundle causes duplicate entity cards
+  Confirmed: NJ, NY
+  Rule: QUERYINPUTFORM belongs ONLY in the ENTITIES bundle (provider=MARK43).
+  Adding it to any other bundle renders each form twice.
+
+BUNDLE ORDER: ENTITIES bundle must be first.
+  Confirmed: AZ v2.0 -- forms do not render when ENTITIES is not first.
+  Order: 1=ENTITIES (provider=MARK43), 2=PROVIDER, 3=RMS
+
+BUNDLE TYPE: Every bundle must have type='BUNDLE'.
+  Confirmed: AZ v1.0. Missing type causes import rejection.
+
+================================================================================
+SECTION 2 -- FIELD NAMING AND IDENTIFICATION
+================================================================================
+
+LIMITATION #8: LicensePlateNumber (generic) does not trigger RMS plate search
+  Confirmed: NJ v3.13
+  Rule: Use fieldId='LicensePlateNumberIn' (in-state) or 'LicensePlateNumberOut' (OOS).
+  These come from HIDLE.json and must match exactly.
+  QIDM targetField remains 'LicensePlateNumber' (outbound XML element unchanged).
+
+LIMITATION #21: Duplicate keyReference rejected at import
+  Confirmed: NJ v3.12, NY v1.13
+  Error: "Duplicate key references found in query input data mapping."
+  Rule: Each combination within a single QIDM must have a distinct keyReference.
+  Fix: Use invented distinct keyRef (e.g., DALL + DALH). Provider routes by field
+    content in the XML, not by keyRef. keyRef is platform-internal only.
+  Confirmed working: NY v1.19 (invented DALH accepted, both paths fire correctly).
+
+PROPERTY NAME: Use 'keyReference' not 'keyRef' on QIDM combinations.
+  Wrong property name causes silent null, then import rejection.
+
+================================================================================
+SECTION 3 -- CODE TYPE PAIRINGS
+================================================================================
+
+LIMITATION #16: YES_NO codeTypeCategory is not recognized
+  Confirmed: NJ v1.7
+  Rule: Use YES_NO_UNKNOWN instead. No YES_NO or YESNO category exists.
+  Applies to: RandomRequest, ImageIndicator, all Y/N dropdown situations.
+
+LIMITATION #17: ArticleTypeCode requires codeTypeSource=CA_CLETS
+  Confirmed: NJ v1.0
+  Rule: NCIC gives empty dropdown for NCIC_ARTICLE_TYPE. Use CA_CLETS source.
+
+LIMITATION #18: NIBRS_RACE requires codeTypeSource=NIBRS (not NCIC)
+  Confirmed: NY v1.12 (2026-04-14)
+  Rule: NCIC gives empty dropdown for NIBRS_RACE.
+  Correct: codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'
+
+LIMITATION #20: VEHICLE_BODY_STYLE and VEHICLE_TYPE are provider-specific
+  Rule: Must verify codeTypeSource per provider.
+  Known mappings:
+    NJ: VEHICLE_BODY_STYLE / NJ_NIBRS
+    CA: VEHICLE_BODY_STYLE / VEHICLE
+    HI: VEHICLE_TYPE / HI_NIBRS
+    NCIC source = empty dropdown for both.
+
+LIMITATION #10: FormSelect YES_NO_UNKNOWN exposes N and U options
+  Confirmed: NJ v1.7
+  Impact: Y/N/U all selectable. For Y-only flag fields: use FormInput maxLength=1
+    (officer types Y when needed, blank = not sent).
+
+================================================================================
+SECTION 4 -- FIELD ENCODING RULES
+================================================================================
+
+LIMITATION #19: SexCode -- complex field requiring specific configuration
+  Rule: attributeTypeId='SEX' + codeTypeProvider='NIBRS' on BOTH form field AND
+    CommSys QIDM attribute. RMS sex uses useAttributeId=true with NO rule handler.
+  Confirmed working: NJ, AZ, FL (single-QIF)
+  Full configuration reference: SEX_CODE_PATTERN.txt
+  See also: LIMITATION #27 (ArrayWrapper breaks it), LIMITATION #28 (entity-split breaks it)
+
+LIMITATION #27: AttributeArrayWrapperRuleHandler on RMS sex = 400 error
+  Confirmed: NJ v3.25 (2026-04-17)
+  Rule: Do NOT add AttributeArrayWrapperRuleHandler to the RMS sex attribute.
+  HIDLE default (useAttributeId=true, no rule handler) produces correct string output.
+  Adding the handler wraps sexAttrId in array -> RMS rejects with 400.
+
+STATE FIELD (NCIC Pattern):
+  Single visible Sel 'RegistrationState': attributeTypeId='STATE', initialValue='<state>'.
+  CommSys QIDM: sourceField=['RegistrationState'], codeTypeProvider='NCIC'.
+  RMS: HIDLE default (useAttributeId=true + AttributeArrayWrapperRuleHandler).
+  Confirmed: NJ, AZ, NY. See TESTING_LIMITATIONS.txt for unconfirmed instances.
+  See PLATFORM_LIMITATIONS.txt #4 for why attributeTypeId='STATE' needs codeTypeProvider.
+  See PLATFORM_LIMITATIONS.txt #30 for initialValue routing interaction.
+
+STATE FIELD (Fallback):
+  When NCIC reverse-lookup is not supported on an instance:
+  Dual-field pattern: SelH RegistrationState (RMS) + InpH with initialValue (CommSys).
+  See FORM_ARCHITECTURE.txt Section 3.
+
+DATE FIELDS:
+  FormDate sends ISO yyyy-MM-dd. QIDM attribute must use CommsysParseDateRuleHandler
+  with arguments=['yyyy-MM-dd','<provider-format>']. Provider format varies (see
+  PROVIDER_LIMITATIONS.txt).
+
+NAME FIELD (composite):
+  Separate FormInput fields: NameFirst, NameLast, NameMiddle, NameSuffix.
+  QIDM: rule=FormatStringRuleHandler, sourceField=all name fields, targetField='Name'.
+  Arguments count = sourceField count minus 1 (2 fields = 1 arg, 4 fields = 3 args).
+
+================================================================================
+SECTION 5 -- LAYOUT CONSTRAINTS
+================================================================================
+
+LIMITATION #11: Card.props.title renders plain text only
+  HTML tags appear verbatim. Use ALL CAPS for emphasis.
+  Non-ASCII characters (em dash, smart quotes) render as mojibake (AP #26).
+  Rule: ASCII only in card titles. Use hyphen-minus (U+002D), not em dash.
+
+LIMITATION #12: No conditional field visibility
+  hidden is static (true/false only). Cannot show/hide based on user input.
+  Workaround: All fields visible; QIDM set/any handles routing.
+
+LIMITATION #13: No field styling
+  No font size, color, weight props on any node type.
+  Workaround: Field ordering and Card titles only.
+
+LIMITATION #14: No standalone text/label component
+  Components: Card, Row, FormInput, FormSelect, FormDate, FormCheckbox.
+  Workaround: Card.props.title for instructional text.
+
+================================================================================
+SECTION 6 -- MULTI-QIDM FORM PATTERNS
+================================================================================
+
+LIMITATION #24: Two QIDMs on same form -- autoSelect + queriesToDeselect
+  Confirmed: FL_FCIC (2026-04-10)
+  Rule: When DL and DH share a Person form, add to each QIDM:
+    autoSelect: true
+    queriesToDeselect: ["<other query name>"]
+  Without this: both queries fire on every submission.
+  ALWAYS pair with LIMITATION #25 (DH-suffix fieldIds).
+  Do NOT put queriesToDeselect on DL QIDMs in separate-form designs (deadlocks).
+
+LIMITATION #25: DH-suffix fieldIds when DL and DH share a form
+  Confirmed: FL_FCIC (2026-04-10)
+  Rule: DH form fields use suffixed fieldIds:
+    NameFirstDH, NameLastDH, NameMiddleDH, NameSuffixDH,
+    BirthDateDH, SexCodeDH, OperatorLicenseNumberDH
+  DH QIDM set[]/sourceField reference only DH-suffixed names.
+  Result: DL and DH set[] reference different fields -- cannot co-fire accidentally.
+
+================================================================================
+SECTION 7 -- TYPE SAFETY (Build Script)
+================================================================================
+
+templateColumns: MUST be array of strings (["6","6"]), not integers.
+maxLength: MUST be string ("20"), not number.
+autoSelect: MUST be boolean (true), not string.
+keyReference: Not keyRef. Wrong property name = silent null.
+rule: Use { function: "HandlerName" }, not ruleHandlers: [{name:...}].
+
+C# and PowerShell JSON serializers silently produce wrong types.
+Always run validator after build script execution.
+
+================================================================================
+SECTION 8 -- IMAGEINDICATOR REQUIREMENTS
+================================================================================
+
+ImageIndicator requires three things (all must be met):
+  1. QIDM attribute: size=1
+  2. FormSelect: initialValue='Y' (Person/Firearm) or 'N' (Vehicle)
+  3. Field must be in set[] or any[] of at least one combination
+
+Missing any of these causes ImageIndicator to not serialize to XML.

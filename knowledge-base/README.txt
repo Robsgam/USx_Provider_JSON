@@ -1,9 +1,8 @@
 CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
-Last updated: 2026-04-30
-Covers: NJ_NJCJIS (v1.7 Phase 1 COMPLETE), NY_NYSPIN_EJUSTICE (v1.1 Phase 1 ready to import),
-        AZ_AZDPS (v1.0 Phase 1 ready to import)
+Last updated: 2026-05-04
+Covers: 7 providers (NJ/AZ/FL/NY/HI/TX/LA) in consolidated monorepo
 
 CURRENT BASELINE (use as structural reference for all new builds):
   NJ_NJCJIS_BASE.json -- v1.7 Phase 1, 25/25 PASS (2026-04-20)
@@ -26,38 +25,53 @@ FILES IN THIS FOLDER
 
   README.txt               This file -- index and overview
   BUNDLE_ARCHITECTURE.txt  3-bundle structure, AUTH/QMF/QRDM patterns, RMS patches, rule handlers
-  PLATFORM_LIMITATIONS.txt Confirmed platform behaviors and hard limits (numbered, #1-#26)
   FIELD_RULES.txt          Field type selection, codeType pairings, attribute rules
   QIDM_ARCHITECTURE.txt    QIDM design: combinations, routing, merge/split decisions
   FORM_ARCHITECTURE.txt    QIF design: state fields, layout, multi-card patterns
   IMPORT_ERRORS.txt        Error messages seen at import -- cause and fix
-  ANTI_PATTERNS.txt        Confirmed dead ends -- do not attempt these
+  ANTI_PATTERNS.txt        Confirmed dead ends -- do not attempt these (AP #1-27)
   BUILD_CHECKLIST.txt      Pre-build, pre-import, post-import steps
   SEX_CODE_PATTERN.txt     *** How to configure sex code for CommSys + RMS simultaneously ***
-                           Three-layer chain (form + QIDM + RMS). Confirmed AZ, NJ. FL checklist.
+                           Three-layer chain (form + QIDM + RMS). Confirmed AZ, NJ, FL.
   RMS_SEX_ISSUE_REPORT.txt Full history of sex code investigation (19 options tested, root cause).
-  RULE_HANDLERS.txt     Complete reference for all 24 rule handlers: 4 property paths, handler functions,
-                         attribute rule handlers, dead ends. Includes origin map and build checklist.
-  DEFAULTS_USABILITY.txt Standard defaults, cross-project audit, State default safety rules, usability checklist
-  DEVELOPER_TOOLS.txt    Required tools, scripts, workflow, and folder structure for JSON development
+  RULE_HANDLERS.txt        Complete reference for all 24 rule handlers: 4 property paths,
+                           handler functions, attribute rule handlers, dead ends.
+  DEFAULTS_USABILITY.txt   Standard defaults, cross-project audit, State default safety rules
+  DEVELOPER_TOOLS.txt      Required tools, scripts, workflow, and folder structure
+
+  LIMITATION FILES (4 files, separated by category):
+  PLATFORM_LIMITATIONS.txt   Immutable platform behaviors (query routing, field encoding,
+                              shared pool, server-side overrides). #1-5, #7, #9, #23, #26, #28-30
+  JSON_LIMITATIONS.txt        JSON structural/config rules (bundle order, field naming, code types,
+                              type safety, layout constraints). #8, #10-14, #16-22, #24-25, #27
+  TESTING_LIMITATIONS.txt     Instance-specific verification requirements, unconfirmed features,
+                              validator markers. #6, #15, confirmation matrix
+  PROVIDER_LIMITATIONS.txt    Per-provider exceptions and constraints. NJ/AZ/FL/NY/HI/TX/LA
+                              specific rules, cross-provider consistency checks
 
   READ ORDER FOR A NEW PROVIDER:
     0. DEVELOPER_TOOLS.txt (verify all tools are installed)
     1. README.txt (this file)
     2. BUNDLE_ARCHITECTURE.txt (understand the structure before writing any code)
-    3. PLATFORM_LIMITATIONS.txt (know the constraints before designing)
-    4. ANTI_PATTERNS.txt (know what not to try before writing any field)
-    5. FIELD_RULES.txt (look up every field type and code type pairing)
-    6. QIDM_ARCHITECTURE.txt (combination and routing rules)
-    7. FORM_ARCHITECTURE.txt (layout patterns per entity)
-    8. BUILD_CHECKLIST.txt (run through before building, importing, and testing)
-    9. DEFAULTS_USABILITY.txt (standard defaults, State safety, cross-project consistency)
+    3. PLATFORM_LIMITATIONS.txt (know the immutable platform constraints)
+    4. JSON_LIMITATIONS.txt (know the JSON structural rules)
+    5. ANTI_PATTERNS.txt (know what not to try before writing any field)
+    6. FIELD_RULES.txt (look up every field type and code type pairing)
+    7. QIDM_ARCHITECTURE.txt (combination and routing rules)
+    8. FORM_ARCHITECTURE.txt (layout patterns per entity)
+    9. PROVIDER_LIMITATIONS.txt (check your provider's specific constraints)
+   10. BUILD_CHECKLIST.txt (run through before building, importing, and testing)
+   11. DEFAULTS_USABILITY.txt (standard defaults, State safety, cross-project consistency)
+   12. TESTING_LIMITATIONS.txt (instance-specific tests for first import)
 
   SPECIFIC TOPICS (go directly here for known issues):
-    Sex code (CommSys + RMS):   SEX_CODE_PATTERN.txt
-    State field architecture:   FIELD_RULES.txt Section 4
-    Article type dropdown:      FIELD_RULES.txt Section 2 (codeTypeSource=CA_CLETS)
-    Import error messages:      IMPORT_ERRORS.txt
+    Sex code (CommSys + RMS):       SEX_CODE_PATTERN.txt
+    State field architecture:       FIELD_RULES.txt Section 4
+    Article type dropdown:          FIELD_RULES.txt Section 2 (codeTypeSource=CA_CLETS)
+    Import error messages:          IMPORT_ERRORS.txt
+    Provider-specific constraints:  PROVIDER_LIMITATIONS.txt
+    First-import test checklist:    TESTING_LIMITATIONS.txt Section 1
+    Cross-provider consistency:     PROVIDER_LIMITATIONS.txt (bottom section)
 
 ================================================================================
 TOOLS
