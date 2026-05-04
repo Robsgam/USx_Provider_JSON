@@ -5,9 +5,9 @@ Last updated: 2026-05-04
 Covers: 7 providers (NJ/AZ/FL/NY/HI/TX/LA) in consolidated monorepo
 
 CURRENT BASELINE (use as structural reference for all new builds):
-  NJ_NJCJIS_BASE.json -- v1.7 Phase 1, 25/25 PASS (2026-04-20)
+  NJ_NJCJIS_BASE.json -- v2.0 Phase 1+MC, 64P/0F/3W/2LIM (2026-04-29)
   Phase model: single-entity, single-card QIFs. Confirm all QIDMs before layout work.
-  NCIC state pattern confirmed NJ + AZ. NIBRS sex confirmed NJ + AZ.
+  NCIC state pattern confirmed NJ + AZ. NIBRS sex confirmed NJ + AZ + FL.
   Avoid old NJ v3.x (split entity) and old NY v1.0-v1.21 (multi-form) as templates --
   those were built before Phase 1 model was established. Start from Phase 1 model.
 
@@ -20,58 +20,73 @@ SOURCE AUTHORITY RULE: The provider XML (MetaData) is the build authority.
   Document any MetaData vs. DevDoc discrepancies in [PROVIDER]_PDF_XML_INCONSISTENCIES.txt.
 
 ================================================================================
-FILES IN THIS FOLDER
+FILES IN THIS FOLDER (9 files, organized by question)
 ================================================================================
 
   README.txt               This file -- index and overview
-  BUNDLE_ARCHITECTURE.txt  3-bundle structure, AUTH/QMF/QRDM patterns, RMS patches, rule handlers
-  FIELD_RULES.txt          Field type selection, codeType pairings, attribute rules
-  QIDM_ARCHITECTURE.txt    QIDM design: combinations, routing, merge/split decisions
-  FORM_ARCHITECTURE.txt    QIF design: state fields, layout, multi-card patterns
-  IMPORT_ERRORS.txt        Error messages seen at import -- cause and fix
-  ANTI_PATTERNS.txt        Confirmed dead ends -- do not attempt these (AP #1-27)
-  BUILD_CHECKLIST.txt      Pre-build, pre-import, post-import steps
-  SEX_CODE_PATTERN.txt     *** How to configure sex code for CommSys + RMS simultaneously ***
-                           Three-layer chain (form + QIDM + RMS). Confirmed AZ, NJ, FL.
-  RMS_SEX_ISSUE_REPORT.txt Full history of sex code investigation (19 options tested, root cause).
-  RULE_HANDLERS.txt        Complete reference for all 24 rule handlers: 4 property paths,
-                           handler functions, attribute rule handlers, dead ends.
-  DEFAULTS_USABILITY.txt   Standard defaults, cross-project audit, State default safety rules
-  DEVELOPER_TOOLS.txt      Required tools, scripts, workflow, and folder structure
 
-  LIMITATION FILES (4 files, separated by category):
-  PLATFORM_LIMITATIONS.txt   Immutable platform behaviors (query routing, field encoding,
-                              shared pool, server-side overrides). #1-5, #7, #9, #23, #26, #28-30
-  JSON_LIMITATIONS.txt        JSON structural/config rules (bundle order, field naming, code types,
-                              type safety, layout constraints). #8, #10-14, #16-22, #24-25, #27
-  TESTING_LIMITATIONS.txt     Instance-specific verification requirements, unconfirmed features,
-                              validator markers. #6, #15, confirmation matrix
-  PROVIDER_LIMITATIONS.txt    Per-provider exceptions and constraints. NJ/AZ/FL/NY/HI/TX/LA
-                              specific rules, cross-provider consistency checks
+  BUILD_RULES.txt          "How do I structure a provider JSON?"
+                           3-bundle architecture, AUTH/QMF/QRDM configs, RMS patches 1-6,
+                           QIF layout structure, build phase model, state field patterns,
+                           entity field patterns, layout constraints, type safety rules
+
+  FIELD_REFERENCE.txt      "How do I configure this specific field?"
+                           Field type selection, code type pairings table, attributeTypeId
+                           rules, sex code 3-layer chain, state field NCIC/dual-field,
+                           date/name/plate/ImageIndicator configs, operational identity
+                           fields, initialValue defaults, queryLabel standard
+
+  QIDM_REFERENCE.txt       "How do I set up query routing?"
+                           QIDM properties, combination basics, routing rules, merge vs
+                           split decision tree, multi-query person forms (DL+DH scenarios
+                           A/B/C), known query patterns, field naming constraints
+
+  PLATFORM_CONSTRAINTS.txt "What CAN'T I do? What breaks?"
+                           All 30 platform limitations (#1-#30) + all 27 anti-patterns
+                           (AP #1-#27) organized by category. Anti-patterns folded into
+                           their related constraints. Confirmed dead ends.
+
+  PROVIDER_CONSTRAINTS.txt "What's special about THIS provider?"
+                           Per-provider exceptions: NJ(5), AZ(5), FL(7), NY(7), HI(5),
+                           TX(4), LA(6). Cross-provider consistency rules.
+
+  TESTING_REQUIREMENTS.txt "How do I build, test, and validate?"
+                           Build phase model, pre-build checklist, autonomous design
+                           decisions, RMS patch checklist, defaults/usability audit,
+                           pre/post-import checklists, instance-specific behaviors,
+                           confirmation status matrix, mandatory gates (2-5),
+                           test sequences, validator markers, failure investigation
+
+  IMPORT_ERRORS.txt        "Why did import fail?"
+                           7 known import errors with root cause and fix
+
+  RULE_HANDLERS.txt        "What handlers exist?"
+                           24 handlers: 4 property paths, 9 handler functions,
+                           14 attribute rule handlers, 1 special handler.
+                           Origin map, dead ends, build script checklist.
 
   READ ORDER FOR A NEW PROVIDER:
-    0. DEVELOPER_TOOLS.txt (verify all tools are installed)
     1. README.txt (this file)
-    2. BUNDLE_ARCHITECTURE.txt (understand the structure before writing any code)
-    3. PLATFORM_LIMITATIONS.txt (know the immutable platform constraints)
-    4. JSON_LIMITATIONS.txt (know the JSON structural rules)
-    5. ANTI_PATTERNS.txt (know what not to try before writing any field)
-    6. FIELD_RULES.txt (look up every field type and code type pairing)
-    7. QIDM_ARCHITECTURE.txt (combination and routing rules)
-    8. FORM_ARCHITECTURE.txt (layout patterns per entity)
-    9. PROVIDER_LIMITATIONS.txt (check your provider's specific constraints)
-   10. BUILD_CHECKLIST.txt (run through before building, importing, and testing)
-   11. DEFAULTS_USABILITY.txt (standard defaults, State safety, cross-project consistency)
-   12. TESTING_LIMITATIONS.txt (instance-specific tests for first import)
+    2. BUILD_RULES.txt (understand the structure before writing any code)
+    3. PLATFORM_CONSTRAINTS.txt (know the immutable constraints and dead ends)
+    4. FIELD_REFERENCE.txt (look up every field type and code type pairing)
+    5. QIDM_REFERENCE.txt (combination and routing rules)
+    6. PROVIDER_CONSTRAINTS.txt (check your provider's specific constraints)
+    7. TESTING_REQUIREMENTS.txt (build checklist, defaults audit, test workflow)
+    8. RULE_HANDLERS.txt (handler signatures for build script reference)
 
   SPECIFIC TOPICS (go directly here for known issues):
-    Sex code (CommSys + RMS):       SEX_CODE_PATTERN.txt
-    State field architecture:       FIELD_RULES.txt Section 4
-    Article type dropdown:          FIELD_RULES.txt Section 2 (codeTypeSource=CA_CLETS)
+    Sex code (CommSys + RMS):       FIELD_REFERENCE.txt Section 4
+    State field architecture:       FIELD_REFERENCE.txt Section 5
+    Article type dropdown:          FIELD_REFERENCE.txt Section 2 (codeTypeSource=CA_CLETS)
+    QIDM merge vs split:           QIDM_REFERENCE.txt Section 4
+    DL+DH multi-query patterns:    QIDM_REFERENCE.txt Section 5
     Import error messages:          IMPORT_ERRORS.txt
-    Provider-specific constraints:  PROVIDER_LIMITATIONS.txt
-    First-import test checklist:    TESTING_LIMITATIONS.txt Section 1
-    Cross-provider consistency:     PROVIDER_LIMITATIONS.txt (bottom section)
+    Provider-specific constraints:  PROVIDER_CONSTRAINTS.txt
+    First-import test checklist:    TESTING_REQUIREMENTS.txt Section 8
+    Cross-provider consistency:     PROVIDER_CONSTRAINTS.txt (bottom section)
+    Anti-patterns by number:        PLATFORM_CONSTRAINTS.txt (cross-reference index)
+    Defaults and usability:         TESTING_REQUIREMENTS.txt Section 6
 
 ================================================================================
 TOOLS
@@ -91,6 +106,44 @@ TOOLS
     Usage: powershell.exe -ExecutionPolicy Bypass -File validate.ps1 -Path <json> [-ShowDetail]
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
+  tools/build_report.ps1
+    Master build report. Runs all 5 tools (validator + layout + query sim + picklist + HTML).
+    Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
+    Run after EVERY JSON build or edit.
+
+  tools/render_layout.ps1
+    CLI layout tree renderer.
+    Usage: -Path <json> [-Summary] [-Entity <name>] [-Variant <type>] [-QidmOnly]
+
+  tools/test_commsys.ps1
+    CommSys query simulator. Shows which combos fire and simulated XML output.
+    Usage: -Path <json> [-Entity <name>] [-Combo <keyRef>]
+
+  tools/report_picklists.ps1
+    Scans all FormSelect dropdowns + QRDM/QIDM code types.
+    Usage: -Path <json> [-OutFile <path>]
+
+  tools/render_html.ps1
+    Self-contained HTML layout report with color-coded fields and QIDM tables.
+    Usage: -Path <json> -OutFile <path>
+
+  tools/new_test_log.ps1
+    Creates a stub test log in tests/. Required by GATE 2 before every test.
+    Usage: -Provider <name> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo>
+
+================================================================================
+PREREQUISITES
+================================================================================
+
+  Git for Windows       https://gitforwindows.org/
+                        Provides: bash, git, pdftotext (via MinGW)
+
+  PowerShell 5.1+      Included with Windows. Scripts require -ExecutionPolicy Bypass.
+
+  pdftotext             Included with Git for Windows MinGW.
+                        Usage: pdftotext "source/<Provider>.pdf" "source/<PROVIDER>_DEVDOC.txt"
+                        If missing: choco install poppler OR winget install poppler
+
 ================================================================================
 AUTHORITATIVE SOURCE FILES (read-only)
 ================================================================================
@@ -107,7 +160,7 @@ AUTHORITATIVE SOURCE FILES (read-only)
     DH-suffix pattern, GunQuery sourceField naming).
 
   providers/NJ_NJCJIS/   *** CONFIRMED BASELINE ***
-    Phase 1 standup COMPLETE -- v1.7, 25/25 PASS (2026-04-20).
+    Phase 1 standup COMPLETE -- v2.0, 64P/0F/3W/2LIM (2026-04-29).
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
     NJ_NJCJIS_BASE.json = permanent Phase 1 reference (do not overwrite).
     Best reference for: NCIC state pattern, NIBRS sex pattern, RMS person state patch,
@@ -117,31 +170,25 @@ AUTHORITATIVE SOURCE FILES (read-only)
   providers/NY_NYSPIN_EJUSTICE/
     Phase 1 reboot complete -- v1.1 built (2026-04-20), import PENDING.
     Legacy repo (read-only): https://github.com/Robsgam/NY_NYSPIN_EJUSTICE
-    Best reference for: DGRP/NyNyspinDriverLicenseNameQuery separate transaction,
-    DALL+DALH invented keyRef, DH-suffix isolation, blank-default NJ_NIBRS_STATE (NCIC unconfirmed NY),
-    NIBRS_SEX CommSys-only + sex removed from RMS (when reverse-lookup unconfirmed).
+    Best reference for: DALL+DALH invented keyRef, DH co-fire design,
+    blank-default State (LIMITATION #30), NIBRS_SEX CommSys-only pattern.
     AVOID as template: old NY v1.0-v1.21 (multi-form split-entity before Phase 1 model).
 
   providers/AZ_AZDPS/
-    Phase 1 -- v1.1 built (2026-04-20), forms confirmed rendered, tests PENDING.
+    Phase 1 -- v2.0 built (2026-04-30), import PENDING.
     Legacy repo (read-only): https://github.com/Robsgam/AZ_AZDPS
     Best reference for: all-on-one-person-card design (DL + DH + Wanted + Missing),
-    dexStateUserId auto-populate pattern (badge hidden, auto-filled from officer profile),
-    yyyyMMdd date format, AZ NCIC/NIBRS confirmed patterns, Wanted/Missing on Person form.
-    8 QIDMs: VehicleReg, DL (4 paths), DH (2 paths), GunQuery, ArticleSingle, BoatQuery (4 paths),
-    WMPIWanted (2 paths), WMPIMissing (2 paths).
+    dexStateUserId auto-populate pattern, yyyyMMdd date format, WMPI queries.
 
   templates/CODETYPE_TEST.json
     Code source dropdown test file. Shows which codeTypeCategory values
     populate under which codeTypeSource. Use before committing any new dropdown.
 
 ================================================================================
-FULL BUILD GUIDE (workflow, prompts, folder structure)
+ARCHIVE
 ================================================================================
 
-  knowledge-base/CONNECTCIC_BUILD_GUIDE.txt
-
-  The build guide covers: folder structure, standup prompts, gap check process,
-  build script pattern, phase transitions, test log format, documentation workflow.
-  This knowledge base covers: confirmed technical rules and known issues.
-  Use both together.
+  knowledge-base/archive/
+    Contains the original pre-consolidation KB files (18 files).
+    Preserved for reference only. All content has been merged into the 9 files above.
+    Do not use archived files for builds -- use the consolidated versions.

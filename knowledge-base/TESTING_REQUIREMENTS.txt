@@ -1,0 +1,714 @@
+CONNECTCIC TESTING REQUIREMENTS
+==================================
+How to build, test, and validate a provider JSON.
+Last updated: 2026-05-04
+
+Consolidated from: BUILD_CHECKLIST.txt, TESTING_LIMITATIONS.txt, DEFAULTS_USABILITY.txt.
+
+See also:
+  BUILD_RULES.txt            -- Structural rules, bundle architecture, field configs
+  FIELD_REFERENCE.txt        -- Field definitions, code types, handler signatures
+  QIDM_REFERENCE.txt         -- Combo rules, merge/split, ordering, co-fire
+  PLATFORM_CONSTRAINTS.txt   -- Dead ends and immutable platform behaviors
+
+================================================================================
+SECTION 1 -- BUILD PHASE MODEL
+================================================================================
+
+  Follow this order. Do not skip phases.
+
+  PHASE 1 -- STANDUP (single entity, single card)
+    Goal: confirm every query path and QIDM combination works.
+    One QIF per entity. One card per QIF. All fields on that card.
+    No multi-card. No split entity. No UX decisions.
+    This is the only baseline that isolates QIDM/combination problems
+    from layout problems.
+    Complete 100% of query path testing before leaving Phase 1.
+    Output: <PROVIDER>_BASE.json (save a copy -- this is the Phase 1
+    reference forever)
+
+  PHASE 2 -- MULTI-CARD
+    Goal: improve operator UX by separating search paths onto distinct cards.
+    Start from the confirmed Phase 1 BASE.json. Build multi-card layout for
+    entities that have 2+ search paths (Vehicle: Plate vs VIN; Person: OLN
+    vs Name).
+    QIDM does not change. Only the form layout changes.
+    Retest only affected entities after layout promotion.
+
+  PHASE 3 -- SPLIT ENTITY (only if needed)
+    Goal: handle cases where two search paths require fundamentally different
+    hidden state fields and cannot share a common state model in one QIF.
+    Examples: in-state form needs SelH+InpH; OOS form needs visible
+    RegistrationStateOOS.
+    Retest all entities after split.
+    Most providers do not need Phase 3 if the NCIC state pattern works
+    (see BUILD_RULES.txt).
+
+  WHY THIS ORDER MATTERS (lessons from NJ and NY):
+    NJ went through multi-card and split-entity in Phase 1. When tests
+    failed it was impossible to tell if the failure was the QIDM, the
+    layout, or the state model. Starting single-card eliminates layout as
+    a variable. QIDM problems surface cleanly. NY introduced multi-card
+    before QIDM combinations were confirmed. Same confusion. Phase 1
+    single-card is the only way to establish a clean causal baseline.
+
+================================================================================
+SECTION 2 -- PRE-BUILD CHECKLIST
+================================================================================
+
+  BEFORE STARTING A NEW PROVIDER:
+
+  [ ] Read README.txt in knowledge-base/
+  [ ] Read BUNDLE_ARCHITECTURE.txt (3-bundle structure, AUTH/QMF/QRDM/RMS
+      patches, rule handlers) -- see BUILD_RULES.txt for consolidated rules
+  [ ] Read CONNECTCIC_BUILD_GUIDE.txt (workflow, prompts, folder structure)
+  [ ] Read PLATFORM_CONSTRAINTS.txt (especially #2, #21, #24-#25)
+  [ ] Read ANTI_PATTERNS.txt before writing any field definitions
+  [ ] Check FIELD_REFERENCE.txt codeType table for every dropdown field
+  [ ] Confirm all target transactions are in the provider XML (MessageKey
+      list). Any missing -> flag in LIMITATIONS.txt and include in gap
+      summary.
+  [ ] Run PDF vs XML gap check before first build (see build guide for prompt)
+  [ ] Check NJ_NJCJIS.json and NY_NYSPIN_EJUSTICE.json as structural
+      reference
+
+  OPERATIONAL IDENTITY FIELDS (ask before writing any form field or QIDM):
+
+  [ ] Does the provider XML include BadgeNumber (or equivalent officer
+      identity field) in any query transaction combinations?
+      YES -> decide now: VISIBLE or AUTO-POPULATED?
+
+      OPTION A -- Visible (officer types badge manually):
+        Form:  Inp 'BadgeNumber' 'Badge Number' '<maxLen>' '<rowId>'
+        QIDM:  sourceField = @('BadgeNumber'), targetField = 'BadgeNumber'
+        Combinations: set/any refs use 'BadgeNumber'
+
+      OPTION B -- Auto-populated from officer RMS profile (RECOMMENDED):
+        Form:  InpH 'dexStateUserId' 'Badge (auto)' @{} '<rowId>'
+               (hidden row)
+        QIDM:  sourceField = @('dexStateUserId'),
+               targetField = 'BadgeNumber'
+        Combinations: set/any refs use 'dexStateUserId'
+        AUTHENTICATION: CommsysGetDexStateUserIdRuleHandler is already
+               wired in AUTH config. No other AUTH changes needed.
+
+      If unsure: ask the end user. "Should officers type their badge each
+      time, or should it be filled automatically from their RMS profile?"
+      Confirmed auto-populate pattern: AZ_AZDPS v1.1 (2026-04-20).
+
+      DO NOT default to visible just because it appears as a form field
+      in the XML spec. The XML spec describes what can be sent -- it does
+      not dictate whether the officer types it or the system fills it.
+      This is a UX and deployment decision.
+      See FIELD_REFERENCE.txt and PLATFORM_CONSTRAINTS.txt.
+
+  PHASE 1 FORM DECISIONS (make these before Phase 1 build):
+
+  [ ] Identify all query types from provider XML (MessageKey list).
+  [ ] Identify all search paths per query type (OLN vs Name, Plate vs
+      VIN, etc.).
+  [ ] Identify all optional fields per path from XML.
+  [ ] Does provider have DriverHistoryQuery? Note for Phase 2 planning.
+  [ ] Does provider have WINQ/MINQ? Note for Phase 2 planning.
+      (Phase 1: DH goes on same Person QIF as DL; Phase 2: split if
+      needed)
+  [ ] For every QIDM covering multiple paths: check keyRefs in MetaData.
+      -> All keyRefs distinct: merge into one QIDM with multiple combos.
+      -> Duplicate keyRefs: invent distinct keyRefs (e.g., DALL + DALH).
+         Provider routes by field content, NOT by keyRef.
+         See QIDM_REFERENCE.txt.
+      -> Only reach "not implementable" after confirming ALL three options
+         fail: (a) separate MetaData transaction, (b) invented keyRef,
+         (c) DH-suffix isolation.
+
+  NAME FIELD CHECK:
+
+  [ ] Check provider MetaData: does it accept NameMiddle and NameSuffix
+      in Name field?
+      YES -> 4-field name, FormatStringRuleHandler arguments = @(' ',' ',' ')
+      NO  -> 2-field name, FormatStringRuleHandler arguments = @(' ')
+      Mismatch causes malformed Name output.
+      See FIELD_REFERENCE.txt for handler signature details.
+
+  BEFORE EACH BUILD:
+
+  [ ] Confirm JSON version bumped (do not overwrite a tested version)
+  [ ] Check every new FormSelect: is codeTypeCategory + codeTypeSource
+      correct? (See FIELD_REFERENCE.txt -- do not guess)
+  [ ] Check every attributeTypeId: is it STATE only, for a SelH, not
+      in QIDM?
+  [ ] Check every SEX field: verify instance-specific reverse-lookup
+      status first.
+      NJ confirmed: attributeTypeId=SEX + codeTypeProvider=NIBRS
+      FL confirmed: NIBRS_SEX + CommSys-only (reverse-lookup fails)
+      Unknown instance: default to codeTypeCategory=NIBRS_SEX (safe)
+      See FIELD_REFERENCE.txt for per-instance status.
+  [ ] Check every RACE field: codeTypeCategory=NIBRS_RACE, NOT
+      attributeTypeId=RACE
+  [ ] Check every state field: dual-field pattern in place?
+      (SelH 'RegistrationState' for RMS + InpH for XML)
+  [ ] Check every QIDM: all keyReferences unique within each QIDM?
+  [ ] Check every combination: set[] and any[] values reference valid
+      sourceField names?
+  [ ] Check ENTITIES bundle order.default: using targetEntity values?
+  [ ] Check every FormatStringRuleHandler: argument count = sourceField
+      count minus 1? (NJ: 2 fields / 1 arg; NY: 4 fields / 3 args)
+  [ ] If DH form present: two-card layout in place (CARD_DH_OLN +
+      CARD_DH_NAME)? DH-suffix fieldIds on all DH form fields and QIDM
+      sourceFields? DALL (OLN) + DALH (Name) or equivalent distinct
+      keyRefs in single QIDM?
+  [ ] If DL+DH on same form (FL pattern): DH-suffix fieldIds +
+      autoSelect + queriesToDeselect?
+  [ ] queriesToDeselect on DL QIDMs? -> NO (platform shared pool;
+      queriesToDeselect deadlocks).
+      queriesToDeselect on DH QIDM? -> NOT NEEDED with single unified
+      QIDM (v1.19 pattern).
+      autoSelect=true on all person QIDMs that should fire automatically?
+  [ ] Check RMS Person QIDM: does it include registrationStateAttrId?
+      (HIDLE does NOT have it)
+      ALWAYS add Patch 3 manually. See Section 5 below.
+  [ ] Check every queryLabel value against the standard
+      (FIELD_REFERENCE.txt):
+      VehicleRegistrationQuery -> "Vehicle Registration"
+      DriverLicenseQuery       -> "Driver License"
+      DriverHistoryQuery       -> "Driver History"
+      GunQuery                 -> "Firearm"
+      ArticleSingleQuery       -> "Article"
+      BoatQuery                -> "Boat"
+      Do NOT use entity names, system names, or generic labels.
+  [ ] Check all card titles (MC only): ASCII characters only.
+      No em dashes, en dashes, or smart quotes -- they render as
+      mojibake.
+  [ ] VehicleMakeCode: if present, use attributeTypeId='VEHICLE_MAKE'
+      for dropdown. Accept that this field does NOT serialize to CommSys
+      XML (platform limitation). Keep codeTypeProvider='NCIC' on QIDM
+      attribute for graceful omission. Do NOT use NCIC_FIREARM_MAKE.
+  [ ] Verify Patch 6 (RMS cleanup) is applied after all other patches.
+      Dead HIDLE attrs with no form fieldId = bloat + false RMS search
+      hits.
+  [ ] Verify every RMS QIDM combo set[]/any[] field has a matching
+      attribute. No orphan field references allowed. CommSys fields
+      with no RMS equivalent (e.g., LicensePlateYear) must NOT appear
+      in RMS combos.
+  [ ] Check State initialValue: do NOT set initialValue on State when
+      provider has separate in-state vs OOS keyRefs (changes combo
+      routing). See LIMITATION #30 and Section 6 below.
+  [ ] Run validator:
+      powershell.exe -ExecutionPolicy Bypass -File "tools/validate.ps1"
+        -Path <your-json>
+      Catches: BOM, templateColumns type, maxLength type, autoSelect
+      conflicts, duplicate targetField, phantom sourceField,
+      LIMITATION #2, combination field resolution, missing
+      Auth/QMF/Results.
+      Build aborts on [FAIL]. Fix all FAILs before importing.
+
+================================================================================
+SECTION 3 -- AUTONOMOUS DESIGN DECISIONS (apply without prompting)
+================================================================================
+
+  These decisions must be made automatically when designing a new provider
+  JSON. Do not wait for a test failure or explicit instruction.
+
+  1. PHASE 1 LAYOUT RULE (always single card)
+     Phase 1 always produces single entity, single card per QIF.
+     Do NOT pre-build multi-card or split-entity in Phase 1 -- even if
+     you know it will be needed later. Confirm all query paths first.
+
+  2. MULTI-CARD FORMS (Phase 2 only)
+     Promote to multi-card after Phase 1 standup confirms all paths.
+     Any entity with 2+ search paths gets one card per path.
+     Each card gets a clear ALL-CAPS title identifying its search path.
+     QIDM does not change in Phase 2. Layout only.
+
+  3. SPLIT ENTITY FORMS (Phase 3 only)
+     Promote only after Phase 2 reveals a genuine state model conflict.
+     If NCIC state pattern is confirmed: split entity is rarely needed.
+
+  4. DH-SUFFIX FIELDIDS
+     Any DH form that coexists with a DL form -> DH-suffix fieldIds
+     automatically. OperatorLicenseNumberDH, NameFirstDH, NameLastDH,
+     NameMiddleDH, NameSuffixDH, BirthDateDH, SexCodeDH on DH form
+     fields AND in DH QIDM sourceField/set[].
+     This is structural isolation -- no queriesToDeselect needed.
+
+  5. DUPLICATE KEYREF IN METADATA
+     MetaData assigns the same keyRef to two paths -> use invented
+     distinct keyRef for the second combination (e.g., DALL + DALH).
+     keyRef is platform-internal only; provider routes by field content.
+     Do not declare "not implementable" until (a) separate transaction,
+     (b) invented keyRef, and (c) DH-suffix isolation have all failed.
+
+  6. QIDM MERGE
+     Multiple paths, same (targetEntity, query) -> single merged QIDM
+     always preferred. Split into 2 QIDMs only when all workarounds
+     are exhausted.
+
+  7. COMBINATION ORDERING
+     Most-specific combination (most fields in set[]) goes first.
+     Less-specific last. Prevents broad combination from swallowing
+     a more specific match (LIMITATION #3).
+
+  8. EMPTY ELEMENT SIDE EFFECT (LIMITATION #1)
+     When a multi-path QIDM fires, ALL attributes serialize. Paths with
+     empty sourceFields produce empty XML elements (e.g., <Name/> on
+     OLN queries). Servers tested so far accept empty elements. Include
+     a note in build comments. Monitor per provider -- if a server
+     rejects empty elements, split QIDM is needed.
+
+================================================================================
+SECTION 4 -- STANDARD RMS PATCHES (checklist)
+================================================================================
+
+  These patches are NOT present in HIDLE.json. They must be applied
+  manually in every build script. All are confirmed working in NJ_NJCJIS
+  v1.2 (2026-04-20).
+
+  Full details and implementation patterns: BUILD_RULES.txt Section 5.
+
+  [ ] PATCH 1 -- Vehicle plate + state (RMS Vehicle QIDM)
+      Add RegistrationState to RMS Vehicle licensePlateIn combination
+      any[]. Without this: plate search fires but state filter absent.
+      Target field: vehicle.registrationStateAttrIds (array,
+      AttributeArrayWrapperRuleHandler), useAttributeId=true.
+
+  [ ] PATCH 2 -- Vehicle OOS state cleanup (RMS Vehicle QIDM)
+      Drop RegistrationStateOut from RMS Vehicle
+      licensePlateOutAndState set[]. HIDLE includes
+      RegistrationStateOut as required -- this breaks OOS plate search.
+
+  [ ] PATCH 3 -- Person state (RMS Person QIDM)
+      Add registrationState attribute to RMS Person QIDM:
+        name='registrationState',
+        sourceField=['RegistrationState'],
+        targetField='registrationStateAttrId',
+        useAttributeId=true
+      Add 'RegistrationState' to ALL person combination any[] arrays.
+      Note: Person = singular registrationStateAttrId (string, NO
+      ArrayWrapper). Vehicle = plural registrationStateAttrIds (array,
+      WITH ArrayWrapper).
+      CONFIRMED NJ v1.2 2026-04-20.
+
+  [ ] PATCH 6 -- RMS cleanup (ALWAYS apply AFTER all other patches)
+      Remove unused HIDLE attrs/combos that have no matching form
+      fieldId.
+      Vehicle: remove LicensePlateNumberOut, RegistrationStateOut,
+        OwnerFirstName, OwnerLastName; remove combos:
+        licensePlateOutAndState, OwnerFirstAndLastName; clean any[] refs.
+      Person: remove socialSecurityNumber, licenseNumberOOS,
+        firstNameOOS, lastNameOOS, dateOfBirthOOS, sexOOS; remove
+        combos: firstNameLastNameSocialSecurityNumber,
+        driversLicenseNumberOOS, and all OOS combos.
+      Exception: keep OOS attrs if provider uses DH-suffix fieldIds
+        (e.g., FL_FCIC).
+      CONFIRMED 2026-04-24.
+
+  VERIFICATION RULE: After import, verify that
+  registrationStateAttrId:"[attrId]" appears in person RMS elastic
+  query for DQN (OLN) search. Missing = Patch 3 not applied or wrong
+  fieldId.
+
+================================================================================
+SECTION 5 -- DEFAULTS AND USABILITY
+================================================================================
+
+  WHY THIS MATTERS:
+    Default values determine what the officer sees when they open a query
+    form. Good defaults reduce keystrokes and prevent common errors. Bad
+    defaults silently change combo routing, causing queries to fire
+    against the wrong system.
+
+    This audit catches:
+      - Missing convenience defaults (PlateType, PlateYear, ImageIndicator)
+      - Dangerous State defaults that change in-state/OOS combo routing
+      - Inconsistency across providers
+      - Provider-specific defaults that need to be carried into new builds
+
+  STANDARD DEFAULTS (apply to every provider unless noted):
+
+    VEHICLE ENTITY:
+      PlateType (LicensePlateTypeCode)  = "PC"     (Passenger Car)
+      PlateYear (LicensePlateYear)      = "<year>"  (current calendar year)
+      ImageIndicator                    = "N"       (not needed for vehicle)
+
+    PERSON ENTITY:
+      ImageIndicator                    = "Y"       (officer wants photo)
+
+    FIREARM / ARTICLE / BOAT ENTITY:
+      ImageIndicator                    = "N"       (not needed)
+
+    These are ALL in any[] -- they never appear in set[] and do NOT
+    affect combo routing. Safe to add everywhere.
+
+  STATE DEFAULT RULE (LIMITATION #30):
+
+    State initialValue determines whether in-state or OOS combos fire
+    by default.
+
+    SAFE to default State=XX when:
+      - Provider uses NCIC state pattern (single QIDM, all combos
+        "In/Out")
+      - No keyRef has state="In" or state="Out" separately
+      - Examples: NJ, AZ
+
+    DO NOT default State=XX when:
+      - Provider has separate in-state vs OOS keyRefs
+        (state="In" / state="Out")
+      - Setting a default would silently route queries to in-state system
+      - Officer must consciously choose their state for correct routing
+      - Examples: NY Vehicle (RVEH In vs RVIN Out),
+                  FL Vehicle (FRQ In vs QV/RQ Out)
+
+    When in doubt: leave State blank and use card title hints instead.
+
+  PROVIDER-SPECIFIC DEFAULTS (not cross-applicable):
+
+    These defaults are unique to their provider. Carry forward when
+    rebuilding that provider, but do NOT add to other providers.
+
+    NJ:  RandomRequest = "N"
+         (full request is standard; Y = random check per NJ law)
+    HI:  TypeCode = "1", RelatedSearchHitIndicator = "Y"
+    FL:  Driver History Purpose = "C"
+
+  CROSS-PROJECT AUDIT (2026-04-29):
+
+    | Default      | NJ     | NY     | HI     | AZ     | FL     | TX     |
+    |--------------|--------|--------|--------|--------|--------|--------|
+    | State        | NJ (S) | -- (S) | HI (!) | AZ (S) | FL (!) | TX (!) |
+    | PlateType=PC | PC     | PC     | PC     | --     | --     | --     |
+    | PlateYear    | 2026   | 2026   | 2026   | --     | --     | --     |
+    | Image(Veh)   | N      | --     | N      | --     | --     | --     |
+    | Image(Per)   | Y      | --     | --     | --     | Y      | --     |
+    | Image(Other) | N      | --     | --     | --     | --     | --     |
+
+    Legend: (S) = Safe/correct  (!) = Has in/out split, review needed
+            -- = Missing
+
+    STATE DEFAULT SAFETY:
+      NJ  -- SAFE. NCIC state pattern, all combos In/Out. State=NJ.
+      NY  -- SAFE. Correctly blank. Has in/out split on Vehicle and
+             Person DL/DH.
+      HI  -- REVIEW. Has in/out split on Vehicle (M55L/M55S In,
+             RQ/RQV Out). State=HI currently set. Verify during import.
+      AZ  -- SAFE. NCIC state pattern confirmed. State=AZ.
+      FL  -- REVIEW. Has in/out split on Vehicle (FRQ In) and Boat
+             (FBQ In, BQ Out). State=FL currently set. Review when
+             entity-split unblocked.
+      TX  -- REVIEW. Person has in-state-only combos (DQ In, CPL In,
+             RSDWW In, KQ In). State=TX currently set. Review during
+             rebuild.
+
+    CONSISTENCY GAPS (safe to address):
+      AZ, FL, TX: Missing PlateType=PC, PlateYear=<year>
+      NY, AZ, TX: Missing ImageIndicator defaults
+      FL:         Missing ImageIndicator on non-Person entities
+
+  AUDIT PROCEDURE (run for every new JSON):
+
+    STEP 1 -- Extract current defaults
+      Grep for "initialValue" in the provider JSON.
+      List every field with a default, organized by entity.
+
+    STEP 2 -- Check standard defaults present
+      [ ] Vehicle: PlateType=PC
+      [ ] Vehicle: PlateYear=<current year>
+      [ ] Vehicle: ImageIndicator=N (if field exists in metadata)
+      [ ] Person:  ImageIndicator=Y (if field exists in metadata)
+      [ ] All other entities: ImageIndicator=N (if field exists)
+      [ ] Provider-specific defaults from metadata/devdoc
+
+    STEP 3 -- Check State default safety
+      [ ] Grep for keyReference with state="In" or state="Out" in QIDM
+          combos
+      [ ] If ANY combo has state="In" or state="Out" on that entity:
+          -> DO NOT set State initialValue on that entity's form
+          -> Document in provider LIMITATIONS file
+      [ ] If ALL combos are state="In/Out" (or no state property):
+          -> State=<home state> is safe to set
+
+    STEP 4 -- Cross-reference with audit table above
+      [ ] Compare against the cross-project audit table
+      [ ] Flag any new inconsistencies
+      [ ] Update the audit table when this provider ships
+
+    STEP 5 -- Document
+      [ ] Record defaults in provider STATUS.txt
+      [ ] Note any defaults intentionally omitted and why
+      [ ] Update cross-project audit table in this file
+
+  NOTES:
+    - PlateType/PlateYear/ImageIndicator can be added by direct JSON
+      edit (no full rebuild required). Re-run validator after edit.
+    - State default changes require careful analysis of QIDM combo
+      routing before any edit. Never change State defaults without
+      checking keyRefs.
+    - This audit replaces ad-hoc default decisions. Every new provider
+      must go through this checklist before Phase 1 is declared complete.
+    - When updating PlateYear for a new calendar year, update ALL
+      providers simultaneously to maintain consistency.
+
+================================================================================
+SECTION 6 -- PRE-IMPORT CHECKLIST
+================================================================================
+
+  [ ] Validator passes clean (0 FAIL, 0 unexpected WARN):
+      powershell.exe -ExecutionPolicy Bypass -File "tools/validate.ps1"
+        -Path <your-json> -ShowDetail
+  [ ] CommSys provider bundle: type='BUNDLE' present on the bundle
+      object?
+  [ ] ENTITIES bundle: type='BUNDLE' present on the bundle object?
+      (Both bundles require type='BUNDLE'. If omitted, platform
+      silently ignores configs.)
+  [ ] ENTITIES bundle: order is a nested object
+      {default:[...], CAD_DISPATCH:[...], FIRST_RESPONDER:[...]}?
+      (NOT a flat array. Flat array causes entity ordering failure and
+      forms may not render.)
+  [ ] ENTITIES bundle: provider='MARK43' present? (REQUIRED -- either
+      on the bundle object OR on every individual QIF config. If absent
+      from both -> forms will not render after import. NEVER use the
+      CommSys provider name on QIF configs -- confirmed failure mode
+      AZ v2.0 2026-04-20.)
+  [ ] Backup current installed JSON (use bump_version.ps1 or archive
+      manually)
+  [ ] Import into ConnectCIC dev/test environment first (not production)
+  [ ] Confirm entity tabs render in expected order after import
+
+================================================================================
+SECTION 7 -- POST-IMPORT CHECKLIST
+================================================================================
+
+  [ ] Entity tabs appear in correct order
+      (default: Person, Vehicle, Firearm, Article, Boat)
+  [ ] Dropdown fields show expected options (not empty, not garbage)
+  [ ] Hidden state field pre-fills (no visible field shows wrong value)
+  [ ] Run minimum-fields test for each query path before calling
+      anything PASS
+  [ ] Update STATUS.txt TEST MATRIX with result and version
+
+================================================================================
+SECTION 8 -- INSTANCE-SPECIFIC BEHAVIORS (TEST ON FIRST IMPORT)
+================================================================================
+
+  These behaviors are confirmed on some instances but must be verified
+  per provider on first import. Do not assume they work -- run the
+  specified test.
+
+  NCIC STATE PATTERN:
+    What to test: In-state plate query (ST-1). Check CommSys XML for
+      <State> element.
+    If <State> contains 2-letter code: NCIC reverse-lookup works.
+    If <State> is absent or contains numeric ID: fall back to dual-field
+      pattern.
+    Confirmed: NJ (2026-04-20), AZ (2026-04-20), NY (confirmed working)
+    Unconfirmed: FL, HI, TX, LA
+    Why instance-specific: codeTypeProvider=NCIC requires a registered
+      reverse-lookup entry in the instance's code type registry.
+      NJ_NIBRS was NOT registered on NJ but NCIC was. Each instance
+      may differ.
+
+  SEXCODE REVERSE-LOOKUP:
+    What to test: Person query with Sex field populated. Check CommSys
+      XML for <SexCode>.
+    If <SexCode> contains M/F/U: reverse-lookup works.
+    If <SexCode> contains numeric ID: reverse-lookup broken (check for
+      entity-split #28).
+    Confirmed: NJ (2026-04-17), AZ (2026-04-20), FL single-QIF
+      (2026-04-21)
+    Broken: FL entity-split (LIMITATION #28 -- SERVER-SIDE, no fix)
+    Unconfirmed: NY, HI, TX, LA
+    Default: Use NIBRS_SEX/NIBRS CommSys-only + remove sex from RMS
+      until confirmed.
+
+  DEXSTATEUSERID (Badge auto-population):
+    What to test: Check if BadgeNumber field auto-populates with
+      officer's badge from session.
+    Confirmed: AZ (2026-04-20)
+    Unconfirmed: NJ, FL, NY, HI, TX, LA
+    If auto-populates: hide BadgeNumber field (not needed on form).
+    If not: keep visible for manual entry.
+
+  VEHICLE_BODY_STYLE / VEHICLE_TYPE:
+    What to test: Import and check dropdown populates.
+    Mapping varies by instance -- see PLATFORM_CONSTRAINTS.txt #20.
+    NCIC source = empty dropdown. Must find correct source per provider.
+
+================================================================================
+SECTION 9 -- UNCONFIRMED PLATFORM FEATURES
+================================================================================
+
+  LIMITATION #15: FIRST_RESPONDER layout variant recognition
+    Status: UNCONFIRMED as of 2026-05-04
+    Whether the platform renders FIRST_RESPONDER as a distinct context
+    vs. falling back to CAD_DISPATCH or default is not confirmed.
+    Current practice: Set FIRST_RESPONDER identical to CAD_DISPATCH in
+    all builds.
+    Impact: NONE. Include in all builds regardless.
+
+  LIMITATION #6: OOS RMS state filter (RESOLVED via NCIC pattern)
+    Originally: NJ v3.16 (2026-04-10) -- believed SERVER-SIDE
+    Resolution: NCIC state pattern resolves this for confirmed
+    instances.
+    Status: RESOLVED for NJ, AZ. Instance-specific for others.
+    Test: Run OOS plate query. Check RMS returns filtered by selected
+    state.
+
+================================================================================
+SECTION 10 -- CONFIRMATION STATUS MATRIX
+================================================================================
+
+  | Feature                    | NJ  | AZ  | FL  | NY  | HI  | TX  | LA  |
+  |----------------------------|-----|-----|-----|-----|-----|-----|-----|
+  | NCIC state reverse-lookup  | YES | YES | --  | YES | --  | --  | --  |
+  | SexCode reverse-lookup     | YES | YES | YES*| --  | --  | --  | --  |
+  | dexStateUserId badge       | --  | YES | --  | --  | --  | --  | --  |
+  | FIRST_RESPONDER layout     | --  | --  | --  | --  | --  | --  | --  |
+  | Entity-split reverse-lookup| n/a | n/a | NO  | n/a | n/a | n/a | n/a |
+
+  YES = confirmed working     NO = confirmed broken     -- = untested
+  * FL single-QIF only; entity-split broken (LIMITATION #28)
+  n/a = not applicable (single QIF design)
+
+================================================================================
+SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
+================================================================================
+
+  These are BLOCKING gates. Cannot proceed to next step without
+  completing current.
+
+  GATE 2 -- BEFORE EACH TEST:
+  [GATE] Run shared new_test_log.ps1 to create a stub log in tests/
+         powershell.exe -ExecutionPolicy Bypass -File tools/new_test_log.ps1
+           -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity>
+           -Combo <combo> -Description "<desc>"
+  [GATE] User opens F12 > Network before submitting query
+  [GATE] CANNOT execute the test without a stub log on disk
+
+  GATE 3 -- AFTER EACH TEST:
+  [GATE] Paste raw XML request into log file (RAW XML REQUEST section)
+  [GATE] Paste raw RMS JSON request into log file (if applicable)
+  [GATE] Fill in: FORM STATE, REQUEST SUMMARY, FIELD ANALYSIS, RESULT
+  [GATE] git add + git commit + git push the completed log file
+  [GATE] CANNOT proceed to next test until current log is committed
+         and pushed
+
+  GATE 4 -- AFTER TEST SESSION:
+  [GATE] Update docs/<PROVIDER>_STATUS.txt test matrix with all results
+  [GATE] Commit and push STATUS.txt
+  [GATE] If a new platform behavior is confirmed: update
+         PLATFORM_CONSTRAINTS.txt in knowledge-base/ AND push
+
+  GATE 5 -- BEFORE DECLARING PASS OR DONE:
+  [GATE] Verify tests/ contains one log file per test (count must match)
+  [GATE] Verify docs/base/ (and docs/mc/) has all 5 report files
+  [GATE] Verify docs/<PROVIDER>_STATUS.txt is current
+  [GATE] Verify docs/<PROVIDER>_SQVR.txt exists with [CONFIRMED]/
+         [PENDING] markers
+  [GATE] Verify all committed and pushed to GitHub
+  [GATE] CANNOT declare PASS/DONE if any gate fails -- fix first
+
+================================================================================
+SECTION 12 -- STANDARD TEST SEQUENCE
+================================================================================
+
+  STANDARD TEST SEQUENCE PER QUERY PATH:
+
+    T1: Minimum required fields only (cleanest request)
+    T2: Required + one optional field
+    T3: Required + all optional fields
+    T4: All form fields filled (confirm LIMITATION #1 -- extra fields
+        ignored by server)
+    T5: OOS variant if applicable
+
+  SPLIT CONFIG TESTING (LIMITATION #2 check):
+
+    T1: Cold start, path A only
+    T2: Cold start, path B only (if T2 fails -> LIMITATION #2
+        confirmed, must merge/alternate)
+    T3: Warm switch A->B
+    T4: Warm switch B->A
+    If T3 fails: LIMITATION #2. See QIDM_REFERENCE.txt.
+
+================================================================================
+SECTION 13 -- TESTING WORKFLOW CONSTRAINTS
+================================================================================
+
+  XML CAPTURE:
+    Browser dev tools (F12 > Network) must be open BEFORE submitting a
+    query. XML is in the POST request body to the CommSys endpoint.
+    RMS payload is in a separate POST to the RMS endpoint. Both must be
+    captured for full test verification.
+
+  ATTENTION FIELD:
+    Cannot reliably test user-entered Attention values -- platform
+    overrides with session identity (see PLATFORM_CONSTRAINTS.txt #29).
+    Test that the <Attention> element IS present in XML, not that it
+    matches the form value.
+
+  COMBO PRIORITY:
+    When testing combo priority (most-specific first), fill ALL fields
+    and verify which combo fires. The "losing" combo's set[] fields
+    will still appear in XML (LIMITATION #1). This is expected --
+    verify the keyReference in the XML matches the expected combo,
+    not the field list.
+
+  CO-FIRE TESTING:
+    Person DL+DH co-fire is expected when OLN is present
+    (LIMITATION #26). Do not report this as a failure -- it is correct
+    police workflow. RMS co-fire with CommSys is also expected --
+    verify both payloads.
+
+================================================================================
+SECTION 14 -- VALIDATOR MARKERS
+================================================================================
+
+  The validator (tools/validate.ps1) emits four severity levels:
+
+    [PASS]       -- Check passed. No action needed.
+    [WARN]       -- Fixable issue. Should be resolved before import.
+    [LIMITATION] -- Known platform constraint. Document in SQVR but
+                    cannot fix.
+    [FAIL]       -- Must fix before import. JSON will not work correctly.
+
+  LIMITATION markers the validator emits:
+    - Generic LicensePlateNumber (should be LicensePlateNumberIn/Out)
+      -- LIMITATION #8
+    - Card title with HTML tags -- LIMITATION #11
+    - State field with attributeTypeId='STATE' patterns
+    - SexCode field chain validation
+    - Attention field auto-fill patterns (when handler is present)
+
+  Target: 0 FAIL, 0 WARN on every JSON before import.
+  LIMITATIONs are expected and should be documented in the provider's
+  SQVR.
+
+================================================================================
+SECTION 15 -- FAILURE INVESTIGATION
+================================================================================
+
+  WHEN A TEST FAILS:
+
+    1. Read the outbound XML carefully before making any changes.
+       Confirm which fields were sent and what values they carried.
+    2. Check: is the QIDM being evaluated at all?
+       If the XML request shows no provider query -- LIMITATION #2.
+       Merge.
+    3. Check: is a field sending a wrong value (numeric ID vs code)?
+       See PLATFORM_CONSTRAINTS.txt (STATE/SEX/RACE numeric ID bugs).
+    4. Check: is a combination routing incorrectly?
+       Review set[] order and combination priority
+       (QIDM_REFERENCE.txt).
+    5. Check: is a dropdown empty on the form?
+       Confirm codeTypeCategory + codeTypeSource
+       (FIELD_REFERENCE.txt).
+    6. Update BUILD_NOTES.txt CHANGED and REASON stubs after every fix.
+    7. Save test log immediately. Do not wait.
+
+  WHEN A LIMITATION IS CONFIRMED:
+
+    [ ] Add to [PROVIDER]_LIMITATIONS.txt (provider-specific file)
+    [ ] Add to PLATFORM_CONSTRAINTS.txt in knowledge-base/ (if
+        platform-wide)
+    [ ] Add to ANTI_PATTERNS.txt in knowledge-base/ (if it is a dead
+        end)
+    [ ] Note in BUILD_NOTES.txt REASON section
+    [ ] Consider notifying vendor if server-side change is required
