@@ -76,10 +76,10 @@ ENTITY FORM FIELDS
     SerialNumber, ArticleTypeCode (NCIC_ARTICLE_TYPE), OwnerAppliedNumber,
     NCICNumber, PCN, ImageIndicator (N)
 
-  Boat (12 fields):
+  Boat (13 fields):
     RegNumber, HullId, RegistrationState (no default),
     Decal, TitleLien, CoastGuardDocumentNumber,
-    NCICNumber, PCN, ImageIndicator (N),
+    NCICNumber, PCN, ImageIndicator (N), Stolen Search (Y) [RelatedHitSearchIndicator],
     Last Name (BQ), First Name (BQ), DOB (BQ)
 
 BUILD SCRIPTS
@@ -183,10 +183,11 @@ LIVE TEST STATUS -- MC v3.0-mc
   46  Any[]     Vehicle   RQ+VIN+State+Year  PASS    VehicleYear=2020 in RQ XML; QV+RMS co-fire
   47  Any[]     Person    QW+Name+OLN        PASS    OLN=OLN99999 in QW XML (any[]); FDQ+RMS co-fire
 
-  LIMITATIONS (2):
-  - QB+Hull: UNREACHABLE — FBQ+Hull fires first (same set[] field, higher priority).
-    No BoatStolenQuery exists in metadata to enable co-fire.
-  - QB+Reg: UNREACHABLE — FBQ+Reg fires first (same root cause as QB+Hull).
+  LIMITATIONS (2 — RESOLVED 2026-05-05):
+  - QB+Hull: was UNREACHABLE — FIXED via RelatedHitSearchIndicator routing (FL-8).
+    Officer types Y in "Stolen Search" to route hull query to NCIC stolen (QB).
+  - QB+Reg: was UNREACHABLE — same fix. All 12 boat combos now reachable.
+    Fallback: git tag FL_FCIC_PRE_QB_ROUTING. Needs live test confirmation.
 
   Notes:
   - DH autoSelect=true: checkbox auto-lights when DH fields populated (safe — separate card)
@@ -202,4 +203,5 @@ PENDING
 -------
   1. Production import
   2. KB update: VehicleMakeCode serialization (contradicts FIELD_RULES)
-  3. QB+Hull/QB+Reg limitation — revisit if platform adds BoatStolenQuery
+  3. Live test: QB+Hull/QB+Reg with RelatedHitSearchIndicator=Y (FL-8 routing)
+     Fallback tag FL_FCIC_PRE_QB_ROUTING if server rejects field

@@ -99,12 +99,14 @@ FL-7: DL+DH shared form (6-card design)
   Uses LIMITATION #24/#25 pattern: autoSelect + queriesToDeselect + DH-suffix fieldIds.
   Reference implementation for shared-form DL+DH.
 
-FL-8: BoatQuery ImageIndicator must be in ALL combo any[] arrays
-  BQ and FBQ combos originally omitted ImageIndicator from any[].
-  QB combos had it. Fixed 2026-05-04: all 12 BoatQuery combos now include
-  ImageIndicator in any[] for consistency with Vehicle/Person patterns.
-  Per LIMITATION #1 this is functionally harmless either way, but ensures
-  combo firing is not blocked when only set[] fields + ImageIndicator are filled.
+FL-8: BoatQuery QB+Hull/QB+Reg routing via RelatedHitSearchIndicator
+  QB+Hull and QB+Reg were unreachable because FBQ+Hull/FBQ+Reg shared the
+  same set[] field and fired first. Fixed 2026-05-05: RelatedHitSearchIndicator
+  (metadata field, Y/N, exclusive to QB combos) promoted from any[] to set[]
+  on QB+Hull and QB+Reg. Officer types Y in "Stolen Search" to route to NCIC
+  stolen; blank = FL registration (FBQ). QB combos ordered before FBQ.
+  Fallback tag: FL_FCIC_PRE_QB_ROUTING (revert if server rejects field).
+  All 12 boat combos now reachable.
 
 ================================================================================
 NY_NYSPIN_EJUSTICE -- New York

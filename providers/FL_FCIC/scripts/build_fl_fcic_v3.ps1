@@ -525,6 +525,7 @@ $artQuery = [PSCustomObject]@{
 
 # --- 8. BoatQuery (FBQ + QB + BQ) -- 12 combos ---
 # XML: FBQ (hull/reg/decal/title), QB (CG/NCIC/PCN/hull/reg), BQ (name+DOB/hull+state/reg+state)
+# RelatedHitSearchIndicator routes QB+Hull/QB+Reg vs FBQ: officer types Y to get NCIC stolen
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -544,9 +545,10 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('RegistrationNumber');        targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'TitleLienInformation';      size = 10; sourceField = @('TitleLienInformation');      targetField = 'TitleLienInformation' }
+        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('RelatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
-        # BQ combos (state-routed)
+        # BQ combos (state-routed Nlets OOS)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst','RegistrationState'); any = @('BoatHullIdNumber','RegistrationNumber','ImageIndicator') }
             primaryFieldReference = 'Name'
@@ -565,7 +567,21 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'BQRegistrationNumber'
             state                 = 'In/Out'
         }
-        # FBQ combos (FCIC-only, no state)
+        # QB+Hull/QB+Reg (NCIC stolen -- RelatedHitSearchIndicator in set[] routes here)
+        # MUST be before FBQ+Hull/FBQ+Reg: more-specific set[] fires first when flag is filled
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RelatedHitSearchIndicator'); any = @('ImageIndicator','RegistrationNumber') }
+            primaryFieldReference = 'BoatHullIdNumber'
+            keyReference          = 'QBBoatHullIdNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber','RelatedHitSearchIndicator'); any = @('ImageIndicator','BoatHullIdNumber') }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'QBRegistrationNumber'
+            state                 = 'In/Out'
+        }
+        # FBQ combos (FCIC registration -- no RelatedHitSearchIndicator, fires when flag is blank)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('DecalNumber','RegistrationNumber','TitleLienInformation','ImageIndicator') }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -590,39 +606,27 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'
         }
-        # QB combos (NCIC stolen boat)
+        # QB combos with unique set[] fields (already reachable, no routing issue)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('CoastGuardDocumentNumber'); any = @('ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('CoastGuardDocumentNumber'); any = @('ImageIndicator','RelatedHitSearchIndicator') }
             primaryFieldReference = 'CoastGuardDocumentNumber'
             keyReference          = 'QBCoastGuardDocumentNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator') }
-            primaryFieldReference = 'BoatHullIdNumber'
-            keyReference          = 'QBBoatHullIdNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator') }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'QBRegistrationNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','RelatedHitSearchIndicator') }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QBNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ProcessControlNumber'); any = @('ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ProcessControlNumber'); any = @('ImageIndicator','RelatedHitSearchIndicator') }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QBProcessControlNumber'
             state                 = 'In/Out'
         }
     )
-    description     = 'BoatQuery -- BQ (name/hull/reg+state), FBQ (hull/reg/decal/title), QB (CG/hull/reg/NCIC/PCN). 12 combos.'
+    description     = 'BoatQuery -- BQ (name/hull/reg+state), FBQ (hull/reg/decal/title), QB (CG/hull/reg/NCIC/PCN). 12 combos. RelatedHitSearchIndicator routes QB+Hull/QB+Reg vs FBQ.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_BoatQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -799,10 +803,11 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'TitleLienInformation_Input';     node = Inp 'TitleLienInformation' 'Title/Lien Info' '10' 'ROW_BOA_2' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'CoastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_2' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NCICNumber_Input';          node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
-                @{ id = 'ProcessControlNumber_Input'; node = Inp 'ProcessControlNumber' 'PCN' '10' 'ROW_BOA_3' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NIBRS'; initialValue = 'N' } 'ROW_BOA_3' }
+            @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NCICNumber_Input';               node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
+                @{ id = 'ProcessControlNumber_Input';      node = Inp 'ProcessControlNumber' 'PCN' '10' 'ROW_BOA_3' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NIBRS'; initialValue = 'N' } 'ROW_BOA_3' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'RelatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_3' }
             )}
             @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (BQ)' '30' 'ROW_BOA_4' }
@@ -813,7 +818,7 @@ $boaLayout = MakeLayouts @(
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- BQ (name/hull/reg+state), FBQ (hull/reg/decal/title), QB (CG/NCIC/PCN/hull/reg).'
+    description  = 'Boat queries -- BQ (name/hull/reg+state), FBQ (hull/reg/decal/title), QB (CG/NCIC/PCN/hull/reg). Stolen Search=Y routes hull/reg to QB.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'

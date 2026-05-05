@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC_BASE
   Source: FL_FCIC_BASE.json
-  Generated: 2026-05-04 17:10
+  Generated: 2026-05-05 09:32
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -12,7 +12,7 @@ QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=6
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
-  Boat | entity=Boat | qidm= | cards=1 fields=9
+  Boat | entity=Boat | qidm= | cards=1 fields=10
 QIDMs: 8
   FL_FCIC_VehicleRegistrationQuery | attrs=10 combos=6 autoSelect=
   FL_FCIC_VehicleStolenQuery | attrs=5 combos=2 autoSelect=
@@ -21,7 +21,7 @@ QIDMs: 8
   FL_FCIC_DriverHistoryQuery | attrs=7 combos=2 autoSelect=False
   FL_FCIC_GunQuery | attrs=5 combos=3 autoSelect=
   FL_FCIC_ArticleSingleQuery | attrs=6 combos=4 autoSelect=
-  FL_FCIC_BoatQuery | attrs=11 combos=12 autoSelect=
+  FL_FCIC_BoatQuery | attrs=12 combos=12 autoSelect=
 
 
 LAYOUT DETAIL
@@ -111,10 +111,11 @@ LAYOUT DETAIL
         DecalNumber (Text | maxLen=20)
         TitleLienInformation (Text | maxLen=10)
         CoastGuardDocumentNumber (Text | maxLen=8)
-      ROW ROW_BOA_3 [4 4 4]
+      ROW ROW_BOA_3 [3 3 3 3]
         NCICNumber (Text | maxLen=10)
         ProcessControlNumber (Text | maxLen=10)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
+        RelatedHitSearchIndicator (Text | maxLen=1)
       ROW ROW_BOA_4 [4 4 4]
         NameLast (Text | maxLen=30)
         NameFirst (Text | maxLen=30)
