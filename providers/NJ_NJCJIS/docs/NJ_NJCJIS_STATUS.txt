@@ -2,10 +2,18 @@
 =================
 Last updated: 2026-05-05
 
-  BASE  v2.0     -- 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 17/17 PASS (2026-04-29)
+  BASE  v2.2     -- 66 PASS / 0 FAIL / 7 WARN / 2 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 17/17 PASS (2026-04-29)
   MC    v2.0-mc  -- 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 57/57 PASS (2026-04-29)
 
-  WARNs RESOLVED (2026-05-04):
+  BASE 7 WARNs (camelCase fieldIds -- cosmetic, all live-tested working):
+    NJ BASE uses full camelCase fieldIds (v2.1+ rename). Validator checks PascalCase names.
+    1-5. ImageIndicator missing on Vehicle/Person/Firearm/Article/Boat (field exists as 'imageIndicator')
+    6.   PlateType missing on Vehicle (field exists as 'plateType')
+    7.   PlateYear missing on Vehicle (field exists as 'licensePlateYear')
+    These WARNs are cosmetic -- all fields exist under camelCase names and serialize correctly.
+    MC uses PascalCase fieldIds and has 0 WARN.
+
+  Prior WARNs RESOLVED (2026-05-04):
     1. AUTH combination keyReference='AUTH' added to build scripts
     2. RMS Person autoSelect=true added (Patch 7)
     3. RMS Vehicle autoSelect=true added (Patch 7)
