@@ -1,0 +1,67 @@
+﻿FL_FCIC BoatQuery QB Routing Verification
+==========================================
+JSON: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\FL_FCIC\FL_FCIC_BASE.json
+Date: 2026-05-05 09:35
+Combos: 12
+
+[PASS] Hull only -> FBQ (registration)
+  Fields: ImageIndicator, BoatHullIdNumber  |  Expected: FBQBoatHullIdNumber  |  Got: FBQBoatHullIdNumber
+  Why:   Why: No RelatedHitSearchIndicator, no State. FBQ fires (ImageIndicator=N satisfies any[]).
+
+[PASS] Hull + Stolen=Y -> QB (stolen)
+  Fields: RelatedHitSearchIndicator, ImageIndicator, BoatHullIdNumber  |  Expected: QBBoatHullIdNumber  |  Got: QBBoatHullIdNumber
+  Why:   Why: RelatedHitSearchIndicator=Y satisfies QB set[]. QB ordered before FBQ.
+
+[PASS] Reg only -> FBQ (registration)
+  Fields: ImageIndicator, RegistrationNumber  |  Expected: FBQRegistrationNumber  |  Got: FBQRegistrationNumber
+  Why:   Why: No RelatedHitSearchIndicator, no State. FBQ fires.
+
+[PASS] Reg + Stolen=Y -> QB (stolen)
+  Fields: RegistrationNumber, RelatedHitSearchIndicator, ImageIndicator  |  Expected: QBRegistrationNumber  |  Got: QBRegistrationNumber
+  Why:   Why: RelatedHitSearchIndicator=Y in set[] routes to QB.
+
+[PASS] Hull + State -> BQ (OOS)
+  Fields: RegistrationState, BoatHullIdNumber, ImageIndicator  |  Expected: BQBoatHullIdNumber  |  Got: BQBoatHullIdNumber
+  Why:   Why: State in set[] routes to BQ (Nlets OOS). BQ ordered before QB/FBQ.
+
+[PASS] Reg + State -> BQ (OOS)
+  Fields: RegistrationNumber, RegistrationState, ImageIndicator  |  Expected: BQRegistrationNumber  |  Got: BQRegistrationNumber
+  Why:   Why: State in set[] routes to BQ.
+
+[PASS] CG# only -> QB (stolen)
+  Fields: ImageIndicator, CoastGuardDocumentNumber  |  Expected: QBCoastGuardDocumentNumber  |  Got: QBCoastGuardDocumentNumber
+  Why:   Why: CG# is unique to QB. No routing conflict.
+
+[PASS] NCIC# only -> QB (stolen)
+  Fields: ImageIndicator, NCICNumber  |  Expected: QBNCICNumber  |  Got: QBNCICNumber
+  Why:   Why: NCICNumber unique to QB.
+
+[PASS] PCN only -> QB (stolen)
+  Fields: ProcessControlNumber, ImageIndicator  |  Expected: QBProcessControlNumber  |  Got: QBProcessControlNumber
+  Why:   Why: PCN unique to QB.
+
+[PASS] Decal only -> FBQ (registration)
+  Fields: DecalNumber, ImageIndicator  |  Expected: FBQDecalNumber  |  Got: FBQDecalNumber
+  Why:   Why: Decal unique to FBQ.
+
+[PASS] Title only -> FBQ (registration)
+  Fields: ImageIndicator, TitleLienInformation  |  Expected: FBQTitleLienInformation  |  Got: FBQTitleLienInformation
+  Why:   Why: Title unique to FBQ.
+
+[PASS] Name+DOB+State -> BQ Name (OOS)
+  Fields: BirthDate, NameFirst, NameLast, RegistrationState, ImageIndicator  |  Expected: BQName  |  Got: BQName
+  Why:   Why: Name+DOB+State all in BQ Name set[]. BQ ordered first.
+
+[PASS] Hull + Stolen + State -> BQ (State wins)
+  Fields: RelatedHitSearchIndicator, RegistrationState, BoatHullIdNumber, ImageIndicator  |  Expected: BQBoatHullIdNumber  |  Got: BQBoatHullIdNumber
+  Why:   Why: BQ ordered before QB. State+Hull satisfies BQ set[]. BQ fires first.
+
+[PASS] Hull only, ImageIndicator blank -> NONE
+  Fields: BoatHullIdNumber  |  Expected: NONE  |  Got: NONE
+  Why:   Why: No any[] field populated (ImageIndicator blank). Neither QB nor FBQ fires. Edge case.
+
+[PASS] Hull + Reg -> FBQ Hull (most specific)
+  Fields: RegistrationNumber, ImageIndicator, BoatHullIdNumber  |  Expected: FBQBoatHullIdNumber  |  Got: FBQBoatHullIdNumber
+  Why:   Why: Both Hull and Reg filled. FBQ+Hull matches first (combo ordering).
+
+RESULTS: 15 PASS / 0 FAIL  (15 scenarios)
