@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-05 14:35
+  Generated: 2026-05-05 16:13
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -9,38 +9,113 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 
   Entity: Article
     ArticleTypeCode [Article Type]
-      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=NCIC
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+    ImageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RelatedHitSearchIndicator [Related Hit Search] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    State [State] (default=TX)
+    ImageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RegistrationState [State]
       Config: attributeTypeId=STATE
+    RelatedHitSearchIndicator [Related Hit Search] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Firearm
+    GunCaliber [Caliber]
+      Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
+    GunMake [Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+    ImageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RelatedHitSearchIndicator [Related Hit Search] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
+    ImageIndicator [Image] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     RaceCode [Race]
-      Config: codeTypeCategory=RACE, codeTypeSource=NCIC
-    SexCode [Sex]
-      Config: codeTypeCategory=SEX, codeTypeSource=NCIC
-    State [License State] (default=TX)
+      Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+    RegistrationState [State]
       Config: attributeTypeId=STATE
+    SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
     LicensePlateTypeCode [Plate Type]
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    State [State] (default=TX)
+    RegistrationState [State]
       Config: attributeTypeId=STATE
-    VehicleMakeCode [Make]
+    VehicleMakeCode [Vehicle Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 --------------------------------------------------
 
-  (no code type attributes found)
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: TX_TLETS_VehicleInsuranceRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: TX_TLETS_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: TX_TLETS_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: TX_TLETS_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: TX_TLETS_Results
+      AddressStateCode -> AddressStateCode
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NIBRS
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMakeName -> VehicleMakeName
+        codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+      VehicleStyleCode -> BodyStyle
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
 
 SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 --------------------------------------------------
 
+  QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: TX_TLETS_DriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: TX_TLETS_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: TX_TLETS_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: TX_TLETS_DriverHistoryQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: TX_TLETS_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 8
-  QRDM code type attrs: 0
+  Form dropdowns: 17
+  QRDM code type attrs: 15

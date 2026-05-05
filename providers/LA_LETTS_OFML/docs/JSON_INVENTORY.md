@@ -1,4 +1,4 @@
-# JSON Inventory — LA_LETTS_OFML
+# JSON Inventory - LA_LETTS_OFML
 
 All JSON versions produced for this provider.
 
@@ -6,10 +6,20 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LETTS_OFML_BASE.json | v1.0 | Current | BASE single-card layout. Phase 1 initial standup. Updated 2026-04-29. |
+| LA_LETTS_OFML_BASE.json | v2.0 | Current BASE | Full rebuild. 48P/0F/32W/4LIM. 2026-05-05. |
+| LA_LETTS_OFML_BASE_READABLE.json | v2.0 | Pretty-print | Human-readable BASE variant. |
+| LA_LETTS_OFML_MC.json | v2.0-mc | Current MC | Multi-card layout. 48P/0F/32W/4LIM. 2026-05-05. |
+| LA_LETTS_OFML_MC_READABLE.json | v2.0-mc | Pretty-print | Human-readable MC variant. |
 
-## release/
+## phases/
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| release/LA_LETTS_OFML_BASE.json | v1.0 | Phase snapshot | Release bundle BASE (2026-04-24). |
+| phases/base/LA_LETTS_OFML_v2.0_2026-05-05.json | v2.0 | Snapshot | BASE phase archive. |
+| phases/mc/LA_LETTS_OFML_v2.0-mc_2026-05-05.json | v2.0-mc | Snapshot | MC phase archive. |
+
+## Legacy
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| (v1.0 BASE) | v1.0 | Superseded | Pre-KB build. 39P/7F/53W. Replaced by v2.0 rebuild. |

@@ -14,7 +14,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 ```
 
-## Provider Status (updated 2026-05-04)
+## Provider Status (updated 2026-05-05)
 
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
@@ -23,8 +23,8 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/0W/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/0W/4LIM import PENDING | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 100P/0F/1W/4LIM(BASE) 5LIM(MC) 21+60 PASS import PENDING | DL+DH shared form, 6-card Person, QB routing (FL-8) |
-| TX_TLETS | providers/TX_TLETS/ | v1.0 BASE | **67P/16F/44W NEEDS REBUILD** | TX-specific queries (DPSI/REG/CPL/RSDWW) |
-| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v1.0 BASE | **39P/7F/53W NEEDS REBUILD** | Attention handler pattern (AP #27) |
+| TX_TLETS | providers/TX_TLETS/ | v2.0 BASE + v2.0-mc MC | 73P/0F/14W/3LIM import PENDING | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
+| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v2.0 BASE + v2.0-mc MC | 48P/0F/32W/4LIM import PENDING | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 
 ## Legacy Repos (READ-ONLY)
 

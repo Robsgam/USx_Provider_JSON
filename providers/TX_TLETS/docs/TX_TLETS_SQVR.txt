@@ -1,18 +1,18 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-05-04
-JSON version: v1.0 BASE
-Live test: NOT YET TESTED -- NEEDS REBUILD (16 FAIL)
-Validator: 67 PASS / 16 FAIL / 44 WARN / 4 LIMITATION (2026-05-04, monorepo re-validation)
+Last updated: 2026-05-05
+JSON version: v2.0 BASE + v2.0-mc MC
+Live test: NOT YET TESTED -- import PENDING
+Validator: 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION (v2.0 rebuild)
+Verify: 2 FAIL (EmailAddress pending handler -- expected)
 
-NOTE: No per-test XML logs exist. All combos are [PENDING] until exhaustive
-testing with per-test log captures (GATE 2/3).
+NOTE: All combos [PENDING] until exhaustive testing with per-test log captures (GATE 2/3).
 
-OPEN ISSUES:
-  - WARN: MessageKey sourceField missing from Person QIF (TX_TLETS_DriverLicenseQuery)
-  - Build script is a stub (needs completion)
-  - TX-specific queries (DPSI, REG, CPL, RSDWW) need validation against TX metadata
-  - No MC variant
+EMAILADDRESS NOTE:
+  Engineering developing a handler to auto-populate EmailAddress from user profile
+  (similar to CommsysGetDexStateUserIdRuleHandler for dexStateUserId).
+  EmailAddress is QIDM-only -- no form field until handler deployed.
+  Verify FAILs for EmailAddress are expected and acknowledged.
 
 ================================================================================
 1. VehicleInsuranceRegistrationQuery -- Vehicle Entity
@@ -20,50 +20,55 @@ OPEN ISSUES:
 
   QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery
   QIF:  Vehicle
-  queryLabel: Vehicle Registration / Insurance
-  Fields: Plate, PlateType, PlateYear, VIN, Make, Year, State,
-          StickerNumber, FinancialResponsibilityType, RegionId
+  queryLabel: Vehicle Registration
+  Fields: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+          VehicleIdentificationNumber, VehicleMakeCode, VehicleYear,
+          RegistrationState, FinancialResponsibilityType, RegionId, StickerNumber
 
-  RQ+Plate -- Nlets Vehicle Registration (Plate) [PENDING]
+  REG Plate -- TX Registration (Plate+Year+FRT) [PENDING]
+    keyReference: REGLicensePlateNumber
+    set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
+    any: RegistrationState
+    state: In/Out
+
+  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [PENDING]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
-    any: State
+    any: RegistrationState
+    state: In/Out
 
-  QV+Plate -- NCIC Stolen Vehicle (Plate) [PENDING]
+  VIN+FRT -- VIN + Financial Responsibility [PENDING]
+    keyReference: VINVehicleIdentificationNumber
+    set: VehicleIdentificationNumber, FinancialResponsibilityType
+    any: RegistrationState
+    state: In/Out
+
+  DPSI Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
+    keyReference: DPSIStickerNumber
+    set: StickerNumber
+    any: RegistrationState
+    state: In/Out
+
+  QV Plate -- NCIC Stolen Vehicle (Plate only) [PENDING]
     keyReference: QVLicensePlateNumber
     set: LicensePlateNumber
-    any: RegionId, State
+    any: RegionId, RegistrationState
+    state: In/Out
 
-  RQ+VIN -- Nlets Vehicle Registration (VIN) [PENDING]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
-    any: State, VehicleMakeCode, VehicleYear
+    any: RegistrationState, VehicleMakeCode, VehicleYear
+    state: In/Out
 
-  QV+VIN -- NCIC Stolen Vehicle (VIN) [PENDING]
+  QV VIN -- NCIC Stolen Vehicle (VIN only) [PENDING]
     keyReference: QVVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegionId
-
-  DPSI+Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
-    keyReference: DPSIStickerNumber
-    set: StickerNumber
-    any: State
-    Note: TX-specific query -- needs validation
-
-  REG+Plate -- TX Registration (Plate + Financial Responsibility) [PENDING]
-    keyReference: REGLicensePlateNumber
-    set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
-    any: State
-    Note: TX-specific query -- needs validation
-
-  VIN+FR -- TX VIN + Financial Responsibility [PENDING]
-    keyReference: VINVehicleIdentificationNumber
-    set: VehicleIdentificationNumber, FinancialResponsibilityType
-    any: State
-    Note: TX-specific query -- needs validation
+    state: In/Out
 
   RMS co-fire [PENDING]
-    RMS Vehicle combo expected to fire alongside CommSys (VIN, Plate).
+    RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -73,48 +78,33 @@ OPEN ISSUES:
   QIF:  Person
   queryLabel: Driver License
   autoSelect: true
-  queriesToDeselect: DriverHistoryQuery
-  Fields: OLN, First, Last, Middle, Suffix, DOB, Sex, Race, State,
-          ImageIndicator, EmailAddress, ExpandedBirthDateSearchCode,
-          ReasonCode, RegionId, MessageKey
+  Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
+          BirthDate, SexCode, RaceCode, RegistrationState, ImageIndicator,
+          EmailAddress (QIDM-only), ExpandedBirthDateSearchCode, ReasonCode, RegionId
 
-  DQ+Name -- Nlets Driver License (Name) [PENDING]
+  DQ OLN -- Nlets Driver License (OLN) [PENDING]
+    keyReference: DQOperatorLicenseNumber
+    set: OperatorLicenseNumber
+    any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
+    state: In/Out
+
+  DQ Name -- Nlets Driver License (Name+DOB+Sex) [PENDING]
     keyReference: DQName
-    set: SexCode, BirthDate, NameFirst, NameLast
-    any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, State
-    state: In
+    set: SexCode, BirthDate, NameLast, NameFirst
+    any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
+    state: In/Out
 
-  QW+Name -- NCIC Wanted Person (Name) [PENDING]
+  QW Name -- NCIC Wanted (Name+DOB, expanded search) [PENDING]
     keyReference: QWName
-    set: BirthDate, NameFirst, NameLast
+    set: BirthDate, NameLast, NameFirst
     any: ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode
     state: In/Out
 
-  CPL+Name -- TX Concealed Permit License (Name) [PENDING]
-    keyReference: CPLName
-    set: NameFirst, NameLast
-    any: EmailAddress, ImageIndicator, MessageKey, NameMiddle, NameSuffix, ReasonCode, State
-    state: In
-    Note: TX-specific query -- needs validation
-
-  RSDWW+OLN -- TX DPS Warrant (OLN) [PENDING]
-    keyReference: RSDWWOperatorLicenseNumber
-    set: OperatorLicenseNumber
-    any: EmailAddress, ImageIndicator, ReasonCode, RegionId, State
-    state: In
-    Note: TX-specific query -- needs validation
-
-  DQ+OLN -- Nlets Driver License (OLN) [PENDING]
-    keyReference: DQOperatorLicenseNumber
-    set: OperatorLicenseNumber
-    any: EmailAddress, ImageIndicator, ReasonCode, State
-    state: In/Out
-
-  Priority: OLN combos listed after Name combos in JSON.
-  Combo ordering may need review for operational priority (OLN before Name).
+  Combo ordering note: OLN first (operational priority), then DQ Name (4 set),
+  then QW Name (3 set). QW is a fallback for expanded search when Sex not provided.
 
   RMS co-fire [PENDING]
-    RMS Person combo expected to fire alongside CommSys.
+    RMS Person combo fires alongside CommSys.
 
 ================================================================================
 3. DriverHistoryQuery -- Person Entity
@@ -125,21 +115,24 @@ OPEN ISSUES:
   queryLabel: Driver History
   autoSelect: false (manual selection required)
   queriesToDeselect: DriverLicenseQuery
-  Fields: OLN, First, Last, Middle, Suffix, DOB, Sex, State,
-          Attention, PurposeCode, ReasonCode, EmailAddress, ImageIndicator
+  Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
+          BirthDate, SexCode, RegistrationState, Attention (handler), PurposeCode,
+          ReasonCode, EmailAddress (QIDM-only), ImageIndicator
 
-  KQ+OLN -- Driver History (OLN) [PENDING]
+  KQ OLN -- Driver History (OLN) [PENDING]
     keyReference: KQOperatorLicenseNumber
     set: OperatorLicenseNumber
-    any: Attention, EmailAddress, ImageIndicator, PurposeCode, ReasonCode, State
-    state: In
+    any: Attention, EmailAddress, ImageIndicator, PurposeCode, ReasonCode, RegistrationState
+    state: In/Out
 
-  KQ+Name -- Driver History (Name) [PENDING]
+  KQ Name -- Driver History (Name+DOB+Sex) [PENDING]
     keyReference: KQName
-    set: NameFirst, NameLast, BirthDate, SexCode
+    set: SexCode, BirthDate, NameLast, NameFirst
     any: Attention, EmailAddress, ImageIndicator, NameMiddle, NameSuffix,
-         PurposeCode, ReasonCode, State
-    state: In
+         PurposeCode, ReasonCode, RegistrationState
+    state: In/Out
+
+  Attention: CommsysGetLastNameFirstNameInitialRuleHandler (DH only in TX).
 
 ================================================================================
 4. GunQuery -- Firearm Entity
@@ -148,18 +141,20 @@ OPEN ISSUES:
   QIDM: TX_TLETS_GunQuery
   QIF:  Firearm
   queryLabel: Firearm
-  Fields: SerialNumber, GunMake, GunCaliber, NCICNumber,
+  Fields: GunSerialNumber, GunMake(23), GunCaliber, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QG+Serial -- NCIC Gun (Serial Number) [PENDING]
+  QG Serial -- NCIC Gun (Serial Number) [PENDING]
     keyReference: QGGunSerialNumber
     set: GunSerialNumber
     any: GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
-  QG+NCIC -- NCIC Gun (NCIC Number) [PENDING]
+  QG NCIC -- NCIC Gun (NCIC Number) [PENDING]
     keyReference: QGNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
@@ -168,18 +163,20 @@ OPEN ISSUES:
   QIDM: TX_TLETS_ArticleSingleQuery
   QIF:  Article
   queryLabel: Article
-  Fields: SerialNumber, ArticleTypeCode, NCICNumber,
+  Fields: ArticleSerialNumber, ArticleTypeCode, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QA+Serial -- NCIC Article (Serial + Type) [PENDING]
+  QA Serial+Type -- NCIC Article (Serial + Type) [PENDING]
     keyReference: QAArticleSerialNumber
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
-  QA+NCIC -- NCIC Article (NCIC Number) [PENDING]
+  QA NCIC -- NCIC Article (NCIC Number) [PENDING]
     keyReference: QANCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
 ================================================================================
 6. BoatQuery -- Boat Entity
@@ -188,42 +185,47 @@ OPEN ISSUES:
   QIDM: TX_TLETS_BoatQuery
   QIF:  Boat
   queryLabel: Boat
-  Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber, State,
-          ImageIndicator, RelatedHitSearchIndicator
+  Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber,
+          RegistrationState, ImageIndicator, RelatedHitSearchIndicator
 
-  QB+Reg -- NCIC Boat (Registration Number) [PENDING]
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
+    keyReference: BQRegistrationNumber
+    set: RegistrationNumber, RegistrationState
+    any: ImageIndicator, RelatedHitSearchIndicator
+    state: Out
+
+  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [PENDING]
+    keyReference: BQBoatHullIdNumber
+    set: BoatHullIdNumber, RegistrationState
+    any: ImageIndicator, RelatedHitSearchIndicator
+    state: Out
+
+  QB Reg -- NCIC Stolen Boat (Reg, any state) [PENDING]
     keyReference: QBRegistrationNumber
     set: RegistrationNumber
     any: BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
-  QB+Hull -- NCIC Boat (Hull ID) [PENDING]
+  QB Hull -- NCIC Stolen Boat (Hull, any state) [PENDING]
     keyReference: QBBoatHullIdNumber
     set: BoatHullIdNumber
     any: ImageIndicator, RelatedHitSearchIndicator
+    state: In/Out
 
-  QB+NCIC -- NCIC Boat (NCIC Number) [PENDING]
+  QB NCIC -- NCIC Stolen Boat (NCIC Number) [PENDING]
     keyReference: QBNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
-
-  BQ+Reg -- Nlets Boat (Registration) [PENDING]
-    keyReference: BQRegistrationNumber
-    set: RegistrationNumber
-    any: State
-
-  BQ+Hull -- Nlets Boat (Hull ID) [PENDING]
-    keyReference: BQBoatHullIdNumber
-    set: BoatHullIdNumber
-    any: State
+    state: In/Out
 
 ================================================================================
 RMS BUNDLE
 ================================================================================
 
   RMS Vehicle co-fire [PENDING]
-    Combos: VIN, Plate
+    Combos: licensePlateNumber (+ RegistrationState any[]), VIN
   RMS Person co-fire [PENDING]
-    Combos: OLN, Name+DOB, Name+OLN, Name
+    Combos: OLN, Name+DOB, Name+OLN, Name (after Patch 6 cleanup)
 
 ================================================================================
 SUMMARY
@@ -231,14 +233,8 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 18
-  Total RMS combos: 6 (2 Vehicle + 4 Person)
+  Total CommSys combos: 21
+  Total RMS combos: ~6 (2 Vehicle + 4 Person)
   [CONFIRMED]: NONE
   [PENDING]: ALL
-  Missing: Per-test XML logs (no live tests performed yet)
-
-  OPEN ITEMS:
-  - MessageKey sourceField missing from Person QIF
-  - TX-specific queries (DPSI, REG, CPL, RSDWW) need metadata validation
-  - Combo priority ordering review needed
-  - No MC variant
+  MC variant: v2.0-mc (same QIDMs, multi-card layout)

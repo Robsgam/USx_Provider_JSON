@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LETTS_OFML_BASE
   Source: LA_LETTS_OFML_BASE.json
-  Generated: 2026-05-05 14:36
+  Generated: 2026-05-05 16:13
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -15,23 +15,16 @@ POST-BUILD VERIFICATION
   [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'LA_LEMS_GunQuery' attr 'Attention' sourceField='Attention' not in Firearm QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_GunQuery' attr 'GunTypeCode' sourceField='FirearmTypeCode' not in Firearm QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_VehicleRegistrationQuery' attr 'Attention' sourceField='Attention' not in Vehicle QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'Attention' sourceField='Attention' not in Person QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_DriverHistoryQuery' attr 'Attention' sourceField='Attention' not in Person QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_BoatQuery' attr 'Attention' sourceField='Attention' not in Boat QIF fieldIds
-  [FAIL] QIDM 'LA_LEMS_ArticleSingleQuery' attr 'Attention' sourceField='Attention' not in Article QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 11
-  [INFO] CommSys-only: 15 [Attention, FirearmMake, FirearmTypeCode, FirearmModel, SerialNumber, FirearmCaliber, ImageIndicator, LicensePlateTypeCode, LicensePlateYear, NameMiddle, NameSuffix, PurposeCode, BoatHullIdNumber, RegistrationNumber, ArticleTypeCode]
+  [INFO] Shared fieldIds (CommSys+RMS): 7
+  [INFO] CommSys-only: 16 [Attention, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, ImageIndicator, NameMiddle, NameSuffix, RaceCode, PurposeCode, GunMake, GunSerialNumber, GunTypeCode, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 4
-  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 2 [SocialSecurityNumber, VehicleModelCode]
+  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 3 [VehicleYear, VehicleMakeCode, VehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -39,11 +32,10 @@ POST-BUILD VERIFICATION
 
 --- CHECK 6: Reference Pattern Check ---
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
-  [FAIL] RMS QIDM 'RMS Person Search query' missing autoSelect=true
-  [FAIL] RMS QIDM 'RMS Vehicle search query' missing autoSelect=true
+  [PASS] All 2 RMS QIDMs have autoSelect=true
 
 ========================================
- VERIFICATION FAILED: 9 FAIL / 5 PASS
+ VERIFICATION PASSED: 6 PASS / 0 FAIL
 ========================================
 
 

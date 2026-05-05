@@ -1,32 +1,30 @@
 ﻿================================================================
-  Build Report: TX_TLETS_BASE
-  Source: TX_TLETS_BASE.json
-  Generated: 2026-05-05 16:13
+  Build Report: LA_LETTS_OFML_MC
+  Source: LA_LETTS_OFML_MC.json
+  Generated: 2026-05-05 16:24
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_BASE
+ POST-BUILD VERIFICATION: LA_LETTS_OFML_MC
 ========================================
 
 --- CHECK 1: Banned Patterns ---
   [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'EmailAddress' sourceField='EmailAddress' not in Person QIF fieldIds
-  [FAIL] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'EmailAddress' sourceField='EmailAddress' not in Person QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 24 [FinancialResponsibilityType, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegionId, StickerNumber, EmailAddress, ExpandedBirthDateSearchCode, ImageIndicator, NameMiddle, NameSuffix, RaceCode, ReasonCode, Attention, PurposeCode, GunCaliber, GunMake, GunSerialNumber, NCICNumber, RelatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 2
-  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 1 [VehicleModelCode]
+  [INFO] Shared fieldIds (CommSys+RMS): 7
+  [INFO] CommSys-only: 16 [Attention, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, ImageIndicator, NameMiddle, NameSuffix, RaceCode, PurposeCode, GunMake, GunSerialNumber, GunTypeCode, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 4
+  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 3 [VehicleYear, VehicleMakeCode, VehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -37,7 +35,7 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 ========================================
- VERIFICATION FAILED: 2 FAIL / 6 PASS
+ VERIFICATION PASSED: 6 PASS / 0 FAIL
 ========================================
 
 

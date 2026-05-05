@@ -5,38 +5,65 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v2.0-mc  2026-05-05  MC multi-card layout variant
 --------------------------------------------------------------------------------
-2026-04-23  queryLabel standardization (direct JSON edit)
+CHANGED : Multi-card layout for Vehicle (3 cards), Person (3 cards), Boat (3 cards).
+          Firearm and Article remain single-card (same as BASE).
+          QIDMs identical to v2.0 BASE (MC is layout-only change).
+REASON  : Phase 2 standard -- split entity forms into one card per search path.
+SCRIPT  : scripts/build_tx_tlets_mc.ps1
+OUTPUT  : TX_TLETS_MC.json + TX_TLETS_MC_READABLE.json
+REPORTS : docs/mc/ (6 files)
+RESULTS : 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION | Verify: 2 FAIL (EmailAddress)
+
+--------------------------------------------------------------------------------
+v2.0  2026-05-05  Complete rebuild from scratch
+--------------------------------------------------------------------------------
+CHANGED : Full rebuild from TX_TLETS XML metadata using new build script.
+          - ENTITIES bundle first (was second in v1.0)
+          - NCIC state pattern (attributeTypeId=STATE + codeTypeProvider=NCIC)
+          - NIBRS sex pattern (attributeTypeId=SEX + codeTypeProvider=NIBRS)
+          - NIBRS_RACE + NIBRS codeTypeSource for RaceCode
+          - 3 layout variants (default, CAD_DISPATCH, FIRST_RESPONDER)
+          - RMS patches 1/3/6/7/8 applied (including AP #11 race fix in Patch 6)
+          - CAD_DISPATCH CONTEXT_INFO_CARD parent fix
+          - EmailAddress QIDM-only field (pending engineering handler)
+          - CommsysGetLastNameFirstNameInitialRuleHandler on DH Attention
+          - Dual JSON output (minified + readable)
+          - VehicleInsuranceRegistrationQuery: 7 combos (REG, RQ, VIN+FRT, DPSI, QV, RQ VIN, QV VIN)
+          - DriverLicenseQuery: 3 combos (DQ OLN, DQ Name, QW Name)
+          - DriverHistoryQuery: 2 combos (KQ OLN, KQ Name) with queriesToDeselect
+          - GunQuery: 2 combos (Serial, NCIC)
+          - ArticleSingleQuery: 2 combos (Serial+Type, NCIC)
+          - BoatQuery: 5 combos (BQ Reg, BQ Hull, QB Reg, QB Hull, QB NCIC)
+REASON  : v1.0 had 16 FAIL / 44 WARN -- pre-KB build, fundamentally broken.
+          Complete rewrite required to meet current standards.
+SCRIPT  : scripts/build_tx_tlets.ps1
+OUTPUT  : TX_TLETS_BASE.json + TX_TLETS_BASE_READABLE.json
+REPORTS : docs/base/ (6 files)
+RESULTS : 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION | Verify: 2 FAIL (EmailAddress)
+
+FIXES FROM v1.0 (16 FAIL resolved):
+  - RMS QIDMs moved from provider bundle to RMS bundle
+  - combinations arrays removed from QIFs (belongs on QIDMs only)
+  - State codeTypeProvider='NCIC' added (was sending numeric ID)
+  - SexCode codeTypeProvider='NIBRS' added (was sending numeric ID)
+  - RMS bundle rebuilt from HIDLE.json with standard patches
+  - FIRST_RESPONDER layouts added to all 5 entities
+  - ImageIndicator changed from FormCheckbox to FormSelect YES_NO_UNKNOWN
+  - ArticleTypeCode codeTypeSource changed from NCIC to CA_CLETS
+  - CAD_DISPATCH ROW_0 parent fixed
+  - LicensePlateNumberIn -> licensePlateNumber (Patch 8)
+
+--------------------------------------------------------------------------------
+v1.0  2026-04-23  queryLabel standardization (direct JSON edit)
 --------------------------------------------------------------------------------
 CHANGED : ArticleSingleQuery "Article Query"->"Article", BoatQuery "Boat Query"->"Boat",
           GunQuery "Firearm Query"->"Firearm".
-REASON  : KB queryLabel standard adopted across all providers. Labels must describe
-          what the officer searches for, not append "Query" or use system names.
-          Standard: VehicleRegistrationQuery="Vehicle Registration",
-          DriverLicenseQuery="Driver License", GunQuery="Firearm",
-          ArticleSingleQuery="Article", BoatQuery="Boat".
-          Applied to AZ, FL, NY, TX in same session.
-SCOPE   : TX_TLETS_BASE.json queryLabel fields only. No rebuild, no QIDM changes.
+REASON  : KB queryLabel standard adopted across all providers.
 
 --------------------------------------------------------------------------------
-v1.0  2026-04-21
+v1.0  2026-04-21  Initial standup
 --------------------------------------------------------------------------------
 CHANGED : Initial project standup. TX_TLETS.json placed into structured repo.
-REASON  : Establishing TX_TLETS as a tracked ConnectCIC JSON project following
-          the FL_FCIC / NY_NYSPIN_EJUSTICE / NJ_NJCJIS / AZ_AZDPS baseline standard.
-
-Structure created:
-  TX_TLETS.json                        -- working JSON (v1.0)
-  phases/01_standup/                   -- initial snapshot + PHASE_NOTES
-  docs/                                -- STATUS, BUILD_NOTES, LIMITATIONS stubs
-  scripts/                             -- validate, bump_version, inspect_layout,
-                                          new_test_log, build stub
-  source/                              -- for TX_TLETS spec docs (PDF/XML)
-
-Next steps:
-  1. Import TX_TLETS.json into ConnectCIC (fresh import).
-  2. Verify all 5 entity forms render.
-  3. Run through TEST MATRIX in docs/TX_TLETS_STATUS.txt.
-  4. Log results to phases/01_standup/logs/.
-  5. Review SexCode and State field configurations against KB patterns.
-  6. Add TX_TLETS source XML/PDF to source/ directory.
+REASON  : Establishing TX_TLETS as a tracked ConnectCIC JSON project.

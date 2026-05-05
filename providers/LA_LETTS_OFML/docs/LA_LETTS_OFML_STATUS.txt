@@ -1,115 +1,153 @@
 LA_LETTS_OFML -- Build Status
 ==============================
-Last updated: 2026-05-04
-Current version: 1.0 (Phase 1 -- initial standup)
-Provider: LA_LEMS (internal name) / LA_LETTS_OFML (repo name)
-Phase: 01_standup (initial JSON, not yet tested)
+Last updated: 2026-05-05
+Current version: v2.0 BASE + v2.0-mc MC
+Provider: LA_LETTS_OFML (internal: LA_LEMS, System LEMS v18)
+Phase: Phase 1 (BASE) + Phase 2 (MC) -- rebuilt from scratch
 
-RE-VALIDATION (2026-05-04, monorepo validator):
-  Validator: 39 PASS / 7 FAIL / 53 WARN / 3 LIMITATION
-  Status: NEEDS REBUILD -- pre-KB build, does not meet current standards
+BUILD RESULTS
+=============
+  BASE (v2.0):
+    Validator: 48 PASS / 0 FAIL / 32 WARN / 4 LIMITATION
+    Verify:    CLEAN (0 FAIL)
+    Queries:   10 FIRE / 2 SKIP
 
-  CRITICAL FAILs (7):
-    - ENTITIES bundle not first -> forms render incorrectly
-    - State AP #1 x3: Vehicle, DH, Boat QIDMs missing codeTypeProvider -> sends numeric ID
-    - SexCode AP #2 x2: DL + DH QIDMs send numeric ID for SexCode
-    - RaceCode AP #3: DL QIDM sends numeric ID for RaceCode
+  MC (v2.0-mc):
+    Validator: 48 PASS / 0 FAIL / 32 WARN / 4 LIMITATION
+    Verify:    CLEAN (0 FAIL)
+    Queries:   10 FIRE / 2 SKIP
 
-  KEY WARNs (53):
-    - No entity order array defined
-    - Missing CAD_DISPATCH + FIRST_RESPONDER layouts on 3 entities
-    - LicensePlateYear='2025' (stale, should be 2026)
-    - RaceCode field uses attributeTypeId='RACE' without codeTypeProvider (AP #3)
-    - SexCode field missing codeTypeProvider='NIBRS' on form
-    - Attention in combo any[] on ALL queries (unresolvable per validator)
-    - RMS Patch 3 missing (no registrationState on Person QIDM)
-    - RMS Patch 6 not applied (dead HIDLE fields remain)
-    - RMS autoSelect not true
-    - Firearm ImageIndicator missing initialValue
-    - Firearm layout misalignment (2-col row, 1 child)
-    - Generic LicensePlateNumber fieldId (needs correct PascalCase fieldId for RMS)
+  Import: PENDING
 
-ARCHITECTURE (v1.0)
---------------------
-Bundles:  3
-  LA_LEMS   (9 configurations)
-  ENTITIES  (5 QUERYINPUTFORM)
-  RMS       (6 configurations)
+ARCHITECTURE (v2.0)
+===================
+  Bundles: 3 (ENTITIES first, LA_LETTS_OFML second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
 
-Entities: Vehicle, Person, Firearm, Article, Boat
+  LA_LETTS_OFML Configurations (9):
+    LA_LETTS_OFML                                   AUTHENTICATION
+    LA_LETTS_OFML_Results                           QUERYRESULTDATAMAPPING
+    LA_LETTS_OFML_QueryMessageFormat                QUERYMESSAGEFORMAT
+    LA_LETTS_OFML_VehicleRegistrationQuery          QUERYINPUTDATAMAPPING  (2 combos)
+    LA_LETTS_OFML_DriverLicenseQuery                QUERYINPUTDATAMAPPING  (4 combos)
+    LA_LETTS_OFML_DriverHistoryQuery                QUERYINPUTDATAMAPPING  (2 combos)
+    LA_LETTS_OFML_GunQuery                          QUERYINPUTDATAMAPPING  (1 combo)
+    LA_LETTS_OFML_ArticleSingleQuery                QUERYINPUTDATAMAPPING  (1 combo)
+    LA_LETTS_OFML_BoatQuery                         QUERYINPUTDATAMAPPING  (2 combos)
 
-LA_LEMS Configurations:
-  LA_LEMS                              AUTHENTICATION
-  LA_LEMS_Results                      QUERYRESULTDATAMAPPING
-  LA_LEMS_QueryMessageFormat           QUERYMESSAGEFORMAT
-  LA_LEMS_GunQuery                     QUERYINPUTDATAMAPPING
-  LA_LEMS_VehicleRegistrationQuery     QUERYINPUTDATAMAPPING
-  LA_LEMS_DriverLicenseQuery           QUERYINPUTDATAMAPPING
-  LA_LEMS_DriverHistoryQuery           QUERYINPUTDATAMAPPING
-  LA_LEMS_BoatQuery                    QUERYINPUTDATAMAPPING
-  LA_LEMS_ArticleSingleQuery           QUERYINPUTDATAMAPPING
+  RMS: cloned from HIDLE.json + Patches 1/3/6/7/8
+    Patch 1: RegistrationState in Vehicle licensePlateIn any[]
+    Patch 3: registrationState attr + RegistrationState in Person combo any[]
+    Patch 6: removed dead HIDLE fields (Vehicle+Person) + race removal (AP #11)
+    Patch 7: autoSelect=true on all RMS QIDMs
+    Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
 
-RMS Configurations:
-  RMS                                  AUTHENTICATION
-  RMS_QueryMessageFormat               QUERYMESSAGEFORMAT
-  RMS Person Search query              QUERYINPUTDATAMAPPING
-  RMS Vehicle search query             QUERYINPUTDATAMAPPING
-  RMS_Results                          QUERYRESULTDATAMAPPING
-  RMS_ResultsLayout                    QUERYRESULTSLAYOUT
+  Total CommSys combos: 12
+  Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
 
-ATTENTION FIELD PATTERN
------------------------
-  CommsysGetLastNameFirstNameInitialRuleHandler on Attention QIDM attribute (all QIDMs).
+ATTENTION PATTERN (AP #27 compliant)
+====================================
+  ALL 6 QIDMs use CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute.
   No Attention FormInput on any form -- handler reads officer session (LName FInitial).
-  Attention in any[] on all combinations. Confirmed correct pattern (matches CA_eSUN).
-  This pattern was cross-validated against CommSys XML logs vs HI/FL comparison 2026-04-22.
+  Attention in any[] on all combinations (auto-fires via handler).
+  Confirmed correct pattern (matches CA_eSUN).
 
-KNOWN ISSUES (v1.0)
---------------------
-[x] ENTTIY_Boat typo in ENTITIES bundle QUERYINPUTFORM name field -- fixed 2026-04-22
+WARN ACKNOWLEDGMENT (32 WARNs)
+==============================
+  All WARNs are acknowledged and expected:
 
-OPEN ITEMS (Phase 1)
---------------------
-[ ] Import to ConnectCIC and verify forms render
-[ ] Confirm entity forms display correctly (5 entities)
-[ ] Confirm VehicleRegistrationQuery fires correctly
-[ ] Confirm DriverLicenseQuery fires correctly
-[ ] Confirm DriverHistoryQuery fires correctly
-[ ] Confirm GunQuery fires on SerialNumber
-[ ] Confirm ArticleSingleQuery fires on SerialNumber
-[ ] Confirm BoatQuery fires correctly
-[ ] Confirm RMS Vehicle/Person search queries fire
-[ ] Confirm Results mapping renders response data
-[ ] Review SexCode field configuration (see KB SEX_CODE_PATTERN.txt)
-[ ] Review State field configuration across all entities
-[ ] Review Attention field in DriverHistoryQuery (set[] vs any[] -- see FL_FCIC issue)
+  Attention handler (24 WARNs):
+    - Combo any[] references Attention not in QIF fieldIds (x12, all combos)
+    - Attention attr in combo any[] with handler present (x6, all QIDMs)
+    - EXPECTED: LA uses handler pattern on ALL QIDMs (no Attention form field).
+      This is the correct LA_LETTS_OFML pattern per AP #27.
+
+  ImageIndicator (1 WARN):
+    - Person ImageIndicator initialValue='' (no default)
+    - CORRECT: No default is intentional -- ImageIndicator in DP set[] acts as
+      routing toggle between photo (DP) and non-photo (DQ) OLN queries.
+
+  Boat State LIMITATION #30 (1 WARN):
+    - Boat State initialValue='LA' with separate In/Out combos (BQ=Out, QB=In/Out)
+    - ACCEPTED: BQ (Nlets registration) requires OOS state. QB (NCIC stolen) works
+      with any state. initialValue='LA' means QB fires by default (correct for stolen
+      boat queries which are state-agnostic). Officer changes state for Nlets BQ lookup.
+
+  Combo ordering (6 WARNs counted within LIMITATIONs below)
+
+LIMITATION ACKNOWLEDGMENT (4 LIMITATIONs)
+==========================================
+  LIMITATION #1: DL combo order (fewer set[] before more)
+    DP (2 set) before DQ (1 set) before QWDN (5 set) before QWA (4 set).
+    CORRECT: DP fires first when ImageIndicator present (photo request).
+    DQ fires when only OLN (no photo). QWDN (with Race) before QWA (without Race).
+
+  LIMITATION #2: DH combo order (fewer set[] before more)
+    KQ OLN (2 set) before KQ Name (5 set).
+    CORRECT: OLN operationally prioritized over Name for DH queries.
+
+  LIMITATION #3: DL+DH on single form without DH-suffix fieldIds (LIMITATION #25)
+    LA does not use DH-suffix or queriesToDeselect.
+    DH autoSelect=false -- officer manually checks DH checkbox.
+    ACCEPTED: DH co-fires with DL when both checked (correct LA workflow).
+
+  LIMITATION #4: DL+DH on single form without queriesToDeselect (LIMITATION #24)
+    Same as above. No queriesToDeselect on either QIDM.
+    ACCEPTED: LA workflow allows DL+DH co-fire.
+
+MC LAYOUT (v2.0-mc)
+====================
+  Vehicle: 3 cards (OPTIONS / PLATE SEARCH / VIN SEARCH)
+  Person:  3 cards (OPTIONS / LICENSE NUMBER / NAME SEARCH)
+  Firearm: 1 card  (same as BASE)
+  Article: 1 card  (same as BASE)
+  Boat:    2 cards (REGISTRATION / HULL SEARCH)
+
+  QIDMs: identical to BASE (MC is layout-only change)
 
 TEST MATRIX
------------
+===========
 Format: [PASS] / [FAIL] / [PENDING]
 
-  VEHICLE
-  VEH-1: Vehicle Registration (Plate)         CommSys+RMS     [PENDING]
-  VEH-2: Vehicle Registration (VIN)           CommSys+RMS     [PENDING]
+  VEHICLE (VehicleRegistrationQuery -- 2 combos)
+  VEH-1: RQS Plate (Plate+State)                  CommSys+RMS     [PENDING]
+  VEH-2: RQS VIN (VIN+State)                      CommSys+RMS     [PENDING]
 
-  PERSON -- Driver License
-  PER-1: Driver License (OLN)                 CommSys+RMS     [PENDING]
-  PER-2: Driver License (Name)                CommSys+RMS     [PENDING]
+  PERSON -- Driver License (4 combos)
+  PER-1: DP Photo OLN (OLN+ImageIndicator)         CommSys+RMS     [PENDING]
+  PER-2: DQ OLN (OLN only, no image)               CommSys+RMS     [PENDING]
+  PER-3: QWDN Name (Name+DOB+Sex+Race)             CommSys+RMS     [PENDING]
+  PER-4: QWA Name (Name+DOB+Sex, no Race)           CommSys+RMS     [PENDING]
 
-  PERSON -- Driver History
-  PER-3: Driver History (OLN/Name)            CommSys         [PENDING]
+  PERSON -- Driver History (2 combos)
+  PER-5: KQ OLN (OLN+PurposeCode)                 CommSys         [PENDING]
+  PER-6: KQ Name (Name+DOB+Sex+PurposeCode)       CommSys         [PENDING]
 
-  FIREARM
-  FA-1:  Gun Query (SerialNumber)              CommSys         [PENDING]
+  FIREARM (1 combo)
+  FA-1:  QG Serial (GunSerialNumber)               CommSys         [PENDING]
 
-  ARTICLE
-  ART-1: Article Query (SerialNumber)          CommSys         [PENDING]
+  ARTICLE (1 combo)
+  ART-1: QA Serial (ArticleSerialNumber)            CommSys         [PENDING]
 
-  BOAT
-  BOA-1: Boat Query                            CommSys         [PENDING]
+  BOAT (2 combos)
+  BOA-1: BQ Reg (RegNumber+State, Nlets OOS)       CommSys         [PENDING]
+  BOA-2: QB Hull (HullID, NCIC stolen)              CommSys         [PENDING]
 
 BUILD LOG (newest first)
-  v1.0  2026-04-22  Initial standup -- LA_LETTS_OFML.json imported into project structure
-    Output : C:\Users\Gordon Hallof\LA_LETTS_OFML\LA_LETTS_OFML_BASE.json
-    Archive: C:\Users\Gordon Hallof\LA_LETTS_OFML\phases\01_standup\LA_LETTS_OFML_v1.0_2026-04-22.json
-    Import: PENDING
+========================
+  v2.0-mc  2026-05-05  MC build -- multi-card layout variant
+    Build script: scripts/build_la_letts_ofml_mc.ps1
+    Output: LA_LETTS_OFML_MC.json + LA_LETTS_OFML_MC_READABLE.json
+    Reports: docs/mc/ (6 files)
+    QIDMs: identical to v2.0 BASE
+
+  v2.0  2026-05-05  Complete rebuild from scratch (build script)
+    Build script: scripts/build_la_letts_ofml.ps1
+    Output: LA_LETTS_OFML_BASE.json + LA_LETTS_OFML_BASE_READABLE.json
+    Reports: docs/base/ (6 files)
+    Fixes from v1.0: ENTITIES first, NCIC state pattern, NIBRS sex+race,
+      3 layout variants, RMS patches 1/3/6/7/8, CAD_DISPATCH fix,
+      AP #11 race fix, GunTypeCode added, ArticleTypeCode in any[],
+      PurposeCode in DH set[], DP/DQ routing toggle, duplicate keyRef fixes
+
+  v1.0  2026-04-22  Initial standup
