@@ -56,7 +56,7 @@ LIMITATION #2: ONE QIDM per (targetEntity, query) pair
   Diagnostic trigger: Form data confirms field IS populated but query still does not
     fire. STOP iterating set[] changes -- the QIDM itself is never evaluated.
   Resolution: Merge into one QIDM (when all keyRefs are distinct), use a separate
-    transaction, or use DH-suffix fieldIds. See JSON_LIMITATIONS.txt for patterns.
+    transaction, or use DH-suffix fieldIds. See BUILD_RULES.txt for patterns.
 
   DO NOT: Split QIDM configs without verifying this constraint first (AP #12)
     Creating two separate QIDMs for the same (targetEntity, query) and assuming
@@ -162,7 +162,7 @@ AP #2: attributeTypeId='SEX' WITHOUT codeTypeProvider='NIBRS'
     writes the raw ID into outbound XML. CommSys receives
     <SexCode>69509891711</SexCode>.
   Correct approach: attributeTypeId='SEX' + codeTypeProvider='NIBRS' on BOTH
-    the form field AND the QIDM SexCode attribute. See SEX_CODE_PATTERN.txt.
+    the form field AND the QIDM SexCode attribute. See FIELD_REFERENCE.txt Section 5.
   NOTE: codeTypeCategory=NIBRS_SEX satisfies CommSys only. It does NOT work for
     RMS sex filtering (useAttributeId=true cannot convert NIBRS code to attribute
     ID). Use the attributeTypeId + codeTypeProvider pattern when both CommSys and

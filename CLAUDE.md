@@ -289,6 +289,8 @@ Every QIDM must have a `queryLabel` property. Use these standard values:
 | GunQuery | Firearm |
 | ArticleSingleQuery | Article |
 | BoatQuery | Boat |
+| WMPIPersonWINQQuery | Wanted Person |
+| WMPIPersonMINQQuery | Missing Person |
 | RMS (all) | RMS |
 
 Label by what the officer is searching for, not by backend system name. Do not use entity names ("Person"), system names ("NCIC", "DMV"), or append "Query".
@@ -430,7 +432,7 @@ powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path providers/
 # Full build report (runs all 6: validator + layout + query sim + picklist + HTML + verify)
 powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
-# Post-build verification (banned patterns, fieldId consistency, reference patterns)
+# Post-build verification (banned_patterns.txt, fieldId consistency, reference patterns)
 # Called automatically by build_report.ps1 as step 6. Can also run standalone:
 powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -CamelCase

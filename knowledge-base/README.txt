@@ -147,6 +147,27 @@ TOOLS
     Creates a stub test log in tests/. Required by GATE 2 before every test.
     Usage: -Provider <name> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo>
 
+  tools/test_layout.ps1
+    QIF layout tree validator. Checks parent-child relationships and generates
+    an HTML form preview for visual inspection.
+    Usage: -Path <json>
+
+  tools/compare_hidle.ps1
+    Compares a provider's RMS bundle against the current HIDLE.json template.
+    Reports structural differences (added/removed/changed attributes and combos).
+    Usage: -Path <json>
+
+  tools/build_codetype_test.ps1
+    Generates CODETYPE_TEST.json for dropdown validation. Tests which
+    codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
+    Usage: -OutFile <path>
+
+  tools/audit_repo.ps1
+    Full monorepo consistency audit. Checks KB docs, build scripts, tools, and
+    CLAUDE.md for drift, stale references, missing documentation, banned patterns.
+    8 categories, sources of truth extracted at runtime. FAILS (exit 1) on any issue.
+    Usage: .\audit_repo.ps1 [-Category <1-8>]
+
 ================================================================================
 PREREQUISITES
 ================================================================================

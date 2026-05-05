@@ -24,7 +24,7 @@ NJ-1: VehicleStolenQuery registered separately
 NJ-2: State initialValue='NJ' is safe
   NJ has no separate in-state vs OOS keyRefs. State is always in set[] for primary
   combos. initialValue='NJ' does not change which combo fires (unlike NY -- see
-  PLATFORM_LIMITATIONS.txt #30). Safe to default.
+  PLATFORM_CONSTRAINTS.txt #30). Safe to default.
 
 NJ-3: BirthDate format MMddyyyy
   CommSys expects: CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','MMddyyyy']
@@ -203,7 +203,7 @@ Status: v1.0 BASE | 39P/7F/53W/3LIM | NEEDS REBUILD
 LA-1: Attention handler pattern (CommsysGetLastNameFirstNameInitialRuleHandler)
   LA uses the CA_eSUN Attention pattern: no visible Attention FormInput,
   handler auto-populates from officer session. Attention in any[] on all combos.
-  This is the CORRECT pattern for Attention (see PLATFORM_LIMITATIONS.txt #29).
+  This is the CORRECT pattern for Attention (see PLATFORM_CONSTRAINTS.txt #29).
 
 LA-2: RaceCode in DL Name set[] (unusual)
   LA requires RaceCode in set[] for Name-based DL query. Most providers have
