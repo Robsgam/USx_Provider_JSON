@@ -59,11 +59,11 @@ SECTION 2 -- PRE-BUILD CHECKLIST
   BEFORE STARTING A NEW PROVIDER:
 
   [ ] Read README.txt in knowledge-base/
-  [ ] Read BUNDLE_ARCHITECTURE.txt (3-bundle structure, AUTH/QMF/QRDM/RMS
-      patches, rule handlers) -- see BUILD_RULES.txt for consolidated rules
-  [ ] Read CONNECTCIC_BUILD_GUIDE.txt (workflow, prompts, folder structure)
+  [ ] Read BUILD_RULES.txt (3-bundle structure, AUTH/QMF/QRDM/RMS
+      patches, rule handlers, field configuration)
+  [ ] Read TESTING_REQUIREMENTS.txt (this file -- workflow, gates, test sequence)
   [ ] Read PLATFORM_CONSTRAINTS.txt (especially #2, #21, #24-#25)
-  [ ] Read ANTI_PATTERNS.txt before writing any field definitions
+  [ ] Read PLATFORM_CONSTRAINTS.txt anti-patterns before writing any field definitions
   [ ] Check FIELD_REFERENCE.txt codeType table for every dropdown field
   [ ] Confirm all target transactions are in the provider XML (MessageKey
       list). Any missing -> flag in LIMITATIONS.txt and include in gap
@@ -170,6 +170,7 @@ SECTION 2 -- PRE-BUILD CHECKLIST
   [ ] Check every queryLabel value against the standard
       (FIELD_REFERENCE.txt):
       VehicleRegistrationQuery -> "Vehicle Registration"
+      VehicleStolenQuery       -> "Vehicle Stolen"
       DriverLicenseQuery       -> "Driver License"
       DriverHistoryQuery       -> "Driver History"
       GunQuery                 -> "Firearm"
@@ -599,7 +600,7 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
 
   GATE 5 -- BEFORE DECLARING PASS OR DONE:
   [GATE] Verify tests/ contains one log file per test (count must match)
-  [GATE] Verify docs/base/ (and docs/mc/) has all 5 report files
+  [GATE] Verify docs/base/ (and docs/mc/) has all 6 report files
   [GATE] Verify docs/<PROVIDER>_STATUS.txt is current
   [GATE] Verify docs/<PROVIDER>_SQVR.txt exists with [CONFIRMED]/
          [PENDING] markers
@@ -708,7 +709,7 @@ SECTION 15 -- FAILURE INVESTIGATION
     [ ] Add to [PROVIDER]_LIMITATIONS.txt (provider-specific file)
     [ ] Add to PLATFORM_CONSTRAINTS.txt in knowledge-base/ (if
         platform-wide)
-    [ ] Add to ANTI_PATTERNS.txt in knowledge-base/ (if it is a dead
-        end)
+    [ ] Add to PLATFORM_CONSTRAINTS.txt anti-patterns section (if it
+        is a dead end)
     [ ] Note in BUILD_NOTES.txt REASON section
     [ ] Consider notifying vendor if server-side change is required

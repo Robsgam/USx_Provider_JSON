@@ -978,3 +978,17 @@ Write-Host "Built AZ_AZDPS_MC.json v${Version}" -ForegroundColor Green
 Write-Host "  -> $OUT"
 Write-Host "  -> $OUTREADABLE"
 Write-Host "  -> $VEROUT"
+
+# =====================================================================
+# VALIDATE
+# =====================================================================
+Write-Host ""
+Write-Host "Running structural validation..." -ForegroundColor Cyan
+$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
+powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red
+    exit 1
+}
+Write-Host "Validation passed." -ForegroundColor Green

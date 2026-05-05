@@ -289,6 +289,13 @@ SECTION 6 -- KNOWN QUERY/TRANSACTION PATTERNS
     All three keyRefs are distinct -- safe to merge.
     Confirmed: NY v1.11 T1-T4 all PASS.
 
+  VehicleStolenQuery (NJ-specific)
+    query='VehicleStolenQuery'  targetEntity='Vehicle'
+    queryLabel='Vehicle Stolen'
+    Combinations: QVN (NCIC#), QVP (Plate), QVV (VIN)
+    All three keyRefs are distinct.
+    Confirmed: NJ v2.0 BASE (2026-04-28).
+
   GunQuery
     query='GunQuery'  keyRef=GINQ  targetEntity='Firearm'
     set=['GunSerialNumber']

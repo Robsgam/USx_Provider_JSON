@@ -107,9 +107,25 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 5 tools (validator + layout + query sim + picklist + HTML).
+    Master build report. Runs all 6 tools (validator + layout + query sim + picklist + HTML + verify).
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
+
+  tools/verify_build.ps1
+    Post-build verification. Catches issues that slip past the structural validator:
+      1. Banned string patterns (from banned_patterns.txt)
+      2. QIF fieldId / QIDM sourceField / combo consistency
+      3. RMS QIDM name vs sourceField alignment
+      4. Cross-bundle fieldId consistency
+      5. camelCase enforcement (opt-in via -CamelCase flag)
+      6. NJ reference pattern comparison (queryLabel, ImageIndicator, keyReference, state)
+    Called automatically by build_report.ps1 as step 6. Can also run standalone.
+    Usage: -Path <json> [-CamelCase]
+    FAILS the build (exit 1) if any check fails.
+
+  tools/banned_patterns.txt
+    One regex per line. Each pattern must NOT appear in any output JSON.
+    Consumed by verify_build.ps1 Check 1. Add new patterns as issues are discovered.
 
   tools/render_layout.ps1
     CLI layout tree renderer.

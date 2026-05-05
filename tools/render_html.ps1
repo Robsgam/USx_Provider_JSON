@@ -202,8 +202,8 @@ function Build-QidmHtml($provBundle, $qidmName) {
         $idx = 1
         foreach ($c in $qidm.combinations) {
             $kr = if ($c.keyReference) { $c.keyReference } else { '(none)' }
-            $setFields = if ($c.set) { ($c.set | ForEach-Object { "<span class='combo-field combo-set'>$(Esc $_)</span>" }) -join ' ' } else { '<em>none</em>' }
-            $anyFields = if ($c.any) { ($c.any | ForEach-Object { "<span class='combo-field combo-any'>$(Esc $_)</span>" }) -join ' ' } else { '<em>none</em>' }
+            $setFields = if ($c.requirements.set) { ($c.requirements.set | ForEach-Object { "<span class='combo-field combo-set'>$(Esc $_)</span>" }) -join ' ' } else { '<em>none</em>' }
+            $anyFields = if ($c.requirements.any) { ($c.requirements.any | ForEach-Object { "<span class='combo-field combo-any'>$(Esc $_)</span>" }) -join ' ' } else { '<em>none</em>' }
             $html += "<div class='combo'><span class='combo-idx'>#$idx</span> <strong>$(Esc $kr)</strong><div class='combo-detail'>set (required): $setFields</div><div class='combo-detail'>any (optional): $anyFields</div></div>"
             $idx++
         }

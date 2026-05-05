@@ -127,8 +127,8 @@ function Render-Qidm($provBundle, $qidmName) {
         Write-Output "  COMBINATIONS:"
         foreach ($c in $combos) {
             $kr = if ($c.keyReference) { " [$($c.keyReference)]" } else { '' }
-            $setStr = if ($c.set) { "set=[$($c.set -join ',')]" } else { '' }
-            $anyStr = if ($c.any) { "any=[$($c.any -join ',')]" } else { '' }
+            $setStr = if ($c.requirements.set) { "set=[$($c.requirements.set -join ',')]" } else { '' }
+            $anyStr = if ($c.requirements.any) { "any=[$($c.requirements.any -join ',')]" } else { '' }
             Write-Output "    ${kr} ${setStr} ${anyStr}"
         }
     }

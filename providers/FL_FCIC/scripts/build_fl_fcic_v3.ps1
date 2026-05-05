@@ -900,3 +900,17 @@ Write-Host "  -> $outPathReadable"
 Write-Host "  ENTITIES: 5 QIFs (Person, Vehicle, Firearm, Article, Boat)"
 Write-Host "  ${provider}: AUTH + QRDM + QMF + 8 CommSys QIDMs (33 combos)"
 Write-Host "  RMS: Patched (1+3+6+7)"
+
+# =====================================================================
+# VALIDATE
+# =====================================================================
+Write-Host ""
+Write-Host "Running structural validation..." -ForegroundColor Cyan
+$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
+powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $outPath
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red
+    exit 1
+}
+Write-Host "Validation passed." -ForegroundColor Green

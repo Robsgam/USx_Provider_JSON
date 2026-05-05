@@ -31,7 +31,7 @@ Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
       The platform will reject it regardless. The validator WARN change just masked
       the problem. Always revert validator to FAIL after this error.
     NOTE: Invented keyRefs DO work for resolving duplicate keyRef conflicts within
-    a single QIDM -- see QIDM_ARCHITECTURE.txt Section 3b. The import error only
+    a single QIDM -- see QIDM_REFERENCE.txt Section 4. The import error only
     occurs when two combinations in one QIDM share the SAME keyReference value.
 
   Confirmed: NJ v3.12 (investigation), NY v1.13 (import failed 2026-04-14)
@@ -59,7 +59,7 @@ Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
   Fix: Remove attributeTypeId='STATE' from the QIDM sourceField.
     Use InpH (FormInput hidden) with initialValue='NY' instead.
     Map InpH's fieldId as the QIDM sourceField -> targetField='State'.
-    See FORM_ARCHITECTURE.txt for full dual-field pattern.
+    See BUILD_RULES.txt Section 7 for full dual-field pattern.
 
   Also applies to SEX and RACE fields (same numeric ID issue):
     SEX: use codeTypeCategory='NIBRS_SEX', codeTypeSource='NIBRS'
@@ -91,7 +91,7 @@ Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
     but no XML request is built. If you see this after confirming field is filled,
     STOP changing set[] and move to merge/split decision.
 
-  Fix: See QIDM_ARCHITECTURE.txt Section 3 (Merge vs Split Decision).
+  Fix: See QIDM_REFERENCE.txt Section 4 (Merge vs Split Decision).
 
   Confirmed: NJ v2.6 (DL Name cold fail), NY v1.8-v1.10 (Vehicle OOS never fired)
 

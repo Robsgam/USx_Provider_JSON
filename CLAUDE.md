@@ -18,7 +18,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.0 BASE + MC | 66P/0F/0W/2LIM live 17+57 PASS | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6+7 |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.2 BASE + v2.0-mc MC | 66P/0F/7W/2LIM (BASE camelCase+Patch8) live 17+57 PASS | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6+7+8 |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 62P/0F/5W/4LIM import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/0W/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/0W/4LIM import PENDING | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
@@ -283,6 +283,7 @@ Every QIDM must have a `queryLabel` property. Use these standard values:
 | Query | queryLabel |
 |---|---|
 | VehicleRegistrationQuery | Vehicle Registration |
+| VehicleStolenQuery | Vehicle Stolen |
 | DriverLicenseQuery | Driver License |
 | DriverHistoryQuery | Driver History |
 | GunQuery | Firearm |
@@ -426,11 +427,16 @@ powershell -ExecutionPolicy Bypass -File tools/test_layout.ps1 -Path providers/<
 # CommSys query simulator (form data -> combo matching -> XML output)
 powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
-# Full build report (runs all 5: validator + layout + query sim + picklist + HTML)
+# Full build report (runs all 6: validator + layout + query sim + picklist + HTML + verify)
 powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
+
+# Post-build verification (banned patterns, fieldId consistency, reference patterns)
+# Called automatically by build_report.ps1 as step 6. Can also run standalone:
+powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
+powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -CamelCase
 ```
 
-Validator must pass clean (0 FAIL) before import. Fix all failures before proceeding.
+Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 
 ---
 
@@ -479,7 +485,7 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 
 **TRIGGER: You edit or create any `.json` provider file**
 - Run build_report.ps1
-- Commit JSON + all 5 report files
+- Commit JSON + all 6 report files
 - Push to GitHub
 - Update docs/STATUS.txt if version changed
 - Update docs/SQVR.txt if query paths changed
@@ -544,7 +550,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 1. Run `build_report.ps1 -Path <json>` (validator + layout + query sim + picklist + HTML)
 2. Verify 0 FAIL in validator output
-3. Commit the JSON + all 5 report files to `docs/base/` or `docs/mc/`
+3. Commit the JSON + all 6 report files to `docs/base/` or `docs/mc/`
 4. `git push` immediately
 5. **CANNOT proceed to import or testing until reports are committed and pushed**
 
@@ -574,7 +580,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 ### GATE 5: Before Reporting PASS or DONE on Any Variant
 
 1. Verify `tests/` directory contains one log file per test executed (count must match)
-2. Verify `docs/base/` (and `docs/mc/` if applicable) contains all 5 report files
+2. Verify `docs/base/` (and `docs/mc/` if applicable) contains all 6 report files
 3. Verify `docs/<PROVIDER>_STATUS.txt` is current
 4. Verify `docs/<PROVIDER>_SQVR.txt` exists with [CONFIRMED]/[PENDING] per query path
 5. Verify all files are committed and pushed to GitHub
@@ -617,12 +623,14 @@ Every provider under `providers/` MUST have this structure. All new providers fo
 providers/<PROVIDER>/
 ├── <PROVIDER>_BASE.json                   # Current BASE JSON
 ├── <PROVIDER>_MC.json                     # Current MC JSON (if applicable)
+├── <PROVIDER>_BASE_READABLE.json          # Pretty-printed BASE (for engineers)
+├── <PROVIDER>_MC_READABLE.json            # Pretty-printed MC (if applicable)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
-│   ├── base/                              # BASE variant reports (5 files)
+│   ├── base/                              # BASE variant reports (6 files)
 │   └── mc/                                # MC variant reports (if applicable)
 ├── tests/                                 # Per-test log files (one per test executed)
 ├── phases/                                # Version snapshots
