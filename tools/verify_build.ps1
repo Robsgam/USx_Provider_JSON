@@ -4,14 +4,19 @@
     1. Banned string patterns (from banned_patterns.txt)
     2. QIF fieldId / QIDM sourceField / QIDM combo consistency
     3. RMS QIDM name vs sourceField alignment
+    4. Cross-bundle fieldId consistency
+    5. camelCase enforcement (when provider has been migrated)
+    6. NJ reference pattern comparison (ImageIndicator, queryLabel, etc.)
   FAILS the build if any check fails. Called automatically by build_report.ps1.
 
   Usage: .\verify_build.ps1 -Path <provider.json>
+         .\verify_build.ps1 -Path <provider.json> -CamelCase
 #>
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$Path
+    [string]$Path,
+    [switch]$CamelCase
 )
 
 $ErrorActionPreference = "Stop"
@@ -66,15 +71,11 @@ if ($entitiesBundle) {
     foreach ($cfg in $entitiesBundle.configurations) {
         if ($cfg.type -ne 'QUERYINPUTFORM') { continue }
         $entity = $cfg.targetEntity
-        $nodesJson = $cfg.formConfiguration.formLayout.default
-        if (-not $nodesJson) { continue }
-        $nodes = if ($nodesJson -is [string]) { $nodesJson | ConvertFrom-Json } else { $nodesJson }
-        foreach ($prop in $nodes.PSObject.Properties) {
-            $node = $prop.Value
-            if ($node.props -and $node.props.fieldId) {
-                if (-not $formFieldIds.ContainsKey($entity)) { $formFieldIds[$entity] = [System.Collections.Generic.HashSet[string]]::new() }
-                [void]$formFieldIds[$entity].Add($node.props.fieldId)
-            }
+        if (-not $formFieldIds.ContainsKey($entity)) { $formFieldIds[$entity] = [System.Collections.Generic.HashSet[string]]::new() }
+        $cfgText = $cfg | ConvertTo-Json -Depth 100 -Compress
+        $fieldMatches = [regex]::Matches($cfgText, '"fieldId"\s*:\s*"([^"]+)"')
+        foreach ($m in $fieldMatches) {
+            [void]$formFieldIds[$entity].Add($m.Groups[1].Value)
         }
     }
 }
@@ -190,6 +191,90 @@ if ($providerBundle -and $rmsBundle) {
         Info "RMS-only sourceFields (HIDLE defaults, no form match): $($orphans.Count) [$($orphans -join ', ')]"
     }
     Pass "Cross-bundle fieldId consistency checked"
+}
+
+# ── CHECK 5: camelCase fieldId enforcement ────────────────────────────────────
+Write-Host ""
+Write-Host "--- CHECK 5: camelCase Enforcement ---" -ForegroundColor Yellow
+
+if ($CamelCase) {
+    $platformFields = @('CAD_UNIT_SELECT_VALUE','CAD_EVENT_SELECT_VALUE','LINK_CURRENT_ASSIGNED_EVENT')
+    $allFieldIds = @()
+    foreach ($k in $formFieldIds.Keys) { $allFieldIds += $formFieldIds[$k] }
+    $entityFieldIds = @($allFieldIds | Where-Object { $_ -notin $platformFields })
+    $badCase = @($entityFieldIds | Where-Object { $_ -cmatch '^[A-Z]' })
+    if ($badCase.Count -gt 0) {
+        Fail "QIF fieldIds starting with uppercase (should be camelCase): $($badCase -join ', ')"
+    } else {
+        Pass "All $($entityFieldIds.Count) QIF fieldIds are camelCase (excluded $($platformFields.Count) platform fields)"
+    }
+
+    if ($providerBundle) {
+        $badSources = @()
+        foreach ($cfg in $providerBundle.configurations) {
+            if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            foreach ($attr in $cfg.attributes) {
+                foreach ($sf in $attr.sourceField) {
+                    if ($sf -cmatch '^[A-Z]') { $badSources += "$($cfg.name).$sf" }
+                }
+            }
+        }
+        if ($badSources.Count -gt 0) {
+            Fail "CommSys QIDM sourceFields starting with uppercase: $($badSources -join ', ')"
+        } else {
+            Pass "All CommSys QIDM sourceFields are camelCase"
+        }
+    }
+} else {
+    Info "camelCase check skipped (use -CamelCase to enable)"
+}
+
+# ── CHECK 6: NJ reference pattern comparison ─────────────────────────────────
+Write-Host ""
+Write-Host "--- CHECK 6: Reference Pattern Check ---" -ForegroundColor Yellow
+
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+
+        if (-not $cfg.queryLabel) {
+            Fail "QIDM '$($cfg.name)' missing queryLabel"
+        } else {
+            $validLabels = @('Vehicle Registration','Vehicle Stolen','Driver License','Driver History','Firearm','Article','Boat','RMS')
+            if ($cfg.queryLabel -notin $validLabels) {
+                Fail "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' not in standard set [$($validLabels -join ', ')]"
+            }
+        }
+
+        $imgAttr = $cfg.attributes | Where-Object { $_.name -match '[Ii]mage[Ii]ndicator' }
+        if ($imgAttr) {
+            if ($imgAttr.size -ne 1) {
+                Fail "QIDM '$($cfg.name)' ImageIndicator size=$($imgAttr.size), must be 1"
+            }
+        }
+
+        foreach ($combo in $cfg.combinations) {
+            if (-not $combo.keyReference) {
+                Fail "QIDM '$($cfg.name)' has a combination with no keyReference"
+            }
+            if (-not $combo.state) {
+                Fail "QIDM '$($cfg.name)' has a combination with no state"
+            }
+        }
+    }
+    Pass "Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)"
+}
+
+if ($rmsBundle) {
+    $rmsAutoSelectCount = 0
+    foreach ($cfg in $rmsBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        if ($cfg.autoSelect -eq $true) { $rmsAutoSelectCount++ }
+        else { Fail "RMS QIDM '$($cfg.name)' missing autoSelect=true" }
+    }
+    if ($rmsAutoSelectCount -gt 0) {
+        Pass "All $rmsAutoSelectCount RMS QIDMs have autoSelect=true"
+    }
 }
 
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
