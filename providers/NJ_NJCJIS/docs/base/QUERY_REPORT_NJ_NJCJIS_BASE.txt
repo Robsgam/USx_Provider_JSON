@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-05 13:47
+  Generated: 2026-05-05 13:51
 ================================================================
 QUERY SIMULATION
 ================
@@ -129,11 +129,35 @@ QUERY SIMULATION
 
 --- QIDM: NJ_NJCJIS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
-    [SKIP] QG -- missing set: serialNumber
+
+    [FIRES] QG
+      set: [serialNumber]
+      any: [gunCaliber, firearmMake, gunModel, imageIndicator] -> matched: [gunCaliber, firearmMake, gunModel, imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
 
 --- QIDM: NJ_NJCJIS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
-    [SKIP] QA -- missing set: serialNumber
+
+    [FIRES] QA
+      set: [serialNumber, articleTypeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
 
 --- QIDM: NJ_NJCJIS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 3  |  Combos: 2

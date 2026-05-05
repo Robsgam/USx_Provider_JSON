@@ -95,7 +95,9 @@ $testData["Vehicle"] = @{
     dexStateUserId              = "BADGE"
 }
 $testData["Firearm"] = @{
+    serialNumber              = "ABC12345"
     GunSerialNumber           = "ABC12345"
+    firearmMake               = "SMTH"
     GunMake                   = "SMTH"
     GunCaliber                = "9MM"
     GunModel                  = "M&P"
@@ -106,6 +108,7 @@ $testData["Firearm"] = @{
     dexStateUserId            = "BADGE"
 }
 $testData["Article"] = @{
+    serialNumber              = "SN12345678"
     ArticleSerialNumber       = "SN12345678"
     ArticleTypeCode           = "COMP"
     NCICNumber                = "A123456789"
