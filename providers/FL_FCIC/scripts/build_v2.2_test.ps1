@@ -508,7 +508,12 @@ $raw = $raw.Substring(0, $rvStart) + $rmsVehicleQIDM + $raw.Substring($rvEnd)
 # ═══════════════════════════════════════════════════════════
 # WRITE OUTPUT
 # ═══════════════════════════════════════════════════════════
+$outPathReadable = Join-Path $PSScriptRoot "FL_FCIC_v2.2_test_READABLE.json"
 [System.IO.File]::WriteAllText($outPath, $raw, [System.Text.UTF8Encoding]::new($false))
+# Pretty-print the minified output for readable version
+$readableJson = (Get-Content $outPath -Raw | ConvertFrom-Json) | ConvertTo-Json -Depth 100
+[System.IO.File]::WriteAllText($outPathReadable, $readableJson, [System.Text.UTF8Encoding]::new($false))
 $sz = (Get-Item $outPath).Length
 Write-Host "Written: $outPath ($sz bytes)"
+Write-Host "Written: $outPathReadable (readable)"
 Write-Host "Source:  $((Get-Item $srcPath).Length) bytes"

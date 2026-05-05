@@ -904,9 +904,14 @@ $output = [PSCustomObject]@{
 }
 
 $json = $output | ConvertTo-Json -Depth 100 -Compress
-[System.IO.File]::WriteAllText($outPath, $json, [System.Text.UTF8Encoding]::new($false))
+$jsonReadable = $output | ConvertTo-Json -Depth 100
+$outPathReadable = "$PSScriptRoot\..\FL_FCIC_MC_READABLE.json"
+[System.IO.File]::WriteAllText($outPath,         $json,         [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($outPathReadable, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "Built $outPath (v$Version) -- no BOM"
+Write-Host "  -> $outPath"
+Write-Host "  -> $outPathReadable"
 Write-Host "  ENTITIES: 5 QIFs (Person, Vehicle, Firearm, Article, Boat)"
 Write-Host "  ${provider}: AUTH + QRDM + QMF + 8 CommSys QIDMs (33 combos)"
 Write-Host "  RMS: Patched (1+3+6+7)"

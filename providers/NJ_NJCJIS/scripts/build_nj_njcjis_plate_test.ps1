@@ -726,12 +726,16 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $njBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100
-[System.IO.File]::WriteAllText($OUT,    $json, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT, $json, [System.Text.UTF8Encoding]::new($false))
+$json = $output | ConvertTo-Json -Depth 100 -Compress
+$jsonReadable = $output | ConvertTo-Json -Depth 100
+$OUTREADABLE = "$DIR\NJ_NJCJIS_BASE_PLATE_TEST_READABLE.json"
+[System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($VEROUT,      $json,         [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "Built NJ_NJCJIS_BASE_PLATE_TEST.json v${Version}"
 Write-Host "  -> $OUT"
+Write-Host "  -> $OUTREADABLE"
 Write-Host "  -> $VEROUT"
 
 # =====================================================================

@@ -968,9 +968,13 @@ $rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
 # OUTPUT
 # =====================================================================
 $json = $final | ConvertTo-Json -Depth 100 -Compress
-[System.IO.File]::WriteAllText($OUT,    $json, (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($VEROUT, $json, (New-Object System.Text.UTF8Encoding $false))
+$jsonReadable = $final | ConvertTo-Json -Depth 100
+$OUTREADABLE = "$DIR\AZ_AZDPS_MC_READABLE.json"
+[System.IO.File]::WriteAllText($OUT,         $json,         (New-Object System.Text.UTF8Encoding $false))
+[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, (New-Object System.Text.UTF8Encoding $false))
+[System.IO.File]::WriteAllText($VEROUT,      $json,         (New-Object System.Text.UTF8Encoding $false))
 
 Write-Host "Built AZ_AZDPS_MC.json v${Version}" -ForegroundColor Green
 Write-Host "  -> $OUT"
+Write-Host "  -> $OUTREADABLE"
 Write-Host "  -> $VEROUT"

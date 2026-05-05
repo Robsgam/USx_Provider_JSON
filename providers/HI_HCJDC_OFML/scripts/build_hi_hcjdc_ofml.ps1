@@ -736,11 +736,15 @@ $output = [PSCustomObject]@{
 }
 
 $json = $output | ConvertTo-Json -Depth 100 -Compress
-[System.IO.File]::WriteAllText($OUT,    $json, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT, $json, [System.Text.UTF8Encoding]::new($false))
+$jsonReadable = $output | ConvertTo-Json -Depth 100
+$OUTREADABLE = "$DIR\HI_HCJDC_OFML_BASE_READABLE.json"
+[System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($VEROUT,      $json,         [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "Built HI_HCJDC_OFML_BASE.json v${Version}"
 Write-Host "  -> $OUT"
+Write-Host "  -> $OUTREADABLE"
 Write-Host "  -> $VEROUT"
 
 # =====================================================================
