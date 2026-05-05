@@ -1,0 +1,34 @@
+﻿================================================================
+  Build Report: NJ_NJCJIS_BASE
+  Source: NJ_NJCJIS_BASE.json
+  Generated: 2026-05-05 13:38
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: NJ_NJCJIS_BASE
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [PASS] No banned pattern 'LicensePlateNumberIn'
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 9
+  [INFO] CommSys-only: 12 [imageIndicator, licensePlateTypeCode, licensePlateYear, randomRequest, ncicNumber, gunCaliber, firearmMake, gunModel, serialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 3
+  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 3 [raceCode, vehicleYear, vehicleModelCode]
+  [PASS] Cross-bundle fieldId consistency checked
+
+========================================
+ VERIFICATION PASSED: 4 PASS / 0 FAIL
+========================================
+
+

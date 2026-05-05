@@ -1,0 +1,10 @@
+## Banned Patterns -- verify_build.ps1
+## Each non-comment, non-blank line is a regex pattern that must NOT appear in any output JSON.
+## Add new patterns as issues are discovered.
+
+# Split-entity artifact -- CAD uses licensePlateNumber (no "In" suffix)
+LicensePlateNumberIn
+
+# Wrong casing -- all fieldIds must be camelCase (when provider has been migrated)
+# Uncomment per-provider as camelCase rollout proceeds:
+# ^.*"fieldId":\s*"[A-Z]

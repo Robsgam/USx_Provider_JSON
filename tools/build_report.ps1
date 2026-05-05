@@ -43,7 +43,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = if ($Release) { 6 } else { 5 }
+$stepCount = if ($Release) { 7 } else { 6 }
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -107,10 +107,24 @@ $htmlFile = Join-Path $DocsDir "LAYOUT_$jsonName.html"
 & powershell -ExecutionPolicy Bypass -File $htmlRendererPath -Path $resolved -OutFile $htmlFile 2>&1 | Out-Null
 Write-Host "  [5/$stepCount] Saved: $htmlFile" -ForegroundColor Green
 
-# --- 6. Release Bundle (optional) ---
+# --- 6. Post-Build Verification ---
+Write-Host ""
+Write-Host "  [6/$stepCount] Running post-build verification..." -ForegroundColor Yellow
+$verifyPath = Join-Path $toolDir "verify_build.ps1"
+$verifyOut = & powershell -ExecutionPolicy Bypass -File $verifyPath -Path $resolved 2>&1 | Out-String
+$verifyFile = Join-Path $DocsDir "VERIFY_REPORT_$jsonName.txt"
+($header + "POST-BUILD VERIFICATION`n=======================`n`n" + $verifyOut) | Out-File -FilePath $verifyFile -Encoding utf8
+$verifyFails = ([regex]::Matches($verifyOut, '\[FAIL\]')).Count
+if ($verifyFails -gt 0) {
+    Write-Host "  [6/$stepCount] VERIFICATION FAILED ($verifyFails failures) -- see $verifyFile" -ForegroundColor Red
+} else {
+    Write-Host "  [6/$stepCount] Saved: $verifyFile" -ForegroundColor Green
+}
+
+# --- 7. Release Bundle (optional) ---
 if ($Release) {
     Write-Host ""
-    Write-Host "  [6/$stepCount] Building release bundle..." -ForegroundColor Yellow
+    Write-Host "  [7/$stepCount] Building release bundle..." -ForegroundColor Yellow
 
     $releaseDir = Join-Path $jsonDir "release"
     if (-not (Test-Path $releaseDir)) {
@@ -123,9 +137,10 @@ if ($Release) {
     Copy-Item $queryFile (Join-Path $releaseDir "QUERY_REPORT_$jsonName.txt") -Force
     Copy-Item $picklistFile (Join-Path $releaseDir "PICKLIST_REPORT_$jsonName.txt") -Force
     Copy-Item $htmlFile (Join-Path $releaseDir "LAYOUT_$jsonName.html") -Force
+    Copy-Item $verifyFile (Join-Path $releaseDir "VERIFY_REPORT_$jsonName.txt") -Force
 
     $releaseCount = (Get-ChildItem $releaseDir -File).Count
-    Write-Host "  [6/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
+    Write-Host "  [7/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
 }
 
 # --- Summary ---
@@ -139,6 +154,7 @@ Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host "  REPORT COMPLETE" -ForegroundColor Green
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
+Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
 Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray
 if ($Release) {
