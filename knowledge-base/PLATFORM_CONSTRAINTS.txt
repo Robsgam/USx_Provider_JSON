@@ -26,6 +26,13 @@ LIMITATION #1: set[] and any[] control combination selection -- not field sendin
     extras in NJ v2.1 and still returned results. Merge is preferred unless server
     rejects specific unknown fields.
 
+  CLARIFICATION (confirmed FL_FCIC 2026-05-05):
+    any[] is NOT a minimum-one-required gate. A combo fires when all set[] fields
+    are populated, even if NO any[] field is populated. Tested: FBQ+Hull combo
+    (set=[BoatHullIdNumber], any=[Decal,Reg,TitleLien,ImageIndicator]) fired with
+    only BoatHullIdNumber filled and all any[] fields blank. The any[] array
+    controls which optional fields CAN serialize, not whether the combo matches.
+
   OPERATIONAL CONCERN (flagged 2026-04-29):
     When priority routing selects one combo over another (e.g., RQ wins over RQN
     because both Plate and VIN are filled), the "losing" combo's SET fields still

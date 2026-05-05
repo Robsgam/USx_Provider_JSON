@@ -1,9 +1,10 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
-Last updated: 2026-05-01
+Last updated: 2026-05-05
 JSON version: v3.0 BASE + v3.0-mc MC
 Validator: 100 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
-Live test: BASE 21 PASS / MC 47 PASS / 0 FAIL / 2 LIMITATION (2026-05-01)
+Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL / 0 LIMITATION (2026-05-05)
+QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8)
 
 ARCHITECTURE: v3.0 uses 8 merged QIDMs (1 per entity+query pair) with invented
 keyReferences per LIMITATION #21. This replaces v2.x's 25 split QIDMs.
@@ -210,6 +211,7 @@ LIMITATION #2 (one QIDM per entity+query pair).
   QIF:  Boat
   Fields: RegNumber, HullId, RegistrationState(no default), Decal, TitleLien,
           CoastGuardDocumentNumber, NCICNumber, PCN, ImageIndicator(N),
+          RelatedHitSearchIndicator (Stolen Search, Y=NCIC stolen),
           NameLast, NameFirst, BirthDate
 
   BQ+Name -- Nlets Boat (Name+DOB+State) [CONFIRMED]
@@ -252,21 +254,20 @@ LIMITATION #2 (one QIDM per entity+query pair).
     set: [CoastGuardDocumentNumber]
     any: [ImageIndicator]
 
-  QB+Hull -- NCIC Stolen Boat (Hull) [LIMITATION]
+  QB+Hull -- NCIC Stolen Boat (Hull) [CONFIRMED]
     keyReference: QBBoatHullIdNumber
-    set: [BoatHullIdNumber]
-    any: [ImageIndicator]
-    *** UNREACHABLE: FBQ+Hull (combo #4) shares same set[] field and fires first.
-        No separate BoatStolenQuery exists in metadata (unlike VehicleStolenQuery).
-        LIMITATION #2 prevents a second BoatQuery QIDM. Stolen boat check for Hull
-        requires using CoastGuardDocumentNumber, NCICNumber, or ProcessControlNumber instead.
+    set: [BoatHullIdNumber, RelatedHitSearchIndicator]
+    any: [ImageIndicator, RegistrationNumber]
+    Routing: Officer types Y in "Stolen Search" to route to NCIC stolen.
+    Ordered BEFORE FBQ+Hull so RelatedHitSearchIndicator in set[] differentiates.
+    Fixed 2026-05-05 via FL-8 (RelatedHitSearchIndicator routing).
 
-  QB+Reg -- NCIC Stolen Boat (Registration) [LIMITATION]
+  QB+Reg -- NCIC Stolen Boat (Registration) [CONFIRMED]
     keyReference: QBRegistrationNumber
-    set: [RegistrationNumber]
-    any: [ImageIndicator]
-    *** UNREACHABLE: FBQ+Reg (combo #5) shares same set[] field and fires first.
-        Same root cause as QB+Hull above.
+    set: [RegistrationNumber, RelatedHitSearchIndicator]
+    any: [ImageIndicator, BoatHullIdNumber]
+    Routing: Same as QB+Hull. Stolen Search=Y routes to NCIC stolen.
+    Fixed 2026-05-05 via FL-8.
 
   QB+NCIC -- NCIC Boat (NCIC Number) [CONFIRMED]
     keyReference: QBNCICNumber
@@ -278,10 +279,12 @@ LIMITATION #2 (one QIDM per entity+query pair).
     set: [ProcessControlNumber]
     any: [ImageIndicator]
 
-  Combo priority: BQ (state-required, broadest) > FBQ (FL-only) > QB (NCIC stolen).
-  KNOWN LIMITATION: QB+Hull and QB+Reg unreachable — FBQ combos share same set[]
-  fields and fire first. No BoatStolenQuery exists in CommSys metadata to enable
-  co-fire (unlike VehicleStolenQuery for Vehicle). Revisit if platform adds support.
+  Combo priority: BQ (state-required) > QB+Hull/Reg (stolen flag) > FBQ (FL-only) > QB unique fields.
+  All 12 combos reachable. RelatedHitSearchIndicator routing (FL-8) resolved
+  the QB+Hull/QB+Reg unreachable limitation. Officer types Y in "Stolen Search"
+  to route to NCIC stolen; blank defaults to FL registration (FBQ).
+  Co-fire not possible (single BoatQuery QIDM). Two submissions needed for
+  both registration and stolen results.
 
 ================================================================================
 RMS BUNDLE (Patched from HIDLE)
@@ -304,10 +307,10 @@ SUMMARY
   Architecture: 8 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
   Total CommSys combos: 35 (6+2+4+2+2+3+4+12)
   Total RMS combos: ~8 (after Patch 6 cleanup)
-  [CONFIRMED]: 33 CommSys + 2 RMS (all reachable combos)
-  [LIMITATION]: 2 (QB+Hull, QB+Reg — unreachable, FBQ fires first)
+  [CONFIRMED]: 35 CommSys + 2 RMS (all combos reachable)
+  [LIMITATION]: 0 (QB+Hull/QB+Reg RESOLVED via FL-8 routing, 2026-05-05)
   [PENDING]: 0
-  Live test: BASE 21 PASS / MC 47 PASS / 0 FAIL (2026-05-01)
+  Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL (2026-05-05)
 
   v3.0 resolved:
   - LIMITATION #2: Separate query types (VehicleStolenQuery, WantedPersonQuery)

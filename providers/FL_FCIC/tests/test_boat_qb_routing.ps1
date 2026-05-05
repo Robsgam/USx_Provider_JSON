@@ -143,10 +143,10 @@ $results += Test-Scenario "Hull + Stolen + State -> BQ (State wins)" @{
     ImageIndicator            = "N"
 } -ExpectedKeyRef "BQBoatHullIdNumber" -Why "BQ ordered before QB. State+Hull satisfies BQ set[]. BQ fires first."
 
-# --- Scenario 14: Hull only, no ImageIndicator -> does FBQ still fire? ---
-$results += Test-Scenario "Hull only, ImageIndicator blank -> NONE" @{
+# --- Scenario 14: Hull only, no ImageIndicator -> FBQ still fires ---
+$results += Test-Scenario "Hull only, ImageIndicator blank -> FBQ (still fires)" @{
     BoatHullIdNumber = "FL1234AB56H7"
-} -ExpectedKeyRef "NONE" -Why "No any[] field populated (ImageIndicator blank). Neither QB nor FBQ fires. Edge case."
+} -ExpectedKeyRef "FBQBoatHullIdNumber" -Why "Platform behavior: any[] is NOT a min-one gate. set[] satisfied = combo fires. Confirmed live 2026-05-05."
 
 # --- Scenario 15: Hull + Reg (no state, no stolen) -> FBQ Hull ---
 $results += Test-Scenario "Hull + Reg -> FBQ Hull (most specific)" @{

@@ -183,11 +183,12 @@ LIVE TEST STATUS -- MC v3.0-mc
   46  Any[]     Vehicle   RQ+VIN+State+Year  PASS    VehicleYear=2020 in RQ XML; QV+RMS co-fire
   47  Any[]     Person    QW+Name+OLN        PASS    OLN=OLN99999 in QW XML (any[]); FDQ+RMS co-fire
 
-  LIMITATIONS (2 — RESOLVED 2026-05-05):
+  LIMITATIONS (2 — RESOLVED + CONFIRMED 2026-05-05):
   - QB+Hull: was UNREACHABLE — FIXED via RelatedHitSearchIndicator routing (FL-8).
     Officer types Y in "Stolen Search" to route hull query to NCIC stolen (QB).
+    LIVE TESTED: 13/13 PASS (all 12 combos + priority edge case).
   - QB+Reg: was UNREACHABLE — same fix. All 12 boat combos now reachable.
-    Fallback: git tag FL_FCIC_PRE_QB_ROUTING. Needs live test confirmation.
+    Fallback: git tag FL_FCIC_PRE_QB_ROUTING (revert if server rejects field).
 
   Notes:
   - DH autoSelect=true: checkbox auto-lights when DH fields populated (safe — separate card)
@@ -199,9 +200,30 @@ LIVE TEST STATUS -- MC v3.0-mc
   - All any[] fields explicitly tested: VehicleMakeCode, VehicleYear, GunMake, OLN(QW), ImageIndicator
   - All 5 entities have negative tests (empty form = no send button)
 
+QB ROUTING LIVE TESTS (2026-05-05, MC instance)
+-------------------------------------------------
+  #   Scenario                        Expected KeyRef            Result
+  --  ------------------------------  -------------------------  ------
+  48  Hull only                       FBQBoatHullIdNumber        PASS
+  49  Hull + Stolen=Y                 QBBoatHullIdNumber         PASS
+  50  Reg only                        FBQRegistrationNumber      PASS
+  51  Reg + Stolen=Y                  QBRegistrationNumber       PASS
+  52  Hull + State                    BQBoatHullIdNumber         PASS
+  53  Reg + State                     BQRegistrationNumber       PASS
+  54  CG# only                        QBCoastGuardDocumentNumber PASS
+  55  NCIC# only                      QBNCICNumber               PASS
+  56  PCN only                        QBProcessControlNumber     PASS
+  57  Decal only                       FBQDecalNumber             PASS
+  58  Title only                       FBQTitleLienInformation    PASS
+  59  Name+DOB+State                  BQName                     PASS
+  60  Hull+Stolen+State (priority)    BQBoatHullIdNumber         PASS
+
+  13 PASS / 0 FAIL. All 12 combos confirmed reachable. Priority routing confirmed.
+
+  Platform behavior: any[] is NOT a minimum-one-required gate. Combo fires when
+  set[] is satisfied even if no any[] field is populated (Test 14 edge case).
+
 PENDING
 -------
   1. Production import
   2. KB update: VehicleMakeCode serialization (contradicts FIELD_RULES)
-  3. Live test: QB+Hull/QB+Reg with RelatedHitSearchIndicator=Y (FL-8 routing)
-     Fallback tag FL_FCIC_PRE_QB_ROUTING if server rejects field

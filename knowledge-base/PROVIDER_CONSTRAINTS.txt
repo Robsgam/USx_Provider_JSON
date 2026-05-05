@@ -82,11 +82,10 @@ FL-3: DriverHistoryQuery (KQ) is FL-specific
   KQ includes PurposeCode (FormInput, maxLength=1, initialValue='C').
   Not all providers have DH -- check metadata.
 
-FL-4: Boat combo priority conflict
-  QB+Hull and QB+Reg combos unreachable due to FBQ combos firing first.
-  FBQ+Hull fires before QB+Hull because FBQ QIDM evaluates first (autoSelect=true
-  vs QB autoSelect=false). Three QB combos remain functional (QB+CG, QB+NCIC, QB+PCN).
-  Resolution requires separate BoatStolenQuery transaction type (platform change).
+FL-4: Boat combo priority conflict (RESOLVED -- see FL-8)
+  QB+Hull and QB+Reg were unreachable due to FBQ combos firing first.
+  RESOLVED 2026-05-05 via RelatedHitSearchIndicator routing (FL-8).
+  All 12 boat combos now reachable. Live tested 13/13 PASS.
 
 FL-5: BoatHullIdNumber maxLength=62
   Longer than NJ standard (20). Provider-specific metadata value.
@@ -106,7 +105,7 @@ FL-8: BoatQuery QB+Hull/QB+Reg routing via RelatedHitSearchIndicator
   on QB+Hull and QB+Reg. Officer types Y in "Stolen Search" to route to NCIC
   stolen; blank = FL registration (FBQ). QB combos ordered before FBQ.
   Fallback tag: FL_FCIC_PRE_QB_ROUTING (revert if server rejects field).
-  All 12 boat combos now reachable.
+  All 12 boat combos now reachable. Live tested 13/13 PASS (2026-05-05).
 
 ================================================================================
 NY_NYSPIN_EJUSTICE -- New York
