@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-05 14:36
+  Generated: 2026-05-05 14:56
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,7 +13,25 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
-    [SKIP] RQLicensePlateNumber -- missing set: LicensePlateNumberIn
+
+    [FIRES] RQLicensePlateNumber
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
     [FIRES] RQVehicleIdentificationNumber
       set: [VehicleIdentificationNumber, RegistrationState]
@@ -24,6 +42,7 @@ QUERY SIMULATION
         <MessageKey>RQ</MessageKey>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
@@ -32,7 +51,25 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] FRQLicensePlateNumber -- missing set: LicensePlateNumberIn
+
+    [FIRES] FRQLicensePlateNumber
+      set: [LicensePlateNumber]
+      any: [LicensePlateYear, ImageIndicator] -> matched: [LicensePlateYear, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>FRQ</MessageKey>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
     [FIRES] FRQVehicleIdentificationNumber
       set: [VehicleIdentificationNumber]
@@ -43,6 +80,7 @@ QUERY SIMULATION
         <MessageKey>FRQ</MessageKey>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
@@ -61,6 +99,7 @@ QUERY SIMULATION
         <MessageKey>FRQ</MessageKey>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
@@ -79,6 +118,7 @@ QUERY SIMULATION
         <MessageKey>FRQ</MessageKey>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
@@ -90,7 +130,20 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_VehicleStolenQuery [Vehicle] ---
     Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
-    [SKIP] QVLicensePlateNumber -- missing set: LicensePlateNumberIn
+
+    [FIRES] QVLicensePlateNumber
+      set: [LicensePlateNumber]
+      any: [ImageIndicator, RegistrationState, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
 
     [FIRES] QVVehicleIdentificationNumber
       set: [VehicleIdentificationNumber]
@@ -100,6 +153,7 @@ QUERY SIMULATION
       <Transaction>
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-05 14:35
+  Generated: 2026-05-05 14:57
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,7 +23,6 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
-  [WARN] QIF 'ENTITY_Vehicle' uses deprecated fieldId='LicensePlateNumberIn' -- use 'licensePlateNumber' (no In/Out suffix)
   [PASS] QIF 'ENTITY_Vehicle' ImageIndicator default='N' for Vehicle
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
@@ -39,7 +38,6 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 3 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' ImageIndicator size=1
-  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' attr 'LicensePlateNumberIn' sourceField='LicensePlateNumberIn' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead
   [LIMITATION] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -102,8 +100,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo 'RCAR': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 71 PASS / 0 FAIL / 2 WARN / 5 LIMITATION
+  RESULTS: 71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  5 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

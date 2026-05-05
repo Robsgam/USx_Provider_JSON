@@ -19,7 +19,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.2 BASE + v2.0-mc MC | 66P/0F/7W/2LIM (BASE camelCase+Patch8) live 17+57 PASS | Dual Vehicle QIDMs, RandomRequest, NCIC state, Patch 1+3+6+7+8 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 62P/0F/5W/4LIM import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 BASE + MC | 64P/0F/2W/4LIM import PENDING | 6-transaction build from XML, empty any[] pattern, VehicleTypeCode |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 BASE + MC | 71P/0F/0W/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 BASE + MC | 69P/0F/0W/4LIM import PENDING | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.0 BASE + MC | 100P/0F/1W/4LIM 21+60 PASS import PENDING | DL+DH shared form, 6-card Person, QB routing (FL-8) |

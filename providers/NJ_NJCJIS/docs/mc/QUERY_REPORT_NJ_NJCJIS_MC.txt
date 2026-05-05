@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-05 14:36
+  Generated: 2026-05-05 14:57
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,7 +13,22 @@ QUERY SIMULATION
 
 --- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
-    [SKIP] RQ -- missing set: LicensePlateNumberIn
+
+    [FIRES] RQ
+      set: [LicensePlateNumber, RandomRequest, RegistrationState, LicensePlateTypeCode]
+      any: [ImageIndicator, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
 
     [FIRES] RQN
       set: [VehicleIdentificationNumber, RandomRequest, RegistrationState]
@@ -23,6 +38,7 @@ QUERY SIMULATION
       <Transaction>
         <MessageKey>RQ</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <RandomRequest>N</RandomRequest>
@@ -41,12 +57,27 @@ QUERY SIMULATION
       <Transaction>
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <NCICNumber>V123456789</NCICNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
-    [SKIP] QVP -- missing set: LicensePlateNumberIn
+
+    [FIRES] QVP
+      set: [LicensePlateNumber]
+      any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
 
     [FIRES] QVV
       set: [VehicleIdentificationNumber]
@@ -56,6 +87,7 @@ QUERY SIMULATION
       <Transaction>
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <NCICNumber>V123456789</NCICNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>

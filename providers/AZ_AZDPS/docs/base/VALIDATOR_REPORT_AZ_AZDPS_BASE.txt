@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-05 14:35
+  Generated: 2026-05-05 14:56
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,7 +23,6 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
-  [WARN] QIF 'ENTITY_Vehicle' uses deprecated fieldId='LicensePlateNumberIn' -- use 'licensePlateNumber' (no In/Out suffix)
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 35 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
@@ -33,7 +32,6 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 2 combos
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [WARN] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' attr 'LicensePlateNumber' sourceField='LicensePlateNumberIn' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead
   [LIMITATION] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' -> Person : 7 attrs, 4 combos
   [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -99,8 +97,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQMN': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 69 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
+  RESULTS: 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  4 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

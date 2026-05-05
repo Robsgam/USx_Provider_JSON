@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-05 14:35
+  Generated: 2026-05-05 14:56
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,16 +13,33 @@ QUERY SIMULATION
 
 --- QIDM: AZ_AZDPS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
-    [SKIP] ACVR -- missing set: LicensePlateNumberIn
+
+    [FIRES] ACVR
+      set: [dexStateUserId, LicensePlateNumber]
+      any: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ACVR</MessageKey>
+        <BadgeNumber>BADG</BadgeNumber>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
     [FIRES] ACVRV
       set: [dexStateUserId, VehicleIdentificationNumber]
-      any: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear]
+      any: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>ACVRV</MessageKey>
         <BadgeNumber>BADG</BadgeNumber>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>

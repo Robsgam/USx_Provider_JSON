@@ -264,3 +264,9 @@ justification documented in the provider's section above.
 
 6. YES_NO_UNKNOWN/NCIC for all Y/N dropdowns
    No provider should use YES_NO, YESNO, or other variants.
+
+7. Patch 8: LicensePlateNumberIn eliminated from all output JSONs
+   CAD sends licensePlateNumber (camelCase, no "In" suffix). HIDLE template uses
+   LicensePlateNumberIn -- build scripts must rename after serialization.
+   Confirmed: NJ (BASE full camelCase, MC text replace), AZ, FL, HI, NY (all text replace).
+   Missing: LA, TX (needs rebuild).

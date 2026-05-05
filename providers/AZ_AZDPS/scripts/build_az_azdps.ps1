@@ -899,6 +899,11 @@ $rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
 # =====================================================================
 $json = $final | ConvertTo-Json -Depth 100 -Compress
 $jsonReadable = $final | ConvertTo-Json -Depth 100
+
+# Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+$json = $json -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+
 $OUTREADABLE = "$DIR\AZ_AZDPS_BASE_READABLE.json"
 [System.IO.File]::WriteAllText($OUT,         $json,         (New-Object System.Text.UTF8Encoding $false))
 [System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, (New-Object System.Text.UTF8Encoding $false))

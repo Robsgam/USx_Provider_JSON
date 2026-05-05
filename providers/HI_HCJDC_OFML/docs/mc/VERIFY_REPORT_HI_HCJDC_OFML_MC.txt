@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_MC
   Source: HI_HCJDC_OFML_MC.json
-  Generated: 2026-05-05 14:41
+  Generated: 2026-05-05 14:56
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -12,7 +12,7 @@ POST-BUILD VERIFICATION
 ========================================
 
 --- CHECK 1: Banned Patterns ---
-  [FAIL] Banned pattern 'LicensePlateNumberIn' found 4 time(s)
+  [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
@@ -24,7 +24,7 @@ POST-BUILD VERIFICATION
   [INFO] Shared fieldIds (CommSys+RMS): 9
   [INFO] CommSys-only: 18 [ImageIndicator, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, VehicleTypeCode, NameMiddle, NameSuffix, Attention, PurposeCode, GunCaliber, GunMake, GunModel, GunSerialNumber, RelatedSearchHitIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 3
-  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 3 [RaceCode, VehicleModelCode, LicensePlateNumberIn]
+  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 2 [RaceCode, VehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -35,7 +35,7 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 ========================================
- VERIFICATION FAILED: 1 FAIL / 5 PASS
+ VERIFICATION PASSED: 6 PASS / 0 FAIL
 ========================================
 
 

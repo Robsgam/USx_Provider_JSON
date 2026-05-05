@@ -1,27 +1,39 @@
 HI_HCJDC_OFML STATUS
 ====================
-Last Updated: 2026-05-04
+Last Updated: 2026-05-05
 
 BASE v1.0
-  Validator: 62 PASS / 0 FAIL / 5 WARN / 4 LIMITATION (re-validated 2026-05-04)
+  Validator: 64 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
+  Verify:    0 FAIL (Patch 8 applied -- LicensePlateNumberIn eliminated)
   Queries:   15 FIRE / 0 SKIP
   Import:    PENDING
   Live Test: PENDING
 
-MC v1.0
-  Validator: 62 PASS / 0 FAIL / 5 WARN / 4 LIMITATION (re-validated 2026-05-04)
+MC v1.0-mc
+  Validator: 64 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
+  Verify:    0 FAIL (Patch 8 applied -- LicensePlateNumberIn eliminated)
+  Queries:   15 FIRE / 0 SKIP
   Import:    PENDING
   Live Test: PENDING
 
-  OPEN WARNs (monorepo re-validation 2026-05-04):
+  FIXED 2026-05-05:
+    - AUTH keyReference='AUTH' added to combination
+    - RMS Person autoSelect=true added (Patch 7)
+    - RMS Vehicle autoSelect=true added (Patch 7)
+    - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+    - READABLE JSON now generated for both BASE and MC
+
+  REMAINING WARNs (2):
     1. Vehicle ImageIndicator not in any combo set[]/any[] -- will not serialize (needs fix)
     2. Vehicle State initialValue='HI' with In/Out combos -- LIMITATION #30 (documented, no fix)
-    3. AUTH combination missing keyReference -- low risk
-    4. RMS Person autoSelect not true -- should be true (cross-provider consistency)
-    5. RMS Vehicle autoSelect not true -- should be true (cross-provider consistency)
-  OPEN LIMITATIONs:
+
+  REMAINING LIMITATIONs (4):
     1-3. Combo ordering (Vehicle, DL, DH) -- operational priority correct
     4. DL+DH single form without DH-suffix -- known constraint (AP #14 / LIMITATION #25)
+
+  PENDING:
+    - Vehicle ImageIndicator in combo any[] -- needs build script fix
+    - First import test to confirm NCIC state + VehicleTypeCode patterns
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built, for comparison)

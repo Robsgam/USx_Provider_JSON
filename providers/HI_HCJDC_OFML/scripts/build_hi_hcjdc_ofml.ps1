@@ -743,6 +743,11 @@ $output = [PSCustomObject]@{
 
 $json = $output | ConvertTo-Json -Depth 100 -Compress
 $jsonReadable = $output | ConvertTo-Json -Depth 100
+
+# Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+$json = $json -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+
 $OUTREADABLE = "$DIR\HI_HCJDC_OFML_BASE_READABLE.json"
 [System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))

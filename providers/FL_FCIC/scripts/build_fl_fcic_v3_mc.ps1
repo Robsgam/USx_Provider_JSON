@@ -905,6 +905,11 @@ $output = [PSCustomObject]@{
 
 $json = $output | ConvertTo-Json -Depth 100 -Compress
 $jsonReadable = $output | ConvertTo-Json -Depth 100
+
+# Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+$json = $json -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+
 $outPathReadable = "$PSScriptRoot\..\FL_FCIC_MC_READABLE.json"
 [System.IO.File]::WriteAllText($outPath,         $json,         [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText($outPathReadable, $jsonReadable, [System.Text.UTF8Encoding]::new($false))

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC_BASE
   Source: FL_FCIC_BASE.json
-  Generated: 2026-05-05 14:35
+  Generated: 2026-05-05 14:56
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -59,7 +59,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [6 3 3]
-        LicensePlateNumberIn (Text | maxLen=10)
+        LicensePlateNumber (Text | maxLen=10)
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
       ROW ROW_VEH_2 [6 3 3]
@@ -135,6 +135,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumberIn -> vehicle.tag
+    licensePlateNumber -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

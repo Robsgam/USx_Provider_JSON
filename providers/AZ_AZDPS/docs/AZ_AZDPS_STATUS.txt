@@ -1,6 +1,6 @@
 AZ_AZDPS -- Build Status
 =========================
-Last updated: 2026-04-30
+Last updated: 2026-05-05
 Current version: v2.0 (NJ cross-reference rebuild)
 Provider: AZ_AZDPS
 
@@ -25,8 +25,8 @@ VALIDATOR RESULTS
 
   | Variant | Version | Validator                                           | Live Test | Date       |
   |---------|---------|-----------------------------------------------------|-----------|------------|
-  | BASE    | v2.0    | 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE | PENDING   | 2026-04-30 |
-  | MC      | v2.0    | 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE | PENDING   | 2026-04-30 |
+  | BASE    | v2.0    | 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE | PENDING   | 2026-05-05 |
+  | MC      | v2.0    | 69 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE | PENDING   | 2026-05-05 |
 
 LIMITATIONs (4):
   1. DL combo priority ordering (DQ before DQN -- OLN wins, correct)
@@ -41,9 +41,10 @@ Race:    NIBRS confirmed (attributeTypeId=RACE, codeTypeProvider=NIBRS) -- AP #3
 Date:    yyyyMMdd (AZ-specific)
 DH:      DH-suffix fieldIds (LIMITATION #26 isolation)
 
-v2.0 CHANGES (NJ cross-reference rebuild)
-------------------------------------------
+v2.0 CHANGES (NJ cross-reference rebuild + Patch 8)
+----------------------------------------------------
   - AUTH keyReference='AUTH' added
+  - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
   - PlateType default=PC, PlateYear default=2026
   - LicensePlateNumber fieldId standardized (PascalCase for RMS plate search)
   - RaceCode: codeTypeCategory/codeTypeSource -> attributeTypeId=RACE + codeTypeProvider=NIBRS

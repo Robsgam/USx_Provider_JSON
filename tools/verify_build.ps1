@@ -88,6 +88,8 @@ if ($providerBundle) {
         $entityFields = if ($formFieldIds.ContainsKey($entity)) { $formFieldIds[$entity] } else { $null }
 
         foreach ($attr in $cfg.attributes) {
+            # Attention uses handler auto-populate (no form field needed)
+            if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') { continue }
             foreach ($sf in $attr.sourceField) {
                 if ($entityFields -and -not $entityFields.Contains($sf)) {
                     Fail "QIDM '$qidmName' attr '$($attr.name)' sourceField='$sf' not in $entity QIF fieldIds"
