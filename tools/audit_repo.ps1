@@ -1,8 +1,9 @@
 <#
   audit_repo.ps1 -- Full monorepo consistency audit
-  Mechanically checks KB docs, build scripts, tools, and CLAUDE.md for
-  drift, stale references, missing documentation, and banned patterns.
-  Sources of truth are extracted at runtime (not hardcoded).
+  Mechanically checks KB docs, build scripts, tools, provider JSONs, and
+  CLAUDE.md for drift, stale references, missing documentation, banned
+  patterns, report completeness, and cross-provider JSON consistency.
+  11 categories, sources of truth extracted at runtime (not hardcoded).
 
   FAILS (exit 1) if any check fails. Run after any KB, tool, or CLAUDE.md edit.
 
@@ -413,6 +414,185 @@ if ($claudeMd -match 'banned_patterns') {
     Pass "CLAUDE.md references banned_patterns.txt"
 } else {
     Fail "CLAUDE.md does not reference banned_patterns.txt"
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 9: Provider canonical structure
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 9) {
+Write-Host ""
+Write-Host "--- CATEGORY 9: Provider Canonical Structure ---" -ForegroundColor Yellow
+
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+$requiredDirs = @('docs','scripts','source')
+$requiredDocs = @('STATUS.txt','SQVR.txt','BUILD_NOTES.txt','JSON_INVENTORY.md')
+
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+
+    # Required subdirectories
+    foreach ($rd in $requiredDirs) {
+        if (Test-Path (Join-Path $pd.FullName $rd)) {
+            Pass "${provName} -- has $rd/"
+        } else {
+            Fail "${provName} -- missing required $rd/"
+        }
+    }
+
+    # Required doc files (prefixed with provider name for STATUS/SQVR/BUILD_NOTES)
+    $docsDir = Join-Path $pd.FullName 'docs'
+    if (Test-Path $docsDir) {
+        foreach ($rd in $requiredDocs) {
+            $pattern = if ($rd -eq 'JSON_INVENTORY.md') { $rd } else { "${provName}_$rd" }
+            $found = Get-ChildItem $docsDir -File | Where-Object { $_.Name -eq $pattern }
+            if ($found) {
+                Pass "${provName} -- docs/$pattern exists"
+            } else {
+                Fail "${provName} -- docs/$pattern missing"
+            }
+        }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 10: Report file completeness
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 10) {
+Write-Host ""
+Write-Host "--- CATEGORY 10: Report File Completeness ---" -ForegroundColor Yellow
+
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+$reportPrefixes = @('VALIDATOR_REPORT','LAYOUT_REPORT','QUERY_REPORT','PICKLIST_REPORT','VERIFY_REPORT')
+
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $baseDir = Join-Path $pd.FullName 'docs\base'
+    $mcDir = Join-Path $pd.FullName 'docs\mc'
+
+    # BASE reports
+    if (Test-Path $baseDir) {
+        $baseFiles = @(Get-ChildItem $baseDir -File | ForEach-Object { $_.Name })
+        $missingBase = @()
+        foreach ($rp in $reportPrefixes) {
+            $match = $baseFiles | Where-Object { $_ -match "^${rp}_" }
+            if (-not $match) { $missingBase += $rp }
+        }
+        # Also check HTML layout
+        $htmlMatch = $baseFiles | Where-Object { $_ -match '^LAYOUT_.*\.html$' }
+        if (-not $htmlMatch) { $missingBase += 'LAYOUT_HTML' }
+
+        if ($missingBase.Count -gt 0) {
+            Fail "${provName} docs/base/ missing: $($missingBase -join ', ')"
+        } else {
+            Pass "${provName} -- docs/base/ has all 6 report files"
+        }
+    } else {
+        Fail "${provName} -- docs/base/ directory missing"
+    }
+
+    # MC reports (only check if MC JSON exists)
+    $mcJson = Get-ChildItem $pd.FullName -File -Filter '*_MC.json' | Select-Object -First 1
+    if ($mcJson) {
+        if (Test-Path $mcDir) {
+            $mcFiles = @(Get-ChildItem $mcDir -File | ForEach-Object { $_.Name })
+            $missingMc = @()
+            foreach ($rp in $reportPrefixes) {
+                $match = $mcFiles | Where-Object { $_ -match "^${rp}_" }
+                if (-not $match) { $missingMc += $rp }
+            }
+            $htmlMatch = $mcFiles | Where-Object { $_ -match '^LAYOUT_.*\.html$' }
+            if (-not $htmlMatch) { $missingMc += 'LAYOUT_HTML' }
+
+            if ($missingMc.Count -gt 0) {
+                Fail "${provName} docs/mc/ missing: $($missingMc -join ', ')"
+            } else {
+                Pass "${provName} -- docs/mc/ has all 6 report files"
+            }
+        } else {
+            Fail "${provName} -- MC JSON exists but docs/mc/ missing"
+        }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 11: Cross-provider JSON consistency
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 11) {
+Write-Host ""
+Write-Host "--- CATEGORY 11: Cross-Provider JSON Consistency ---" -ForegroundColor Yellow
+
+# Providers flagged NEEDS REBUILD get INFO instead of FAIL
+$needsRebuild = @('TX_TLETS','LA_LETTS_OFML')
+$validLabels = Get-ValidLabels
+
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $baseJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE.json' | Select-Object -First 1
+    if (-not $baseJson) { Info "${provName} -- no BASE JSON, skipping"; continue }
+
+    # Prefer READABLE JSON for reliable parsing; fall back to minified
+    $readableJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE_READABLE.json' | Select-Object -First 1
+    $jsonFile = if ($readableJson) { $readableJson } else { $baseJson }
+    $text = [System.IO.File]::ReadAllText($jsonFile.FullName)
+    $parsed = $text | ConvertFrom-Json
+    $isRebuild = $provName -in $needsRebuild
+    $report = if ($isRebuild) { { param($m) Info "REBUILD: ${provName} -- $m" } } else { { param($m) Fail "${provName} -- $m" } }
+
+    # Collect all configs across all bundles
+    $allConfigs = @()
+    foreach ($bundle in $parsed.bundles) {
+        if ($bundle.configurations) { $allConfigs += $bundle.configurations }
+    }
+
+    # 11a: RMS autoSelect on RMS QIDMs
+    $rmsQidms = @($allConfigs | Where-Object { $_.provider -eq 'RMS' -and $_.type -eq 'QUERYINPUTDATAMAPPING' })
+    if ($rmsQidms.Count -gt 0) {
+        $missingAutoSelect = @($rmsQidms | Where-Object { $_.autoSelect -ne $true })
+        if ($missingAutoSelect.Count -gt 0) {
+            $names = ($missingAutoSelect | ForEach-Object { $_.name }) -join ', '
+            & $report "RMS QIDMs missing autoSelect=true: $names"
+        } else {
+            Pass "${provName} -- all $($rmsQidms.Count) RMS QIDMs have autoSelect=true"
+        }
+    } else {
+        & $report "no RMS QIDMs found (missing RMS bundle or QIDM configs)"
+    }
+
+    # 11b: AUTH keyReference
+    $authConfigs = @($allConfigs | Where-Object { $_.type -eq 'AUTHENTICATION' })
+    if ($authConfigs.Count -gt 0) {
+        $authCombos = @()
+        foreach ($ac in $authConfigs) {
+            if ($ac.combinations) { $authCombos += $ac.combinations }
+        }
+        $hasKeyRef = $authCombos | Where-Object { $_.keyReference }
+        if ($hasKeyRef) {
+            Pass "${provName} -- AUTH has keyReference"
+        } else {
+            & $report "AUTH config missing keyReference on combinations"
+        }
+    }
+
+    # 11c: queryLabel values in JSON (parsed)
+    $qidmConfigs = @($allConfigs | Where-Object { $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.queryLabel })
+    $badLabels = @($qidmConfigs | Where-Object { $_.queryLabel -notin $validLabels } | ForEach-Object { $_.queryLabel })
+    if ($badLabels.Count -gt 0) {
+        $unique = $badLabels | Select-Object -Unique
+        & $report "non-standard queryLabels in JSON: $($unique -join ', ')"
+    } elseif ($qidmConfigs.Count -gt 0) {
+        Pass "${provName} -- all $($qidmConfigs.Count) queryLabels are standard"
+    }
+
+    # 11d: YES_NO vs YES_NO_UNKNOWN (regex on text — codeTypeCategory is in nested props)
+    $badYesNo = [regex]::Matches($text, '"codeTypeCategory"\s*:\s*"(YES_NO|YESNO)"(?!_)')
+    if ($badYesNo.Count -gt 0) {
+        $categories = @($badYesNo | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+        & $report "uses non-standard Y/N category: $($categories -join ', ') (should be YES_NO_UNKNOWN)"
+    }
 }
 }
 

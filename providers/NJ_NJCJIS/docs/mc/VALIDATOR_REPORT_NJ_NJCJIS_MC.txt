@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-04 17:10
+  Generated: 2026-05-05 14:36
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -24,6 +24,7 @@ VALIDATOR RESULTS
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' ImageIndicator default='N' for Vehicle
+  [WARN] QIF 'ENTITY_Vehicle' uses deprecated fieldId='LicensePlateNumberIn' -- use 'licensePlateNumber' (no In/Out suffix)
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 10 fieldIds
@@ -38,9 +39,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
   [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' ImageIndicator size=1
+  [WARN] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' attr 'LicensePlateNumberIn' sourceField='LicensePlateNumberIn' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' -> Vehicle : 6 attrs, 3 combos
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' ImageIndicator size=1
+  [WARN] QIDM 'NJ_NJCJIS_VehicleStolenQuery' attr 'LicensePlateNumberIn' sourceField='LicensePlateNumberIn' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead
   [LIMITATION] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -89,11 +92,9 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QBN': all set[]/any[] fields resolvable
 
-â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
-â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 66 PASS / 0 FAIL / 3 WARN / 2 LIMITATION
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  2 known limitation(s) -- documented, no action needed.
-
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

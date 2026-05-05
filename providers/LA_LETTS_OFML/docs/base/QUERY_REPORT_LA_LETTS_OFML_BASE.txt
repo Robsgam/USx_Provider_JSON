@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LETTS_OFML_BASE
   Source: LA_LETTS_OFML_BASE.json
-  Generated: 2026-04-24 16:24
+  Generated: 2026-05-05 14:36
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,7 +13,18 @@ QUERY SIMULATION
 
 --- QIDM: LA_LEMS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 7  |  Combos: 1
-    [SKIP] GunSerialNumber -- missing set: SerialNumber
+
+    [FIRES] GunSerialNumber
+      set: [SerialNumber]
+      any: [Attention, FirearmMake, FirearmTypeCode, FirearmModel, FirearmCaliber, ImageIndicator] -> matched: [FirearmMake, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>GunSerialNumber</MessageKey>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
 
 --- QIDM: LA_LEMS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
@@ -151,7 +162,7 @@ QUERY SIMULATION
 
 --- QIDM: LA_LEMS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
-    [SKIP] ArticleSerialNumber -- missing set: SerialNumber
+    [SKIP] ArticleSerialNumber -- no any[] match
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>

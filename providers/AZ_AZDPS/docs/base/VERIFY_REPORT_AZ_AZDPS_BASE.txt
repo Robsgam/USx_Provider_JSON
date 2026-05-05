@@ -1,0 +1,41 @@
+﻿================================================================
+  Build Report: AZ_AZDPS_BASE
+  Source: AZ_AZDPS_BASE.json
+  Generated: 2026-05-05 14:35
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: AZ_AZDPS_BASE
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [FAIL] Banned pattern 'LicensePlateNumberIn' found 10 time(s)
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 12
+  [INFO] CommSys-only: 34 [dexStateUserId, LicensePlateTypeCode, LicensePlateYear, NameMiddle, NameSuffix, Attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCode, SexCodeDH, StateDH, GunCaliber, GunMake, GunModel, GunSerialNumber, RelatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NCICNumber, Age, AreaCode, EyeColorCode, FormORI, HairColorCode, Height, Weight]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
+  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 1 [VehicleModelCode]
+  [PASS] Cross-bundle fieldId consistency checked
+
+--- CHECK 5: camelCase Enforcement ---
+  [INFO] camelCase check skipped (use -CamelCase to enable)
+
+--- CHECK 6: Reference Pattern Check ---
+  [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+  [PASS] All 2 RMS QIDMs have autoSelect=true
+
+========================================
+ VERIFICATION FAILED: 1 FAIL / 5 PASS
+========================================
+
+

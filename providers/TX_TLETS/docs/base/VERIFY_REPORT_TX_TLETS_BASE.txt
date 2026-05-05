@@ -1,0 +1,42 @@
+﻿================================================================
+  Build Report: TX_TLETS_BASE
+  Source: TX_TLETS_BASE.json
+  Generated: 2026-05-05 14:35
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: TX_TLETS_BASE
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [PASS] No banned pattern 'LicensePlateNumberIn'
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [FAIL] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'MessageKey' sourceField='MessageKey' not in Person QIF fieldIds
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+
+--- CHECK 5: camelCase Enforcement ---
+  [INFO] camelCase check skipped (use -CamelCase to enable)
+
+--- CHECK 6: Reference Pattern Check ---
+  [FAIL] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' queryLabel='Vehicle Registration / Insurance' not in standard set [Vehicle Registration, Vehicle Stolen, Driver License, Driver History, Firearm, Article, Boat, Wanted Person, Missing Person, RMS]
+  [FAIL] QIDM 'RMS Vehicle search query' has a combination with no state
+  [FAIL] QIDM 'RMS Vehicle search query' has a combination with no state
+  [FAIL] QIDM 'RMS Person Search query' has a combination with no state
+  [FAIL] QIDM 'RMS Person Search query' has a combination with no state
+  [FAIL] QIDM 'RMS Person Search query' has a combination with no state
+  [FAIL] QIDM 'RMS Person Search query' has a combination with no state
+  [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+
+========================================
+ VERIFICATION FAILED: 8 FAIL / 3 PASS
+========================================
+
+

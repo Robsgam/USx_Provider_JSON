@@ -132,6 +132,7 @@ $auth = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            keyReference = 'AUTH'
             requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
         }
     )
@@ -565,6 +566,11 @@ $rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
     $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
         'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
 })
+
+# Patch 7: RMS autoSelect=true on all RMS QIDMs
+foreach ($rmsCfg in $rmsBundle.configurations) {
+    if ($rmsCfg.type -eq 'QUERYINPUTDATAMAPPING') { $rmsCfg | Add-Member -NotePropertyName autoSelect -NotePropertyValue $true -Force }
+}
 
 # =====================================================================
 # WRITE OUTPUT

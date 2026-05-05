@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-04 11:21
+  Generated: 2026-05-05 14:35
 ================================================================
 QUERY SIMULATION
 ================
@@ -21,7 +21,6 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RVIN</MessageKey>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
@@ -30,23 +29,7 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
-
-    [FIRES] RVEH
-      set: [LicensePlateNumber]
-      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RVEH</MessageKey>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
-        <ImageIndicator>Y</ImageIndicator>
-      </Transaction>
+    [SKIP] RVEH -- missing set: LicensePlateNumberIn
 
     [FIRES] RCAR
       set: [VehicleIdentificationNumber]
@@ -55,7 +38,6 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RCAR</MessageKey>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>

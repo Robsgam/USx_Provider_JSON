@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_MC
   Source: NY_NYSPIN_EJUSTICE_MC.json
-  Generated: 2026-05-04 11:21
+  Generated: 2026-05-05 14:36
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -35,7 +35,7 @@ LAYOUT DETAIL
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
     CARD "CARD_VEH_PLATE"
       ROW ROW_VEH_PLATE_1 [12]
-        LicensePlateNumber (Text | maxLen=10)
+        LicensePlateNumberIn (Text | maxLen=10)
       ROW ROW_VEH_PLATE_2 [6 6]
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
@@ -116,6 +116,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumber -> vehicle.tag
+    LicensePlateNumberIn -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

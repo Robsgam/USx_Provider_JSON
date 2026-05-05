@@ -163,10 +163,23 @@ TOOLS
     Usage: -OutFile <path>
 
   tools/audit_repo.ps1
-    Full monorepo consistency audit. Checks KB docs, build scripts, tools, and
-    CLAUDE.md for drift, stale references, missing documentation, banned patterns.
-    8 categories, sources of truth extracted at runtime. FAILS (exit 1) on any issue.
-    Usage: .\audit_repo.ps1 [-Category <1-8>]
+    Full monorepo consistency audit. Checks KB docs, build scripts, tools,
+    provider JSONs, and CLAUDE.md for drift, stale references, missing
+    documentation, banned patterns, report completeness, and cross-provider
+    JSON consistency. 11 categories:
+      1. Banned patterns repo-wide
+      2. Report step count consistency
+      3. QueryLabel standard
+      4. Stale archive references
+      5. Build script completeness (dual output, validator)
+      6. Tool documentation
+      7. Render tool correctness
+      8. CLAUDE.md consistency
+      9. Provider canonical structure (dirs, docs)
+      10. Report file completeness (all 6 per variant)
+      11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
+    Sources of truth extracted at runtime. FAILS (exit 1) on any issue.
+    Usage: .\audit_repo.ps1 [-Category <1-11>]
 
 ================================================================================
 PREREQUISITES

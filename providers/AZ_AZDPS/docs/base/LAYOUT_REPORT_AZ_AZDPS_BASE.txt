@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-01 10:33
+  Generated: 2026-05-05 14:35
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -33,7 +33,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [6 6]
-        LicensePlateNumber (Text | maxLen=10)
+        LicensePlateNumberIn (Text | maxLen=10)
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
       ROW ROW_VEH_BADGE [12]
         dexStateUserId (Text)
@@ -151,6 +151,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumber -> vehicle.tag
+    LicensePlateNumberIn -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

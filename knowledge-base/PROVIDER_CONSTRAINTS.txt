@@ -245,17 +245,18 @@ These patterns MUST match across all providers. Differences require metadata
 justification documented in the provider's section above.
 
 1. RMS autoSelect=true on all RMS QIDMs
-   Confirmed: NY, AZ, FL. Missing: NJ, HI, LA (build script fix needed).
+   Confirmed: NJ, AZ, FL, HI, NY. Missing: LA, TX (needs rebuild).
 
 2. AUTH keyReference present
-   Missing from NJ, HI, LA build scripts. Must be added.
+   Confirmed: NJ, AZ, FL, HI, NY. Missing: LA, TX (needs rebuild).
 
 3. ImageIndicator in combo any[] or set[]
    Must be in at least one combo per entity where it appears on the form.
    Missing: HI Vehicle (HI-2).
 
 4. queryLabel standard values
-   Vehicle Registration, Vehicle Stolen, Driver License, Driver History, Firearm, Article, Boat, RMS.
+   Vehicle Registration, Vehicle Stolen, Driver License, Driver History, Firearm, Article, Boat,
+   Wanted Person, Missing Person, RMS.
    All providers must use these exact labels.
 
 5. PlateType default=PC, PlateYear default=current year

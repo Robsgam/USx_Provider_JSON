@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-04-28 14:12
+  Generated: 2026-05-05 14:35
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -17,75 +17,143 @@ VALIDATOR RESULTS
   [PASS] Bundle 'ENTITIES': 5 configurations
   [PASS] Bundle 'TX_TLETS': 11 configurations
   [PASS] Bundle 'RMS': 2 configurations
+  [FAIL] QIDM 'RMS Vehicle search query' with handlerFunction='RmsRestPayloadHandler' in provider bundle 'TX_TLETS' -- must be in RMS bundle
+  [FAIL] QIDM 'RMS Person Search query' with handlerFunction='RmsRestPayloadHandler' in provider bundle 'TX_TLETS' -- must be in RMS bundle
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+  [WARN] ENTITIES order missing 'FIRST_RESPONDER' key -- first responder view will use default order
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [FAIL] QIF 'ENTITY_Vehicle' has 'combinations' array -- combinations belong on QIDMs, not QIFs
+  [WARN] QIF 'ENTITY_Vehicle' 'LicensePlateYear' missing initialValue -- standard is current year
+  [WARN] QIF 'ENTITY_Vehicle' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
+  [WARN] QIF 'ENTITY_Vehicle' missing 'FIRST_RESPONDER' layout variant
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
+  [FAIL] QIF 'ENTITY_Person' has 'combinations' array -- combinations belong on QIDMs, not QIFs
+  [WARN] QIF 'ENTITY_Person' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work
+  [WARN] QIF 'ENTITY_Person' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values
+  [WARN] QIF 'ENTITY_Person' SexCode field has codeTypeCategory='SEX' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS instead
+  [WARN] QIF 'ENTITY_Person' ImageIndicator initialValue='' -- expected 'Y' for Person
+  [WARN] QIF 'ENTITY_Person' ImageIndicator is FormCheckbox -- should be FormSelect with YES_NO_UNKNOWN
+  [WARN] QIF 'ENTITY_Person' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
+  [WARN] QIF 'ENTITY_Person' missing 'FIRST_RESPONDER' layout variant
   [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
+  [FAIL] QIF 'ENTITY_Firearm' has 'combinations' array -- combinations belong on QIDMs, not QIFs
+  [WARN] QIF 'ENTITY_Firearm' ImageIndicator initialValue='' -- expected 'N' for Firearm
+  [WARN] QIF 'ENTITY_Firearm' ImageIndicator is FormCheckbox -- should be FormSelect with YES_NO_UNKNOWN
+  [WARN] QIF 'ENTITY_Firearm' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
+  [WARN] QIF 'ENTITY_Firearm' missing 'FIRST_RESPONDER' layout variant
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
+  [FAIL] QIF 'ENTITY_Article' has 'combinations' array -- combinations belong on QIDMs, not QIFs
+  [WARN] QIF 'ENTITY_Article' field 'ArticleTypeCode' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)
+  [WARN] QIF 'ENTITY_Article' ImageIndicator initialValue='' -- expected 'N' for Article
+  [WARN] QIF 'ENTITY_Article' ImageIndicator is FormCheckbox -- should be FormSelect with YES_NO_UNKNOWN
+  [WARN] QIF 'ENTITY_Article' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
+  [WARN] QIF 'ENTITY_Article' missing 'FIRST_RESPONDER' layout variant
   [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
+  [FAIL] QIF 'ENTITY_Boat' has 'combinations' array -- combinations belong on QIDMs, not QIFs
+  [WARN] QIF 'ENTITY_Boat' ImageIndicator initialValue='' -- expected 'N' for Boat
+  [WARN] QIF 'ENTITY_Boat' ImageIndicator is FormCheckbox -- should be FormSelect with YES_NO_UNKNOWN
+  [WARN] QIF 'ENTITY_Boat' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
+  [WARN] QIF 'ENTITY_Boat' missing 'FIRST_RESPONDER' layout variant
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
+  [FAIL] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' sourceField='State' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
+  [WARN] QIDM 'RMS Vehicle search query' attr 'vinNumber' missing size property
+  [WARN] QIDM 'RMS Vehicle search query' attr 'makeNcicCode' missing size property
+  [WARN] QIDM 'RMS Vehicle search query' attr 'LicensePlateNumber' missing size property
+  [WARN] QIDM 'RMS Vehicle search query' attr 'RegistrationState' missing size property
   [PASS] QIDM 'RMS Vehicle search query' -> Vehicle : 5 attrs, 2 combos
+  [FAIL] CommSys QIDM 'RMS Vehicle search query' handlerFunction='RmsRestPayloadHandler' -- must be 'CommsysTransactionRequestHandler'
+  [WARN] QIDM 'RMS Vehicle search query' provider='TX_TLETS_RMS' does not match bundle name 'TX_TLETS'
+  [WARN] QIDM 'RMS Vehicle search query' missing providerType property
   [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' has 1 sourceField(s) not found in Person QIF:
          MessageKey (sourceField='MessageKey')
+  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName' any[] references 'MessageKey' not in QIF fieldIds
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 12 attrs, 5 combos
+  [FAIL] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'State' sourceField='State' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' ImageIndicator size=1
+  [LIMITATION] QIDM 'TX_TLETS_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
+  [FAIL] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'State' sourceField='State' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' ImageIndicator size=1
+  [WARN] QIDM 'RMS Person Search query' attr 'dateOfBirth' missing size property
+  [WARN] QIDM 'RMS Person Search query' attr 'race' missing size property
+  [WARN] QIDM 'RMS Person Search query' attr 'sex' missing size property
   [PASS] QIDM 'RMS Person Search query' -> Person : 6 attrs, 4 combos
+  [FAIL] CommSys QIDM 'RMS Person Search query' handlerFunction='RmsRestPayloadHandler' -- must be 'CommsysTransactionRequestHandler'
+  [WARN] QIDM 'RMS Person Search query' provider='TX_TLETS_RMS' does not match bundle name 'TX_TLETS'
+  [WARN] QIDM 'RMS Person Search query' missing providerType property
   [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_BoatQuery' -> Boat : 6 attrs, 5 combos
+  [FAIL] QIDM 'TX_TLETS_BoatQuery' attr 'State' sourceField='State' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
+  [PASS] QIDM 'TX_TLETS_BoatQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_GunQuery' -> Firearm : 6 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_GunQuery' ImageIndicator size=1
+  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' has separate In/Out combos but Person State field 'State' has initialValue='TX' -- changes combo routing (LIMITATION #30)
+  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' has separate In/Out combos but Person State field 'State' has initialValue='TX' -- changes combo routing (LIMITATION #30)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
-  [PASS] Article : 1 QIDMs,  QIF(s)
-  [PASS] Person : 3 QIDMs,  QIF(s)
-  [PASS] Vehicle : 2 QIDMs,  QIF(s)
-  [PASS] Boat : 1 QIDMs,  QIF(s)
-  [PASS] Firearm : 1 QIDMs,  QIF(s)
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
+  [PASS] Person : 3 QIDMs, 1 QIF(s)
+  [LIMITATION] Vehicle : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
 
 === PHASE 5: Auth / QMF / Results ===
   [PASS] AUTHENTICATION present
+  [WARN] AUTH 'TX_TLETS' combination missing keyReference
   [PASS] QUERYMESSAGEFORMAT present
   [PASS] QUERYRESULTDATAMAPPING present
+  [WARN] RMS bundle provider='TX_TLETS_RMS' -- expected 'RMS'
   [PASS] RMS AUTHENTICATION present
   [PASS] RMS QUERYMESSAGEFORMAT present
+  [FAIL] RMS bundle missing QUERYRESULTDATAMAPPING config
+  [FAIL] RMS bundle missing QUERYRESULTSLAYOUT config
+  [FAIL] RMS bundle has no QUERYINPUTDATAMAPPING configs (no RMS search queries)
 
 === PHASE 6: Query Simulation ===
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQLicensePlateNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'DPSIStickerNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'REGLicensePlateNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'VINVehicleIdentificationNumber': all set[] fields resolvable
-  [PASS] QIDM 'RMS Vehicle search query' combo 'vehicleIdentificationNumber': all set[] fields resolvable
-  [PASS] QIDM 'RMS Vehicle search query' combo 'licensePlateNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'RSDWWOperatorLicenseNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[] fields resolvable
-  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDriversLicenseNumber': all set[] fields resolvable
-  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDateOfBirth': all set[] fields resolvable
-  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastName': all set[] fields resolvable
-  [PASS] QIDM 'RMS Person Search query' combo 'driversLicenseNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QANCICNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBRegistrationNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBBoatHullIdNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQRegistrationNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQBoatHullIdNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'DPSIStickerNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'REGLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'VINVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Vehicle search query' combo 'vehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Vehicle search query' combo 'licensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[]/any[] fields resolvable
+  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName': unresolvable any[] fields: MessageKey
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'RSDWWOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDriversLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastNameDateOfBirth': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'firstNameLastName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'RMS Person Search query' combo 'driversLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QANCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'BQBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 60 PASS / 0 FAIL / 1 WARN
+  RESULTS: 67 PASS / 16 FAIL / 42 WARN / 4 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  FIX all FAIL items before importing.
 
