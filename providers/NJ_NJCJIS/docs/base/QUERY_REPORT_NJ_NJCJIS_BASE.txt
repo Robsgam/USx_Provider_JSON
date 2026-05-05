@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-04 17:10
+  Generated: 2026-05-05 13:26
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES] RQ
-      set: [LicensePlateNumberIn, RandomRequest, RegistrationState, LicensePlateTypeCode]
-      any: [ImageIndicator, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateYear]
+      set: [licensePlateNumber, randomRequest, registrationState, licensePlateTypeCode]
+      any: [imageIndicator, licensePlateYear] -> matched: [imageIndicator, licensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -31,8 +31,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQN
-      set: [VehicleIdentificationNumber, RandomRequest, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleIdentificationNumber, randomRequest, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -50,8 +50,8 @@ QUERY SIMULATION
     Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
 
     [FIRES] QVN
-      set: [NCICNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [ncicNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -65,8 +65,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVP
-      set: [LicensePlateNumberIn]
-      any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
+      set: [licensePlateNumber]
+      any: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode] -> matched: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -80,8 +80,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVV
-      set: [VehicleIdentificationNumber]
-      any: [ImageIndicator, VehicleMakeCode] -> matched: [ImageIndicator, VehicleMakeCode]
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator, vehicleMakeCode] -> matched: [imageIndicator, vehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -98,8 +98,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES] DQN
-      set: [OperatorLicenseNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [operatorLicenseNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -113,8 +113,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQ
-      set: [BirthDate, NameLast, NameFirst]
-      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
+      set: [birthDate, nameLast, nameFirst]
+      any: [imageIndicator, sexCode, registrationState] -> matched: [imageIndicator, sexCode, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -129,42 +129,18 @@ QUERY SIMULATION
 
 --- QIDM: NJ_NJCJIS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
-
-    [FIRES] QG
-      set: [GunSerialNumber]
-      any: [GunCaliber, GunMake, GunModel, ImageIndicator] -> matched: [GunCaliber, GunMake, GunModel, ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QG</MessageKey>
-        <GunCaliber>9MM</GunCaliber>
-        <GunMake>SMTH</GunMake>
-        <GunModel>M&P</GunModel>
-        <GunSerialNumber>ABC12345</GunSerialNumber>
-        <ImageIndicator>Y</ImageIndicator>
-      </Transaction>
+    [SKIP] QG -- missing set: serialNumber
 
 --- QIDM: NJ_NJCJIS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
-
-    [FIRES] QA
-      set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QA</MessageKey>
-        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
-        <ArticleTypeCode>COMP</ArticleTypeCode>
-        <ImageIndicator>Y</ImageIndicator>
-      </Transaction>
+    [SKIP] QA -- missing set: serialNumber
 
 --- QIDM: NJ_NJCJIS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 3  |  Combos: 2
 
     [FIRES] QB
-      set: [RegistrationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [registrationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -175,8 +151,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QBN
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [boatHullIdNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

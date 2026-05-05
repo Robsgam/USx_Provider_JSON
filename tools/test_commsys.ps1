@@ -77,7 +77,6 @@ $testData["Person"] = @{
 }
 $testData["Vehicle"] = @{
     LicensePlateNumber          = "ABC1234"
-    LicensePlateNumberIn        = "ABC1234"
     LicensePlateYear            = "2024"
     LicensePlateTypeCode        = "PC"
     RegistrationState           = "NJ"

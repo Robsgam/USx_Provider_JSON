@@ -33,7 +33,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [6 6]
-        LicensePlateNumberIn (Text | maxLen=10)
+        LicensePlateNumber (Text | maxLen=10)
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
       ROW ROW_VEH_BADGE [12]
         dexStateUserId (Text)
@@ -151,6 +151,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumberIn -> vehicle.tag
+    LicensePlateNumber -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

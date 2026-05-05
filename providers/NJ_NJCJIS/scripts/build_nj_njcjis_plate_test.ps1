@@ -702,20 +702,20 @@ $rmsVehQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true
 $rmsPersonQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
 
 # =====================================================================
-# Patch 8: RMS Vehicle plate fieldId rename (LicensePlateNumberIn -> LicensePlateNumber)
-# HIDLE template ships with LicensePlateNumberIn; form now uses LicensePlateNumber
+# Patch 8: RMS Vehicle plate fieldId rename (LicensePlateNumber -> LicensePlateNumber)
+# HIDLE template ships with LicensePlateNumber; form now uses LicensePlateNumber
 # =====================================================================
-$plateAttr = $rmsVehQidm.attributes | Where-Object { $_.name -eq 'LicensePlateNumberIn' }
+$plateAttr = $rmsVehQidm.attributes | Where-Object { $_.name -eq 'LicensePlateNumber' }
 if ($plateAttr) {
     $plateAttr.name = 'LicensePlateNumber'
     $plateAttr.sourceField = @('LicensePlateNumber')
 }
 foreach ($combo in $rmsVehQidm.combinations) {
     if ($combo.requirements.set) {
-        $combo.requirements.set = @($combo.requirements.set | ForEach-Object { if ($_ -eq 'LicensePlateNumberIn') { 'LicensePlateNumber' } else { $_ } })
+        $combo.requirements.set = @($combo.requirements.set | ForEach-Object { if ($_ -eq 'LicensePlateNumber') { 'LicensePlateNumber' } else { $_ } })
     }
     if ($combo.requirements.any) {
-        $combo.requirements.any = @($combo.requirements.any | ForEach-Object { if ($_ -eq 'LicensePlateNumberIn') { 'LicensePlateNumber' } else { $_ } })
+        $combo.requirements.any = @($combo.requirements.any | ForEach-Object { if ($_ -eq 'LicensePlateNumber') { 'LicensePlateNumber' } else { $_ } })
     }
 }
 

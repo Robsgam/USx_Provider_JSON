@@ -191,7 +191,7 @@ $qmf = [PSCustomObject]@{
 $vehQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BadgeNumber';                 size = 4;  sourceField = @('dexStateUserId');            targetField = 'BadgeNumber' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumberIn');       targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');       targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');      targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');          targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State';                       size = 2;  sourceField = @('RegistrationState');         targetField = 'State'; codeTypeProvider = 'NCIC' }
@@ -202,7 +202,7 @@ $vehQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('dexStateUserId','LicensePlateNumberIn')
+                set = @('dexStateUserId','LicensePlateNumber')
                 any = @('LicensePlateYear','LicensePlateTypeCode','RegistrationState','VehicleIdentificationNumber','VehicleMakeCode','VehicleYear')
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -212,7 +212,7 @@ $vehQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('dexStateUserId','VehicleIdentificationNumber')
-                any = @('LicensePlateNumberIn','LicensePlateTypeCode','LicensePlateYear','RegistrationState','VehicleMakeCode','VehicleYear')
+                any = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState','VehicleMakeCode','VehicleYear')
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'ACVRV'
@@ -612,7 +612,7 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_PLATE_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumberIn' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
+                @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
                 @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_1' }
                 @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_1' @{ initialValue = '2026' } }
             )}

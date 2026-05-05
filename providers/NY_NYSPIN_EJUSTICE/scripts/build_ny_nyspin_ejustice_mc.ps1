@@ -203,14 +203,14 @@ $qmf = [PSCustomObject]@{
 # 1d. VehicleRegistrationQuery
 # XML: VehicleRegistrationQuery v1
 #   RVEH: Choice(set[Plate,any[PlateType]], set[Plate,PlateType,PlateYear,State]), any[Image]
-#         -> Flatten: set[LicensePlateNumberIn], any[PlateType, PlateYear, State]
+#         -> Flatten: set[LicensePlateNumber], any[PlateType, PlateYear, State]
 #   RCAR: set[VIN], any[Image]
 #   RVIN: set[VIN, State], any[Image, VehicleMakeCode, VehicleYear]
 # Order: RVIN (most specific) > RVEH > RCAR (least specific)
 # =====================================================================
 $vehQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'LicensePlateNumberIn';        size = 10; sourceField = @('LicensePlateNumberIn');        targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';        size = 10; sourceField = @('LicensePlateNumber');        targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
@@ -227,8 +227,8 @@ $vehQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumberIn'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear','RegistrationState') }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear','RegistrationState') }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEH'
             state                 = 'In/Out'
         }
@@ -525,7 +525,7 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
-                @{ id = 'LicensePlateNumberIn_Input'; node = Inp 'LicensePlateNumberIn' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
             )}
             @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }

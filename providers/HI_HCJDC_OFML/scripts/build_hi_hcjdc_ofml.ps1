@@ -225,7 +225,7 @@ $qmf = [PSCustomObject]@{
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('ImageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumberIn';         size = 10; sourceField = @('LicensePlateNumberIn');         targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('LicensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';         size = 2;  sourceField = @('LicensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
@@ -237,8 +237,8 @@ $vehRegQuery = [PSCustomObject]@{
     combinations = @(
         # M55L: In-state plate (VehicleTypeCode + Plate)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumberIn'); any = @() }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @() }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
         }
@@ -251,8 +251,8 @@ $vehRegQuery = [PSCustomObject]@{
         }
         # RQ: Out-state plate (Plate + PlateType + PlateYear). State optional (Any inside Set).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumberIn','LicensePlateTypeCode','LicensePlateYear'); any = @() }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
         }
@@ -265,8 +265,8 @@ $vehRegQuery = [PSCustomObject]@{
         }
         # QVP: Stolen plate (Plate + State)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumberIn','RegistrationState'); any = @() }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @() }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
@@ -526,7 +526,7 @@ $vehLayout = MakeLayouts @(
         title = 'VEHICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumberIn_Input'; node = Inp 'LicensePlateNumberIn' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'HI' } 'ROW_VEH_1' }
                 @{ id = 'VehicleTypeCode_Input';      node = Inp 'VehicleTypeCode' 'Type Code' '1' 'ROW_VEH_1' @{ initialValue = '1' } }
             )}

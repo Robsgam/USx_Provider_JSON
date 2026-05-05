@@ -15,7 +15,7 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
 
     [FIRES] M55L
-      set: [VehicleTypeCode, LicensePlateNumberIn]
+      set: [VehicleTypeCode, LicensePlateNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -49,7 +49,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQ
-      set: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear]
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -83,7 +83,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVP
-      set: [LicensePlateNumberIn, RegistrationState]
+      set: [LicensePlateNumber, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

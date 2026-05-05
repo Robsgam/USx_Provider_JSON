@@ -35,7 +35,7 @@ Architecture notes:
                    ImageIndicator, VehicleTypeCode (default=1)
 
   M55L -- Plate + State(HI) + VehicleTypeCode [PENDING]
-    set: LicensePlateNumberIn, RegistrationState, VehicleTypeCode
+    set: LicensePlateNumber, RegistrationState, VehicleTypeCode
     any: (empty)
     keyReference: M55L
     Fires when: State=HI (in-state) and Plate present
@@ -48,7 +48,7 @@ Architecture notes:
     Fires when: State=HI (in-state) and VIN present, no Plate
 
   RQ -- Plate + State(non-HI) [PENDING]
-    set: LicensePlateNumberIn, RegistrationState
+    set: LicensePlateNumber, RegistrationState
     any: (empty)
     keyReference: RQ
     Fires when: State != HI (out-of-state) and Plate present
@@ -60,7 +60,7 @@ Architecture notes:
     Stolen vehicle by VIN
 
   QVP -- Plate + State [PENDING]
-    set: LicensePlateNumberIn, RegistrationState
+    set: LicensePlateNumber, RegistrationState
     any: (empty)
     keyReference: QVP
     Stolen vehicle by Plate (co-fires with M55L/RQ on shared fields)

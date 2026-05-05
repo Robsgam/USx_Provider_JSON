@@ -17,7 +17,7 @@ WMPI: WantedPerson + MissingPerson inquiry paths on Person entity
 NJ CROSS-REFERENCE (GATE 7): Applied 2026-04-30
   AUTH keyReference='AUTH' -- [PENDING]
   PlateType=PC, PlateYear=2026 -- [PENDING]
-  LicensePlateNumberIn (LIMITATION #8) -- [PENDING]
+  LicensePlateNumber (LIMITATION #8) -- [PENDING]
   RaceCode attributeTypeId=RACE + codeTypeProvider=NIBRS -- [PENDING]
   RMS Patch 3 (registrationState) -- [PENDING]
   RMS Patch 6 (dead HIDLE cleanup, SSN kept) -- [PENDING]
@@ -43,7 +43,7 @@ KNOWN LIMITATIONS (4):
   Defaults: State=AZ, PlateType=PC, PlateYear=2026
 
   ACVR -- Plate + Badge (dexStateUserId) [PENDING]
-    set: dexStateUserId, LicensePlateNumberIn
+    set: dexStateUserId, LicensePlateNumber
     any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
          VehicleIdentificationNumber, VehicleMakeCode, VehicleYear
     keyReference: ACVR
@@ -51,7 +51,7 @@ KNOWN LIMITATIONS (4):
   ACVRV -- VIN + Badge (dexStateUserId) [PENDING]
     set: dexStateUserId, VehicleIdentificationNumber
     any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
-         LicensePlateNumberIn, VehicleMakeCode, VehicleYear
+         LicensePlateNumber, VehicleMakeCode, VehicleYear
     keyReference: ACVRV (invented)
 
   OOS -- Plate with non-AZ state [PENDING]
@@ -247,7 +247,7 @@ KNOWN LIMITATIONS (4):
 RMS QUERIES (auto-fire alongside CommSys)
 ================================================================================
 
-  RMS Vehicle Search: autoSelect=true, fires on LicensePlateNumberIn + VehicleIdentificationNumber
+  RMS Vehicle Search: autoSelect=true, fires on LicensePlateNumber + VehicleIdentificationNumber
   RMS Person Search:  autoSelect=true, fires on OperatorLicenseNumber + NameFirst + NameLast
   RMS Patch 3: registrationState attr on Person QIDM
   RMS Patch 6: dead HIDLE OOS fields removed (SSN intentionally kept for AZ)

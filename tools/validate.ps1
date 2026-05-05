@@ -398,9 +398,9 @@ if ($entitiesBundle) {
                             Write-Warn "QIF '$($cfg.name)' SexCode field has codeTypeCategory='$($node.props.codeTypeCategory)' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS instead"
                         }
                     }
-                    # Generic LicensePlateNumber on Vehicle form (should be LicensePlateNumberIn/Out)
-                    if ($node.props.fieldId -eq 'LicensePlateNumber' -and $cfg.targetEntity -eq 'Vehicle') {
-                        Write-Warn "QIF '$($cfg.name)' uses generic fieldId='LicensePlateNumber' -- use 'LicensePlateNumberIn' or 'LicensePlateNumberOut' for RMS plate search (LIMITATION #8)"
+                    # LicensePlateNumber fieldId check — canonical name is licensePlateNumber (no In/Out suffix)
+                    if ($node.props.fieldId -match '^LicensePlateNumber(In|Out)$' -and $cfg.targetEntity -eq 'Vehicle') {
+                        Write-Warn "QIF '$($cfg.name)' uses deprecated fieldId='$($node.props.fieldId)' -- use 'licensePlateNumber' (no In/Out suffix)"
                     }
                     # PlateYear current year check
                     if ($node.props.fieldId -match '^(LicensePlateYear|PlateYear)$' -and $node.props.initialValue) {
@@ -1152,14 +1152,14 @@ foreach ($bundle in $providerBundles) {
                 }
             }
 
-            # Check LIMITATION #8: generic LicensePlateNumber as sourceField
+            # Check LicensePlateNumber sourceField — canonical name is licensePlateNumber (no In/Out suffix)
             foreach ($attr in $cfg.attributes) {
                 $sfs = @()
                 if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
                 elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
                 foreach ($sf in $sfs) {
-                    if ($sf -eq 'LicensePlateNumber') {
-                        Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses generic 'LicensePlateNumber' -- RMS plate search requires 'LicensePlateNumberIn' or 'LicensePlateNumberOut' (LIMITATION #8)"
+                    if ($sf -match '^LicensePlateNumber(In|Out)$') {
+                        Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' sourceField='$sf' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead"
                     }
                 }
                 # targetField should be XML element name (LicensePlateNumber), not form fieldId variant

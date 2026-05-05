@@ -174,7 +174,7 @@ $qmf = [PSCustomObject]@{
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('ImageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumberIn';         size = 10; sourceField = @('LicensePlateNumberIn');         targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('LicensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';         size = 2;  sourceField = @('LicensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'RandomRequest';                size = 1;  sourceField = @('RandomRequest');                targetField = 'RandomRequest' }
@@ -183,8 +183,8 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumberIn','RandomRequest','RegistrationState','LicensePlateTypeCode'); any = @('ImageIndicator','LicensePlateYear') }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RandomRequest','RegistrationState','LicensePlateTypeCode'); any = @('ImageIndicator','LicensePlateYear') }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'In/Out'
         }
@@ -212,7 +212,7 @@ $vehRegQuery = [PSCustomObject]@{
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('ImageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumberIn';         size = 10; sourceField = @('LicensePlateNumberIn');         targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('LicensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'NCICNumber';                   size = 10; sourceField = @('NCICNumber');                   targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('VehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
@@ -226,8 +226,8 @@ $vehStolenQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumberIn'); any = @('ImageIndicator','RegistrationState','VehicleIdentificationNumber','VehicleMakeCode') }
-            primaryFieldReference = 'LicensePlateNumberIn'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','RegistrationState','VehicleIdentificationNumber','VehicleMakeCode') }
+            primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
@@ -423,7 +423,7 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumberIn_Input'; node = Inp 'LicensePlateNumberIn' 'Plate Number' '10' 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = '2026' } }
             )}

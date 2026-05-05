@@ -29,7 +29,7 @@ FIXES APPLIED 2026-04-30:
   Optional fields: PlateYear, VehicleMakeCode, VehicleModelCode, ImageIndicator
 
   RQ -- Plate + State + PlateType + RandomRequest [CONFIRMED]
-    set: LicensePlateNumberIn, RegistrationState, LicensePlateType, RandomRequest
+    set: licensePlateNumber, RegistrationState, LicensePlateType, RandomRequest
     any: PlateYear, VehicleMakeCode, VehicleModelCode, ImageIndicator
     keyReference: RQ
     Defaults: State=NJ, PlateType=PC, PlateYear=2026, RandomRequest=N, Image=N
@@ -63,7 +63,7 @@ FIXES APPLIED 2026-04-30:
     keyReference: QVN
 
   QVP -- Plate [CONFIRMED via co-fire]
-    set: LicensePlateNumberIn, RegistrationState, LicensePlateType
+    set: licensePlateNumber, RegistrationState, LicensePlateType
     any: ImageIndicator
     keyReference: QVP
     Co-fires with VehicleReg RQ on shared fields (LIMITATION #1)

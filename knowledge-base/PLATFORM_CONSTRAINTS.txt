@@ -196,7 +196,7 @@ AP #8: fieldId='LicensePlateNumber' (generic) does not trigger RMS plate search
   Why it fails: RMS elastic search does not recognize this fieldId for plate
     queries. Plate query fires to CommSys correctly but RMS does not return
     local records.
-  Correct approach: fieldId='LicensePlateNumberIn' (in-state) or
+  Correct approach: fieldId='licensePlateNumber' (in-state) or
     fieldId='LicensePlateNumberOut' (OOS). QIDM targetField stays
     'LicensePlateNumber'.
 

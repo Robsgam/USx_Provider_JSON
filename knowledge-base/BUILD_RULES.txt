@@ -236,11 +236,11 @@ See also:
   ------------------------------------------------------------------
     Problem: HIDLE RMS Vehicle QIDM has a licensePlateOutAndState combination
       with set=['LicensePlateNumberOut','RegistrationStateOut']. When OOS
-      plate uses LicensePlateNumberIn instead of LicensePlateNumberOut, this
+      plate uses licensePlateNumber instead of LicensePlateNumberOut, this
       combination can never fire.
     Fix: Remove RegistrationStateOut from set[] or remove the combination
       entirely.
-    Applies to: NY, AZ (where LicensePlateNumberIn is used for all plates).
+    Applies to: NY, AZ (where licensePlateNumber is used for all plates).
     Does NOT apply to: NJ (NJ uses LicensePlateNumberOut on OOS forms --
       leave as-is).
     Confirmed: NY v1.4.
@@ -548,8 +548,8 @@ See also:
   Two valid approaches for plate fieldIds:
 
   APPROACH A: Shared plate fieldId (recommended when OOS doesn't need state)
-    Both Vehicle-NY and Vehicle-OOS forms use fieldId='LicensePlateNumberIn'.
-    RVEH combination: set=['LicensePlateNumberIn'] -- fires from either form.
+    Both Vehicle-NY and Vehicle-OOS forms use fieldId='licensePlateNumber'.
+    RVEH combination: set=['licensePlateNumber'] -- fires from either form.
     OOS form: State is optional in RVEH (OOS plate search without state
       filter).
     Advantage: simpler QIDM -- one RVEH combination covers both forms.
@@ -557,7 +557,7 @@ See also:
 
   APPROACH B: Separate plate fieldIds (when NJ and OOS combos must be
     distinct)
-    Vehicle-NJ form uses fieldId='LicensePlateNumberIn'.
+    Vehicle-NJ form uses fieldId='licensePlateNumber'.
     Vehicle-OOS form uses fieldId='LicensePlateNumberOut'.
     QIDM has separate combinations.
     Advantage: distinguishes NJ vs OOS plate by fieldId; state is required

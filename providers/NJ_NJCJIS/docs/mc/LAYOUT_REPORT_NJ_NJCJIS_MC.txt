@@ -36,7 +36,7 @@ LAYOUT DETAIL
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
     CARD "CARD_VEH_PLATE"
       ROW ROW_VEH_P1 [6 3 3]
-        LicensePlateNumberIn (Text | maxLen=10)
+        licensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
     CARD "CARD_VEH_VIN"
@@ -110,6 +110,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumberIn -> vehicle.tag
+    licensePlateNumber -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

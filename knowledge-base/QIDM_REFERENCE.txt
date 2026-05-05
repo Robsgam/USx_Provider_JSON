@@ -88,7 +88,7 @@ SECTION 3 -- COMBINATION ROUTING
   Example order (Vehicle merged QIDM):
     1. RVIN (VehicleIdentificationNumber + RegistrationStateOOS) -- most specific
     2. RCAR (VehicleIdentificationNumber only) -- less specific
-    3. RVEH (LicensePlateNumberIn) -- plate only, fires last
+    3. RVEH (licensePlateNumber) -- plate only, fires last
   If RVIN were listed after RCAR, entering VIN+State would fire RCAR instead of RVIN.
 
 ================================================================================
@@ -321,7 +321,7 @@ SECTION 7 -- FIELD NAMING CONSTRAINTS
 
   LIMITATION #8: LicensePlateNumber (generic) does not trigger RMS plate search
     Confirmed: NJ v3.13
-    Rule: Use fieldId='LicensePlateNumberIn' (in-state) or
+    Rule: Use fieldId='licensePlateNumber' (in-state) or
       'LicensePlateNumberOut' (OOS). These come from HIDLE.json and must match
       exactly.
     QIDM targetField remains 'LicensePlateNumber' (outbound XML element

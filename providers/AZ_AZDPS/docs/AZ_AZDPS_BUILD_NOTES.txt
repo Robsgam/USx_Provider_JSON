@@ -13,8 +13,8 @@ CHANGED
 
   1. AUTH keyReference='AUTH' added to authentication config
   2. PlateType default=PC, PlateYear default=2026 (safe -- no combo routing impact)
-  3. LicensePlateNumber -> LicensePlateNumberIn on form, QIDM sourceField, and all combo refs
-     (LIMITATION #8: RMS plate search requires 'In' suffix)
+  3. Generic LicensePlateNumber fieldId corrected to LicensePlateNumber on form, QIDM sourceField, and all combo refs
+     (fieldId must be PascalCase for non-NJ providers; RMS plate search requires this specific fieldId)
   4. RaceCode: changed from codeTypeCategory='NIBRS_RACE'/codeTypeSource='NIBRS' to
      attributeTypeId='RACE'/codeTypeProvider='NIBRS' (same pattern as Sex)
      Required validator AP #3 fix to not false-positive on codeTypeProvider race.
@@ -44,8 +44,8 @@ VALIDATOR FIXES (applied during AZ rebuild)
 INSIGHTS FOR OTHER BUILDS
   1. Validator AP #3 Race false positive: fixed in validator (added codeTypeProvider check).
      Applies to any future provider using attributeTypeId=RACE + codeTypeProvider=NIBRS.
-  2. LicensePlateNumberIn: all providers should use 'In' suffix for RMS plate compatibility.
-     Verify NJ/NY use LicensePlateNumberIn (NJ confirmed, NY should be checked).
+  2. LicensePlateNumber: all providers should use the correct fieldId for RMS plate compatibility.
+     NJ uses camelCase (licensePlateNumber); all other providers use PascalCase (LicensePlateNumber).
   3. ImageIndicator is NOT universal: per-provider metadata determines support.
      AZ has RelatedHitSearchIndicator instead on Gun/Article/Boat.
   4. RMS SSN handling: if provider DL form has SSN, keep SSN in RMS Person QIDM.

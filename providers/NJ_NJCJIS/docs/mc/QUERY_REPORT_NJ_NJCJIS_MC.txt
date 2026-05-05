@@ -15,7 +15,7 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES] RQ
-      set: [LicensePlateNumberIn, RandomRequest, RegistrationState, LicensePlateTypeCode]
+      set: [licensePlateNumber, RandomRequest, RegistrationState, LicensePlateTypeCode]
       any: [ImageIndicator, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -65,7 +65,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVP
-      set: [LicensePlateNumberIn]
+      set: [licensePlateNumber]
       any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>

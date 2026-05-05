@@ -15,7 +15,7 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
 
     [FIRES] ACVR
-      set: [dexStateUserId, LicensePlateNumberIn]
+      set: [dexStateUserId, LicensePlateNumber]
       any: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -33,7 +33,7 @@ QUERY SIMULATION
 
     [FIRES] ACVRV
       set: [dexStateUserId, VehicleIdentificationNumber]
-      any: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear]
+      any: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

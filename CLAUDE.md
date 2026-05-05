@@ -206,7 +206,7 @@ QIDM: `rule=FormatStringRuleHandler`, sourceField=all name fields, targetField='
 Check provider MetaData to confirm which Name fields are accepted.
 
 ### LicensePlateNumber
-In-state: `fieldId='LicensePlateNumberIn'`. OOS: `fieldId='LicensePlateNumberOut'`.
+In-state: `fieldId='licensePlateNumber'`. OOS: `fieldId='LicensePlateNumberOut'`.
 Generic 'LicensePlateNumber' does NOT trigger RMS plate search.
 QIDM `targetField` remains 'LicensePlateNumber'.
 

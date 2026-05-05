@@ -31,7 +31,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [8 4]
-        LicensePlateNumberIn (Text | maxLen=10)
+        LicensePlateNumber (Text | maxLen=10)
         RegistrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_VEH_2 [4 4 4]
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
@@ -107,6 +107,6 @@ LAYOUT DETAIL
     VehicleIdentificationNumber -> vehicle.vinNumber
     VehicleMakeCode -> vehicle.makeNcicCode
     VehicleModelCode -> vehicle.modelNcicCode
-    LicensePlateNumberIn -> vehicle.tag
+    LicensePlateNumber -> vehicle.tag
     RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

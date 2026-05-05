@@ -15,7 +15,7 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
 
     [FIRES] RQLicensePlateNumber
-      set: [LicensePlateNumberIn, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
       any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -53,7 +53,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] FRQLicensePlateNumber
-      set: [LicensePlateNumberIn]
+      set: [LicensePlateNumber]
       any: [LicensePlateYear, ImageIndicator] -> matched: [LicensePlateYear, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -132,7 +132,7 @@ QUERY SIMULATION
     Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
 
     [FIRES] QVLicensePlateNumber
-      set: [LicensePlateNumberIn]
+      set: [LicensePlateNumber]
       any: [ImageIndicator, RegistrationState, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-04 17:10
+  Generated: 2026-05-05 13:26
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -33,6 +33,13 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Article' -> Article : 6 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+  [WARN] Vehicle missing fieldId 'PlateType' -- standard default PC -- missing means officer must manually select
+  [WARN] Vehicle missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
+  [WARN] Vehicle missing PlateYear/LicensePlateYear -- standard default is current year
+  [WARN] Person missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
+  [WARN] Article missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
+  [WARN] Boat missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
+  [WARN] Firearm missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
@@ -89,11 +96,9 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QBN': all set[]/any[] fields resolvable
 
-â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
-â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 66 PASS / 0 FAIL / 7 WARN / 2 LIMITATION
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  2 known limitation(s) -- documented, no action needed.
-
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

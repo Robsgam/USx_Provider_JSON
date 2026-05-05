@@ -726,6 +726,9 @@ $cadRenames = @{
 foreach ($cfg in $rmsBundle.configurations) {
     if (-not $cfg.attributes) { continue }
     foreach ($attr in $cfg.attributes) {
+        if ($attr.name -and $cadRenames.ContainsKey($attr.name)) {
+            $attr.name = $cadRenames[$attr.name]
+        }
         if ($attr.sourceField) {
             $attr.sourceField = @($attr.sourceField | ForEach-Object {
                 if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
@@ -734,6 +737,9 @@ foreach ($cfg in $rmsBundle.configurations) {
     }
     if (-not $cfg.combinations) { continue }
     foreach ($combo in $cfg.combinations) {
+        if ($combo.primaryFieldReference -and $cadRenames.ContainsKey($combo.primaryFieldReference)) {
+            $combo.primaryFieldReference = $cadRenames[$combo.primaryFieldReference]
+        }
         if ($combo.requirements.set) {
             $combo.requirements.set = @($combo.requirements.set | ForEach-Object {
                 if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }

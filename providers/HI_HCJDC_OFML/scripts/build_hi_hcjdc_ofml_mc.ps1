@@ -165,7 +165,7 @@ $qmf = [PSCustomObject]@{
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('ImageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumberIn';         size = 10; sourceField = @('LicensePlateNumberIn');         targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('LicensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';         size = 2;  sourceField = @('LicensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
@@ -175,11 +175,11 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('VehicleYear');                  targetField = 'VehicleYear' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumberIn'); any = @() }; primaryFieldReference = 'LicensePlateNumberIn'; keyReference = 'M55L'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'M55L'; state = 'In' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'M55S'; state = 'In' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumberIn','LicensePlateTypeCode','LicensePlateYear'); any = @() }; primaryFieldReference = 'LicensePlateNumberIn'; keyReference = 'RQ'; state = 'Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQ'; state = 'Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVV'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumberIn','RegistrationState'); any = @() }; primaryFieldReference = 'LicensePlateNumberIn'; keyReference = 'QVP'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVP'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQV'; state = 'Out' }
     )
     description     = 'VehicleRegistrationQuery -- M55L/M55S (in-state), RQ (out-state), QV (stolen). 6 combos.'
@@ -345,7 +345,7 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumberIn_Input'; node = Inp 'LicensePlateNumberIn' 'Plate Number' '10' 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = '2026' } }
             )}
