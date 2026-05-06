@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-06 10:40
+  Generated: 2026-05-06 11:11
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -62,6 +62,11 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
         codeTypeProvider=NIBRS
       SexCode -> SexCode
         codeTypeProvider=NIBRS
+    Config: CA_CLETS_CAISupervisedReleaseQuery
+      RaceCode -> RaceCode
+        codeTypeProvider=NIBRS
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
     Config: CA_CLETS_BoatQuery
       State -> State
         codeTypeProvider=NCIC
@@ -114,6 +119,12 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: CA_CLETS_WMPIMissingPersonQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
+  QIDM: CA_CLETS_CAISupervisedReleaseQuery
+    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
+
+  QIDM: CA_CLETS_CAISupervisedReleaseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
   QIDM: CA_CLETS_BoatQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
@@ -121,4 +132,4 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   SUMMARY
 ======================================================================
   Form dropdowns: 10
-  QRDM code type attrs: 18
+  QRDM code type attrs: 20

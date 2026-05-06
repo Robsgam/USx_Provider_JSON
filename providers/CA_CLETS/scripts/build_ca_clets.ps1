@@ -4,7 +4,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets.ps1 -Version X.X -Phase base
 #
 # INPUTS:
-#   source\CA_CLETS.xml   -- XML metadata (2026-04-01) -- 8 transactions, 21 combos [AUTHORITATIVE]
+#   source\CA_CLETS.xml   -- XML metadata (2026-04-01) -- 9 transactions, 25 combos [AUTHORITATIVE]
 #   source\CA_CLETS.pdf   -- CommSys devdoc [CROSS-CHECK]
 #   source\HIDLE.json     -- RMS structural template
 #
@@ -17,6 +17,7 @@
 #   BoatQuery v35                 -- 7 combos in XML, collapsed to 3 (IA.QB hull/OAN/reg)
 #   WMPIWantedPersonQuery v49     -- 18 combos in XML, collapsed to 3 (IW.QW name/OLN/NCIC#)
 #   WMPIMissingPersonQuery v33    -- 10 combos in XML, collapsed to 3 (UM.QM name/OLN/NCIC#)
+#   CAISupervisedReleaseQuery v24 -- 4 combos (IR.QVC CII/SSN/OLN/Name) -- Phase 2
 #
 # CA-SPECIFIC:
 #   CaRequestPurposeCode -- required in set[] on EVERY combo. Hidden InpH initialValue='C' (Criminal Justice).
@@ -34,22 +35,23 @@
 #   BoatQuery                  IA.QB.H (Hull), IA.QB.O (OAN), IA.QB.R (Reg)
 #   WMPIWantedPersonQuery      IW.QW.N (Name+Sex), IW.QW.O (OLN), IW.QW.NC (NCIC#)
 #   WMPIMissingPersonQuery     UM.QM.N (Name+Sex), UM.QM.O (OLN), UM.QM.NC (NCIC#)
+#   CAISupervisedReleaseQuery  IR.QVC.O (OLN), IR.QVC.C (CII), IR.QVC.S (SSN), IR.QVC.N (Name+Sex)
 #
 # ENTITIES (5 QUERYINPUTFORM):
 #   Vehicle  -- Plate + VIN + State + PlateType + PlateYear + VehMake + VehYear + CaPurpose(hidden)
-#   Person   -- OLN + Name + DOB + Sex + Race + State + NCICNumber + CaPurpose(hidden)
+#   Person   -- OLN + Name + DOB + Sex + Race + State + NCICNumber + CII + SSN + CaPurpose(hidden)
 #   Firearm  -- Serial + Make + Caliber + Type + CaPurpose(hidden)
 #   Article  -- Serial + OAN + ArticleType + ArticleBrand + CaPurpose(hidden)
 #   Boat     -- Reg# + Hull + OAN + State + CaPurpose(hidden)
 #
-# PERSON (4 QIDMs co-fire by design):
-#   DL + DH + WantedPerson + MissingPerson all share Person entity/form.
+# PERSON (5 QIDMs co-fire by design):
+#   DL + DH + WantedPerson + MissingPerson + SupervisedRelease all share Person entity/form.
 #   All have autoSelect=true. Officer can uncheck to disable specific queries.
 #   Shared field pool (LIMITATION #26) is intentional -- CA super-query pattern.
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.1",
     [string]$Phase   = "base"
 )
 
@@ -221,7 +223,8 @@ $qmf = [PSCustomObject]@{
 # 1d. VehicleRegistrationQuery
 # XML v59: 19 combos (IA.QV, IA.QVK, IV.4*, NLTS.RQ, IN.VP)
 # Collapsed to 4: in-state plate/VIN + OOS plate/VIN
-# IV.4* DMV plate-type combos and IN.VP name query skipped (Phase 2)
+# IV.4* DMV plate-type combos: COVERED by IA.QV (CommSys routes by LicensePlateTypeCode value)
+# IN.VP name query: NOT IMPLEMENTABLE (cross-entity -- person name on vehicle form)
 # LIMITATION #30: No State initialValue -- in-state vs OOS routing by State presence
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
@@ -277,7 +280,7 @@ $vehRegQuery = [PSCustomObject]@{
 # 1e. DriverLicenseQuery
 # XML v36: 8 combos (IN.L1, ID.L1, IR.QVC x4, NLTS.DQ x2)
 # Collapsed to 3: in-state OLN (ID.L1), in-state Name (IN.L1), OOS OLN (NLTS.DQ)
-# IR.QVC (Supervised Release) skipped Phase 1
+# IR.QVC (Supervised Release) now a separate QIDM (CAISupervisedReleaseQuery, 5th Person co-fire)
 # NLTS.DQ Name combo (set=[CaPurpose] only) skipped -- too broad
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
@@ -490,10 +493,72 @@ $mpQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
+# 1h.5 CAISupervisedReleaseQuery (Phase 2)
+# XML v24: 4 combos, all keyRef IR.QVC in metadata (invented IR.QVC.O/C/S/N)
+# Person query -- co-fires as 5th Person QIDM with DL+DH+WP+MP
+# Uses same Person form fields (OLN, Name, Sex, DOB, Race) + CII + SSN
+# =====================================================================
+$srQuery = [PSCustomObject]@{
+    attributes = @(
+        [PSCustomObject]@{
+            name = 'BirthDate'
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
+        }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CriminalIdNumber';     size = 9;  sourceField = @('criminalIdNumber');     targetField = 'CriminalIdNumber' }
+        [PSCustomObject]@{
+            name = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
+        }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('raceCode'); targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'SexCode';  size = 1; sourceField = @('sexCode');  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'SocialSecurityNumber'; size = 9;  sourceField = @('socialSecurityNumber'); targetField = 'SocialSecurityNumber' }
+    )
+    combinations = @(
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @() }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.O'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','criminalIdNumber'); any = @() }
+            primaryFieldReference = 'CriminalIdNumber'
+            keyReference          = 'IR.QVC.C'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','socialSecurityNumber'); any = @() }
+            primaryFieldReference = 'SocialSecurityNumber'
+            keyReference          = 'IR.QVC.S'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst','sexCode'); any = @('birthDate','raceCode') }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IR.QVC.N'
+            state                 = 'In/Out'
+        }
+    )
+    description     = 'CAISupervisedReleaseQuery -- IR.QVC (OLN, CII, SSN, Name+Sex). Phase 2.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = 'CA_CLETS_CAISupervisedReleaseQuery'
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = 'CA_CLETS'
+    providerType    = 'Commsys'
+    query           = 'CAISupervisedReleaseQuery'
+    queryLabel      = 'Supervised Release'
+    targetEntity    = 'Person'
+}
+
+# =====================================================================
 # 1i. GunQuery
 # XML v21: 2 combos (IG.QGB serial, IG.QGH name)
-# Phase 1: serial only (IG.QGB). Name-based gun query (IG.QGH) needs
-# gun-specific fieldIds to avoid conflict with Person form names.
+# Serial only (IG.QGB). IG.QGH (gun by name): NOT IMPLEMENTABLE (cross-entity -- person fields on firearm form).
 # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
@@ -565,7 +630,8 @@ $artQuery = [PSCustomObject]@{
 # 1k. BoatQuery
 # XML v35: 7 combos (IA.QB x3, IV.4B, NLTS.BQ x3)
 # Collapsed to 3: hull (IA.QB.H), OAN (IA.QB.O), reg (IA.QB.R)
-# IV.4B (DMV vessels) and NLTS.BQ (OOS, needs Name/BirthDate) skipped Phase 1
+# IV.4B (DMV vessels): COVERED by IA.QB (same fields, CommSys routes by content)
+# NLTS.BQ Name: NOT IMPLEMENTABLE (cross-entity -- person name on boat form)
 # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
@@ -607,7 +673,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $caBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $wpQuery, $mpQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $wpQuery, $mpQuery, $srQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for CA_CLETS v${Version}"
     name           = 'CA_CLETS'
     type           = 'BUNDLE'
@@ -688,11 +754,15 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_4'; cols = @('12'); fields = @(
                 @{ id = 'ncicNumber_Input'; node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_PER_4' }
             )}
+            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+                @{ id = 'criminalIdNumber_Input';    node = Inp 'criminalIdNumber'    'CII Number' '9' 'ROW_PER_5' }
+                @{ id = 'socialSecurityNumber_Input'; node = Inp 'socialSecurityNumber' 'SSN'       '9' 'ROW_PER_5' }
+            )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM).'
+    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM) + SR (IR.QVC).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

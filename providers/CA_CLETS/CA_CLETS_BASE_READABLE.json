@@ -1114,7 +1114,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM).",
+                                                   "description":  "Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM) + SR (IR.QVC).",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -1186,7 +1186,8 @@
                                                                                                                  "ROW_PER_1",
                                                                                                                  "ROW_PER_2",
                                                                                                                  "ROW_PER_3",
-                                                                                                                 "ROW_PER_4"
+                                                                                                                 "ROW_PER_4",
+                                                                                                                 "ROW_PER_5"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -1464,7 +1465,69 @@
 
                                                                                                                            },
                                                                                                            "parent":  "ROW_PER_4"
-                                                                                                       }
+                                                                                                       },
+                                                                                  "ROW_PER_5":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "criminalIdNumber_Input",
+                                                                                                                  "socialSecurityNumber_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER"
+                                                                                                },
+                                                                                  "criminalIdNumber_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "criminalIdNumber",
+                                                                                                                               "label":  "CII Number",
+                                                                                                                               "maxLength":  "9"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_PER_5"
+                                                                                                             },
+                                                                                  "socialSecurityNumber_Input":  {
+                                                                                                                     "type":  {
+                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                              },
+                                                                                                                     "displayName":  "Input",
+                                                                                                                     "props":  {
+                                                                                                                                   "fieldId":  "socialSecurityNumber",
+                                                                                                                                   "label":  "SSN",
+                                                                                                                                   "maxLength":  "9"
+                                                                                                                               },
+                                                                                                                     "isCanvas":  false,
+                                                                                                                     "hidden":  false,
+                                                                                                                     "nodes":  [
+
+                                                                                                                               ],
+                                                                                                                     "linkedNodes":  {
+
+                                                                                                                                     },
+                                                                                                                     "parent":  "ROW_PER_5"
+                                                                                                                 }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -1536,7 +1599,8 @@
                                                                                                                       "ROW_PER_1",
                                                                                                                       "ROW_PER_2",
                                                                                                                       "ROW_PER_3",
-                                                                                                                      "ROW_PER_4"
+                                                                                                                      "ROW_PER_4",
+                                                                                                                      "ROW_PER_5"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -1815,6 +1879,68 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_PER_4"
                                                                                                             },
+                                                                                       "ROW_PER_5":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "criminalIdNumber_Input",
+                                                                                                                       "socialSecurityNumber_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER"
+                                                                                                     },
+                                                                                       "criminalIdNumber_Input":  {
+                                                                                                                      "type":  {
+                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                               },
+                                                                                                                      "displayName":  "Input",
+                                                                                                                      "props":  {
+                                                                                                                                    "fieldId":  "criminalIdNumber",
+                                                                                                                                    "label":  "CII Number",
+                                                                                                                                    "maxLength":  "9"
+                                                                                                                                },
+                                                                                                                      "isCanvas":  false,
+                                                                                                                      "hidden":  false,
+                                                                                                                      "nodes":  [
+
+                                                                                                                                ],
+                                                                                                                      "linkedNodes":  {
+
+                                                                                                                                      },
+                                                                                                                      "parent":  "ROW_PER_5"
+                                                                                                                  },
+                                                                                       "socialSecurityNumber_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Input",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "socialSecurityNumber",
+                                                                                                                                        "label":  "SSN",
+                                                                                                                                        "maxLength":  "9"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_PER_5"
+                                                                                                                      },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -1967,7 +2093,8 @@
                                                                                                                          "ROW_PER_1",
                                                                                                                          "ROW_PER_2",
                                                                                                                          "ROW_PER_3",
-                                                                                                                         "ROW_PER_4"
+                                                                                                                         "ROW_PER_4",
+                                                                                                                         "ROW_PER_5"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -2246,6 +2373,68 @@
                                                                                                                                    },
                                                                                                                    "parent":  "ROW_PER_4"
                                                                                                                },
+                                                                                          "ROW_PER_5":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "criminalIdNumber_Input",
+                                                                                                                          "socialSecurityNumber_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER"
+                                                                                                        },
+                                                                                          "criminalIdNumber_Input":  {
+                                                                                                                         "type":  {
+                                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                                  },
+                                                                                                                         "displayName":  "Input",
+                                                                                                                         "props":  {
+                                                                                                                                       "fieldId":  "criminalIdNumber",
+                                                                                                                                       "label":  "CII Number",
+                                                                                                                                       "maxLength":  "9"
+                                                                                                                                   },
+                                                                                                                         "isCanvas":  false,
+                                                                                                                         "hidden":  false,
+                                                                                                                         "nodes":  [
+
+                                                                                                                                   ],
+                                                                                                                         "linkedNodes":  {
+
+                                                                                                                                         },
+                                                                                                                         "parent":  "ROW_PER_5"
+                                                                                                                     },
+                                                                                          "socialSecurityNumber_Input":  {
+                                                                                                                             "type":  {
+                                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                                      },
+                                                                                                                             "displayName":  "Input",
+                                                                                                                             "props":  {
+                                                                                                                                           "fieldId":  "socialSecurityNumber",
+                                                                                                                                           "label":  "SSN",
+                                                                                                                                           "maxLength":  "9"
+                                                                                                                                       },
+                                                                                                                             "isCanvas":  false,
+                                                                                                                             "hidden":  false,
+                                                                                                                             "nodes":  [
+
+                                                                                                                                       ],
+                                                                                                                             "linkedNodes":  {
+
+                                                                                                                                             },
+                                                                                                                             "parent":  "ROW_PER_5"
+                                                                                                                         },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -6413,6 +6602,161 @@
                                                {
                                                    "attributes":  [
                                                                       {
+                                                                          "name":  "BirthDate",
+                                                                          "rule":  {
+                                                                                       "function":  "CommsysParseDateRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         "yyyy-MM-dd",
+                                                                                                         "MMddyyyy"
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  8,
+                                                                          "sourceField":  [
+                                                                                              "birthDate"
+                                                                                          ],
+                                                                          "targetField":  "BirthDate"
+                                                                      },
+                                                                      {
+                                                                          "name":  "CaRequestPurposeCode",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "caRequestPurposeCode"
+                                                                                          ],
+                                                                          "targetField":  "CaRequestPurposeCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "CriminalIdNumber",
+                                                                          "size":  9,
+                                                                          "sourceField":  [
+                                                                                              "criminalIdNumber"
+                                                                                          ],
+                                                                          "targetField":  "CriminalIdNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Name",
+                                                                          "rule":  {
+                                                                                       "function":  "FormatStringRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         ", "
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  30,
+                                                                          "sourceField":  [
+                                                                                              "nameLast",
+                                                                                              "nameFirst"
+                                                                                          ],
+                                                                          "targetField":  "Name"
+                                                                      },
+                                                                      {
+                                                                          "name":  "OperatorLicenseNumber",
+                                                                          "size":  20,
+                                                                          "sourceField":  [
+                                                                                              "operatorLicenseNumber"
+                                                                                          ],
+                                                                          "targetField":  "OperatorLicenseNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "RaceCode",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "raceCode"
+                                                                                          ],
+                                                                          "targetField":  "RaceCode",
+                                                                          "codeTypeProvider":  "NIBRS"
+                                                                      },
+                                                                      {
+                                                                          "name":  "SexCode",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "sexCode"
+                                                                                          ],
+                                                                          "targetField":  "SexCode",
+                                                                          "codeTypeProvider":  "NIBRS"
+                                                                      },
+                                                                      {
+                                                                          "name":  "SocialSecurityNumber",
+                                                                          "size":  9,
+                                                                          "sourceField":  [
+                                                                                              "socialSecurityNumber"
+                                                                                          ],
+                                                                          "targetField":  "SocialSecurityNumber"
+                                                                      }
+                                                                  ],
+                                                   "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "operatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "IR.QVC.O",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "criminalIdNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "CriminalIdNumber",
+                                                                            "keyReference":  "IR.QVC.C",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "SocialSecurityNumber",
+                                                                            "keyReference":  "IR.QVC.S",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "nameLast",
+                                                                                                             "nameFirst",
+                                                                                                             "sexCode"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "birthDate",
+                                                                                                             "raceCode"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IR.QVC.N",
+                                                                            "state":  "In/Out"
+                                                                        }
+                                                                    ],
+                                                   "description":  "CAISupervisedReleaseQuery -- IR.QVC (OLN, CII, SSN, Name+Sex). Phase 2.",
+                                                   "handlerFunction":  "CommsysTransactionRequestHandler",
+                                                   "name":  "CA_CLETS_CAISupervisedReleaseQuery",
+                                                   "type":  "QUERYINPUTDATAMAPPING",
+                                                   "autoSelect":  true,
+                                                   "provider":  "CA_CLETS",
+                                                   "providerType":  "Commsys",
+                                                   "query":  "CAISupervisedReleaseQuery",
+                                                   "queryLabel":  "Supervised Release",
+                                                   "targetEntity":  "Person"
+                                               },
+                                               {
+                                                   "attributes":  [
+                                                                      {
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
@@ -6665,7 +7009,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v1.0",
+                        "description":  "Provider configuration for CA_CLETS v1.1",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

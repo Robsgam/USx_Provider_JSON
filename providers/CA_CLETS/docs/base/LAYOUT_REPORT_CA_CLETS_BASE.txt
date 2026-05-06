@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-06 10:40
+  Generated: 2026-05-06 11:11
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,16 +9,17 @@ LAYOUT SUMMARY
 === CA_CLETS_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=6
-  Person | entity=Person | qidm= | cards=1 fields=5
+  Person | entity=Person | qidm= | cards=1 fields=7
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=4
   Boat | entity=Boat | qidm= | cards=1 fields=4
-QIDMs: 8
+QIDMs: 9
   CA_CLETS_VehicleRegistrationQuery | attrs=8 combos=4 autoSelect=True
   CA_CLETS_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
   CA_CLETS_DriverHistoryQuery | attrs=6 combos=2 autoSelect=True
   CA_CLETS_WMPIWantedPersonQuery | attrs=7 combos=3 autoSelect=True
   CA_CLETS_WMPIMissingPersonQuery | attrs=7 combos=3 autoSelect=True
+  CA_CLETS_CAISupervisedReleaseQuery | attrs=8 combos=4 autoSelect=True
   CA_CLETS_GunQuery | attrs=5 combos=1 autoSelect=
   CA_CLETS_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
   CA_CLETS_BoatQuery | attrs=5 combos=3 autoSelect=
@@ -62,6 +63,9 @@ LAYOUT DETAIL
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
       ROW ROW_PER_4 [12]
         ncicNumber (Text | maxLen=10)
+      ROW ROW_PER_5 [6 6]
+        criminalIdNumber (Text | maxLen=9)
+        socialSecurityNumber (Text | maxLen=9)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

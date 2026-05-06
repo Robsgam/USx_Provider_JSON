@@ -5,7 +5,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.0'
+$Version  = '1.1'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_CLETS_MC.json"
@@ -411,6 +411,64 @@ $mpQuery = [PSCustomObject]@{
     targetEntity    = 'Person'
 }
 
+# CAISupervisedReleaseQuery -- PascalCase (Phase 2)
+$srQuery = [PSCustomObject]@{
+    attributes = @(
+        [PSCustomObject]@{
+            name = 'BirthDate'
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
+        }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('CaRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CriminalIdNumber';     size = 9;  sourceField = @('CriminalIdNumber');     targetField = 'CriminalIdNumber' }
+        [PSCustomObject]@{
+            name = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+        }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('RaceCode'); targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'SexCode';  size = 1; sourceField = @('SexCode');  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'SocialSecurityNumber'; size = 9;  sourceField = @('SocialSecurityNumber'); targetField = 'SocialSecurityNumber' }
+    )
+    combinations = @(
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumber'); any = @() }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.O'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','CriminalIdNumber'); any = @() }
+            primaryFieldReference = 'CriminalIdNumber'
+            keyReference          = 'IR.QVC.C'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','SocialSecurityNumber'); any = @() }
+            primaryFieldReference = 'SocialSecurityNumber'
+            keyReference          = 'IR.QVC.S'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLast','NameFirst','SexCode'); any = @('BirthDate','RaceCode') }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IR.QVC.N'
+            state                 = 'In/Out'
+        }
+    )
+    description     = 'CAISupervisedReleaseQuery -- IR.QVC (OLN, CII, SSN, Name+Sex). Phase 2.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = 'CA_CLETS_CAISupervisedReleaseQuery'
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = 'CA_CLETS'
+    providerType    = 'Commsys'
+    query           = 'CAISupervisedReleaseQuery'
+    queryLabel      = 'Supervised Release'
+    targetEntity    = 'Person'
+}
+
 # GunQuery -- PascalCase
 $gunQuery = [PSCustomObject]@{
     attributes = @(
@@ -514,7 +572,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $caBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $wpQuery, $mpQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $wpQuery, $mpQuery, $srQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for CA_CLETS v${Version} MC"
     name           = 'CA_CLETS'
     type           = 'BUNDLE'
@@ -580,11 +638,15 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_4'; cols = @('12'); fields = @(
                 @{ id = 'NCICNumber_Input'; node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_PER_4' }
             )}
+            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+                @{ id = 'CriminalIdNumber_Input';    node = Inp 'CriminalIdNumber'    'CII Number' '9' 'ROW_PER_5' }
+                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN'       '9' 'ROW_PER_5' }
+            )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM).'
+    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM) + SR (IR.QVC).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
