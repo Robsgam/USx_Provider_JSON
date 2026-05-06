@@ -1,0 +1,1076 @@
+﻿<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>CAD Field Mapping Report</title>
+<style>
+body { font-family: Consolas, monospace; font-size: 12px; margin: 20px; background: #1e1e1e; color: #d4d4d4; }
+h1 { color: #569cd6; font-size: 18px; }
+h2 { color: #4ec9b0; font-size: 15px; margin-top: 30px; border-bottom: 1px solid #444; padding-bottom: 4px; }
+h3 { color: #ce9178; font-size: 13px; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+th { background: #264f78; color: #fff; padding: 6px 8px; text-align: left; font-size: 11px; position: sticky; top: 0; }
+td { border: 1px solid #333; padding: 4px 8px; font-size: 11px; vertical-align: top; }
+tr:nth-child(even) { background: #252526; }
+tr:nth-child(odd) { background: #1e1e1e; }
+.match { color: #6a9955; }
+.diff { color: #d7ba7d; }
+.missing { color: #808080; font-style: italic; }
+.hidden { color: #569cd6; }
+.handler { color: #ce9178; font-size: 10px; }
+.ctp { color: #9cdcfe; font-size: 10px; }
+.unassoc { background: #3c2020; }
+.section-unassoc { color: #f44747; margin-top: 10px; font-weight: bold; }
+.toc a { color: #569cd6; text-decoration: none; margin-right: 15px; }
+.toc a:hover { text-decoration: underline; }
+</style></head><body>
+<h1>CAD Field Mapping Report</h1>
+<p>Generated: 2026-05-06 11:40 | Providers: 8 | Entities: 5</p>
+<div class="toc">
+<a href="#Vehicle">Vehicle</a>
+<a href="#Person">Person</a>
+<a href="#Firearm">Firearm</a>
+<a href="#Article">Article</a>
+<a href="#Boat">Boat</a>
+</div>
+<h2 id="Vehicle">Vehicle Entity</h2>
+<table><thead><tr><th>CAD Field (camelCase)</th>
+<th>AZ</th>
+<th>CA</th>
+<th>FL</th>
+<th>HI</th>
+<th>LA</th>
+<th>NJ</th>
+<th>NY</th>
+<th>TX</th>
+</tr></thead><tbody>
+<tr><td><b>licensePlateNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[Vehicle Stolen]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[Vehicle Stolen]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateNumber &rarr; LicensePlateNumber<br><span class="match">[RMS]</span> licensePlateNumber &rarr; vehicle.tag</td>
+</tr>
+<tr><td><b>licensePlateTypeCode</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> licensePlateTypeCode &rarr; LicensePlateTypeCode</td>
+</tr>
+<tr><td><b>licensePlateYear</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> licensePlateYear &rarr; LicensePlateYear</td>
+</tr>
+<tr><td><b>vehicleIdentificationNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[Vehicle Stolen]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[Vehicle Stolen]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleIdentificationNumber &rarr; VehicleIdentificationNumber<br><span class="match">[RMS]</span> vehicleIdentificationNumber &rarr; vehicle.vinNumber</td>
+</tr>
+<tr><td><b>registrationState</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Vehicle Stolen]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Vehicle Stolen]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; vehicle.registrationStateAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+</tr>
+<tr><td><b>vehicleMakeCode</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[Vehicle Stolen]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Stolen]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> vehicleMakeCode &rarr; VehicleMakeCode<br><span class="match">[RMS]</span> vehicleMakeCode &rarr; vehicle.makeNcicCode</td>
+</tr>
+<tr><td><b>vehicleYear</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Vehicle Registration]</span> vehicleYear &rarr; VehicleYear<br><span class="match">[RMS]</span> vehicleYear &rarr; vehicle.yearOfManufacture</td>
+</tr>
+<tr><td><b>imageIndicator</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> imageIndicator &rarr; ImageIndicator<br><span class="match">[Vehicle Stolen]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> imageIndicator &rarr; ImageIndicator<br><span class="match">[Vehicle Stolen]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Vehicle Registration]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressCity</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressStreetNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>purposeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameFirst</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameLast</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameMiddle</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameSuffix</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>licensePlateColorCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+</tbody></table>
+<h3>Unassociated JSON Fields (not in CAD list)</h3>
+<p><b>AZ (Vehicle):</b>
+<br>QIF: dexStateUserId (FormInput)
+<br>QIDM: dexStateUserId&rarr;BadgeNumber [Vehicle Registration], VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>CA (Vehicle):</b>
+<br>QIF: caRequestPurposeCode (FormInput)
+<br>QIDM: caRequestPurposeCode&rarr;CaRequestPurposeCode [Vehicle Registration], vehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>FL (Vehicle):</b>
+<br>QIF: DecalNumber (FormInput), TitleLienInformation (FormInput)
+<br>QIDM: DecalNumber&rarr;DecalNumber [Vehicle Registration], TitleLienInformation&rarr;TitleLienInformation [Vehicle Registration], VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>HI (Vehicle):</b>
+<br>QIF: VehicleTypeCode (FormInput)
+<br>QIDM: VehicleTypeCode&rarr;VehicleTypeCode [Vehicle Registration], VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>LA (Vehicle):</b>
+<br>QIDM: Attention&rarr;Attention [Vehicle Registration], VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>NJ (Vehicle):</b>
+<br>QIF: ncicNumber (FormInput), randomRequest (FormSelect)
+<br>QIDM: randomRequest&rarr;RandomRequest [Vehicle Registration], ncicNumber&rarr;NCICNumber [Vehicle Stolen], vehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>NY (Vehicle):</b>
+<br>QIDM: VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p><b>TX (Vehicle):</b>
+<br>QIF: StickerNumber (FormInput), RegionId (FormInput), FinancialResponsibilityType (FormInput)
+<br>QIDM: StickerNumber&rarr;StickerNumber [Vehicle Registration], RegionId&rarr;RegionId [Vehicle Registration], FinancialResponsibilityType&rarr;FinancialResponsibilityType [Vehicle Registration], VehicleModelCode&rarr;vehicle.modelNcicCode [RMS]
+</p>
+<p class="section-unassoc">CAD fields not in ANY provider (Vehicle): addressCity, addressStreetNumber, purposeCode, nameFirst, nameLast, nameMiddle, nameSuffix, licensePlateColorCode</p>
+<h2 id="Person">Person Entity</h2>
+<table><thead><tr><th>CAD Field (camelCase)</th>
+<th>AZ</th>
+<th>CA</th>
+<th>FL</th>
+<th>HI</th>
+<th>LA</th>
+<th>NJ</th>
+<th>NY</th>
+<th>TX</th>
+</tr></thead><tbody>
+<tr><td><b>operatorLicenseNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Driver History]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Wanted Person]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Missing Person]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Supervised Release]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Wanted Person]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Driver History]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Driver History]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Driver History]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[Driver History]</span> operatorLicenseNumber &rarr; OperatorLicenseNumber<br><span class="match">[RMS]</span> operatorLicenseNumber &rarr; dlNumber</td>
+</tr>
+<tr><td><b>nameFirst</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Wanted Person]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Missing Person]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Driver History]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Wanted Person]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Missing Person]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Supervised Release]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span><br><span class="match">[Wanted Person]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameFirst &rarr; firstName</td>
+</tr>
+<tr><td><b>nameLast</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Wanted Person]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Missing Person]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Driver History]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Wanted Person]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Missing Person]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[Supervised Release]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span><br><span class="match">[Wanted Person]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: nameLast + nameFirst</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[RMS]</span> nameLast &rarr; lastName</td>
+</tr>
+<tr><td><b>nameMiddle</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Wanted Person]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Missing Person]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="diff">QIF only: FormInput &quot;Middle Name&quot;</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameMiddle &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+</tr>
+<tr><td><b>nameSuffix</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Wanted Person]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Missing Person]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="diff">QIF only: FormInput &quot;Suffix&quot;</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameFirst + NameLast + NameMiddle + NameSuffix</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span><br><span class="match">[Driver History]</span> nameSuffix &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst + NameMiddle + NameSuffix</span></td>
+</tr>
+<tr><td><b>birthDate</b></td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Wanted Person]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Driver History]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Wanted Person]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Missing Person]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Supervised Release]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Wanted Person]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Driver History]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Driver History]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Driver History]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Driver License]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[Driver History]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span><br><span class="match">[RMS]</span> birthDate &rarr; dateOfBirth</td>
+</tr>
+<tr><td><b>sexCode</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Wanted Person]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Missing Person]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver History]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Wanted Person]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Missing Person]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Supervised Release]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Driver History]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Driver History]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Driver History]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Driver History]</span> sexCode &rarr; SexCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> sexCode &rarr; sexAttrId</td>
+</tr>
+<tr><td><b>registrationState</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[Driver History]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span><br><span class="match">[RMS]</span> registrationState &rarr; registrationStateAttrId</td>
+</tr>
+<tr><td><b>imageIndicator</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> imageIndicator &rarr; ImageIndicator<br><span class="match">[Wanted Person]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> imageIndicator &rarr; ImageIndicator<br><span class="match">[Driver History]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> imageIndicator &rarr; ImageIndicator<br><span class="match">[Driver History]</span> imageIndicator &rarr; ImageIndicator</td>
+</tr>
+<tr><td><b>purposeCode</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver History]</span> purposeCode &rarr; PurposeCode</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver History]</span> purposeCode &rarr; PurposeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver History]</span> purposeCode &rarr; PurposeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver History]</span> purposeCode &rarr; PurposeCode</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver History]</span> purposeCode &rarr; PurposeCode</td>
+</tr>
+<tr><td><b>raceCode</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Wanted Person]</span> raceCode &rarr; RaceCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Missing Person]</span> raceCode &rarr; RaceCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Wanted Person]</span> raceCode &rarr; RaceCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Missing Person]</span> raceCode &rarr; RaceCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[Supervised Release]</span> raceCode &rarr; RaceCode<br><span class="ctp">codeType: NIBRS</span><br><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> raceCode &rarr; RaceCode</td>
+<td><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">[RMS]</span> raceCode &rarr; raceAttrIds<br><span class="handler">handler: AttributeArrayWrapperRuleHandler</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Driver License]</span> raceCode &rarr; RaceCode</td>
+</tr>
+<tr><td><b>socialSecurityNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver License]</span> socialSecurityNumber &rarr; SocialSecurityNumber<br><span class="match">[RMS]</span> socialSecurityNumber &rarr; ssn</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Supervised Release]</span> socialSecurityNumber &rarr; SocialSecurityNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>driverHistoryPurposeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>height</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Missing Person]</span> height &rarr; Height</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>age</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Missing Person]</span> age &rarr; Age</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>attention</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver History]</span> attention &rarr; Attention</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">[Driver History]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Driver History]</span> attention &rarr; Attention</td>
+<td><span class="match">[Driver License]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span><br><span class="match">[Driver History]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">[Driver History]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+</tr>
+<tr><td><b>criminalIdNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Supervised Release]</span> criminalIdNumber &rarr; CriminalIdNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>address</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressCity</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressState</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressStreetName</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressStreetNameSecond</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressStreetNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressZipCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>addressZone</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>hairColor</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>relatedHitSearchIndicator</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Wanted Person]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator<br><span class="match">[Missing Person]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+</tbody></table>
+<h3>Unassociated JSON Fields (not in CAD list)</h3>
+<p><b>AZ (Person):</b>
+<br>QIF: NCICNumber (FormInput), OperatorLicenseNumberDH (FormInput), AreaCode (FormInput), BirthDateDH (FormDate), SexCodeDH (FormSelect), StateDH (FormInput), NameLastDH (FormInput), NameMiddleDH (FormInput), FormORI (FormInput), ExpandedNameSearchCode (FormInput), NameFirstDH (FormInput), dexStateUserId (FormInput), Weight (FormInput), NameSuffixDH (FormInput), EyeColorCode (FormSelect), ExpandedBirthDateSearchCode (FormInput), HairColorCode (FormSelect)
+<br>QIDM: dexStateUserId&rarr;BadgeNumber [Driver License], NameFirstDH&rarr;Name [Driver History], NameSuffixDH&rarr;Name [Driver History], SexCodeDH&rarr;SexCode [Driver History], StateDH&rarr;State [Driver History], NameMiddleDH&rarr;Name [Driver History], BirthDateDH&rarr;BirthDate [Driver History], NameLastDH&rarr;Name [Driver History], OperatorLicenseNumberDH&rarr;OperatorLicenseNumber [Driver History], NCICNumber&rarr;NCICNumber [Wanted Person], ExpandedNameSearchCode&rarr;ExpandedNameSearchCode [Wanted Person], ExpandedBirthDateSearchCode&rarr;ExpandedBirthDateSearchCode [Wanted Person], FormORI&rarr;FormORI [Missing Person], EyeColorCode&rarr;EyeColorCode [Missing Person], AreaCode&rarr;AreaCode [Missing Person], HairColorCode&rarr;HairColorCode [Missing Person], Weight&rarr;Weight [Missing Person]
+</p>
+<p><b>CA (Person):</b>
+<br>QIF: ncicNumber (FormInput), caRequestPurposeCode (FormInput)
+<br>QIDM: caRequestPurposeCode&rarr;CaRequestPurposeCode [Driver License], ncicNumber&rarr;NCICNumber [Wanted Person]
+</p>
+<p><b>FL (Person):</b>
+<br>QIF: NameLastDH (FormInput), SexCodeDH (FormSelect), NameFirstDH (FormInput), BirthDateDH (FormDate), OperatorLicenseNumberDH (FormInput)
+<br>QIDM: NameFirstDH&rarr;Name [Driver History], SexCodeDH&rarr;SexCode [Driver History], BirthDateDH&rarr;BirthDate [Driver History], NameLastDH&rarr;Name [Driver History], OperatorLicenseNumberDH&rarr;OperatorLicenseNumber [Driver History]
+</p>
+<p><b>TX (Person):</b>
+<br>QIF: RegionId (FormInput), ExpandedBirthDateSearchCode (FormInput), ReasonCode (FormInput)
+<br>QIDM: EmailAddress&rarr;EmailAddress [Driver License], RegionId&rarr;RegionId [Driver License], ExpandedBirthDateSearchCode&rarr;ExpandedBirthDateSearchCode [Driver License], ReasonCode&rarr;ReasonCode [Driver License]
+</p>
+<p class="section-unassoc">CAD fields not in ANY provider (Person): driverHistoryPurposeCode, address, addressCity, addressState, addressStreetName, addressStreetNameSecond, addressStreetNumber, addressZipCode, addressZone, hairColor</p>
+<h2 id="Firearm">Firearm Entity</h2>
+<table><thead><tr><th>CAD Field (camelCase)</th>
+<th>AZ</th>
+<th>CA</th>
+<th>FL</th>
+<th>HI</th>
+<th>LA</th>
+<th>NJ</th>
+<th>NY</th>
+<th>TX</th>
+</tr></thead><tbody>
+<tr><td><b>serialNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> serialNumber &rarr; GunSerialNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> serialNumber &rarr; GunSerialNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>firearmMake</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> firearmMake &rarr; GunMake</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> firearmMake &rarr; GunMake</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>gunCaliber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunCaliber &rarr; GunCaliber</td>
+</tr>
+<tr><td><b>gunModel</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> gunModel &rarr; GunModel</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> gunModel &rarr; GunModel</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> gunModel &rarr; GunModel</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>gunTypeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunTypeCode &rarr; GunTypeCode</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> gunTypeCode &rarr; GunTypeCode</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>imageIndicator</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> imageIndicator &rarr; ImageIndicator</td>
+</tr>
+<tr><td><b>purposeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameFirst</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameLast</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameMiddle</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameSuffix</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>age</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>birthDate</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>relatedHitSearchIndicator</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Firearm]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Firearm]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+</tr>
+<tr><td><b>attention</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">[Firearm]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>address</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+</tbody></table>
+<h3>Unassociated JSON Fields (not in CAD list)</h3>
+<p><b>AZ (Firearm):</b>
+<br>QIF: dexStateUserId (FormInput), GunSerialNumber (FormInput), GunMake (FormSelect)
+<br>QIDM: dexStateUserId&rarr;BadgeNumber [Firearm], GunSerialNumber&rarr;GunSerialNumber [Firearm], GunMake&rarr;GunMake [Firearm]
+</p>
+<p><b>CA (Firearm):</b>
+<br>QIF: caRequestPurposeCode (FormInput)
+<br>QIDM: caRequestPurposeCode&rarr;CaRequestPurposeCode [Firearm]
+</p>
+<p><b>FL (Firearm):</b>
+<br>QIF: GunSerialNumber (FormInput), NCICNumber (FormInput), GunMake (FormSelect), ProcessControlNumber (FormInput)
+<br>QIDM: GunSerialNumber&rarr;GunSerialNumber [Firearm], NCICNumber&rarr;NCICNumber [Firearm], GunMake&rarr;GunMake [Firearm], ProcessControlNumber&rarr;ProcessControlNumber [Firearm]
+</p>
+<p><b>HI (Firearm):</b>
+<br>QIF: RelatedSearchHitIndicator (FormSelect), GunSerialNumber (FormInput), GunMake (FormSelect)
+<br>QIDM: RelatedSearchHitIndicator&rarr;RelatedSearchHitIndicator [Firearm], GunSerialNumber&rarr;GunSerialNumber [Firearm], GunMake&rarr;GunMake [Firearm]
+</p>
+<p><b>LA (Firearm):</b>
+<br>QIF: GunSerialNumber (FormInput), GunMake (FormSelect)
+<br>QIDM: GunSerialNumber&rarr;GunSerialNumber [Firearm], GunMake&rarr;GunMake [Firearm]
+</p>
+<p><b>NY (Firearm):</b>
+<br>QIF: GunSerialNumber (FormInput), GunMake (FormSelect)
+<br>QIDM: GunSerialNumber&rarr;GunSerialNumber [Firearm], GunMake&rarr;GunMake [Firearm]
+</p>
+<p><b>TX (Firearm):</b>
+<br>QIF: NCICNumber (FormInput), GunSerialNumber (FormInput), GunMake (FormSelect)
+<br>QIDM: NCICNumber&rarr;NCICNumber [Firearm], GunSerialNumber&rarr;GunSerialNumber [Firearm], GunMake&rarr;GunMake [Firearm]
+</p>
+<p class="section-unassoc">CAD fields not in ANY provider (Firearm): purposeCode, nameFirst, nameLast, nameMiddle, nameSuffix, age, birthDate, address</p>
+<h2 id="Article">Article Entity</h2>
+<table><thead><tr><th>CAD Field (camelCase)</th>
+<th>AZ</th>
+<th>CA</th>
+<th>FL</th>
+<th>HI</th>
+<th>LA</th>
+<th>NJ</th>
+<th>NY</th>
+<th>TX</th>
+</tr></thead><tbody>
+<tr><td><b>serialNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> serialNumber &rarr; ArticleSerialNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> serialNumber &rarr; ArticleSerialNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>articleBrand</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> articleBrand &rarr; ArticleBrand</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>articleTypeCode</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> articleTypeCode &rarr; ArticleTypeCode</td>
+</tr>
+<tr><td><b>articleCategory</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>ownerAppliedNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> ownerAppliedNumber &rarr; OwnerAppliedNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> ownerAppliedNumber &rarr; OwnerAppliedNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>imageIndicator</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> imageIndicator &rarr; ImageIndicator</td>
+</tr>
+<tr><td><b>purposeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameFirst</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameLast</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameMiddle</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>attention</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">[Article]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>birthDate</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>relatedHitSearchIndicator</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Article]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Article]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+</tr>
+</tbody></table>
+<h3>Unassociated JSON Fields (not in CAD list)</h3>
+<p><b>AZ (Article):</b>
+<br>QIF: ArticleSerialNumber (FormInput), dexStateUserId (FormInput)
+<br>QIDM: ArticleSerialNumber&rarr;ArticleSerialNumber [Article], dexStateUserId&rarr;BadgeNumber [Article]
+</p>
+<p><b>CA (Article):</b>
+<br>QIF: caRequestPurposeCode (FormInput)
+<br>QIDM: caRequestPurposeCode&rarr;CaRequestPurposeCode [Article]
+</p>
+<p><b>FL (Article):</b>
+<br>QIF: NCICNumber (FormInput), ProcessControlNumber (FormInput), ArticleSerialNumber (FormInput)
+<br>QIDM: NCICNumber&rarr;NCICNumber [Article], ProcessControlNumber&rarr;ProcessControlNumber [Article], ArticleSerialNumber&rarr;ArticleSerialNumber [Article]
+</p>
+<p><b>HI (Article):</b>
+<br>QIF: ArticleSerialNumber (FormInput), RelatedSearchHitIndicator (FormSelect)
+<br>QIDM: ArticleSerialNumber&rarr;ArticleSerialNumber [Article], RelatedSearchHitIndicator&rarr;RelatedSearchHitIndicator [Article]
+</p>
+<p><b>LA (Article):</b>
+<br>QIF: ArticleSerialNumber (FormInput)
+<br>QIDM: ArticleSerialNumber&rarr;ArticleSerialNumber [Article]
+</p>
+<p><b>NY (Article):</b>
+<br>QIF: ArticleSerialNumber (FormInput)
+<br>QIDM: ArticleSerialNumber&rarr;ArticleSerialNumber [Article]
+</p>
+<p><b>TX (Article):</b>
+<br>QIF: ArticleSerialNumber (FormInput), NCICNumber (FormInput)
+<br>QIDM: ArticleSerialNumber&rarr;ArticleSerialNumber [Article], NCICNumber&rarr;NCICNumber [Article]
+</p>
+<p class="section-unassoc">CAD fields not in ANY provider (Article): articleCategory, purposeCode, nameFirst, nameLast, nameMiddle, birthDate</p>
+<h2 id="Boat">Boat Entity</h2>
+<table><thead><tr><th>CAD Field (camelCase)</th>
+<th>AZ</th>
+<th>CA</th>
+<th>FL</th>
+<th>HI</th>
+<th>LA</th>
+<th>NJ</th>
+<th>NY</th>
+<th>TX</th>
+</tr></thead><tbody>
+<tr><td><b>boatHullIdNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> boatHullIdNumber &rarr; BoatHullIdNumber</td>
+</tr>
+<tr><td><b>registrationNumber</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> registrationNumber &rarr; RegistrationNumber</td>
+</tr>
+<tr><td><b>registrationState</b></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> registrationState &rarr; State<br><span class="ctp">codeType: NCIC</span></td>
+</tr>
+<tr><td><b>ownerAppliedNumber</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> ownerAppliedNumber &rarr; OwnerAppliedNumber</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>imageIndicator</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> imageIndicator &rarr; ImageIndicator</td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> imageIndicator &rarr; ImageIndicator</td>
+</tr>
+<tr><td><b>purposeCode</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameFirst</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> nameFirst &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameLast</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> nameLast &rarr; Name<br><span class="handler">handler: FormatStringRuleHandler</span><br><span class="handler">multi: NameLast + NameFirst</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameMiddle</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>nameSuffix</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>birthDate</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormDate</span><br><span class="match">[Boat]</span> birthDate &rarr; BirthDate<br><span class="handler">handler: CommsysParseDateRuleHandler</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+<tr><td><b>relatedHitSearchIndicator</b></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormInput</span><br><span class="match">[Boat]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">QIF: FormSelect</span><br><span class="match">[Boat]</span> relatedHitSearchIndicator &rarr; RelatedHitSearchIndicator</td>
+</tr>
+<tr><td><b>attention</b></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="match">[Boat]</span> attention &rarr; Attention<br><span class="handler">handler: CommsysGetLastNameFirstNameInitialRuleHandler</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+<td><span class="missing">--</span></td>
+</tr>
+</tbody></table>
+<h3>Unassociated JSON Fields (not in CAD list)</h3>
+<p><b>AZ (Boat):</b>
+<br>QIF: dexStateUserId (FormInput)
+<br>QIDM: dexStateUserId&rarr;BadgeNumber [Boat]
+</p>
+<p><b>CA (Boat):</b>
+<br>QIF: caRequestPurposeCode (FormInput)
+<br>QIDM: caRequestPurposeCode&rarr;CaRequestPurposeCode [Boat]
+</p>
+<p><b>FL (Boat):</b>
+<br>QIF: ProcessControlNumber (FormInput), NCICNumber (FormInput), CoastGuardDocumentNumber (FormInput), DecalNumber (FormInput), TitleLienInformation (FormInput)
+<br>QIDM: ProcessControlNumber&rarr;ProcessControlNumber [Boat], NCICNumber&rarr;NCICNumber [Boat], CoastGuardDocumentNumber&rarr;CoastGuardDocumentNumber [Boat], DecalNumber&rarr;DecalNumber [Boat], TitleLienInformation&rarr;TitleLienInformation [Boat]
+</p>
+<p><b>HI (Boat):</b>
+<br>QIF: RelatedSearchHitIndicator (FormSelect)
+<br>QIDM: RelatedSearchHitIndicator&rarr;RelatedSearchHitIndicator [Boat]
+</p>
+<p><b>TX (Boat):</b>
+<br>QIF: NCICNumber (FormInput)
+<br>QIDM: NCICNumber&rarr;NCICNumber [Boat]
+</p>
+<p class="section-unassoc">CAD fields not in ANY provider (Boat): purposeCode, nameMiddle, nameSuffix</p>
+</body></html>

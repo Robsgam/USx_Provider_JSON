@@ -5,7 +5,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.1'
+$Version  = '1.2'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_CLETS_MC.json"
@@ -166,13 +166,18 @@ $qmf = [PSCustomObject]@{
     provider             = 'CA_CLETS'
 }
 
-# VehicleRegistrationQuery -- PascalCase
+# VehicleRegistrationQuery -- PascalCase + cross-entity (Name for IN.VP combo)
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'CaRequestPurposeCode';       size = 1;  sourceField = @('CaRequestPurposeCode');       targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');          targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
+        [PSCustomObject]@{
+            name = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            size = 35; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+        }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 30; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
         [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
@@ -203,8 +208,14 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'IA.QV'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLast','NameFirst'); any = @() }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IN.VP'
+            state                 = 'In/Out'
+        }
     )
-    description        = 'VehicleRegistrationQuery -- IA.QV (plate), IA.QVK (VIN), NLTS.RQ (OOS plate/VIN).'
+    description        = 'VehicleRegistrationQuery -- IA.QV (plate), IA.QVK (VIN), NLTS.RQ (OOS), IN.VP (name). MC cross-entity.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'CA_CLETS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -469,7 +480,7 @@ $srQuery = [PSCustomObject]@{
     targetEntity    = 'Person'
 }
 
-# GunQuery -- PascalCase
+# GunQuery -- PascalCase + cross-entity (Name for IG.QGH combo)
 $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('CaRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -477,6 +488,11 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('FirearmMake');           targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('SerialNumber');          targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'GunTypeCode';          size = 2;  sourceField = @('GunTypeCode');           targetField = 'GunTypeCode' }
+        [PSCustomObject]@{
+            name = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+        }
     )
     combinations = @(
         [PSCustomObject]@{
@@ -485,8 +501,14 @@ $gunQuery = [PSCustomObject]@{
             keyReference          = 'IG.QGB'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLast','NameFirst'); any = @() }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IG.QGH'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'GunQuery -- IG.QGB (serial). CA NCIC+historical firearm query.'
+    description     = 'GunQuery -- IG.QGB (serial) + IG.QGH (name). MC cross-entity.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_GunQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -531,16 +553,44 @@ $artQuery = [PSCustomObject]@{
     targetEntity    = 'Article'
 }
 
-# BoatQuery -- PascalCase
+# BoatQuery -- PascalCase + cross-entity (Name+DOB for NLTS.BQ Name combo)
 $boatQuery = [PSCustomObject]@{
     attributes = @(
+        [PSCustomObject]@{
+            name = 'BirthDate'
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
+        }
         [PSCustomObject]@{ name = 'BoatHullIdNumber';      size = 20; sourceField = @('BoatHullIdNumber');      targetField = 'BoatHullIdNumber' }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode';  size = 1;  sourceField = @('CaRequestPurposeCode');  targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{
+            name = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+        }
         [PSCustomObject]@{ name = 'OwnerAppliedNumber';    size = 20; sourceField = @('OwnerAppliedNumber');    targetField = 'OwnerAppliedNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';    size = 8;  sourceField = @('RegistrationNumber');    targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','BoatHullIdNumber','RegistrationState'); any = @() }
+            primaryFieldReference = 'BoatHullIdNumber'
+            keyReference          = 'NLTS.BQ.H'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','RegistrationNumber','RegistrationState'); any = @() }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'NLTS.BQ.R'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLast','NameFirst','BirthDate','RegistrationState'); any = @() }
+            primaryFieldReference = 'Name'
+            keyReference          = 'NLTS.BQ.N'
+            state                 = 'In/Out'
+        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','BoatHullIdNumber'); any = @('RegistrationState') }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -560,7 +610,7 @@ $boatQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'BoatQuery -- IA.QB (hull, OAN, reg). CA stolen boat + NCIC inquiry.'
+    description     = 'BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg, name). MC cross-entity.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -604,11 +654,15 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleMakeCode_Input'; node = Inp 'VehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_4' }
                 @{ id = 'VehicleYear_Input';     node = Inp 'VehicleYear'     'Vehicle Year' '4' 'ROW_VEH_4' }
             )}
+            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_5' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_5' }
+            )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleRegistrationQuery (IA.QV/IA.QVK + NLTS.RQ OOS).'
+    description  = 'Vehicle queries -- VehicleRegistrationQuery (IA.QV/IA.QVK + NLTS.RQ OOS + IN.VP name). MC cross-entity.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -668,11 +722,15 @@ $faLayout = MakeLayouts @(
                 @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
                 @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
+            @{ id = 'ROW_GUN_3'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_3' }
+            )}
         )
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- IG.QGB (serial). Historical+NCIC.'
+    description  = 'Firearm query -- IG.QGB (serial) + IG.QGH (name). MC cross-entity.'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'
@@ -720,11 +778,16 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_2' }
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_2' }
             )}
+            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_BOA_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_BOA_3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'   'ROW_BOA_3' }
+            )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- IA.QB (hull, OAN, reg). State for OOS.'
+    description  = 'Boat queries -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg, name). MC cross-entity.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'

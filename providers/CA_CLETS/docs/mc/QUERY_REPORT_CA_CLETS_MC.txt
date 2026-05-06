@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-06 11:11
+  Generated: 2026-05-06 11:50
 ================================================================
 QUERY SIMULATION
 ================
@@ -12,11 +12,12 @@ QUERY SIMULATION
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 4
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 5
     [SKIP] NLTS.RQ.P -- missing set: CaRequestPurposeCode
     [SKIP] NLTS.RQ.V -- missing set: CaRequestPurposeCode
     [SKIP] IA.QVK -- missing set: CaRequestPurposeCode
     [SKIP] IA.QV -- missing set: CaRequestPurposeCode
+    [SKIP] IN.VP -- missing set: CaRequestPurposeCode, NameLast, NameFirst
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
@@ -49,8 +50,9 @@ QUERY SIMULATION
     [SKIP] IR.QVC.N -- missing set: CaRequestPurposeCode
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
-    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
     [SKIP] IG.QGB -- missing set: CaRequestPurposeCode
+    [SKIP] IG.QGH -- missing set: CaRequestPurposeCode, NameLast, NameFirst
 
 --- QIDM: CA_CLETS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
@@ -58,7 +60,10 @@ QUERY SIMULATION
     [SKIP] IP.QA.O -- missing set: CaRequestPurposeCode
 
 --- QIDM: CA_CLETS_BoatQuery [Boat] ---
-    Query: BoatQuery  |  Attrs: 5  |  Combos: 3
+    Query: BoatQuery  |  Attrs: 7  |  Combos: 6
+    [SKIP] NLTS.BQ.H -- missing set: CaRequestPurposeCode
+    [SKIP] NLTS.BQ.R -- missing set: CaRequestPurposeCode
+    [SKIP] NLTS.BQ.N -- missing set: CaRequestPurposeCode, BirthDate
     [SKIP] IA.QB.H -- missing set: CaRequestPurposeCode
     [SKIP] IA.QB.O -- missing set: CaRequestPurposeCode, OwnerAppliedNumber
     [SKIP] IA.QB.R -- missing set: CaRequestPurposeCode

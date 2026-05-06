@@ -14,7 +14,7 @@
 #   DriverHistoryQuery v22        -- 2 combos (NLTS.KQ Name, NLTS.KQ OLN)
 #   GunQuery v21                  -- 2 combos in XML, 1 used (IG.QGB serial; IG.QGH name skipped Phase 1)
 #   ArticleSingleQuery v20        -- 2 combos (IP.QA serial, IP.QA OAN)
-#   BoatQuery v35                 -- 7 combos in XML, collapsed to 3 (IA.QB hull/OAN/reg)
+#   BoatQuery v35                 -- 7 combos in XML, collapsed to 5 (IA.QB hull/OAN/reg + NLTS.BQ hull/reg OOS)
 #   WMPIWantedPersonQuery v49     -- 18 combos in XML, collapsed to 3 (IW.QW name/OLN/NCIC#)
 #   WMPIMissingPersonQuery v33    -- 10 combos in XML, collapsed to 3 (UM.QM name/OLN/NCIC#)
 #   CAISupervisedReleaseQuery v24 -- 4 combos (IR.QVC CII/SSN/OLN/Name) -- Phase 2
@@ -26,13 +26,13 @@
 #   No RandomRequest     -- not in CA metadata.
 #   No State initialValue -- LIMITATION #30: separate in-state (IA.*) vs OOS (NLTS.*) keyRefs.
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 8 configs, 21 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 9 configs, 27 combos):
 #   VehicleRegistrationQuery   IA.QV (Plate), IA.QVK (VIN), NLTS.RQ.P (OOS Plate), NLTS.RQ.V (OOS VIN)
 #   DriverLicenseQuery         ID.L1 (OLN), IN.L1 (Name), NLTS.DQ (OOS OLN)
 #   DriverHistoryQuery         NLTS.KQ.N (Name+DOB+Sex), NLTS.KQ.O (OLN) -- all via Nlets
 #   GunQuery                   IG.QGB (Serial)
 #   ArticleSingleQuery         IP.QA.S (Serial), IP.QA.O (OAN)
-#   BoatQuery                  IA.QB.H (Hull), IA.QB.O (OAN), IA.QB.R (Reg)
+#   BoatQuery                  IA.QB.H (Hull), IA.QB.O (OAN), IA.QB.R (Reg), NLTS.BQ.H (OOS Hull), NLTS.BQ.R (OOS Reg)
 #   WMPIWantedPersonQuery      IW.QW.N (Name+Sex), IW.QW.O (OLN), IW.QW.NC (NCIC#)
 #   WMPIMissingPersonQuery     UM.QM.N (Name+Sex), UM.QM.O (OLN), UM.QM.NC (NCIC#)
 #   CAISupervisedReleaseQuery  IR.QVC.O (OLN), IR.QVC.C (CII), IR.QVC.S (SSN), IR.QVC.N (Name+Sex)
@@ -51,7 +51,7 @@
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
@@ -629,9 +629,9 @@ $artQuery = [PSCustomObject]@{
 # =====================================================================
 # 1k. BoatQuery
 # XML v35: 7 combos (IA.QB x3, IV.4B, NLTS.BQ x3)
-# Collapsed to 3: hull (IA.QB.H), OAN (IA.QB.O), reg (IA.QB.R)
+# 5 built: hull (IA.QB.H), OAN (IA.QB.O), reg (IA.QB.R), OOS hull (NLTS.BQ.H), OOS reg (NLTS.BQ.R)
 # IV.4B (DMV vessels): COVERED by IA.QB (same fields, CommSys routes by content)
-# NLTS.BQ Name: NOT IMPLEMENTABLE (cross-entity -- person name on boat form)
+# NLTS.BQ Name: NOT IMPLEMENTABLE in BASE (cross-entity -- person name on boat form). MC only.
 # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
@@ -660,8 +660,20 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'IA.QB.R'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber','registrationState'); any = @() }
+            primaryFieldReference = 'BoatHullIdNumber'
+            keyReference          = 'NLTS.BQ.H'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber','registrationState'); any = @() }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'NLTS.BQ.R'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'BoatQuery -- IA.QB (hull, OAN, reg). CA stolen boat + NCIC inquiry.'
+    description     = 'BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg). CA boat inquiry.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'

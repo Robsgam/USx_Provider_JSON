@@ -6996,9 +6996,39 @@
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "IA.QB.R",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "boatHullIdNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "BoatHullIdNumber",
+                                                                            "keyReference":  "NLTS.BQ.H",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "registrationNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "RegistrationNumber",
+                                                                            "keyReference":  "NLTS.BQ.R",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "BoatQuery -- IA.QB (hull, OAN, reg). CA stolen boat + NCIC inquiry.",
+                                                   "description":  "BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg). CA boat inquiry.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7009,7 +7039,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v1.1",
+                        "description":  "Provider configuration for CA_CLETS v1.2",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

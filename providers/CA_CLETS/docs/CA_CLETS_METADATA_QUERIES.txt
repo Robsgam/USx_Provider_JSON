@@ -1,0 +1,2697 @@
+﻿==============================================================================
+  SUPPORTED QUERIES EXTRACTED FROM METADATA
+  Source: CA_CLETS.xml
+  Generated: 2026-05-06 11:37
+==============================================================================
+
+State: CA  System: CLETS  Version: 58
+
+QUERY TRANSACTIONS FOUND: 64
+------------------------------------------------------------------------------
+
+CATEGORY SUMMARY
+----------------------------------------
+  Basic Queries (14):
+    ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery
+    EISDriverQuery, GunQuery, HazardousMaterialQuery
+    VehicleRegistrationQuery, WMPIMissingPersonQuery
+    WMPIProtectionOrderQuery, WMPISexOffenderQuery
+    WMPISupervisedReleaseQuery, WMPIUnidentifiedPersonQuery
+    WMPIWantedPersonQuery
+
+  CAI (In-State) (21):
+    CAIArticleSingleQuery, CAIBoatCheckQuery, CAIBoatRegistrationQuery
+    CAIDriverHistoryQuery, CAIDriverLicenseQuery, CAIGunQuery
+    CAIHazardousMaterialQuery, CAILojackQuery, CAIMissingPersonQuery
+    CAIOregonBoatQuery, CAIOregonDriverLicenseQuery
+    CAIOregonVehicleRegistrationQuery, CAIRestrainingOrderQuery
+    CAISecuritiesQuery, CAISnowMobileRegistrationQuery
+    CAISupervisedReleaseQuery, CAIVCINQuery, CAIVehicleCheckQuery
+    CAIVehicleRegistrationPlateQuery, CAIVehicleRegistrationQuery
+    CAIWantedPersonQuery
+
+  CBI (Canadian) (6):
+    CBIArticleSingleQuery, CBIBoatQuery, CBIDriverLicenseQuery
+    CBIGunQuery, CBISecuritiesStolenQuery, CBIVehicleRegistrationQuery
+
+  CCH (Criminal History) (10):
+    CCHCaliforniaOnlyCriminalHistoryQuery, CCHCriminalHistoryAQQuery
+    CCHCriminalHistoryFQQuery, CCHCriminalHistoryIQQuery
+    CCHCriminalHistoryQHQuery, CCHCriminalHistoryQHTQuery
+    CCHCriminalHistoryQHYQuery, CCHCriminalHistoryQuery
+    CCHCriminalHistoryZRQuery, CCHMentalHealthFirearmProhibitQuery
+
+  Expanded (11):
+    AOSHazardousMaterialQuery, APPSIdentificationNumberQuery
+    APPSNameQuery, APPSSerialNumberQuery
+    CaCletsArmedProhibitedPersonQuery, CaCletsLapdPersonQuery
+    CaCletsLapdVehicleQuery, CaPersonSuperQuery, CLETSPersonSuperQuery
+    DmvDriverLicenseQuery, DmvVehicleRegistrationQuery
+
+  Other (2):
+    CriminalGangTerroristGroupQuery, CriminalGangTerroristMemberQuery
+
+==============================================================================
+
+------------------------------------------------------------------------------
+AOSHazardousMaterialQuery (v4)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  UnitedNationsNumber        Alphanumeric  4     
+  ChemicalName               Alphanumeric  50    
+
+  COMBINATIONS (1):
+
+  1. keyRef: NLTS.MQ
+     primary: UnitedNationsNumber
+     set: CaRequestPurposeCode
+
+------------------------------------------------------------------------------
+APPSIdentificationNumberQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  IDNumber                   Alphanumeric  15    
+  Name                       Alphanumeric  30    
+  PhoneNumber                Alphanumeric  10    
+
+  COMBINATIONS (1):
+
+  1. keyRef: QYN
+     primary: IDNumber
+     set: CaRequestPurposeCode, IDNumber, Name, PhoneNumber
+
+------------------------------------------------------------------------------
+APPSNameQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Age                        Alphanumeric  2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+
+  COMBINATIONS (1):
+
+  1. keyRef: QYP
+     primary: Name
+     set: CaRequestPurposeCode, Name
+
+------------------------------------------------------------------------------
+APPSSerialNumberQuery (v11)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  GunCaliber                 Alphanumeric  4     
+  GunMake                    Alphanumeric  3     
+  GunTypeCode                Alphanumeric  2     
+  SerialNumber               Alphanumeric  20    
+
+  COMBINATIONS (1):
+
+  1. keyRef: QYG
+     primary: SerialNumber
+     set: CaRequestPurposeCode, SerialNumber
+     any: [GunCaliber, GunMake, GunTypeCode]
+
+------------------------------------------------------------------------------
+ArticleSingleQuery (v20)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  ArticleBrand               Alphanumeric  6     
+  ArticleCategory            Alphanumeric  1     
+  ArticleSerialNumber        Alphanumeric  20    
+  ArticleTypeCode            Alphanumeric  6     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  OwnerAppliedNumber         Alphanumeric  20    
+
+  COMBINATIONS (2):
+
+  1. keyRef: IP.QA
+     primary: ArticleSerialNumber
+     set: CaRequestPurposeCode, ArticleSerialNumber
+     any: [ArticleBrand, ArticleCategory, ArticleTypeCode]
+
+  2. keyRef: IP.QA
+     primary: OwnerAppliedNumber
+     set: CaRequestPurposeCode, OwnerAppliedNumber
+     any: [ArticleBrand, ArticleCategory, ArticleTypeCode]
+
+------------------------------------------------------------------------------
+BoatQuery (v35)
+------------------------------------------------------------------------------
+
+  FIELDS (7):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          8     
+  BoatHullIdNumber           Alphanumeric  20    
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  OwnerAppliedNumber         Alphanumeric  20    
+  RegistrationNumber         Alphanumeric  8     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (7):
+
+  1. keyRef: IA.QB
+     primary: BoatHullIdNumber
+     set: CaRequestPurposeCode, BoatHullIdNumber
+
+  2. keyRef: IA.QB
+     primary: OwnerAppliedNumber
+     set: CaRequestPurposeCode, OwnerAppliedNumber
+
+  3. keyRef: IA.QB
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+     any: [State]
+
+  4. keyRef: IV.4B
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+
+  5. keyRef: NLTS.BQ
+     primary: Name
+     set: CaRequestPurposeCode, Name, BirthDate, State
+
+  6. keyRef: NLTS.BQ
+     primary: BoatHullIdNumber
+     set: CaRequestPurposeCode, BoatHullIdNumber, State
+
+  7. keyRef: NLTS.BQ
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber, State
+
+------------------------------------------------------------------------------
+CaCletsArmedProhibitedPersonQuery (v19)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Age                        Numeric       2     
+  AppsIdNumber               Alphanumeric  20    
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  GunCaliber                 Alphanumeric  4     
+  GunMake                    Alphanumeric  3     
+  GunSerialNumber            Alphanumeric  20    
+  GunTypeCode                Alphanumeric  2     
+  Name                       Name          30    
+
+  COMBINATIONS (4):
+
+  1. keyRef: IY.QYP
+     primary: BirthDate
+     set: CaRequestPurposeCode, BirthDate, Name
+
+  2. keyRef: IY.QYP
+     primary: Age
+     set: CaRequestPurposeCode, Age, Name
+
+  3. keyRef: IY.QYP
+     primary: AppsIdNumber
+     set: CaRequestPurposeCode, AppsIdNumber
+
+  4. keyRef: IY.QYP
+     primary: GunSerialNumber
+     set: CaRequestPurposeCode, GunSerialNumber
+     any: [GunCaliber, GunMake, GunTypeCode]
+
+------------------------------------------------------------------------------
+CaCletsLapdPersonQuery (v17)
+------------------------------------------------------------------------------
+
+  FIELDS (17):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCity                Alphanumeric  20    
+  AddressStreetNumber        Alphanumeric  3     
+  Age                        Numeric       2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  DdmvIndicator              Alphabetic    1     
+  EyeColorCode               Alphabetic    3     
+  HairColorCode              Alphabetic    3     
+  Height                     Numeric       3     
+  Name                       Name          35    
+  OperatorLicenseNumber      Alphanumeric  20    
+  PcwsIndicator              Alphabetic    1     
+  RaceCode                   Alphabetic    1     
+  RvrIndicator               Alphabetic    1     
+  SexCode                    Alphabetic    1     
+  State                      Alphanumeric  2     
+  WcjisIndicator             Alphabetic    1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: CUSTP
+     primary: State
+     set: CaRequestPurposeCode
+     any: [AddressCity, AddressStreetNumber, Age, BirthDate, DdmvIndicator, EyeColorCode, HairColorCode, Height, Name, OperatorLicenseNumber, PcwsIndicator, RaceCode, RvrIndicator, SexCode, State, WcjisIndicator]
+
+------------------------------------------------------------------------------
+CaCletsLapdVehicleQuery (v15)
+------------------------------------------------------------------------------
+
+  FIELDS (13):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  EngineIdNumber               Alphanumeric  20    
+  LicensePlateNumber           Alphanumeric  10    
+  LicensePlateTypeCode         Alphabetic    2     
+  LicensePlateYear             Year          4     
+  LoJackReplyCode              Alphanumeric  5     
+  RvrIndicator                 Alphabetic    1     
+  SsvsIndicator                Alphabetic    1     
+  State                        Alphanumeric  2     
+  VcwsIndicator                Alphabetic    1     
+  VehicleIdentificationNumber  Alphanumeric  30    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Year          4     
+
+  COMBINATIONS (1):
+
+  1. keyRef: CUSTV
+     primary: State
+     set: CaRequestPurposeCode
+     any: [EngineIdNumber, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, LoJackReplyCode, RvrIndicator, SsvsIndicator, State, VcwsIndicator, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+
+------------------------------------------------------------------------------
+CAIArticleSingleQuery (v22)
+------------------------------------------------------------------------------
+
+  FIELDS (14):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCityCode            Alphabetic    4     
+  Age                        Numeric       2     
+  ArticleBrand               Alphanumeric  6     
+  ArticleSerialNumber        Alphanumeric  20    
+  ArticleType                Alphanumeric  6     
+  ArticleTypeCode            Alphanumeric  7     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  CategoryCode               Alphanumeric  1     
+  FileControlNumber          Alphanumeric  13    
+  MessageKeyModifier         Alphanumeric  1     
+  Name                       Name          30    
+  OwnerAppliedNumber         Alphanumeric  20    
+  RelatedHitSearchIndicator  Alphabetic    1     
+
+  COMBINATIONS (3):
+
+  1. keyRef: IP.QAN
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [AddressCityCode]
+
+  2. keyRef: IP.QA
+     primary: ArticleSerialNumber
+     set: CaRequestPurposeCode
+     any: [MessageKeyModifier, RelatedHitSearchIndicator]
+
+  3. keyRef: IP.QA
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+     any: [MessageKeyModifier]
+
+------------------------------------------------------------------------------
+CAIBoatCheckQuery (v27)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BoatHullIdNumber           Alphanumeric  20    
+  BoatMakeCode               Alphanumeric  4     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Category                   Alphanumeric  2     
+  EngineNumber               Alphanumeric  20    
+  FileControlNumber          Alphanumeric  13    
+  OwnerAppliedNumber         Alphanumeric  20    
+  PropertyBrandName          Alphanumeric  4     
+  RegistrationNumber         Alphanumeric  8     
+  RelatedHitSearchIndicator  Alphabetic    1     
+  SerialNumber               Alphanumeric  20    
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (6):
+
+  1. keyRef: IA.QB
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+     any: [RelatedHitSearchIndicator, State]
+
+  2. keyRef: IA.QB
+     primary: BoatHullIdNumber
+     set: CaRequestPurposeCode, BoatHullIdNumber
+     any: [BoatMakeCode, RelatedHitSearchIndicator]
+
+  3. keyRef: IA.QB
+     primary: EngineNumber
+     set: CaRequestPurposeCode, EngineNumber
+     any: [RelatedHitSearchIndicator]
+
+  4. keyRef: IA.QB
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  5. keyRef: IA.QB
+     primary: OwnerAppliedNumber
+     set: CaRequestPurposeCode, OwnerAppliedNumber
+     any: [Category, PropertyBrandName, RelatedHitSearchIndicator]
+
+  6. keyRef: IA.QB
+     primary: SerialNumber
+     set: CaRequestPurposeCode, SerialNumber
+     any: [Category, PropertyBrandName, RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+CAIBoatRegistrationQuery (v22)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          8     
+  BoatHullIdNumber           Alphanumeric  20    
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  RegistrationNumber         Alphanumeric  8     
+  State                      Alphanumeric  2     
+  State2                     Alphanumeric  2     
+  State3                     Alphanumeric  2     
+  State4                     Alphanumeric  2     
+  State5                     Alphanumeric  2     
+
+  COMBINATIONS (3):
+
+  1. keyRef: NLTS.BQ
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name
+     any: [State, State2, State3, State4, State5]
+
+  2. keyRef: NLTS.BQ
+     primary: BoatHullIdNumber
+     set: CaRequestPurposeCode, BoatHullIdNumber
+     any: [State, State2, State3, State4, State5]
+
+  3. keyRef: NLTS.BQ
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+     any: [State, State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+CAIDriverHistoryQuery (v23)
+------------------------------------------------------------------------------
+
+  FIELDS (8):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Text          30    
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  PurposeCode                Alphabetic    1     
+  SexCode                    Alphabetic    1     SexCode
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (2):
+
+  1. keyRef: NLTS.KQ
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name, SexCode
+     any: [Attention, PurposeCode, State]
+
+  2. keyRef: NLTS.KQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+     any: [Attention, PurposeCode, State]
+
+------------------------------------------------------------------------------
+CAIDriverLicenseQuery (v30)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Address                    Alphanumeric  3     
+  AddressCity                Alphabetic    13    
+  AddressZone                Alphanumeric  1     
+  Age                        Numeric       2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  CompanyName                Alphanumeric  35    
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  SexCode                    Alphanumeric  1     SexCode
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (5):
+
+  1. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [Address, AddressCity, AddressZone]
+
+  2. keyRef: IN.VC
+     primary: CompanyName
+     set: CaRequestPurposeCode, CompanyName
+
+  3. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  4. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode, Name, BirthDate, State
+     any: [SexCode]
+
+  5. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+
+------------------------------------------------------------------------------
+CAIGunQuery (v24)
+------------------------------------------------------------------------------
+
+  FIELDS (15):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Numeric       2     
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  CategoryCode                 Alphanumeric  1     
+  FileControlNumber            Alphanumeric  13    
+  GunCaliber                   Alphanumeric  4     
+  GunMake                      Alphanumeric  3     
+  GunSerialNumber              Alphanumeric  20    
+  GunType                      Alphanumeric  1     
+  GunTypeCode                  Alphanumeric  2     
+  MessageKeyModifier           Alphabetic    2     
+  Name                         Name          30    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  Reference                    Alphanumeric  20    
+  RelatedHitSearchIndicator    Alphabetic    1     
+
+  COMBINATIONS (4):
+
+  1. keyRef: IG.QG
+     primary: Name
+     set: CaRequestPurposeCode, MessageKeyModifier, Name
+     any: [Reference]
+
+  2. keyRef: IG.QG
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  3. keyRef: IG.QG
+     primary: GunSerialNumber
+     set: CaRequestPurposeCode, GunSerialNumber
+     any: [GunCaliber, GunMake, MessageKeyModifier, Reference, RelatedHitSearchIndicator]
+
+  4. keyRef: IG.QG
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+------------------------------------------------------------------------------
+CAIHazardousMaterialQuery (v16)
+------------------------------------------------------------------------------
+
+  FIELDS (2):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  UnitedNationsNumber        Alphanumeric  4     
+
+  COMBINATIONS (1):
+
+  1. keyRef: NLTS.MQ
+     primary: UnitedNationsNumber
+     set: CaRequestPurposeCode, UnitedNationsNumber
+
+------------------------------------------------------------------------------
+CAILojackQuery (v13)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  LojackIdentifier           Alphanumeric  5     
+  RelatedHitSearchIndicator  Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: IA.QV
+     primary: LojackIdentifier
+     set: CaRequestPurposeCode, LojackIdentifier
+     any: [RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+CAIMissingPersonQuery (v39)
+------------------------------------------------------------------------------
+
+  FIELDS (31):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Numeric       2     
+  Area                         Alphanumeric  3     
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  DentalCharacteristics        Alphanumeric  64    
+  ExpandedNameSearchCode       Alphanumeric  1     
+  EyeColorCode                 Alphanumeric  4     
+  FBINumber                    Alphanumeric  9     
+  FileControlNumber            Alphanumeric  13    
+  HairColorCode                Alphanumeric  4     
+  Height                       Numeric       3     
+  LastContactDate              Date          8     
+  LicensePlateNumber           Alphanumeric  10    
+  MiscellaneousNumber          Alphanumeric  15    
+  Name                         Name          30    
+  NCICNumber                   Alphanumeric  10    
+  NcicOnlyIndicator            Alphabetic    1     
+  OperatorLicenseNumber        Alphanumeric  20    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphabetic    1     
+  RelatedHitSearchIndicator    Alphabetic    1     
+  ScarsMarksTattoosCode        Alphanumeric  10    
+  SexCode                      Alphabetic    1     SexCode
+  SocialSecurityNumber         Alphanumeric  9     
+  VehicleColorPrimaryCode      Alphanumeric  7     
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  24    
+  VehicleModelCode             Alphanumeric  3     
+  VehicleStyleCode             Alphanumeric  2     
+  VehicleYear                  Year          4     
+  Weight                       Numeric       3     
+
+  COMBINATIONS (11):
+
+  1. keyRef: IM.R.QM
+     primary: Name
+     set: CaRequestPurposeCode, Name, NcicOnlyIndicator, SexCode
+     any: [ExpandedNameSearchCode]
+
+  2. keyRef: IM.QM
+     primary: Age
+     set: CaRequestPurposeCode, Age, Height, RaceCode, SexCode
+     any: [Area, EyeColorCode, HairColorCode, LastContactDate, ScarsMarksTattoosCode, Weight]
+
+  3. keyRef: IM.QM
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [ExpandedNameSearchCode, EyeColorCode, HairColorCode, Height, LastContactDate, RaceCode, RelatedHitSearchIndicator, Weight]
+
+  4. keyRef: IM.QM
+     primary: DentalCharacteristics
+     set: CaRequestPurposeCode, DentalCharacteristics
+
+  5. keyRef: IM.QM
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  6. keyRef: IM.QM
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  7. keyRef: IM.R.QM
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, NcicOnlyIndicator
+
+  8. keyRef: IM.R.QM
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber, NcicOnlyIndicator
+
+  9. keyRef: IM.QM
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  10. keyRef: IM.QM
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  11. keyRef: IM.QM
+     primary: VehicleMakeCode
+     set: CaRequestPurposeCode, VehicleColorPrimaryCode, VehicleMakeCode
+     any: [VehicleModelCode, VehicleStyleCode, VehicleYear]
+
+------------------------------------------------------------------------------
+CAIOregonBoatQuery (v16)
+------------------------------------------------------------------------------
+
+  FIELDS (2):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  RegistrationNumber         Alphanumeric  20    
+
+  COMBINATIONS (1):
+
+  1. keyRef: IO.REG.LB
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+
+------------------------------------------------------------------------------
+CAIOregonDriverLicenseQuery (v20)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          6     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  SexCode                    Alphabetic    1     SexCode
+
+  COMBINATIONS (2):
+
+  1. keyRef: IO.DLP.ID
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name
+     any: [SexCode]
+
+  2. keyRef: IO.DLR.ID
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+------------------------------------------------------------------------------
+CAIOregonVehicleRegistrationQuery (v16)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  LicensePlateNumber           Alphanumeric  10    
+  VehicleIdentificationNumber  Alphanumeric  20    
+
+  COMBINATIONS (2):
+
+  1. keyRef: IO.REG.LP
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  2. keyRef: IO.REG.IP
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+
+------------------------------------------------------------------------------
+CAIRestrainingOrderQuery (v28)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  AddressCountyCode            Alphanumeric  2     
+  Age                          Numeric       2     
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  FileControlNumber            Alphanumeric  13    
+  Height                       Numeric       3     
+  MessageKeyModifier           Alphanumeric  1     
+  Name                         Name          30    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphabetic    1     
+  SexCode                      Alphabetic    1     SexCode
+
+  COMBINATIONS (5):
+
+  1. keyRef: IB.QRR
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [AddressCountyCode, Height, MessageKeyModifier, RaceCode]
+
+  2. keyRef: IB.QRR
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+     any: [MessageKeyModifier]
+
+  3. keyRef: IB.QRRH
+     primary: Name
+     set: CaRequestPurposeCode, MessageKeyModifier, Name, SexCode
+
+  4. keyRef: IB.QRP
+     primary: Name
+     set: CaRequestPurposeCode, MessageKeyModifier, Name, SexCode
+
+  5. keyRef: IB.QRR
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+     any: [MessageKeyModifier]
+
+------------------------------------------------------------------------------
+CAISecuritiesQuery (v23)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  Denomination                 Alphanumeric  9     
+  Issuer                       Alphanumeric  15    
+  NCICNumber                   Alphanumeric  10    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  Owner                        Alphanumeric  40    
+  RelatedHitSearchIndicator    Alphabetic    1     
+  SecuritySerialNumber         Alphanumeric  18    
+  SecurityTypeCode             Alphanumeric  2     
+  SocialSecurityNumber         Numeric       9     
+
+  COMBINATIONS (4):
+
+  1. keyRef: IJ.QS
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+  2. keyRef: IJ.QS
+     primary: SecuritySerialNumber
+     set: CaRequestPurposeCode, Denomination, SecuritySerialNumber, SecurityTypeCode
+     any: [Issuer, RelatedHitSearchIndicator]
+
+  3. keyRef: IJ.QS
+     primary: Owner
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber, Owner, SocialSecurityNumber
+     any: [RelatedHitSearchIndicator, SecurityTypeCode]
+
+  4. keyRef: IJ.QS
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+     any: [RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+CAISnowMobileRegistrationQuery (v22)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  Name                         Name          30    
+  RegistrationNumber           Alphanumeric  10    
+  State                        Alphanumeric  2     
+  State2                       Alphanumeric  2     
+  State3                       Alphanumeric  2     
+  State4                       Alphanumeric  2     
+  State5                       Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  20    
+
+  COMBINATIONS (3):
+
+  1. keyRef: NLTS.SQ
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name
+     any: [State, State2, State3, State4, State5]
+
+  2. keyRef: NLTS.SQ
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+     any: [State, State2, State3, State4, State5]
+
+  3. keyRef: NLTS.SQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+     any: [State, State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+CAISupervisedReleaseQuery (v24)
+------------------------------------------------------------------------------
+
+  FIELDS (17):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  AddressCountyCode             Alphanumeric  2     
+  Age                           Numeric       2     
+  BirthDate                     Date          8     
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  9     
+  ExpandedNameSearchCode        Alphanumeric  1     
+  FileControlNumber             Alphanumeric  13    
+  Height                        Numeric       3     
+  InmateNumber                  Alphanumeric  6     
+  InstitutionNumber             Alphanumeric  6     
+  MessageKeyModifier            Alphabetic    3     
+  Name                          Name          30    
+  OperatorLicenseNumber         Alphanumeric  20    
+  OriginatingAgencyCaseNumber   Alphanumeric  20    
+  RaceCode                      Alphabetic    1     
+  SexCode                       Alphabetic    1     SexCode
+  SocialSecurityNumber          Alphanumeric  9     
+
+  COMBINATIONS (3):
+
+  1. keyRef: IR.Q
+     primary: Name
+     set: CaRequestPurposeCode, MessageKeyModifier, Name, SexCode
+     any: [AddressCountyCode, ExpandedNameSearchCode, Height, RaceCode]
+
+  2. keyRef: IR.Q
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber, MessageKeyModifier
+
+  3. keyRef: IR.Q
+     primary: MessageKeyModifier
+     set: CaRequestPurposeCode, MessageKeyModifier
+
+------------------------------------------------------------------------------
+CAIVCINQuery (v33)
+------------------------------------------------------------------------------
+
+  FIELDS (17):
+  Name                             Type          Size  ValueList
+  -------------------------------  ------------  ----  --------------------
+  BirthDate                        Date          8     
+  CaRequestPurposeCode             Alphabetic    1     CaRequestPurposeCode
+  CASubjectInmateNumber            Alphanumeric  6     
+  CASubjectYouthInstitutionNumber  Alphanumeric  6     
+  CriminalIdentificationINumber    Alphanumeric  9     
+  FileControlNumber                Alphanumeric  13    
+  LicensePlateNumber               Alphanumeric  10    
+  Name                             Name          65    
+  OperatorLicenseNumber            Alphanumeric  20    
+  RaceCode                         Alphabetic    1     
+  RegistrationType                 Alphanumeric  1     
+  SexCode                          Alphanumeric  1     SexCode
+  SocialSecurityNumber             Alphanumeric  9     
+  SubjectEyeColorCode              Alphanumeric  3     
+  SubjectHairColorCode             Alphanumeric  3     
+  SubjectHeight                    Numeric       3     
+  SubjectWeight                    Numeric       3     
+
+  COMBINATIONS (8):
+
+  1. keyRef: IX.QSA
+     primary: CASubjectInmateNumber
+     set: CaRequestPurposeCode, CASubjectInmateNumber
+
+  2. keyRef: IX.QSA
+     primary: CASubjectYouthInstitutionNumber
+     set: CaRequestPurposeCode, CASubjectYouthInstitutionNumber
+
+  3. keyRef: IX.QSA
+     primary: CriminalIdentificationINumber
+     set: CaRequestPurposeCode, CriminalIdentificationINumber
+
+  4. keyRef: IX.QSA
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  5. keyRef: IX.QSA
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  6. keyRef: IX.QSA
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [BirthDate, RaceCode, RegistrationType, SubjectEyeColorCode, SubjectHairColorCode, SubjectHeight, SubjectWeight]
+
+  7. keyRef: IX.QSA
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  8. keyRef: IX.QSA
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+------------------------------------------------------------------------------
+CAIVehicleCheckQuery (v30)
+------------------------------------------------------------------------------
+
+  FIELDS (13):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  Category                     Alphanumeric  2     
+  EngineNumber                 Alphanumeric  20    
+  FileControlNumber            Alphanumeric  13    
+  LicensePlateNumber           Alphanumeric  10    
+  LojackIdentifier             Alphanumeric  5     
+  OwnerAppliedNumber           Alphanumeric  20    
+  PropertyBrandName            Alphanumeric  4     
+  RelatedHitSearchIndicator    Alphanumeric  1     
+  SerialNumber                 Alphanumeric  20    
+  State                        Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  4     
+
+  COMBINATIONS (7):
+
+  1. keyRef: IA.QV
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [RelatedHitSearchIndicator, State]
+
+  2. keyRef: IA.QV
+     primary: EngineNumber
+     set: CaRequestPurposeCode, EngineNumber
+     any: [RelatedHitSearchIndicator]
+
+  3. keyRef: IA.QV
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  4. keyRef: IA.QV
+     primary: LojackIdentifier
+     set: CaRequestPurposeCode, LojackIdentifier
+     any: [RelatedHitSearchIndicator]
+
+  5. keyRef: IA.QV
+     primary: OwnerAppliedNumber
+     set: CaRequestPurposeCode, OwnerAppliedNumber
+     any: [Category, PropertyBrandName, RelatedHitSearchIndicator]
+
+  6. keyRef: IA.QV
+     primary: SerialNumber
+     set: CaRequestPurposeCode, SerialNumber
+     any: [Category, PropertyBrandName, RelatedHitSearchIndicator]
+
+  7. keyRef: IA.QV
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+     any: [RelatedHitSearchIndicator, VehicleMakeCode]
+
+------------------------------------------------------------------------------
+CAIVehicleRegistrationPlateQuery (v21)
+------------------------------------------------------------------------------
+
+  FIELDS (2):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  LicensePlateNumber         Alphanumeric  7     
+
+  COMBINATIONS (3):
+
+  1. keyRef: IV.4A
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  2. keyRef: IV.4E
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  3. keyRef: IL.A6
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+------------------------------------------------------------------------------
+CAIVehicleRegistrationQuery (v34)
+------------------------------------------------------------------------------
+
+  FIELDS (14):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  AddressCity                  Alphabetic    13    
+  AddressStreetNumber          Alphanumeric  3     
+  BoatHullIdNumber             Alphanumeric  30    
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  LicensePlateNumber           Alphanumeric  10    
+  LicensePlateTypeCode         Alphanumeric  2     
+  LicensePlateYear             Year          4     
+  MessageKeyModifier           Alphabetic    1     
+  Name                         Name          35    
+  RegistrationNumber           Alphanumeric  6     
+  State                        Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  30    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Year          4     
+
+  COMBINATIONS (8):
+
+  1. keyRef: IL.A6
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  2. keyRef: IV.4V
+     primary: BoatHullIdNumber
+     set: CaRequestPurposeCode, BoatHullIdNumber
+     any: [VehicleMakeCode]
+
+  3. keyRef: IV.4
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, MessageKeyModifier
+
+  4. keyRef: IN.VP
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [AddressCity, AddressStreetNumber]
+
+  5. keyRef: IV.4B
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber
+
+  6. keyRef: IV.4V
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+     any: [VehicleMakeCode]
+
+  7. keyRef: NLTS.RQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, State, VehicleIdentificationNumber
+     any: [VehicleMakeCode, VehicleYear]
+
+  8. keyRef: NLTS.RQ
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateYear, State
+     any: [LicensePlateTypeCode]
+
+------------------------------------------------------------------------------
+CAIWantedPersonQuery (v39)
+------------------------------------------------------------------------------
+
+  FIELDS (21):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  Age                           Numeric       2     
+  BirthDate                     Date          8     
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  9     
+  ExpandedNameSearchCode        Alphanumeric  1     
+  FBINumber                     Alphanumeric  9     
+  FileControlNumber             Alphanumeric  13    
+  Height                        Numeric       3     
+  LicensePlateNumber            Alphanumeric  10    
+  MiscellaneousNumber           Alphanumeric  15    
+  Name                          Name          30    
+  NCICNumber                    Alphanumeric  10    
+  NcicOnlyIndicator             Alphanumeric  1     
+  OperatorLicenseNumber         Alphanumeric  20    
+  OriginatingAgencyCaseNumber   Alphanumeric  20    
+  RaceCode                      Alphabetic    1     
+  RelatedHitSearchIndicator     Alphanumeric  1     
+  SexCode                       Alphabetic    1     SexCode
+  SocialSecurityNumber          Alphanumeric  9     
+  VehicleIdentificationNumber   Alphanumeric  20    
+  WarrantNumber                 Alphanumeric  15    
+
+  COMBINATIONS (10):
+
+  1. keyRef: IW.QW
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [Height, RaceCode]
+
+  2. keyRef: IW.R.QW
+     primary: Name
+     set: CaRequestPurposeCode, Name, NcicOnlyIndicator
+     any: [ExpandedNameSearchCode, RelatedHitSearchIndicator]
+
+  3. keyRef: IW.QW
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber
+
+  4. keyRef: IW.QW
+     primary: FBINumber
+     set: CaRequestPurposeCode, FBINumber
+
+  5. keyRef: IW.QW
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  6. keyRef: IW.QW
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+  7. keyRef: IW.QW
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  8. keyRef: IW.QW
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  9. keyRef: IW.QW
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+  10. keyRef: IW.QW
+     primary: WarrantNumber
+     set: CaRequestPurposeCode, WarrantNumber
+
+------------------------------------------------------------------------------
+CaPersonSuperQuery (v40)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Age                        Alphanumeric  3     
+  BirthDate                  Date          8     
+  CriminalIdNumber           Alphanumeric  11    
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  RaceCode                   Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+  SocialSecurityNumber       Alphanumeric  9     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (17):
+
+  1. keyRef: IG.QGH
+     primary: CriminalIdNumber
+     set: CaRequestPurposeCode, CriminalIdNumber
+
+  2. keyRef: IX.QSA
+     primary: CriminalIdNumber
+     set: CaRequestPurposeCode, CriminalIdNumber
+
+  3. keyRef: IR.QVC
+     primary: CriminalIdNumber
+     set: CaRequestPurposeCode, CriminalIdNumber
+
+  4. keyRef: IG.QGH
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+  5. keyRef: IX.QSA
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+  6. keyRef: IR.QVC
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+  7. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  8. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+
+  9. keyRef: IG.QGH
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  10. keyRef: IX.QSA
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  11. keyRef: IM.QM
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  12. keyRef: IR.QVC
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  13. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+
+  14. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode, Name, State
+     any: [BirthDate, SexCode]
+
+  15. keyRef: IG.QGH
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+
+  16. keyRef: IM.QM
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [Age, RaceCode]
+
+  17. keyRef: IR.QVC
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [RaceCode]
+
+------------------------------------------------------------------------------
+CBIArticleSingleQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  ArticleSerialNumber            Alphanumeric  23    
+  ArticleTypeCode                Alphanumeric  2     
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: CAQ
+     primary: ArticleSerialNumber
+     set: CaRequestPurposeCode, ArticleSerialNumber, ArticleTypeCode, ReasonCode, PersonPropertyInSiteIndicator
+
+------------------------------------------------------------------------------
+CBIBoatQuery (v13)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  BoatHullNumber                 Alphanumeric  12    
+  BoatName                       Alphanumeric  13    
+  BoatSerialNumber               Alphanumeric  18    
+  BoatTypeCode                   Alphanumeric  5     
+  LicensePlateNumber             Alphanumeric  10    
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+  RegistrationNumber             Alphanumeric  7     
+
+  COMBINATIONS (5):
+
+  1. keyRef: CBQ
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+  2. keyRef: CBQ
+     primary: BoatHullNumber
+     set: CaRequestPurposeCode, BoatHullNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+  3. keyRef: CBQ
+     primary: RegistrationNumber
+     set: CaRequestPurposeCode, RegistrationNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+  4. keyRef: CBQ
+     primary: BoatName
+     set: CaRequestPurposeCode, BoatName, ReasonCode, PersonPropertyInSiteIndicator
+
+  5. keyRef: CBQ
+     primary: BoatSerialNumber
+     set: CaRequestPurposeCode, BoatSerialNumber, BoatTypeCode, ReasonCode, PersonPropertyInSiteIndicator
+
+------------------------------------------------------------------------------
+CBIDriverLicenseQuery (v7)
+------------------------------------------------------------------------------
+
+  FIELDS (8):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  BirthDate                      Alphanumeric  8     
+  Name                           Alphanumeric  30    
+  NletsDestination               Alphanumeric  2     
+  OperatorLicenseNumber          Alphanumeric  20    
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+  SexCode                        Alphanumeric  1     
+
+  COMBINATIONS (2):
+
+  1. keyRef: UQ
+     primary: NletsDestination
+     set: CaRequestPurposeCode, NletsDestination, SexCode, ReasonCode, PersonPropertyInSiteIndicator, BirthDate, Name
+     any: [OperatorLicenseNumber]
+
+  2. keyRef: WQ
+     primary: SexCode
+     set: CaRequestPurposeCode, SexCode, ReasonCode, PersonPropertyInSiteIndicator, BirthDate, Name
+
+------------------------------------------------------------------------------
+CBIGunQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  GunSerialNumber                Alphanumeric  23    
+  GunTypeCode                    Alphanumeric  2     
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: CGQ
+     primary: GunSerialNumber
+     set: CaRequestPurposeCode, GunSerialNumber, GunTypeCode, ReasonCode, PersonPropertyInSiteIndicator
+
+------------------------------------------------------------------------------
+CBISecuritiesStolenQuery (v11)
+------------------------------------------------------------------------------
+
+  FIELDS (8):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  Issuer                         Alphanumeric  30    
+  Name                           Alphanumeric  14    
+  Owner                          Alphanumeric  30    
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+  SecuritySerialNumber           Alphanumeric  23    
+  SecurityTypeCode               Alphanumeric  2     
+
+  COMBINATIONS (4):
+
+  1. keyRef: CSQ
+     primary: SecuritySerialNumber
+     set: CaRequestPurposeCode, SecuritySerialNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+  2. keyRef: CSQ
+     primary: Issuer
+     set: CaRequestPurposeCode, Issuer, ReasonCode, PersonPropertyInSiteIndicator
+
+  3. keyRef: CSQ
+     primary: Owner
+     set: CaRequestPurposeCode, Owner, ReasonCode, PersonPropertyInSiteIndicator
+
+  4. keyRef: CSQ
+     primary: SecurityTypeCode
+     set: CaRequestPurposeCode, SecurityTypeCode, ReasonCode, PersonPropertyInSiteIndicator, Name
+
+------------------------------------------------------------------------------
+CBIVehicleRegistrationQuery (v7)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                           Type          Size  ValueList
+  -----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode           Alphabetic    1     CaRequestPurposeCode
+  LicensePlateNumber             Alphanumeric  10    
+  NletsDestination               Alphanumeric  2     
+  PersonPropertyInSiteIndicator  Alphanumeric  1     
+  ReasonCode                     Alphanumeric  1     
+  VehicleIdentificationNumber    Alphanumeric  17    
+
+  COMBINATIONS (2):
+
+  1. keyRef: VQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, NletsDestination, LicensePlateNumber, VehicleIdentificationNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+  2. keyRef: XQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, NletsDestination, LicensePlateNumber, VehicleIdentificationNumber, ReasonCode, PersonPropertyInSiteIndicator
+
+------------------------------------------------------------------------------
+CCHCaliforniaOnlyCriminalHistoryQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  8     
+  DispositionRecordNumber       Alphanumeric  9     
+  RequestorName                 Alphanumeric  30    
+
+  COMBINATIONS (1):
+
+  1. keyRef: QHY
+     primary: RequestorName
+     set: CaRequestPurposeCode, RequestorName
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryAQQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Attention                  Alphanumeric  32    
+  FreeText                   Alphanumeric  14400 
+  NletsDestination           Alphanumeric  9     
+  NletsDestination2          Alphanumeric  9     
+  NletsDestination3          Alphanumeric  9     
+  NletsDestination4          Alphanumeric  9     
+  NletsDestination5          Alphanumeric  9     
+  PurposeCode                Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: AQ
+     primary: Attention
+     set: CaRequestPurposeCode, Attention, PurposeCode
+     any: [FreeText, NletsDestination, NletsDestination2, NletsDestination3, NletsDestination4, NletsDestination5]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryFQQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  AddressCityAndState        Alphanumeric  30    
+  AddressStreet              Alphanumeric  30    
+  AddressZipCode             Alphanumeric  9     
+  Attention                  Alphanumeric  30    
+  Building                   Alphanumeric  30    
+  DepartmentName             Alphanumeric  30    
+  ImageIndicator             Alphanumeric  1     
+  PurposeCode                Alphanumeric  1     
+  State                      Alphanumeric  2     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (1):
+
+  1. keyRef: FQ
+     primary: Attention
+     set: CaRequestPurposeCode, State, Attention, PurposeCode, StateIdNumber
+     any: [AddressCityAndState, AddressStreet, AddressZipCode, Building, DepartmentName, ImageIndicator]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryIQQuery (v11)
+------------------------------------------------------------------------------
+
+  FIELDS (15):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Attention                  Alphanumeric  30    
+  BirthDate                  Date          8     
+  ImageIndicator             Alphanumeric  1     
+  MiscellaneousNumber        Alphanumeric  15    
+  Name                       Name          30    
+  PurposeCode                Alphanumeric  1     
+  RaceCode                   Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+  SocialSecurityNumber       Alphanumeric  9     
+  State                      Alphanumeric  2     
+  State2                     Alphanumeric  2     
+  State3                     Alphanumeric  2     
+  State4                     Alphanumeric  2     
+  State5                     Alphanumeric  2     
+
+  COMBINATIONS (1):
+
+  1. keyRef: IQ
+     primary: Name
+     set: CaRequestPurposeCode, Name, BirthDate, SexCode
+     any: [Attention, ImageIndicator, PurposeCode, RaceCode, State, State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQHQuery (v14)
+------------------------------------------------------------------------------
+
+  FIELDS (20):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  Age                           Alphanumeric  2     
+  Attention                     Alphanumeric  30    
+  BirthDate                     Date          10    
+  CriminalIdentificationNumber  Alphanumeric  20    
+  DispositionRecordNumber       Alphanumeric  20    
+  EyeColorCode                  Alphanumeric  3     
+  FBINumber                     Alphanumeric  9     
+  HairColorCode                 Alphanumeric  3     
+  Height                        Alphanumeric  3     
+  InstitutionNumber             Alphanumeric  10    
+  MiscellaneousNumber           Alphanumeric  15    
+  Name                          Name          30    
+  OperatorLicenseNumber         Alphanumeric  20    
+  PurposeCode                   Alphanumeric  1     
+  RaceCode                      Alphanumeric  1     
+  RequestorInformation          Alphanumeric  30    
+  SexCode                       Alphanumeric  1     
+  SocialSecurityNumber          Alphanumeric  9     
+  StateIdNumber                 Alphanumeric  10    
+
+  COMBINATIONS (3):
+
+  1. keyRef: IQ
+     primary: Name
+     set: CaRequestPurposeCode, Attention, PurposeCode
+     any: [Age, CriminalIdentificationNumber, DispositionRecordNumber, EyeColorCode, HairColorCode, Height, InstitutionNumber, OperatorLicenseNumber, RequestorInformation]
+
+  2. keyRef: IQ
+     primary: StateIdNumber
+     set: CaRequestPurposeCode, Attention, PurposeCode, StateIdNumber
+     any: [Age, BirthDate, CriminalIdentificationNumber, DispositionRecordNumber, EyeColorCode, HairColorCode, Height, InstitutionNumber, MiscellaneousNumber, Name, OperatorLicenseNumber, RaceCode, RequestorInformation, SexCode, SocialSecurityNumber]
+
+  3. keyRef: IQ
+     primary: FBINumber
+     set: CaRequestPurposeCode, Attention, PurposeCode, FBINumber
+     any: [Age, BirthDate, CriminalIdentificationNumber, DispositionRecordNumber, EyeColorCode, HairColorCode, Height, InstitutionNumber, MiscellaneousNumber, Name, OperatorLicenseNumber, RaceCode, RequestorInformation, SexCode, SocialSecurityNumber]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQHTQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  20    
+  DispositionRecordNumber       Alphanumeric  20    
+  RequestingAgencyORI           Alphanumeric  12    
+  RequestorInformation          Alphanumeric  30    
+
+  COMBINATIONS (1):
+
+  1. keyRef: QHT
+     primary: RequestorInformation
+     set: CaRequestPurposeCode, RequestorInformation, RequestingAgencyORI
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQHYQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  9     
+  DispositionRecordNumber       Alphanumeric  20    
+  RequestorInformation          Alphanumeric  30    
+
+  COMBINATIONS (2):
+
+  1. keyRef: IH.QHY
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber, RequestorInformation
+
+  2. keyRef: IH.QHY
+     primary: DispositionRecordNumber
+     set: CaRequestPurposeCode
+     any: [DispositionRecordNumber, RequestorInformation]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQuery (v42)
+------------------------------------------------------------------------------
+
+  FIELDS (57):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  AddressBuilding               Alphanumeric  30    
+  AddressCityState              Alphanumeric  30    
+  AddressStreet                 Alphanumeric  30    
+  AddressZipCode                Alphanumeric  9     
+  Age                           Alphanumeric  2     
+  Attention                     Alphanumeric  32    
+  BirthDate                     Date          10    
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  8     
+  DepartmentName                Alphanumeric  30    
+  DestinationORI                Alphanumeric  9     
+  DestinationORI2               Alphanumeric  9     
+  DestinationORI3               Alphanumeric  9     
+  DestinationORI4               Alphanumeric  9     
+  DestinationORI5               Alphanumeric  9     
+  DispositionRecordNumber       Alphanumeric  9     
+  EyeColorCode                  Alphanumeric  3     
+  FBINumber                     Alphanumeric  9     
+  FBINumber2                    Alphanumeric  9     
+  FBINumber3                    Alphanumeric  9     
+  FBINumber4                    Alphanumeric  9     
+  FBINumber5                    Alphanumeric  9     
+  FBINumber6                    Alphanumeric  9     
+  FreeText                      Alphanumeric  1938  
+  HairColorCode                 Alphanumeric  3     
+  Height                        Numeric       3     
+  InstitutionNumber             Alphanumeric  7     
+  InstitutionNumber2            Alphanumeric  7     
+  InstitutionNumber3            Alphanumeric  7     
+  InstitutionNumber4            Alphanumeric  7     
+  InstitutionNumber5            Alphanumeric  7     
+  InstitutionNumber6            Alphanumeric  7     
+  MessageKeyModifier            Alphabetic    1     
+  MiscellaneousNumber           Alphanumeric  15    
+  Name                          Name          30    
+  OperatorLicenseNumber         Alphanumeric  8     
+  OperatorLicenseNumber2        Alphanumeric  8     
+  OperatorLicenseNumber3        Alphanumeric  8     
+  OperatorLicenseNumber4        Alphanumeric  8     
+  OperatorLicenseNumber5        Alphanumeric  8     
+  OperatorLicenseNumber6        Alphanumeric  8     
+  PurposeCode                   Alphanumeric  1     
+  RaceCode                      Alphabetic    1     
+  RequestorName                 Name          30    
+  SexCode                       Alphabetic    1     SexCode
+  SocialSecurityNumber          Alphanumeric  9     
+  SocialSecurityNumber2         Alphanumeric  9     
+  SocialSecurityNumber3         Alphanumeric  9     
+  SocialSecurityNumber4         Alphanumeric  9     
+  SocialSecurityNumber5         Alphanumeric  9     
+  SocialSecurityNumber6         Alphanumeric  9     
+  State                         Alphanumeric  2     
+  State2                        Alphanumeric  2     
+  State3                        Alphanumeric  2     
+  State4                        Alphanumeric  2     
+  State5                        Alphanumeric  2     
+  StateIdNumber                 Alphanumeric  10    
+
+  COMBINATIONS (13):
+
+  1. keyRef: NLTS.AQ
+     primary: DestinationORI
+     set: CaRequestPurposeCode, Attention, DestinationORI, FreeText, PurposeCode
+     any: [DestinationORI2, DestinationORI3, DestinationORI4, DestinationORI5]
+
+  2. keyRef: IH.QHA
+     primary: Name
+     set: CaRequestPurposeCode, Name, RequestorName, SexCode
+     any: [EyeColorCode, HairColorCode, Height, RaceCode]
+
+  3. keyRef: IH.R.QH
+     primary: Name
+     set: CaRequestPurposeCode, Attention, BirthDate, Name, PurposeCode, RaceCode, SexCode
+
+  4. keyRef: IH.R.QR
+     primary: FBINumber
+     set: CaRequestPurposeCode, Attention, FBINumber, PurposeCode
+
+  5. keyRef: IH.R.QR
+     primary: StateIdNumber
+     set: CaRequestPurposeCode, Attention, PurposeCode, StateIdNumber
+
+  6. keyRef: IH.QH
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber, MessageKeyModifier, RequestorName
+
+  7. keyRef: IH.QHC
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber, RequestorName
+
+  8. keyRef: IH.QH
+     primary: DispositionRecordNumber
+     set: CaRequestPurposeCode, DispositionRecordNumber, MessageKeyModifier, RequestorName
+
+  9. keyRef: IH.QHN
+     primary: RequestorName
+     set: CaRequestPurposeCode, RequestorName
+     any: [FBINumber2, FBINumber3, FBINumber4, FBINumber5, FBINumber6, InstitutionNumber2, InstitutionNumber3, InstitutionNumber4, InstitutionNumber5, InstitutionNumber6, OperatorLicenseNumber2, OperatorLicenseNumber3, OperatorLicenseNumber4, OperatorLicenseNumber5, OperatorLicenseNumber6, SocialSecurityNumber2, SocialSecurityNumber3, SocialSecurityNumber4, SocialSecurityNumber5, SocialSecurityNumber6]
+
+  10. keyRef: NLTS.IQ
+     primary: Name
+     set: CaRequestPurposeCode, Attention, BirthDate, Name, PurposeCode, SexCode
+     any: [MiscellaneousNumber, RaceCode, State, State2, State3, State4, State5]
+
+  11. keyRef: NLTS.FQ
+     primary: Attention
+     set: CaRequestPurposeCode, AddressBuilding, AddressStreet, AddressZipCode, Attention, DepartmentName, PurposeCode, State, StateIdNumber
+     any: [AddressCityState]
+
+  12. keyRef: NLTS.AQ
+     primary: State
+     set: CaRequestPurposeCode, Attention, FreeText, PurposeCode, State
+     any: [State2, State3, State4, State5]
+
+  13. keyRef: NLTS.FQ
+     primary: StateIdNumber
+     set: CaRequestPurposeCode, Attention, PurposeCode, State, StateIdNumber
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryZRQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  FBINumber                  Alphanumeric  9     
+  PurposeCode                Alphanumeric  1     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (1):
+
+  1. keyRef: ZR
+     primary: PurposeCode
+     set: CaRequestPurposeCode, PurposeCode
+
+------------------------------------------------------------------------------
+CCHMentalHealthFirearmProhibitQuery (v10)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  BirthDate                  Date          10    
+  Name                       Name          30    
+  PersonAge                  Alphanumeric  2     
+  RecordNumber               Alphanumeric  10    
+  Requestor                  Alphanumeric  30    
+
+  COMBINATIONS (1):
+
+  1. keyRef: FQA
+     primary: Requestor
+     set: CaRequestPurposeCode, Requestor
+
+------------------------------------------------------------------------------
+CLETSPersonSuperQuery (v21)
+------------------------------------------------------------------------------
+
+  FIELDS (7):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Age                        Alphanumeric  2     
+  BirthDate                  Date          8     
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  SexCode                    Alphanumeric  1     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (7):
+
+  1. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+
+  2. keyRef: IE.WRM
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+
+  3. keyRef: IR.QVC
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  4. keyRef: IM.QM
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  5. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  6. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode, Name, BirthDate, SexCode, State
+
+  7. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+
+------------------------------------------------------------------------------
+CriminalGangTerroristGroupQuery (v11)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  GroupName                  Name          22    
+  SubGroup                   Alphanumeric  35    
+
+  COMBINATIONS (1):
+
+  1. keyRef: IJ.QGG
+     primary: GroupName
+     set: CaRequestPurposeCode
+     any: [GroupName, SubGroup]
+
+------------------------------------------------------------------------------
+CriminalGangTerroristMemberQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (16):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  EnhancedNameSearchIndicator  Alphanumeric  1     
+  FBINumber                    Alphanumeric  9     
+  LicensePlateNumber           Alphanumeric  10    
+  MiscellaneousNumber          Alphanumeric  15    
+  Name                         Name          30    
+  OperatorLicenseNumber        Alphanumeric  20    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphanumeric  1     
+  RelatedHitSearchIndicator    Alphanumeric  1     
+  SexCode                      Alphanumeric  1     
+  SocialSecurityNumber         Alphanumeric  9     
+  State                        Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  24    
+
+  COMBINATIONS (1):
+
+  1. keyRef: IJ.QGM
+     primary: Name
+     set: CaRequestPurposeCode
+     any: [BirthDate, EnhancedNameSearchIndicator, FBINumber, LicensePlateNumber, MiscellaneousNumber, Name, OperatorLicenseNumber, OriginatingAgencyCaseNumber, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, State, VehicleIdentificationNumber, VehicleMakeCode]
+
+------------------------------------------------------------------------------
+DmvDriverLicenseQuery (v14)
+------------------------------------------------------------------------------
+
+  FIELDS (15):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCity                Alphanumeric  13    
+  AddressStreetNumber        Alphanumeric  3     
+  Age                        Alphanumeric  2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  InfoCode                   Alphanumeric  2     
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  SexCode                    Alphanumeric  1     
+  State                      Alphanumeric  2     
+  State2                     Alphanumeric  2     
+  State3                     Alphanumeric  2     
+  State4                     Alphanumeric  2     
+  State5                     Alphanumeric  2     
+  ZoneCode                   Alphanumeric  2     
+
+  COMBINATIONS (4):
+
+  1. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [AddressCity, AddressStreetNumber, InfoCode, ZoneCode]
+
+  2. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+     any: [InfoCode]
+
+  3. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name, SexCode, State
+     any: [State2, State3, State4, State5]
+
+  4. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+     any: [State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+DmvVehicleRegistrationQuery (v39)
+------------------------------------------------------------------------------
+
+  FIELDS (14):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  FileCode                     Alphanumeric  1     
+  InfoCode                     Alphanumeric  1     
+  LicensePlateNumber           Alphanumeric  7     
+  LicensePlateTypeCode         Alphanumeric  2     
+  LicensePlateYear             Alphanumeric  4     
+  State                        Alphanumeric  2     
+  State2                       Alphanumeric  2     
+  State3                       Alphanumeric  2     
+  State4                       Alphanumeric  2     
+  State5                       Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Alphanumeric  4     
+
+  COMBINATIONS (17):
+
+  1. keyRef: IV.4I
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  2. keyRef: IV.4C
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  3. keyRef: IV.4M
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  4. keyRef: IV.4L
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  5. keyRef: IV.4T
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  6. keyRef: IV.4A
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [LicensePlateTypeCode]
+
+  7. keyRef: IV.4F
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  8. keyRef: IV.4S
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  9. keyRef: IV.4E
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  10. keyRef: IL.A1
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  11. keyRef: IV.4H
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  12. keyRef: IV.4P
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  13. keyRef: IV.4K
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  14. keyRef: IV.4V
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+     any: [FileCode, InfoCode]
+
+  15. keyRef: IV.4
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [FileCode, InfoCode]
+
+  16. keyRef: NLTS.RQ
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateYear, State
+     any: [LicensePlateTypeCode, State2, State3, State4, State5]
+
+  17. keyRef: NLTS.RQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, State, VehicleIdentificationNumber
+     any: [State2, State3, State4, State5, VehicleMakeCode, VehicleYear]
+
+------------------------------------------------------------------------------
+DriverHistoryQuery (v22)
+------------------------------------------------------------------------------
+
+  FIELDS (8):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Text          30    
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  PurposeCode                Alphabetic    1     
+  SexCode                    Alphabetic    1     SexCode
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (2):
+
+  1. keyRef: NLTS.KQ
+     primary: Name
+     set: CaRequestPurposeCode, BirthDate, Name, SexCode
+     any: [Attention, PurposeCode, State]
+
+  2. keyRef: NLTS.KQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+     any: [Attention, PurposeCode, State]
+
+------------------------------------------------------------------------------
+DriverLicenseQuery (v36)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCounty              Alphanumeric  3     
+  Age                        Numeric       2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  CriminalIdNumber           Alphanumeric  11    
+  Height                     Numeric       3     
+  Name                       Name          30    
+  OperatorLicenseNumber      Text          20    
+  RaceCode                   Alphabetic    1     
+  SexCode                    Alphabetic    1     SexCode
+  SocialSecurityNumber       Numeric       9     
+  State                      Text          2     
+
+  COMBINATIONS (8):
+
+  1. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [BirthDate]
+
+  2. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  3. keyRef: IR.QVC
+     primary: Name
+     set: CaRequestPurposeCode
+     any: [AddressCounty, Height, RaceCode]
+
+  4. keyRef: IR.QVC
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+     any: [CriminalIdNumber, SocialSecurityNumber]
+
+  5. keyRef: IR.QVC
+     primary: CriminalIdNumber
+     set: CaRequestPurposeCode, CriminalIdNumber
+     any: [OperatorLicenseNumber, SocialSecurityNumber]
+
+  6. keyRef: IR.QVC
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+     any: [CriminalIdNumber, OperatorLicenseNumber]
+
+  7. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode
+
+  8. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+
+------------------------------------------------------------------------------
+EISDriverQuery (v30)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCity                Alphanumeric  13    
+  AddressStreet              Alphanumeric  3     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  RaceCode                   Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (8):
+
+  1. keyRef: ID.L1
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  2. keyRef: IN.L1
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [AddressCity, AddressStreet, BirthDate]
+
+  3. keyRef: NLTS.DQ
+     primary: Name
+     set: CaRequestPurposeCode
+
+  4. keyRef: NLTS.DQ
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber, State
+
+  5. keyRef: IM.QM
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  6. keyRef: IW.QW
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  7. keyRef: IM.QM
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [BirthDate, RaceCode]
+
+  8. keyRef: IR.QVC
+     primary: Name
+     set: CaRequestPurposeCode
+     any: [RaceCode]
+
+------------------------------------------------------------------------------
+GunQuery (v21)
+------------------------------------------------------------------------------
+
+  FIELDS (8):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Age                        Numeric       2     
+  BirthDate                  Date          8     
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  GunCaliber                 Numeric       4     
+  GunMake                    Alphanumeric  3     
+  GunSerialNumber            Alphanumeric  20    
+  GunTypeCode                Alphabetic    2     
+  Name                       Name          30    
+
+  COMBINATIONS (2):
+
+  1. keyRef: IG.QGB
+     primary: GunSerialNumber
+     set: CaRequestPurposeCode, GunSerialNumber
+     any: [GunCaliber, GunMake, GunTypeCode]
+
+  2. keyRef: IG.QGH
+     primary: Name
+     set: CaRequestPurposeCode, Name
+
+------------------------------------------------------------------------------
+HazardousMaterialQuery (v16)
+------------------------------------------------------------------------------
+
+  FIELDS (2):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode       Alphabetic    1     CaRequestPurposeCode
+  UnitedNationsNumber        Alphanumeric  4     
+
+  COMBINATIONS (1):
+
+  1. keyRef: NLTS.MQ
+     primary: UnitedNationsNumber
+     set: CaRequestPurposeCode, UnitedNationsNumber
+
+------------------------------------------------------------------------------
+VehicleRegistrationQuery (v59)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  AddressCity                  Text          13    
+  AddressStreetNumber          Text          3     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  LicensePlateNumber           Alphanumeric  10    
+  LicensePlateTypeCode         Alphabetic    2     
+  LicensePlateYear             Year          4     
+  Name                         Name          35    
+  State                        Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  30    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Year          4     
+
+  COMBINATIONS (19):
+
+  1. keyRef: IA.QV
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [State]
+
+  2. keyRef: IA.QVK
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+     any: [VehicleMakeCode]
+
+  3. keyRef: IV.4I
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  4. keyRef: IV.4C
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  5. keyRef: IV.4M
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  6. keyRef: IV.4L
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  7. keyRef: IV.4T
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  8. keyRef: IV.4A
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [LicensePlateTypeCode]
+
+  9. keyRef: IV.4F
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  10. keyRef: IV.4S
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  11. keyRef: IV.4E
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  12. keyRef: IL.A1
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  13. keyRef: IV.4H
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  14. keyRef: IV.4P
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  15. keyRef: IV.4K
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode
+
+  16. keyRef: IV.4V
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber
+
+  17. keyRef: NLTS.RQ
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State
+     any: [VehicleMakeCode, VehicleYear]
+
+  18. keyRef: NLTS.RQ
+     primary: VehicleIdentificationNumber
+     set: CaRequestPurposeCode, VehicleIdentificationNumber, State
+     any: [VehicleMakeCode, VehicleYear]
+
+  19. keyRef: IN.VP
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [AddressCity, AddressStreetNumber]
+
+------------------------------------------------------------------------------
+WMPIMissingPersonQuery (v33)
+------------------------------------------------------------------------------
+
+  FIELDS (28):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Alphanumeric  3     
+  AreaCode                     Alphanumeric  2     
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  DentalCharacteristics        Alphanumeric  1599  
+  EyeColorCode                 Alphanumeric  3     
+  FBINumber                    Alphanumeric  9     
+  FileControlNumber            Alphanumeric  13    
+  HairColorCode                Alphanumeric  3     
+  Height                       Alphanumeric  3     
+  LastContactDate              Date          8     
+  LicensePlateNumber           Alphanumeric  8     
+  MiscellaneousNumber          Alphanumeric  15    
+  Name                         Name          30    
+  NCICNumber                   Alphanumeric  10    
+  NcicOnlyIndicator            Alphabetic    1     
+  OperatorLicenseNumber        Alphanumeric  20    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphanumeric  1     
+  ScarsMarksTattoosCode        Alphanumeric  10    
+  SexCode                      Alphanumeric  1     
+  SocialSecurityNumber         Alphanumeric  9     
+  VehicleColorCode             Alphanumeric  7     
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleModelCode             Alphanumeric  3     
+  VehicleStyleCode             Alphanumeric  2     
+  VehicleYear                  Alphanumeric  4     
+  Weight                       Alphanumeric  3     
+
+  COMBINATIONS (10):
+
+  1. keyRef: UM.QM
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [EyeColorCode, FBINumber, HairColorCode, Height, LastContactDate, MiscellaneousNumber, OperatorLicenseNumber, RaceCode, SocialSecurityNumber, Weight]
+
+  2. keyRef: UM.QM
+     primary: Height
+     set: CaRequestPurposeCode, SexCode, RaceCode, Height
+     any: [Age, AreaCode, BirthDate, EyeColorCode, HairColorCode, LastContactDate, ScarsMarksTattoosCode, Weight]
+
+  3. keyRef: UM.QM
+     primary: Age
+     set: CaRequestPurposeCode, SexCode, RaceCode, Age, Height, Weight, HairColorCode, EyeColorCode
+     any: [NcicOnlyIndicator, Name]
+
+  4. keyRef: UM.QM
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  5. keyRef: UM.QM
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  6. keyRef: UM.QM
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  7. keyRef: UM.QM
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [NcicOnlyIndicator]
+
+  8. keyRef: UM.QM
+     primary: VehicleColorCode
+     set: CaRequestPurposeCode, VehicleColorCode, VehicleMakeCode
+     any: [VehicleModelCode, VehicleStyleCode, VehicleYear]
+
+  9. keyRef: UM.QM
+     primary: DentalCharacteristics
+     set: CaRequestPurposeCode, DentalCharacteristics
+
+  10. keyRef: UM.QM
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+------------------------------------------------------------------------------
+WMPIProtectionOrderQuery (v23)
+------------------------------------------------------------------------------
+
+  FIELDS (19):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Alphanumeric  3     
+  BirthDate                    Date          8     
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  CountyRegionCode             Alphanumeric  2     
+  FBINumber                    Alphanumeric  9     
+  FileControlNumber            Alphanumeric  13    
+  Height                       Alphanumeric  3     
+  LicensePlateNumber           Alphanumeric  10    
+  MiscellaneousNumber          Alphanumeric  15    
+  Name                         Name          30    
+  NCICNumber                   Alphanumeric  10    
+  OperatorLicenseNumber        Alphanumeric  20    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  PartialResponseIndicator     Alphabetic    1     
+  ProtectionOrderNumber        Alphanumeric  15    
+  RaceCode                     Alphanumeric  1     
+  SexCode                      Alphanumeric  1     
+  SocialSecurityNumber         Alphanumeric  9     
+  VehicleIdentificationNumber  Alphanumeric  20    
+
+  COMBINATIONS (6):
+
+  1. keyRef: IB.QRR
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  2. keyRef: IB.QRR
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  3. keyRef: IB.QRR
+     primary: Name
+     set: CaRequestPurposeCode, PartialResponseIndicator, Name, SexCode
+     any: [Age, BirthDate, CountyRegionCode, Height, RaceCode]
+
+  4. keyRef: IB.QRP
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [Age, BirthDate, CountyRegionCode, Height, RaceCode]
+
+  5. keyRef: IB.QPO
+     primary: Name
+     set: CaRequestPurposeCode, Name
+
+  6. keyRef: IB.QPO
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+------------------------------------------------------------------------------
+WMPISexOffenderQuery (v27)
+------------------------------------------------------------------------------
+
+  FIELDS (18):
+  Name                             Type          Size  ValueList
+  -------------------------------  ------------  ----  --------------------
+  Age                              Alphanumeric  3     
+  BirthDate                        Date          8     
+  CaRequestPurposeCode             Alphabetic    1     CaRequestPurposeCode
+  CASubjectYouthInstitutionNumber  Alphanumeric  6     
+  CriminalIdentificationNumber     Alphanumeric  9     
+  DepartmentOfCorrectionsNumber    Alphanumeric  6     
+  EyeColorCode                     Alphanumeric  3     
+  FileControlNumber                Alphanumeric  13    
+  HairColorCode                    Alphanumeric  3     
+  Height                           Alphanumeric  3     
+  LicensePlateNumber               Alphanumeric  10    
+  Name                             Name          30    
+  OperatorLicenseNumber            Alphanumeric  20    
+  RaceCode                         Alphanumeric  1     
+  RegistrationType                 Alphanumeric  1     
+  SexCode                          Alphanumeric  1     
+  SocialSecurityNumber             Alphanumeric  9     
+  Weight                           Alphanumeric  3     
+
+  COMBINATIONS (8):
+
+  1. keyRef: IX.QSA
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  2. keyRef: IX.QSA
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber
+
+  3. keyRef: IX.QSA
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [Age, BirthDate, EyeColorCode, HairColorCode, Height, RaceCode, RegistrationType, Weight]
+
+  4. keyRef: IX.QSA
+     primary: DepartmentOfCorrectionsNumber
+     set: CaRequestPurposeCode, DepartmentOfCorrectionsNumber
+
+  5. keyRef: IX.QSA
+     primary: CASubjectYouthInstitutionNumber
+     set: CaRequestPurposeCode, CASubjectYouthInstitutionNumber
+
+  6. keyRef: IX.QSA
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+
+  7. keyRef: IX.QSA
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  8. keyRef: IX.QSA
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+------------------------------------------------------------------------------
+WMPISupervisedReleaseQuery (v8)
+------------------------------------------------------------------------------
+
+  FIELDS (18):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  Age                           Alphanumeric  3     
+  APPSRequestIndicator          Alphanumeric  1     
+  BirthDate                     Date          8     
+  CountyRegionCode              Alphanumeric  2     
+  CriminalIdentificationNumber  Alphanumeric  9     
+  EnhancedNameSearchIndicator   Alphanumeric  1     
+  FileControlNumber             Alphanumeric  13    
+  Height                        Alphanumeric  3     
+  MessageKey                    Alphanumeric  3     
+  Name                          Name          30    
+  OperatorLicenseNumber         Alphanumeric  20    
+  PartialResponseIndicator      Alphanumeric  1     
+  RaceCode                      Alphanumeric  1     
+  RelatedHitSearchIndicator     Alphanumeric  1     
+  SexCode                       Alphanumeric  1     
+  SocialSecurityNumber          Alphanumeric  9     
+  TestIndicator                 Alphanumeric  1     
+
+  COMBINATIONS (2):
+
+  1. keyRef: QVC
+     primary: Name
+     set: CaRequestPurposeCode, Name
+     any: [Age, APPSRequestIndicator, BirthDate, CountyRegionCode, CriminalIdentificationNumber, EnhancedNameSearchIndicator, FileControlNumber, Height, MessageKey, OperatorLicenseNumber, PartialResponseIndicator, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, TestIndicator]
+
+  2. keyRef: QVF
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+     any: [Age, APPSRequestIndicator, BirthDate, CountyRegionCode, CriminalIdentificationNumber, EnhancedNameSearchIndicator, Height, MessageKey, Name, OperatorLicenseNumber, PartialResponseIndicator, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, TestIndicator]
+
+------------------------------------------------------------------------------
+WMPIUnidentifiedPersonQuery (v29)
+------------------------------------------------------------------------------
+
+  FIELDS (17):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Alphanumeric  3     
+  AreaCode                     Alphanumeric  2     
+  BodyPartsStatusCode          Alphanumeric  14    
+  CaRequestPurposeCode         Alphabetic    1     CaRequestPurposeCode
+  DentalCharacteristics        Alphanumeric  1599  
+  EstimatedDeathDate           Date          8     
+  EyeColorCode                 Alphanumeric  3     
+  FileControlNumber            Alphanumeric  13    
+  HairColorCode                Alphanumeric  3     
+  Height                       Alphanumeric  3     
+  NCICNumber                   Alphanumeric  10    
+  NcicOnlyIndicator            Alphabetic    1     
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphanumeric  1     
+  ScarsMarksTattoosCode        Alphanumeric  10    
+  SexCode                      Alphanumeric  1     
+  Weight                       Alphanumeric  3     
+
+  COMBINATIONS (8):
+
+  1. keyRef: IM.QU
+     primary: Age
+     set: CaRequestPurposeCode, SexCode, RaceCode, Age, Height
+     any: [AreaCode, EstimatedDeathDate, EyeColorCode, HairColorCode, ScarsMarksTattoosCode, Weight]
+
+  2. keyRef: IM.QU
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  3. keyRef: IM.QU
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  4. keyRef: IM.QU
+     primary: BodyPartsStatusCode
+     set: CaRequestPurposeCode, BodyPartsStatusCode
+     any: [AreaCode, SexCode]
+
+  5. keyRef: IM.QU
+     primary: DentalCharacteristics
+     set: CaRequestPurposeCode, DentalCharacteristics
+
+  6. keyRef: IM.QU
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+  7. keyRef: IM.R.QU
+     primary: NCICOnlyIndicator
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+     any: [NcicOnlyIndicator]
+
+  8. keyRef: IM.QU
+     primary: NCICOnlyIndicator
+     set: CaRequestPurposeCode, SexCode, RaceCode, Age, Height, Weight, EyeColorCode, HairColorCode
+     any: [NcicOnlyIndicator]
+
+------------------------------------------------------------------------------
+WMPIWantedPersonQuery (v49)
+------------------------------------------------------------------------------
+
+  FIELDS (25):
+  Name                          Type          Size  ValueList
+  ----------------------------  ------------  ----  --------------------
+  Age                           Alphanumeric  3     
+  BirthDate                     Date          8     
+  CaRequestPurposeCode          Alphabetic    1     CaRequestPurposeCode
+  CriminalIdentificationNumber  Alphanumeric  9     
+  EnhancedNameSearchIndicator   Alphanumeric  1     
+  ExpandedBirthDateSearchCode   Alphanumeric  1     
+  FBINumber                     Alphanumeric  9     
+  FileControlNumber             Alphanumeric  13    
+  Height                        Alphanumeric  3     
+  LicensePlateNumber            Alphanumeric  10    
+  MessageKeyModifier            Alphanumeric  1     
+  MiscellaneousNumber           Alphanumeric  15    
+  Name                          Name          30    
+  NCICNumber                    Alphanumeric  10    
+  NcicOnlyIndicator             Alphabetic    1     
+  OperatorLicenseNumber         Alphanumeric  20    
+  OriginatingAgencyCaseNumber   Alphanumeric  20    
+  RaceCode                      Alphanumeric  1     
+  RelatedHitSearchIndicator     Alphanumeric  1     
+  SexCode                       Alphanumeric  1     
+  SocialSecurityNumber          Alphanumeric  9     
+  State                         Alphanumeric  2     
+  VehicleIdentificationNumber   Alphanumeric  20    
+  VehicleMakeCode               Alphanumeric  24    
+  WarrantNumber                 Alphanumeric  15    
+
+  COMBINATIONS (18):
+
+  1. keyRef: IW.QW
+     primary: FileControlNumber
+     set: CaRequestPurposeCode, FileControlNumber
+
+  2. keyRef: IW.QW
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [Age, BirthDate, EnhancedNameSearchIndicator, Height, RaceCode, RelatedHitSearchIndicator]
+
+  3. keyRef: IW.QW
+     primary: CriminalIdentificationNumber
+     set: CaRequestPurposeCode, CriminalIdentificationNumber
+     any: [EnhancedNameSearchIndicator, RelatedHitSearchIndicator]
+
+  4. keyRef: IW.QW
+     primary: FBINumber
+     set: CaRequestPurposeCode, FBINumber
+
+  5. keyRef: IW.QW
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+
+  6. keyRef: IW.QW
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+
+  7. keyRef: IW.QW
+     primary: WarrantNumber
+     set: CaRequestPurposeCode, WarrantNumber
+
+  8. keyRef: IW.QW
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, OriginatingAgencyCaseNumber
+
+  9. keyRef: IW.QW
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+
+  10. keyRef: IW.R.QW
+     primary: Name
+     set: CaRequestPurposeCode, Name, SexCode
+     any: [BirthDate, EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, MessageKeyModifier, NcicOnlyIndicator, RaceCode, RelatedHitSearchIndicator]
+
+  11. keyRef: IW.R.QW
+     primary: FBINumber
+     set: CaRequestPurposeCode, FBINumber
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator]
+
+  12. keyRef: IW.R.QW
+     primary: MiscellaneousNumber
+     set: CaRequestPurposeCode, MiscellaneousNumber
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator]
+
+  13. keyRef: IW.R.QW
+     primary: SocialSecurityNumber
+     set: CaRequestPurposeCode, SocialSecurityNumber
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator]
+
+  14. keyRef: IW.R.QW
+     primary: OperatorLicenseNumber
+     set: CaRequestPurposeCode, OperatorLicenseNumber
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator]
+
+  15. keyRef: IW.R.QW
+     primary: LicensePlateNumber
+     set: CaRequestPurposeCode, LicensePlateNumber
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator, State]
+
+  16. keyRef: IW.R.QW
+     primary: VehicleMakeCode
+     set: CaRequestPurposeCode, VehicleIdentificationNumber, VehicleMakeCode
+     any: [MessageKeyModifier, Name, NcicOnlyIndicator]
+
+  17. keyRef: IW.R.QW
+     primary: OriginatingAgencyCaseNumber
+     set: CaRequestPurposeCode, Name, OriginatingAgencyCaseNumber
+     any: [EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, MessageKeyModifier, NcicOnlyIndicator, RelatedHitSearchIndicator]
+
+  18. keyRef: IW.R.QW
+     primary: NCICNumber
+     set: CaRequestPurposeCode, NCICNumber
+     any: [MessageKeyModifier, NcicOnlyIndicator]
+
+==============================================================================
+TOTALS: 64 query transactions, 290 combinations
+==============================================================================

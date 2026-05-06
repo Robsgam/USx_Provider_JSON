@@ -3,7 +3,7 @@
                     {
                         "configurations":  [
                                                {
-                                                   "description":  "Vehicle queries -- VehicleRegistrationQuery (IA.QV/IA.QVK + NLTS.RQ OOS).",
+                                                   "description":  "Vehicle queries -- VehicleRegistrationQuery (IA.QV/IA.QVK + NLTS.RQ OOS + IN.VP name). MC cross-entity.",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -75,7 +75,8 @@
                                                                                                                  "ROW_VEH_1",
                                                                                                                  "ROW_VEH_2",
                                                                                                                  "ROW_VEH_3",
-                                                                                                                 "ROW_VEH_4"
+                                                                                                                 "ROW_VEH_4",
+                                                                                                                 "ROW_VEH_5"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -331,7 +332,69 @@
 
                                                                                                                             },
                                                                                                             "parent":  "ROW_VEH_4"
-                                                                                                        }
+                                                                                                        },
+                                                                                  "ROW_VEH_5":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "NameFirst_Input",
+                                                                                                                  "NameLast_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_VEH"
+                                                                                                },
+                                                                                  "NameFirst_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                   },
+                                                                                                          "displayName":  "Input",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "NameFirst",
+                                                                                                                        "label":  "First Name",
+                                                                                                                        "maxLength":  "30"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_VEH_5"
+                                                                                                      },
+                                                                                  "NameLast_Input":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                  },
+                                                                                                         "displayName":  "Input",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "NameLast",
+                                                                                                                       "label":  "Last Name",
+                                                                                                                       "maxLength":  "30"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_VEH_5"
+                                                                                                     }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -403,7 +466,8 @@
                                                                                                                       "ROW_VEH_1",
                                                                                                                       "ROW_VEH_2",
                                                                                                                       "ROW_VEH_3",
-                                                                                                                      "ROW_VEH_4"
+                                                                                                                      "ROW_VEH_4",
+                                                                                                                      "ROW_VEH_5"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -660,6 +724,68 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_VEH_4"
                                                                                                              },
+                                                                                       "ROW_VEH_5":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "NameFirst_Input",
+                                                                                                                       "NameLast_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_VEH"
+                                                                                                     },
+                                                                                       "NameFirst_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                        },
+                                                                                                               "displayName":  "Input",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "NameFirst",
+                                                                                                                             "label":  "First Name",
+                                                                                                                             "maxLength":  "30"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_VEH_5"
+                                                                                                           },
+                                                                                       "NameLast_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                       },
+                                                                                                              "displayName":  "Input",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "NameLast",
+                                                                                                                            "label":  "Last Name",
+                                                                                                                            "maxLength":  "30"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_VEH_5"
+                                                                                                          },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -812,7 +938,8 @@
                                                                                                                          "ROW_VEH_1",
                                                                                                                          "ROW_VEH_2",
                                                                                                                          "ROW_VEH_3",
-                                                                                                                         "ROW_VEH_4"
+                                                                                                                         "ROW_VEH_4",
+                                                                                                                         "ROW_VEH_5"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -1069,6 +1196,68 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_VEH_4"
                                                                                                                 },
+                                                                                          "ROW_VEH_5":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "NameFirst_Input",
+                                                                                                                          "NameLast_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_VEH"
+                                                                                                        },
+                                                                                          "NameFirst_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "NameFirst",
+                                                                                                                                "label":  "First Name",
+                                                                                                                                "maxLength":  "30"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_VEH_5"
+                                                                                                              },
+                                                                                          "NameLast_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "NameLast",
+                                                                                                                               "label":  "Last Name",
+                                                                                                                               "maxLength":  "30"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_VEH_5"
+                                                                                                             },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -2480,7 +2669,7 @@
                                                    "targetEntity":  "Person"
                                                },
                                                {
-                                                   "description":  "Firearm query -- IG.QGB (serial). Historical+NCIC.",
+                                                   "description":  "Firearm query -- IG.QGB (serial) + IG.QGH (name). MC cross-entity.",
                                                    "label":  "Firearm",
                                                    "layout":  {
                                                                   "default":  {
@@ -2550,7 +2739,8 @@
                                                                                                    "hidden":  false,
                                                                                                    "nodes":  [
                                                                                                                  "ROW_GUN_1",
-                                                                                                                 "ROW_GUN_2"
+                                                                                                                 "ROW_GUN_2",
+                                                                                                                 "ROW_GUN_3"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -2706,7 +2896,69 @@
 
                                                                                                                             },
                                                                                                             "parent":  "ROW_GUN_2"
-                                                                                                        }
+                                                                                                        },
+                                                                                  "ROW_GUN_3":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "NameFirst_Input",
+                                                                                                                  "NameLast_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_GUN"
+                                                                                                },
+                                                                                  "NameFirst_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                   },
+                                                                                                          "displayName":  "Input",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "NameFirst",
+                                                                                                                        "label":  "First Name",
+                                                                                                                        "maxLength":  "30"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_GUN_3"
+                                                                                                      },
+                                                                                  "NameLast_Input":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                  },
+                                                                                                         "displayName":  "Input",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "NameLast",
+                                                                                                                       "label":  "Last Name",
+                                                                                                                       "maxLength":  "30"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_GUN_3"
+                                                                                                     }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -2776,7 +3028,8 @@
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "ROW_GUN_1",
-                                                                                                                      "ROW_GUN_2"
+                                                                                                                      "ROW_GUN_2",
+                                                                                                                      "ROW_GUN_3"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -2933,6 +3186,68 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_GUN_2"
                                                                                                              },
+                                                                                       "ROW_GUN_3":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "NameFirst_Input",
+                                                                                                                       "NameLast_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_GUN"
+                                                                                                     },
+                                                                                       "NameFirst_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                        },
+                                                                                                               "displayName":  "Input",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "NameFirst",
+                                                                                                                             "label":  "First Name",
+                                                                                                                             "maxLength":  "30"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_GUN_3"
+                                                                                                           },
+                                                                                       "NameLast_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                       },
+                                                                                                              "displayName":  "Input",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "NameLast",
+                                                                                                                            "label":  "Last Name",
+                                                                                                                            "maxLength":  "30"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_GUN_3"
+                                                                                                          },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -3083,7 +3398,8 @@
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "ROW_GUN_1",
-                                                                                                                         "ROW_GUN_2"
+                                                                                                                         "ROW_GUN_2",
+                                                                                                                         "ROW_GUN_3"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -3240,6 +3556,68 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_GUN_2"
                                                                                                                 },
+                                                                                          "ROW_GUN_3":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "NameFirst_Input",
+                                                                                                                          "NameLast_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_GUN"
+                                                                                                        },
+                                                                                          "NameFirst_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "NameFirst",
+                                                                                                                                "label":  "First Name",
+                                                                                                                                "maxLength":  "30"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_GUN_3"
+                                                                                                              },
+                                                                                          "NameLast_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "NameLast",
+                                                                                                                               "label":  "Last Name",
+                                                                                                                               "maxLength":  "30"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_GUN_3"
+                                                                                                             },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -4084,7 +4462,7 @@
                                                    "targetEntity":  "Article"
                                                },
                                                {
-                                                   "description":  "Boat queries -- IA.QB (hull, OAN, reg). State for OOS.",
+                                                   "description":  "Boat queries -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg, name). MC cross-entity.",
                                                    "label":  "Boat",
                                                    "layout":  {
                                                                   "default":  {
@@ -4154,7 +4532,8 @@
                                                                                                    "hidden":  false,
                                                                                                    "nodes":  [
                                                                                                                  "ROW_BOA_1",
-                                                                                                                 "ROW_BOA_2"
+                                                                                                                 "ROW_BOA_2",
+                                                                                                                 "ROW_BOA_3"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -4307,7 +4686,90 @@
 
                                                                                                                                    },
                                                                                                                    "parent":  "ROW_BOA_2"
-                                                                                                               }
+                                                                                                               },
+                                                                                  "ROW_BOA_3":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "4",
+                                                                                                                                          "4",
+                                                                                                                                          "4"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "NameFirst_Input",
+                                                                                                                  "NameLast_Input",
+                                                                                                                  "BirthDate_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_BOA"
+                                                                                                },
+                                                                                  "NameFirst_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                   },
+                                                                                                          "displayName":  "Input",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "NameFirst",
+                                                                                                                        "label":  "First Name",
+                                                                                                                        "maxLength":  "30"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_BOA_3"
+                                                                                                      },
+                                                                                  "NameLast_Input":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                  },
+                                                                                                         "displayName":  "Input",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "NameLast",
+                                                                                                                       "label":  "Last Name",
+                                                                                                                       "maxLength":  "30"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_BOA_3"
+                                                                                                     },
+                                                                                  "BirthDate_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormDate"
+                                                                                                                   },
+                                                                                                          "displayName":  "Date",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "BirthDate",
+                                                                                                                        "label":  "Date of Birth"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_BOA_3"
+                                                                                                      }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -4377,7 +4839,8 @@
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "ROW_BOA_1",
-                                                                                                                      "ROW_BOA_2"
+                                                                                                                      "ROW_BOA_2",
+                                                                                                                      "ROW_BOA_3"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -4531,6 +4994,89 @@
                                                                                                                                         },
                                                                                                                         "parent":  "ROW_BOA_2"
                                                                                                                     },
+                                                                                       "ROW_BOA_3":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "4",
+                                                                                                                                               "4",
+                                                                                                                                               "4"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "NameFirst_Input",
+                                                                                                                       "NameLast_Input",
+                                                                                                                       "BirthDate_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_BOA"
+                                                                                                     },
+                                                                                       "NameFirst_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                        },
+                                                                                                               "displayName":  "Input",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "NameFirst",
+                                                                                                                             "label":  "First Name",
+                                                                                                                             "maxLength":  "30"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_BOA_3"
+                                                                                                           },
+                                                                                       "NameLast_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                       },
+                                                                                                              "displayName":  "Input",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "NameLast",
+                                                                                                                            "label":  "Last Name",
+                                                                                                                            "maxLength":  "30"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_BOA_3"
+                                                                                                          },
+                                                                                       "BirthDate_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormDate"
+                                                                                                                        },
+                                                                                                               "displayName":  "Date",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "BirthDate",
+                                                                                                                             "label":  "Date of Birth"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_BOA_3"
+                                                                                                           },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -4681,7 +5227,8 @@
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "ROW_BOA_1",
-                                                                                                                         "ROW_BOA_2"
+                                                                                                                         "ROW_BOA_2",
+                                                                                                                         "ROW_BOA_3"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -4835,6 +5382,89 @@
                                                                                                                                            },
                                                                                                                            "parent":  "ROW_BOA_2"
                                                                                                                        },
+                                                                                          "ROW_BOA_3":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "4",
+                                                                                                                                                  "4",
+                                                                                                                                                  "4"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "NameFirst_Input",
+                                                                                                                          "NameLast_Input",
+                                                                                                                          "BirthDate_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_BOA"
+                                                                                                        },
+                                                                                          "NameFirst_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "NameFirst",
+                                                                                                                                "label":  "First Name",
+                                                                                                                                "maxLength":  "30"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_BOA_3"
+                                                                                                              },
+                                                                                          "NameLast_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "NameLast",
+                                                                                                                               "label":  "Last Name",
+                                                                                                                               "maxLength":  "30"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_BOA_3"
+                                                                                                             },
+                                                                                          "BirthDate_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormDate"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Date",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "BirthDate",
+                                                                                                                                "label":  "Date of Birth"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_BOA_3"
+                                                                                                              },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -5993,6 +6623,21 @@
                                                                           "targetField":  "LicensePlateYear"
                                                                       },
                                                                       {
+                                                                          "name":  "Name",
+                                                                          "rule":  {
+                                                                                       "function":  "FormatStringRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         ", "
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  35,
+                                                                          "sourceField":  [
+                                                                                              "NameLast",
+                                                                                              "NameFirst"
+                                                                                          ],
+                                                                          "targetField":  "Name"
+                                                                      },
+                                                                      {
                                                                           "name":  "State",
                                                                           "size":  2,
                                                                           "sourceField":  [
@@ -6093,9 +6738,24 @@
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "IA.QV",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IN.VP",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- IA.QV (plate), IA.QVK (VIN), NLTS.RQ (OOS plate/VIN).",
+                                                   "description":  "VehicleRegistrationQuery -- IA.QV (plate), IA.QVK (VIN), NLTS.RQ (OOS), IN.VP (name). MC cross-entity.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6795,6 +7455,21 @@
                                                                                               "GunTypeCode"
                                                                                           ],
                                                                           "targetField":  "GunTypeCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Name",
+                                                                          "rule":  {
+                                                                                       "function":  "FormatStringRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         ", "
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  30,
+                                                                          "sourceField":  [
+                                                                                              "NameLast",
+                                                                                              "NameFirst"
+                                                                                          ],
+                                                                          "targetField":  "Name"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -6813,9 +7488,24 @@
                                                                             "primaryFieldReference":  "GunSerialNumber",
                                                                             "keyReference":  "IG.QGB",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IG.QGH",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "GunQuery -- IG.QGB (serial). CA NCIC+historical firearm query.",
+                                                   "description":  "GunQuery -- IG.QGB (serial) + IG.QGH (name). MC cross-entity.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_GunQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6913,6 +7603,21 @@
                                                {
                                                    "attributes":  [
                                                                       {
+                                                                          "name":  "BirthDate",
+                                                                          "rule":  {
+                                                                                       "function":  "CommsysParseDateRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         "yyyy-MM-dd",
+                                                                                                         "MMddyyyy"
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  8,
+                                                                          "sourceField":  [
+                                                                                              "BirthDate"
+                                                                                          ],
+                                                                          "targetField":  "BirthDate"
+                                                                      },
+                                                                      {
                                                                           "name":  "BoatHullIdNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
@@ -6927,6 +7632,21 @@
                                                                                               "CaRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Name",
+                                                                          "rule":  {
+                                                                                       "function":  "FormatStringRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         ", "
+                                                                                                     ]
+                                                                                   },
+                                                                          "size":  30,
+                                                                          "sourceField":  [
+                                                                                              "NameLast",
+                                                                                              "NameFirst"
+                                                                                          ],
+                                                                          "targetField":  "Name"
                                                                       },
                                                                       {
                                                                           "name":  "OwnerAppliedNumber",
@@ -6955,6 +7675,53 @@
                                                                       }
                                                                   ],
                                                    "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "BoatHullIdNumber",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "BoatHullIdNumber",
+                                                                            "keyReference":  "NLTS.BQ.H",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "RegistrationNumber",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "RegistrationNumber",
+                                                                            "keyReference":  "NLTS.BQ.R",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "BirthDate",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "NLTS.BQ.N",
+                                                                            "state":  "In/Out"
+                                                                        },
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
@@ -6998,7 +7765,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "BoatQuery -- IA.QB (hull, OAN, reg). CA stolen boat + NCIC inquiry.",
+                                                   "description":  "BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg, name). MC cross-entity.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7009,7 +7776,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v1.1 MC",
+                        "description":  "Provider configuration for CA_CLETS v1.2 MC",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

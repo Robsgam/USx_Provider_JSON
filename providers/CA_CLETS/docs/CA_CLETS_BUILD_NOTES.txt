@@ -1,6 +1,44 @@
 CA_CLETS -- Build Notes
 ========================
 
+v1.2 (2026-05-06) -- Phase 2 MC cross-entity combos
+  CHANGED: MC variant adds person fields to Vehicle/Firearm/Boat forms for cross-entity combos
+  REASON:  Metadata defines name-based combos on non-person entities; MC enables them
+
+  MC-ONLY ADDITIONS:
+    VehicleRegistrationQuery -- +IN.VP (NameFirst+NameLast on Vehicle form)
+    GunQuery                 -- +IG.QGH (NameFirst+NameLast on Firearm form)
+    BoatQuery                -- +NLTS.BQ.N (NameFirst+NameLast+BirthDate on Boat form)
+
+  MC QIF CHANGES:
+    Vehicle form -- +ROW_VEH_5: NameFirst, NameLast (13 fieldIds total)
+    Firearm form -- +ROW_GUN_3: NameFirst, NameLast (10 fieldIds total)
+    Boat form    -- +ROW_BOA_3: NameFirst, NameLast, BirthDate (11 fieldIds total)
+
+  COMBO ORDERING:
+    Vehicle: NLTS.RQ OOS first, then IA.* in-state, then IN.VP name (least specific last)
+    Gun: IG.QGB serial first, then IG.QGH name
+    Boat: NLTS.BQ OOS first (hull, reg, name), then IA.QB in-state (hull, OAN, reg)
+
+  VALIDATOR: BASE 82P/0F/3W/6LIM | MC 86P/0F/1W/8LIM | Verify CLEAN
+
+v1.1 (2026-05-06) -- Phase 2 SupervisedRelease + OOS boat
+  CHANGED: Added CAISupervisedReleaseQuery (9th QIDM) + NLTS.BQ OOS boat combos
+  REASON:  Metadata IR.QVC transaction confirmed valid; OOS boat combos buildable without cross-entity
+
+  NEW QIDMs:
+    CAISupervisedReleaseQuery -- 4 combos: IR.QVC.O (OLN), IR.QVC.C (CII), IR.QVC.S (SSN), IR.QVC.N (Name+Sex)
+      -> 5th Person QIDM, co-fires with DL+DH+WP+MP
+
+  NEW COMBOS:
+    BoatQuery -- +NLTS.BQ.H (Hull+State OOS), +NLTS.BQ.R (Reg+State OOS)
+      -> OOS combos ordered before in-state per LIMITATION #3
+
+  RESOLVED:
+    IV.4* (DMV plate-type combos) -- COVERED by IA.QV (LIMITATION #31)
+    IV.4B (DMV vessels) -- COVERED by IA.QB (LIMITATION #33)
+    IV.4V (VIN/Engine/Hull) -- COVERED by IA.QVK + IA.QB (LIMITATION #32)
+
 v1.0 (2026-05-06) -- Phase 1 single-card standup
   CHANGED: Full Phase 1 build: 5 entities, 8 CommSys QIDMs (21 combos), RMS
   REASON:  Initial CA_CLETS provider JSON for ConnectCIC

@@ -1,7 +1,7 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
 Last updated: 2026-05-06
-Version: v1.1 (Phase 2: +SupervisedRelease, IV.4* resolved)
+Version: v1.2 (Phase 2: +SupervisedRelease, OOS boat, MC cross-entity)
 
 VEHICLE REGISTRATION (VehicleRegistrationQuery)
   Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
@@ -25,6 +25,11 @@ VEHICLE REGISTRATION (VehicleRegistrationQuery)
     set: CaRequestPurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     Status: [PENDING]
+
+  IN.VP -- Vehicle by Name (MC only, cross-entity)
+    set: CaRequestPurposeCode, NameLast, NameFirst
+    any: (none)
+    Status: [PENDING] [MC-ONLY]
 
 DRIVER LICENSE (DriverLicenseQuery)
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
@@ -101,6 +106,11 @@ FIREARM (GunQuery)
     any: GunCaliber, FirearmMake, GunTypeCode
     Status: [PENDING]
 
+  IG.QGH -- Gun by Name (MC only, cross-entity)
+    set: CaRequestPurposeCode, NameLast, NameFirst
+    any: (none)
+    Status: [PENDING] [MC-ONLY]
+
 ARTICLE (ArticleSingleQuery)
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: (not set)
 
@@ -116,6 +126,21 @@ ARTICLE (ArticleSingleQuery)
 
 BOAT (BoatQuery)
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: (not set)
+
+  NLTS.BQ.H -- OOS Boat by Hull ID (Nlets)
+    set: CaRequestPurposeCode, BoatHullIdNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  NLTS.BQ.R -- OOS Boat by Registration (Nlets)
+    set: CaRequestPurposeCode, RegistrationNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  NLTS.BQ.N -- OOS Boat by Name+DOB (MC only, cross-entity)
+    set: CaRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
+    any: (none)
+    Status: [PENDING] [MC-ONLY]
 
   IA.QB.H -- Boat by Hull ID
     set: CaRequestPurposeCode, BoatHullIdNumber
@@ -175,8 +200,9 @@ PHASE 2 RESOLVED
 - IV.4B (DMV vessels) -- COVERED by IA.QB (LIMITATION #33)
 - IV.4V (VIN/Engine/Hull) -- COVERED by IA.QVK + IA.QB (LIMITATION #32)
 
-NOT IMPLEMENTABLE (cross-entity field problem)
------------------------------------------------
-- IG.QGH (Gun by Name) -- requires person fields (Name, OLN, CII, SSN) on Firearm entity form
-- NLTS.BQ Name (Boat OOS by Name) -- requires person fields (Name, BirthDate) on Boat entity form
-- IN.VP (Vehicle by Name) -- requires person name fields on Vehicle entity form
+CROSS-ENTITY (MC-ONLY)
+-----------------------
+These combos require person fields on non-person entity forms. Implemented in MC variant only.
+- IN.VP (Vehicle by Name) -- NameFirst+NameLast on Vehicle form
+- IG.QGH (Gun by Name) -- NameFirst+NameLast on Firearm form
+- NLTS.BQ.N (Boat by Name+DOB) -- NameFirst+NameLast+BirthDate on Boat form

@@ -1,28 +1,28 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-06 11:11
+  Generated: 2026-05-06 11:50
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === CA_CLETS_MC.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=6
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=8
   Person | entity=Person | qidm= | cards=1 fields=7
-  Firearm | entity=Firearm | qidm= | cards=1 fields=2
+  Firearm | entity=Firearm | qidm= | cards=1 fields=4
   Article | entity=Article | qidm= | cards=1 fields=4
-  Boat | entity=Boat | qidm= | cards=1 fields=4
+  Boat | entity=Boat | qidm= | cards=1 fields=6
 QIDMs: 9
-  CA_CLETS_VehicleRegistrationQuery | attrs=8 combos=4 autoSelect=True
+  CA_CLETS_VehicleRegistrationQuery | attrs=9 combos=5 autoSelect=True
   CA_CLETS_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
   CA_CLETS_DriverHistoryQuery | attrs=6 combos=2 autoSelect=True
   CA_CLETS_WMPIWantedPersonQuery | attrs=7 combos=3 autoSelect=True
   CA_CLETS_WMPIMissingPersonQuery | attrs=7 combos=3 autoSelect=True
   CA_CLETS_CAISupervisedReleaseQuery | attrs=8 combos=4 autoSelect=True
-  CA_CLETS_GunQuery | attrs=5 combos=1 autoSelect=
+  CA_CLETS_GunQuery | attrs=6 combos=2 autoSelect=
   CA_CLETS_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
-  CA_CLETS_BoatQuery | attrs=5 combos=3 autoSelect=
+  CA_CLETS_BoatQuery | attrs=7 combos=6 autoSelect=
 
 
 LAYOUT DETAIL
@@ -45,6 +45,9 @@ LAYOUT DETAIL
       ROW ROW_VEH_4 [6 6]
         VehicleMakeCode (Text | maxLen=4)
         VehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_5 [6 6]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -78,6 +81,9 @@ LAYOUT DETAIL
       ROW ROW_GUN_2 [6 6]
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         GunTypeCode (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
+      ROW ROW_GUN_3 [6 6]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -102,6 +108,10 @@ LAYOUT DETAIL
       ROW ROW_BOA_2 [6 6]
         BoatHullIdNumber (Text | maxLen=20)
         OwnerAppliedNumber (Text | maxLen=20)
+      ROW ROW_BOA_3 [4 4 4]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+        BirthDate (FormDate)
 
 === RMS QIDMs ===
   RMS Person Search query
