@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-05 15:22
+  Generated: 2026-05-06 10:53
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -34,7 +34,7 @@ LAYOUT DETAIL
     CARD "CARD_OPTIONS"
       ROW ROW_OPT [6 6]
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=Y)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
     CARD "CARD_DL"
       ROW ROW_DL1 [12]
         OperatorLicenseNumber (Text | maxLen=20)
@@ -64,7 +64,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_1 [6 3 3]
         LicensePlateNumber (Text | maxLen=10)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_VEH_2 [6 3 3]
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
@@ -86,7 +86,7 @@ LAYOUT DETAIL
       ROW ROW_GUN_2 [4 4 4]
         NCICNumber (Text | maxLen=10)
         ProcessControlNumber (Text | maxLen=10)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -97,7 +97,7 @@ LAYOUT DETAIL
         ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
       ROW ROW_ART_2 [6 6]
         OwnerAppliedNumber (Text | maxLen=20)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_ART_3 [6 6]
         NCICNumber (Text | maxLen=10)
         ProcessControlNumber (Text | maxLen=10)
@@ -117,7 +117,7 @@ LAYOUT DETAIL
       ROW ROW_BOA_3 [3 3 3 3]
         NCICNumber (Text | maxLen=10)
         ProcessControlNumber (Text | maxLen=10)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NIBRS | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
         RelatedHitSearchIndicator (Text | maxLen=1)
       ROW ROW_BOA_4 [4 4 4]
         NameLast (Text | maxLen=30)
