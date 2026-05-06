@@ -1,0 +1,39 @@
+NJ_NJCJIS -- Provider Configuration
+======================================
+Last verified: 2026-05-06
+Source of truth: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 metadata)
+
+DATE FORMAT
+-----------
+BirthDate target format: MMddyyyy
+Source: NJ_NJCJIS.pdf devdoc + confirmed live tests (2026-04-29)
+CommsysParseDateRuleHandler arguments: ['yyyy-MM-dd','MMddyyyy']
+
+SUPPORTED QUERIES (devdoc "Basic Queries Supported")
+-----------------------------------------------------
+1. ArticleSingleQuery
+2. BoatQuery
+3. DriverLicenseQuery
+4. GunQuery
+5. VehicleRegistrationQuery
+6. VehicleStolenQuery
+
+NOT IN SCOPE:
+- DriverHistoryQuery -- NOT in NJ metadata (NJ does not support DH)
+- WMPI queries -- in devdoc but excluded per source authority decision
+
+NJ-SPECIFIC PATTERNS
+---------------------
+State: initialValue='NJ' (single NCIC pattern, confirmed working)
+RandomRequest: mandatory on VehicleRegistrationQuery (Y=random/stolen, N=full data)
+VehicleStolenQuery: separate QIDM (co-fires with VehicleReg on plate/VIN)
+ImageIndicator: on all 6 transactions (v2 metadata addition)
+PlateType: default PC (passenger car)
+PlateYear: default current year
+Name format: Last, First (comma-space separator)
+
+LIVE TEST STATUS
+----------------
+BASE v2.0: 17/17 PASS (2026-04-29)
+MC v2.0-mc: 57/57 PASS (2026-04-29)
+All combos [CONFIRMED]

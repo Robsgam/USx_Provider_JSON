@@ -1,4 +1,4 @@
-﻿NJ_NJCJIS BUILD NOTES -- v2.x Line
+NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
@@ -30,119 +30,31 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v2.0  2026-05-06  [describe change here]
+
+v2.3  2026-05-06  Monorepo rebuild with latest tools
   CHANGED
-    -
+    - Rebuilt with current validate.ps1/build_report.ps1 toolchain
+    - Reports regenerated at docs/base/ (2026-05-06 10:53)
   REASON
-    -
-v2.3  2026-05-06  [describe change here]
+    - Standardization after monorepo migration
+  RESULT
+    - 66 PASS / 0 FAIL / 7 WARN / 1 LIMITATION
+
+v2.2  2026-05-05  camelCase fieldId rename (BASE only)
   CHANGED
-    -
+    - All BASE fieldIds converted to camelCase for CAD auto-populate
+    - 7 WARNs introduced (validator checks PascalCase names)
+    - MC retains PascalCase and has 0 WARN
   REASON
-    -
-v2.2  2026-05-05  [describe change here]
+    - CAD field name alignment (project_cad_field_alignment memory)
+
+v2.1  2026-05-05  Patch 7 + Patch 8 + AUTH keyRef
   CHANGED
-    -
+    - RMS QIDMs: autoSelect=true (Patch 7)
+    - LicensePlateNumberIn -> licensePlateNumber (Patch 8, BASE)
+    - AUTH combination: keyReference='AUTH' added
   REASON
-    -
-v2.0  2026-05-05  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.2  2026-05-05  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.2  2026-05-05  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.1  2026-05-05  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.1  2026-05-05  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0  2026-05-04  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0  2026-05-01  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0  2026-05-01  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-plate-test  2026-04-30  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v2.0-mc  2026-04-28  MC variant of v2.0 BASE
-  CHANGED
-    - Multi-card layout: Vehicle (OPTIONS+PLATE+VIN), Person (OPTIONS+LICENSE+NAME)
-    - Firearm, Article, Boat single-card (same as BASE)
-    - QIDMs identical to BASE (6 QIDMs, 11 combos)
-    - RMS identical to BASE (HIDLE + Patch 1+3+6)
-  REASON
-    - Standard MC variant per build methodology
+    - Cross-provider standardization from monorepo audit
 
 v2.0  2026-04-28  Full rebuild from new 2026-04-28 XML metadata
   CHANGED
@@ -155,26 +67,18 @@ v2.0  2026-04-28  Full rebuild from new 2026-04-28 XML metadata
     - Patch 1+3+6 applied to RMS
   REASON
     - New XML metadata (2026-04-28) adds VehicleStolenQuery, RandomRequest, ImageIndicator
-================================================================================
+  RESULT
+    - 66 PASS / 0 FAIL / 7 WARN / 2 LIMITATION (BASE)
+    - 66 PASS / 0 FAIL / 0 WARN / 2 LIMITATION (MC)
+  LIVE TEST
+    - BASE: 17/17 PASS (2026-04-29)
+    - MC:   57/57 PASS (2026-04-29)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+v2.0-mc  2026-04-28  MC variant of v2.0 BASE
+  CHANGED
+    - Multi-card layout: Vehicle (OPTIONS+PLATE+VIN), Person (OPTIONS+LICENSE+NAME)
+    - Firearm, Article, Boat single-card (same as BASE)
+    - QIDMs identical to BASE (6 QIDMs, 11 combos)
+    - RMS identical to BASE (HIDLE + Patch 1+3+6)
+  REASON
+    - Standard MC variant per build methodology
