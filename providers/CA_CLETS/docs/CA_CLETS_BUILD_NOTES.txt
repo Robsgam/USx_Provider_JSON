@@ -1,6 +1,38 @@
 CA_CLETS -- Build Notes
 ========================
 
+v1.0 (2026-05-06) -- Phase 1 single-card standup
+  CHANGED: Full Phase 1 build: 5 entities, 8 CommSys QIDMs (21 combos), RMS
+  REASON:  Initial CA_CLETS provider JSON for ConnectCIC
+
+  ENTITIES: Vehicle, Person, Firearm, Article, Boat
+  QIDMs (CommSys):
+    VehicleRegistrationQuery  -- 4 combos: NLTS.RQ.P, NLTS.RQ.V, IA.QVK, IA.QV
+    DriverLicenseQuery        -- 3 combos: NLTS.DQ, ID.L1, IN.L1
+    DriverHistoryQuery        -- 2 combos: NLTS.KQ.N, NLTS.KQ.O
+    WMPIWantedPersonQuery     -- 3 combos: IW.QW.N, IW.QW.O, IW.QW.NC
+    WMPIMissingPersonQuery    -- 3 combos: UM.QM.N, UM.QM.O, UM.QM.NC
+    GunQuery                  -- 1 combo:  IG.QGB
+    ArticleSingleQuery        -- 2 combos: IP.QA.S, IP.QA.O
+    BoatQuery                 -- 3 combos: IA.QB.H, IA.QB.O, IA.QB.R
+
+  DESIGN DECISIONS:
+    - CaRequestPurposeCode hidden with initialValue='C' on all 5 forms
+    - No State initialValue (LIMITATION #30: in-state vs OOS routing by State presence)
+    - No PlateType/PlateYear defaults (prevents OOS combo firing on in-state)
+    - 4 Person QIDMs co-fire (CA super-query pattern)
+    - Race field: attributeTypeId='RACE' + codeTypeProvider='NIBRS' (same as sex pattern)
+    - ArticleTypeCode: codeTypeSource='CA_CLETS' (NCIC gives empty dropdown)
+    - Invented keyRefs per LIMITATION #21 for duplicate metadata keyRefs
+
+  DEFERRED TO PHASE 2:
+    - Gun name query (IG.QGH) -- needs gun-specific fieldIds
+    - Boat OOS (NLTS.BQ) -- needs Name/BirthDate fields
+    - Vehicle name query (IN.VP)
+    - Supervised Release (IR.QVC)
+    - DMV plate-type combos (IV.4*)
+    - DMV vessels (IV.4B)
+
 v0.0 (2026-05-06)
   CHANGED: Project scaffolding created
-  REASON:  Initial provider setup; awaiting metadata and devdoc
+  REASON:  Initial provider setup

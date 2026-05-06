@@ -1,28 +1,49 @@
 CA_CLETS -- Build Status
 =========================
 Last updated: 2026-05-06
-Current version: v0.0 (scaffolding only)
+Current version: v1.0 (Phase 1 - single card standup)
 Provider: CA_CLETS
 
 ARCHITECTURE
 --------------------
-Entities: TBD (pending metadata review)
-QIFs:     TBD
-QIDMs:    TBD
-Combos:   TBD
+Entities: 5 (Vehicle, Person, Firearm, Article, Boat)
+QIFs:     5 (1 per entity, single card each)
+QIDMs:    8 CommSys + 2 RMS = 10 total
+Combos:   21 CommSys (4 VehReg + 3 DL + 2 DH + 3 WP + 3 MP + 1 Gun + 2 Article + 3 Boat)
+
+CA-SPECIFIC
+-----------
+- CaRequestPurposeCode: hidden InpH initialValue='C' on every form, in set[] on every combo
+- No ImageIndicator (not in CA metadata)
+- No VehicleStolenQuery (combined with VehicleRegistrationQuery)
+- No RandomRequest (not in CA metadata)
+- No State initialValue on any form (LIMITATION #30: in-state IA.* vs OOS NLTS.* routing)
+- No PlateType/PlateYear defaults (prevents NLTS.RQ from firing on in-state queries)
+- 4 Person QIDMs co-fire by design (DL + DH + WP + MP)
+- Gun name query (IG.QGH) deferred to Phase 2
+- Boat OOS (NLTS.BQ) deferred to Phase 2
 
 VALIDATOR RESULTS
 -----------------
 
-  | Variant | Version | Validator | Live Test | Date       |
-  |---------|---------|-----------|-----------|------------|
-  | BASE    | --      | --        | --        | --         |
-  | MC      | --      | --        | --        | --         |
+  | Variant | Version | Validator            | Verify | Date       |
+  |---------|---------|----------------------|--------|------------|
+  | BASE    | v1.0    | 73P/0F/3W/4LIM       | CLEAN  | 2026-05-06 |
+  | MC      | v1.0    | 73P/0F/1W/4LIM       | CLEAN  | 2026-05-06 |
+
+  BASE WARN (3): PlateType missing default, PlateYear missing default, PlateYear missing initialValue
+    -> All intentional per LIMITATION #30 (in-state vs OOS routing)
+  MC WARN (1): PlateYear missing initialValue
+    -> Intentional per LIMITATION #30
+  LIMITATION (4): DL combo ordering, 4 Person QIDMs co-fire, DL+DH no DH-suffix, no queriesToDeselect
+    -> All by design for CA super-query pattern
+
+LIVE TESTS
+----------
+Import PENDING
 
 NEXT STEPS
 ----------
-1. Add metadata XML to source/
-2. Add devdoc PDF to source/
-3. Copy HIDLE.json to source/
-4. Analyze metadata for entities, queries, field mappings
-5. Create build script (Phase 1 - single card standup)
+1. Import BASE to test instance
+2. Phase 1 live test (8-phase protocol per TESTING_REQUIREMENTS.txt)
+3. Phase 2: multi-card layouts, gun name query, boat OOS

@@ -1,6 +1,152 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
 Last updated: 2026-05-06
-Version: v0.0 (scaffolding only)
+Version: v1.0 (Phase 1)
 
-Queries will be populated after metadata analysis.
+VEHICLE REGISTRATION (VehicleRegistrationQuery)
+  Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
+
+  NLTS.RQ.P -- OOS Plate query (Nlets)
+    set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+  NLTS.RQ.V -- OOS VIN query (Nlets)
+    set: CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+  IA.QVK -- In-state VIN query
+    set: CaRequestPurposeCode, VehicleIdentificationNumber
+    any: VehicleMakeCode, RegistrationState
+    Status: [PENDING]
+
+  IA.QV -- In-state Plate query
+    set: CaRequestPurposeCode, LicensePlateNumber
+    any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+DRIVER LICENSE (DriverLicenseQuery)
+  Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
+
+  NLTS.DQ -- OOS DL by OLN (Nlets)
+    set: CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  ID.L1 -- In-state DL by OLN
+    set: CaRequestPurposeCode, OperatorLicenseNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  IN.L1 -- In-state DL by Name
+    set: CaRequestPurposeCode, NameLast, NameFirst
+    any: BirthDate, RegistrationState
+    Status: [PENDING]
+
+DRIVER HISTORY (DriverHistoryQuery)
+  Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true
+
+  NLTS.KQ.N -- DH by Name+DOB+Sex (Nlets)
+    set: CaRequestPurposeCode, BirthDate, NameLast, NameFirst, SexCode
+    any: RegistrationState
+    Status: [PENDING]
+
+  NLTS.KQ.O -- DH by OLN (Nlets)
+    set: CaRequestPurposeCode, OperatorLicenseNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+WANTED PERSON (WMPIWantedPersonQuery)
+  Entity: Person | QIDM: CA_CLETS_WMPIWantedPersonQuery | autoSelect: true
+
+  IW.QW.N -- Wanted by Name+Sex
+    set: CaRequestPurposeCode, NameLast, NameFirst, SexCode
+    any: BirthDate, RaceCode
+    Status: [PENDING]
+
+  IW.QW.O -- Wanted by OLN
+    set: CaRequestPurposeCode, OperatorLicenseNumber
+    any: (none)
+    Status: [PENDING]
+
+  IW.QW.NC -- Wanted by NCIC Number
+    set: CaRequestPurposeCode, NCICNumber
+    any: (none)
+    Status: [PENDING]
+
+MISSING PERSON (WMPIMissingPersonQuery)
+  Entity: Person | QIDM: CA_CLETS_WMPIMissingPersonQuery | autoSelect: true
+
+  UM.QM.N -- Missing by Name+Sex
+    set: CaRequestPurposeCode, NameLast, NameFirst, SexCode
+    any: BirthDate, RaceCode
+    Status: [PENDING]
+
+  UM.QM.O -- Missing by OLN
+    set: CaRequestPurposeCode, OperatorLicenseNumber
+    any: (none)
+    Status: [PENDING]
+
+  UM.QM.NC -- Missing by NCIC Number
+    set: CaRequestPurposeCode, NCICNumber
+    any: (none)
+    Status: [PENDING]
+
+FIREARM (GunQuery)
+  Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: (not set)
+
+  IG.QGB -- Gun by Serial
+    set: CaRequestPurposeCode, SerialNumber
+    any: GunCaliber, FirearmMake, GunTypeCode
+    Status: [PENDING]
+
+ARTICLE (ArticleSingleQuery)
+  Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: (not set)
+
+  IP.QA.S -- Article by Serial
+    set: CaRequestPurposeCode, SerialNumber
+    any: ArticleBrand, ArticleTypeCode
+    Status: [PENDING]
+
+  IP.QA.O -- Article by OAN
+    set: CaRequestPurposeCode, OwnerAppliedNumber
+    any: ArticleBrand, ArticleTypeCode
+    Status: [PENDING]
+
+BOAT (BoatQuery)
+  Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: (not set)
+
+  IA.QB.H -- Boat by Hull ID
+    set: CaRequestPurposeCode, BoatHullIdNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  IA.QB.O -- Boat by OAN
+    set: CaRequestPurposeCode, OwnerAppliedNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  IA.QB.R -- Boat by Registration
+    set: CaRequestPurposeCode, RegistrationNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+RMS (Person + Vehicle)
+  autoSelect: true (both)
+  Status: [PENDING] -- co-fires with CommSys queries
+
+LIMITATIONS
+-----------
+#21 -- Invented keyRefs for duplicate metadata keyRefs (NLTS.RQ.P/V, NLTS.KQ.N/O, IP.QA.S/O, IA.QB.H/O/R, IW.QW.N/O/NC, UM.QM.N/O/NC)
+#26 -- Shared field pool: 4 Person QIDMs share all fields (intentional CA super-query)
+#30 -- No State initialValue: in-state (IA.*) vs OOS (NLTS.*) routing by State field presence
+
+PHASE 2 DEFERRED
+-----------------
+- IG.QGH (Gun by Name) -- needs gun-specific fieldIds
+- NLTS.BQ (Boat OOS) -- needs Name/BirthDate fields
+- IN.VP (Vehicle by Name)
+- IR.QVC (Supervised Release)
+- IV.4* (DMV plate-type combos)
+- IV.4B (DMV vessels)

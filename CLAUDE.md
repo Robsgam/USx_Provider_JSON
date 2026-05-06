@@ -25,7 +25,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | FL_FCIC | providers/FL_FCIC/ | v3.0 | 100P/0F/1W/4LIM 21+60 PASS import PENDING | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.0 | 73P/0F/14W/3LIM import PENDING | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
 | LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v2.0 | 48P/0F/32W/4LIM import PENDING | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
-| CA_CLETS | providers/CA_CLETS/ | v0.0 | Scaffolded — awaiting metadata + devdoc | TBD |
+| CA_CLETS | providers/CA_CLETS/ | v1.0 | 73P/0F/3W/4LIM (BASE) 1W (MC) import PENDING | CaRequestPurposeCode, LIMITATION #30, 4-QIDM co-fire, no ImageIndicator |
 
 ## Legacy Repos (READ-ONLY)
 
