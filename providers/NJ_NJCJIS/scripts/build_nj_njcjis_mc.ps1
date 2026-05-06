@@ -195,19 +195,21 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'NJ_NJCJIS_VehicleRegistrationQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'NJ_NJCJIS'
-    providerType    = 'Commsys'
-    query           = 'VehicleRegistrationQuery'
-    queryLabel      = 'Vehicle Registration'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
+    queriesToDeselect  = @('VehicleStolenQuery')
+    provider           = 'NJ_NJCJIS'
+    providerType       = 'Commsys'
+    query              = 'VehicleRegistrationQuery'
+    queryLabel         = 'Vehicle Registration'
+    targetEntity       = 'Vehicle'
 }
 
 # =====================================================================
-# 1e. VehicleStolenQuery (identical to BASE)
+# 1e. VehicleStolenQuery (mutual exclusion with VehicleReg)
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
@@ -238,15 +240,16 @@ $vehStolenQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'NJ_NJCJIS_VehicleStolenQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'NJ_NJCJIS'
-    providerType    = 'Commsys'
-    query           = 'VehicleStolenQuery'
-    queryLabel      = 'Vehicle Stolen'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'NJ_NJCJIS_VehicleStolenQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    queriesToDeselect  = @('VehicleRegistrationQuery')
+    provider           = 'NJ_NJCJIS'
+    providerType       = 'Commsys'
+    query              = 'VehicleStolenQuery'
+    queryLabel         = 'Vehicle Stolen'
+    targetEntity       = 'Vehicle'
 }
 
 # =====================================================================

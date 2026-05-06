@@ -33,9 +33,9 @@
 # DUAL VEHICLE QIDM:
 #   VehicleRegistrationQuery and VehicleStolenQuery both target Vehicle entity.
 #   Different query values = separate QIDMs, no LIMITATION #2 conflict.
-#   Both co-fire when shared fields (Plate, VIN) are populated.
-#   RandomRequest in set[] gates VehicleReg: empty RandomRequest = only VehicleStolen fires.
-#   Default RandomRequest='N' ensures VehicleReg fires on standard plate/VIN queries.
+#   Mutual exclusion via queriesToDeselect: officer checks one, the other unchecks.
+#   VehicleReg has autoSelect=true (default checked). VehicleStolen is manual-only.
+#   No auto-evaluation deadlock because only one QIDM has autoSelect (AP #14 safe).
 #
 # STATE HANDLING (NCIC pattern, confirmed NJ v1.0):
 #   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=NJ)
@@ -242,15 +242,17 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'NJ_NJCJIS_VehicleRegistrationQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'NJ_NJCJIS'
-    providerType    = 'Commsys'
-    query           = 'VehicleRegistrationQuery'
-    queryLabel      = 'Vehicle Registration'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
+    queriesToDeselect  = @('VehicleStolenQuery')
+    provider           = 'NJ_NJCJIS'
+    providerType       = 'Commsys'
+    query              = 'VehicleRegistrationQuery'
+    queryLabel         = 'Vehicle Registration'
+    targetEntity       = 'Vehicle'
 }
 
 # =====================================================================
@@ -258,7 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
 # XML (2026-04-28): VehicleStolenQuery v1
 #   3 combos all keyRef QV in XML -> invented QVN/QVP/QVV (LIMITATION #21)
 #   Targets Vehicle entity (same as VehicleReg) -- different query = separate QIDM, no conflict.
-#   Co-fires with VehicleReg when shared fields (Plate, VIN) populated.
+#   Mutual exclusion via queriesToDeselect -- officer manually checks to run stolen query.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
@@ -289,15 +291,16 @@ $vehStolenQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'NJ_NJCJIS_VehicleStolenQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'NJ_NJCJIS'
-    providerType    = 'Commsys'
-    query           = 'VehicleStolenQuery'
-    queryLabel      = 'Vehicle Stolen'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'NJ_NJCJIS_VehicleStolenQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    queriesToDeselect  = @('VehicleRegistrationQuery')
+    provider           = 'NJ_NJCJIS'
+    providerType       = 'Commsys'
+    query              = 'VehicleStolenQuery'
+    queryLabel         = 'Vehicle Stolen'
+    targetEntity       = 'Vehicle'
 }
 
 # =====================================================================
