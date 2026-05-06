@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.0",
+    [string]$Version = "2.3",
     [string]$Phase   = "base"
 )
 
