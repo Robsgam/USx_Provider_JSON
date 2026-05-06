@@ -5,7 +5,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.4'
+$Version  = '1.5'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_CLETS_MC.json"
@@ -479,9 +479,9 @@ $vehLayout = MakeLayouts @(
         title = 'VEHICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
@@ -516,9 +516,9 @@ $perLayout = MakeLayouts @(
         title = 'PERSON SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
@@ -546,9 +546,9 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM SEARCH'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_1' @{ initialValue = 'C' } }
                 @{ id = 'SerialNumber_Input'; node = Inp 'SerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'FirearmMake_Input';  node = Sel 'FirearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
                 @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -576,9 +576,9 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
                 @{ id = 'SerialNumber_Input';       node = Inp 'SerialNumber'       'Serial Number'        '20' 'ROW_ART_1' }
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
@@ -602,9 +602,9 @@ $boaLayout = MakeLayouts @(
         title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
                 @{ id = 'RegistrationNumber_Input';  node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
                 @{ id = 'RegistrationState_Input';   node = Sel 'RegistrationState'  'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_2' }

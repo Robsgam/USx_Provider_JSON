@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-06 12:46
+  Generated: 2026-05-06 13:07
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -31,9 +31,9 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [4 4 4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
         licensePlateNumber (Text | maxLen=10)
         registrationState (Dropdown | attributeTypeId=STATE)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
       ROW ROW_VEH_2 [6 6]
         licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
         licensePlateYear (Text | maxLen=4)
@@ -48,9 +48,9 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_PER"
       ROW ROW_PER_1 [4 4 4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
         operatorLicenseNumber (Text | maxLen=20)
         registrationState (Dropdown | attributeTypeId=STATE)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
       ROW ROW_PER_2 [6 6]
         nameFirst (Text | maxLen=30)
         nameLast (Text | maxLen=30)
@@ -63,9 +63,9 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_GUN"
       ROW ROW_GUN_1 [4 4 4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
         serialNumber (Text | maxLen=20)
         firearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
       ROW ROW_GUN_2 [6 6]
         gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         gunTypeCode (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
@@ -75,9 +75,9 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_ART"
       ROW ROW_ART_1 [4 4 4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
         serialNumber (Text | maxLen=20)
         ownerAppliedNumber (Text | maxLen=20)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
       ROW ROW_ART_2 [6 6]
         articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
         articleBrand (Text | maxLen=6)
@@ -87,9 +87,9 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_BOA"
       ROW ROW_BOA_1 [4 4 4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
         registrationNumber (Text | maxLen=8)
         registrationState (Dropdown | attributeTypeId=STATE)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
       ROW ROW_BOA_2 [6 6]
         boatHullIdNumber (Text | maxLen=20)
         ownerAppliedNumber (Text | maxLen=20)
