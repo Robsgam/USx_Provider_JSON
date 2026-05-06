@@ -34,6 +34,7 @@ if (-not $ProviderDir) {
         'FL_FCIC'             = "$repoRoot\providers\FL_FCIC"
         'TX_TLETS'            = "$repoRoot\providers\TX_TLETS"
         'LA_LETTS_OFML'       = "$repoRoot\providers\LA_LETTS_OFML"
+        'CA_CLETS'            = "$repoRoot\providers\CA_CLETS"
     }
     if ($knownPaths.ContainsKey($Provider)) {
         $ProviderDir = $knownPaths[$Provider]

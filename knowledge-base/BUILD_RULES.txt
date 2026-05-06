@@ -278,18 +278,21 @@ See also:
         sexAttrId:"69509891711" (string) CORRECT.
       DO NOT add AttributeArrayWrapperRuleHandler.
       DO NOT remove sex from RMS QIDM.
-      CONFIRMED: NJ_NJCJIS (all versions), AZ_AZDPS v1.0.
+      CONFIRMED: NJ_NJCJIS, AZ_AZDPS, FL_FCIC (single-QIF only).
+      NOTE: Prior "FL reverse-lookup broken" was wrong (2026-04-20). Actual
+        failure was duplicate targetField from entity-split design. FL works
+        with single Person QIF. See PROVIDER_CONSTRAINTS.txt FL-9.
 
-    REMOVE (NIBRS reverse-lookup not confirmed or known broken):
-      Form uses codeTypeCategory=NIBRS_SEX (stores string "M"/"F"/"U").
-      useAttributeId=true + string -> wraps in array ->
+    REMOVE (only when entity-split creates duplicate targetField):
+      When duplicate Person QIFs cause two QIDM attrs with same targetField,
+      reverse-lookup breaks. Form must use codeTypeCategory=NIBRS_SEX instead.
+      useAttributeId=true + string "M" -> wraps in array ->
         sexAttrId:[69509891711] -> RMS 400 error.
       Fix: remove BOTH sex attributes from RMS QIDM attributes[] AND remove
         'SexCode' AND 'SexCodeOOS' from ALL combination any[]/set[] arrays.
       Pattern: filter by targetField='sexAttrId' (catches both 'sex' and
         'sexOOS' attributes).
-      REQUIRED: NY_NYSPIN_EJUSTICE v1.1 (2026-04-20).
-      CONFIRMED BROKEN (reverse-lookup fails): FL_FCIC instance (2026-04-20).
+      REQUIRED: NY_NYSPIN_EJUSTICE (uses entity-split design).
       UNCONFIRMED: any new instance -- test before assuming keep or remove.
       See PLATFORM_CONSTRAINTS.txt AP #18 for both-attr removal detail.
 

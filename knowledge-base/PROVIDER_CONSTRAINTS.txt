@@ -1,8 +1,11 @@
-CONNECTCIC PROVIDER-SPECIFIC LIMITATIONS
+CONNECTCIC PROVIDER-SPECIFIC CONSTRAINTS
 ==========================================
-Per-provider known exceptions, constraints, and deviations from the standard build.
+Per-provider known exceptions, deviations, and patterns.
 Build scripts reference this file for provider-specific customization.
-Last updated: 2026-05-04
+
+For CURRENT STATUS (versions, validator counts, import status):
+  -> See CLAUDE.md provider table (single source of truth)
+  -> See each provider's docs/<PROVIDER>_STATUS.txt
 
 See also:
   PLATFORM_CONSTRAINTS.txt    -- Immutable platform behaviors
@@ -12,14 +15,12 @@ See also:
 ================================================================================
 NJ_NJCJIS -- New Jersey
 ================================================================================
-Status: v2.0 BASE+MC | 64P/0F/3W/2LIM | Live tested 2026-04-29
 
 NJ-1: VehicleStolenQuery registered separately
   NJ CommSys has VehicleStolenQuery as a distinct transaction. Vehicle QIDM covers
   VehicleRegistrationQuery; a second QIDM covers VehicleStolenQuery. Both target
   the same Vehicle entity but different query values, so LIMITATION #2 does not apply.
   RandomRequest (Y/N): RAND combo = stolen-only (Y), FULL combo = all-data (N).
-  See reference_nj_randomrequest_analysis.md for combo details.
 
 NJ-2: State initialValue='NJ' is safe
   NJ has no separate in-state vs OOS keyRefs. State is always in set[] for primary
@@ -29,10 +30,9 @@ NJ-2: State initialValue='NJ' is safe
 NJ-3: BirthDate format MMddyyyy
   CommSys expects: CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','MMddyyyy']
 
-NJ-4: AUTH keyReference and RMS autoSelect lost in rebuild
-  Manual fixes (AUTH keyReference, RMS Person+Vehicle autoSelect=true) applied
-  2026-04-30 were overwritten by build script. Build script must include these.
-  Cross-provider consistency: NY/AZ/FL have autoSelect=true on RMS QIDMs.
+NJ-4: AUTH keyReference and RMS autoSelect in build script
+  AUTH keyReference and RMS Person+Vehicle autoSelect=true must be in build script
+  (not applied manually post-build). Confirmed fixed in v2.3 build script.
 
 NJ-5: Confirmed attribute IDs (from live test)
   NJ state: 69509884952, PA state: 69509887513, NY state: 69509888105
@@ -41,7 +41,6 @@ NJ-5: Confirmed attribute IDs (from live test)
 ================================================================================
 AZ_AZDPS -- Arizona
 ================================================================================
-Status: v2.0 BASE+MC | 69P/0F/0W/4LIM | Import PENDING
 
 AZ-1: dexStateUserId auto-populates BadgeNumber
   CommsysGetDexStateUserIdRuleHandler with arguments=['true'] on AUTH UserName
@@ -66,12 +65,11 @@ AZ-5: LicensePlateYear has no RMS elastic mapping
 ================================================================================
 FL_FCIC -- Florida
 ================================================================================
-Status: v3.0 BASE+MC | 100P/0F/1W/4LIM | Import PENDING
 
 FL-1: Entity-split BLOCKED (LIMITATION #28)
   FL originally used Person-FL + Person-OOS split. codeTypeProvider reverse-lookup
-  breaks with multiple Person QIFs. Redesigned to single 6-card Person QIF (v2.2+).
-  Do NOT attempt entity-split on FL.
+  breaks with multiple Person QIFs (duplicate targetField). Redesigned to single
+  6-card Person QIF (v2.2+). Do NOT attempt entity-split on FL.
 
 FL-2: FL-specific transaction keys
   FL uses FCIC keys: FRQ (vehicle reg), FDQ (driver license), QW (firearm),
@@ -100,22 +98,24 @@ FL-7: DL+DH shared form (6-card design)
 
 FL-8: BoatQuery QB+Hull/QB+Reg routing via RelatedHitSearchIndicator
   QB+Hull and QB+Reg were unreachable because FBQ+Hull/FBQ+Reg shared the
-  same set[] field and fired first. Fixed 2026-05-05: RelatedHitSearchIndicator
+  same set[] field and fired first. Fixed: RelatedHitSearchIndicator
   (metadata field, Y/N, exclusive to QB combos) promoted from any[] to set[]
   on QB+Hull and QB+Reg. Officer types Y in "Stolen Search" to route to NCIC
   stolen; blank = FL registration (FBQ). QB combos ordered before FBQ.
   Fallback tag: FL_FCIC_PRE_QB_ROUTING (revert if server rejects field).
-  All 12 boat combos now reachable. Live tested 13/13 PASS (2026-05-05).
+
+FL-9: Sex reverse-lookup works (single-QIF only)
+  codeTypeProvider='NIBRS' reverse-lookup works on FL instance when using single
+  Person QIF. Prior "FL doesn't support reverse-lookup" was wrong — actual failure
+  was duplicate targetField from entity-split design (FL-1). Confirmed 2026-04-20.
 
 ================================================================================
 NY_NYSPIN_EJUSTICE -- New York
 ================================================================================
-Status: v1.1 BASE+MC | 71P/0F/0W/5LIM | Import PENDING
 
 NY-1: WINQ/MINQ transactions have no XML in metadata
   Wanted Inquiry (WINQ) and Missing Person Inquiry (MINQ) appear in metadata
   but have no Transaction XML defined. Cannot build QIDMs until metadata updated.
-  Flagged for CommSys gap summary.
 
 NY-2: State initialValue must NOT be set (LIMITATION #30)
   NY has separate in-state (RCAR) vs OOS (RVIN) combos. Setting initialValue='NY'
@@ -123,10 +123,8 @@ NY-2: State initialValue must NOT be set (LIMITATION #30)
   documented query types. Card title hints guide officers.
 
 NY-3: DL Name path uses separate transaction
-  NyNyspinDriverLicenseNameQuery (DGRP) is a distinct transaction in metadata.
-  Allows DL Name path QIDM without hitting LIMITATION #2.
-  NOTE: DGRP was later removed; DLICN restored as single DL QIDM with checkbox.
-  See project_ny_nyspin_dlicn_removal.md for revert instructions.
+  NyNyspinDriverLicenseNameQuery (DGRP) was a distinct transaction in metadata.
+  DGRP was later removed; DLICN restored as single DL QIDM with checkbox.
 
 NY-4: DriverHistoryQuery Name path blocked
   Both DH combos use keyRef=DALL. No separate transaction exists.
@@ -137,29 +135,28 @@ NY-5: BirthDate format MMddyyyy
   Same as NJ. Arguments=['yyyy-MM-dd','MMddyyyy']
 
 NY-6: RaceCode NIBRS_RACE/NIBRS confirmed
-  codeTypeSource=NCIC gave empty dropdown. Fixed to NIBRS source (v1.12).
+  codeTypeSource=NCIC gave empty dropdown. Fixed to NIBRS source.
 
 NY-7: BoatQuery and DriverHistoryQuery are ACTIVE
   Both transactions exist in metadata with full XML definitions.
   BoatQuery: 4 combos (RVEH/RCAR in-state, BVEH/BVIN OOS). Confirmed live.
-  DriverHistoryQuery: 2 combos (DALL OLN, DALH Name). Co-fires with DL. Confirmed live.
+  DriverHistoryQuery: 2 combos (DALL OLN, DALH Name). Co-fires with DL.
 
 ================================================================================
 HI_HCJDC_OFML -- Hawaii
 ================================================================================
-Status: v1.0 BASE+MC | 62P/0F/5W/4LIM | Import PENDING
 
 HI-1: VehicleTypeCode uses HI_NIBRS source
   codeTypeCategory='VEHICLE_TYPE', codeTypeSource='HI_NIBRS'.
   NCIC source = empty dropdown.
 
-HI-2: Vehicle ImageIndicator not in combo any[]
-  ImageIndicator exists on Vehicle QIF but is missing from Vehicle QIDM
-  combination any[] arrays. Will not serialize to XML. Needs fix in build script.
+HI-2: Vehicle ImageIndicator in combo any[]
+  ImageIndicator must be in Vehicle QIDM combination any[] arrays for
+  serialization. Fixed in v1.1 build script.
 
 HI-3: Empty any[] pattern
   HI combos use empty any[] arrays (all optional fields omitted from combo).
-  This is correct -- fields still serialize via LIMITATION #1 (all populated
+  Correct -- fields still serialize via LIMITATION #1 (all populated
   attrs sent regardless of any[]).
 
 HI-4: 6-transaction build from XML metadata
@@ -173,7 +170,6 @@ HI-5: NCIC state and SexCode unconfirmed
 ================================================================================
 TX_TLETS -- Texas
 ================================================================================
-Status: v1.0 BASE | 67P/16F/44W/4LIM | NEEDS REBUILD
 
 TX-1: TX-specific query types
   TX uses non-standard combo types: DPSI (sticker), REG (financial responsibility),
@@ -182,47 +178,80 @@ TX-1: TX-specific query types
 TX-2: VehicleInsuranceRegistrationQuery (not VehicleRegistrationQuery)
   TX uses a different transaction name for vehicle queries.
 
-TX-3: Pre-KB build -- needs complete rebuild
-  Current JSON was built before KB rules were established. 16 FAILs include:
-  - RMS QIDMs in provider bundle (should be in RMS bundle)
-  - combinations array on QIFs (belongs on QIDMs only)
-  - No codeTypeProvider on State/Sex (AP #1/#2)
-  - RMS bundle incomplete (missing QRDM, no QIDM configs)
-  - RMS bundle provider name 'TX_TLETS_RMS' instead of 'RMS'
-  Do NOT import current JSON. Rebuild from scratch.
+TX-3: EmailAddress QIDM-only field (pending handler)
+  Engineering developing handler to auto-populate EmailAddress from user profile
+  (similar to CommsysGetDexStateUserIdRuleHandler). No form field until handler
+  deployed. Verify FAILs for EmailAddress are expected and acknowledged.
 
-TX-4: All instance-specific behaviors unconfirmed
+TX-4: Attention handler on DriverHistoryQuery
+  Uses CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute.
+  No visible Attention FormInput. Same pattern as LA/CA_eSUN.
+
+TX-5: BirthDate format MMddyyyy
+  Same as NJ. Arguments=['yyyy-MM-dd','MMddyyyy']
+
+TX-6: All instance-specific behaviors unconfirmed
   NCIC state, SexCode reverse-lookup, dexStateUserId -- all untested.
   Build with standard patterns, verify on first import.
 
 ================================================================================
 LA_LETTS_OFML -- Louisiana
 ================================================================================
-Status: v1.0 BASE | 39P/7F/53W/3LIM | NEEDS REBUILD
 
 LA-1: Attention handler pattern (CommsysGetLastNameFirstNameInitialRuleHandler)
   LA uses the CA_eSUN Attention pattern: no visible Attention FormInput,
   handler auto-populates from officer session. Attention in any[] on all combos.
-  This is the CORRECT pattern for Attention (see PLATFORM_CONSTRAINTS.txt #29).
 
 LA-2: RaceCode in DL Name set[] (unusual)
   LA requires RaceCode in set[] for Name-based DL query. Most providers have
   RaceCode in any[] or omit it. Check metadata before removing.
 
-LA-3: GunTypeCode sourceField missing from Firearm QIF
-  QIDM references FirearmTypeCode but the Firearm QIF has no matching field.
-  Must add FirearmTypeCode FormSelect to QIF or remove from QIDM.
+LA-3: DP/DQ routing toggle for DriverLicenseQuery
+  LA has both DP (state DMV) and DQ (NLETS) DL combos. State presence in set[]
+  routes between them. Similar to CA OOS pattern.
 
-LA-4: Pre-KB build -- needs rebuild
-  7 FAILs include: ENTITIES bundle not first, no entity order array,
-  missing source field references. AP #27 fix already applied.
-  Build script is a stub -- needs completion.
+LA-4: BirthDate format MMddyyyy
+  Same as NJ. Arguments=['yyyy-MM-dd','MMddyyyy']
 
-LA-5: No MC variant
-  Only BASE exists. MC needs to be built after BASE is clean.
-
-LA-6: All instance-specific behaviors unconfirmed
+LA-5: All instance-specific behaviors unconfirmed
   NCIC state, SexCode reverse-lookup, dexStateUserId -- all untested.
+
+================================================================================
+CA_CLETS -- California
+================================================================================
+
+CA-1: CaRequestPurposeCode on every form and combo
+  Hidden initialValue='C' on all 5 entity forms, in set[] on every combo.
+  California-specific requirement (not in any other provider).
+
+CA-2: State initialValue must NOT be set (LIMITATION #30)
+  CA has separate in-state (IA.*) vs OOS (NLTS.*) keyRefs. State presence
+  routes between them. Same constraint as NY (NY-2).
+
+CA-3: BirthDate format yyyyMMdd
+  Different from NJ (MMddyyyy). Same as AZ. Confirmed from CA_ESUN production.
+  Arguments=['yyyy-MM-dd','yyyyMMdd']
+
+CA-4: No ImageIndicator
+  CA metadata does not include ImageIndicator on any transaction.
+  Do NOT add ImageIndicator to CA forms or combos.
+
+CA-5: 6 basic queries only (devdoc authority)
+  Devdoc "Basic Queries Supported" lists 6 queries. Metadata contains additional
+  transactions (WP, MP, SupervisedRelease) that are NOT authorized to build.
+  CAILojackQuery is devdoc "Expanded" only.
+
+CA-6: DL+DH co-fire (2 Person QIDMs)
+  Both DL and DH have autoSelect=true with no queriesToDeselect. DL+DH always
+  fire together. This is the standard CA police workflow.
+
+CA-7: ArticleTypeCode uses CA_CLETS source
+  codeTypeCategory='NCIC_ARTICLE_TYPE', codeTypeSource='CA_CLETS'.
+  NCIC source gives empty dropdown.
+
+CA-8: MC cross-entity combos
+  3 MC-only combos add person fields to non-person entity forms:
+  IN.VP (Vehicle by Name), IG.QGH (Gun by Name), NLTS.BQ.N (Boat by Name+DOB).
 
 ================================================================================
 CA_ESUN -- California (reference only, not in monorepo)
@@ -230,12 +259,11 @@ CA_ESUN -- California (reference only, not in monorepo)
 
 CA-REF: Attention handler pattern reference
   CA_eSUN established the CommsysGetLastNameFirstNameInitialRuleHandler pattern
-  for Attention. LA_LETTS_OFML follows this pattern.
+  for Attention. LA_LETTS_OFML and TX_TLETS follow this pattern.
 
 CA-REF: OOS DL bug documented
   OnScene OOS queries returned CA DMV results. Three causes identified:
   IgnoreUserValueRuleHandler, missing NCIC codeTypeProvider, combo ordering.
-  See project_ca_esun_oos_bug.md.
 
 ================================================================================
 CROSS-PROVIDER CONSISTENCY RULES
@@ -245,14 +273,14 @@ These patterns MUST match across all providers. Differences require metadata
 justification documented in the provider's section above.
 
 1. RMS autoSelect=true on all RMS QIDMs
-   Confirmed: NJ, AZ, FL, HI, NY. Missing: LA, TX (needs rebuild).
+   Confirmed: all 8 providers.
 
 2. AUTH keyReference present
-   Confirmed: NJ, AZ, FL, HI, NY. Missing: LA, TX (needs rebuild).
+   Confirmed: all 8 providers.
 
 3. ImageIndicator in combo any[] or set[]
    Must be in at least one combo per entity where it appears on the form.
-   Missing: HI Vehicle (HI-2).
+   Exception: CA (no ImageIndicator in metadata — CA-4).
 
 4. queryLabel standard values
    Vehicle Registration, Vehicle Stolen, Driver License, Driver History, Firearm, Article, Boat,
@@ -260,13 +288,16 @@ justification documented in the provider's section above.
    All providers must use these exact labels.
 
 5. PlateType default=PC, PlateYear default=current year
-   Confirmed NJ, applied NY. Safe across all providers (no combo routing impact).
+   Confirmed: all 8 providers (2026-05-06). Mandatory standard.
+   Safe: State is combo routing discriminator, not PlateType/Year.
 
 6. YES_NO_UNKNOWN/NCIC for all Y/N dropdowns
    No provider should use YES_NO, YESNO, or other variants.
 
 7. Patch 8: LicensePlateNumberIn eliminated from all output JSONs
-   CAD sends licensePlateNumber (camelCase, no "In" suffix). HIDLE template uses
-   LicensePlateNumberIn -- build scripts must rename after serialization.
-   Confirmed: NJ (BASE full camelCase, MC text replace), AZ, FL, HI, NY (all text replace).
-   Missing: LA, TX (needs rebuild).
+   CAD sends licensePlateNumber (camelCase, no "In" suffix).
+   Confirmed: all 8 providers.
+
+8. BirthDate format is provider-specific
+   NJ/NY/TX/LA/HI = MMddyyyy. CA/AZ = yyyyMMdd.
+   NEVER copy date format from another provider. Verify from production JSON or devdoc.

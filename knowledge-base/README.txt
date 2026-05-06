@@ -1,23 +1,24 @@
 CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
-Last updated: 2026-05-04
-Covers: 7 providers (NJ/AZ/FL/NY/HI/TX/LA) in consolidated monorepo
+Last updated: 2026-05-06
+Covers: 8 providers (NJ/AZ/FL/NY/HI/TX/LA/CA) in consolidated monorepo
 
-CURRENT BASELINE (use as structural reference for all new builds):
-  NJ_NJCJIS_BASE.json -- v2.0 Phase 1+MC, 64P/0F/3W/2LIM (2026-04-29)
+CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
+  NJ_NJCJIS is the structural reference for all new builds.
   Phase model: single-entity, single-card QIFs. Confirm all QIDMs before layout work.
   NCIC state pattern confirmed NJ + AZ. NIBRS sex confirmed NJ + AZ + FL.
-  Avoid old NJ v3.x (split entity) and old NY v1.0-v1.21 (multi-form) as templates --
-  those were built before Phase 1 model was established. Start from Phase 1 model.
+  Avoid old NJ v3.x (split entity) and old NY v1.0-v1.21 (multi-form) as templates.
 
 This folder is the single authoritative reference for all future builds.
 Read it before starting any new provider or making any structural change.
 
-SOURCE AUTHORITY RULE: The provider XML (MetaData) is the build authority.
-  When MetaData and DevDoc (PDF) disagree, MetaData wins.
-  DevDoc-only fields are excluded from the build.
-  Document any MetaData vs. DevDoc discrepancies in [PROVIDER]_PDF_XML_INCONSISTENCIES.txt.
+SOURCE AUTHORITY RULES:
+  WHICH queries to build: DevDoc "Basic Queries Supported" is the ONLY authority.
+    Metadata existence alone does NOT authorize building a query.
+  HOW to build (fields, combos, keyRefs): MetaData is the build authority.
+    When MetaData and DevDoc field descriptions disagree, MetaData wins.
+  Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
 FILES IN THIS FOLDER (9 files, organized by question)
