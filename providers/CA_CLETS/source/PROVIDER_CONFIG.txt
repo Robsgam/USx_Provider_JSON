@@ -1,0 +1,50 @@
+CA_CLETS -- Provider Configuration
+====================================
+Last verified: 2026-05-06
+Source of truth: CA_ESUN.json (production) + CA_CLETS_devdoc.txt + CA_CLETS.xml
+
+DATE FORMAT
+-----------
+BirthDate target format: yyyyMMdd
+Source: CA_ESUN.json (production, all 4 BirthDate handlers use yyyyMMdd)
+CommsysParseDateRuleHandler arguments: ['yyyy-MM-dd','yyyyMMdd']
+
+SUPPORTED QUERIES (devdoc "Basic Queries Supported:" line 57)
+-------------------------------------------------------------
+1. ArticleSingleQuery
+2. BoatQuery
+3. DriverHistoryQuery
+4. DriverLicenseQuery
+5. GunQuery
+6. VehicleRegistrationQuery
+
+NOT SUPPORTED (in metadata but NOT in devdoc basic or expanded):
+- WMPIWantedPersonQuery
+- WMPIMissingPersonQuery
+- CAISupervisedReleaseQuery
+
+EXPANDED (devdoc only, not built):
+- CAILojackQuery
+- CaCletsArmedProhibitedPersonQuery
+- CaCletsLapdPersonQuery
+- CaCletsLapdVehicleQuery
+- EISDriverQuery
+- HazardousMaterialQuery
+- VehicleRegistrationWithDirectNcicQuery
+- AlarmExchangeResponse
+
+CA-SPECIFIC PATTERNS
+--------------------
+CaRequestPurposeCode: hidden InpH, initialValue='C', in set[] every combo
+State: NO initialValue (LIMITATION #30: in-state IA.* vs OOS NLTS.* routing)
+ImageIndicator: NOT in CA metadata
+VehicleStolenQuery: NOT separate (combined with VehicleRegistrationQuery)
+RandomRequest: NOT in CA metadata
+ArticleTypeCode: codeTypeSource='CA_CLETS' (NCIC gives empty dropdown)
+Person QIDMs: DL+DH co-fire (2 QIDMs, both autoSelect=true)
+Name format: Last,First (comma separator, per NCIC standard)
+
+PRODUCTION REFERENCE
+--------------------
+CA_ESUN.json: templates/CA_ESUN.json (existing production CA provider)
+Known bugs in CA_ESUN: IgnoreUserValueRuleHandler on State (AP #4), no codeTypeProvider on SexCode, combo ordering shadows OOS

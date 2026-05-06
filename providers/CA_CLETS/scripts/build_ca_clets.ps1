@@ -4,7 +4,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets.ps1 -Version X.X -Phase base
 #
 # INPUTS:
-#   source\CA_CLETS.xml   -- XML metadata (2026-04-01) -- 9 transactions, 25 combos [AUTHORITATIVE]
+#   source\CA_CLETS.xml   -- XML metadata (2026-04-01) [AUTHORITATIVE]
 #   source\CA_CLETS.pdf   -- CommSys devdoc [CROSS-CHECK]
 #   source\HIDLE.json     -- RMS structural template
 #
@@ -44,7 +44,7 @@
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = "1.3",
+    [string]$Version = "1.4",
     [string]$Phase   = "base"
 )
 
@@ -280,7 +280,7 @@ $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -334,7 +334,7 @@ $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }

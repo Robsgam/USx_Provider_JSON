@@ -5,7 +5,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.3'
+$Version  = '1.4'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_CLETS_MC.json"
@@ -232,7 +232,7 @@ $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('CaRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -281,7 +281,7 @@ $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('CaRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -398,7 +398,7 @@ $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'BoatHullIdNumber';      size = 20; sourceField = @('BoatHullIdNumber');      targetField = 'BoatHullIdNumber' }

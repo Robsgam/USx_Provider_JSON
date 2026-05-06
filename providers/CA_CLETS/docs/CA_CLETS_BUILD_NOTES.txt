@@ -1,6 +1,16 @@
 CA_CLETS -- Build Notes
 ========================
 
+v1.4 (2026-05-06) -- BirthDate format fix
+  CHANGED: CommsysParseDateRuleHandler target format: MMddyyyy -> yyyyMMdd (all BirthDate attrs)
+  REASON:  CA_ESUN (production CA provider) uses yyyyMMdd. Our build had MMddyyyy (copied from
+           NJ pattern without verifying CA-specific format). BirthDate would have been sent as
+           e.g., "01151990" (Jan 15) instead of "19900115" — wrong date interpretation by CA backend.
+  ALSO:    Added PROVIDER_CONFIG.txt with verified date format, supported query list, CA patterns.
+           Build script header cleaned (removed stale "9 transactions" count).
+
+  VALIDATOR: BASE 63P/0F/3W/5LIM | MC 67P/0F/1W/7LIM | Verify CLEAN (unchanged from v1.3)
+
 v1.3 (2026-05-06) -- Devdoc audit: removed unsupported QIDMs
   CHANGED: Removed WMPIWantedPersonQuery, WMPIMissingPersonQuery, CAISupervisedReleaseQuery
   REASON:  Devdoc "Basic Queries Supported:" lists exactly 6 queries. These 3 are NOT in the
