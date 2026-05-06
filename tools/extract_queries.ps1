@@ -21,7 +21,7 @@ if (-not (Test-Path $XmlPath)) { Write-Error "File not found: $XmlPath"; return 
 $fileName = [System.IO.Path]::GetFileNameWithoutExtension($XmlPath)
 $lines = @()
 $lines += "=" * 78
-$lines += "  SUPPORTED QUERIES EXTRACTED FROM METADATA"
+$lines += "  QUERY TRANSACTIONS IN METADATA (check devdoc for supported query list)"
 $lines += "  Source: $(Split-Path $XmlPath -Leaf)"
 $lines += "  Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 $lines += "=" * 78
@@ -54,38 +54,37 @@ foreach ($txn in $transactions) {
 $lines += "QUERY TRANSACTIONS FOUND: $($queryTxns.Count)"
 $lines += "-" * 78
 
-# Categorize by ConnectCIC query type
+# Group by name prefix -- NO "Basic" or "Supported" labels.
+# Which queries are supported is defined by the DEVDOC, not by metadata naming patterns.
 $categories = [ordered]@{
-    'Basic Queries'    = @()
-    'CAI (In-State)'   = @()
-    'CBI (Canadian)'   = @()
-    'CCH (Criminal History)' = @()
-    'Expanded'         = @()
-    'Other'            = @()
+    'Standard'                  = @()
+    'WMPI'                      = @()
+    'CAI (state-prefixed)'      = @()
+    'CBI (state-prefixed)'      = @()
+    'CCH (state-prefixed)'      = @()
+    'Provider-specific'         = @()
 }
 
-$basicNames = @(
+$standardNames = @(
     'ArticleSingleQuery','BoatQuery','DriverHistoryQuery','DriverLicenseQuery',
-    'GunQuery','VehicleRegistrationQuery','HazardousMaterialQuery','QueryPassThrough',
-    'EISDriverQuery'
+    'GunQuery','VehicleRegistrationQuery','VehicleStolenQuery',
+    'HazardousMaterialQuery','EISDriverQuery','QueryPassThrough'
 )
-$wmpiNames = @('WMPIWantedPersonQuery','WMPIMissingPersonQuery','WMPIProtectionOrderQuery',
-    'WMPISexOffenderQuery','WMPISupervisedReleaseQuery','WMPIUnidentifiedPersonQuery')
 
 foreach ($txn in $queryTxns) {
     $name = $txn.name
-    if ($name -in $basicNames -or $name -in $wmpiNames) {
-        $categories['Basic Queries'] += $txn
+    if ($name -in $standardNames) {
+        $categories['Standard'] += $txn
+    } elseif ($name -match '^WMPI') {
+        $categories['WMPI'] += $txn
     } elseif ($name -match '^CAI') {
-        $categories['CAI (In-State)'] += $txn
+        $categories['CAI (state-prefixed)'] += $txn
     } elseif ($name -match '^CBI') {
-        $categories['CBI (Canadian)'] += $txn
+        $categories['CBI (state-prefixed)'] += $txn
     } elseif ($name -match '^CCH') {
-        $categories['CCH (Criminal History)'] += $txn
-    } elseif ($name -match '^CaClets|^APPS|^AOS|^Dmv|^CLETSPerson|^CaPerson') {
-        $categories['Expanded'] += $txn
+        $categories['CCH (state-prefixed)'] += $txn
     } else {
-        $categories['Other'] += $txn
+        $categories['Provider-specific'] += $txn
     }
 }
 

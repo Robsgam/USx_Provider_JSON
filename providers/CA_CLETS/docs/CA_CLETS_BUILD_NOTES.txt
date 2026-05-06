@@ -1,6 +1,29 @@
 CA_CLETS -- Build Notes
 ========================
 
+v1.3 (2026-05-06) -- Devdoc audit: removed unsupported QIDMs
+  CHANGED: Removed WMPIWantedPersonQuery, WMPIMissingPersonQuery, CAISupervisedReleaseQuery
+  REASON:  Devdoc "Basic Queries Supported:" lists exactly 6 queries. These 3 are NOT in the
+           devdoc's basic or expanded query lists. Built in error during v1.0-v1.2 because
+           extract_queries.ps1 invented a "Basic" category from naming patterns instead of
+           checking the devdoc. CA_ESUN (production CA provider) confirms: 6 basic + Lojack only.
+
+  REMOVED QIDMs:
+    WMPIWantedPersonQuery     -- 3 combos removed (IW.QW.N, IW.QW.O, IW.QW.NC)
+    WMPIMissingPersonQuery    -- 3 combos removed (UM.QM.N, UM.QM.O, UM.QM.NC)
+    CAISupervisedReleaseQuery -- 4 combos removed (IR.QVC.O, IR.QVC.C, IR.QVC.S, IR.QVC.N)
+
+  PERSON FORM SIMPLIFIED:
+    Removed: NCICNumber, CriminalIdNumber, SocialSecurityNumber, RaceCode
+    Remaining: NameFirst, NameLast, BirthDate, SexCode, OperatorLicenseNumber, CaRequestPurposeCode
+    Person QIDMs: 2 (DL + DH), down from 5
+
+  COMBO COUNTS:
+    BASE: 17 CommSys combos (was 27)
+    MC:   20 CommSys combos (was 30)
+
+  VALIDATOR: BASE 63P/0F/3W/5LIM | MC 67P/0F/1W/7LIM | Verify CLEAN
+
 v1.2 (2026-05-06) -- Phase 2 MC cross-entity combos
   CHANGED: MC variant adds person fields to Vehicle/Firearm/Boat forms for cross-entity combos
   REASON:  Metadata defines name-based combos on non-person entities; MC enables them

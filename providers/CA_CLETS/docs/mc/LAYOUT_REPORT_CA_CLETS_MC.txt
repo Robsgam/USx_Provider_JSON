@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-06 11:50
+  Generated: 2026-05-06 12:20
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,17 +9,14 @@ LAYOUT SUMMARY
 === CA_CLETS_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=8
-  Person | entity=Person | qidm= | cards=1 fields=7
+  Person | entity=Person | qidm= | cards=1 fields=4
   Firearm | entity=Firearm | qidm= | cards=1 fields=4
   Article | entity=Article | qidm= | cards=1 fields=4
   Boat | entity=Boat | qidm= | cards=1 fields=6
-QIDMs: 9
+QIDMs: 6
   CA_CLETS_VehicleRegistrationQuery | attrs=9 combos=5 autoSelect=True
   CA_CLETS_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
   CA_CLETS_DriverHistoryQuery | attrs=6 combos=2 autoSelect=True
-  CA_CLETS_WMPIWantedPersonQuery | attrs=7 combos=3 autoSelect=True
-  CA_CLETS_WMPIMissingPersonQuery | attrs=7 combos=3 autoSelect=True
-  CA_CLETS_CAISupervisedReleaseQuery | attrs=8 combos=4 autoSelect=True
   CA_CLETS_GunQuery | attrs=6 combos=2 autoSelect=
   CA_CLETS_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
   CA_CLETS_BoatQuery | attrs=7 combos=6 autoSelect=
@@ -60,15 +57,9 @@ LAYOUT DETAIL
       ROW ROW_PER_2 [6 6]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
-      ROW ROW_PER_3 [4 4 4]
+      ROW ROW_PER_3 [6 6]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        RaceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_4 [12]
-        NCICNumber (Text | maxLen=10)
-      ROW ROW_PER_5 [6 6]
-        CriminalIdNumber (Text | maxLen=9)
-        SocialSecurityNumber (Text | maxLen=9)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

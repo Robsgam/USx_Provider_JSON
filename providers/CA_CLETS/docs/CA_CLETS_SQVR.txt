@@ -1,7 +1,7 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
 Last updated: 2026-05-06
-Version: v1.2 (Phase 2: +SupervisedRelease, OOS boat, MC cross-entity)
+Version: v1.3 (Devdoc audit: removed unsupported QIDMs, 6 basic queries only)
 
 VEHICLE REGISTRATION (VehicleRegistrationQuery)
   Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
@@ -60,42 +60,6 @@ DRIVER HISTORY (DriverHistoryQuery)
   NLTS.KQ.O -- DH by OLN (Nlets)
     set: CaRequestPurposeCode, OperatorLicenseNumber
     any: RegistrationState
-    Status: [PENDING]
-
-WANTED PERSON (WMPIWantedPersonQuery)
-  Entity: Person | QIDM: CA_CLETS_WMPIWantedPersonQuery | autoSelect: true
-
-  IW.QW.N -- Wanted by Name+Sex
-    set: CaRequestPurposeCode, NameLast, NameFirst, SexCode
-    any: BirthDate, RaceCode
-    Status: [PENDING]
-
-  IW.QW.O -- Wanted by OLN
-    set: CaRequestPurposeCode, OperatorLicenseNumber
-    any: (none)
-    Status: [PENDING]
-
-  IW.QW.NC -- Wanted by NCIC Number
-    set: CaRequestPurposeCode, NCICNumber
-    any: (none)
-    Status: [PENDING]
-
-MISSING PERSON (WMPIMissingPersonQuery)
-  Entity: Person | QIDM: CA_CLETS_WMPIMissingPersonQuery | autoSelect: true
-
-  UM.QM.N -- Missing by Name+Sex
-    set: CaRequestPurposeCode, NameLast, NameFirst, SexCode
-    any: BirthDate, RaceCode
-    Status: [PENDING]
-
-  UM.QM.O -- Missing by OLN
-    set: CaRequestPurposeCode, OperatorLicenseNumber
-    any: (none)
-    Status: [PENDING]
-
-  UM.QM.NC -- Missing by NCIC Number
-    set: CaRequestPurposeCode, NCICNumber
-    any: (none)
     Status: [PENDING]
 
 FIREARM (GunQuery)
@@ -157,45 +121,28 @@ BOAT (BoatQuery)
     any: RegistrationState
     Status: [PENDING]
 
-SUPERVISED RELEASE (CAISupervisedReleaseQuery) -- Phase 2
-  Entity: Person | QIDM: CA_CLETS_CAISupervisedReleaseQuery | autoSelect: true
-
-  IR.QVC.O -- Supervised Release by OLN
-    set: CaRequestPurposeCode, OperatorLicenseNumber
-    any: (none)
-    Status: [PENDING]
-
-  IR.QVC.C -- Supervised Release by CII Number
-    set: CaRequestPurposeCode, CriminalIdNumber
-    any: (none)
-    Status: [PENDING]
-
-  IR.QVC.S -- Supervised Release by SSN
-    set: CaRequestPurposeCode, SocialSecurityNumber
-    any: (none)
-    Status: [PENDING]
-
-  IR.QVC.N -- Supervised Release by Name+Sex
-    set: CaRequestPurposeCode, NameLast, NameFirst, SexCode
-    any: BirthDate, RaceCode
-    Status: [PENDING]
-
 RMS (Person + Vehicle)
   autoSelect: true (both)
   Status: [PENDING] -- co-fires with CommSys queries
 
 LIMITATIONS
 -----------
-#21 -- Invented keyRefs for duplicate metadata keyRefs (NLTS.RQ.P/V, NLTS.KQ.N/O, IP.QA.S/O, IA.QB.H/O/R, IW.QW.N/O/NC, UM.QM.N/O/NC, IR.QVC.O/C/S/N)
-#26 -- Shared field pool: 5 Person QIDMs share all fields (intentional CA super-query)
+#21 -- Invented keyRefs for duplicate metadata keyRefs (NLTS.RQ.P/V, NLTS.KQ.N/O, IP.QA.S/O, IA.QB.H/O/R)
+#26 -- Shared field pool: 2 Person QIDMs (DL+DH) share all fields (standard co-fire)
 #30 -- No State initialValue: in-state (IA.*) vs OOS (NLTS.*) routing by State field presence
 #31 -- IV.4* DMV plate-type combos: COVERED by IA.QV (LicensePlateTypeCode sent as QIDM attribute; CommSys routes by value)
 #32 -- IV.4V (VIN/Hull): COVERED by IA.QVK (VIN) and IA.QB (Hull)
 #33 -- IV.4B (DMV Vessels): COVERED by IA.QB.H/R (same fields, different keyRef; CommSys routes by content)
 
-PHASE 2 RESOLVED
------------------
-- IR.QVC (Supervised Release) -- IMPLEMENTED as 5th Person QIDM (4 combos: OLN, CII, SSN, Name+Sex)
+NOT IMPLEMENTED (not in devdoc Basic Queries Supported)
+---------------------------------------------------------
+- WMPIWantedPersonQuery (IW.QW) -- in metadata but NOT in devdoc basic or expanded
+- WMPIMissingPersonQuery (UM.QM) -- in metadata but NOT in devdoc basic or expanded
+- CAISupervisedReleaseQuery (IR.QVC) -- in metadata but NOT in devdoc basic or expanded
+- CAILojackQuery (IA.QV) -- devdoc Expanded only, not basic
+
+COVERED BY EXISTING COMBOS
+----------------------------
 - IV.4* (DMV plate-type combos) -- COVERED by IA.QV (LIMITATION #31)
 - IV.4B (DMV vessels) -- COVERED by IA.QB (LIMITATION #33)
 - IV.4V (VIN/Engine/Hull) -- COVERED by IA.QVK + IA.QB (LIMITATION #32)

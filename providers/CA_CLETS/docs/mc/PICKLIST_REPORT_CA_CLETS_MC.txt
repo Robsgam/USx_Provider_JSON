@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-06 11:50
+  Generated: 2026-05-06 12:20
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -24,8 +24,6 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
 
   Entity: Person
-    RaceCode [Race]
-      Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     RegistrationState [State]
       Config: attributeTypeId=STATE
     SexCode [Sex]
@@ -52,21 +50,6 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
         codeTypeProvider=NIBRS
       State -> State
         codeTypeProvider=NCIC
-    Config: CA_CLETS_WMPIWantedPersonQuery
-      RaceCode -> RaceCode
-        codeTypeProvider=NIBRS
-      SexCode -> SexCode
-        codeTypeProvider=NIBRS
-    Config: CA_CLETS_WMPIMissingPersonQuery
-      RaceCode -> RaceCode
-        codeTypeProvider=NIBRS
-      SexCode -> SexCode
-        codeTypeProvider=NIBRS
-    Config: CA_CLETS_CAISupervisedReleaseQuery
-      RaceCode -> RaceCode
-        codeTypeProvider=NIBRS
-      SexCode -> SexCode
-        codeTypeProvider=NIBRS
     Config: CA_CLETS_BoatQuery
       State -> State
         codeTypeProvider=NCIC
@@ -107,29 +90,11 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: CA_CLETS_DriverHistoryQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: CA_CLETS_WMPIWantedPersonQuery
-    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
-
-  QIDM: CA_CLETS_WMPIWantedPersonQuery
-    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
-
-  QIDM: CA_CLETS_WMPIMissingPersonQuery
-    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
-
-  QIDM: CA_CLETS_WMPIMissingPersonQuery
-    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
-
-  QIDM: CA_CLETS_CAISupervisedReleaseQuery
-    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
-
-  QIDM: CA_CLETS_CAISupervisedReleaseQuery
-    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
-
   QIDM: CA_CLETS_BoatQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 10
-  QRDM code type attrs: 20
+  Form dropdowns: 9
+  QRDM code type attrs: 14

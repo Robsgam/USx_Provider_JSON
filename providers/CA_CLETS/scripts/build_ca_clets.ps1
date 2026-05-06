@@ -15,9 +15,6 @@
 #   GunQuery v21                  -- 2 combos in XML, 1 used (IG.QGB serial; IG.QGH name skipped Phase 1)
 #   ArticleSingleQuery v20        -- 2 combos (IP.QA serial, IP.QA OAN)
 #   BoatQuery v35                 -- 7 combos in XML, collapsed to 5 (IA.QB hull/OAN/reg + NLTS.BQ hull/reg OOS)
-#   WMPIWantedPersonQuery v49     -- 18 combos in XML, collapsed to 3 (IW.QW name/OLN/NCIC#)
-#   WMPIMissingPersonQuery v33    -- 10 combos in XML, collapsed to 3 (UM.QM name/OLN/NCIC#)
-#   CAISupervisedReleaseQuery v24 -- 4 combos (IR.QVC CII/SSN/OLN/Name) -- Phase 2
 #
 # CA-SPECIFIC:
 #   CaRequestPurposeCode -- required in set[] on EVERY combo. Hidden InpH initialValue='C' (Criminal Justice).
@@ -26,32 +23,28 @@
 #   No RandomRequest     -- not in CA metadata.
 #   No State initialValue -- LIMITATION #30: separate in-state (IA.*) vs OOS (NLTS.*) keyRefs.
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 9 configs, 27 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 17 combos):
 #   VehicleRegistrationQuery   IA.QV (Plate), IA.QVK (VIN), NLTS.RQ.P (OOS Plate), NLTS.RQ.V (OOS VIN)
 #   DriverLicenseQuery         ID.L1 (OLN), IN.L1 (Name), NLTS.DQ (OOS OLN)
 #   DriverHistoryQuery         NLTS.KQ.N (Name+DOB+Sex), NLTS.KQ.O (OLN) -- all via Nlets
 #   GunQuery                   IG.QGB (Serial)
 #   ArticleSingleQuery         IP.QA.S (Serial), IP.QA.O (OAN)
 #   BoatQuery                  IA.QB.H (Hull), IA.QB.O (OAN), IA.QB.R (Reg), NLTS.BQ.H (OOS Hull), NLTS.BQ.R (OOS Reg)
-#   WMPIWantedPersonQuery      IW.QW.N (Name+Sex), IW.QW.O (OLN), IW.QW.NC (NCIC#)
-#   WMPIMissingPersonQuery     UM.QM.N (Name+Sex), UM.QM.O (OLN), UM.QM.NC (NCIC#)
-#   CAISupervisedReleaseQuery  IR.QVC.O (OLN), IR.QVC.C (CII), IR.QVC.S (SSN), IR.QVC.N (Name+Sex)
 #
 # ENTITIES (5 QUERYINPUTFORM):
 #   Vehicle  -- Plate + VIN + State + PlateType + PlateYear + VehMake + VehYear + CaPurpose(hidden)
-#   Person   -- OLN + Name + DOB + Sex + Race + State + NCICNumber + CII + SSN + CaPurpose(hidden)
+#   Person   -- OLN + Name + DOB + Sex + State + CaPurpose(hidden)
 #   Firearm  -- Serial + Make + Caliber + Type + CaPurpose(hidden)
 #   Article  -- Serial + OAN + ArticleType + ArticleBrand + CaPurpose(hidden)
 #   Boat     -- Reg# + Hull + OAN + State + CaPurpose(hidden)
 #
-# PERSON (5 QIDMs co-fire by design):
-#   DL + DH + WantedPerson + MissingPerson + SupervisedRelease all share Person entity/form.
-#   All have autoSelect=true. Officer can uncheck to disable specific queries.
-#   Shared field pool (LIMITATION #26) is intentional -- CA super-query pattern.
+# PERSON (2 QIDMs co-fire by design):
+#   DL + DH share Person entity/form.
+#   Both have autoSelect=true. Officer can uncheck to disable specific queries.
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = "1.2",
+    [string]$Version = "1.3",
     [string]$Phase   = "base"
 )
 
@@ -381,182 +374,7 @@ $dhQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1g. WMPIWantedPersonQuery
-# XML v49: 18 combos (IW.QW x9, IW.R.QW x9)
-# Collapsed to 3 core combos: Name+Sex, OLN, NCICNumber
-# IW.R.QW (NCIC-specific) combos skipped Phase 1
-# =====================================================================
-$wpQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
-        }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
-        [PSCustomObject]@{
-            name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'NCICNumber';            size = 10; sourceField = @('ncicNumber');            targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('raceCode'); targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'SexCode';  size = 1; sourceField = @('sexCode');  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst','sexCode'); any = @('birthDate','raceCode') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'IW.QW.N'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'IW.QW.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ncicNumber'); any = @() }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'IW.QW.NC'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'WMPIWantedPersonQuery -- IW.QW (Name+Sex, OLN, NCIC#). CA wanted person.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_CLETS_WMPIWantedPersonQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
-    provider        = 'CA_CLETS'
-    providerType    = 'Commsys'
-    query           = 'WMPIWantedPersonQuery'
-    queryLabel      = 'Wanted Person'
-    targetEntity    = 'Person'
-}
-
-# =====================================================================
-# 1h. WMPIMissingPersonQuery
-# XML v33: 10 combos (UM.QM x10)
-# Collapsed to 3 core combos: Name+Sex, OLN, NCICNumber
-# Descriptor/vehicle combos skipped Phase 1
-# =====================================================================
-$mpQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
-        }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
-        [PSCustomObject]@{
-            name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'NCICNumber';            size = 10; sourceField = @('ncicNumber');            targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('raceCode'); targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'SexCode';  size = 1; sourceField = @('sexCode');  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst','sexCode'); any = @('birthDate','raceCode') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'UM.QM.N'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'UM.QM.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ncicNumber'); any = @() }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'UM.QM.NC'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'WMPIMissingPersonQuery -- UM.QM (Name+Sex, OLN, NCIC#). CA missing person.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_CLETS_WMPIMissingPersonQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
-    provider        = 'CA_CLETS'
-    providerType    = 'Commsys'
-    query           = 'WMPIMissingPersonQuery'
-    queryLabel      = 'Missing Person'
-    targetEntity    = 'Person'
-}
-
-# =====================================================================
-# 1h.5 CAISupervisedReleaseQuery (Phase 2)
-# XML v24: 4 combos, all keyRef IR.QVC in metadata (invented IR.QVC.O/C/S/N)
-# Person query -- co-fires as 5th Person QIDM with DL+DH+WP+MP
-# Uses same Person form fields (OLN, Name, Sex, DOB, Race) + CII + SSN
-# =====================================================================
-$srQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
-        }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
-        [PSCustomObject]@{ name = 'CriminalIdNumber';     size = 9;  sourceField = @('criminalIdNumber');     targetField = 'CriminalIdNumber' }
-        [PSCustomObject]@{
-            name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('raceCode'); targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'SexCode';  size = 1; sourceField = @('sexCode');  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'SocialSecurityNumber'; size = 9;  sourceField = @('socialSecurityNumber'); targetField = 'SocialSecurityNumber' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'IR.QVC.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','criminalIdNumber'); any = @() }
-            primaryFieldReference = 'CriminalIdNumber'
-            keyReference          = 'IR.QVC.C'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','socialSecurityNumber'); any = @() }
-            primaryFieldReference = 'SocialSecurityNumber'
-            keyReference          = 'IR.QVC.S'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst','sexCode'); any = @('birthDate','raceCode') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'IR.QVC.N'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'CAISupervisedReleaseQuery -- IR.QVC (OLN, CII, SSN, Name+Sex). Phase 2.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_CLETS_CAISupervisedReleaseQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
-    provider        = 'CA_CLETS'
-    providerType    = 'Commsys'
-    query           = 'CAISupervisedReleaseQuery'
-    queryLabel      = 'Supervised Release'
-    targetEntity    = 'Person'
-}
-
-# =====================================================================
-# 1i. GunQuery
+# 1g. GunQuery
 # XML v21: 2 combos (IG.QGB serial, IG.QGH name)
 # Serial only (IG.QGB). IG.QGH (gun by name): NOT IMPLEMENTABLE (cross-entity -- person fields on firearm form).
 # =====================================================================
@@ -588,7 +406,7 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1j. ArticleSingleQuery
+# 1h. ArticleSingleQuery
 # XML v20: 2 combos both keyRef IP.QA -> invented IP.QA.S / IP.QA.O
 # Serial and OAN are separate search paths
 # ArticleTypeCode: codeTypeSource=CA_CLETS (NCIC gives empty dropdown)
@@ -627,7 +445,7 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1k. BoatQuery
+# 1i. BoatQuery
 # XML v35: 7 combos (IA.QB x3, IV.4B, NLTS.BQ x3)
 # 5 built: hull (IA.QB.H), OAN (IA.QB.O), reg (IA.QB.R), OOS hull (NLTS.BQ.H), OOS reg (NLTS.BQ.R)
 # IV.4B (DMV vessels): COVERED by IA.QB (same fields, CommSys routes by content)
@@ -685,7 +503,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $caBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $wpQuery, $mpQuery, $srQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for CA_CLETS v${Version}"
     name           = 'CA_CLETS'
     type           = 'BUNDLE'
@@ -741,7 +559,7 @@ $vehicleForm = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Person -- 1 card
-# Serves 4 QIDMs: DL + DH + WantedPerson + MissingPerson (all co-fire).
+# Serves 2 QIDMs: DL + DH (co-fire).
 # State: NO initialValue (LIMITATION #30 -- ID.L1 vs NLTS.DQ routing)
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
@@ -758,23 +576,15 @@ $perLayout = MakeLayouts @(
                 @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }
                 @{ id = 'nameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_2' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
                 @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                          'ROW_PER_3' }
                 @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_3' }
-                @{ id = 'raceCode_Input';  node = Sel 'raceCode'  'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' }             'ROW_PER_3' }
-            )}
-            @{ id = 'ROW_PER_4'; cols = @('12'); fields = @(
-                @{ id = 'ncicNumber_Input'; node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_PER_4' }
-            )}
-            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
-                @{ id = 'criminalIdNumber_Input';    node = Inp 'criminalIdNumber'    'CII Number' '9' 'ROW_PER_5' }
-                @{ id = 'socialSecurityNumber_Input'; node = Inp 'socialSecurityNumber' 'SSN'       '9' 'ROW_PER_5' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ) + Wanted (IW.QW) + Missing (UM.QM) + SR (IR.QVC).'
+    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

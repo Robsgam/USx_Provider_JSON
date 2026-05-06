@@ -1,23 +1,20 @@
 CA_CLETS -- Build Status
 =========================
 Last updated: 2026-05-06
-Current version: v1.2 (Phase 2 -- SupervisedRelease + OOS boat + MC cross-entity)
+Current version: v1.3 (Devdoc audit: removed unsupported QIDMs, 6 basic queries only)
 Provider: CA_CLETS
 
 ARCHITECTURE
 --------------------
 Entities: 5 (Vehicle, Person, Firearm, Article, Boat)
 QIFs:     5 (1 per entity, single card each)
-QIDMs:    9 CommSys + 2 RMS = 11 total
-Combos:   BASE 27 CommSys / MC 30 CommSys (3 MC-only cross-entity)
+QIDMs:    6 CommSys + 2 RMS = 8 total
+Combos:   BASE 17 CommSys / MC 20 CommSys (3 MC-only cross-entity)
 
-BASE combos (27):
+BASE combos (17):
   VehicleRegistrationQuery  -- 4: NLTS.RQ.P, NLTS.RQ.V, IA.QVK, IA.QV
   DriverLicenseQuery        -- 3: NLTS.DQ, ID.L1, IN.L1
   DriverHistoryQuery        -- 2: NLTS.KQ.N, NLTS.KQ.O
-  WMPIWantedPersonQuery     -- 3: IW.QW.N, IW.QW.O, IW.QW.NC
-  WMPIMissingPersonQuery    -- 3: UM.QM.N, UM.QM.O, UM.QM.NC
-  CAISupervisedReleaseQuery -- 4: IR.QVC.O, IR.QVC.C, IR.QVC.S, IR.QVC.N
   GunQuery                  -- 1: IG.QGB
   ArticleSingleQuery        -- 2: IP.QA.S, IP.QA.O
   BoatQuery                 -- 5: NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R
@@ -35,8 +32,15 @@ CA-SPECIFIC
 - No RandomRequest (not in CA metadata)
 - No State initialValue on any form (LIMITATION #30: in-state IA.* vs OOS NLTS.* routing)
 - No PlateType/PlateYear defaults (prevents NLTS.RQ from firing on in-state queries)
-- 5 Person QIDMs co-fire by design (DL + DH + WP + MP + SR)
+- 2 Person QIDMs co-fire by design (DL + DH)
 - MC: person fields (NameFirst, NameLast, BirthDate) on Vehicle/Firearm/Boat forms for cross-entity combos
+
+NOT IMPLEMENTED (devdoc audit)
+-------------------------------
+- WMPIWantedPersonQuery -- in metadata but NOT in devdoc Basic Queries Supported
+- WMPIMissingPersonQuery -- in metadata but NOT in devdoc Basic Queries Supported
+- CAISupervisedReleaseQuery -- in metadata but NOT in devdoc Basic Queries Supported
+- CAILojackQuery -- devdoc Expanded Transactions only, not basic
 
 VALIDATOR RESULTS
 -----------------
@@ -47,12 +51,14 @@ VALIDATOR RESULTS
   | MC      | v1.0    | 73P/0F/1W/4LIM       | CLEAN  | 2026-05-06 |
   | BASE    | v1.2    | 82P/0F/3W/6LIM       | CLEAN  | 2026-05-06 |
   | MC      | v1.2    | 86P/0F/1W/8LIM       | CLEAN  | 2026-05-06 |
+  | BASE    | v1.3    | 63P/0F/3W/5LIM       | CLEAN  | 2026-05-06 |
+  | MC      | v1.3    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
 
   BASE WARN (3): PlateType missing default, PlateYear missing default, PlateYear missing initialValue
     -> All intentional per LIMITATION #30 (in-state vs OOS routing)
   MC WARN (1): PlateYear missing initialValue
     -> Intentional per LIMITATION #30
-  LIMITATION (BASE 6 / MC 8): combo ordering, 5 Person QIDMs co-fire, DL+DH no DH-suffix,
+  LIMITATION (BASE 5 / MC 7): combo ordering, 2 Person QIDMs co-fire, DL+DH no DH-suffix,
     no queriesToDeselect, MC cross-entity combo ordering (Gun, Vehicle, Boat)
     -> All by design
 
