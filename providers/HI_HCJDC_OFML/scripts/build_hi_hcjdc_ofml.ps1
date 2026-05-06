@@ -238,42 +238,42 @@ $vehRegQuery = [PSCustomObject]@{
     combinations = @(
         # M55L: In-state plate (VehicleTypeCode + Plate)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
         }
         # M55S: In-state VIN (VehicleTypeCode + VIN)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
         }
-        # RQ: Out-state plate (Plate + PlateType + PlateYear). State optional (Any inside Set).
+        # RQ: Out-state plate (Plate + PlateType + PlateYear)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
         }
-        # QVV: Stolen VIN (VIN + MakeCode). ImageIndicator optional (Any inside Set).
+        # QVV: Stolen VIN (VIN + MakeCode)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVV'
             state                 = 'In/Out'
         }
         # QVP: Stolen plate (Plate + State)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
-        # RQV: Out-state VIN fallback (VIN only). State/MakeCode/Year optional (Any inside Set).
+        # RQV: Out-state VIN fallback (VIN only)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQV'
             state                 = 'Out'

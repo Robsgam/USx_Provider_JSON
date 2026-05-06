@@ -11,7 +11,7 @@
 #   Boat:    OPTIONS (State, Image, RelatedHitSearch) + REGISTRATION (RegNumber) + HULL/NCIC (Hull, NCICNumber)
 
 param(
-    [string]$Version = "2.0-mc",
+    [string]$Version = "2.0",
     [string]$Phase   = "mc"
 )
 

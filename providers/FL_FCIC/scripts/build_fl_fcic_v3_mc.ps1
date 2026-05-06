@@ -35,7 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.0-mc",
+    [string]$Version = "3.0",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_MC
   Source: HI_HCJDC_OFML_MC.json
-  Generated: 2026-05-05 15:23
+  Generated: 2026-05-06 09:28
 ================================================================
 QUERY SIMULATION
 ================
@@ -16,6 +16,7 @@ QUERY SIMULATION
 
     [FIRES] M55L
       set: [VehicleTypeCode, LicensePlateNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -33,6 +34,7 @@ QUERY SIMULATION
 
     [FIRES] M55S
       set: [VehicleTypeCode, VehicleIdentificationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -50,6 +52,7 @@ QUERY SIMULATION
 
     [FIRES] RQ
       set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -67,6 +70,7 @@ QUERY SIMULATION
 
     [FIRES] QVV
       set: [VehicleIdentificationNumber, VehicleMakeCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -84,6 +88,7 @@ QUERY SIMULATION
 
     [FIRES] QVP
       set: [LicensePlateNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -101,6 +106,7 @@ QUERY SIMULATION
 
     [FIRES] RQV
       set: [VehicleIdentificationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

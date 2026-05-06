@@ -14,7 +14,7 @@
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "2.0-mc",
+    [string]$Version = "2.3",
     [string]$Phase   = "mc"
 )
 

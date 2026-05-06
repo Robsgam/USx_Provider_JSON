@@ -11,7 +11,7 @@
 #   Boat:    3 cards (OPTIONS, REGISTRATION, HULL)
 
 param(
-    [string]$Version = "1.0-mc",
+    [string]$Version = "1.0",
     [string]$Phase   = "mc"
 )
 
@@ -176,12 +176,12 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('VehicleYear');                  targetField = 'VehicleYear' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'M55L'; state = 'In' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'M55S'; state = 'In' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQ'; state = 'Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVV'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @() }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVP'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @() }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQV'; state = 'Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'M55L'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'M55S'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQ'; state = 'Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVV'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVP'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQV'; state = 'Out' }
     )
     description     = 'VehicleRegistrationQuery -- M55L/M55S (in-state), RQ (out-state), QV (stolen). 6 combos.'
     handlerFunction = 'CommsysTransactionRequestHandler'
