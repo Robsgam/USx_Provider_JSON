@@ -58,17 +58,32 @@ SECTION 2 -- PRE-BUILD CHECKLIST
 
   BEFORE STARTING A NEW PROVIDER:
 
+  SOURCE MATERIAL VERIFICATION (do this FIRST):
+  [ ] Verify provider folder name matches XML filename (minus .xml)
+      See BUILD_RULES.txt Section 0 -- mismatches cause costly renames
+  [ ] Verify source/<PROVIDER>.xml exists (metadata XML)
+  [ ] Verify source/<PROVIDER>.pdf exists (devdoc PDF)
+  [ ] Copy templates/HIDLE.json to source/HIDLE.json if not already there
+  [ ] Convert PDF to text: pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt
+  [ ] Run extract_queries.ps1 to populate SQVR with query landscape:
+      powershell.exe -ExecutionPolicy Bypass -File tools/extract_queries.ps1
+        -XmlPath source/<PROVIDER>.xml -OutFile docs/<PROVIDER>_SQVR.txt
+  [ ] Read devdoc "Basic Queries Supported" -- this is the ONLY authority
+      for WHICH queries to build (not metadata existence)
+
+  KB READING (do this SECOND):
   [ ] Read README.txt in knowledge-base/
-  [ ] Read BUILD_RULES.txt (3-bundle structure, AUTH/QMF/QRDM/RMS
-      patches, rule handlers, field configuration)
+  [ ] Read BUILD_RULES.txt (Section 0 naming + 3-bundle structure + RMS patches)
   [ ] Read TESTING_REQUIREMENTS.txt (this file -- workflow, gates, test sequence)
   [ ] Read PLATFORM_CONSTRAINTS.txt (especially #2, #21, #24-#25)
   [ ] Read PLATFORM_CONSTRAINTS.txt anti-patterns before writing any field definitions
   [ ] Check FIELD_REFERENCE.txt codeType table for every dropdown field
+
+  METADATA VERIFICATION (do this THIRD):
   [ ] Confirm all target transactions are in the provider XML (MessageKey
-      list). Any missing -> flag in LIMITATIONS.txt and include in gap
-      summary.
-  [ ] Run PDF vs XML gap check before first build (see build guide for prompt)
+      list). Any missing -> flag in SQVR and include in gap summary.
+  [ ] Run PDF vs XML gap check: compare devdoc "Basic Queries Supported"
+      against extracted query list. Document discrepancies.
   [ ] Check NJ_NJCJIS.json and NY_NYSPIN_EJUSTICE.json as structural
       reference
 
@@ -719,3 +734,93 @@ SECTION 15 -- FAILURE INVESTIGATION
     [ ] Note in BUILD_NOTES.txt REASON section
     [ ] Update provider STATUS.txt limitations section
     [ ] Consider notifying vendor if server-side change is required
+
+================================================================================
+SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
+================================================================================
+
+  When adding multiple new providers at once (e.g., 10+ providers),
+  follow this workflow to avoid rework and ensure consistency.
+
+  PHASE A -- SETUP (all providers, before any builds):
+
+    1. VERIFY NAMING: For each provider, open the metadata XML in source/
+       and confirm the filename. The folder name MUST match the XML
+       filename (minus .xml). See BUILD_RULES.txt Section 0.
+       Example: if XML is NM_NMLETS_OFML.xml, folder = NM_NMLETS_OFML/
+       DO NOT guess from devdoc titles or abbreviations.
+
+    2. CREATE CANONICAL STRUCTURE: For each provider, create:
+       providers/<PROVIDER>/
+         docs/  (STATUS.txt, BUILD_NOTES.txt, SQVR.txt, JSON_INVENTORY.md)
+         docs/base/
+         docs/mc/
+         tests/
+         phases/base/
+         phases/mc/
+         scripts/
+         source/  (XML, PDF, HIDLE.json)
+
+    3. COPY HIDLE.JSON: Copy templates/HIDLE.json to each provider's
+       source/ folder. Without HIDLE.json, the RMS bundle cannot be built.
+
+    4. EXTRACT QUERIES: Run extract_queries.ps1 on every metadata XML:
+       foreach ($provider in $providers) {
+         .\tools\extract_queries.ps1 `
+           -XmlPath "providers\$provider\source\$provider.xml" `
+           -OutFile "providers\$provider\docs\${provider}_SQVR.txt"
+       }
+       This maps the full query landscape before writing any build code.
+
+    5. EXTRACT DEVDOC TEXT: Convert every PDF to text:
+       foreach ($provider in $providers) {
+         pdftotext "providers\$provider\source\$provider.pdf" `
+                   "providers\$provider\source\${provider}_DEVDOC.txt"
+       }
+
+    6. REVIEW DEVDOC: For each provider, read "Basic Queries Supported"
+       and cross-reference against extracted queries. Document which
+       queries are authorized to build.
+
+    7. UPDATE TRACKING FILES:
+       - CLAUDE.md provider table: add all new providers as NOT STARTED
+       - tools/new_test_log.ps1: add all providers to knownPaths hash
+       - knowledge-base/README.txt: update provider count
+
+    8. COMMIT AND PUSH: All setup work committed before any builds start.
+
+  PHASE B -- BUILDS (one provider at a time or batched):
+
+    1. For each provider, create build script in scripts/:
+       build_<provider>.ps1 (BASE) and build_<provider>_mc.ps1 (MC)
+    2. Build scripts MUST include: post-build validator call, dual output
+       (minified + readable), all 6 RMS patches
+    3. Run build_report.ps1 after each build
+    4. Commit JSON + 6 reports per variant
+    5. Update STATUS.txt, SQVR.txt, JSON_INVENTORY.md
+    6. Push after each provider completes
+
+  PHASE C -- IMPORT AND TEST (follows standard gates):
+
+    Follow GATE 1-5 per provider. No shortcuts for bulk work.
+
+  LESSONS LEARNED (from 2026-05-06 10-provider onboarding):
+
+    - CHECK XML FILENAMES FIRST: Two providers (CA_SAN_LOUIS_OBISPO and
+      NM_NMLETS) had folder names that did not match their XML filenames.
+      Renaming after folder creation touched 10+ files per provider.
+      Always verify before creating the folder.
+
+    - HIDLE.JSON IS EASY TO FORGET: Source material (XML, PDF) is obvious
+      to copy. HIDLE.json is not -- it comes from templates/, not from the
+      provider. Add it to source/ before any build attempts.
+
+    - EXTRACT BEFORE BUILD: Running extract_queries.ps1 BEFORE writing
+      build scripts saves significant rework. The SQVR output shows every
+      transaction, field, and combination the metadata supports. Build the
+      script from this output, not from manual XML reading.
+
+    - BATCH SETUP, SERIAL BUILDS: Creating all folders and copying source
+      materials can be done in bulk. Building JSONs should be done one at
+      a time -- each provider has unique query patterns, field sets, and
+      combination logic that requires individual attention.

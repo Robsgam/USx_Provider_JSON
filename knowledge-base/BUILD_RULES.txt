@@ -13,6 +13,53 @@ See also:
   IMPORT_ERRORS.txt     -- Import error messages and fixes
 
 ================================================================================
+0. PROVIDER NAMING AND FOLDER SETUP
+================================================================================
+
+  NAMING RULE: Provider folder name MUST match the metadata XML filename
+  (minus the .xml extension). This is the canonical name for the provider.
+
+  Example:
+    XML file:  CA_SAN_LUIS_OBISPO.xml  ->  folder: providers/CA_SAN_LUIS_OBISPO/
+    XML file:  NM_NMLETS_OFML.xml      ->  folder: providers/NM_NMLETS_OFML/
+    XML file:  MD_METERS.xml           ->  folder: providers/MD_METERS/
+
+  WHY: Mismatched names require renaming the folder, all doc files, all
+  references in CLAUDE.md, README.txt, new_test_log.ps1, and every internal
+  doc file. This was learned when CA_SAN_LOUIS_OBISPO and NM_NMLETS had to
+  be renamed to match their XML filenames (CA_SAN_LUIS_OBISPO and
+  NM_NMLETS_OFML). Rename propagation touches 10+ files per provider.
+
+  VERIFICATION: Before creating a provider folder, open the metadata XML and
+  confirm the filename. Use that exact name (case-sensitive) for the folder.
+
+  RENAME PROPAGATION CHECKLIST (if a rename is ever needed):
+    [ ] git mv the provider folder
+    [ ] Rename all docs: STATUS.txt, BUILD_NOTES.txt, SQVR.txt
+    [ ] Update doc file contents (provider name references)
+    [ ] Update JSON_INVENTORY.md
+    [ ] Update CLAUDE.md provider table
+    [ ] Update knowledge-base/README.txt provider list
+    [ ] Update tools/new_test_log.ps1 knownPaths hash
+    [ ] Update any build scripts referencing the old name
+    [ ] Grep full repo for the old name to catch stragglers
+
+  SOURCE FOLDER SETUP (before any build):
+    [ ] Copy metadata XML to source/<PROVIDER>.xml
+    [ ] Copy devdoc PDF to source/<PROVIDER>.pdf
+    [ ] Copy templates/HIDLE.json to source/HIDLE.json
+    [ ] Run extract_queries.ps1 on the XML to map query landscape:
+        powershell.exe -ExecutionPolicy Bypass -File tools/extract_queries.ps1
+          -XmlPath source/<PROVIDER>.xml -OutFile docs/<PROVIDER>_SQVR.txt
+
+  DEVDOC TEXT EXTRACTION:
+    [ ] Convert PDF to text for searchable reference:
+        pdftotext "source/<PROVIDER>.pdf" "source/<PROVIDER>_DEVDOC.txt"
+    [ ] Review "Basic Queries Supported" section -- this is the ONLY authority
+        for WHICH queries to build. Metadata existence alone does NOT authorize
+        building a query.
+
+================================================================================
 1. 3-BUNDLE STRUCTURE
 ================================================================================
 

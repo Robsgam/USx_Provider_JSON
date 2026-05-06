@@ -8,7 +8,7 @@ Consolidated: 2026-05-04
 ## Repo Structure
 
 ```
-providers/{PROVIDER}/     -- 8 provider builds (NJ, AZ, FL, HI, LA, NY, TX, CA)
+providers/{PROVIDER}/     -- 18 providers (8 active + 10 new)
 knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
@@ -519,6 +519,21 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 - Add to the appropriate KB file (PLATFORM_CONSTRAINTS.txt, IMPORT_ERRORS.txt)
 - Fire the KB update trigger above
 
+**TRIGGER: You create a new provider folder**
+- Verify folder name matches XML filename (minus .xml) BEFORE creating
+- Create full canonical structure (docs/, tests/, phases/, scripts/, source/)
+- Copy HIDLE.json from templates/ to source/
+- Add provider to CLAUDE.md provider table
+- Add provider to tools/new_test_log.ps1 knownPaths
+- Update README.txt provider count if needed
+
+**TRIGGER: You rename a provider**
+- git mv the folder
+- Rename all doc files (STATUS.txt, BUILD_NOTES.txt, SQVR.txt)
+- Update content in all doc files
+- Update CLAUDE.md, README.txt, new_test_log.ps1
+- Grep full repo for old name to catch stragglers
+
 **TRIGGER: You are about to end your response**
 - Run the END-OF-RESPONSE VERIFICATION below
 
@@ -633,6 +648,8 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 Every provider under `providers/` MUST have this structure. All new providers follow the same layout.
 
+**NAMING RULE**: `<PROVIDER>` MUST match the metadata XML filename minus `.xml`. Verify before creating the folder. See `BUILD_RULES.txt` Section 0.
+
 ```
 providers/<PROVIDER>/
 ├── <PROVIDER>_BASE.json                   # Current BASE JSON
@@ -665,14 +682,33 @@ When a repo does not match this structure, fix it before doing any other work.
 
 ## Quick Start — New Provider
 
+### Step 0: Naming (CRITICAL — do this FIRST)
+- Open the metadata XML file and read its filename
+- Provider folder name MUST match the XML filename minus `.xml`
+- Example: `NM_NMLETS_OFML.xml` → folder `providers/NM_NMLETS_OFML/`
+- Do NOT guess from devdoc titles, abbreviations, or user-supplied names
+- Mismatched names require renaming 10+ files per provider (see `BUILD_RULES.txt` Section 0)
+
+### Step 1: Setup
 1. Read `knowledge-base/README.txt` then this file
-2. Create repo with canonical structure above
-3. Copy `templates/HIDLE.json` to `source/`
-4. Copy metadata XML and devdoc PDF to `source/`
-5. Create build script in `scripts/`
-6. Phase 1: single card, all entities, confirm all query paths
-7. GATE 1 after every build (report + commit + push)
-8. Create SQVR with [PENDING] markers for every query path
-9. Phase 2: multi-card for entities with 2+ search paths
-10. Phase 3: split entity only if needed (NCIC state pattern usually avoids this)
-11. GATE 5 before declaring any variant DONE
+2. Create provider folder with canonical structure (see above)
+3. Copy metadata XML and devdoc PDF to `source/`
+4. Copy `templates/HIDLE.json` to `source/HIDLE.json`
+5. Convert PDF to text: `pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt`
+6. Run `extract_queries.ps1 -XmlPath source/<PROVIDER>.xml` to populate SQVR
+7. Read devdoc "Basic Queries Supported" — this is the ONLY authority for WHICH queries to build
+
+### Step 2: Build
+8. Create build script in `scripts/` (must include validator call + dual output)
+9. Phase 1: single card, all entities, confirm all query paths
+10. GATE 1 after every build (report + commit + push)
+11. Update SQVR with [PENDING] markers for every query path
+
+### Step 3: Iterate
+12. Phase 2: multi-card for entities with 2+ search paths
+13. Phase 3: split entity only if needed (NCIC state pattern usually avoids this)
+14. GATE 5 before declaring any variant DONE
+
+### Bulk Onboarding (10+ providers)
+See `TESTING_REQUIREMENTS.txt` Section 16 for the complete workflow.
+Key rule: batch setup (folders, source materials), serial builds (one provider at a time).

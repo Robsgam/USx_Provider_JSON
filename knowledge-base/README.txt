@@ -30,7 +30,8 @@ FILES IN THIS FOLDER (9 files, organized by question)
   README.txt               This file -- index and overview
 
   BUILD_RULES.txt          "How do I structure a provider JSON?"
-                           3-bundle architecture, AUTH/QMF/QRDM configs, RMS patches 1-6,
+                           Provider naming and folder setup (Section 0), 3-bundle
+                           architecture, AUTH/QMF/QRDM configs, RMS patches 1-6,
                            QIF layout structure, build phase model, state field patterns,
                            entity field patterns, layout constraints, type safety rules
 
@@ -59,7 +60,8 @@ FILES IN THIS FOLDER (9 files, organized by question)
                            decisions, RMS patch checklist, defaults/usability audit,
                            pre/post-import checklists, instance-specific behaviors,
                            confirmation status matrix, mandatory gates (2-5),
-                           test sequences, validator markers, failure investigation
+                           test sequences, validator markers, failure investigation,
+                           bulk provider onboarding workflow (Section 16)
 
   IMPORT_ERRORS.txt        "Why did import fail?"
                            7 known import errors with root cause and fix
@@ -69,9 +71,15 @@ FILES IN THIS FOLDER (9 files, organized by question)
                            14 attribute rule handlers, 1 special handler.
                            Origin map, dead ends, build script checklist.
 
+  BEFORE ANYTHING ELSE -- NAMING RULE:
+    Provider folder name MUST match the metadata XML filename minus .xml.
+    Example: NM_NMLETS_OFML.xml -> folder providers/NM_NMLETS_OFML/
+    Verify the XML filename BEFORE creating the folder. Mismatches require
+    renaming 10+ files per provider. See BUILD_RULES.txt Section 0.
+
   READ ORDER FOR A NEW PROVIDER:
     1. README.txt (this file)
-    2. BUILD_RULES.txt (understand the structure before writing any code)
+    2. BUILD_RULES.txt (Section 0 naming + structure before writing any code)
     3. PLATFORM_CONSTRAINTS.txt (know the immutable constraints and dead ends)
     4. FIELD_REFERENCE.txt (look up every field type and code type pairing)
     5. QIDM_REFERENCE.txt (combination and routing rules)
@@ -91,6 +99,9 @@ FILES IN THIS FOLDER (9 files, organized by question)
     Cross-provider consistency:     PROVIDER_CONSTRAINTS.txt (bottom section)
     Anti-patterns by number:        PLATFORM_CONSTRAINTS.txt (cross-reference index)
     Defaults and usability:         TESTING_REQUIREMENTS.txt Section 6
+    Bulk provider onboarding:       TESTING_REQUIREMENTS.txt Section 16
+    Provider naming/folder setup:   BUILD_RULES.txt Section 0
+    Rename propagation checklist:   BUILD_RULES.txt Section 0
 
 ================================================================================
 TOOLS
