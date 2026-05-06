@@ -1,8 +1,8 @@
 CONNECTCIC IMPORT ERROR REFERENCE
 ===================================
 Known import error messages with root cause and fix.
-Last updated: 2026-04-29
-Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
+Last updated: 2026-05-06
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, LA_LETTS_OFML
 
 ================================================================================
 "Duplicate key references found in query input data mapping"
@@ -18,21 +18,21 @@ Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LETTS_OFML
     - Trying to merge them into one QIDM with two combinations triggers this error.
 
   Fix options (in order of preference):
-    1. Check if MetaData defines a SEPARATE TRANSACTION for the second path.
+    1. INVENT A DISTINCT KEYREF for the second combination.
+       keyRef is platform-internal only — provider does NOT validate it.
+       Example: DALL (OLN path) + DALH (Name path) in a single QIDM.
+       Confirmed: NY v1.19, AZ v1.0.
+       See QIDM_REFERENCE.txt Section 4.
+    2. Check if MetaData defines a SEPARATE TRANSACTION for the second path.
        Example: NyNyspinDriverLicenseNameQuery (keyRef=DGRP) for DL Name path.
        Use that transaction with its own QIDM. Different query name = no conflict.
-    2. Use DH-suffix fieldId pattern (FL_FCIC). Give the second path unique form
+    3. Use DH-suffix fieldId pattern (FL_FCIC). Give the second path unique form
        fieldIds in set[]. Both QIDMs can now coexist with distinct keyRefs.
-    3. If neither applies: the second path is not implementable. Document it and
-       notify the vendor to assign distinct keyRefs or register a new transaction.
+    4. Only after 1-3 fail: declare not implementable. Document and notify vendor.
 
   What NOT to do:
     - DO NOT change the validator from FAIL to WARN and try to import anyway.
-      The platform will reject it regardless. The validator WARN change just masked
-      the problem. Always revert validator to FAIL after this error.
-    NOTE: Invented keyRefs DO work for resolving duplicate keyRef conflicts within
-    a single QIDM -- see QIDM_REFERENCE.txt Section 4. The import error only
-    occurs when two combinations in one QIDM share the SAME keyReference value.
+      The platform will reject it regardless.
 
   Confirmed: NJ v3.12 (investigation), NY v1.13 (import failed 2026-04-14)
 

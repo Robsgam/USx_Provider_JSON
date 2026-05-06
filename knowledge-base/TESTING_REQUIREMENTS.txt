@@ -1,7 +1,7 @@
 CONNECTCIC TESTING REQUIREMENTS
 ==================================
 How to build, test, and validate a provider JSON.
-Last updated: 2026-05-04
+Last updated: 2026-05-06
 
 Consolidated from: BUILD_CHECKLIST.txt, TESTING_LIMITATIONS.txt, DEFAULTS_USABILITY.txt.
 
@@ -139,14 +139,18 @@ SECTION 2 -- PRE-BUILD CHECKLIST
       in QIDM?
   [ ] Check every SEX field: verify instance-specific reverse-lookup
       status first.
-      NJ confirmed: attributeTypeId=SEX + codeTypeProvider=NIBRS
-      FL confirmed: NIBRS_SEX + CommSys-only (reverse-lookup fails)
-      Unknown instance: default to codeTypeCategory=NIBRS_SEX (safe)
-      See FIELD_REFERENCE.txt for per-instance status.
+      NJ/AZ/FL confirmed: attributeTypeId=SEX + codeTypeProvider=NIBRS
+      (full pattern works on all tested single-QIF instances)
+      Unknown instance: default to full NIBRS pattern (preferred);
+      fall back to NIBRS_SEX/NIBRS CommSys-only ONLY if entity-split
+      design creates duplicate targetField (avoid entity-split).
+      See FIELD_REFERENCE.txt Section 4 for per-instance status.
   [ ] Check every RACE field: codeTypeCategory=NIBRS_RACE, NOT
       attributeTypeId=RACE
-  [ ] Check every state field: dual-field pattern in place?
-      (SelH 'RegistrationState' for RMS + InpH for XML)
+  [ ] Check every state field: NCIC state pattern in place?
+      (single RegistrationState with attributeTypeId=STATE +
+      codeTypeProvider=NCIC on CommSys QIDM). Dual-field is
+      fallback only -- see BUILD_RULES.txt Section 7.
   [ ] Check every QIDM: all keyReferences unique within each QIDM?
   [ ] Check every combination: set[] and any[] values reference valid
       sourceField names?
@@ -371,38 +375,39 @@ SECTION 5 -- DEFAULTS AND USABILITY
     HI:  TypeCode = "1", RelatedSearchHitIndicator = "Y"
     FL:  Driver History Purpose = "C"
 
-  CROSS-PROJECT AUDIT (2026-04-29):
+  CROSS-PROJECT AUDIT (2026-05-06):
 
-    | Default      | NJ     | NY     | HI     | AZ     | FL     | TX     |
-    |--------------|--------|--------|--------|--------|--------|--------|
-    | State        | NJ (S) | -- (S) | HI (!) | AZ (S) | FL (!) | TX (!) |
-    | PlateType=PC | PC     | PC     | PC     | --     | --     | --     |
-    | PlateYear    | 2026   | 2026   | 2026   | --     | --     | --     |
-    | Image(Veh)   | N      | --     | N      | --     | --     | --     |
-    | Image(Per)   | Y      | --     | --     | --     | Y      | --     |
-    | Image(Other) | N      | --     | --     | --     | --     | --     |
+    PlateType=PC and PlateYear=<year> are now MANDATORY for all 8 providers.
+    Confirmed applied: all 8 providers as of 2026-05-06.
+    See PROVIDER_CONSTRAINTS.txt cross-provider rule #5.
 
-    Legend: (S) = Safe/correct  (!) = Has in/out split, review needed
-            -- = Missing
+    | Default      | NJ     | NY     | HI     | AZ     | FL     | TX     | LA     | CA     |
+    |--------------|--------|--------|--------|--------|--------|--------|--------|--------|
+    | State        | NJ (S) | -- (S) | HI (!) | AZ (S) | FL (!) | TX (!) | LA (!) | -- (S) |
+    | PlateType=PC | PC     | PC     | PC     | PC     | PC     | PC     | PC     | PC     |
+    | PlateYear    | 2026   | 2026   | 2026   | 2026   | 2026   | 2026   | 2026   | 2026   |
+    | Image(Veh)   | N      | N      | N      | N      | N      | N      | N      | n/a    |
+    | Image(Per)   | Y      | Y      | Y      | Y      | Y      | Y      | Y      | n/a    |
+    | Image(Other) | N      | N      | N      | N      | N      | N      | N      | n/a    |
+
+    Legend: (S) = Safe/correct  (!) = Has in/out split, review on import
+            -- = Intentionally blank (correct)   n/a = not in metadata
 
     STATE DEFAULT SAFETY:
       NJ  -- SAFE. NCIC state pattern, all combos In/Out. State=NJ.
       NY  -- SAFE. Correctly blank. Has in/out split on Vehicle and
-             Person DL/DH.
-      HI  -- REVIEW. Has in/out split on Vehicle (M55L/M55S In,
-             RQ/RQV Out). State=HI currently set. Verify during import.
+             Person DL/DH (LIMITATION #30).
+      HI  -- REVIEW. Has in/out split on Vehicle. State=HI set.
+             Verify during import.
       AZ  -- SAFE. NCIC state pattern confirmed. State=AZ.
-      FL  -- REVIEW. Has in/out split on Vehicle (FRQ In) and Boat
-             (FBQ In, BQ Out). State=FL currently set. Review when
-             entity-split unblocked.
-      TX  -- REVIEW. Person has in-state-only combos (DQ In, CPL In,
-             RSDWW In, KQ In). State=TX currently set. Review during
-             rebuild.
-
-    CONSISTENCY GAPS (safe to address):
-      AZ, FL, TX: Missing PlateType=PC, PlateYear=<year>
-      NY, AZ, TX: Missing ImageIndicator defaults
-      FL:         Missing ImageIndicator on non-Person entities
+      FL  -- REVIEW. Has in/out split on Vehicle and Boat. State=FL
+             set. Verify during import.
+      TX  -- REVIEW. Person has in-state-only combos. State=TX set.
+             Verify during import.
+      LA  -- REVIEW. Has DP/DQ routing toggle. State=LA set.
+             Verify during import.
+      CA  -- SAFE. Correctly blank. Has in/out split on all entities
+             (IA.* vs NLTS.* keyRefs). LIMITATION #30.
 
   AUDIT PROCEDURE (run for every new JSON):
 
@@ -557,17 +562,16 @@ SECTION 9 -- UNCONFIRMED PLATFORM FEATURES
 SECTION 10 -- CONFIRMATION STATUS MATRIX
 ================================================================================
 
-  | Feature                    | NJ  | AZ  | FL  | NY  | HI  | TX  | LA  |
-  |----------------------------|-----|-----|-----|-----|-----|-----|-----|
-  | NCIC state reverse-lookup  | YES | YES | --  | YES | --  | --  | --  |
-  | SexCode reverse-lookup     | YES | YES | YES*| --  | --  | --  | --  |
-  | dexStateUserId badge       | --  | YES | --  | --  | --  | --  | --  |
-  | FIRST_RESPONDER layout     | --  | --  | --  | --  | --  | --  | --  |
-  | Entity-split reverse-lookup| n/a | n/a | NO  | n/a | n/a | n/a | n/a |
+  | Feature                    | NJ  | AZ  | FL  | NY  | HI  | TX  | LA  | CA  |
+  |----------------------------|-----|-----|-----|-----|-----|-----|-----|-----|
+  | NCIC state reverse-lookup  | YES | YES | --  | YES | --  | --  | --  | --  |
+  | SexCode reverse-lookup     | YES | YES | YES | --  | --  | --  | --  | --  |
+  | dexStateUserId badge       | --  | YES | --  | --  | --  | --  | --  | --  |
+  | FIRST_RESPONDER layout     | --  | --  | --  | --  | --  | --  | --  | --  |
 
   YES = confirmed working     NO = confirmed broken     -- = untested
-  * FL single-QIF only; entity-split broken (LIMITATION #28)
-  n/a = not applicable (single QIF design)
+  FL sex: confirmed working on single-QIF design (FL-9). Entity-split
+  designs break reverse-lookup due to duplicate targetField (LIMITATION #28).
 
 ================================================================================
 SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
@@ -706,10 +710,12 @@ SECTION 15 -- FAILURE INVESTIGATION
 
   WHEN A LIMITATION IS CONFIRMED:
 
-    [ ] Add to [PROVIDER]_LIMITATIONS.txt (provider-specific file)
+    [ ] Add to PROVIDER_CONSTRAINTS.txt in knowledge-base/ (provider
+        section) if provider-specific
     [ ] Add to PLATFORM_CONSTRAINTS.txt in knowledge-base/ (if
         platform-wide)
     [ ] Add to PLATFORM_CONSTRAINTS.txt anti-patterns section (if it
         is a dead end)
     [ ] Note in BUILD_NOTES.txt REASON section
+    [ ] Update provider STATUS.txt limitations section
     [ ] Consider notifying vendor if server-side change is required

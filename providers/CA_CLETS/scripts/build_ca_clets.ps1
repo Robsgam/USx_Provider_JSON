@@ -817,3 +817,6 @@ Write-Host "Built CA_CLETS_BASE.json v${Version}"
 Write-Host "  -> $OUT (minified)"
 Write-Host "  -> $OUTREAD (readable)"
 Write-Host "  -> $VEROUT (phase archive)"
+
+$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
+powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT

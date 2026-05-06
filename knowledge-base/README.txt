@@ -163,6 +163,27 @@ TOOLS
     codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
     Usage: -OutFile <path>
 
+  tools/check_docs.ps1
+    Documentation consistency gate. Verifies version numbers and status
+    match across all provider docs (STATUS.txt, SQVR.txt, BUILD_NOTES.txt,
+    JSON_INVENTORY.md, CLAUDE.md).
+    Usage: .\check_docs.ps1
+
+  tools/extract_queries.ps1
+    Parses metadata XML and extracts all query transactions, fields, and
+    combinations into a structured SQVR-ready tracking file.
+    Usage: .\extract_queries.ps1 -XmlPath <metadata.xml> [-OutFile <path>]
+
+  tools/preflight_check.ps1
+    Pre-build validation against PROVIDER_CONFIG.txt. Catches configuration
+    drift (BirthDate format, provider name, date format) before the build runs.
+    Usage: .\preflight_check.ps1
+
+  tools/report_cad_mapping.ps1
+    Generates an HTML report mapping CAD field names to each provider JSON's
+    field configuration. Shows sourceField->targetField per QIDM.
+    Usage: .\report_cad_mapping.ps1 -Path <json> -OutFile <path>
+
   tools/audit_repo.ps1
     Full monorepo consistency audit. Checks KB docs, build scripts, tools,
     provider JSONs, and CLAUDE.md for drift, stale references, missing
