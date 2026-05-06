@@ -1,8 +1,8 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-05-04
-JSON version: v2.0 BASE / v2.0-mc MC
-Validator: 64 PASS / 0 FAIL / 3 WARN / 2 LIMITATION (2026-05-04, monorepo re-validation)
+Last updated: 2026-05-06
+JSON version: v2.3 BASE / v2.3 MC
+Validator: BASE 66P/0F/7W/1LIM | MC 66P/0F/0W/1LIM (2026-05-06)
 Live test: BASE 17/17 PASS, MC 57/57 PASS (2026-04-29)
 Simulation: BASE 11/11 FIRE, MC 11/11 FIRE (2026-04-30)
 
@@ -10,9 +10,8 @@ NOTE: Live tests (2026-04-29) were performed without per-test XML log captures.
 [CONFIRMED] markers are based on test summary results.
 CommSys simulation logs with XML captures added 2026-04-30 (tests/ directory).
 
-KNOWN LIMITATIONS (validator [LIMITATION] items, no action needed):
+KNOWN LIMITATIONS (1, validator [LIMITATION] items, no action needed):
   1. DL combo order: DQN(2 set) before DQ(3 set) -- correct by operational priority (OLN before Name)
-  2. Vehicle dual QIDMs: no queriesToDeselect -- by design, RandomRequest gates co-fire (LIMITATION #24)
 
 FIXES APPLIED 2026-04-30:
   - AUTH combo: added keyReference "AUTH"
