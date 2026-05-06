@@ -1,0 +1,971 @@
+==============================================================================
+  QUERY TRANSACTIONS IN METADATA (check devdoc for supported query list)
+  Source: TX_TLETS.xml
+  Generated: 2026-05-06 12:31
+==============================================================================
+
+State: TX  System: TLETS  Version: 30
+
+QUERY TRANSACTIONS FOUND: 29
+------------------------------------------------------------------------------
+
+CATEGORY SUMMARY
+----------------------------------------
+  Standard (6):
+    ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery
+    GunQuery, VehicleRegistrationQuery
+
+  WMPI (5):
+    WMPIMissingPersonQuery, WMPIProtectionOrderQuery, WMPISexOffenderQuery
+    WMPIUnidentifiedPersonQuery, WMPIWantedPersonQuery
+
+  CCH (state-prefixed) (8):
+    CCHCriminalHistoryAQQuery, CCHCriminalHistoryARQuery
+    CCHCriminalHistoryFQQuery, CCHCriminalHistoryIQQuery
+    CCHCriminalHistoryQHQuery, CCHCriminalHistoryQRQuery
+    CCHCriminalHistoryQWIQuery, CCHCriminalHistoryZRQuery
+
+  Provider-specific (10):
+    ProtectiveOrderQuery, SexOffenderQuery, StolenSecuritiesQuery
+    StolenVehicleQuery, TxDriverHistoryQuery, TxDriverMultiQuery
+    TxRSDWMultiQuery, TxVehicleRegistrationQuery
+    VehicleInsuranceRegistrationQuery, WantedPersonQuery
+
+==============================================================================
+
+------------------------------------------------------------------------------
+ArticleSingleQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  ArticleSerialNumber        Alphanumeric  20    
+  ArticleTypeCode            Alphanumeric  7     
+  ImageIndicator             Alphanumeric  1     
+  NCICNumber                 Alphanumeric  10    
+  RelatedHitSearchIndicator  Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QA
+     primary: ArticleSerialNumber
+     set: 
+     any: [ImageIndicator, RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+BoatQuery (v13)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BoatHullIdNumber           Alphanumeric  20    
+  ImageIndicator             Alphanumeric  1     
+  NCICNumber                 Alphanumeric  10    
+  RegistrationNumber         Alphanumeric  11    
+  RelatedHitSearchIndicator  Alphanumeric  1     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (5):
+
+  1. keyRef: QB
+     primary: RegistrationNumber
+     set: RegistrationNumber
+     any: [BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator]
+
+  2. keyRef: QB
+     primary: BoatHullIdNumber
+     set: BoatHullIdNumber
+     any: [ImageIndicator, RelatedHitSearchIndicator]
+
+  3. keyRef: QB
+     primary: NCICNumber
+     set: NCICNumber
+     any: [ImageIndicator, RelatedHitSearchIndicator]
+
+  4. keyRef: BQ
+     primary: RegistrationNumber
+     set: RegistrationNumber
+     any: [State]
+
+  5. keyRef: BQ
+     primary: BoatHullIdNumber
+     set: BoatHullIdNumber
+     any: [State]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryAQQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Alphanumeric  30    
+  FreeText                   Alphanumeric  14400 
+  InquiryReason              Alphanumeric  75    
+  NletsDestination           Alphanumeric  9     
+  NletsDestination2          Alphanumeric  9     
+  NletsDestination3          Alphanumeric  9     
+  NletsDestination4          Alphanumeric  9     
+  NletsDestination5          Alphanumeric  9     
+  PurposeCode                Alphabetic    1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: AQ
+     primary: FreeText
+     set: Attention, FreeText, InquiryReason, NletsDestination, PurposeCode
+     any: [NletsDestination2, NletsDestination3, NletsDestination4, NletsDestination5]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryARQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (5):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Alphanumeric  30    
+  FreeText                   Alphanumeric  14400 
+  InquiryReason              Alphanumeric  75    
+  NletsDestination           Alphanumeric  9     
+  PurposeCode                Alphabetic    1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: AR
+     primary: FreeText
+     set: Attention, FreeText, InquiryReason, NletsDestination, PurposeCode
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryFQQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCityState           Alphanumeric  30    
+  AddressStreet              Alphanumeric  30    
+  AddressZipCode             Alphanumeric  9     
+  Attention                  Alphanumeric  30    
+  BuildingName               Alphanumeric  30    
+  DepartmentName             Alphanumeric  30    
+  InquiryReason              Alphanumeric  75    
+  NletsDestination           Alphanumeric  2     
+  PurposeCode                Alphabetic    1     
+  State                      Alphanumeric  2     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (1):
+
+  1. keyRef: FQ
+     primary: StateIdNumber
+     set: Attention, InquiryReason, PurposeCode, StateIdNumber
+     any: [AddressCityState, AddressStreet, AddressZipCode, BuildingName, DepartmentName, NletsDestination, State]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryIQQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (15):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Alphanumeric  30    
+  BirthDate                  Alphanumeric  8     
+  InquiryReason              Alphabetic    75    
+  MiscellaneousNumber        Alphanumeric  15    
+  Name                       Alphanumeric  30    
+  NletsDestination           Alphanumeric  2     
+  NletsDestination2          Alphanumeric  2     
+  NletsDestination3          Alphanumeric  2     
+  NletsDestination4          Alphanumeric  2     
+  NletsDestination5          Alphanumeric  2     
+  PurposeCode                Alphabetic    1     
+  RaceCode                   Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+  SocialSecurityNumber       Numeric       9     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (1):
+
+  1. keyRef: IQ
+     primary: Name
+     set: Attention, BirthDate, InquiryReason, Name, PurposeCode, SexCode
+     any: [MiscellaneousNumber, NletsDestination, NletsDestination2, NletsDestination3, NletsDestination4, NletsDestination5, RaceCode, SocialSecurityNumber, State]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQHQuery (v6)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          8     
+  FBINumber                  Alphanumeric  9     
+  InquiryReason              Alphabetic    75    
+  MiscellaneousNumber        Alphanumeric  15    
+  Name                       Name          30    
+  Operator                   Alphanumeric  30    
+  PurposeCode                Alphabetic    1     
+  RaceCode                   Alphabetic    1     
+  Requestor                  Alphanumeric  30    
+  SexCode                    Alphabetic    1     
+  SocialSecurityNumber       Numeric       9     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (4):
+
+  1. keyRef: QH
+     primary: BirthDate
+     set: Requestor, Operator, BirthDate, InquiryReason, Name, PurposeCode, SexCode, RaceCode
+     any: [MiscellaneousNumber, SocialSecurityNumber]
+
+  2. keyRef: QH
+     primary: Name
+     set: Requestor, Operator, InquiryReason, Name, PurposeCode
+
+  3. keyRef: QH
+     primary: StateIdNumber
+     set: InquiryReason, Requestor, Operator, StateIdNumber, PurposeCode
+     any: [Name]
+
+  4. keyRef: QH
+     primary: FBINumber
+     set: InquiryReason, Requestor, Operator, FBINumber, PurposeCode
+     any: [Name]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQRQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (11):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  AddressCityState           Alphanumeric  30    
+  AddressStreet              Alphanumeric  30    
+  AddressZipCode             Alphanumeric  9     
+  Attention                  Alphanumeric  30    
+  BuildingName               Alphanumeric  30    
+  DepartmentName             Alphanumeric  30    
+  FBINumber                  Alphanumeric  9     
+  InquiryReason              Alphanumeric  75    
+  Name                       Name          30    
+  PurposeCode                Alphabetic    1     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (2):
+
+  1. keyRef: QR
+     primary: FBINumber
+     set: Attention, FBINumber, InquiryReason, PurposeCode
+     any: [AddressCityState, AddressStreet, AddressZipCode, BuildingName, DepartmentName, Name]
+
+  2. keyRef: QR
+     primary: StateIdNumber
+     set: Attention, InquiryReason, PurposeCode, StateIdNumber
+     any: [AddressCityState, AddressStreet, AddressZipCode, BuildingName, DepartmentName, Name]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryQWIQuery (v7)
+------------------------------------------------------------------------------
+
+  FIELDS (14):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Attention                    Alphanumeric  30    
+  BirthDate                    Alphanumeric  8     
+  ExpandedBirthDateSearchCode  Alphanumeric  1     
+  ExpandedNameSearchIndicator  Alphanumeric  1     
+  ImageIndicator               Alphanumeric  1     
+  InquiryReason                Alphabetic    75    
+  MiscellaneousNumber          Alphanumeric  15    
+  Name                         Alphanumeric  30    
+  Operator                     Alphanumeric  30    
+  PurposeCode                  Alphanumeric  1     
+  RaceCode                     Alphanumeric  1     
+  RelatedHitSearchIndicator    Alphanumeric  1     
+  SexCode                      Alphanumeric  1     
+  SocialSecurityNumber         Alphanumeric  9     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QWI
+     primary: Name
+     set: InquiryReason, Name, PurposeCode, Attention, Operator
+     any: [ExpandedNameSearchIndicator, ImageIndicator, RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+CCHCriminalHistoryZRQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  FBINumber                  Alphanumeric  9     
+  InquiryReason              Alphabetic    75    
+  PurposeCode                Alphabetic    1     
+  StateIdNumber              Alphanumeric  10    
+
+  COMBINATIONS (2):
+
+  1. keyRef: ZR
+     primary: FBINumber
+     set: FBINumber, InquiryReason
+     any: [PurposeCode]
+
+  2. keyRef: ZR
+     primary: StateIdNumber
+     set: StateIdNumber, InquiryReason
+     any: [PurposeCode]
+
+------------------------------------------------------------------------------
+DriverHistoryQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  Attention                  Alphanumeric  30    
+  BirthDate                  Date          8     
+  EmailAddress               Alphanumeric  80    
+  ImageIndicator             Alphanumeric  1     
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+  PurposeCode                Alphanumeric  1     
+  ReasonCode                 Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+  State                      Alphanumeric  2     
+
+  COMBINATIONS (2):
+
+  1. keyRef: KQ
+     primary: OperatorLicenseNumber
+     set: OperatorLicenseNumber
+     any: [Attention, PurposeCode, State]
+
+  2. keyRef: KQ
+     primary: Name
+     set: Name, BirthDate, SexCode
+     any: [Attention, PurposeCode, State]
+
+------------------------------------------------------------------------------
+DriverLicenseQuery (v15)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  BirthDate                    Date          8     
+  EmailAddress                 Alphanumeric  80    
+  ExpandedBirthDateSearchCode  Alphanumeric  1     
+  ImageIndicator               Alphanumeric  1     
+  MessageKey                   Alphanumeric  3     
+  Name                         Alphanumeric  30    
+  OperatorLicenseNumber        Alphanumeric  20    
+  RaceCode                     Alphanumeric  1     
+  ReasonCode                   Alphanumeric  1     
+  RegionId                     Alphanumeric  4     
+  SexCode                      Alphanumeric  1     
+  State                        Alphanumeric  2     
+
+  COMBINATIONS (5):
+
+  1. keyRef: DQ
+     primary: Name
+     set: SexCode, BirthDate, Name
+     any: [EmailAddress, ImageIndicator, ReasonCode, State]
+
+  2. keyRef: QW
+     primary: Name
+     set: BirthDate, Name
+     any: [ExpandedBirthDateSearchCode, RaceCode, RegionId, SexCode]
+
+  3. keyRef: CPL
+     primary: Name
+     set: Name
+     any: [EmailAddress, ImageIndicator, MessageKey, ReasonCode, State]
+
+  4. keyRef: RSDWW
+     primary: OperatorLicenseNumber
+     set: OperatorLicenseNumber
+     any: [EmailAddress, ImageIndicator, ReasonCode, RegionId, State]
+
+  5. keyRef: DQ
+     primary: OperatorLicenseNumber
+     set: OperatorLicenseNumber
+     any: [EmailAddress, ImageIndicator, ReasonCode, State]
+
+------------------------------------------------------------------------------
+GunQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  GunCaliber                 Alphanumeric  4     
+  GunMake                    Alphanumeric  23    
+  GunSerialNumber            Alphanumeric  20    
+  ImageIndicator             Alphanumeric  1     
+  NCICNumber                 Alphanumeric  10    
+  RelatedHitSearchIndicator  Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QG
+     primary: GunSerialNumber
+     set: 
+     any: [ImageIndicator, RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+ProtectiveOrderQuery (v3)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          10    
+  ExpandedNameSearchCode     Alphanumeric  1     
+  Name                       Name          30    
+  RaceCode                   Alphanumeric  1     
+  RelatedHitSearchIndicator  Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QPO
+     primary: Name
+     set: BirthDate, Name
+     any: [ExpandedNameSearchCode, RaceCode, RelatedHitSearchIndicator, SexCode]
+
+------------------------------------------------------------------------------
+SexOffenderQuery (v3)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          10    
+  ExpandedNameSearchCode     Alphanumeric  1     
+  Name                       Name          30    
+  RaceCode                   Alphanumeric  1     
+  RelatedHitSearchIndicator  Alphanumeric  1     
+  SexCode                    Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QXS
+     primary: Name
+     set: BirthDate, Name
+     any: [ExpandedNameSearchCode, RaceCode, RelatedHitSearchIndicator, SexCode]
+
+------------------------------------------------------------------------------
+StolenSecuritiesQuery (v3)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Denomination                 Alphanumeric  9     
+  Issuer                       Alphanumeric  15    
+  NCICNumber                   Alphanumeric  10    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  Owner                        Alphanumeric  40    
+  RelatedSearchHitIndicator    Alphanumeric  1     
+  SecurityDate                 Alphanumeric  8     
+  SecuritySerialNumber         Alphanumeric  18    
+  SecurityTypeCode             Alphanumeric  1     
+  SocialSecurityNumber         Alphanumeric  9     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QS
+     primary: SecuritySerialNumber
+     set: 
+     any: [Issuer, RelatedSearchHitIndicator, SecurityDate]
+
+------------------------------------------------------------------------------
+StolenVehicleQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (4):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  LicensePlateNumber           Alphanumeric  10    
+  RegionId                     Alphanumeric  4     
+  State                        Alphanumeric  2     
+  VehicleIdentificationNumber  Alphanumeric  20    
+
+  COMBINATIONS (2):
+
+  1. keyRef: QV
+     primary: LicensePlateNumber
+     set: LicensePlateNumber
+     any: [RegionId, State]
+
+  2. keyRef: QV
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [RegionId]
+
+------------------------------------------------------------------------------
+TxDriverHistoryQuery (v4)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  BirthDate                  Date          10    
+  Name                       Name          30    
+  OperatorLicenseNumber      Alphanumeric  20    
+
+  COMBINATIONS (1):
+
+  1. keyRef: CPI
+     primary: Name
+     set: 
+
+------------------------------------------------------------------------------
+TxDriverMultiQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  EmailAddress               Alphanumeric  30    
+  ImageIndicator             Alphanumeric  1     
+  OperatorLicenseNumber      Alphanumeric  20    
+  OriginatingAgencyORI       Alphanumeric  9     
+  ReasonCode                 Alphanumeric  1     
+  RegionId                   Alphanumeric  3     
+  RegionId2                  Alphanumeric  3     
+  State                      Alphabetic    2     
+  State2                     Alphabetic    2     
+  State3                     Alphabetic    2     
+  State4                     Alphabetic    2     
+  State5                     Alphabetic    2     
+
+  COMBINATIONS (1):
+
+  1. keyRef: RSDWW
+     primary: OperatorLicenseNumber
+     set: OperatorLicenseNumber
+     any: [EmailAddress, ImageIndicator, OriginatingAgencyORI, ReasonCode, RegionId, RegionId2, State, State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+TxRSDWMultiQuery (v5)
+------------------------------------------------------------------------------
+
+  FIELDS (27):
+  Name                             Type          Size  ValueList
+  -------------------------------  ------------  ----  --------------------
+  BirthDate                        Date          10    
+  DriverHistoryIndicator           Alphabetic    1     
+  EmailAddress                     Alphanumeric  80    
+  EnhancedNameSearchIndicator      Alphabetic    1     
+  ExpandedBirthDateSearchCode      Alphanumeric  1     
+  FinancialResponsibilityTypeCode  Alphanumeric  1     
+  ImageIndicator                   Alphabetic    1     
+  LicensePlateNumber               Alphanumeric  10    
+  LicensePlateTypeCode             Alphanumeric  2     
+  LicensePlateYear                 Alphanumeric  4     
+  Name                             Name          30    
+  OperatorLicenseNumber            Alphanumeric  20    
+  RaceCode                         Alphanumeric  1     
+  ReasonCode                       Alphanumeric  1     
+  RegionalDatabase                 Alphanumeric  3     
+  RegionalDatabase2                Alphanumeric  3     
+  RegistrationTypeCode             Alphanumeric  1     
+  SexCode                          Alphanumeric  1     
+  State                            Alphanumeric  2     
+  State2                           Alphanumeric  2     
+  State3                           Alphanumeric  2     
+  State4                           Alphanumeric  2     
+  State5                           Alphanumeric  2     
+  VehicleIdentificationNumber      Alphanumeric  20    
+  VehicleMakeCode                  Alphanumeric  4     
+  VehicleStatisticsIndicator       Alphabetic    1     
+  VehicleYear                      Alphanumeric  4     
+
+  COMBINATIONS (2):
+
+  1. keyRef: RSDW
+     primary: Name
+     set: 
+     any: [RegionalDatabase, RegionalDatabase2, State, State2, State3, State4, State5]
+
+  2. keyRef: RSDWW
+     primary: OperatorLicenseNumber
+     set: 
+     any: [RegionalDatabase, RegionalDatabase2, State, State2, State3, State4, State5]
+
+------------------------------------------------------------------------------
+TxVehicleRegistrationQuery (v4)
+------------------------------------------------------------------------------
+
+  FIELDS (3):
+  Name                       Type          Size  ValueList
+  -------------------------  ------------  ----  --------------------
+  LicensePlateNumber         Alphanumeric  10    
+  LicensePlateYear           Alphanumeric  2     
+  VehicleRegistrationNumber  Alphanumeric  20    
+
+  COMBINATIONS (2):
+
+  1. keyRef: DPSI
+     primary: LicensePlateNumber
+     set: LicensePlateYear, LicensePlateNumber
+
+  2. keyRef: DPSI
+     primary: VehicleRegistrationNumber
+     set: VehicleRegistrationNumber
+
+------------------------------------------------------------------------------
+VehicleInsuranceRegistrationQuery (v14)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  FinancialResponsibilityType  Alphanumeric  1     
+  LicensePlateNumber           Alphanumeric  10    
+  LicensePlateTypeCode         Alphanumeric  2     
+  LicensePlateYear             Year          4     
+  RegionId                     Alphanumeric  4     
+  State                        Alphanumeric  2     
+  StickerNumber                Alphanumeric  10    
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Year          4     
+
+  COMBINATIONS (7):
+
+  1. keyRef: RQ
+     primary: LicensePlateNumber
+     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
+     any: [State]
+
+  2. keyRef: QV
+     primary: LicensePlateNumber
+     set: LicensePlateNumber
+     any: [RegionId, State]
+
+  3. keyRef: RQ
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [State, VehicleMakeCode, VehicleYear]
+
+  4. keyRef: QV
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [RegionId]
+
+  5. keyRef: DPSI
+     primary: StickerNumber
+     set: StickerNumber
+     any: [State]
+
+  6. keyRef: REG
+     primary: LicensePlateNumber
+     set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
+     any: [State]
+
+  7. keyRef: VIN
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber, FinancialResponsibilityType
+     any: [State]
+
+------------------------------------------------------------------------------
+VehicleRegistrationQuery (v13)
+------------------------------------------------------------------------------
+
+  FIELDS (9):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  LicensePlateNumber           Alphanumeric  10    
+  LicensePlateTypeCode         Alphanumeric  2     
+  LicensePlateYear             Year          4     
+  RegionId                     Alphanumeric  4     
+  State                        Alphanumeric  2     
+  StickerNumber                Alphanumeric  10    
+  VehicleIdentificationNumber  Alphanumeric  20    
+  VehicleMakeCode              Alphanumeric  4     
+  VehicleYear                  Year          4     
+
+  COMBINATIONS (7):
+
+  1. keyRef: RQ
+     primary: LicensePlateNumber
+     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
+     any: [State]
+
+  2. keyRef: QV
+     primary: LicensePlateNumber
+     set: LicensePlateNumber
+     any: [RegionId, State]
+
+  3. keyRef: RQ
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [State, VehicleMakeCode, VehicleYear]
+
+  4. keyRef: QV
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [RegionId]
+
+  5. keyRef: DPSI
+     primary: LicensePlateNumber
+     set: LicensePlateYear, LicensePlateNumber
+     any: [State]
+
+  6. keyRef: DPSI
+     primary: StickerNumber
+     set: StickerNumber
+     any: [State]
+
+  7. keyRef: DPSI
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [State]
+
+------------------------------------------------------------------------------
+WantedPersonQuery (v3)
+------------------------------------------------------------------------------
+
+  FIELDS (6):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  BirthDate                    Date          10    
+  ExpandedBirthDateSearchCode  Alphanumeric  1     
+  Name                         Name          30    
+  RaceCode                     Alphanumeric  1     
+  RegionId                     Alphanumeric  3     
+  SexCode                      Alphanumeric  1     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QWA
+     primary: Name
+     set: 
+     any: [BirthDate, ExpandedBirthDateSearchCode, Name, RaceCode, RegionId, SexCode]
+
+------------------------------------------------------------------------------
+WMPIMissingPersonQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (10):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Alphanumeric  2     
+  EnhancedNameSearchIndicator  Alphanumeric  1     
+  EyeColorCode                 Alphanumeric  3     
+  HairColorCode                Alphanumeric  3     
+  Height                       Alphanumeric  3     
+  Name                         Name          30    
+  RaceCode                     Alphanumeric  1     
+  SexCode                      Alphanumeric  1     
+  State                        Alphanumeric  2     
+  Weight                       Alphanumeric  3     
+
+  COMBINATIONS (1):
+
+  1. keyRef: QM
+     primary: SexCode
+     set: Age, SexCode, RaceCode, EyeColorCode, HairColorCode, Height, Weight
+     any: [EnhancedNameSearchIndicator, Name, State]
+
+------------------------------------------------------------------------------
+WMPIProtectionOrderQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (18):
+  Name                              Type          Size  ValueList
+  --------------------------------  ------------  ----  --------------------
+  BirthDate                         Date          8     
+  EnhancedNameSearchIndicator       Alphanumeric  1     
+  ExpandedBirthDateSearchIndicator  Alphanumeric  1     
+  FBINumber                         Alphanumeric  9     
+  LicensePlateNumber                Alphanumeric  10    
+  LicensePlateState                 Alphanumeric  2     
+  MiscellaneousNumber               Alphanumeric  15    
+  Name                              Name          30    
+  NCICNumber                        Alphanumeric  10    
+  OperatorLicenseNumber             Alphanumeric  20    
+  OriginatingAgencyCaseNumber       Alphanumeric  20    
+  ProtectionOrderNumber             Alphanumeric  15    
+  RaceCode                          Alphanumeric  1     
+  RelatedHitSearchIndicator         Alphanumeric  1     
+  SexCode                           Alphanumeric  1     
+  SocialSecurityNumber              Alphanumeric  9     
+  VehicleIdentificationNumber       Alphanumeric  20    
+  VehicleMakeCode                   Alphanumeric  24    
+
+  COMBINATIONS (6):
+
+  1. keyRef: QPO
+     primary: OriginatingAgencyCaseNumber
+     set: OriginatingAgencyCaseNumber, Name
+
+  2. keyRef: QPO
+     primary: ProtectionOrderNumber
+     set: ProtectionOrderNumber, Name
+
+  3. keyRef: QPO
+     primary: Name
+     set: Name
+
+  4. keyRef: QPO
+     primary: NCICNumber
+     set: NCICNumber
+     any: [LicensePlateState, RelatedHitSearchIndicator]
+
+  5. keyRef: QPO
+     primary: LicensePlateNumber
+     set: Name, LicensePlateNumber
+     any: [LicensePlateState, RelatedHitSearchIndicator]
+
+  6. keyRef: QPO
+     primary: VehicleIdentificationNumber
+     set: Name, VehicleIdentificationNumber, VehicleMakeCode
+     any: [RelatedHitSearchIndicator]
+
+------------------------------------------------------------------------------
+WMPISexOffenderQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (18):
+  Name                              Type          Size  ValueList
+  --------------------------------  ------------  ----  --------------------
+  AddressZipCode                    Alphanumeric  10    
+  BirthDate                         Date          8     
+  EnhancedNameSearchIndicator       Alphanumeric  1     
+  ExpandedBirthDateSearchIndicator  Alphanumeric  1     
+  FBINumber                         Alphanumeric  9     
+  LicensePlateNumber                Alphanumeric  10    
+  LicensePlateState                 Alphanumeric  2     
+  MiscellaneousNumber               Alphanumeric  15    
+  Name                              Name          30    
+  OperatorLicenseNumber             Alphanumeric  20    
+  OriginatingAgencyCaseNumber       Alphanumeric  20    
+  RaceCode                          Alphanumeric  1     
+  RelatedHitSearchIndicator         Alphanumeric  1     
+  SexCode                           Alphanumeric  1     
+  SexOffenderStatusCode             Alphanumeric  1     
+  SocialSecurityNumber              Alphanumeric  9     
+  VehicleIdentificationNumber       Alphanumeric  20    
+  VehicleMakeCode                   Alphanumeric  24    
+
+  COMBINATIONS (5):
+
+  1. keyRef: QXS
+     primary: OriginatingAgencyCaseNumber
+     set: OriginatingAgencyCaseNumber, Name
+
+  2. keyRef: QXS
+     primary: Name
+     set: Name
+
+  3. keyRef: QXS
+     primary: LicensePlateNumber
+     set: LicensePlateNumber
+     any: [LicensePlateState, RelatedHitSearchIndicator]
+
+  4. keyRef: QXS
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [RelatedHitSearchIndicator, VehicleMakeCode]
+
+  5. keyRef: QXS
+     primary: AddressZipCode
+     set: AddressZipCode
+     any: [SexOffenderStatusCode]
+
+------------------------------------------------------------------------------
+WMPIUnidentifiedPersonQuery (v12)
+------------------------------------------------------------------------------
+
+  FIELDS (12):
+  Name                         Type          Size  ValueList
+  ---------------------------  ------------  ----  --------------------
+  Age                          Alphanumeric  2     
+  BodyPartStatusCode           Alphanumeric  15    
+  EyeColorCode                 Alphanumeric  3     
+  HairColorCode                Alphanumeric  3     
+  Height                       Alphanumeric  3     
+  NCICNumber                   Alphanumeric  10    
+  OriginatingAgencyCaseNumber  Alphanumeric  20    
+  RaceCode                     Alphanumeric  1     
+  RelatedHitSearchIndicator    Alphanumeric  1     
+  SexCode                      Alphanumeric  1     
+  State                        Alphanumeric  3     
+  Weight                       Alphanumeric  3     
+
+  COMBINATIONS (4):
+
+  1. keyRef: QU
+     primary: BodyPartStatusCode
+     set: BodyPartStatusCode, SexCode, RaceCode
+     any: [State]
+
+  2. keyRef: QU
+     primary: SexCode
+     set: Age, SexCode, RaceCode, EyeColorCode, HairColorCode, Height, Weight
+
+  3. keyRef: QU
+     primary: NCICNumber
+     set: NCICNumber, RelatedHitSearchIndicator
+     any: [RelatedHitSearchIndicator]
+
+  4. keyRef: QU
+     primary: OriginatingAgencyCaseNumber
+     set: OriginatingAgencyCaseNumber
+
+------------------------------------------------------------------------------
+WMPIWantedPersonQuery (v13)
+------------------------------------------------------------------------------
+
+  FIELDS (16):
+  Name                              Type          Size  ValueList
+  --------------------------------  ------------  ----  --------------------
+  BirthDate                         Date          8     
+  EnhancedNameSearchIndicator       Alphanumeric  1     
+  ExpandedBirthDateSearchIndicator  Alphanumeric  1     
+  FBINumber                         Alphanumeric  9     
+  LicensePlateNumber                Alphanumeric  10    
+  MessageKeyModifier                Alphabetic    1     
+  MiscellaneousNumber               Alphanumeric  15    
+  Name                              Name          30    
+  OperatorLicenseNumber             Alphanumeric  20    
+  OriginatingAgencyCaseNumber       Alphanumeric  20    
+  RaceCode                          Alphanumeric  1     
+  RegionId                          Alphanumeric  3     
+  RelatedHitSearchIndicator         Alphanumeric  1     
+  SexCode                           Alphanumeric  1     
+  SocialSecurityNumber              Alphanumeric  9     
+  VehicleIdentificationNumber       Alphanumeric  20    
+
+  COMBINATIONS (4):
+
+  1. keyRef: QW
+     primary: OriginatingAgencyCaseNumber
+     set: OriginatingAgencyCaseNumber, Name
+     any: [MessageKeyModifier]
+
+  2. keyRef: QW
+     primary: Name
+     set: Name
+     any: [MessageKeyModifier, RegionId]
+
+  3. keyRef: QW
+     primary: LicensePlateNumber
+     set: LicensePlateNumber
+     any: [MessageKeyModifier, RelatedHitSearchIndicator]
+
+  4. keyRef: QW
+     primary: VehicleIdentificationNumber
+     set: VehicleIdentificationNumber
+     any: [MessageKeyModifier, RelatedHitSearchIndicator]
+
+==============================================================================
+TOTALS: 29 query transactions, 73 combinations
+==============================================================================
