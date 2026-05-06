@@ -38,11 +38,11 @@ if (-not $ProviderDir) {
         'CA_VENTURA_COUNTY'   = "$repoRoot\providers\CA_VENTURA_COUNTY"
         'CA_CONTRA_COSTA'     = "$repoRoot\providers\CA_CONTRA_COSTA"
         'CA_eSUN'             = "$repoRoot\providers\CA_eSUN"
-        'CA_SAN_LOUIS_OBISPO' = "$repoRoot\providers\CA_SAN_LOUIS_OBISPO"
+        'CA_SAN_LUIS_OBISPO' = "$repoRoot\providers\CA_SAN_LUIS_OBISPO"
         'IL_LEADS_OFML'       = "$repoRoot\providers\IL_LEADS_OFML"
         'MD_METERS'           = "$repoRoot\providers\MD_METERS"
         'OH_LEADS'            = "$repoRoot\providers\OH_LEADS"
-        'NM_NMLETS'           = "$repoRoot\providers\NM_NMLETS"
+        'NM_NMLETS_OFML'           = "$repoRoot\providers\NM_NMLETS"
         'OR_LEDS'             = "$repoRoot\providers\OR_LEDS"
         'TN_TIES'             = "$repoRoot\providers\TN_TIES"
     }

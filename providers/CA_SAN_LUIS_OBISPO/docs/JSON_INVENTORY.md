@@ -1,4 +1,4 @@
-﻿# CA_SAN_LOUIS_OBISPO JSON Inventory
+﻿# CA_SAN_LUIS_OBISPO JSON Inventory
 
 | Version | Variant | Date | File | Notes |
 |---------|---------|------|------|-------|

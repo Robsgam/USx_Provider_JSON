@@ -29,11 +29,11 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | -- | NOT STARTED | |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | NOT STARTED | |
 | CA_eSUN | providers/CA_eSUN/ | -- | NOT STARTED | Attention handler reference, OOS DL bug reference |
-| CA_SAN_LOUIS_OBISPO | providers/CA_SAN_LOUIS_OBISPO/ | -- | NOT STARTED | |
+| CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | -- | NOT STARTED | |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | -- | NOT STARTED | |
 | MD_METERS | providers/MD_METERS/ | -- | NOT STARTED | |
 | OH_LEADS | providers/OH_LEADS/ | -- | NOT STARTED | |
-| NM_NMLETS | providers/NM_NMLETS/ | -- | NOT STARTED | |
+| NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | -- | NOT STARTED | |
 | OR_LEDS | providers/OR_LEDS/ | -- | NOT STARTED | |
 | TN_TIES | providers/TN_TIES/ | -- | NOT STARTED | |
 
