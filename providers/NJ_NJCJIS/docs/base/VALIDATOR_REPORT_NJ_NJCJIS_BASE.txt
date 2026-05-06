@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-06 10:53
+  Generated: 2026-05-06 14:17
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,6 +23,7 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' ImageIndicator default='N' for Vehicle
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
@@ -33,9 +34,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Article' -> Article : 6 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
-  [WARN] Vehicle missing fieldId 'PlateType' -- standard default PC -- missing means officer must manually select
   [WARN] Vehicle missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
-  [WARN] Vehicle missing PlateYear/LicensePlateYear -- standard default is current year
   [WARN] Person missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
   [WARN] Article missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
   [WARN] Boat missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
@@ -96,7 +95,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo 'QBN': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 66 PASS / 0 FAIL / 7 WARN / 1 LIMITATION
+  RESULTS: 67 PASS / 0 FAIL / 5 WARN / 1 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Review WARN items -- they may cause runtime issues.

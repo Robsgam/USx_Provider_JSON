@@ -55,13 +55,11 @@ VALIDATOR RESULTS
   | MC      | v1.3    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
   | BASE    | v1.4    | 63P/0F/3W/5LIM       | CLEAN  | 2026-05-06 |
   | MC      | v1.4    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
-  | BASE    | v1.5    | 63P/0F/2W/5LIM       | CLEAN  | 2026-05-06 |
-  | MC      | v1.5    | 67P/0F/0W/7LIM       | CLEAN  | 2026-05-06 |
+  | BASE    | v1.5    | 64P/0F/0W/5LIM       | CLEAN  | 2026-05-06 |
+  | MC      | v1.5    | 68P/0F/0W/7LIM       | CLEAN  | 2026-05-06 |
 
-  BASE WARN (2): validator checks PascalCase 'PlateType'/'PlateYear' but CA uses 'licensePlateTypeCode'/'licensePlateYear'
-    -> Defaults are set (PC/2026); WARNs are validator false-positive on camelCase fieldId naming
-  MC WARN (1): PlateYear missing initialValue
-    -> Intentional per LIMITATION #30
+  BASE WARN (0): All false-positive WARNs resolved (validator now recognizes camelCase fieldIds)
+  MC WARN (0): Clean
   LIMITATION (BASE 5 / MC 7): combo ordering, 2 Person QIDMs co-fire, DL+DH no DH-suffix,
     no queriesToDeselect, MC cross-entity combo ordering (Gun, Vehicle, Boat)
     -> All by design

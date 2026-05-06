@@ -305,14 +305,14 @@ if ($entitiesBundle) {
 
                 # G-1: Standard field defaults (check only 'default' layout to avoid 3x noise)
                 if ($layoutName -eq 'default' -and $node.props -and $node.props.fieldId) {
-                    if ($node.props.fieldId -eq 'PlateType' -and $node.type.resolvedName -eq 'FormSelect') {
+                    if ($node.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $node.type.resolvedName -eq 'FormSelect') {
                         if ($node.props.initialValue -ne 'PC') {
                             Write-Warn "QIF '$($cfg.name)' PlateType initialValue='$($node.props.initialValue)' -- standard is 'PC'"
                         } else {
                             Write-Pass "QIF '$($cfg.name)' PlateType initialValue='PC'"; Inc-Pass
                         }
                     }
-                    if ($node.props.fieldId -match '^(LicensePlateYear|PlateYear)$') {
+                    if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$') {
                         if (-not $node.props.initialValue) {
                             Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' missing initialValue -- standard is current year"
                         }
@@ -403,7 +403,7 @@ if ($entitiesBundle) {
                         Write-Warn "QIF '$($cfg.name)' uses deprecated fieldId='$($node.props.fieldId)' -- use 'licensePlateNumber' (no In/Out suffix)"
                     }
                     # PlateYear current year check
-                    if ($node.props.fieldId -match '^(LicensePlateYear|PlateYear)$' -and $node.props.initialValue) {
+                    if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$' -and $node.props.initialValue) {
                         $currentYear = (Get-Date).Year.ToString()
                         if ($node.props.initialValue -ne $currentYear) {
                             Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' initialValue='$($node.props.initialValue)' -- current year is $currentYear"
@@ -602,7 +602,7 @@ if ($entitiesBundle) {
     # Expected fields per entity type (field existence checks)
     $expectedFieldsByEntity = @{
         'Vehicle' = @(
-            @{ fieldId='PlateType'; altFieldId='LicensePlateTypeCode'; severity='WARN'; reason='standard default PC -- missing means officer must manually select' }
+            @{ fieldId='PlateType'; altFieldIds=@('LicensePlateTypeCode','licensePlateTypeCode'); severity='WARN'; reason='standard default PC -- missing means officer must manually select' }
         )
     }
     # Expected field checks (deduplicated per entity, not per QIF)
@@ -615,7 +615,7 @@ if ($entitiesBundle) {
         if ($expectedFieldsByEntity.ContainsKey($entity)) {
             foreach ($expected in $expectedFieldsByEntity[$entity]) {
                 $found = $fids.Contains($expected.fieldId)
-                if (-not $found -and $expected.altFieldId) { $found = $fids.Contains($expected.altFieldId) }
+                if (-not $found -and $expected.altFieldIds) { foreach ($alt in $expected.altFieldIds) { if ($fids.Contains($alt)) { $found = $true; break } } }
                 if (-not $found) {
                     Write-Warn "$entity missing fieldId '$($expected.fieldId)' -- $($expected.reason)"
                 }
@@ -630,7 +630,7 @@ if ($entitiesBundle) {
         }
 
         if ($entity -eq 'Vehicle') {
-            if (-not $fids.Contains('PlateYear') -and -not $fids.Contains('LicensePlateYear')) {
+            if (-not $fids.Contains('PlateYear') -and -not $fids.Contains('LicensePlateYear') -and -not $fids.Contains('licensePlateYear')) {
                 Write-Warn "Vehicle missing PlateYear/LicensePlateYear -- standard default is current year"
             }
             if (-not $fids.Contains('VehicleYear') -and -not $fids.Contains('VehicleModelYear')) {

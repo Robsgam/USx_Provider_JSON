@@ -7,8 +7,7 @@ v1.5 (2026-05-06) -- PlateType/PlateYear defaults + PurposeCode layout fix
   REASON:  Standard defaults per cross-provider audit (6/8 providers already had them).
            Safe because State (not PlateType/Year) is the combo routing discriminator.
            PurposeCode is auto-filled so belongs at end, not taking prime position.
-  VALIDATOR: BASE 63P/0F/2W/5LIM | MC 67P/0F/0W/7LIM | Verify CLEAN
-  NOTE:    BASE 2 WARN = validator false-positive (checks PascalCase fieldId names)
+  VALIDATOR: BASE 64P/0F/0W/5LIM | MC 68P/0F/0W/7LIM | Verify CLEAN
 
 v1.4 (2026-05-06) -- BirthDate format fix
   CHANGED: CommsysParseDateRuleHandler target format: MMddyyyy -> yyyyMMdd (all BirthDate attrs)

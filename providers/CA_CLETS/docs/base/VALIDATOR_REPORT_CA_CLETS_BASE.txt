@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-06 13:16
+  Generated: 2026-05-06 14:17
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,13 +23,12 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 10 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
-  [WARN] Vehicle missing fieldId 'PlateType' -- standard default PC -- missing means officer must manually select
-  [WARN] Vehicle missing PlateYear/LicensePlateYear -- standard default is current year
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 4 combos
@@ -94,8 +93,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 63 PASS / 0 FAIL / 2 WARN / 5 LIMITATION
+  RESULTS: 64 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  5 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 
