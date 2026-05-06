@@ -26,6 +26,16 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | TX_TLETS | providers/TX_TLETS/ | v2.1 | 73P/0F/13W/3LIM IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
 | LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v2.0 | 48P/0F/32W/4LIM IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.5 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC cross-entity, no ImageIndicator, 6 basic queries, yyyyMMdd dates |
+| CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | -- | NOT STARTED | |
+| CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | NOT STARTED | |
+| CA_eSUN | providers/CA_eSUN/ | -- | NOT STARTED | Attention handler reference, OOS DL bug reference |
+| CA_SAN_LOUIS_OBISPO | providers/CA_SAN_LOUIS_OBISPO/ | -- | NOT STARTED | |
+| IL_LEADS_OFML | providers/IL_LEADS_OFML/ | -- | NOT STARTED | |
+| MS_METERS | providers/MS_METERS/ | -- | NOT STARTED | |
+| OH_LEADS | providers/OH_LEADS/ | -- | NOT STARTED | |
+| NM_NMLETS | providers/NM_NMLETS/ | -- | NOT STARTED | |
+| OR_LEDS | providers/OR_LEDS/ | -- | NOT STARTED | |
+| TN_TIES | providers/TN_TIES/ | -- | NOT STARTED | |
 
 ## Legacy Repos (READ-ONLY)
 

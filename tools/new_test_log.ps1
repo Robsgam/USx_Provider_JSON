@@ -35,6 +35,16 @@ if (-not $ProviderDir) {
         'TX_TLETS'            = "$repoRoot\providers\TX_TLETS"
         'LA_LETTS_OFML'       = "$repoRoot\providers\LA_LETTS_OFML"
         'CA_CLETS'            = "$repoRoot\providers\CA_CLETS"
+        'CA_VENTURA_COUNTY'   = "$repoRoot\providers\CA_VENTURA_COUNTY"
+        'CA_CONTRA_COSTA'     = "$repoRoot\providers\CA_CONTRA_COSTA"
+        'CA_eSUN'             = "$repoRoot\providers\CA_eSUN"
+        'CA_SAN_LOUIS_OBISPO' = "$repoRoot\providers\CA_SAN_LOUIS_OBISPO"
+        'IL_LEADS_OFML'       = "$repoRoot\providers\IL_LEADS_OFML"
+        'MS_METERS'           = "$repoRoot\providers\MS_METERS"
+        'OH_LEADS'            = "$repoRoot\providers\OH_LEADS"
+        'NM_NMLETS'           = "$repoRoot\providers\NM_NMLETS"
+        'OR_LEDS'             = "$repoRoot\providers\OR_LEDS"
+        'TN_TIES'             = "$repoRoot\providers\TN_TIES"
     }
     if ($knownPaths.ContainsKey($Provider)) {
         $ProviderDir = $knownPaths[$Provider]
