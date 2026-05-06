@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-05 16:24
+  Generated: 2026-05-06 13:22
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -39,8 +39,8 @@ LAYOUT DETAIL
     CARD "CARD_VEH_PLATE"
       ROW ROW_VEH_P1 [6 3 3]
         LicensePlateNumber (Text | maxLen=10)
-        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
-        LicensePlateYear (Text | maxLen=4)
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2026)
     CARD "CARD_VEH_VIN"
       ROW ROW_VEH_V1 [12]
         VehicleIdentificationNumber (Text | maxLen=20)

@@ -1,19 +1,19 @@
 TX_TLETS -- Build Status
 ========================
-Last updated: 2026-05-05
-Current version: v2.0 BASE + v2.0-mc MC
+Last updated: 2026-05-06
+Current version: v2.1 BASE + v2.1 MC
 Provider: TX_TLETS
 Phase: Phase 1 (BASE) + Phase 2 (MC) -- rebuilt from scratch
 
 BUILD RESULTS
 =============
-  BASE (v2.0):
-    Validator: 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION
+  BASE (v2.1):
+    Validator: 73 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
     Verify:    2 FAIL (EmailAddress not in QIF -- expected, pending handler)
     Queries:   17 FIRE / 4 SKIP
 
-  MC (v2.0-mc):
-    Validator: 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION
+  MC (v2.1):
+    Validator: 73 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
     Verify:    2 FAIL (EmailAddress not in QIF -- expected, pending handler)
     Queries:   17 FIRE / 4 SKIP
 
@@ -45,7 +45,7 @@ ARCHITECTURE (v2.0)
   Total CommSys combos: 21
   Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
 
-WARN ACKNOWLEDGMENT (14 WARNs)
+WARN ACKNOWLEDGMENT (13 WARNs)
 ==============================
   All WARNs are acknowledged and expected:
 
@@ -58,10 +58,6 @@ WARN ACKNOWLEDGMENT (14 WARNs)
     - Combo any[] references Attention not in QIF fieldIds (x2: KQ OLN, KQ Name)
     - Attention attr in combo any[] with handler present
     - EXPECTED: DH uses CommsysGetLastNameFirstNameInitialRuleHandler, no form field.
-
-  PlateYear (1 WARN):
-    - LicensePlateYear missing initialValue (MC only, OPTIONS card)
-    - ACCEPTED: MC card separates PlateYear from State; no default set on OPTIONS.
 
   ImageIndicator (1 WARN):
     - Person ImageIndicator default='Y' with In/Out combos
@@ -139,6 +135,11 @@ Format: [PASS] / [FAIL] / [PENDING]
 
 BUILD LOG (newest first)
 ========================
+  v2.1  2026-05-06  PlateType/PlateYear defaults (cross-provider audit)
+    PlateType=PC, PlateYear=2026 on both BASE+MC
+    WARN 14->13 (PlateYear missing initialValue resolved)
+    Build scripts, JSONs, reports all regenerated
+
   v2.0-mc  2026-05-05  MC build -- multi-card layout variant
     Build script: scripts/build_tx_tlets_mc.ps1
     Output: TX_TLETS_MC.json + TX_TLETS_MC_READABLE.json

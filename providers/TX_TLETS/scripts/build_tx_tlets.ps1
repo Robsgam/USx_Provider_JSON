@@ -1,4 +1,4 @@
-# build_tx_tlets.ps1  -- TX_TLETS v2.0 BASE
+# build_tx_tlets.ps1  -- TX_TLETS v2.1 BASE
 # Builds TX_TLETS_BASE.json from source\TX_TLETS.xml + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
@@ -32,14 +32,14 @@
 #     RegistrationNumber maxLength=11
 #
 # COMBO ROUTING:
-#   Vehicle: No PlateType/PlateYear defaults (presence distinguishes RQ from QV)
+#   Vehicle: PlateType=PC, PlateYear=2026 defaults (safe: State is combo discriminator, not PlateType/Year)
 #   Boat: BQ requires State in set[] (Nlets), QB does not (NCIC)
 #
 # NAME FORMAT: "Last,First Middle Suffix" (NCIC standard comma separator)
 # DATE FORMAT: MMddyyyy
 
 param(
-    [string]$Version = "2.0",
+    [string]$Version = "2.1",
     [string]$Phase   = "base"
 )
 
@@ -533,8 +533,8 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'RegionId_Input';           node = Inp 'RegionId' 'Region ID' '4' 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }

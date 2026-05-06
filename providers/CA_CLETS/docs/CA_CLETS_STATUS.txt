@@ -1,7 +1,7 @@
 CA_CLETS -- Build Status
 =========================
 Last updated: 2026-05-06
-Current version: v1.5 (CaRequestPurposeCode moved to end of ROW_1 on all entities)
+Current version: v1.5 (PlateType=PC + PlateYear=2026 defaults, PurposeCode layout fix)
 Provider: CA_CLETS
 
 ARCHITECTURE
@@ -55,11 +55,11 @@ VALIDATOR RESULTS
   | MC      | v1.3    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
   | BASE    | v1.4    | 63P/0F/3W/5LIM       | CLEAN  | 2026-05-06 |
   | MC      | v1.4    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
-  | BASE    | v1.5    | 63P/0F/3W/5LIM       | CLEAN  | 2026-05-06 |
-  | MC      | v1.5    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
+  | BASE    | v1.5    | 63P/0F/2W/5LIM       | CLEAN  | 2026-05-06 |
+  | MC      | v1.5    | 67P/0F/0W/7LIM       | CLEAN  | 2026-05-06 |
 
-  BASE WARN (3): PlateType missing default, PlateYear missing default, PlateYear missing initialValue
-    -> All intentional per LIMITATION #30 (in-state vs OOS routing)
+  BASE WARN (2): validator checks PascalCase 'PlateType'/'PlateYear' but CA uses 'licensePlateTypeCode'/'licensePlateYear'
+    -> Defaults are set (PC/2026); WARNs are validator false-positive on camelCase fieldId naming
   MC WARN (1): PlateYear missing initialValue
     -> Intentional per LIMITATION #30
   LIMITATION (BASE 5 / MC 7): combo ordering, 2 Person QIDMs co-fire, DL+DH no DH-suffix,

@@ -1,12 +1,14 @@
 CA_CLETS -- Build Notes
 ========================
 
-v1.5 (2026-05-06) -- Layout: CaRequestPurposeCode moved to end of ROW_1
-  CHANGED: CaRequestPurposeCode moved from position 1 to position 3 on all 5 entity forms.
-           Field order now: [primary search field, secondary field, PurposeCode] on every ROW_1.
-  REASON:  Usability -- purpose code is auto-filled (initialValue='C'), so it belongs at the
-           end of the row, not taking prime visual position from the actual search fields.
-  VALIDATOR: BASE 63P/0F/3W/5LIM | MC 67P/0F/1W/7LIM | Verify CLEAN (unchanged from v1.4)
+v1.5 (2026-05-06) -- PlateType/PlateYear defaults + PurposeCode layout fix
+  CHANGED: LicensePlateTypeCode initialValue='PC', LicensePlateYear initialValue='2026' (both BASE+MC).
+           CaRequestPurposeCode moved from position 1 to position 3 on all 5 entity ROW_1.
+  REASON:  Standard defaults per cross-provider audit (6/8 providers already had them).
+           Safe because State (not PlateType/Year) is the combo routing discriminator.
+           PurposeCode is auto-filled so belongs at end, not taking prime position.
+  VALIDATOR: BASE 63P/0F/2W/5LIM | MC 67P/0F/0W/7LIM | Verify CLEAN
+  NOTE:    BASE 2 WARN = validator false-positive (checks PascalCase fieldId names)
 
 v1.4 (2026-05-06) -- BirthDate format fix
   CHANGED: CommsysParseDateRuleHandler target format: MMddyyyy -> yyyyMMdd (all BirthDate attrs)

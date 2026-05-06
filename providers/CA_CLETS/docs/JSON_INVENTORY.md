@@ -2,8 +2,10 @@
 
 | Version | Date | File | Notes |
 |---------|------|------|-------|
-| v1.4 BASE | 2026-05-06 | CA_CLETS_BASE.json | BirthDate format fix: MMddyyyy -> yyyyMMdd per CA_ESUN; 63P/0F/3W/5LIM |
-| v1.4 MC | 2026-05-06 | CA_CLETS_MC.json | BirthDate format fix; 67P/0F/1W/7LIM |
+| v1.5 BASE | 2026-05-06 | CA_CLETS_BASE.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 63P/0F/2W/5LIM |
+| v1.5 MC | 2026-05-06 | CA_CLETS_MC.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 67P/0F/0W/7LIM |
+| v1.4 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.4_2026-05-06.json | BirthDate format fix: MMddyyyy -> yyyyMMdd per CA_ESUN; 63P/0F/3W/5LIM |
+| v1.4 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.4_2026-05-06.json | BirthDate format fix; 67P/0F/1W/7LIM |
 | v1.3 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.3_2026-05-06.json | Devdoc audit: removed WP/MP/SR QIDMs; 63P/0F/3W/5LIM |
 | v1.3 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.3_2026-05-06.json | Devdoc audit; 67P/0F/1W/7LIM |
 | v1.2 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.2_2026-05-06.json | MC cross-entity combos; 82P/0F/3W/6LIM |

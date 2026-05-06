@@ -23,9 +23,9 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.1 | 71P/0F/0W/5LIM import PENDING | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 69P/0F/0W/4LIM import PENDING | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.0 | 100P/0F/1W/4LIM 21+60 PASS import PENDING | DL+DH shared form, 6-card Person, QB routing (FL-8) |
-| TX_TLETS | providers/TX_TLETS/ | v2.0 | 73P/0F/14W/3LIM import PENDING | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
+| TX_TLETS | providers/TX_TLETS/ | v2.1 | 73P/0F/13W/3LIM import PENDING | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
 | LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v2.0 | 48P/0F/32W/4LIM import PENDING | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
-| CA_CLETS | providers/CA_CLETS/ | v1.5 | 63P/0F/3W/5LIM (BASE) 67P/0F/1W/7LIM (MC) import PENDING | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC cross-entity, no ImageIndicator, 6 basic queries, yyyyMMdd dates |
+| CA_CLETS | providers/CA_CLETS/ | v1.5 | 63P/0F/2W/5LIM (BASE) 67P/0F/0W/7LIM (MC) import PENDING | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC cross-entity, no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 
 ## Legacy Repos (READ-ONLY)
 

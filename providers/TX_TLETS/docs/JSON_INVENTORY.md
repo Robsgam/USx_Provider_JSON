@@ -6,15 +6,17 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TX_TLETS_BASE.json | v2.0 | Current BASE | Full rebuild. 73P/0F/14W/3LIM. 2026-05-05. |
-| TX_TLETS_BASE_READABLE.json | v2.0 | Pretty-print | Human-readable BASE variant. |
-| TX_TLETS_MC.json | v2.0-mc | Current MC | Multi-card layout. 73P/0F/14W/3LIM. 2026-05-05. |
-| TX_TLETS_MC_READABLE.json | v2.0-mc | Pretty-print | Human-readable MC variant. |
+| TX_TLETS_BASE.json | v2.1 | Current BASE | PlateType/PlateYear defaults. 73P/0F/13W/3LIM. 2026-05-06. |
+| TX_TLETS_BASE_READABLE.json | v2.1 | Pretty-print | Human-readable BASE variant. |
+| TX_TLETS_MC.json | v2.1 | Current MC | PlateType/PlateYear defaults. 73P/0F/13W/3LIM. 2026-05-06. |
+| TX_TLETS_MC_READABLE.json | v2.1 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
+| phases/base/TX_TLETS_v2.1_2026-05-06.json | v2.1 | Snapshot | PlateType/PlateYear defaults. |
+| phases/mc/TX_TLETS_v2.1_2026-05-06.json | v2.1 | Snapshot | PlateType/PlateYear defaults. |
 | phases/base/TX_TLETS_v2.0_2026-05-05.json | v2.0 | Snapshot | BASE phase archive. |
 | phases/mc/TX_TLETS_v2.0-mc_2026-05-05.json | v2.0-mc | Snapshot | MC phase archive. |
 
