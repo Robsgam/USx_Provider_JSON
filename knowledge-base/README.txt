@@ -5,7 +5,7 @@ Last updated: 2026-05-06
 Covers: 18 providers in consolidated monorepo
   Active (8): NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS
   New (10): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_eSUN/CA_SAN_LOUIS_OBISPO/
-            IL_LEADS_OFML/MS_METERS/OH_LEADS/NM_NMLETS/OR_LEDS/TN_TIES
+            IL_LEADS_OFML/MD_METERS/OH_LEADS/NM_NMLETS/OR_LEDS/TN_TIES
 
 CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
   NJ_NJCJIS is the structural reference for all new builds.

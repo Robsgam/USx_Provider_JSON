@@ -1,4 +1,4 @@
-﻿# MS_METERS JSON Inventory
+﻿# MD_METERS JSON Inventory
 
 | Version | Variant | Date | File | Notes |
 |---------|---------|------|------|-------|

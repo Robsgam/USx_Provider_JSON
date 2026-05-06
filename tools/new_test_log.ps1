@@ -40,7 +40,7 @@ if (-not $ProviderDir) {
         'CA_eSUN'             = "$repoRoot\providers\CA_eSUN"
         'CA_SAN_LOUIS_OBISPO' = "$repoRoot\providers\CA_SAN_LOUIS_OBISPO"
         'IL_LEADS_OFML'       = "$repoRoot\providers\IL_LEADS_OFML"
-        'MS_METERS'           = "$repoRoot\providers\MS_METERS"
+        'MD_METERS'           = "$repoRoot\providers\MD_METERS"
         'OH_LEADS'            = "$repoRoot\providers\OH_LEADS"
         'NM_NMLETS'           = "$repoRoot\providers\NM_NMLETS"
         'OR_LEDS'             = "$repoRoot\providers\OR_LEDS"

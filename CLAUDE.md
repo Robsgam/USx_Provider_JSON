@@ -31,7 +31,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | CA_eSUN | providers/CA_eSUN/ | -- | NOT STARTED | Attention handler reference, OOS DL bug reference |
 | CA_SAN_LOUIS_OBISPO | providers/CA_SAN_LOUIS_OBISPO/ | -- | NOT STARTED | |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | -- | NOT STARTED | |
-| MS_METERS | providers/MS_METERS/ | -- | NOT STARTED | |
+| MD_METERS | providers/MD_METERS/ | -- | NOT STARTED | |
 | OH_LEADS | providers/OH_LEADS/ | -- | NOT STARTED | |
 | NM_NMLETS | providers/NM_NMLETS/ | -- | NOT STARTED | |
 | OR_LEDS | providers/OR_LEDS/ | -- | NOT STARTED | |
