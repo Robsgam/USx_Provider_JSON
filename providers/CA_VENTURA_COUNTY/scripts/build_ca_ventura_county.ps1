@@ -49,7 +49,7 @@
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
