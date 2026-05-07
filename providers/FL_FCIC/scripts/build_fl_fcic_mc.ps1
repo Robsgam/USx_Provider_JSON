@@ -1,9 +1,9 @@
-# build_fl_fcic_v3_mc.ps1 -- FL_FCIC v3.x MC (multi-card)
+# build_fl_fcic_mc.ps1 -- FL_FCIC MC (multi-card)
 # Builds FL_FCIC_MC.json from source\FL_FCIC.xml metadata + HIDLE.json.
 # QIDMs identical to BASE. Layout-only changes: Person has 3 cards (Options, DL, DH).
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-#      & .\scripts\build_fl_fcic_v3_mc.ps1 -Version 3.0-mc
+#      & .\scripts\build_fl_fcic_mc.ps1 -Version 3.0-mc
 #
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]

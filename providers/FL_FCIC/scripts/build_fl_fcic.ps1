@@ -1,8 +1,8 @@
-# build_fl_fcic_v3.ps1 -- FL_FCIC v3.x BASE
+# build_fl_fcic.ps1 -- FL_FCIC BASE
 # Builds FL_FCIC_BASE.json from source\FL_FCIC.xml metadata + HIDLE.json.
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-#      & .\scripts\build_fl_fcic_v3.ps1 -Version 3.0
+#      & .\scripts\build_fl_fcic.ps1 -Version 3.0
 #
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]

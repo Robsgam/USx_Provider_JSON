@@ -30,6 +30,12 @@ See also:
   be renamed to match their XML filenames (CA_SAN_LUIS_OBISPO and
   NM_NMLETS_OFML). Rename propagation touches 10+ files per provider.
 
+  EXCEPTION: LA_LETTS_OFML — XML file is LA_LEMS.xml (LEMS = state system
+  name). Folder was named LA_LETTS_OFML before the naming convention was
+  established, the provider is already imported to the server under that name,
+  and all 40+ files reference LA_LETTS_OFML. Renaming would require a server
+  re-import. Documented as the only naming exception.
+
   VERIFICATION: Before creating a provider folder, open the metadata XML and
   confirm the filename. Use that exact name (case-sensitive) for the folder.
 
