@@ -48,7 +48,7 @@
 #   Both have autoSelect=true + queriesToDeselect.
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
