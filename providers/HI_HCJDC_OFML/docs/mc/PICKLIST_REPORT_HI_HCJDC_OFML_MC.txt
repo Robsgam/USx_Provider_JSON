@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML_MC
   Source: HI_HCJDC_OFML_MC.json
-  Generated: 2026-05-07 14:15
+  Generated: 2026-05-07 15:36
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -52,6 +52,9 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
     Config: HI_HCJDC_OFML_VehicleRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
+    Config: HI_HCJDC_OFML_VehicleStolenQuery
+      State -> State
+        codeTypeProvider=NCIC
     Config: HI_HCJDC_OFML_DriverLicenseQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
@@ -93,6 +96,9 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
+  QIDM: HI_HCJDC_OFML_VehicleStolenQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
   QIDM: HI_HCJDC_OFML_DriverLicenseQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
@@ -112,4 +118,4 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   SUMMARY
 ======================================================================
   Form dropdowns: 14
-  QRDM code type attrs: 15
+  QRDM code type attrs: 16

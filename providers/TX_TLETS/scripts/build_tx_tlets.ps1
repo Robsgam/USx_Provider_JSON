@@ -1,4 +1,4 @@
-# build_tx_tlets.ps1  -- TX_TLETS v2.1 BASE
+# build_tx_tlets.ps1  -- TX_TLETS v2.2 BASE
 # Builds TX_TLETS_BASE.json from source\TX_TLETS.xml + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
@@ -8,13 +8,14 @@
 #   source\TX_TLETS.pdf   -- CommSys devdoc [CROSS-CHECK]
 #   source\HIDLE.json     -- RMS structural template
 #
-# SCOPE: Basic Queries (6 transactions from XML metadata):
-#   VehicleInsuranceRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+# SCOPE: Basic Queries (7 transactions from XML metadata):
+#   VehicleInsuranceRegistrationQuery, VehicleStolenQuery,
+#   DriverLicenseQuery, DriverHistoryQuery,
 #   GunQuery, ArticleSingleQuery, BoatQuery
 #
 #   TX-specific queries NOT in scope for BASE:
 #     TxDriverMultiQuery (CPL combos), TxRSDWMultiQuery (RSDWW combos),
-#     StolenVehicleQuery, WantedPersonQuery (standalone), ProtectiveOrderQuery,
+#     WantedPersonQuery (standalone), ProtectiveOrderQuery,
 #     SexOffenderQuery, CCH queries, WMPE/WMPI queries
 #
 # XML METADATA NOTES:
@@ -39,7 +40,7 @@
 # DATE FORMAT: MMddyyyy
 
 param(
-    [string]$Version = "2.1",
+    [string]$Version = "2.2",
     [string]$Phase   = "base"
 )
 
@@ -252,15 +253,57 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleInsuranceRegistrationQuery -- RQ/QV/REG/DPSI/VIN. 7 combos.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'TX_TLETS_VehicleInsuranceRegistrationQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'TX_TLETS'
-    providerType    = 'Commsys'
-    query           = 'VehicleInsuranceRegistrationQuery'
-    queryLabel      = 'Vehicle Registration'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleInsuranceRegistrationQuery -- RQ/QV/REG/DPSI/VIN. 7 combos.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'TX_TLETS_VehicleInsuranceRegistrationQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
+    queriesToDeselect  = @('VehicleStolenQuery')
+    provider           = 'TX_TLETS'
+    providerType       = 'Commsys'
+    query              = 'VehicleInsuranceRegistrationQuery'
+    queryLabel         = 'Vehicle Registration'
+    targetEntity       = 'Vehicle'
+}
+
+# =====================================================================
+# VehicleStolenQuery -- 2 combos (QV plate, QV VIN)
+# Metadata keyRef QV for both -> invented QV.P / QV.V (LIMITATION #21)
+# Mutual exclusion with VehicleInsuranceRegistrationQuery via queriesToDeselect
+# autoSelect=false -- officer manually checks to run stolen query
+# =====================================================================
+$vehStolenQuery = [PSCustomObject]@{
+    attributes = @(
+        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');          targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'RegionId';                    size = 4;  sourceField = @('RegionId');                    targetField = 'RegionId' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
+    )
+    combinations = @(
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RegionId','RegistrationState') }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'QV.P'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegionId') }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'QV.V'
+            state                 = 'In/Out'
+        }
+    )
+    description        = 'VehicleStolenQuery -- QV.P (plate), QV.V (VIN). NCIC stolen vehicle check.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'TX_TLETS_VehicleStolenQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $false
+    queriesToDeselect  = @('VehicleInsuranceRegistrationQuery')
+    provider           = 'TX_TLETS'
+    providerType       = 'Commsys'
+    query              = 'VehicleStolenQuery'
+    queryLabel         = 'Vehicle Stolen'
+    targetEntity       = 'Vehicle'
 }
 
 # =====================================================================
@@ -511,7 +554,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $provBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for TX_TLETS v${Version}"
     name           = 'TX_TLETS'
     type           = 'BUNDLE'
@@ -551,7 +594,7 @@ $vehLayout = MakeLayouts @(
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleInsuranceRegistrationQuery. TX-specific fields.'
+    description  = 'Vehicle queries -- VehicleInsuranceRegistrationQuery + VehicleStolenQuery. TX-specific fields.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

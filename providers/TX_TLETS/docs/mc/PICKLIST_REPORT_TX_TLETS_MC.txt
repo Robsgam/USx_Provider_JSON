@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-07 14:29
+  Generated: 2026-05-07 15:36
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -58,6 +58,9 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
     Config: TX_TLETS_VehicleInsuranceRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
+    Config: TX_TLETS_VehicleStolenQuery
+      State -> State
+        codeTypeProvider=NCIC
     Config: TX_TLETS_DriverLicenseQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
@@ -99,6 +102,9 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
+  QIDM: TX_TLETS_VehicleStolenQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
   QIDM: TX_TLETS_DriverLicenseQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
@@ -118,4 +124,4 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   SUMMARY
 ======================================================================
   Form dropdowns: 17
-  QRDM code type attrs: 15
+  QRDM code type attrs: 16

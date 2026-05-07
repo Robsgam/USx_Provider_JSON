@@ -1,4 +1,4 @@
-# build_tx_tlets_mc.ps1  -- TX_TLETS v2.1 MC
+# build_tx_tlets_mc.ps1  -- TX_TLETS v2.2 MC
 # Multi-card layout. QIDMs identical to BASE. Layout-only changes.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_mc.ps1
@@ -11,7 +11,7 @@
 #   Boat:    OPTIONS (State, Image, RelatedHitSearch) + REGISTRATION (RegNumber) + HULL/NCIC (Hull, NCICNumber)
 
 param(
-    [string]$Version = "2.1",
+    [string]$Version = "2.2",
     [string]$Phase   = "mc"
 )
 
@@ -185,7 +185,22 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegistrationState','VehicleMakeCode','VehicleYear') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegionId') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 7 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 7 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('VehicleStolenQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+}
+
+# VehicleStolenQuery -- 2 combos (QV plate, QV VIN). Mutual exclusion with VehReg.
+$vehStolenQuery = [PSCustomObject]@{
+    attributes = @(
+        [PSCustomObject]@{ name = 'LicensePlateNumber'; size = 10; sourceField = @('LicensePlateNumber'); targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'RegionId'; size = 4; sourceField = @('RegionId'); targetField = 'RegionId' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
+    )
+    combinations = @(
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RegionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QV.P'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegionId') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QV.V'; state = 'In/Out' }
+    )
+    description = 'VehicleStolenQuery -- QV.P (plate), QV.V (VIN). NCIC stolen vehicle check.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleStolenQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $false; queriesToDeselect = @('VehicleInsuranceRegistrationQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleStolenQuery'; queryLabel = 'Vehicle Stolen'; targetEntity = 'Vehicle'
 }
 
 $dlQuery = [PSCustomObject]@{
@@ -281,7 +296,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $provBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for TX_TLETS v${Version} MC"
     name           = 'TX_TLETS'
     type           = 'BUNDLE'
@@ -334,7 +349,7 @@ $vehLayout = MakeLayouts @(
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC: OPTIONS + PLATE SEARCH + VIN SEARCH.'
+    description  = 'Vehicle queries -- MC: OPTIONS + PLATE SEARCH + VIN SEARCH. VehReg + VehStolen.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

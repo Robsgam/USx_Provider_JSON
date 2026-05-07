@@ -1,0 +1,120 @@
+CA_CLETS_OCATS -- Supported Query Validation Report
+=====================================================
+Last updated: 2026-05-07
+Version: v1.0 (Initial build)
+
+VEHICLE REGISTRATION (VehicleRegistrationQuery)
+  Entity: Vehicle | QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery | autoSelect: true
+
+  RQ.P -- OOS Plate query (Nlets)
+    set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+  RQ.V -- OOS VIN query (Nlets)
+    set: CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+  4V -- In-state VIN query
+    set: CaRequestPurposeCode, VehicleIdentificationNumber
+    any: VehicleMakeCode, RegistrationState
+    Status: [PENDING]
+
+  4 -- In-state Plate query
+    set: CaRequestPurposeCode, LicensePlateNumber
+    any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
+    Status: [PENDING]
+
+  VP -- Vehicle by Owner Name
+    set: CaRequestPurposeCode, NameLast, NameFirst
+    any: (none)
+    Status: [PENDING]
+
+DRIVER LICENSE (DriverLicenseQuery)
+  Entity: Person | QIDM: CA_CLETS_OCATS_DriverLicenseQuery | autoSelect: true
+
+  DQ.N -- In-state DL by Name
+    set: CaRequestPurposeCode, NameLast, NameFirst
+    any: BirthDate, SexCode
+    Status: [PENDING]
+
+  DQ.O -- In-state DL by OLN
+    set: CaRequestPurposeCode, OperatorLicenseNumber
+    any: (none)
+    Status: [PENDING]
+
+  L1.O -- OOS DL by OLN (Nlets)
+    set: CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  L1.N -- OOS DL by Name (Nlets)
+    set: CaRequestPurposeCode, NameLast, NameFirst, RegistrationState
+    any: BirthDate, SexCode
+    Status: [PENDING]
+
+FIREARM (GunQuery)
+  Entity: Firearm | QIDM: CA_CLETS_OCATS_GunQuery | autoSelect: true
+
+  QGB -- Gun by Serial Number
+    set: CaRequestPurposeCode, GunSerialNumber
+    any: GunMake, GunType, GunCaliber
+    Status: [PENDING]
+
+ARTICLE (ArticleSingleQuery)
+  Entity: Article | QIDM: CA_CLETS_OCATS_ArticleSingleQuery | autoSelect: true
+
+  QA.S -- Article by Serial Number
+    set: CaRequestPurposeCode, ArticleSerialNumber, ArticleType
+    any: (none)
+    Status: [PENDING]
+
+  QA.O -- Article by OAN
+    set: CaRequestPurposeCode, OwnerAppliedNumber, ArticleType
+    any: (none)
+    Status: [PENDING]
+
+BOAT (BoatQuery)
+  Entity: Boat | QIDM: CA_CLETS_OCATS_BoatQuery | autoSelect: true
+
+  BQ.H -- OOS Boat by Hull (Nlets)
+    set: CaRequestPurposeCode, BoatHullIdNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  BQ.R -- OOS Boat by Registration (Nlets)
+    set: CaRequestPurposeCode, RegistrationNumber, RegistrationState
+    any: (none)
+    Status: [PENDING]
+
+  4V.B -- In-state Boat by Hull
+    set: CaRequestPurposeCode, BoatHullIdNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  QB.O -- In-state Boat by OAN
+    set: CaRequestPurposeCode, OwnerAppliedNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  4B -- In-state Boat by Registration
+    set: CaRequestPurposeCode, RegistrationNumber
+    any: RegistrationState
+    Status: [PENDING]
+
+  QB.H -- NCIC Stolen Boat by Hull
+    set: CaRequestPurposeCode, BoatHullIdNumber
+    any: (none)
+    Status: [PENDING]
+
+  QB.R -- NCIC Stolen Boat by Registration
+    set: CaRequestPurposeCode, RegistrationNumber
+    any: (none)
+    Status: [PENDING]
+
+NOT IMPLEMENTED (metadata exists, not in basic scope)
+-----------------------------------------------------
+  DriverHistoryQuery: No KQ MessageKeys in OCATS metadata
+  OCNAMQ: Requires UserId, not implementable in current platform
+  OCATS-specific (warrants, juvenile, LARS): Available in metadata, not in basic scope

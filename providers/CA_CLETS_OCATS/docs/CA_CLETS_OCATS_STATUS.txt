@@ -1,0 +1,42 @@
+CA_CLETS_OCATS -- Build Status
+================================
+Last updated: 2026-05-07
+Current version: v1.0 (Initial build)
+Provider: CA_CLETS_OCATS
+
+ARCHITECTURE
+--------------------
+Entities: 5 (Vehicle, Person, Firearm, Article, Boat)
+QIFs:     5 (1 per entity, single card each)
+QIDMs:    5 CommSys + 2 RMS = 7 total
+Combos:   19 CommSys
+
+BASE combos (19):
+  VehicleRegistrationQuery  -- 5: RQ.P, RQ.V, 4V, 4, VP
+  DriverLicenseQuery        -- 4: DQ.N, DQ.O, L1.O, L1.N
+  GunQuery                  -- 1: QGB
+  ArticleSingleQuery        -- 2: QA.S, QA.O
+  BoatQuery                 -- 7: BQ.H, BQ.R, 4V.B, QB.O, 4B, QB.H, QB.R
+
+CA-SPECIFIC
+-----------
+- CaRequestPurposeCode: hidden InpH initialValue='C' on every form, in set[] on every combo
+- No ImageIndicator (not in OCATS metadata)
+- No DriverHistoryQuery (no KQ MessageKeys in OCATS metadata)
+- No gun-by-name (no QGH combo)
+- No OCNAMQ (requires UserId, not implementable)
+
+BUILD STATUS
+--------------------
+  Phase 1 single-card: COMPLETE (v1.0 BASE + MC, 2026-05-07)
+  Phase 2 multi-card:  MC includes multi-card layout
+  Import:              PENDING
+
+VALIDATOR
+---------
+  BASE: 63P/0F/0W/2LIM
+  MC:   63P/0F/0W/2LIM
+
+TEST MATRIX
+-----------
+  (awaiting first import)

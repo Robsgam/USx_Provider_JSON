@@ -1,4 +1,4 @@
-# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.0-mc MC VARIANT
+# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.1-mc MC VARIANT
 # Multi-card layout. QIDMs identical to BASE. Layout-only changes.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml_mc.ps1
@@ -11,7 +11,7 @@
 #   Boat:    3 cards (OPTIONS, REGISTRATION, HULL)
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.1",
     [string]$Phase   = "mc"
 )
 
@@ -183,15 +183,43 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVP'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQV'; state = 'Out' }
     )
-    description     = 'VehicleRegistrationQuery -- M55L/M55S (in-state), RQ (out-state), QV (stolen). 6 combos.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'HI_HCJDC_OFML'
-    providerType    = 'Commsys'
-    query           = 'VehicleRegistrationQuery'
-    queryLabel      = 'Vehicle Registration'
-    targetEntity    = 'Vehicle'
+    description        = 'VehicleRegistrationQuery -- M55L/M55S (in-state), RQ (out-state), QV (stolen). 6 combos.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
+    queriesToDeselect  = @('VehicleStolenQuery')
+    provider           = 'HI_HCJDC_OFML'
+    providerType       = 'Commsys'
+    query              = 'VehicleRegistrationQuery'
+    queryLabel         = 'Vehicle Registration'
+    targetEntity       = 'Vehicle'
+}
+
+# VehicleStolenQuery QIDM (identical to BASE)
+$vehStolenQuery = [PSCustomObject]@{
+    attributes = @(
+        [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('ImageIndicator');               targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';           size = 10; sourceField = @('LicensePlateNumber');           targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('VehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
+        [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 20; sourceField = @('VehicleMakeCode');              targetField = 'VehicleMakeCode' }
+    )
+    combinations = @(
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QV.P'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('VehicleMakeCode','ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QV.V'; state = 'In/Out' }
+    )
+    description        = 'VehicleStolenQuery -- QV.P (plate), QV.V (VIN). NCIC stolen vehicle check.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = 'HI_HCJDC_OFML_VehicleStolenQuery'
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $false
+    queriesToDeselect  = @('VehicleRegistrationQuery')
+    provider           = 'HI_HCJDC_OFML'
+    providerType       = 'Commsys'
+    query              = 'VehicleStolenQuery'
+    queryLabel         = 'Vehicle Stolen'
+    targetEntity       = 'Vehicle'
 }
 
 # DriverLicenseQuery QIDM (identical to BASE)
@@ -317,7 +345,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $provBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for HI_HCJDC_OFML v${Version} MC"
     name           = 'HI_HCJDC_OFML'
     type           = 'BUNDLE'
@@ -367,7 +395,7 @@ $vehLayout = MakeLayouts @(
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards.'
+    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VehReg + VehStolen.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

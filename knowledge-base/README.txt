@@ -212,10 +212,52 @@ TOOLS
       7. Render tool correctness
       8. CLAUDE.md consistency
       9. Provider canonical structure (dirs, docs)
-      10. Report file completeness (all 6 per variant)
+      10. Report file completeness (all 8 reports per variant)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
     Sources of truth extracted at runtime. FAILS (exit 1) on any issue.
     Usage: .\audit_repo.ps1 [-Category <1-11>]
+
+  tools/audit_cad.ps1
+    CAD dispatch field alignment auditor. Validates camelCase fieldIds for
+    CAD auto-populate, CAD_DISPATCH/FIRST_RESPONDER layout variants, Patch 8
+    completeness, and QIDM sourceField case alignment.
+    Usage: .\audit_cad.ps1 [-Path <json>] [-Variant <BASE|MC>] [-OutFile <path>]
+
+  tools/audit_cross_provider.ps1
+    Cross-provider consistency audit. Validates ALL provider JSONs against
+    documented rules: default field values, version matching, queryLabel
+    standards, code type pairings, field type consistency, camelCase
+    enforcement, CA-specific rules, RMS autoSelect, entity display order.
+    Usage: .\audit_cross_provider.ps1 [-Path <providers-dir>] [-OutFile <path>]
+
+  tools/audit_metadata.ps1
+    Validates provider JSON QIDM configurations against authoritative XML
+    metadata. Checks that every query/field/combo in metadata is correctly
+    implemented in the JSON.
+    Usage: .\audit_metadata.ps1 [-Path <json>] [-OutFile <path>]
+
+  tools/audit_structure.ps1
+    Validates provider folder structure against canonical rules. Checks folder
+    naming, required dirs/files, report completeness, freshness, JSON internal
+    provider name, source materials, phase archives, release bundle.
+    Usage: .\audit_structure.ps1 [-Path <provider-dir>] [-OutFile <path>]
+
+  tools/audit_test_coverage.ps1
+    Test coverage auditor. Maps QIDM combinations to test log files, generates
+    coverage matrix, checks SQVR alignment, identifies orphan test logs.
+    Usage: .\audit_test_coverage.ps1 [-Path <json>] [-OutFile <path>]
+
+  tools/new_provider.ps1
+    Scaffolds a new provider with canonical folder structure, build script
+    stubs, doc templates, and tool registrations. Derives folder name from
+    XML filename (enforcing naming rule).
+    Usage: .\new_provider.ps1 -XmlPath <metadata.xml> [-PdfPath <devdoc.pdf>] [-Force]
+
+  tools/post_test.ps1
+    Instant-save tool for test results. After any test completes, saves all
+    artifacts, updates docs (STATUS, SQVR), commits, and pushes. Supports
+    XML capture and form state documentation.
+    Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
 
 ================================================================================
 PREREQUISITES

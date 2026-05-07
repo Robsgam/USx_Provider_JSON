@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-07 14:15
+  Generated: 2026-05-07 15:36
 ================================================================
 QUERY SIMULATION
 ================
@@ -120,6 +120,37 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleTypeCode>1</VehicleTypeCode>
         <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_VehicleStolenQuery [Vehicle] ---
+    Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
+
+    [FIRES] QV.P
+      set: [LicensePlateNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QV.V
+      set: [VehicleIdentificationNumber]
+      any: [VehicleMakeCode, ImageIndicator] -> matched: [VehicleMakeCode, ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
 --- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---

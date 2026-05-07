@@ -19,11 +19,11 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.3 | 67P/0F/5W/1LIM (BASE) 67P/0F/0W/1LIM (MC) IMPORTED | queriesToDeselect VehReg/Stolen, RandomRequest, NCIC state, Patch 1+3+6+7+8 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.0 | 65P/0F/1W/4LIM (BASE) 65P/0F/1W/4LIM (MC) IMPORTED | 6-transaction build, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.1 | 70P/0F/1W/4LIM (BASE) 70P/0F/1W/4LIM (MC) IMPORTED | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.2 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) IMPORTED | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) IMPORTED | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.1 | 101P/0F/1W/4LIM (BASE) 101P/0F/1W/5LIM (MC) IMPORTED | DL+DH shared form, 6-card Person, QB routing (FL-8) |
-| TX_TLETS | providers/TX_TLETS/ | v2.1 | 74P/0F/13W/3LIM (BASE) 74P/0F/13W/3LIM (MC) IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
+| TX_TLETS | providers/TX_TLETS/ | v2.2 | 78P/0F/13W/3LIM (BASE) 78P/0F/13W/3LIM (MC) IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
 | LA_LEMS | providers/LA_LEMS/ | v2.0 | 49P/0F/32W/4LIM (BASE) 49P/0F/32W/4LIM (MC) IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.6 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.2 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) BUILT | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
@@ -442,7 +442,7 @@ powershell -ExecutionPolicy Bypass -File tools/test_layout.ps1 -Path providers/<
 # CommSys query simulator (form data -> combo matching -> XML output)
 powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
-# Full build report (runs all 6: validator + layout + query sim + picklist + HTML + verify)
+# Full build report (runs all 8: validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit)
 powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
 # Post-build verification (banned_patterns.txt, fieldId consistency, reference patterns)
@@ -500,7 +500,7 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 
 **TRIGGER: You edit or create any `.json` provider file**
 - Run build_report.ps1
-- Commit JSON + all 6 report files
+- Commit JSON + all 8 report files
 - Push to GitHub
 - Update docs/STATUS.txt if version changed
 - Update docs/SQVR.txt if query paths changed
@@ -580,7 +580,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 1. Run `build_report.ps1 -Path <json>` (validator + layout + query sim + picklist + HTML)
 2. Verify 0 FAIL in validator output
-3. Commit the JSON + all 6 report files to `docs/base/` or `docs/mc/`
+3. Commit the JSON + all 8 report files to `docs/base/` or `docs/mc/`
 4. `git push` immediately
 5. **CANNOT proceed to import or testing until reports are committed and pushed**
 
@@ -610,7 +610,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 ### GATE 5: Before Reporting PASS or DONE on Any Variant
 
 1. Verify `tests/` directory contains one log file per test executed (count must match)
-2. Verify `docs/base/` (and `docs/mc/` if applicable) contains all 6 report files
+2. Verify `docs/base/` (and `docs/mc/` if applicable) contains all 8 report files
 3. Verify `docs/<PROVIDER>_STATUS.txt` is current
 4. Verify `docs/<PROVIDER>_SQVR.txt` exists with [CONFIRMED]/[PENDING] per query path
 5. Verify all files are committed and pushed to GitHub
@@ -662,7 +662,7 @@ providers/<PROVIDER>/
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
-│   ├── base/                              # BASE variant reports (6 files)
+│   ├── base/                              # BASE variant reports (8 files)
 │   └── mc/                                # MC variant reports (if applicable)
 ├── tests/                                 # Per-test log files (one per test executed)
 ├── phases/                                # Version snapshots

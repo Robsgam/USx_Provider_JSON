@@ -3,7 +3,7 @@
                     {
                         "configurations":  [
                                                {
-                                                   "description":  "Vehicle queries -- MC: OPTIONS + PLATE + VIN cards.",
+                                                   "description":  "Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VehReg + VehStolen.",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -6274,10 +6274,101 @@
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "HI_HCJDC_OFML_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
+                                                   "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "VehicleStolenQuery"
+                                                                         ],
                                                    "provider":  "HI_HCJDC_OFML",
                                                    "providerType":  "Commsys",
                                                    "query":  "VehicleRegistrationQuery",
                                                    "queryLabel":  "Vehicle Registration",
+                                                   "targetEntity":  "Vehicle"
+                                               },
+                                               {
+                                                   "attributes":  [
+                                                                      {
+                                                                          "name":  "ImageIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "ImageIndicator"
+                                                                                          ],
+                                                                          "targetField":  "ImageIndicator"
+                                                                      },
+                                                                      {
+                                                                          "name":  "LicensePlateNumber",
+                                                                          "size":  10,
+                                                                          "sourceField":  [
+                                                                                              "LicensePlateNumber"
+                                                                                          ],
+                                                                          "targetField":  "LicensePlateNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "State",
+                                                                          "size":  2,
+                                                                          "sourceField":  [
+                                                                                              "RegistrationState"
+                                                                                          ],
+                                                                          "targetField":  "State",
+                                                                          "codeTypeProvider":  "NCIC"
+                                                                      },
+                                                                      {
+                                                                          "name":  "VehicleIdentificationNumber",
+                                                                          "size":  20,
+                                                                          "sourceField":  [
+                                                                                              "VehicleIdentificationNumber"
+                                                                                          ],
+                                                                          "targetField":  "VehicleIdentificationNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "VehicleMakeCode",
+                                                                          "size":  20,
+                                                                          "sourceField":  [
+                                                                                              "VehicleMakeCode"
+                                                                                          ],
+                                                                          "targetField":  "VehicleMakeCode"
+                                                                      }
+                                                                  ],
+                                                   "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "LicensePlateNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "RegistrationState"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "QV.P",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "VehicleIdentificationNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "VehicleMakeCode",
+                                                                                                             "ImageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
+                                                                            "keyReference":  "QV.V",
+                                                                            "state":  "In/Out"
+                                                                        }
+                                                                    ],
+                                                   "description":  "VehicleStolenQuery -- QV.P (plate), QV.V (VIN). NCIC stolen vehicle check.",
+                                                   "handlerFunction":  "CommsysTransactionRequestHandler",
+                                                   "name":  "HI_HCJDC_OFML_VehicleStolenQuery",
+                                                   "type":  "QUERYINPUTDATAMAPPING",
+                                                   "autoSelect":  false,
+                                                   "queriesToDeselect":  [
+                                                                             "VehicleRegistrationQuery"
+                                                                         ],
+                                                   "provider":  "HI_HCJDC_OFML",
+                                                   "providerType":  "Commsys",
+                                                   "query":  "VehicleStolenQuery",
+                                                   "queryLabel":  "Vehicle Stolen",
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
@@ -6723,7 +6814,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for HI_HCJDC_OFML v1.0 MC",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v1.1 MC",
                         "name":  "HI_HCJDC_OFML",
                         "type":  "BUNDLE",
                         "provider":  "HI_HCJDC_OFML"
