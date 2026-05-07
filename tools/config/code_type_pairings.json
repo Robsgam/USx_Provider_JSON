@@ -1,0 +1,28 @@
+{
+  "_description": "Valid (codeTypeCategory, codeTypeSource) pairings. Source: FIELD_REFERENCE.txt Section 2.",
+  "pairings": [
+    { "category": "NCIC_LICENSE_PLATE_TYPE", "source": "NCIC",      "field": "LicensePlateTypeCode", "status": "confirmed" },
+    { "category": "NCIC_FIREARM_TYPE",       "source": "NCIC",      "field": "FirearmType",           "status": "confirmed" },
+    { "category": "NCIC_FIREARM_MAKE",       "source": "NCIC",      "field": "FirearmMake",           "status": "confirmed", "note": "FIREARM only, NOT vehicle (AP #24)" },
+    { "category": "NCIC_FIREARM_CALIBER",    "source": "NCIC",      "field": "FirearmCaliber",        "status": "confirmed", "note": "FormInput also valid" },
+    { "category": "NCIC_ARTICLE_TYPE",       "source": "CA_CLETS",  "field": "ArticleTypeCode",       "status": "confirmed", "note": "NCIC gives empty dropdown" },
+    { "category": "YES_NO_UNKNOWN",          "source": "NCIC",      "field": "ImageIndicator,RandomRequest", "status": "confirmed", "note": "Y/N only. NIBRS adds Unknown" },
+    { "category": "NIBRS_SEX",               "source": "NIBRS",     "field": "SexCode",               "status": "confirmed", "note": "CommSys-only fallback. Prefer attributeTypeId=SEX + codeTypeProvider=NIBRS" },
+    { "category": "NIBRS_RACE",              "source": "NIBRS",     "field": "RaceCode",              "status": "confirmed", "note": "NOT attributeTypeId=RACE (AP #3). NCIC = empty" },
+    { "category": "NJ_NIBRS_STATE",          "source": "NJ_NIBRS",  "field": "RegistrationStateOOS",  "status": "confirmed", "note": "OOS state dropdowns" }
+  ],
+  "providerSpecific": {
+    "VEHICLE_BODY_STYLE": {
+      "NJ": "NJ_NIBRS",
+      "CA": "VEHICLE",
+      "HI": "HI_NIBRS",
+      "_default": null,
+      "_note": "NCIC gives empty dropdown. Must check per provider."
+    },
+    "VEHICLE_TYPE": {
+      "HI": "HI_NIBRS",
+      "_default": null,
+      "_note": "Must verify per provider. NCIC = empty."
+    }
+  }
+}

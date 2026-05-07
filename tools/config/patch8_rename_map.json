@@ -1,0 +1,22 @@
+{
+  "_description": "Patch 8: PascalCase to camelCase field renames for CAD dispatch auto-populate.",
+  "_rule": "Applied to RMS bundle AFTER Patches 1,3,6,7. Transforms sourceField, combo set[]/any[], primaryFieldReference, attribute names.",
+  "_scope": "All RMS QIDMs (Vehicle + Person). BASE builds apply this. MC builds do NOT (MC uses PascalCase).",
+  "renameMap": {
+    "LicensePlateNumberIn": "licensePlateNumber",
+    "VehicleIdentificationNumber": "vehicleIdentificationNumber",
+    "VehicleMakeCode": "vehicleMakeCode",
+    "VehicleModelCode": "vehicleModelCode",
+    "VehicleYear": "vehicleYear",
+    "RegistrationState": "registrationState",
+    "OperatorLicenseNumber": "operatorLicenseNumber",
+    "NameFirst": "nameFirst",
+    "NameLast": "nameLast",
+    "NameMiddle": "nameMiddle",
+    "NameSuffix": "nameSuffix",
+    "BirthDate": "birthDate",
+    "SexCode": "sexCode",
+    "RaceCode": "raceCode",
+    "ImageIndicator": "imageIndicator"
+  }
+}

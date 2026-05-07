@@ -43,7 +43,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = if ($Release) { 7 } else { 6 }
+$stepCount = if ($Release) { 9 } else { 8 }
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -121,10 +121,47 @@ if ($verifyFails -gt 0) {
     Write-Host "  [6/$stepCount] Saved: $verifyFile" -ForegroundColor Green
 }
 
-# --- 7. Release Bundle (optional) ---
+# --- 7. Metadata Audit (XML vs JSON) ---
+Write-Host ""
+Write-Host "  [7/$stepCount] Running metadata audit..." -ForegroundColor Yellow
+$metadataPath = Join-Path $toolDir "audit_metadata.ps1"
+$metadataFile = Join-Path $DocsDir "METADATA_AUDIT_$jsonName.txt"
+if (Test-Path $metadataPath) {
+    $metadataOut = & powershell -ExecutionPolicy Bypass -File $metadataPath -Path $resolved 2>&1 | Out-String
+    ($header + "METADATA AUDIT`n==============`n`n" + $metadataOut) | Out-File -FilePath $metadataFile -Encoding utf8
+    $metadataFails = ([regex]::Matches($metadataOut, '\[FAIL\]')).Count
+    if ($metadataFails -gt 0) {
+        Write-Host "  [7/$stepCount] METADATA AUDIT: $metadataFails issues -- see $metadataFile" -ForegroundColor Yellow
+    } else {
+        Write-Host "  [7/$stepCount] Saved: $metadataFile" -ForegroundColor Green
+    }
+} else {
+    Write-Host "  [7/$stepCount] SKIPPED (audit_metadata.ps1 not found)" -ForegroundColor Gray
+}
+
+# --- 8. CAD Audit ---
+Write-Host ""
+Write-Host "  [8/$stepCount] Running CAD audit..." -ForegroundColor Yellow
+$cadPath = Join-Path $toolDir "audit_cad.ps1"
+$cadFile = Join-Path $DocsDir "CAD_AUDIT_$jsonName.txt"
+if (Test-Path $cadPath) {
+    $cadVariant = if ($jsonName -match '_MC') { 'MC' } else { 'BASE' }
+    $cadOut = & powershell -ExecutionPolicy Bypass -File $cadPath -Path $resolved -Variant $cadVariant 2>&1 | Out-String
+    ($header + "CAD AUDIT`n=========`n`n" + $cadOut) | Out-File -FilePath $cadFile -Encoding utf8
+    $cadFails = ([regex]::Matches($cadOut, '\[FAIL\]')).Count
+    if ($cadFails -gt 0) {
+        Write-Host "  [8/$stepCount] CAD AUDIT: $cadFails issues -- see $cadFile" -ForegroundColor Yellow
+    } else {
+        Write-Host "  [8/$stepCount] Saved: $cadFile" -ForegroundColor Green
+    }
+} else {
+    Write-Host "  [8/$stepCount] SKIPPED (audit_cad.ps1 not found)" -ForegroundColor Gray
+}
+
+# --- 9. Release Bundle (optional) ---
 if ($Release) {
     Write-Host ""
-    Write-Host "  [7/$stepCount] Building release bundle..." -ForegroundColor Yellow
+    Write-Host "  [9/$stepCount] Building release bundle..." -ForegroundColor Yellow
 
     $releaseDir = Join-Path $jsonDir "release"
     if (-not (Test-Path $releaseDir)) {
@@ -138,9 +175,15 @@ if ($Release) {
     Copy-Item $picklistFile (Join-Path $releaseDir "PICKLIST_REPORT_$jsonName.txt") -Force
     Copy-Item $htmlFile (Join-Path $releaseDir "LAYOUT_$jsonName.html") -Force
     Copy-Item $verifyFile (Join-Path $releaseDir "VERIFY_REPORT_$jsonName.txt") -Force
+    if (Test-Path $metadataFile) {
+        Copy-Item $metadataFile (Join-Path $releaseDir "METADATA_AUDIT_$jsonName.txt") -Force
+    }
+    if (Test-Path $cadFile) {
+        Copy-Item $cadFile (Join-Path $releaseDir "CAD_AUDIT_$jsonName.txt") -Force
+    }
 
     $releaseCount = (Get-ChildItem $releaseDir -File).Count
-    Write-Host "  [7/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
+    Write-Host "  [9/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
 }
 
 # --- Summary ---

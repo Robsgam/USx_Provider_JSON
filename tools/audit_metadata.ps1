@@ -1,0 +1,743 @@
+# audit_metadata.ps1
+# Validates provider JSON QIDM configurations against authoritative XML metadata.
+# The XML metadata is gospel -- if the XML says a query exists with certain fields
+# and combinations, the JSON must implement it correctly.
+#
+# Usage:
+#   .\audit_metadata.ps1                                     # Scan all providers
+#   .\audit_metadata.ps1 -Path providers\IL_LEADS_OFML\IL_LEADS_OFML_BASE.json
+#   .\audit_metadata.ps1 -Path providers\IL_LEADS_OFML\IL_LEADS_OFML_BASE.json -OutFile report.txt
+
+param(
+    [string]$Path,
+    [string]$OutFile
+)
+
+$ErrorActionPreference = 'Stop'
+
+$repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+# If tools/ is directly under repo root, adjust
+if (Test-Path (Join-Path $PSScriptRoot '..\providers')) {
+    $repoRoot = Split-Path $PSScriptRoot -Parent
+} elseif (Test-Path (Join-Path $PSScriptRoot '..\..\providers')) {
+    $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+}
+
+# Known form-only fields: present in QIDM but not in XML (expected, not a gap)
+$formOnlyFields = @(
+    'ImageIndicator', 'State', 'RegistrationState', 'Attention',
+    'PurposeCode', 'CaRequestPurposeCode', 'RelatedHitSearchIndicator',
+    'RandomRequest', 'ExpandedBirthDateSearchCode', 'ReasonCode',
+    'ExpandedNameSearchCode', 'ExpandedBirthDateSearchIndicator',
+    'dexStateUserId', 'InquiryLevel', 'FormORI', 'Requestor'
+)
+
+# Non-query transaction names to skip (admin, enter, clear, modify, etc.)
+$nonQueryTypes = @('Administrative','Clear','Enter','Locate','Modify','Cancel')
+
+# ── Output helpers ────────────────────────────────────────────────────────────
+$lines = [System.Collections.Generic.List[string]]::new()
+$script:passCount  = 0
+$script:failCount  = 0
+$script:warnCount  = 0
+$script:infoCount  = 0
+$script:totalProviders = 0
+
+function Out-Line([string]$text) { $lines.Add($text) }
+function Out-Pass([string]$msg)  { $lines.Add("  [PASS] $msg"); $script:passCount++ }
+function Out-Fail([string]$msg)  { $lines.Add("  [FAIL] $msg"); $script:failCount++ }
+function Out-Warn([string]$msg)  { $lines.Add("  [WARN] $msg"); $script:warnCount++ }
+function Out-Info([string]$msg)  { $lines.Add("  [INFO] $msg"); $script:infoCount++ }
+
+# ── Discover providers to audit ───────────────────────────────────────────────
+$targets = @()
+
+if ($Path) {
+    # Single provider mode
+    $resolved = Resolve-Path $Path -ErrorAction SilentlyContinue
+    if (-not $resolved) {
+        Write-Error "File not found: $Path"
+        return
+    }
+    $targets += [PSCustomObject]@{ JsonPath = $resolved.Path }
+} else {
+    # Scan all providers
+    $provDir = Join-Path $repoRoot 'providers'
+    if (-not (Test-Path $provDir)) {
+        Write-Error "Providers directory not found at $provDir"
+        return
+    }
+    $folders = Get-ChildItem $provDir -Directory
+    foreach ($folder in $folders) {
+        $baseName = $folder.Name
+        # Find _BASE.json (case-insensitive)
+        $jsonCandidates = Get-ChildItem $folder.FullName -Filter '*_BASE.json' -File |
+            Where-Object { $_.Name -notmatch '_READABLE' }
+        if ($jsonCandidates) {
+            $targets += [PSCustomObject]@{ JsonPath = $jsonCandidates[0].FullName }
+        }
+    }
+}
+
+if ($targets.Count -eq 0) {
+    Write-Host "No provider JSON files found to audit." -ForegroundColor Yellow
+    return
+}
+
+# ── Helper: Parse XML requirements structure ──────────────────────────────────
+function Get-XmlComboRequirements {
+    param([System.Xml.XmlElement]$combo)
+
+    $setFields = @()
+    $anyFields = @()
+
+    if ($combo.Requirements -and $combo.Requirements.Set) {
+        $setNode = $combo.Requirements.Set
+        foreach ($child in $setNode.ChildNodes) {
+            if ($child.LocalName -eq 'Field') {
+                $ref = $child.GetAttribute('reference')
+                if (-not $ref) { $ref = $child.GetAttribute('name') }
+                if ($ref) { $setFields += $ref }
+            } elseif ($child.LocalName -eq 'Any') {
+                foreach ($af in $child.ChildNodes) {
+                    if ($af.LocalName -eq 'Field') {
+                        $ref = $af.GetAttribute('reference')
+                        if (-not $ref) { $ref = $af.GetAttribute('name') }
+                        if ($ref) { $anyFields += $ref }
+                    }
+                }
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        Set = $setFields
+        Any = $anyFields
+    }
+}
+
+# ── Helper: Case-insensitive field match ──────────────────────────────────────
+function Test-FieldMatch {
+    param(
+        [string]$xmlField,
+        [string[]]$jsonFields
+    )
+    foreach ($jf in $jsonFields) {
+        if ($jf -ieq $xmlField) { return $true }
+    }
+    return $false
+}
+
+# ── Helper: Find matching JSON field for XML field (case-insensitive) ─────────
+function Find-MatchingJsonField {
+    param(
+        [string]$xmlField,
+        [string[]]$jsonFields
+    )
+    foreach ($jf in $jsonFields) {
+        if ($jf -ieq $xmlField) { return $jf }
+    }
+    return $null
+}
+
+# ── Per-provider audit ────────────────────────────────────────────────────────
+function Audit-Provider {
+    param([string]$JsonPath)
+
+    $jsonFile = [System.IO.Path]::GetFileNameWithoutExtension($JsonPath)
+    # Derive provider name: strip _BASE, _MC suffixes
+    $providerName = $jsonFile -replace '(?i)_(BASE|MC)(_READABLE)?$', ''
+
+    Out-Line ""
+    Out-Line ("=" * 60)
+    Out-Line " METADATA AUDIT: $providerName"
+    Out-Line ("=" * 60)
+
+    # ── Find XML metadata ─────────────────────────────────────────────────────
+    $jsonDir = Split-Path $JsonPath -Parent
+    $xmlPath = $null
+
+    # Look for source/<PROVIDER>.xml (case-insensitive)
+    $sourceDir = Join-Path $jsonDir 'source'
+    if (Test-Path $sourceDir) {
+        $xmlCandidates = Get-ChildItem $sourceDir -Filter '*.xml' -File |
+            Where-Object { $_.Name -notmatch '(?i)\bold\b' }
+        if ($xmlCandidates.Count -gt 0) {
+            $xmlPath = $xmlCandidates[0].FullName
+        }
+    }
+
+    if (-not $xmlPath) {
+        # Fallback: look in provider folder itself
+        $xmlCandidates = Get-ChildItem $jsonDir -Filter '*.xml' -File |
+            Where-Object { $_.Name -notmatch '(?i)\bold\b' }
+        if ($xmlCandidates.Count -gt 0) {
+            $xmlPath = $xmlCandidates[0].FullName
+        }
+    }
+
+    if (-not $xmlPath) {
+        Out-Line "  [SKIP] No XML metadata found for $providerName"
+        Out-Line ""
+        return
+    }
+
+    Out-Line "  XML: $(Split-Path $xmlPath -Leaf)"
+    Out-Line "  JSON: $(Split-Path $JsonPath -Leaf)"
+
+    # ── Parse XML ─────────────────────────────────────────────────────────────
+    try {
+        [xml]$xml = Get-Content $xmlPath -Raw -Encoding UTF8
+    } catch {
+        Out-Fail "XML parse error: $_"
+        return
+    }
+
+    # Navigate XML structure: InterfaceSchema > States > State > Systems > System > Transactions
+    $system = $null
+    try {
+        $system = $xml.InterfaceSchema.States.State.Systems.System
+    } catch { }
+
+    if (-not $system) {
+        Out-Fail "Could not find System element in XML"
+        return
+    }
+
+    $xmlTransactions = @()
+    if ($system.Transactions -and $system.Transactions.Transaction) {
+        $xmlTransactions = @($system.Transactions.Transaction)
+    }
+
+    # Filter to query transactions (name ends with Query)
+    $xmlQueryTxns = @()
+    foreach ($txn in $xmlTransactions) {
+        if ($txn.name -match 'Query$') {
+            $xmlQueryTxns += $txn
+        }
+    }
+
+    # Also check MessageKeys for transactionType/type = Inquiry to identify basic queries
+    $inquiryMsgKeys = @{}
+    $msgKeys = $null
+    try {
+        $msgKeys = $system.MessageKeys.MessageKey
+    } catch { }
+    if ($msgKeys) {
+        foreach ($mk in @($msgKeys)) {
+            $mkType = $mk.type
+            if (-not $mkType) {
+                try { $mkType = $mk.GetAttribute('type') } catch { }
+            }
+            if ($mkType -ieq 'Inquiry') {
+                $mkName = $mk.name
+                if (-not $mkName) {
+                    try { $mkName = $mk.GetAttribute('name') } catch { }
+                }
+                if ($mkName) { $inquiryMsgKeys[$mkName] = $true }
+            }
+        }
+    }
+
+    # ── Parse JSON ────────────────────────────────────────────────────────────
+    try {
+        $raw = [System.IO.File]::ReadAllText($JsonPath, [System.Text.Encoding]::UTF8)
+        $json = $raw | ConvertFrom-Json
+    } catch {
+        Out-Fail "JSON parse error: $_"
+        return
+    }
+
+    # Extract CommSys QIDMs (skip RMS)
+    $qidms = @()
+    foreach ($bundle in $json.bundles) {
+        foreach ($cfg in $bundle.configurations) {
+            if ($cfg.type -eq 'QUERYINPUTDATAMAPPING' -and
+                $cfg.handlerFunction -eq 'CommsysTransactionRequestHandler') {
+                $qidms += $cfg
+            }
+        }
+    }
+
+    # Extract QIF form fields (for CHECK 5 maxLength)
+    $qifFields = @{}  # key = fieldId (lowercase), value = @{ maxLength; fieldId }
+    foreach ($bundle in $json.bundles) {
+        foreach ($cfg in $bundle.configurations) {
+            if ($cfg.type -ne 'QUERYINPUTFORM') { continue }
+            $cfgText = $cfg | ConvertTo-Json -Depth 100 -Compress
+            # Extract fieldId and maxLength pairs
+            $fieldMatches = [regex]::Matches($cfgText, '"fieldId"\s*:\s*"([^"]+)"')
+            $maxLenMatches = @{}
+            # Parse node-by-node for accurate fieldId -> maxLength mapping
+            $layoutVariant = $null
+            try { $layoutVariant = $cfg.layout.default } catch { }
+            if (-not $layoutVariant) { continue }
+
+            foreach ($prop in $layoutVariant.PSObject.Properties) {
+                $node = $prop.Value
+                if (-not $node -or -not $node.props) { continue }
+                $fid = $null
+                $ml = $null
+                try { $fid = $node.props.fieldId } catch { }
+                try { $ml = $node.props.maxLength } catch { }
+                if ($fid -and $ml) {
+                    $qifFields[$fid.ToLower()] = @{
+                        fieldId   = $fid
+                        maxLength = $ml
+                    }
+                }
+            }
+        }
+    }
+
+    # Build lookup: query name -> QIDM config(s)
+    $qidmByQuery = @{}
+    foreach ($q in $qidms) {
+        $qName = $q.query
+        if (-not $qidmByQuery.ContainsKey($qName)) {
+            $qidmByQuery[$qName] = @()
+        }
+        $qidmByQuery[$qName] += $q
+    }
+
+    # Build unique XML query names
+    $xmlQueryNames = @{}
+    foreach ($txn in $xmlQueryTxns) {
+        $xmlQueryNames[$txn.name] = $txn
+    }
+
+    $jsonQueryNames = @{}
+    foreach ($q in $qidms) {
+        $jsonQueryNames[$q.query] = $true
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 1: Query Coverage
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 1: Query Coverage ---"
+
+    # Queries in XML
+    $xmlNames = @($xmlQueryNames.Keys) | Sort-Object
+    $jsonNames = @($jsonQueryNames.Keys) | Sort-Object
+
+    foreach ($name in $xmlNames) {
+        if ($jsonQueryNames.ContainsKey($name)) {
+            Out-Pass "$name`: in XML and JSON"
+        } else {
+            Out-Warn "$name`: in XML but NOT in JSON (not built)"
+        }
+    }
+
+    foreach ($name in $jsonNames) {
+        if (-not $xmlQueryNames.ContainsKey($name)) {
+            Out-Fail "$name`: in JSON but NOT in XML (invalid query)"
+        }
+    }
+
+    if ($xmlNames.Count -eq 0 -and $jsonNames.Count -eq 0) {
+        Out-Info "No query transactions found in XML or JSON"
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 2: KeyReference Validation
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 2: KeyReference Validation ---"
+
+    # Build set of all XML keyRefs per query
+    $xmlKeyRefsByQuery = @{}  # queryName -> set of keyRefs
+    $allXmlKeyRefs = @{}      # keyRef -> queryName
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+        $keyRefs = [System.Collections.Generic.HashSet[string]]::new()
+        if ($txn.Combinations -and $txn.Combinations.Combination) {
+            foreach ($combo in @($txn.Combinations.Combination)) {
+                $kr = $combo.keyReference
+                if (-not $kr) {
+                    try { $kr = $combo.GetAttribute('keyReference') } catch { }
+                }
+                if ($kr) {
+                    [void]$keyRefs.Add($kr)
+                    $allXmlKeyRefs[$kr] = $qName
+                }
+            }
+        }
+        $xmlKeyRefsByQuery[$qName] = $keyRefs
+    }
+
+    # Check each JSON combo's keyRef against XML
+    $jsonKeyRefsSeen = @{}  # keyRef -> queryName
+    foreach ($q in $qidms) {
+        $qName = $q.query
+        if (-not $q.combinations) { continue }
+        foreach ($combo in @($q.combinations)) {
+            $kr = $combo.keyReference
+            if (-not $kr) { continue }
+            $jsonKeyRefsSeen[$kr] = $qName
+
+            # Check if this keyRef exists in XML for this query
+            $foundInQuery = $false
+            $foundAnywhere = $false
+
+            if ($xmlKeyRefsByQuery.ContainsKey($qName)) {
+                if ($xmlKeyRefsByQuery[$qName].Contains($kr)) {
+                    $foundInQuery = $true
+                }
+            }
+            if ($allXmlKeyRefs.ContainsKey($kr)) {
+                $foundAnywhere = $true
+            }
+
+            if ($foundInQuery) {
+                Out-Pass "${kr}: exists in XML $qName"
+            } elseif ($foundAnywhere) {
+                Out-Warn "${kr}: exists in XML $($allXmlKeyRefs[$kr]) but JSON maps it to $qName"
+            } else {
+                Out-Info "${kr}: invented keyRef (not in XML) -- acceptable"
+            }
+        }
+    }
+
+    # XML keyRefs not in any JSON combo
+    foreach ($kr in $allXmlKeyRefs.Keys | Sort-Object) {
+        if (-not $jsonKeyRefsSeen.ContainsKey($kr)) {
+            $qName = $allXmlKeyRefs[$kr]
+            Out-Info "${kr}: XML keyRef ($qName) not used in any JSON combo"
+        }
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 3: Field Coverage
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 3: Field Coverage ---"
+
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+
+        # Collect XML field names
+        $xmlFields = @()
+        if ($txn.Fields -and $txn.Fields.Field) {
+            foreach ($f in @($txn.Fields.Field)) {
+                $fname = $f.name
+                if (-not $fname) {
+                    try { $fname = $f.GetAttribute('name') } catch { }
+                }
+                if ($fname) { $xmlFields += $fname }
+            }
+        }
+
+        if ($xmlFields.Count -eq 0) { continue }
+
+        # Collect JSON QIDM sourceFields and targetFields for this query
+        $jsonSourceFields = @()
+        $jsonTargetFields = @()
+        if ($qidmByQuery.ContainsKey($qName)) {
+            foreach ($qidm in $qidmByQuery[$qName]) {
+                if ($qidm.attributes) {
+                    foreach ($attr in @($qidm.attributes)) {
+                        if ($attr.sourceField) {
+                            foreach ($sf in @($attr.sourceField)) {
+                                $jsonSourceFields += $sf
+                            }
+                        }
+                        if ($attr.targetField) {
+                            $jsonTargetFields += $attr.targetField
+                        }
+                    }
+                }
+            }
+        } else {
+            Out-Line "  $qName`: (not built in JSON -- see CHECK 1)"
+            continue
+        }
+
+        # Deduplicate
+        $jsonSourceFieldsUniq = $jsonSourceFields | Select-Object -Unique
+        $jsonTargetFieldsUniq = $jsonTargetFields | Select-Object -Unique
+        $allJsonFields = @($jsonSourceFieldsUniq) + @($jsonTargetFieldsUniq) | Select-Object -Unique
+
+        Out-Line "  ${qName}:"
+
+        # XML fields vs JSON
+        foreach ($xf in ($xmlFields | Sort-Object)) {
+            $inSource = Test-FieldMatch -xmlField $xf -jsonFields $jsonSourceFieldsUniq
+            $inTarget = Test-FieldMatch -xmlField $xf -jsonFields $jsonTargetFieldsUniq
+
+            if ($inSource -or $inTarget) {
+                Out-Pass "  $xf`: in XML and QIDM"
+            } else {
+                # Check if it's a known form-only that appears with different casing
+                $isFormOnly = $false
+                foreach ($fo in $formOnlyFields) {
+                    if ($fo -ieq $xf) { $isFormOnly = $true; break }
+                }
+                if ($isFormOnly) {
+                    Out-Info "  $xf`: in XML only (form-only pattern -- expected)"
+                } else {
+                    Out-Warn "  $xf`: in XML but not in QIDM"
+                }
+            }
+        }
+
+        # JSON sourceFields not in XML (form-only fields)
+        foreach ($jf in ($jsonSourceFieldsUniq | Sort-Object)) {
+            $inXml = Test-FieldMatch -xmlField $jf -jsonFields $xmlFields
+            if (-not $inXml) {
+                $isFormOnly = $false
+                foreach ($fo in $formOnlyFields) {
+                    if ($fo -ieq $jf) { $isFormOnly = $true; break }
+                }
+                if ($isFormOnly) {
+                    Out-Info "  $jf`: in QIDM only (form-only field)"
+                } else {
+                    Out-Info "  $jf`: in QIDM sourceField but not in XML"
+                }
+            }
+        }
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 4: Combination Field Requirements
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 4: Combination Field Requirements ---"
+
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+        if (-not $qidmByQuery.ContainsKey($qName)) { continue }
+        if (-not $txn.Combinations -or -not $txn.Combinations.Combination) { continue }
+
+        $xmlCombos = @($txn.Combinations.Combination)
+        $jsonQidms = $qidmByQuery[$qName]
+
+        Out-Line "  ${qName}:"
+
+        foreach ($xmlCombo in $xmlCombos) {
+            $kr = $xmlCombo.keyReference
+            if (-not $kr) {
+                try { $kr = $xmlCombo.GetAttribute('keyReference') } catch { $kr = '(unknown)' }
+            }
+
+            $reqs = Get-XmlComboRequirements -combo $xmlCombo
+            $xmlSetFields = $reqs.Set
+            $xmlAnyFields = $reqs.Any
+
+            # Find matching JSON combo(s) by keyRef
+            $matchingJsonCombos = @()
+            foreach ($qidm in $jsonQidms) {
+                if (-not $qidm.combinations) { continue }
+                foreach ($jc in @($qidm.combinations)) {
+                    if ($jc.keyReference -ieq $kr) {
+                        $matchingJsonCombos += $jc
+                    }
+                }
+            }
+
+            if ($matchingJsonCombos.Count -eq 0) {
+                # Check if invented keyRefs cover this combo
+                Out-Info "  keyRef ${kr}: no exact match in JSON (may use invented keyRef)"
+                continue
+            }
+
+            foreach ($jc in $matchingJsonCombos) {
+                $jSet = @()
+                $jAny = @()
+                if ($jc.requirements) {
+                    if ($jc.requirements.set) { $jSet = @($jc.requirements.set) }
+                    if ($jc.requirements.any) { $jAny = @($jc.requirements.any) }
+                }
+                $jAll = $jSet + $jAny
+
+                # Also need to map JSON fieldIds (camelCase sourceField) back to XML PascalCase
+                # Build a reverse map from the QIDM attributes: sourceField -> targetField
+                $sourceToTarget = @{}
+                foreach ($qidm in $jsonQidms) {
+                    if (-not $qidm.attributes) { continue }
+                    foreach ($attr in @($qidm.attributes)) {
+                        if ($attr.sourceField -and $attr.targetField) {
+                            foreach ($sf in @($attr.sourceField)) {
+                                $sourceToTarget[$sf.ToLower()] = $attr.targetField
+                            }
+                        }
+                    }
+                }
+
+                # CHECK: XML Set fields present in JSON set[]
+                foreach ($xsf in $xmlSetFields) {
+                    $found = $false
+                    # Direct match (case-insensitive)
+                    foreach ($jsf in $jSet) {
+                        if ($jsf -ieq $xsf) { $found = $true; break }
+                        # Also check if JSON sourceField maps to this XML field via targetField
+                        if ($sourceToTarget.ContainsKey($jsf.ToLower())) {
+                            if ($sourceToTarget[$jsf.ToLower()] -ieq $xsf) { $found = $true; break }
+                        }
+                    }
+                    if (-not $found) {
+                        # Also check if it's in any[] (demoted from set to any)
+                        $inAny = $false
+                        foreach ($jaf in $jAny) {
+                            if ($jaf -ieq $xsf) { $inAny = $true; break }
+                            if ($sourceToTarget.ContainsKey($jaf.ToLower())) {
+                                if ($sourceToTarget[$jaf.ToLower()] -ieq $xsf) { $inAny = $true; break }
+                            }
+                        }
+                        if ($inAny) {
+                            Out-Info "  keyRef ${kr}: XML set field '$xsf' is in JSON any[] (demoted)"
+                        } else {
+                            Out-Warn "  keyRef ${kr}: XML set field '$xsf' missing from JSON set[]"
+                        }
+                    } else {
+                        Out-Pass "  keyRef ${kr}: set field '$xsf' present"
+                    }
+                }
+
+                # CHECK: XML Any fields present in JSON any[] or set[]
+                foreach ($xaf in $xmlAnyFields) {
+                    $found = $false
+                    foreach ($jsf in $jAll) {
+                        if ($jsf -ieq $xaf) { $found = $true; break }
+                        if ($sourceToTarget.ContainsKey($jsf.ToLower())) {
+                            if ($sourceToTarget[$jsf.ToLower()] -ieq $xaf) { $found = $true; break }
+                        }
+                    }
+                    if ($found) {
+                        Out-Pass "  keyRef ${kr}: any field '$xaf' present"
+                    } else {
+                        # Check if it's a known form-only field
+                        $isFormOnly = $false
+                        foreach ($fo in $formOnlyFields) {
+                            if ($fo -ieq $xaf) { $isFormOnly = $true; break }
+                        }
+                        if ($isFormOnly) {
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in JSON (form-only)"
+                        } else {
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in JSON any[] or set[]"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 5: Field maxLength Alignment
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 5: Field maxLength Alignment ---"
+
+    $maxLenChecked = 0
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+        if (-not $qidmByQuery.ContainsKey($qName)) { continue }
+        if (-not $txn.Fields -or -not $txn.Fields.Field) { continue }
+
+        foreach ($xf in @($txn.Fields.Field)) {
+            $xmlFieldName = $xf.name
+            if (-not $xmlFieldName) {
+                try { $xmlFieldName = $xf.GetAttribute('name') } catch { continue }
+            }
+            $xmlMaxLen = $xf.maxLength
+            if (-not $xmlMaxLen) {
+                try { $xmlMaxLen = $xf.GetAttribute('maxLength') } catch { continue }
+            }
+            if (-not $xmlMaxLen) { continue }
+
+            # Find matching QIF field by looking at QIDM attributes: targetField -> sourceField -> QIF fieldId
+            $sourceFieldIds = @()
+            foreach ($qidm in $qidmByQuery[$qName]) {
+                if (-not $qidm.attributes) { continue }
+                foreach ($attr in @($qidm.attributes)) {
+                    if ($attr.targetField -and $attr.targetField -ieq $xmlFieldName) {
+                        if ($attr.sourceField) {
+                            foreach ($sf in @($attr.sourceField)) {
+                                $sourceFieldIds += $sf
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($sfId in $sourceFieldIds) {
+                $key = $sfId.ToLower()
+                if ($qifFields.ContainsKey($key)) {
+                    $qifMaxLen = $qifFields[$key].maxLength
+                    $maxLenChecked++
+                    if ($qifMaxLen -and $xmlMaxLen) {
+                        $qifInt = 0; $xmlInt = 0
+                        $qifParsed = [int]::TryParse($qifMaxLen, [ref]$qifInt)
+                        $xmlParsed = [int]::TryParse($xmlMaxLen, [ref]$xmlInt)
+                        if ($qifParsed -and $xmlParsed) {
+                            if ($qifInt -eq $xmlInt) {
+                                Out-Pass "$sfId`: maxLength $qifInt matches XML ($xmlFieldName)"
+                            } elseif ($qifInt -gt $xmlInt) {
+                                Out-Warn "$sfId`: QIF maxLength $qifInt > XML maxLength $xmlInt ($xmlFieldName) -- server may reject"
+                            } else {
+                                Out-Info "$sfId`: QIF maxLength $qifInt < XML maxLength $xmlInt ($xmlFieldName) -- conservative, OK"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ($maxLenChecked -eq 0) {
+        Out-Info "No maxLength comparisons possible (no matching QIF fields found)"
+    }
+
+    Out-Line ""
+    $script:totalProviders++
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MAIN EXECUTION
+# ══════════════════════════════════════════════════════════════════════════════
+
+Out-Line ("=" * 60)
+Out-Line " CONNECTCIC METADATA AUDIT"
+Out-Line " Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+Out-Line ("=" * 60)
+
+foreach ($target in $targets) {
+    try {
+        Audit-Provider -JsonPath $target.JsonPath
+    } catch {
+        Out-Line ""
+        Out-Line "  [ERROR] Exception auditing $($target.JsonPath): $_"
+        Out-Line ""
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SUMMARY
+# ══════════════════════════════════════════════════════════════════════════════
+Out-Line ("=" * 60)
+Out-Line " METADATA AUDIT SUMMARY"
+Out-Line ("=" * 60)
+Out-Line "Providers checked: $($script:totalProviders)"
+Out-Line "Total: $($script:passCount) PASS / $($script:failCount) FAIL / $($script:warnCount) WARN / $($script:infoCount) INFO"
+Out-Line ("=" * 60)
+
+# ── Output ────────────────────────────────────────────────────────────────────
+$output = $lines -join "`r`n"
+
+if ($OutFile) {
+    $output | Out-File -FilePath $OutFile -Encoding UTF8
+    Write-Host "Report written to: $OutFile" -ForegroundColor Green
+} else {
+    # Write to console with color coding
+    foreach ($line in $lines) {
+        if ($line -match '^\s*\[PASS\]')       { Write-Host $line -ForegroundColor Green }
+        elseif ($line -match '^\s*\[FAIL\]')    { Write-Host $line -ForegroundColor Red }
+        elseif ($line -match '^\s*\[WARN\]')    { Write-Host $line -ForegroundColor Yellow }
+        elseif ($line -match '^\s*\[INFO\]')    { Write-Host $line -ForegroundColor Gray }
+        elseif ($line -match '^\s*\[SKIP\]')    { Write-Host $line -ForegroundColor DarkYellow }
+        elseif ($line -match '^\s*\[ERROR\]')   { Write-Host $line -ForegroundColor Red }
+        elseif ($line -match '^={3,}')           { Write-Host $line -ForegroundColor Cyan }
+        elseif ($line -match '^-{3,}\s*CHECK')   { Write-Host $line -ForegroundColor Yellow }
+        else                                     { Write-Host $line }
+    }
+}
