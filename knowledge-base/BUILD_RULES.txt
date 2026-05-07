@@ -4,7 +4,7 @@ How to structure a provider JSON from scratch.
 Last updated: 2026-05-06
 Source: NJ_NJCJIS (v2.3), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v2.0),
         FL_FCIC (v3.0), HI_HCJDC_OFML (v1.1), TX_TLETS (v2.1),
-        LA_LETTS_OFML (v2.0), CA_CLETS (v1.5)
+        LA_LEMS (v2.0), CA_CLETS (v1.5)
 
 See also:
   RULE_HANDLERS.txt     -- Handler signatures, arguments, usage patterns
@@ -29,12 +29,6 @@ See also:
   doc file. This was learned when CA_SAN_LOUIS_OBISPO and NM_NMLETS had to
   be renamed to match their XML filenames (CA_SAN_LUIS_OBISPO and
   NM_NMLETS_OFML). Rename propagation touches 10+ files per provider.
-
-  EXCEPTION: LA_LETTS_OFML — XML file is LA_LEMS.xml (LEMS = state system
-  name). Folder was named LA_LETTS_OFML before the naming convention was
-  established, the provider is already imported to the server under that name,
-  and all 40+ files reference LA_LETTS_OFML. Renaming would require a server
-  re-import. Documented as the only naming exception.
 
   VERIFICATION: Before creating a provider folder, open the metadata XML and
   confirm the filename. Use that exact name (case-sensitive) for the folder.

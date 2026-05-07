@@ -368,7 +368,7 @@ SECTION 6 -- HANDLER REFERENCE  (source: HandlerConfiguration.java)
     Purpose: Formats a name as "Last Name, First Initial" (e.g. "SMITH, J").
     Reads from the logged-in officer's user session -- does NOT require a form field.
     We use: YES -- on Attention attribute in any QIDM that sends <Attention>.
-    Pattern (confirmed CA_eSUN, LA_LETTS_OFML, FL_FCIC v2.6):
+    Pattern (confirmed CA_eSUN, LA_LEMS, FL_FCIC v2.6):
       - Add to Attention QIDM attribute: rule = { function: 'CommsysGetLastNameFirstNameInitialRuleHandler' }
       - sourceField: ['Attention'] (platform resolves via handler, not form)
       - Put Attention in any[] (not set[]) -- handler fires automatically

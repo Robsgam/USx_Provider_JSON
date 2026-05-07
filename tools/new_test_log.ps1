@@ -33,7 +33,7 @@ if (-not $ProviderDir) {
         'AZ_AZDPS'            = "$repoRoot\providers\AZ_AZDPS"
         'FL_FCIC'             = "$repoRoot\providers\FL_FCIC"
         'TX_TLETS'            = "$repoRoot\providers\TX_TLETS"
-        'LA_LETTS_OFML'       = "$repoRoot\providers\LA_LETTS_OFML"
+        'LA_LEMS'       = "$repoRoot\providers\LA_LEMS"
         'CA_CLETS'            = "$repoRoot\providers\CA_CLETS"
         'CA_VENTURA_COUNTY'   = "$repoRoot\providers\CA_VENTURA_COUNTY"
         'CA_CONTRA_COSTA'     = "$repoRoot\providers\CA_CONTRA_COSTA"

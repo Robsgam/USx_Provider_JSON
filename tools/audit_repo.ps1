@@ -525,7 +525,7 @@ Write-Host ""
 Write-Host "--- CATEGORY 11: Cross-Provider JSON Consistency ---" -ForegroundColor Yellow
 
 # Providers flagged NEEDS REBUILD get INFO instead of FAIL
-$needsRebuild = @('TX_TLETS','LA_LETTS_OFML')
+$needsRebuild = @('TX_TLETS','LA_LEMS')
 $validLabels = Get-ValidLabels
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory

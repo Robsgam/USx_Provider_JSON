@@ -1,0 +1,204 @@
+LA_LEMS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+============================================================
+Last updated: 2026-05-05
+JSON version: v2.0 BASE + v2.0-mc MC
+Live test: NOT YET TESTED -- import PENDING
+Validator: 48 PASS / 0 FAIL / 32 WARN / 4 LIMITATION (v2.0 rebuild)
+Verify: CLEAN (0 FAIL)
+Provider internal name: LA_LEMS (System LEMS v18)
+
+NOTE: All combos [PENDING] until exhaustive testing with per-test log captures (GATE 2/3).
+
+ATTENTION PATTERN (AP #27 compliant):
+  ALL 6 QIDMs use CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute.
+  No Attention FormInput on any form -- handler reads officer session (LName FInitial).
+  Attention in any[] on all combinations (auto-fires via handler).
+  Confirmed correct pattern (matches CA_eSUN).
+  All Attention WARNs (24) are expected and acknowledged.
+
+DUPLICATE keyRef INVENTORY (LIMITATION #21):
+  VehicleRegistrationQuery: RQS x2 -> RQSLicensePlateNumber, RQSVehicleIdentificationNumber
+  DriverHistoryQuery:       KQ x2  -> KQOperatorLicenseNumber, KQName
+  DriverLicenseQuery:       DP, DQ, QWDN, QWA (all distinct, no invention needed)
+  GunQuery:                 QG (no duplicate)
+  ArticleSingleQuery:       QA (no duplicate)
+  BoatQuery:                BQ, QB (distinct)
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  QIDM: LA_LEMS_VehicleRegistrationQuery
+  QIF:  Vehicle
+  queryLabel: Vehicle Registration
+  Fields: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+          VehicleIdentificationNumber, RegistrationState, Attention (handler)
+  State: in set[] for both combos (LA requires state for vehicle queries)
+  State initialValue: 'LA' (safe -- no separate In/Out keyRefs)
+
+  RQS Plate -- Vehicle Registration (Plate+State) [PENDING]
+    keyReference: RQSLicensePlateNumber
+    set: LicensePlateNumber, RegistrationState
+    any: Attention, LicensePlateTypeCode, LicensePlateYear
+    state: In/Out
+
+  RQS VIN -- Vehicle Registration (VIN+State) [PENDING]
+    keyReference: RQSVehicleIdentificationNumber
+    set: VehicleIdentificationNumber, RegistrationState
+    any: Attention
+    state: In/Out
+
+  RMS co-fire [PENDING]
+    RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
+
+================================================================================
+2. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  QIDM: LA_LEMS_DriverLicenseQuery
+  QIF:  Person
+  queryLabel: Driver License
+  autoSelect: true
+  Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
+          BirthDate, SexCode, RaceCode, RegistrationState, ImageIndicator,
+          Attention (handler)
+
+  DP Photo OLN -- Photo Driver License (OLN+ImageIndicator) [PENDING]
+    keyReference: DP
+    set: OperatorLicenseNumber, ImageIndicator
+    any: Attention, RegistrationState
+    state: In/Out
+    Note: Fires when officer selects Y or N in Image dropdown. No default on Image
+          field means DP only fires when officer actively selects an image option.
+
+  DQ OLN -- Driver License (OLN only, no photo) [PENDING]
+    keyReference: DQ
+    set: OperatorLicenseNumber
+    any: Attention, ImageIndicator, RegistrationState
+    state: In/Out
+    Note: Fires when only OLN entered (ImageIndicator blank). Falls through from DP
+          when Image field is empty.
+
+  QWDN Name -- Driver License (Name+DOB+Sex+Race) [PENDING]
+    keyReference: QWDN
+    set: SexCode, BirthDate, NameLast, NameFirst, RaceCode
+    any: Attention, ImageIndicator, RegistrationState, NameMiddle, NameSuffix
+    state: In/Out
+    Note: LA-specific -- Race in set[] (most states have Race in any[]).
+          Most specific name path.
+
+  QWA Name -- Driver License (Name+DOB+Sex, no Race) [PENDING]
+    keyReference: QWA
+    set: SexCode, BirthDate, NameLast, NameFirst
+    any: Attention, ImageIndicator, RaceCode, RegistrationState, NameMiddle, NameSuffix
+    state: In/Out
+    Note: Less specific -- fires when Race not provided.
+
+  DQ Name -- UNREACHABLE (dropped)
+    XML metadata has a 5th combo DQ(Name) with identical set[] to QWA.
+    Same set[] + later in order = never fires (LIMITATION #3). Dropped.
+
+  RMS co-fire [PENDING]
+    RMS Person combo fires alongside CommSys.
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity
+================================================================================
+
+  QIDM: LA_LEMS_DriverHistoryQuery
+  QIF:  Person (shared with DriverLicenseQuery)
+  queryLabel: Driver History
+  autoSelect: false (manual selection required -- officer checks DH checkbox)
+  NO queriesToDeselect (LIMITATION #26 -- shared field pool)
+  Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
+          BirthDate, SexCode, RegistrationState, PurposeCode, Attention (handler)
+  PurposeCode: in set[] per metadata, FormSelect default='C'
+
+  KQ OLN -- Driver History (OLN+PurposeCode) [PENDING]
+    keyReference: KQOperatorLicenseNumber
+    set: OperatorLicenseNumber, PurposeCode
+    any: Attention, RegistrationState
+    state: In/Out
+
+  KQ Name -- Driver History (Name+DOB+Sex+PurposeCode) [PENDING]
+    keyReference: KQName
+    set: SexCode, BirthDate, NameLast, NameFirst, PurposeCode
+    any: Attention, RegistrationState, NameMiddle, NameSuffix
+    state: In/Out
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: LA_LEMS_GunQuery
+  QIF:  Firearm
+  queryLabel: Firearm
+  Fields: GunSerialNumber, GunMake(3), GunTypeCode(3), Attention (handler)
+  GunMake maxLength: 3 (LA-specific, NOT 23 like TX)
+
+  QG Serial -- NCIC Gun (Serial Number) [PENDING]
+    keyReference: QG
+    set: GunSerialNumber
+    any: Attention, GunMake, GunTypeCode
+    state: In/Out
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: LA_LEMS_ArticleSingleQuery
+  QIF:  Article
+  queryLabel: Article
+  Fields: ArticleSerialNumber, ArticleTypeCode, Attention (handler)
+  ArticleTypeCode: in any[] per metadata (NOT set[] like most states)
+
+  QA Serial -- NCIC Article (Serial Number) [PENDING]
+    keyReference: QA
+    set: ArticleSerialNumber
+    any: Attention, ArticleTypeCode
+    state: In/Out
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: LA_LEMS_BoatQuery
+  QIF:  Boat
+  queryLabel: Boat
+  Fields: RegistrationNumber, BoatHullIdNumber, RegistrationState, Attention (handler)
+  RegistrationNumber maxLength: 8
+
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
+    keyReference: BQ
+    set: RegistrationNumber, RegistrationState
+    any: Attention
+    state: Out
+    Note: State routing -- BQ requires OOS state for Nlets registration lookup.
+
+  QB Hull -- NCIC Stolen Boat (Hull ID) [PENDING]
+    keyReference: QB
+    set: BoatHullIdNumber
+    any: Attention, RegistrationState
+    state: In/Out
+    Note: NCIC stolen boat by hull -- state optional.
+
+================================================================================
+RMS BUNDLE
+================================================================================
+
+  RMS Vehicle co-fire [PENDING]
+    Combos: licensePlateNumber (+ RegistrationState any[]), VIN
+  RMS Person co-fire [PENDING]
+    Combos: OLN, Name+DOB, Name+OLN, Name (after Patch 6 cleanup)
+
+================================================================================
+SUMMARY
+================================================================================
+
+  CommSys QIDMs: 6 (VehicleReg, DriverLicense, DriverHistory,
+                     GunQuery, ArticleSingle, BoatQuery)
+  Total CommSys combos: 12
+  Total RMS combos: ~6 (2 Vehicle + 4 Person)
+  [CONFIRMED]: NONE
+  [PENDING]: ALL
+  MC variant: v2.0-mc (same QIDMs, multi-card layout)

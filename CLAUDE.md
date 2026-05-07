@@ -24,7 +24,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 69P/0F/0W/4LIM IMPORTED | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.1 | 101P/0F/1W/4LIM 21+60 PASS IMPORTED | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.1 | 73P/0F/13W/3LIM IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
-| LA_LETTS_OFML | providers/LA_LETTS_OFML/ | v2.0 | 48P/0F/32W/4LIM IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
+| LA_LEMS | providers/LA_LEMS/ | v2.0 | 48P/0F/32W/4LIM IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.7 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.2 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) BUILT | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |
@@ -47,7 +47,7 @@ Individual repos are preserved for history but are now read-only. All active wor
 - [AZ_AZDPS](https://github.com/Robsgam/AZ_AZDPS) (Robsgam)
 - [FL_FCIC_JSON](https://github.com/LooseConnection/FL_FCIC_JSON) (LooseConnection)
 - [TX_TLETS_JSON](https://github.com/LooseConnection/TX_TLETS_JSON) (LooseConnection)
-- [LA_LETTS_OFML](https://github.com/LooseConnection/LA_LETTS_OFML) (LooseConnection)
+- [LA_LEMS (formerly LA_LETTS_OFML)](https://github.com/LooseConnection/LA_LETTS_OFML) (LooseConnection)
 - [ConnectCIC-KB](https://github.com/Robsgam/ConnectCIC-KB) (Robsgam)
 
 ---
@@ -133,10 +133,10 @@ Do NOT use entity names ("Vehicle", "Person"), system names ("NCIC"), or append 
 Platform renders multi-byte UTF-8 as mojibake in card titles. Em dash "—" becomes "â€"". Use ASCII hyphen-minus (U+002D) only. Confirmed 2026-04-24 on NY MC.
 
 ### AP #27: Phantom field reference in RMS QIDM combo set[]/any[]
-RMS QIDM combo references a field name with no matching attribute definition in the same QIDM. Import error: "Missing attributes found in query input data mapping: [fieldname]". Common cause: copying CommSys combo field lists to RMS combos without verifying each has an RMS attribute. LicensePlateYear has no RMS equivalent — remove from RMS combos. Confirmed: LA_LETTS_OFML v1.0 (2026-04-29).
+RMS QIDM combo references a field name with no matching attribute definition in the same QIDM. Import error: "Missing attributes found in query input data mapping: [fieldname]". Common cause: copying CommSys combo field lists to RMS combos without verifying each has an RMS attribute. LicensePlateYear has no RMS equivalent — remove from RMS combos. Confirmed: LA_LEMS v1.0 (2026-04-29).
 
 ### Attention field pattern (not numbered — reference builds only)
-Do NOT add a visible Attention FormInput. Do NOT put Attention in `set[]`. Platform auto-fills implicitly but this is unreliable. Use `CommsysGetLastNameFirstNameInitialRuleHandler` on the Attention QIDM attribute instead (CA_eSUN, LA_LETTS_OFML pattern).
+Do NOT add a visible Attention FormInput. Do NOT put Attention in `set[]`. Platform auto-fills implicitly but this is unreliable. Use `CommsysGetLastNameFirstNameInitialRuleHandler` on the Attention QIDM attribute instead (CA_eSUN, LA_LEMS pattern).
 
 ---
 

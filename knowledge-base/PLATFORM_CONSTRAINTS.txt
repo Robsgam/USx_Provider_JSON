@@ -4,7 +4,7 @@ What CAN'T I do? What breaks? What are the confirmed dead ends?
 
 Consolidated from: PLATFORM_LIMITATIONS.txt, ANTI_PATTERNS.txt, JSON_LIMITATIONS.txt
 Last updated: 2026-05-06
-Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, HI_HCJDC_OFML, LA_LETTS_OFML
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, HI_HCJDC_OFML, LA_LEMS
 
 Legend:
   CONFIRMED    = verified in live testing (version/date noted)
@@ -260,7 +260,7 @@ LIMITATION #29: Attention field overridden by platform with user session data
     logged-in user's name (LASTNAME FIRSTINITIAL) in outbound XML <Attention>
     element. Override happens AFTER form submit and BEFORE XML generation.
   Workaround: CommsysGetLastNameFirstNameInitialRuleHandler on QIDM Attention
-    attribute (CA_eSUN, LA_LETTS_OFML pattern). Do NOT add visible FormInput
+    attribute (CA_eSUN, LA_LEMS pattern). Do NOT add visible FormInput
     for Attention.
   Open: Whether this applies to all providers or only FL_FCIC; whether this
     applies to all queries or only DriverHistoryQuery.
@@ -448,7 +448,7 @@ AP #18: Removing RMS sex without also removing SexCodeOOS from combinations
 --------------------------------------------------------------------------------
 
 AP #27: Phantom field reference in RMS QIDM combination set[]/any[]
-  CONFIRMED broken: LA_LETTS_OFML v1.0 (2026-04-29)
+  CONFIRMED broken: LA_LEMS v1.0 (2026-04-29)
   What: An RMS QIDM combination references a field name in set[] or any[] that
     has no corresponding attribute definition in the same QIDM's attributes
     array.

@@ -497,7 +497,7 @@ PENDING VALIDATION (as of v1.4)
 
 ================================================================================
 ================================================================================
-v2.6  2026-04-22  ATTENTION FIELD FIX -- match CA_eSUN / LA_LETTS_OFML pattern
+v2.6  2026-04-22  ATTENTION FIELD FIX -- match CA_eSUN / LA_LEMS pattern
 ================================================================================
 
 ROOT CAUSE IDENTIFIED (2026-04-22):
@@ -511,9 +511,9 @@ ROOT CAUSE IDENTIFIED (2026-04-22):
   Confirmed by comparing CommSys XML logs:
     HIDLE/HI: Attention in any[] + user types value -> sends user value
     FL_FCIC:  Attention in set[] + no form entry   -> platform auto-fills "HALLOF G"
-    LA_LETTS_OFML: Attention in any[] + handler on attr + no form field -> sends "LASTNAME F"
+    LA_LEMS: Attention in any[] + handler on attr + no form field -> sends "LASTNAME F"
 
-CORRECT PATTERN (CA_eSUN, LA_LETTS_OFML):
+CORRECT PATTERN (CA_eSUN, LA_LEMS):
   - CommsysGetLastNameFirstNameInitialRuleHandler on the Attention QIDM attribute
   - No Attention FormInput on the form (handler reads from user session, not form)
   - Attention in any[] (optional -- fires automatically via handler)
@@ -582,7 +582,7 @@ AFTER (v2.6):
   "props": { "fieldId": "PurposeCode", "attributeTypeId": "DEX_INQUIRY_PURPOSE_CODE",
              "label": "Driver History Purpose", "initialValue": "C" }
 
-REASON: Confirmed pattern from CA_eSUN and LA_LETTS_OFML. PurposeCode has a platform-managed
+REASON: Confirmed pattern from CA_eSUN and LA_LEMS. PurposeCode has a platform-managed
   code list under DEX_INQUIRY_PURPOSE_CODE. Using FormSelect populates a dropdown of valid
   purpose codes with 'C' (Criminal) as the default. FormInput (free text, maxLength=1) was
   functional but bypassed the platform's managed list.

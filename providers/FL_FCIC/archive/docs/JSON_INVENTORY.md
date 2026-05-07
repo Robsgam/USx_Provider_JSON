@@ -7,7 +7,7 @@ when it was built, and whether it's active, archived, or a dead-end.
 
 | File | Version | Size | Date | Description |
 |------|---------|------|------|-------------|
-| FL_FCIC_BASE.json | v2.6 | — | 2026-04-22 | **CURRENT** — Attention fix: added CommsysGetLastNameFirstNameInitialRuleHandler to DH QIDMs, removed Attention FormInput, moved Attention set[]→any[]. Matches CA_eSUN/LA_LETTS_OFML pattern. |
+| FL_FCIC_BASE.json | v2.6 | — | 2026-04-22 | **CURRENT** — Attention fix: added CommsysGetLastNameFirstNameInitialRuleHandler to DH QIDMs, removed Attention FormInput, moved Attention set[]→any[]. Matches CA_eSUN/LA_LEMS pattern. |
 | FL_FCIC_v2.6_2026-04-22.json | v2.6 | — | 2026-04-22 | Archive snapshot of v2.6. |
 | FL_FCIC_v2.5_2026-04-21.json | v2.5 | 189KB | 2026-04-21 | v2.2 + label updates + DHQ autoSelect=True + DHQ State→any[]. Superseded by v2.6. |
 | FL_FCIC_v2.2_test.json | v2.2 | 189KB | 2026-04-21 | BASELINE — Single Person QIF (6 cards). Imported and tested. FDQName CONFIRMED. |

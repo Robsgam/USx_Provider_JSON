@@ -2,7 +2,7 @@ CONNECTCIC ANTI-PATTERNS
 =========================
 Things confirmed broken or dead-end. Do not attempt these.
 Last updated: 2026-04-29 (AP #27: phantom RMS combo field reference)
-Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, LA_LETTS_OFML
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, LA_LEMS
 
 Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
 
@@ -409,5 +409,5 @@ Each entry: WHAT / WHY IT FAILS / CORRECT APPROACH
   Also check: OwnerFirstName, OwnerLastName (from HIDLE) -- remove if no Owner fields
     on the provider's Vehicle form (Patch 6). socialSecurityNumber on Person -- remove
     if no SSN field (Patch 6).
-  Confirmed broken: LA_LETTS_OFML v1.0 (2026-04-29) -- LicensePlateYear in RMS Vehicle
+  Confirmed broken: LA_LEMS v1.0 (2026-04-29) -- LicensePlateYear in RMS Vehicle
     combo any[] with no attribute. Import rejected until removed.
