@@ -1,5 +1,21 @@
-﻿NM_NMLETS_OFMLBUILD NOTES
-=====================
-Last Updated: 2026-05-06
+NM_NMLETS_OFML -- Build Notes
+=======================
+Provider: NM_NMLETS_OFML
+State: New Mexico
+Network: NMLETS OFML (New Mexico Law Enforcement Telecommunications System)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.0  2026-05-07  Initial build -- 6 basic queries, 14 combos
+--------------------------------------------------------------------------------
+CHANGED : Built from scratch using NM_NMLETS_OFML.xml (metadata v20) + HIDLE.json.
+          6 basic queries: VehicleRegistrationQuery (4 combos), DriverLicenseQuery (2),
+          DriverHistoryQuery (2), GunQuery (1), ArticleSingleQuery (1), BoatQuery (4).
+          14 total combos. GunModel field (size 11, NM-specific).
+          DL+DH co-fire with DH-suffix fieldIds. State initialValue=NM (safe -- no
+          separate in-state vs OOS keyRefs). ImageIndicator in DL. Date: MMddyyyy.
+          5 entities: Vehicle, Person, Firearm, Article, Boat.
+          MC variant: Phase 2 multi-card layout (11 cards).
+REASON  : New provider onboarding -- New Mexico NMLETS via bulk build pipeline.
+SCRIPT  : scripts/build_nm_nmlets_ofml.ps1 + scripts/build_nm_nmlets_ofml_mc.ps1
+OUTPUT  : NM_NMLETS_OFML_BASE.json + NM_NMLETS_OFML_MC.json (+ readable variants)
+RESULTS : BASE: 64P/0F/2W/4LIM | MC: 64P/0F/1W/4LIM

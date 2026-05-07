@@ -1,18 +1,88 @@
-﻿CA_eSUN STATUS
-==============
-Last Updated: 2026-05-07
+CA_eSUN -- Build Status
+========================
+Last updated: 2026-05-07
+Current version: v1.2 BASE + v1.2 MC
+Provider: CA_eSUN
+Phase: Phase 1 (BASE) + Phase 2 (MC)
 
-BASE v1.2
-  Validator: --
-  Verify:    --
-  Queries:   --
-  Import:    NOT STARTED
-  Live Test: NOT STARTED
+BUILD RESULTS
+=============
+  BASE (v1.2):
+    Validator: 70 PASS / 0 FAIL / 3 WARN / 5 LIMITATION
+    Verify:    --
+    Queries:   17 combos
 
-ARCHITECTURE
-============
+  MC (v1.2):
+    Validator: 70 PASS / 0 FAIL / 3 WARN / 5 LIMITATION
+    Verify:    --
+    Queries:   17 combos
+
+  Import: NOT STARTED
+
+ARCHITECTURE (v1.2)
+===================
   Bundles: 3 (ENTITIES first, CA_eSUN second, RMS third)
-  Entities: TBD (pending metadata review)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+
+  CA_eSUN Configurations (9):
+    CA_eSUN                                             AUTHENTICATION
+    CA_eSUN_Results                                     QUERYRESULTDATAMAPPING
+    CA_eSUN_QueryMessageFormat                          QUERYMESSAGEFORMAT
+    CA_eSUN_VehicleRegistrationQuery                    QUERYINPUTDATAMAPPING  (6 combos)
+    CA_eSUN_DriverLicenseQuery                          QUERYINPUTDATAMAPPING  (4 combos)
+    CA_eSUN_DriverHistoryQuery                          QUERYINPUTDATAMAPPING  (4 combos)
+    CA_eSUN_GunQuery                                    QUERYINPUTDATAMAPPING  (2 combos)
+    CA_eSUN_ArticleSingleQuery                          QUERYINPUTDATAMAPPING  (1 combo)
+    CA_eSUN_BoatQuery                                   QUERYINPUTDATAMAPPING  (2 combos)
+
+  RMS: cloned from HIDLE.json + Patches 1/3/6/7/8
+    Patch 1: RegistrationState in Vehicle licensePlateIn any[]
+    Patch 3: registrationState attr + RegistrationState in Person combo any[]
+    Patch 6: removed dead HIDLE fields (Vehicle+Person)
+    Patch 7: autoSelect=true on all RMS QIDMs
+    Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate, BASE only)
+
+  Total CommSys combos: 17 (DL 4 + DH 4 + VehReg 6 + Gun 2 + Article 1 + Boat 2 = 19 in XML, 17 built)
+  Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
+
+WARN ACKNOWLEDGMENT (3 WARNs)
+==============================
+  DH non-suffixed sourceFields (1 WARN):
+    - DH QIDM has 3 non-suffixed sourceField(s): caRequestPurposeCode, caRequestPurposeCode, registrationState
+    - ACCEPTED: CaRequestPurposeCode and RegistrationState are shared fields, not user-input DH fields.
+
+  Shared keyReference (2 WARNs):
+    - keyReference 'L1.O' appears in both DL and DH QIDMs
+    - keyReference 'L1.N' appears in both DL and DH QIDMs
+    - ACCEPTED: DL+DH co-fire by design. Both QIDMs fire on the same in-state combos.
+
+LIMITATION ACKNOWLEDGMENT (5 LIMITATIONs)
+==========================================
+  LIMITATION #1: DL combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #2: DH combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #3: Gun combo order (fewer set[] before more)
+    CORRECT: Serial search prioritized over name search.
+
+  LIMITATION #4: VehReg combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #5: DL+DH co-fire on single QIF (autoSelect=true)
+    ACCEPTED: Standard police workflow -- DL+DH co-fire by design.
+    DH uses DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.).
+
+MC LAYOUT (v1.2)
+=================
+  Vehicle:  4 cards (OPTIONS / PLATE SEARCH / VIN SEARCH / OWNER SEARCH)
+  Person:   3 cards (OPTIONS / LICENSE NUMBER / NAME SEARCH)
+  Firearm:  3 cards (OPTIONS / SERIAL SEARCH / NAME SEARCH)
+  Article:  1 card  (same as BASE)
+  Boat:     3 cards (OPTIONS / HULL SEARCH / REG SEARCH)
+
+  QIDMs: identical to BASE (MC is layout-only change)
 
 INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
 =====================================================
@@ -20,10 +90,49 @@ INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
   SexCode reverse-lookup:      UNCONFIRMED
   dexStateUserId badge:        UNCONFIRMED
 
-BUILD LOG (newest first)
-========================
-  (no builds yet)
-
 TEST MATRIX
 ===========
-  (no tests yet)
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE (VehicleRegistrationQuery -- 6 combos)
+  VEH-1: RQ.P Plate OOS (Plate+State)                 CommSys+RMS     [PENDING]
+  VEH-2: RQ.V VIN OOS (VIN+State)                     CommSys+RMS     [PENDING]
+  VEH-3: QV.P Plate In-state (Plate)                  CommSys         [PENDING]
+  VEH-4: QV.V VIN In-state (VIN)                      CommSys         [PENDING]
+  VEH-5: VP.N Owner by Name (Name+DOB)                CommSys         [PENDING]
+  VEH-6: VP.D Owner by DL (OLN)                       CommSys         [PENDING]
+
+  PERSON -- Driver License (4 combos)
+  PER-1: DQ.N Name OOS (Name+DOB+State)               CommSys+RMS     [PENDING]
+  PER-2: DQ.O OLN OOS (OLN+State)                     CommSys+RMS     [PENDING]
+  PER-3: L1.N Name In-state (Name+DOB+Sex)            CommSys         [PENDING]
+  PER-4: L1.O OLN In-state (OLN)                      CommSys         [PENDING]
+
+  PERSON -- Driver History (4 combos)
+  PER-5: KQ.N Name OOS (Name+DOB+State)               CommSys         [PENDING]
+  PER-6: KQ.O OLN OOS (OLN+State)                     CommSys         [PENDING]
+  PER-7: L1.N Name In-state (co-fires with DL)        CommSys         [PENDING]
+  PER-8: L1.O OLN In-state (co-fires with DL)         CommSys         [PENDING]
+
+  FIREARM (2 combos)
+  FA-1:  QGB Serial (GunSerialNumber)                  CommSys         [PENDING]
+  FA-2:  QGH Name (Name+BirthDate)                    CommSys         [PENDING]
+
+  ARTICLE (1 combo)
+  ART-1: QA Serial (ArticleSerialNumber)               CommSys         [PENDING]
+
+  BOAT (2 combos)
+  BOA-1: BQ.H Hull (BoatHullId+State)                 CommSys         [PENDING]
+  BOA-2: BQ.R Reg (BoatRegistrationNumber+State)      CommSys         [PENDING]
+
+BUILD LOG (newest first)
+========================
+  v1.2  2026-05-07  MC multi-card + DH-suffix refinement
+    BASE: 70P/0F/3W/5LIM  |  MC: 70P/0F/3W/5LIM
+    DH-suffix fieldIds, VP owner search, QGH gun-by-name
+
+  v1.1  2026-05-07  PlateType/PlateYear defaults + DH-suffix
+    Archived to phases/base/
+
+  v1.0  2026-05-06/07  Initial standup -- 6 QIDMs, 17 combos
+    Archived to phases/base/

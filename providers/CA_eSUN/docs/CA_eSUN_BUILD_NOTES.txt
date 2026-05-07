@@ -1,5 +1,52 @@
-﻿CA_eSUN BUILD NOTES
-===================
-Last Updated: 2026-05-06
+CA_eSUN -- Build Notes
+======================
+Provider: CA_eSUN
+State: California
+Network: CLETS via eSUN (Electronic Sunnyvale Network)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.2  2026-05-07  MC multi-card layout + full combo refinement
+--------------------------------------------------------------------------------
+CHANGED : MC variant with PascalCase fieldIds. Multi-card layout for
+          Vehicle (4 cards), Person (3 cards with DH hidden fields),
+          Firearm (3 cards), Article (1 card), Boat (3 cards).
+          BASE rebuilt to match v1.2 with all combo and field refinements.
+          DH uses DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.)
+          with queriesToDeselect pattern.
+          VP owner search and QGH gun-by-name already present in BASE.
+REASON  : Phase 2 standard -- multi-card layout split per search path.
+          DH-suffix fieldIds prevent field collision with DL on shared Person form.
+SCRIPT  : scripts/build_ca_esun.ps1 + scripts/build_ca_esun_mc.ps1
+OUTPUT  : CA_eSUN_BASE.json + CA_eSUN_MC.json (+ readable variants)
+RESULTS : BASE: 70P/0F/3W/5LIM  |  MC: 70P/0F/3W/5LIM
+
+--------------------------------------------------------------------------------
+v1.1  2026-05-07  PlateType/PlateYear defaults + DH-suffix refinement
+--------------------------------------------------------------------------------
+CHANGED : Added PlateType initialValue='PC', PlateYear initialValue='2026'.
+          Refined DH-suffix fieldIds and queriesToDeselect pattern.
+REASON  : Standard defaults per cross-provider audit.
+SCRIPT  : scripts/build_ca_esun.ps1
+OUTPUT  : CA_eSUN_BASE.json + CA_eSUN_BASE_READABLE.json
+RESULTS : Archived to phases/base/CA_eSUN_v1.1_2026-05-07.json
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06/07  Initial standup -- 6 basic queries, 17 combos
+--------------------------------------------------------------------------------
+CHANGED : Initial build from CA_eSUN.xml metadata + HIDLE.json.
+          6 QIDMs: VehicleRegistrationQuery (6 combos: QV.P/QV.V, RQ.P/RQ.V, VP.N/VP.D),
+          DriverLicenseQuery (4 combos: L1.N/L1.O, DQ.N/DQ.O),
+          DriverHistoryQuery (4 combos: L1.N/L1.O, KQ.N/KQ.O),
+          GunQuery (2 combos: QGB serial, QGH name),
+          ArticleSingleQuery (1 combo: QA serial),
+          BoatQuery (2 combos: BQ.R reg, BQ.H hull). 19 total combos in XML, 17 built.
+          5 entities: Vehicle, Person, Firearm, Article, Boat.
+          CaRequestPurposeCode visible Inp initialValue='C'.
+          DH-suffix fieldIds for DL+DH co-fire.
+          VP owner search (Name/BirthDate on Vehicle entity).
+          QGH gun-by-name (Name/BirthDate on Firearm entity).
+          Attention handler (CommsysGetLastNameFirstNameInitialRuleHandler) on DH.
+REASON  : Phase 1 standup. Establishing CA_eSUN as a tracked provider.
+SCRIPT  : scripts/build_ca_esun.ps1
+OUTPUT  : CA_eSUN_BASE.json + CA_eSUN_BASE_READABLE.json
+RESULTS : Archived to phases/base/CA_eSUN_v1.0_2026-05-06.json

@@ -1,29 +1,21 @@
-﻿TN_TIES STATUS
-==============
-Last Updated: 2026-05-07
-
-BASE v1.1
-  Validator: --
-  Verify:    --
-  Queries:   --
-  Import:    NOT STARTED
-  Live Test: NOT STARTED
+TN_TIES -- STATUS
+====================
+Version: v1.1 BASE + v1.1 MC
+Last updated: 2026-05-07
+Validator (BASE): 79P/0F/4W/3LIM
+Validator (MC): 79P/0F/1W/3LIM
+Live test: NOT YET TESTED
 
 ARCHITECTURE
 ============
   Bundles: 3 (ENTITIES first, TN_TIES second, RMS third)
-  Entities: TBD (pending metadata review)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 28 total
 
 INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
 =====================================================
   NCIC state reverse-lookup:   UNCONFIRMED
   SexCode reverse-lookup:      UNCONFIRMED
   dexStateUserId badge:        UNCONFIRMED
-
-BUILD LOG (newest first)
-========================
-  (no builds yet)
-
-TEST MATRIX
-===========
-  (no tests yet)

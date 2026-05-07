@@ -1,18 +1,74 @@
-﻿CA_SAN_LUIS_OBISPO STATUS
-==========================
-Last Updated: 2026-05-07
+CA_SAN_LUIS_OBISPO -- Build Status
+====================================
+Last updated: 2026-05-07
+Current version: v1.1 BASE + v1.1 MC
+Provider: CA_SAN_LUIS_OBISPO
+Phase: Phase 1 (BASE) + Phase 2 (MC)
 
-BASE v1.1
-  Validator: --
-  Verify:    --
-  Queries:   --
-  Import:    NOT STARTED
-  Live Test: NOT STARTED
+BUILD RESULTS
+=============
+  BASE (v1.1):
+    Validator: 63 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+    Verify:    --
+    Queries:   15 combos
 
-ARCHITECTURE
-============
+  MC (v1.1):
+    Validator: 63 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+    Verify:    --
+    Queries:   15 combos
+
+  Import: NOT STARTED
+
+ARCHITECTURE (v1.1)
+===================
   Bundles: 3 (ENTITIES first, CA_SAN_LUIS_OBISPO second, RMS third)
-  Entities: TBD (pending metadata review)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+
+  CA_SAN_LUIS_OBISPO Configurations (9):
+    CA_SAN_LUIS_OBISPO                                  AUTHENTICATION
+    CA_SAN_LUIS_OBISPO_Results                           QUERYRESULTDATAMAPPING
+    CA_SAN_LUIS_OBISPO_QueryMessageFormat                QUERYMESSAGEFORMAT
+    CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery          QUERYINPUTDATAMAPPING  (4 combos)
+    CA_SAN_LUIS_OBISPO_DriverLicenseQuery                QUERYINPUTDATAMAPPING  (3 combos)
+    CA_SAN_LUIS_OBISPO_DriverHistoryQuery                QUERYINPUTDATAMAPPING  (4 combos)
+    CA_SAN_LUIS_OBISPO_GunQuery                          QUERYINPUTDATAMAPPING  (1 combo)
+    CA_SAN_LUIS_OBISPO_ArticleSingleQuery                QUERYINPUTDATAMAPPING  (1 combo)
+    CA_SAN_LUIS_OBISPO_BoatQuery                         QUERYINPUTDATAMAPPING  (2 combos)
+
+  RMS: cloned from HIDLE.json + Patches 1/3/6/7/8
+    Patch 1: RegistrationState in Vehicle licensePlateIn any[]
+    Patch 3: registrationState attr + RegistrationState in Person combo any[]
+    Patch 6: removed dead HIDLE fields (Vehicle+Person)
+    Patch 7: autoSelect=true on all RMS QIDMs
+    Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate, BASE only)
+
+  Total CommSys combos: 15
+  Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
+
+LIMITATION ACKNOWLEDGMENT (4 LIMITATIONs)
+==========================================
+  LIMITATION #1: DH combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #2: DL+DH co-fire on single QIF (autoSelect=true)
+    ACCEPTED: Standard police workflow -- DL+DH co-fire by design.
+
+  LIMITATION #3: DL+DH without DH-suffix fieldIds (AP #14 / LIMITATION #25)
+    ACCEPTED: DL and DH share same fieldIds. No DH-suffix needed for SLO.
+
+  LIMITATION #4: No queriesToDeselect on DL+DH (LIMITATION #24)
+    ACCEPTED: Both QIDMs auto-fire together. No checkbox toggle isolation.
+
+MC LAYOUT (v1.1)
+=================
+  Vehicle:  3 cards (OPTIONS / PLATE SEARCH / VIN SEARCH)
+  Person:   3 cards (OPTIONS / LICENSE NUMBER / NAME SEARCH)
+  Firearm:  1 card  (same as BASE)
+  Article:  1 card  (same as BASE)
+  Boat:     3 cards (OPTIONS / HULL SEARCH / REG SEARCH)
+
+  QIDMs: identical to BASE (MC is layout-only change)
+  NO cross-entity combos (SLO metadata has no VP/QGH/BQ.N transactions)
 
 INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
 =====================================================
@@ -20,10 +76,50 @@ INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
   SexCode reverse-lookup:      UNCONFIRMED
   dexStateUserId badge:        UNCONFIRMED
 
-BUILD LOG (newest first)
-========================
-  (no builds yet)
+CA_SAN_LUIS_OBISPO-SPECIFIC
+============================
+  NO CaRequestPurposeCode -- field not in any SLO metadata transaction.
+  Regional message switch -- NOT a direct CLETS interface.
+  No ImageIndicator -- not in SLO metadata.
+  Shorter keyRefs than CA_CLETS (QV not IA.QV, BQ not IA.QB, etc.).
+  No State initialValue -- LIMITATION #30: separate in-state vs OOS keyRefs.
 
 TEST MATRIX
 ===========
-  (no tests yet)
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE (VehicleRegistrationQuery -- 4 combos)
+  VEH-1: RQ.P Plate OOS (Plate+State)                 CommSys+RMS     [PENDING]
+  VEH-2: RQ.V VIN OOS (VIN+State)                     CommSys+RMS     [PENDING]
+  VEH-3: QV.P Plate In-state (Plate)                  CommSys         [PENDING]
+  VEH-4: QV.V VIN In-state (VIN)                      CommSys         [PENDING]
+
+  PERSON -- Driver License (3 combos)
+  PER-1: DQ.O OLN OOS (OLN+State)                     CommSys+RMS     [PENDING]
+  PER-2: L1.N Name In-state (Name+DOB+Sex)            CommSys+RMS     [PENDING]
+  PER-3: L1.O OLN In-state (OLN)                      CommSys         [PENDING]
+
+  PERSON -- Driver History (4 combos)
+  PER-4: KQ.N Name OOS (Name+DOB+State)               CommSys         [PENDING]
+  PER-5: KQ.O OLN OOS (OLN+State)                     CommSys         [PENDING]
+  PER-6: B2.N Name In-state (Name+DOB+Sex)            CommSys         [PENDING]
+  PER-7: B2.O OLN In-state (OLN)                      CommSys         [PENDING]
+
+  FIREARM (1 combo)
+  FA-1:  QGB Serial (GunSerialNumber)                  CommSys         [PENDING]
+
+  ARTICLE (1 combo)
+  ART-1: QA Serial (ArticleSerialNumber)               CommSys         [PENDING]
+
+  BOAT (2 combos)
+  BOA-1: BQ Hull (BoatHullId)                          CommSys         [PENDING]
+  BOA-2: QB Reg (BoatRegistrationNumber)               CommSys         [PENDING]
+
+BUILD LOG (newest first)
+========================
+  v1.1  2026-05-07  MC multi-card layout + combo refinement
+    BASE: 63P/0F/0W/4LIM  |  MC: 63P/0F/0W/4LIM
+    No cross-entity combos. DL+DH shared fieldIds.
+
+  v1.0  2026-05-06  Initial standup -- 6 QIDMs, 15 combos
+    Archived to phases/base/

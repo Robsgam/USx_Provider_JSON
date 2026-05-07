@@ -1,5 +1,49 @@
-﻿CA_VENTURA_COUNTY BUILD NOTES
-=============================
-Last Updated: 2026-05-06
+CA_VENTURA_COUNTY -- Build Notes
+=================================
+Provider: CA_VENTURA_COUNTY
+State: California
+Network: CLETS (California Law Enforcement Telecommunications System) via Ventura County
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.2  2026-05-07  MC multi-card layout + cross-entity combos
+--------------------------------------------------------------------------------
+CHANGED : MC variant with PascalCase fieldIds. Multi-card layout for
+          Vehicle (4 cards), Person (3 cards), Firearm (3 cards),
+          Article (3 cards), Boat (5 cards). Added cross-entity combos:
+          IN.VP (owner search by name on Vehicle), IG.QGH (gun by name on
+          Firearm), NLTS.BQ.N (boat by name OOS on Boat).
+          BASE rebuilt to match v1.2.
+REASON  : Phase 2 standard -- multi-card layout split per search path.
+          Cross-entity combos expand query coverage beyond serial-only searches.
+SCRIPT  : scripts/build_ca_ventura_county.ps1 + scripts/build_ca_ventura_county_mc.ps1
+OUTPUT  : CA_VENTURA_COUNTY_BASE.json + CA_VENTURA_COUNTY_MC.json (+ readable variants)
+RESULTS : BASE: 66P/0F/0W/6LIM  |  MC: 70P/0F/0W/8LIM
+
+--------------------------------------------------------------------------------
+v1.1  2026-05-07  PlateType/PlateYear defaults + combo refinement
+--------------------------------------------------------------------------------
+CHANGED : Added PlateType initialValue='PC', PlateYear initialValue='2026'.
+          Refined combo ordering for operational priority.
+REASON  : Standard defaults per cross-provider audit. PlateType/PlateYear
+          presence aids RQ vs QV combo routing.
+SCRIPT  : scripts/build_ca_ventura_county.ps1
+OUTPUT  : CA_VENTURA_COUNTY_BASE.json + CA_VENTURA_COUNTY_BASE_READABLE.json
+RESULTS : Archived to phases/base/CA_VENTURA_COUNTY_v1.1_2026-05-07.json
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06  Initial standup -- 6 basic queries
+--------------------------------------------------------------------------------
+CHANGED : Initial build from CA_VENTURA_COUNTY.xml metadata + HIDLE.json.
+          6 QIDMs: VehicleRegistrationQuery (4 combos), DriverLicenseQuery (3 combos),
+          DriverHistoryQuery (4 combos), GunQuery (1 combo), ArticleSingleQuery (2 combos),
+          BoatQuery (5 combos). 19 total combos. 5 entities: Vehicle, Person, Firearm,
+          Article, Boat.
+          CaRequestPurposeCode visible Inp initialValue='C' (Criminal Justice).
+          No ImageIndicator (not in CA metadata).
+          No State initialValue (LIMITATION #30: separate in-state vs OOS keyRefs).
+          DL+DH co-fire on shared Person form without DH-suffix fieldIds.
+          DH has in-state combos (IN.B2, ID.B2) -- differs from CA_CLETS (OOS-only).
+REASON  : Phase 1 standup. Establishing CA_VENTURA_COUNTY as a tracked provider.
+SCRIPT  : scripts/build_ca_ventura_county.ps1
+OUTPUT  : CA_VENTURA_COUNTY_BASE.json + CA_VENTURA_COUNTY_BASE_READABLE.json
+RESULTS : Archived to phases/base/CA_VENTURA_COUNTY_v1.0_2026-05-06.json

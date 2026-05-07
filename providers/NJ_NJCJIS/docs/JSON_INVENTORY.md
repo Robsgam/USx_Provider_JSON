@@ -6,8 +6,8 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_BASE.json | v2.3 | Current | 66P/0F/7W/1LIM. camelCase fieldIds, Patch 7+8, AUTH keyRef. |
-| NJ_NJCJIS_MC.json | v2.3 | Current | 66P/0F/0W/1LIM. PascalCase fieldIds. Live tested 57/57 PASS (2026-04-29 on v2.0). |
+| NJ_NJCJIS_BASE.json | v2.3 | Current | 67P/0F/5W/1LIM. camelCase fieldIds, Patch 7+8, AUTH keyRef. |
+| NJ_NJCJIS_MC.json | v2.3 | Current | 67P/0F/0W/1LIM. PascalCase fieldIds. Live tested 57/57 PASS (2026-04-29 on v2.0). |
 
 ## phases/base/
 

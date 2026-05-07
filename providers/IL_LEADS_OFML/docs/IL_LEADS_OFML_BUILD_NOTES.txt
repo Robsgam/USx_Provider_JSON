@@ -1,5 +1,40 @@
-﻿IL_LEADS_OFML BUILD NOTES
-=========================
-Last Updated: 2026-05-06
+IL_LEADS_OFML -- Build Notes
+=============================
+Provider: IL_LEADS_OFML
+State: Illinois
+Network: LEADS (Law Enforcement Agencies Data System)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.0  2026-05-07  MC multi-card layout
+--------------------------------------------------------------------------------
+CHANGED : MC variant with PascalCase fieldIds. Multi-card layout for
+          Vehicle (3 cards), Person (3 cards), Firearm (1 card),
+          Article (1 card), Boat (3 cards). 11 cards total.
+          No cross-entity combos. No DriverHistoryQuery.
+          QIDMs identical to BASE (MC is layout-only change).
+REASON  : Phase 2 standard -- multi-card layout split per search path.
+SCRIPT  : scripts/build_il_leads_ofml_mc.ps1
+OUTPUT  : IL_LEADS_OFML_MC.json + IL_LEADS_OFML_MC_READABLE.json
+RESULTS : MC: 59P/0F/3W/0LIM
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06/07  Initial standup -- 5 basic queries, 9 combos
+--------------------------------------------------------------------------------
+CHANGED : Initial build from IL_LEADS_OFML.xml (metadata v8) + HIDLE.json.
+          5 QIDMs (no DriverHistoryQuery -- not in IL metadata):
+          VehicleRegistrationQuery (3 combos: Z5 in-state plate, Z2.P OOS plate, Z2.V OOS VIN),
+          DriverLicenseQuery (2 combos: Z2.N Name+DOB, Z2.O OLN),
+          GunQuery (1 combo: QG serial),
+          ArticleSingleQuery (1 combo: QA serial+type),
+          BoatQuery (2 combos: BQ.H hull, BQ.R reg). 9 total combos.
+          5 entities: Vehicle, Person, Firearm, Article, Boat.
+          ImageIndicator present (Vehicle=N, Person=Y, Firearm=Y, Boat=Y).
+          State initialValue='IL' (safe: no separate in-state vs OOS keyRefs for DL).
+          CDCName in AUTH configuration.
+          Date format: MMddyyyy.
+          No CaRequestPurposeCode (not a CA system).
+REASON  : Phase 1 standup. Establishing IL_LEADS_OFML as a tracked provider.
+SCRIPT  : scripts/build_il_leads_ofml.ps1
+OUTPUT  : IL_LEADS_OFML_BASE.json + IL_LEADS_OFML_BASE_READABLE.json
+RESULTS : BASE: 59P/0F/7W/0LIM
+          Archived to phases/base/IL_LEADS_OFML_v1.0_2026-05-06.json

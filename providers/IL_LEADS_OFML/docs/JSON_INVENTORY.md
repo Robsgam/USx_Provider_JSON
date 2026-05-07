@@ -1,5 +1,20 @@
-﻿# IL_LEADS_OFML JSON Inventory
+# JSON Inventory - IL_LEADS_OFML
 
-| Version | Variant | Date | File | Notes |
-|---------|---------|------|------|-------|
-| (no builds yet) | | | | |
+All JSON versions produced for this provider.
+
+## Root (current)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| IL_LEADS_OFML_BASE.json | v1.0 | Current BASE | 5 QIDMs, 9 combos. 59P/0F/7W/0LIM. 2026-05-07. |
+| IL_LEADS_OFML_BASE_READABLE.json | v1.0 | Pretty-print | Human-readable BASE variant. |
+| IL_LEADS_OFML_MC.json | v1.0 | Current MC | MC multi-card. 59P/0F/3W/0LIM. 2026-05-07. |
+| IL_LEADS_OFML_MC_READABLE.json | v1.0 | Pretty-print | Human-readable MC variant. |
+
+## phases/
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| phases/base/IL_LEADS_OFML_v1.0_2026-05-07.json | v1.0 | Snapshot | Rebuilt 2026-05-07. |
+| phases/base/IL_LEADS_OFML_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial standup. |
+| phases/mc/IL_LEADS_OFML_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | MC multi-card layout. |

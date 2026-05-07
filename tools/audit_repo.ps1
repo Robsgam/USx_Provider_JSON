@@ -3,7 +3,7 @@
   Mechanically checks KB docs, build scripts, tools, provider JSONs, and
   CLAUDE.md for drift, stale references, missing documentation, banned
   patterns, report completeness, and cross-provider JSON consistency.
-  11 categories, sources of truth extracted at runtime (not hardcoded).
+  16 categories, sources of truth extracted at runtime (not hardcoded).
 
   FAILS (exit 1) if any check fails. Run after any KB, tool, or CLAUDE.md edit.
 
@@ -692,6 +692,177 @@ foreach ($pd in $providerDirs) {
         } elseif ($mcVersion) {
             Pass "${provName} -- BASE and MC versions match (v${scriptVersion})"
         }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 13: BUILD_NOTES.txt has entry for current version
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 13) {
+Write-Host ""
+Write-Host "--- CATEGORY 13: BUILD_NOTES Version Coverage ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
+    if (-not $baseScript) { continue }
+
+    $scriptText = [System.IO.File]::ReadAllText($baseScript.FullName)
+    $scriptVersion = $null
+    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+        $scriptVersion = $Matches[1]
+    }
+    if (-not $scriptVersion) { continue }
+
+    $bnFile = "$($pd.FullName)\docs\${provName}_BUILD_NOTES.txt"
+    if (Test-Path $bnFile) {
+        $bnText = [System.IO.File]::ReadAllText($bnFile)
+        if ($bnText -match '\(no builds yet\)') {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- BUILD_NOTES is stub" }
+            else { Fail "${provName} -- BUILD_NOTES.txt is stub but build script is at v${scriptVersion}" }
+        } elseif ($bnText -match "v$([regex]::Escape($scriptVersion))") {
+            Pass "${provName} -- BUILD_NOTES.txt has v${scriptVersion} entry"
+        } else {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- BUILD_NOTES missing v${scriptVersion}" }
+            else { Fail "${provName} -- BUILD_NOTES.txt missing entry for current v${scriptVersion}" }
+        }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 14: JSON_INVENTORY.md has entry for current version
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 14) {
+Write-Host ""
+Write-Host "--- CATEGORY 14: JSON_INVENTORY Version Coverage ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
+    if (-not $baseScript) { continue }
+
+    $scriptText = [System.IO.File]::ReadAllText($baseScript.FullName)
+    $scriptVersion = $null
+    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+        $scriptVersion = $Matches[1]
+    }
+    if (-not $scriptVersion) { continue }
+
+    $jiFile = "$($pd.FullName)\docs\JSON_INVENTORY.md"
+    if (Test-Path $jiFile) {
+        $jiText = [System.IO.File]::ReadAllText($jiFile)
+        if ($jiText -match '\(no builds yet\)') {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- JSON_INVENTORY is stub" }
+            else { Fail "${provName} -- JSON_INVENTORY.md is stub but build script is at v${scriptVersion}" }
+        } elseif ($jiText -match "v$([regex]::Escape($scriptVersion))") {
+            Pass "${provName} -- JSON_INVENTORY.md has v${scriptVersion}"
+        } else {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- JSON_INVENTORY missing v${scriptVersion}" }
+            else { Fail "${provName} -- JSON_INVENTORY.md missing current v${scriptVersion}" }
+        }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 15: STATUS.txt score accuracy vs validator reports
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 15) {
+Write-Host ""
+Write-Host "--- CATEGORY 15: STATUS.txt Score Accuracy ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    $statusFile = "$($pd.FullName)\docs\${provName}_STATUS.txt"
+    if (-not (Test-Path $statusFile)) { continue }
+
+    $statusText = [System.IO.File]::ReadAllText($statusFile)
+
+    # Check for stub
+    if ($statusText -match '\(no builds yet\)' -or $statusText -match 'Validator:\s*--') {
+        $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
+        if ($baseScript) {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- STATUS.txt is stub" }
+            else { Fail "${provName} -- STATUS.txt is stub but has a build script" }
+        }
+        continue
+    }
+
+    # Extract PASS count from validator report
+    $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${provName}_BASE.txt"
+    if (-not (Test-Path $reportFile)) { continue }
+
+    $reportText = [System.IO.File]::ReadAllText($reportFile)
+    $reportPass = $null
+    if ($reportText -match 'RESULTS:\s*(\d+)\s*PASS') {
+        $reportPass = [int]$Matches[1]
+    }
+    if (-not $reportPass) { continue }
+
+    # Check if STATUS.txt contains the correct BASE PASS count anywhere
+    # Look for "NNP/" compact format or "NN PASS" full format
+    $hasCorrectScore = ($statusText -match "${reportPass}P/\d+F") -or ($statusText -match "${reportPass}\s*PASS\s*/\s*\d+\s*FAIL")
+    if ($hasCorrectScore) {
+        Pass "${provName} -- STATUS.txt contains correct BASE score (${reportPass}P)"
+    } else {
+        Fail "${provName} -- STATUS.txt missing correct BASE score (expected ${reportPass}P from validator report)"
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 16: Phase archive completeness
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 16) {
+Write-Host ""
+Write-Host "--- CATEGORY 16: Phase Archive Completeness ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
+    if (-not $baseScript) { continue }
+
+    $scriptText = [System.IO.File]::ReadAllText($baseScript.FullName)
+    $scriptVersion = $null
+    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+        $scriptVersion = $Matches[1]
+    }
+    if (-not $scriptVersion) { continue }
+
+    $phasesBase = "$($pd.FullName)\phases\base"
+    if (Test-Path $phasesBase) {
+        $versionedFile = Get-ChildItem $phasesBase -File | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
+        if ($versionedFile) {
+            Pass "${provName} -- phases/base/ has v${scriptVersion} snapshot"
+        } else {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} in phases/base/" }
+            else { Fail "${provName} -- phases/base/ missing v${scriptVersion} snapshot" }
+        }
+    } else {
+        if ($isFlagged) { Info "FLAGGED: ${provName} -- phases/base/ missing" }
+        else { Fail "${provName} -- phases/base/ directory missing" }
     }
 }
 }

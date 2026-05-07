@@ -717,3 +717,23 @@ FIXES FROM v2.x
 VALIDATOR RESULT: 100 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
 
 ================================================================================
+================================================================================
+v3.1  2026-05-07  Monorepo rebuild + Patch 8 + VehicleMakeCode fix
+================================================================================
+
+CHANGES FROM v3.0:
+  1. Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+  2. VehicleMakeCode: FormInput -> FormSelect (NCIC_FIREARM_MAKE/NCIC cross-provider fix)
+  3. Monorepo rebuild with latest tools (validate.ps1, build_report.ps1)
+  4. Reports regenerated at docs/base/ and docs/mc/
+
+REASON:
+  - CAD auto-populate standardization (Patch 8, all providers)
+  - Cross-provider field type consistency audit (VehicleMakeCode)
+  - Monorepo migration standardization
+
+VALIDATOR RESULT:
+  BASE: 101 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+  MC:   101 PASS / 0 FAIL / 1 WARN / 5 LIMITATION
+
+================================================================================

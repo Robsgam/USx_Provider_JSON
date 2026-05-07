@@ -29,6 +29,18 @@ Sex NIBRS_SEX CommSys-only: NIBRS reverse-lookup unconfirmed on NY instance.
   Sex removed from RMS person QIDM entirely. Same pattern as FL_FCIC.
 
 VERSION HISTORY  (newest first)
+v1.2  2026-05-07  Monorepo rebuild + Patch 8
+  CHANGED
+    - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+    - Rebuilt with current validate.ps1/build_report.ps1 toolchain
+    - Reports regenerated at docs/base/ and docs/mc/
+  REASON
+    - CAD auto-populate standardization (Patch 8, all providers)
+    - Monorepo migration standardization
+  VALIDATOR
+    - BASE: 72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
+    - MC:   72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
+
 v1.1  2026-04-30  NJ cross-reference rebuild (GATE 7)
   CHANGED
     - ImageIndicator FormSelect added to ALL entities (Vehicle, Firearm, Article, Boat forms)

@@ -1,18 +1,83 @@
-﻿CA_VENTURA_COUNTY STATUS
-========================
-Last Updated: 2026-05-07
+CA_VENTURA_COUNTY -- Build Status
+===================================
+Last updated: 2026-05-07
+Current version: v1.2 BASE + v1.2 MC
+Provider: CA_VENTURA_COUNTY
+Phase: Phase 1 (BASE) + Phase 2 (MC)
 
-BASE v1.2
-  Validator: --
-  Verify:    --
-  Queries:   --
-  Import:    NOT STARTED
-  Live Test: NOT STARTED
+BUILD RESULTS
+=============
+  BASE (v1.2):
+    Validator: 66 PASS / 0 FAIL / 0 WARN / 6 LIMITATION
+    Verify:    --
+    Queries:   19 combos (BASE) / 22 combos (MC with cross-entity)
 
-ARCHITECTURE
-============
+  MC (v1.2):
+    Validator: 70 PASS / 0 FAIL / 0 WARN / 8 LIMITATION
+    Verify:    --
+    Queries:   22 combos (BASE 19 + 3 cross-entity: IN.VP, IG.QGH, NLTS.BQ.N)
+
+  Import: NOT STARTED
+
+ARCHITECTURE (v1.2)
+===================
   Bundles: 3 (ENTITIES first, CA_VENTURA_COUNTY second, RMS third)
-  Entities: TBD (pending metadata review)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+
+  CA_VENTURA_COUNTY Configurations (9):
+    CA_VENTURA_COUNTY                                   AUTHENTICATION
+    CA_VENTURA_COUNTY_Results                            QUERYRESULTDATAMAPPING
+    CA_VENTURA_COUNTY_QueryMessageFormat                 QUERYMESSAGEFORMAT
+    CA_VENTURA_COUNTY_VehicleRegistrationQuery           QUERYINPUTDATAMAPPING  (4 combos BASE / 5 MC)
+    CA_VENTURA_COUNTY_DriverLicenseQuery                 QUERYINPUTDATAMAPPING  (3 combos)
+    CA_VENTURA_COUNTY_DriverHistoryQuery                 QUERYINPUTDATAMAPPING  (4 combos)
+    CA_VENTURA_COUNTY_GunQuery                           QUERYINPUTDATAMAPPING  (1 combo BASE / 2 MC)
+    CA_VENTURA_COUNTY_ArticleSingleQuery                 QUERYINPUTDATAMAPPING  (2 combos)
+    CA_VENTURA_COUNTY_BoatQuery                          QUERYINPUTDATAMAPPING  (5 combos BASE / 6 MC)
+
+  RMS: cloned from HIDLE.json + Patches 1/3/6/7/8
+    Patch 1: RegistrationState in Vehicle licensePlateIn any[]
+    Patch 3: registrationState attr + RegistrationState in Person combo any[]
+    Patch 6: removed dead HIDLE fields (Vehicle+Person)
+    Patch 7: autoSelect=true on all RMS QIDMs
+    Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate, BASE only)
+
+  Total CommSys combos: 19 (BASE) / 22 (MC)
+  Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
+
+LIMITATION ACKNOWLEDGMENT (6 LIM BASE / 8 LIM MC)
+===================================================
+  LIMITATION #1: DL combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #2: DH combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #3: Boat combo order (fewer set[] before more)
+    CORRECT: Operational priority ordering.
+
+  LIMITATION #4: DL+DH co-fire on single QIF (autoSelect=true)
+    ACCEPTED: Standard police workflow -- DL+DH co-fire by design.
+
+  LIMITATION #5: DL+DH without DH-suffix fieldIds (AP #14 / LIMITATION #25)
+    ACCEPTED: Known platform constraint for BASE variant.
+
+  LIMITATION #6: No queriesToDeselect on DL+DH (LIMITATION #24)
+    ACCEPTED: Both QIDMs auto-fire together. No checkbox toggle isolation.
+
+  MC additional:
+  LIMITATION #7: VehReg combo order (MC only, with IN.VP cross-entity)
+  LIMITATION #8: Gun combo order (MC only, with IG.QGH cross-entity)
+
+MC LAYOUT (v1.2)
+=================
+  Vehicle:  4 cards (OPTIONS / PLATE SEARCH / VIN SEARCH / OWNER SEARCH)
+  Person:   3 cards (OPTIONS / LICENSE NUMBER / NAME SEARCH)
+  Firearm:  3 cards (OPTIONS / SERIAL SEARCH / NAME SEARCH)
+  Article:  3 cards (OPTIONS / SERIAL SEARCH / OAN SEARCH)
+  Boat:     5 cards (OPTIONS / HULL SEARCH / OAN SEARCH / REG SEARCH / NAME SEARCH)
+
+  QIDMs: BASE combos + 3 cross-entity (IN.VP, IG.QGH, NLTS.BQ.N)
 
 INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
 =====================================================
@@ -20,10 +85,49 @@ INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
   SexCode reverse-lookup:      UNCONFIRMED
   dexStateUserId badge:        UNCONFIRMED
 
-BUILD LOG (newest first)
-========================
-  (no builds yet)
-
 TEST MATRIX
 ===========
-  (no tests yet)
+Format: [PASS] / [FAIL] / [PENDING]
+
+  VEHICLE (VehicleRegistrationQuery -- 4 combos BASE)
+  VEH-1: NLTS.RQ.P Plate OOS (Plate+State)            CommSys+RMS     [PENDING]
+  VEH-2: NLTS.RQ.V VIN OOS (VIN+State)                CommSys+RMS     [PENDING]
+  VEH-3: IA.QVK Plate In-state (Plate+VehicleMake)    CommSys         [PENDING]
+  VEH-4: IA.QV VIN In-state (VIN)                     CommSys         [PENDING]
+
+  PERSON -- Driver License (3 combos)
+  PER-1: NLTS.DQ OOS (OLN+State)                      CommSys+RMS     [PENDING]
+  PER-2: ID.L1 In-state OLN (OLN)                     CommSys+RMS     [PENDING]
+  PER-3: IN.L1 In-state Name (Name+DOB+Sex)           CommSys         [PENDING]
+
+  PERSON -- Driver History (4 combos)
+  PER-4: NLTS.KQ.N Name OOS (Name+DOB+State)          CommSys         [PENDING]
+  PER-5: NLTS.KQ.O OLN OOS (OLN+State)               CommSys         [PENDING]
+  PER-6: IN.B2 Name In-state (Name+DOB+Sex)           CommSys         [PENDING]
+  PER-7: ID.B2 OLN In-state (OLN)                     CommSys         [PENDING]
+
+  FIREARM (1 combo BASE)
+  FA-1:  IG.QGB Serial (GunSerialNumber)               CommSys         [PENDING]
+
+  ARTICLE (2 combos)
+  ART-1: IP.QA.S Serial (ArticleSerialNumber)          CommSys         [PENDING]
+  ART-2: IP.QA.O OAN (OtherArticleNumber)             CommSys         [PENDING]
+
+  BOAT (5 combos BASE)
+  BOA-1: IA.QB.H Hull In-state (HullID)               CommSys         [PENDING]
+  BOA-2: IA.QB.O OAN In-state (BoatOAN)               CommSys         [PENDING]
+  BOA-3: IA.QB.R Reg In-state (RegNumber)              CommSys         [PENDING]
+  BOA-4: NLTS.BQ.H Hull OOS (HullID+State)            CommSys         [PENDING]
+  BOA-5: NLTS.BQ.R Reg OOS (RegNumber+State)          CommSys         [PENDING]
+
+BUILD LOG (newest first)
+========================
+  v1.2  2026-05-07  MC multi-card + cross-entity combos
+    BASE: 66P/0F/0W/6LIM  |  MC: 70P/0F/0W/8LIM
+    MC adds IN.VP, IG.QGH, NLTS.BQ.N cross-entity combos
+
+  v1.1  2026-05-07  PlateType/PlateYear defaults + combo refinement
+    Archived to phases/base/
+
+  v1.0  2026-05-06  Initial standup -- 6 QIDMs, 19 combos
+    Archived to phases/base/

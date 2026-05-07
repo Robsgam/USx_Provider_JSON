@@ -12,6 +12,12 @@ See also:
   BUILD_RULES.txt             -- JSON structural/config rules
   TESTING_REQUIREMENTS.txt    -- Instance-specific verification requirements
 
+Per-provider sections below document EXCEPTIONS ONLY. Providers not listed here
+have been reviewed and follow all cross-provider rules with no exceptions:
+  CA_VENTURA_COUNTY, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, IL_LEADS_OFML,
+  MD_METERS, OH_LEADS, NM_NMLETS_OFML, OR_LEDS, TN_TIES
+  (CA_CONTRA_COSTA is FLAGGED -- no basic queries per devdoc, not reviewed)
+
 ================================================================================
 NJ_NJCJIS -- New Jersey
 ================================================================================
@@ -254,16 +260,23 @@ CA-8: MC cross-entity combos
   IN.VP (Vehicle by Name), IG.QGH (Gun by Name), NLTS.BQ.N (Boat by Name+DOB).
 
 ================================================================================
-CA_ESUN -- California (reference only, not in monorepo)
+CA_eSUN -- California (providers/CA_eSUN/, v1.2 BUILT)
 ================================================================================
 
-CA-REF: Attention handler pattern reference
+CA_eSUN-1: Attention handler pattern reference
   CA_eSUN established the CommsysGetLastNameFirstNameInitialRuleHandler pattern
   for Attention. LA_LEMS and TX_TLETS follow this pattern.
 
-CA-REF: OOS DL bug documented
+CA_eSUN-2: OOS DL bug documented
   OnScene OOS queries returned CA DMV results. Three causes identified:
   IgnoreUserValueRuleHandler, missing NCIC codeTypeProvider, combo ordering.
+
+CA_eSUN-3: BirthDate format yyyyMMdd (MIXED: GunQuery uses MMddyyyy)
+  DL/DH: yyyyMMdd. GunQuery BirthDate: MMddyyyy (max=8).
+  Arguments vary by query. Verify from build script before copying.
+
+CA_eSUN-4: CaRequestPurposeCode visible (Inp, not InpH)
+  Officers interact with purpose code. Must be visible FormInput.
 
 ================================================================================
 CROSS-PROVIDER CONSISTENCY RULES
@@ -273,10 +286,10 @@ These patterns MUST match across all providers. Differences require metadata
 justification documented in the provider's section above.
 
 1. RMS autoSelect=true on all RMS QIDMs
-   Confirmed: all 8 providers.
+   Confirmed: all 18 active providers.
 
 2. AUTH keyReference present
-   Confirmed: all 8 providers.
+   Confirmed: all 18 active providers.
 
 3. ImageIndicator in combo any[] or set[]
    Must be in at least one combo per entity where it appears on the form.
@@ -288,7 +301,7 @@ justification documented in the provider's section above.
    All providers must use these exact labels.
 
 5. PlateType default=PC, PlateYear default=current year
-   Confirmed: all 8 providers (2026-05-06). Mandatory standard.
+   Confirmed: all 18 active providers (2026-05-06). Mandatory standard.
    Safe: State is combo routing discriminator, not PlateType/Year.
 
 6. YES_NO_UNKNOWN/NCIC for all Y/N dropdowns
@@ -296,8 +309,10 @@ justification documented in the provider's section above.
 
 7. Patch 8: LicensePlateNumberIn eliminated from all output JSONs
    CAD sends licensePlateNumber (camelCase, no "In" suffix).
-   Confirmed: all 8 providers.
+   Confirmed: all 18 active providers.
 
 8. BirthDate format is provider-specific
-   NJ/NY/TX/LA/HI = MMddyyyy. CA/AZ = yyyyMMdd.
-   NEVER copy date format from another provider. Verify from production JSON or devdoc.
+   MMddyyyy: NJ, NY, TX, LA, HI, IL, MD, OH, NM
+   yyyyMMdd: AZ, FL, CA_CLETS, CA_VENTURA_COUNTY, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, OR, TN
+   MIXED:    CA_eSUN (yyyyMMdd primary, MMddyyyy for GunQuery)
+   NEVER copy date format from another provider. Verify from build script or metadata.

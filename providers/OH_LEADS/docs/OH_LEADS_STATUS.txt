@@ -1,29 +1,21 @@
-﻿OH_LEADS STATUS
-===============
-Last Updated: 2026-05-07
-
-BASE v1.1
-  Validator: --
-  Verify:    --
-  Queries:   --
-  Import:    NOT STARTED
-  Live Test: NOT STARTED
+OH_LEADS -- STATUS
+====================
+Version: v1.1 BASE + v1.1 MC
+Last updated: 2026-05-07
+Validator (BASE): 76P/0F/4W/4LIM
+Validator (MC): 76P/0F/3W/4LIM
+Live test: NOT YET TESTED
 
 ARCHITECTURE
 ============
   Bundles: 3 (ENTITIES first, OH_LEADS second, RMS third)
-  Entities: TBD (pending metadata review)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 23 total
 
 INSTANCE-SPECIFIC BEHAVIORS (verify on first import)
 =====================================================
   NCIC state reverse-lookup:   UNCONFIRMED
   SexCode reverse-lookup:      UNCONFIRMED
   dexStateUserId badge:        UNCONFIRMED
-
-BUILD LOG (newest first)
-========================
-  (no builds yet)
-
-TEST MATRIX
-===========
-  (no tests yet)

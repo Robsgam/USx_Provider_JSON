@@ -1,5 +1,40 @@
-﻿CA_SAN_LUIS_OBISPO BUILD NOTES
-===============================
-Last Updated: 2026-05-06
+CA_SAN_LUIS_OBISPO -- Build Notes
+==================================
+Provider: CA_SAN_LUIS_OBISPO
+State: California
+Network: Regional message switch (NOT direct CLETS interface)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.1  2026-05-07  MC multi-card layout + combo refinement
+--------------------------------------------------------------------------------
+CHANGED : MC variant with PascalCase fieldIds. Multi-card layout for
+          Vehicle (3 cards), Person (3 cards), Firearm (1 card),
+          Article (1 card), Boat (3 cards). NO cross-entity combos
+          (SLO metadata has no VP/QGH/BQ.N transactions).
+          BASE rebuilt to match v1.1.
+          DL and DH share same fieldIds (no DH-suffix needed).
+REASON  : Phase 2 standard -- multi-card layout split per search path.
+SCRIPT  : scripts/build_ca_san_luis_obispo.ps1 + scripts/build_ca_san_luis_obispo_mc.ps1
+OUTPUT  : CA_SAN_LUIS_OBISPO_BASE.json + CA_SAN_LUIS_OBISPO_MC.json (+ readable variants)
+RESULTS : BASE: 63P/0F/0W/4LIM  |  MC: 63P/0F/0W/4LIM
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06  Initial standup -- 6 basic queries, 14 combos
+--------------------------------------------------------------------------------
+CHANGED : Initial build from CA_SAN_LUIS_OBISPO.xml metadata + HIDLE.json.
+          6 QIDMs: VehicleRegistrationQuery (4 combos: QV.P/QV.V, RQ.P/RQ.V),
+          DriverLicenseQuery (3 combos: L1.O, L1.N, DQ.O),
+          DriverHistoryQuery (4 combos: B2.N/B2.O, KQ.N/KQ.O),
+          GunQuery (1 combo: QGB serial),
+          ArticleSingleQuery (1 combo: QA serial),
+          BoatQuery (2 combos: BQ hull, QB reg). 15 total combos.
+          5 entities: Vehicle, Person, Firearm, Article, Boat.
+          NO CaRequestPurposeCode (field not in any SLO metadata transaction).
+          No ImageIndicator (not in SLO metadata).
+          No State initialValue (LIMITATION #30: separate in-state vs OOS keyRefs).
+          Shorter keyRefs than CA_CLETS (QV not IA.QV, BQ not IA.QB).
+          Regional message switch interface.
+REASON  : Phase 1 standup. Establishing CA_SAN_LUIS_OBISPO as a tracked provider.
+SCRIPT  : scripts/build_ca_san_luis_obispo.ps1
+OUTPUT  : CA_SAN_LUIS_OBISPO_BASE.json + CA_SAN_LUIS_OBISPO_BASE_READABLE.json
+RESULTS : Archived to phases/base/CA_SAN_LUIS_OBISPO_v1.0_2026-05-06.json

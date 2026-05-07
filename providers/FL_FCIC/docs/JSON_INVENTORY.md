@@ -6,13 +6,31 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v2.6 | Current | BASE single-card layout. Single-QIF baseline with FDQName confirmed. Updated 2026-04-23. |
+| FL_FCIC_BASE.json | v3.1 | Current | 8-QIDM merged architecture. 101P/0F/1W/4LIM. Patch 8 + VehicleMakeCode fix. |
+| FL_FCIC_BASE_READABLE.json | v3.1 | Current | Pretty-printed BASE. |
+| FL_FCIC_MC.json | v3.1 | Current | MC multi-card layout. 101P/0F/1W/5LIM. |
+| FL_FCIC_MC_READABLE.json | v3.1 | Current | Pretty-printed MC. |
 
-## release/
+## phases/base/
 
-| File | Version | Status | Notes |
-|------|---------|--------|-------|
-| release/FL_FCIC_BASE.json | v2.6 | Phase snapshot | Release bundle BASE (2026-04-23). |
+| File | Version | Date | Notes |
+|------|---------|------|-------|
+| FL_FCIC_BASE.json | v3.1 | 2026-05-07 | Current phase snapshot |
+| FL_FCIC_BASE_READABLE.json | v3.1 | 2026-05-07 | Current phase snapshot (readable) |
+
+## phases/mc/
+
+| File | Version | Date | Notes |
+|------|---------|------|-------|
+| FL_FCIC_MC.json | v3.1 | 2026-05-07 | Current phase snapshot |
+| FL_FCIC_MC_READABLE.json | v3.1 | 2026-05-07 | Current phase snapshot (readable) |
+
+## phases/ (other)
+
+| File | Version | Date | Notes |
+|------|---------|------|-------|
+| FL_FCIC_BASE_2026-05-01_backup.json | v2.6 | 2026-05-01 | Pre-v3.0 backup |
+| 01_standup/FL_FCIC_v2.1_CLEAN_noBOM.json | v2.1 | — | Phase 1 standup artifact |
 
 ## archive/
 
@@ -26,4 +44,4 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.2_test.json | v2.2 | Archived | Single-QIF test build (2026-04-21). |
 | archive/FL_FCIC_v2.3_split.json | v2.3 | Archived | Entity-split attempt (2026-04-21). |
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
-| archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Snapshot before current promotion (2026-04-23). |
+| archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |

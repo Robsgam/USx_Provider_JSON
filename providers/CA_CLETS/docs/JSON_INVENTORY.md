@@ -2,8 +2,10 @@
 
 | Version | Date | File | Notes |
 |---------|------|------|-------|
-| v1.5 BASE | 2026-05-06 | CA_CLETS_BASE.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 63P/0F/2W/5LIM |
-| v1.5 MC | 2026-05-06 | CA_CLETS_MC.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 67P/0F/0W/7LIM |
+| v1.6 BASE | 2026-05-07 | CA_CLETS_BASE.json | VehicleMakeCode dropdown, Stats cleanup; 64P/0F/0W/5LIM |
+| v1.6 MC | 2026-05-07 | CA_CLETS_MC.json | VehicleMakeCode dropdown, Stats cleanup; 68P/0F/0W/7LIM |
+| v1.5 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.5_2026-05-06.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 63P/0F/2W/5LIM |
+| v1.5 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.5_2026-05-06.json | PlateType=PC, PlateYear=2026 defaults + PurposeCode layout fix; 67P/0F/0W/7LIM |
 | v1.4 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.4_2026-05-06.json | BirthDate format fix: MMddyyyy -> yyyyMMdd per CA_ESUN; 63P/0F/3W/5LIM |
 | v1.4 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.4_2026-05-06.json | BirthDate format fix; 67P/0F/1W/7LIM |
 | v1.3 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.3_2026-05-06.json | Devdoc audit: removed WP/MP/SR QIDMs; 63P/0F/3W/5LIM |
@@ -14,3 +16,16 @@
 | v1.1 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.1_2026-05-06.json | SupervisedRelease + OOS boat |
 | v1.0 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.0_2026-05-06.json | Phase 1 single-card; 5 entities, 8 QIDMs, 21 combos; 73P/0F/3W/4LIM |
 | v1.0 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.0_2026-05-06.json | Phase 1 PascalCase; 73P/0F/1W/4LIM |
+
+## phases/base/ (additional)
+
+| File | Date | Notes |
+|------|------|-------|
+| CA_CLETS_v1.6_2026-05-07.json | 2026-05-07 | Current v1.6 BASE snapshot |
+
+## phases/mc/ (additional)
+
+| File | Date | Notes |
+|------|------|-------|
+| CA_CLETS_MC_v1.6_2026-05-07.json | 2026-05-07 | Current v1.6 MC snapshot |
+| CA_CLETS_MC_v1.7_2026-05-07.json | 2026-05-07 | Orphaned -- not promoted to current; user review needed |

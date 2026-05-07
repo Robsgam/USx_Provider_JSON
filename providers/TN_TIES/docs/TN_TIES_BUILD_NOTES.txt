@@ -1,5 +1,33 @@
-﻿TN_TIES BUILD NOTES
-===================
-Last Updated: 2026-05-06
+TN_TIES -- Build Notes
+=======================
+Provider: TN_TIES
+State: Tennessee
+Network: TIES (Tennessee Information Enforcement System)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.1  2026-05-07  MC multi-card layout + PlateType/PlateYear defaults
+--------------------------------------------------------------------------------
+CHANGED : Phase 2 multi-card layout for MC variant (14 cards). PlateType=PC and
+          PlateYear=2026 defaults applied to both BASE and MC. Rebuilt both
+          variants from updated build scripts.
+REASON  : Standard Phase 2 progression -- split entity forms into one card per
+          search path. PlateType/PlateYear defaults per cross-provider audit.
+SCRIPT  : scripts/build_tn_ties.ps1 + scripts/build_tn_ties_mc.ps1
+OUTPUT  : TN_TIES_BASE.json + TN_TIES_MC.json (+ readable variants)
+RESULTS : BASE: 79P/0F/4W/3LIM | MC: 79P/0F/1W/3LIM
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06  Initial build -- 6 basic queries, 28 combos
+--------------------------------------------------------------------------------
+CHANGED : Built from scratch using TN_TIES.xml (metadata v31) + HIDLE.json.
+          6 basic queries: VehicleRegistrationQuery (13 combos), DriverLicenseQuery (6),
+          DriverHistoryQuery (3), GunQuery (1), ArticleSingleQuery (1), BoatQuery (4).
+          28 total combos -- the most of any provider. DL+DH co-fire with DH-suffix fieldIds.
+          No State initialValue (LIMITATION #30 -- in-state vs OOS keyRef routing).
+          VehReg includes Dealer (RQ05), Handicap (RQ06), Temp (RQ07), and NCIC Dealer (QV.D).
+          DriverHistoryQuery has PurposeCode (Mandatory) + Attention (Mandatory).
+          Date format: yyyyMMdd. 5 entities: Vehicle, Person, Firearm, Article, Boat.
+REASON  : New provider onboarding -- Tennessee TIES via bulk build pipeline.
+SCRIPT  : scripts/build_tn_ties.ps1 + scripts/build_tn_ties_mc.ps1
+OUTPUT  : TN_TIES_BASE.json + TN_TIES_MC.json (+ readable variants)
+RESULTS : BASE: 79P/0F/4W/3LIM | MC: 79P/0F/1W/3LIM

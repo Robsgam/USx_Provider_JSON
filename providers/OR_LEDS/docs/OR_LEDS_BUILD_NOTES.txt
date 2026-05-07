@@ -1,5 +1,33 @@
-﻿OR_LEDS BUILD NOTES
-===================
-Last Updated: 2026-05-06
+OR_LEDS -- Build Notes
+=======================
+Provider: OR_LEDS
+State: Oregon
+Network: LEDS (Law Enforcement Data System)
 
-(no builds yet -- add CHANGED/REASON/RESULTS per version)
+--------------------------------------------------------------------------------
+v1.1  2026-05-07  MC multi-card layout + PlateType/PlateYear defaults
+--------------------------------------------------------------------------------
+CHANGED : Phase 2 multi-card layout for MC variant (11 cards). PlateType=PC and
+          PlateYear=2026 defaults applied to both BASE and MC. Rebuilt both
+          variants from updated build scripts.
+REASON  : Standard Phase 2 progression -- split entity forms into one card per
+          search path. PlateType/PlateYear defaults per cross-provider audit.
+SCRIPT  : scripts/build_or_leds.ps1 + scripts/build_or_leds_mc.ps1
+OUTPUT  : OR_LEDS_BASE.json + OR_LEDS_MC.json (+ readable variants)
+RESULTS : BASE: 58P/0F/2W/1LIM | MC: 58P/0F/1W/1LIM
+
+--------------------------------------------------------------------------------
+v1.0  2026-05-06  Initial build -- 5 basic queries, 8 combos
+--------------------------------------------------------------------------------
+CHANGED : Built from scratch using OR_LEDS.xml (metadata v5) + HIDLE.json.
+          5 basic queries: VehicleRegistrationQuery (2 combos), DriverLicenseQuery (2),
+          GunQuery (1), ArticleSingleQuery (1), BoatQuery (2).
+          8 total combos. NO DriverHistoryQuery (not in metadata or devdoc).
+          Invented keyRefs: DQ.N/DQ.O, RQ.P/RQ.V, BQ.R/BQ.H (duplicate keyRefs in metadata).
+          No State initialValue (LIMITATION #30 -- In vs Out routing).
+          Date format: yyyyMMdd. RelatedHitSearchIndicator Y-only flag.
+          5 entities: Vehicle, Person, Firearm, Article, Boat.
+REASON  : New provider onboarding -- Oregon LEDS via bulk build pipeline.
+SCRIPT  : scripts/build_or_leds.ps1 + scripts/build_or_leds_mc.ps1
+OUTPUT  : OR_LEDS_BASE.json + OR_LEDS_MC.json (+ readable variants)
+RESULTS : BASE: 58P/0F/2W/1LIM | MC: 58P/0F/1W/1LIM
