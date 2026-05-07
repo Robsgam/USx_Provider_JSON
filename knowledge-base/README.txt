@@ -1,10 +1,10 @@
 ﻿CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
-Last updated: 2026-05-06
-Covers: 18 providers in consolidated monorepo
+Last updated: 2026-05-07
+Covers: 19 providers in consolidated monorepo
   Active (8): NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS
-  New (10): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_eSUN/CA_SAN_LUIS_OBISPO/
+  New (11): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_CLETS_OCATS/CA_eSUN/CA_SAN_LUIS_OBISPO/
             IL_LEADS_OFML/MD_METERS/OH_LEADS/NM_NMLETS_OFML/OR_LEDS/TN_TIES
 
 CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
