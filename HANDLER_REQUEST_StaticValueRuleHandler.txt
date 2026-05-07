@@ -1,0 +1,51 @@
+# Engineering Request: Fix IgnoreUserValueRuleHandler (StaticValueRuleHandler)
+
+**Requested by:** Rob Sgambellone (rob.sgambellone@mark43.com)
+**Date:** 2026-05-07
+**Component:** HandlerConfiguration.java — ConnectCIC QIDM rule handler
+**Scope:** One-line fix to existing handler
+
+---
+
+## Problem
+
+`IgnoreUserValueRuleHandler` exists in the handler registry and accepts an `arguments` array, but does not work as its name implies. Instead of ignoring the user-supplied value and substituting the argument, it passes the raw sourceField value through unchanged. The argument is accepted but never used.
+
+This was discovered during production provider builds and confirmed through testing. It is documented internally as Anti-Pattern #4 and marked as a dead end for all provider configurations.
+
+## Current Behavior
+
+1. Handler is invoked on a QIDM attribute with `arguments = ['someValue']`
+2. User enters or selects a value on the form
+3. Handler returns the user's value, not `'someValue'`
+4. The argument is silently ignored
+
+## Expected Behavior
+
+1. Handler is invoked on a QIDM attribute with `arguments = ['someValue']`
+2. Regardless of what the user enters on the form, the handler returns `'someValue'`
+3. The outbound XML element contains the hardcoded argument value
+
+## Impact of the Bug
+
+Every provider that needs a hardcoded value in outbound XML (not derived from user input) must work around this broken handler using hidden form fields with `initialValue`. This creates:
+
+- **Extra hidden fields on every entity form.** The most common case is state hardcoding, where a visible dropdown serves the RMS search and a separate hidden text field serves the CommSys XML. Every provider with this pattern carries two fields where one should suffice.
+
+- **Increased configuration complexity.** Hidden fields must be maintained in form layouts, wired into QIDM sourceField mappings, and validated separately. They create confusion during audits because they appear to duplicate visible fields.
+
+- **A confirmed production bug.** One provider's out-of-state query routing failed because the hidden-field workaround interacted poorly with combo evaluation. The root cause traced back to this handler not substituting the argument. The fix required restructuring the entire form and QIDM rather than applying the handler as designed.
+
+- **Blocked simplification across 18 providers.** Every active provider uses at least one hidden-field workaround that exists solely because this handler does not work.
+
+## Suggested Fix
+
+In `HandlerConfiguration.java`, the handler implementation should return `arguments[0]` instead of the sourceField value. The method signature, argument wiring, and handler registration are already correct. Only the return value needs to change.
+
+## Verification
+
+After the fix, a QIDM attribute configured with this handler and `arguments = ['X']` should always produce the XML element value `X`, regardless of the form field value. Existing provider configurations that do not use this handler are unaffected.
+
+## Risk
+
+Low. The handler is currently non-functional (returns the same value as having no handler at all). No existing provider depends on its current broken behavior. Fixing it enables new configurations but does not change any deployed behavior.
