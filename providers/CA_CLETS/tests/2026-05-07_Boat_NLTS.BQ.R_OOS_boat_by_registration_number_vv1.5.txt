@@ -1,0 +1,80 @@
+CA_CLETS BASE v1.5 -- Test Log
+============================================================
+Date       : 2026-05-07
+JSON       : CA_CLETS_BASE.json
+Entity     : Boat
+Combo      : NLTS.BQ.R (OOS boat by registration number)
+Test type  : T1 -- basic combo fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  BoatHullIdNumber          (blank)            not set
+  RegistrationNumber        FL985547           typed
+  OwnerAppliedNumber        (blank)            not set
+  RegistrationState         MT                 selected (OOS routing)
+  CaRequestPurposeCode      C                  initialValue (visible)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR1C3QE8ESMS2Y345Q35P9CB
+  MessageType : BoatQuery
+  keyReference: NLTS.BQ.R
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    State                MT
+    RegistrationNumber   FL985547
+    CaRequestPurposeCode C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: NLTS.BQ.R
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + RegistrationNumber='FL985547' + RegistrationState='MT'
+
+  QIDM attribute          Sent?  Value           Note
+  ----------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode    YES    C               visible initialValue
+  RegistrationNumber      YES    FL985547        typed by user
+  State                   YES    MT              selected -- OOS routing
+  BoatHullIdNumber        NO     --              blank
+  OwnerAppliedNumber      NO     --              blank
+
+  State=MT present confirms NLTS.BQ.R (OOS) not IA.QB.R (in-state).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE
+  Note: No RMS Boat QIDM exists in HIDLE. Boat queries are CommSys-only.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: NLTS.BQ.R fired correctly with RegistrationNumber + State=MT (OOS) + CaRequestPurposeCode=C. No RMS co-fire (expected).
+  Detail: No response expected for test reg#. NCIC state reverse-lookup working (MT). Final boat combo confirmed.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1C3QE8ESMS2Y345Q35P9CB"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KR1C3QE8ESMS2Y345Q35P9CB</Id><State>MT</State><RegistrationNumber>FL985547</RegistrationNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A -- no RMS Boat QIDM

@@ -1,0 +1,399 @@
+Maryland (MD) METERS
+Statement
+Transport: DMPP2020
+
+Disclaimer
+
+Routing and Configuration Information: Save byte routing
+ The METERS assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The METERS assigned PID for a device should be placed in the <Authentication>/<Mnemonic> field in the ConnectCIC header.
+ The METERS assigned User ID for a user should be placed in the <Authentication>/<UserName> field in the ConnectCIC header.
+
+Security Requirements:
+Each site must request METERS access for the vendor and application and complete the necessary paperwork, which will include a network diagram and information about the application's purpose and use. The physical and application security is addressed. This paperwork is necessary to gain approval for METERS connectivity. This paperwork must be completed by the site before METERS will release any documentation or provide any connectivity or assistance to vendors.
+
+Logon Requirements: UserName and Password
+
+Certification Requirements:
+When the local agency has determined that their testing is complete and they are ready to cut their new system in production METERS will need the following items.
+1) METERS will need an email from the individual in charge of the agency stating that the agency's testing has been completed and the agency is ready to move to production. a. This letter will need to contain the IP address of the agency's connection to METERS (Ed Nabors will be able to provide this). b. The cut over date must also be at least two weeks in advance of the send date of the email. c. All other items which follow must be completed.
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+d. Upon receipt of this letter and approval from Jillian Watts, Ed Nabors will send the local agency the production IP address and port number.
+
+2) Dalene Drum will need a letter for the agency TAC officer with a list of all of the new PID numbers which need to be configured for the new system. a. It is recommended to include half a dozen PID at the top of the list and clearly marked for testing. This way the production connection may be tested before a full roll out.
+3) If a new ORI is needed for the RMDT/CAD system then the ORI request process must be completed before the cut over to production can be started.
+If the system is a new CAD system METERS and MSP must perform an onsite inspection of the system before the system can be cut over to production.
+Data-Mined Transactions: None
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name ArticleSerialNumber ArticleTypeCode
+
+XML Tag Name ArticleSerialNumber ArticleTypeCode
+
+M/C/O M M
+
+Size 20 7
+
+Possible Values
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode
+
+BoatQuery
+Field Name BoatHullIdNumber RegistrationNumber
+
+XML Tag Name BoatHullIdNumber RegistrationNumber
+
+M/C/O C C
+
+Size 20 8
+
+Possible Values
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber 2. (In/Out) BoatHullIdNumber, RegistrationNumber 3. (In/Out) RegistrationNumber
+
+DriverHistoryQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+Size 8 30 20
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+Possible Combinations 1. (In) BirthDate, Name 2. (In) OperatorLicenseNumber
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+SexCode
+
+SexCode
+
+C
+
+RaceCode
+
+RaceCode
+
+C
+
+State
+
+State
+
+O
+
+Size 8 30 20 1 1 2
+
+Possible Values
+
+Possible Combinations 1. (In) Name, SexCode, RaceCode, BirthDate, [State] 2. (In) Name, SexCode, RaceCode, OperatorLicenseNumber,
+OperatorLicenseExpirationYear, [State] 3. (Out) Name, SexCode, BirthDate, [State] 4. (In/Out) OperatorLicenseNumber, [State]
+
+GunQuery
+Field Name GunCaliber GunMake GunSerialNumber
+
+XML Tag Name GunCaliber GunMake GunSerialNumber
+
+M/C/O M M M
+
+Size 4 23 20
+
+Possible Values
+
+Possible Combinations 1. (In/Out) GunCaliber, GunMake, GunSerialNumber
+
+VehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateTypeCode LicensePlateTypeCode
+
+C2
+
+LicensePlateYear
+
+LicensePlateYear
+
+C4
+
+State
+
+State
+
+O2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+Possible Combinations 1. (In) VehicleIdentificationNumber, [VehicleMakeCode] 2. (In/Out) VehicleIdentificationNumber, [State] 3. (In) LicensePlateNumber 4. (In/Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, [State]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+Transactions Supported:
+
+Wanted Missing Person Inquiries (WMP-I)
+
+WMPIWantedPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+O
+
+MiscellaneousNumber MiscellaneousNumber
+
+O
+
+Name
+
+Name
+
+M
+
+OperatorLicenseNumber OperatorLicenseNumber
+
+O
+
+OperatorLicenseStateCode OperatorLicenseStateCode O
+
+OperatorLicenseStateYear OperatorLicenseStateYear O
+
+RaceCode
+
+RaceCode
+
+M
+
+SexCode
+
+SexCode
+
+M
+
+SocialSecurityNumber SocialSecurityNumber
+
+O
+
+Size Possible Values 6 15 30 20 2 4 1 1 9
+
+Possible Combinations 1. (In/Out) Name, RaceCode, SexCode, [BirthDate, MiscellaneousNumber,
+SocialSecurityNumber] 2. (In/Out) Name, RaceCode, SexCode, [OperatorLicenseNumber,
+OperatorLicenseStateCode, OperatorLicenseStateYear]
+
+Expanded Transactions Supported:
+
+AlarmExchangeResponse
+
+Field Name AlarmResponse DestinationORI FormORI
+
+XML Tag Name AlarmResponse DestinationORI FormORI
+
+M/C/O M M O
+
+Size 16385
+9 9
+
+Possible Values
+
+Possible Combinations 1. (In/Out) AlarmResponse, DestinationORI, [FormORI]
+
+LogoffRequest
+
+Field Name Password UserName
+
+XML Tag Name Password UserName
+
+Possible Combinations 1. (In/Out) UserName, [Password]
+
+M/C/O O M
+
+Size 20 20
+
+Possible Values
+
+LogonRequest
+
+Field Name Password UserName
+
+XML Tag Name Password UserName
+
+Possible Combinations 1. (In/Out) Password, UserName
+
+M/C/O M M
+
+Size 20 20
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+P1AlarmExchangeResponse
+
+Field Name AlarmResponse DestinationORI FormORI
+
+XML Tag Name AlarmResponse DestinationORI FormORI
+
+M/C/O M M O
+
+Size 16385
+9 9
+
+Possible Values
+
+Possible Combinations 1. (In/Out) AlarmResponse, DestinationORI, [FormORI]
+
+SecuritiesStolenQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Denomination
+
+Denomination
+
+C 9 Alphanumeric, Special Chars
+
+Issuer
+
+Issuer
+
+O 15 Alphanumeric, Special Chars
+
+NCICNumber
+
+NCICNumber
+
+C 10 Alphanumeric
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20 Alphanumeric, Special Chars
+
+Owner
+
+Owner
+
+C 40 Alphanumeric, Special Chars
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O 1 Alpha, `Y' or `N'
+
+SecuritySerialNumber
+
+SecuritySerialNumber
+
+C 18 Alphanumeric
+
+SecurityTypeCode
+
+SecurityTypeCode
+
+C 2 Alpha (See NCIC Code Manual)
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C 9 Numeric
+
+Possible Combinations 1. (In/Out) Denomination, SecuritySerialNumber, SecurityTypeCode, [Issuer,
+RelatedHitSearchIndicator] 2. (In/Out) NCICNumber, [RelatedHitSearchIndicator] 3. (In/Out) OriginatingAgencyCaseNumber, Owner, [RelatedHitSearchIndicator] 4. (In/Out) Owner, [RelatedHitSearchIndicator] 5. (In/Out) Owner, SecurityTypeCode, [RelatedHitSearchIndicator] 6. (In/Out) Owner, SocialSecurityNumber, [RelatedHitSearchIndicator] 7. (In/Out) SocialSecurityNumber, [RelatedHitSearchIndicator]
+
+Hardware/Software Requirements:
+
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+Hardware
+Edge Checkpoint Device
+
+Notes: None
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 5
+
+References:
+ Maryland Department of Public Safety and Correctional Services (Mobile Data Terminal Interface Specifications)
+ NCIC 2000 Operations Manual  NLETS User Guide  RMDTS Specifications Document  RMDT Info Sheet
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 6
+
+

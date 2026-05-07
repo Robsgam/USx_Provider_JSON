@@ -1,0 +1,127 @@
+﻿================================================================
+  Build Report: TN_TIES_BASE
+  Source: TN_TIES_BASE.json
+  Generated: 2026-05-07 10:36
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== TN_TIES_BASE.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=9
+  Person | entity=Person | qidm= | cards=1 fields=11
+  Firearm | entity=Firearm | qidm= | cards=1 fields=1
+  Article | entity=Article | qidm= | cards=1 fields=1
+  Boat | entity=Boat | qidm= | cards=1 fields=3
+QIDMs: 6
+  TN_TIES_VehicleRegistrationQuery | attrs=11 combos=13 autoSelect=True
+  TN_TIES_DriverLicenseQuery | attrs=11 combos=6 autoSelect=True
+  TN_TIES_DriverHistoryQuery | attrs=7 combos=3 autoSelect=True
+  TN_TIES_GunQuery | attrs=3 combos=1 autoSelect=
+  TN_TIES_ArticleSingleQuery | attrs=2 combos=1 autoSelect=
+  TN_TIES_BoatQuery | attrs=4 combos=4 autoSelect=True
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH"
+      ROW ROW_VEH_1 [4 4 4]
+        licensePlateNumber (Text | maxLen=10)
+        registrationState (Dropdown | attributeTypeId=STATE)
+        inquiryTypeIndicator (Text | maxLen=1)
+      ROW ROW_VEH_2 [6 6]
+        licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        licensePlateYear (Text | maxLen=4 | default=2026)
+      ROW ROW_VEH_3 [12]
+        vehicleIdentificationNumber (Text | maxLen=20)
+      ROW ROW_VEH_4 [6 6]
+        vehicleMakeCode (Text | maxLen=4)
+        vehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_5 [4 4 4]
+        dealerLicensePlateNumber (Text | maxLen=10)
+        handicapPlacardNumber (Text | maxLen=10)
+        temporaryLicensePlateNumber (Text | maxLen=10)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER"
+      ROW ROW_PER_1 [4 4 4]
+        operatorLicenseNumber (Text | maxLen=20)
+        registrationState (Dropdown | attributeTypeId=STATE)
+        socialSecurityNumber (Text | maxLen=20)
+      ROW ROW_PER_2 [6 6]
+        nameLast (Text | maxLen=30)
+        nameFirst (Text | maxLen=30)
+      ROW ROW_PER_3 [4 4 4]
+        birthDate (FormDate)
+        sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_4 [4 4 4]
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        expandedNameSearchCode (Text | maxLen=1)
+        relatedHitSearchIndicator (Text | maxLen=1)
+      ROW ROW_PER_5 [6]
+        inquiryTypeIndicator (Text | maxLen=1)
+      ROW ROW_PER_DH1 [6 6]
+        operatorLicenseNumberDH (Text | maxLen=20)
+        purposeCode (Text | maxLen=1)
+      ROW ROW_PER_DH2 [4 4 4]
+        nameLastDH (Text | maxLen=30)
+        nameFirstDH (Text | maxLen=30)
+        birthDateDH (FormDate)
+      ROW ROW_PER_DH3 [6]
+        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [12]
+        serialNumber (Text | maxLen=20)
+      ROW ROW_GUN_2 [6 6]
+        firearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        serialNumber (Text | maxLen=20)
+        articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA"
+      ROW ROW_BOA_1 [4 4 4]
+        registrationNumber (Text | maxLen=8)
+        boatHullIdNumber (Text | maxLen=20)
+        registrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_BOA_2 [6]
+        inquiryTypeIndicator (Text | maxLen=1)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    nameFirst -> firstName
+    nameLast -> lastName
+    socialSecurityNumber -> ssn
+    operatorLicenseNumber -> dlNumber
+    birthDate -> dateOfBirth
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    sexCode -> sexAttrId (useAttrId)
+    registrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    vehicleYear -> vehicle.yearOfManufacture
+    vehicleIdentificationNumber -> vehicle.vinNumber
+    vehicleMakeCode -> vehicle.makeNcicCode
+    vehicleModelCode -> vehicle.modelNcicCode
+    licensePlateNumber -> vehicle.tag
+    registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

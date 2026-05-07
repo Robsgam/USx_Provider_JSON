@@ -525,7 +525,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('8','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
@@ -566,7 +566,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('8','2','2'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
@@ -665,7 +665,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }

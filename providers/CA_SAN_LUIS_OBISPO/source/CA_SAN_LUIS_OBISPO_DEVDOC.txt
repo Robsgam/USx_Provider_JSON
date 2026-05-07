@@ -1,0 +1,229 @@
+California (CA) SAN_LUIS_OBISPO
+
+Disclaimer Statement
+
+Transport: TCP/IP
+Routing and Configuration Information: Save Bytes (Primary) Mnemonic (Secondary)
+ The site assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The assigned Mnemonic for a device should be placed in the <Authentication>/<Mnemonic> field in the ConnectCIC header.
+ The assigned User ID should be placed in the <Authentication>/<UserName> field in the ConnectCIC header.
+ The agency assigned Terminal Identifier should be placed in the <Authentication>/<DeviceId> field in the ConnectCIC header. This field is required only when CLETS mnemonic pooling is used. If this field is not provided, the IP Address of the ConnectCIC server on the state network is used.
+Security Requirements: Agency must adhere to all requirements set forth by San Luis Obispo for operation of a direct connection.
+Logon Requirements: None
+Transaction Requirements: Beginning July 21, 2021 CLETS requires a "Purpose Code" field to be supplied with every CLETS transaction. The information regarding this purpose code was published by CLETS in Information Bulletin 20-03-CJIS and covers the "Purpose Code" field added to satisfy Assembly Bill (AB) 1747.
+Any transaction which does not supply a valid Purpose Code value will be rejected by CLETS. ConnectCIC does not default the value of field; it must be provided by the partner implementation as a user selectable field.
+The CLETS "Purpose Code" value must be supplied to ConnectCIC via the <CaRequestPurposeCode> element as a sibling to the transaction-specific elements
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+covered in this document. The <CaRequestPurposeCode> element is mandatory for all transactions.
+The element is a single character value which may be one of the following:
+ C ­ Criminal Justice  I ­ Immigration Enforcement  U ­ Investigate Violations of Title 8, section 1325 of the United States Code
+
+Certification Requirements: None
+
+Data-Mined Transactions:
+NCIC (QA, QB, QG, QV, QW) and DMV(IDOT) (Person and Vehicle) Tags returned from Data mining
+
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name ArticleBrand ArticleCategory ArticleSerialNumber ArticleTypeCode
+
+XML Tag Name ArticleBrand ArticleCategory ArticleSerialNumber ArticleTypeCode
+
+M/C/O C O C C
+
+Size 6 1 20 6
+
+Possible Values
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleBrand, [ArticleCategory] 2. (In/Out) ArticleSerialNumber, ArticleTypeCode, [ArticleCategory]
+
+BoatQuery
+
+Field Name BoatHullIdNumber RegistrationNumber State
+
+XML Tag Name BoatHullIdNumber RegistrationNumber State
+
+M/C/O C C O
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber, [State] 2. (In/Out) RegistrationNumber, [State]
+
+Size 20 8 2
+
+Possible Values
+
+DriverHistoryQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+Attention
+
+Attention
+
+O
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+Size 30 8 30 20
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+PurposeCode SexCode State
+
+PurposeCode SexCode State
+
+O
+
+1
+
+C
+
+1
+
+C
+
+2
+
+Possible Combinations 1. (In) Name, [BirthDate] 2. (In) OperatorLicenseNumber 3. (Out) BirthDate, Name, SexCode, State, [Attention, PurposeCode] 4. (Out) OperatorLicenseNumber, State, [Attention, PurposeCode]
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+SexCode
+
+SexCode
+
+C
+
+State
+
+State
+
+O
+
+Size 8 30 20 1 2
+
+Possible Values
+
+Possible Combinations 1. (In) Name, [BirthDate] 2. (In) OperatorLicenseNumber 3. (Out) Name, BirthDate, SexCode, [State] 4. (Out) OperatorLicenseNumber, [State]
+
+GunQuery
+
+Field Name GunCaliber GunMake GunSerialNumber GunTypeCode
+
+XML Tag Name GunCaliber GunMake GunSerialNumber GunTypeCode
+
+M/C/O O O C O
+
+Size 4 3 20 2
+
+Possible Values
+
+Possible Combinations 1. (In/Out) GunSerialNumber, [GunCaliber, GunMake, GunTypeCode]
+
+VehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateTypeCode LicensePlateTypeCode
+
+C 2 AP, CO, TK, TR, MC, RE, PE, TL, PC, AQ, AT, DX, EX, DL, AR, IP, TM
+
+LicensePlateYear
+
+LicensePlateYear
+
+C4
+
+State
+
+State
+
+O2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 30
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In) LicensePlateNumber, LicensePlateTypeCode 2. (In) VehicleIdentificationNumber, [VehicleMakeCode] 3. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State 4. (Out) VehicleIdentificationNumber, State [VehicleMakeCode, VehicleYear]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+Transactions Supported: None
+Expanded Transactions Supported: None
+Hardware/Software Requirements:
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+Notes: None
+References:  NCIC 2000 Operations Manual  NLETS User Guide  CLETS System TCP/IP Spec.  CLETS CLEW Website Documentation  Various supporting documents including NCIC 2000 message switch/implementation updates
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+

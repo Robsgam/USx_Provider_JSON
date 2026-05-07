@@ -1,0 +1,1373 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<InterfaceSchema version="3.0" xmlns="http://schema.commsys.com/xml/ConnectCic/Api/InterfaceSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.commsys.com/xml/ConnectCic/Api/InterfaceSchema ../ApiInterfaceSchema.xsd">
+    <States>
+        <State name="MD">
+            <Systems>
+                <System name="METERS" version="15">
+                    <MessageKeys>
+                        <MessageKey name="ALR" type="Administrative" description="ASAP-PSAP Alarm Exchange Response" />
+                        <MessageKey name="ZART" type="Inquiry" description="Article Inquiry" />
+                        <MessageKey name="ZBOA" type="Inquiry" description="Boat Inquiry" />
+                        <MessageKey name="ZDRV" type="Inquiry" description="Driver History Inquiry" />
+                        <MessageKey name="ZGUN" type="Inquiry" description="Gun Inquiry" />
+                        <MessageKey name="ZLDR" type="Inquiry" description="Driver Registration Inquiry" />
+                        <MessageKey name="ZLOF" type="Logoff" description="Logoff" />
+                        <MessageKey name="ZLOG" type="Logon" description="Logon" />
+                        <MessageKey name="ZLRG" type="Inquiry" description="Vehicle Registration Inquiry" />
+                        <MessageKey name="ZSEC" type="Inquiry" description="Stolen Securities Inquiry" />
+                        <MessageKey name="ZVEH" type="Inquiry" description="Stolen Vehicle Inquiry" />
+                        <MessageKey name="ZWAR" type="Inquiry" description="Wanted Person Inquiry" />
+                    </MessageKeys>
+                    <Transactions>
+                        <Transaction name="ArticleSingleQuery" version="3">
+                            <Fields>
+                                <Field name="ArticleTypeCode" type="Alphanumeric" maxLength="7" description="Article Type Code" />
+                                <Field name="ArticleSerialNumber" type="Alphanumeric" maxLength="20" description="Article Serial Number" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZART" primaryFieldReference="ArticleSerialNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="ArticleTypeCode" />
+                                            <Field reference="ArticleSerialNumber" />
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="BoatQuery" version="4">
+                            <Fields>
+                                <Field name="RegistrationNumber" type="Alphanumeric" maxLength="8" description="Registration Number" />
+                                <Field name="BoatHullIdNumber" type="Alphanumeric" maxLength="20" description="Boat Hull ID Number" />
+                                <Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZBOA" primaryFieldReference="BoatHullIdNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="BoatHullIdNumber" />
+                                            <Any>
+                                                <Field reference="RegistrationNumber" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZBOA" primaryFieldReference="RegistrationNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="RegistrationNumber" />
+                                            <Any>
+                                                <Field reference="BoatHullIdNumber" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="DriverHistoryQuery" version="6">
+                            <Fields>
+                                <Field name="OperatorLicenseNumber" type="Alphanumeric" maxLength="20" description="Operator License Number" />
+                                <Field name="Name" type="Alphanumeric" maxLength="30" description="Name">
+                                    <Components>
+                                        <Component name="First" type="Alphabetic" />
+                                        <Component name="Middle" type="Alphabetic" />
+                                        <Component name="Last" type="Alphabetic" />
+                                        <Component name="Suffix" type="Alphabetic" />
+                                    </Components>
+                                </Field>
+                                <Field name="BirthDate" type="Alphanumeric" maxLength="8" description="Birth Date">
+                                    <Components>
+                                        <Component name="Day" type="Numeric" />
+                                        <Component name="Month" type="Numeric" />
+                                        <Component name="Year" type="Numeric" />
+                                    </Components>
+                                </Field>
+                                <Field name="SexCode" type="Alphabetic" maxLength="1" description="Sex Code" />
+                                <Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZDRV" primaryFieldReference="OperatorLicenseNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="OperatorLicenseNumber" />
+                                            <Any>
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZDRV" primaryFieldReference="Name">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="BirthDate" />
+                                            <Field reference="Name" />
+                                            <Field reference="SexCode" />
+                                            <Any>
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="DriverLicenseQuery" version="7">
+                            <Fields>
+                                <Field name="BirthDate" type="Alphanumeric" maxLength="8" description="Birth Date">
+                                    <Components>
+                                        <Component name="Day" type="Numeric" />
+                                        <Component name="Month" type="Numeric" />
+                                        <Component name="Year" type="Numeric" />
+                                    </Components>
+                                </Field>
+                                <Field name="Name" type="Alphanumeric" maxLength="30" description="Name">
+                                    <Components>
+                                        <Component name="First" type="Alphabetic" />
+                                        <Component name="Middle" type="Alphabetic" />
+                                        <Component name="Last" type="Alphabetic" />
+                                        <Component name="Suffix" type="Alphabetic" />
+                                    </Components>
+                                </Field>
+                                <Field name="OperatorLicenseExpirationYear" type="Alphanumeric" maxLength="4" description="Operator License Expiration Year" />
+                                <Field name="OperatorLicenseNumber" type="Alphanumeric" maxLength="20" description="Operator License Number" />
+                                <Field name="RaceCode" type="Alphanumeric" maxLength="1" description="Race Code" />
+                                <Field name="SexCode" type="Alphanumeric" maxLength="1" description="Sex Code" />
+                                <Field name="State" type="Alphanumeric" maxLength="2" description="State" />
+                                <Field name="YearsPastViolationsWanted" type="Alphanumeric" maxLength="2" description="Years Past Violations Wanted" />
+                                <Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZWAR" primaryFieldReference="OperatorLicenseNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Current" system="DMV" class="DriverLicense" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Current" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="CandidateList" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="DriverLicense" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Error" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="NoRecord" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Response" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="Name" />
+                                            <Field reference="OperatorLicenseExpirationYear" />
+                                            <Field reference="OperatorLicenseNumber" />
+                                            <Field reference="RaceCode" />
+                                            <Field reference="SexCode" />
+                                            <Any>
+                                                <Field reference="State" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZWAR" primaryFieldReference="Name">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="DriverLicense" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="BirthDate" />
+                                            <Field reference="Name" />
+                                            <Field reference="RaceCode" />
+                                            <Field reference="SexCode" />
+                                            <Any>
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZDRV" primaryFieldReference="OperatorLicenseNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="DriverLicense" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="OperatorLicenseNumber" />
+                                            <Any>
+                                                <Field reference="YearsPastViolationsWanted" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZLDR" primaryFieldReference="Name">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Current" system="DMV" class="DriverLicense" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Current" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="CandidateList" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="DriverLicense" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Error" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="NoRecord" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Response" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="BirthDate" />
+                                            <Field reference="Name" />
+                                            <Field reference="SexCode" />
+                                            <Any>
+                                                <Field reference="State" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZLDR" primaryFieldReference="OperatorLicenseNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Current" system="DMV" class="DriverLicense" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Current" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Current" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="CandidateList" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="DriverLicense" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Error" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="NoRecord" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Response" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Current" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="OperatorLicenseNumber" />
+                                            <Any>
+                                                <Field reference="State" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="GunQuery" version="3">
+                            <Fields>
+                                <Field name="GunCaliber" type="Alphanumeric" maxLength="4" description="Gun Caliber" />
+                                <Field name="GunMake" type="Alphanumeric" maxLength="23" description="Gun Make" />
+                                <Field name="GunSerialNumber" type="Alphanumeric" maxLength="20" description="Gun Serial Number" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZGUN" primaryFieldReference="GunMake">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="GunCaliber" />
+                                            <Field reference="GunMake" />
+                                            <Field reference="GunSerialNumber" />
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="P1AlarmExchangeResponse" version="4">
+                            <Fields>
+                                <Field name="DestinationORI" type="Alphanumeric" maxLength="9" description="Destination ORI" />
+                                <Field name="AlarmResponse" type="Alphanumeric" maxLength="14400" description="Alarm Response" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ALR" primaryFieldReference="DestinationORI">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Other" system="Nlets" class="AlarmExchangeRequest" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="DestinationORI" />
+                                            <Field reference="AlarmResponse" />
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="LogoffRequest" version="4">
+                            <Fields>
+                                <Field name="Password" type="Alphanumeric" maxLength="20" description="Password" />
+                                <Field name="UserName" type="Alphanumeric" maxLength="20" description="UserName" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZLOF" primaryFieldReference="UserName">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogoffAccept" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="UserName" />
+                                            <Any>
+                                                <Field reference="Password" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="LogonRequest" version="4">
+                            <Fields>
+                                <Field name="Password" type="Alphanumeric" maxLength="20" description="Password" />
+                                <Field name="UserName" type="Alphanumeric" maxLength="20" description="UserName" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZLOG" primaryFieldReference="UserName">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonAccept" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonFailed" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="Password" />
+                                            <Field reference="UserName" />
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="SecuritiesStolenQuery" version="3">
+                            <Fields>
+                                <Field name="SecurityTypeCode" type="Alphanumeric" maxLength="2" description="Security Type Code" />
+                                <Field name="SecuritySerialNumber" type="Alphanumeric" maxLength="18" description="Security Serial Number" />
+                                <Field name="Denomination" type="Alphanumeric" maxLength="9" description="Denomination" />
+                                <Field name="Issuer" type="Alphanumeric" maxLength="15" description="Issuer" />
+                                <Field name="RelatedHitSearchIndicator" type="Alphanumeric" maxLength="1" description="Related Hit Search Indicator" />
+                                <Field name="Owner" type="Alphanumeric" maxLength="40" description="Owner" />
+                                <Field name="OriginatingAgencyCaseNumber" type="Alphanumeric" maxLength="20" description="Originating Agency Case Number" />
+                                <Field name="SocialSecurityNumber" type="Alphanumeric" maxLength="9" description="Social Security Number" />
+                                <Field name="NCICNumber" type="Alphanumeric" maxLength="10" description="NCIC Number" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZSEC" primaryFieldReference="SecuritySerialNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="SecurityTypeCode" />
+                                            <Field reference="SecuritySerialNumber" />
+                                            <Field reference="Denomination" />
+                                            <Any>
+                                                <Field reference="Issuer" />
+                                                <Field reference="RelatedHitSearchIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZSEC" primaryFieldReference="Owner">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="Owner" />
+                                            <Any>
+                                                <Field reference="SecurityTypeCode" />
+                                                <Field reference="OriginatingAgencyCaseNumber" />
+                                                <Field reference="SocialSecurityNumber" />
+                                                <Field reference="OriginatingAgencyCaseNumber" />
+                                                <Field reference="RelatedHitSearchIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZSEC" primaryFieldReference="SocialSecurityNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="SocialSecurityNumber" />
+                                            <Any>
+                                                <Field reference="RelatedHitSearchIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZSEC" primaryFieldReference="NCICNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="NCICNumber" />
+                                            <Any>
+                                                <Field reference="RelatedHitSearchIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                        <Transaction name="VehicleRegistrationQuery" version="6">
+                            <Fields>
+                                <Field name="LicensePlateNumber" type="Alphanumeric" maxLength="10" description="License Plate Number" />
+                                <Field name="LicensePlateTypeCode" type="Alphanumeric" maxLength="2" description="License Plate Type Code" />
+                                <Field name="LicensePlateYear" type="Alphanumeric" maxLength="4" description="License Plate Year" />
+                                <Field name="State" type="Alphanumeric" maxLength="2" description="State" />
+                                <Field name="VehicleIdentificationNumber" type="Alphanumeric" maxLength="20" description="Vehicle Identification Number" />
+                                <Field name="VehicleMakeCode" type="Alphanumeric" maxLength="24" description="Vehicle Make Code" />
+                                <Field name="ImageIndicator" type="Alphabetic" maxLength="1" description="Image Indicator" />
+                            </Fields>
+                            <Combinations>
+                                <Combination keyReference="ZVEH" primaryFieldReference="VehicleIdentificationNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="System" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="DMV" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="METERS" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="METERS" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="VehicleIdentificationNumber" />
+                                            <Any>
+                                                <Field reference="VehicleMakeCode" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZVEH" primaryFieldReference="LicensePlateNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="System" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="DMV" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Global" system="METERS" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="METERS" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="LicensePlateNumber" />
+                                            <Any>
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZLRG" primaryFieldReference="LicensePlateNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="System" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="DMV" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Error" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="NoRecord" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Response" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="METERS" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="METERS" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="LicensePlateNumber" />
+                                            <Field reference="LicensePlateTypeCode" />
+                                            <Field reference="LicensePlateYear" />
+                                            <Any>
+                                                <Field reference="State" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                                <Combination keyReference="ZLRG" primaryFieldReference="VehicleIdentificationNumber">
+                                    <ResponseTypes>
+                                        <ResponseType geoscope="Global" system="DMV" class="Error" />
+                                        <ResponseType geoscope="Global" system="DMV" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="DMV" class="System" />
+                                        <ResponseType geoscope="Global" system="DMV" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="DMV" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Global" system="METERS" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="METERS" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Administrative" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="CriminalHistory" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="MissingPerson" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Error" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="NoRecord" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="ProtectionOrder" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="SexualOffender" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenArticle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenBoat" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenGun" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Response" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="StolenVehicle" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="NCIC" class="WantedPerson" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Error" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="VehicleRegistration" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="NoRecord" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Response" />
+                                        <ResponseType geoscope="Other" system="Nlets" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Error" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="LogonRequired" />
+                                        <ResponseType geoscope="Global" system="SWITCH" class="Unknown" />
+                                        <ResponseType geoscope="Global" system="Unknown" class="Unknown" />
+                                    </ResponseTypes>
+                                    <Requirements>
+                                        <Set>
+                                            <Field reference="VehicleIdentificationNumber" />
+                                            <Any>
+                                                <Field reference="State" />
+                                                <Field reference="ImageIndicator" />
+                                            </Any>
+                                        </Set>
+                                    </Requirements>
+                                </Combination>
+                            </Combinations>
+                        </Transaction>
+                    </Transactions>
+                    <ResponseTypes>
+                        <ResponseType system="DMV" class="DriverLicense" description="DMV Driver License" version="3">
+                            <Components>
+                                <Component name="BirthDate" type="Date" />
+                                <Component name="NormalizedBirthDate" type="Date" />
+                                <Component name="NormalizedBirthDateDay" type="Numeric" />
+                                <Component name="NormalizedBirthDateMonth" type="Numeric" />
+                                <Component name="NormalizedBirthDateYear" type="Numeric" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateDay" type="Numeric" />
+                                <Component name="NormalizedExpirationDateMonth" type="Numeric" />
+                                <Component name="NormalizedExpirationDateYear" type="Numeric" />
+                                <Component name="IssueDate" type="Date" />
+                                <Component name="NormalizedIssueDate" type="Date" />
+                                <Component name="NormalizedIssueDateDay" type="Numeric" />
+                                <Component name="NormalizedIssueDateMonth" type="Numeric" />
+                                <Component name="NormalizedIssueDateYear" type="Numeric" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="RaceCode" type="Text" />
+                                <Component name="SexCode" type="Text" />
+                                <Component name="Height" type="Text" />
+                                <Component name="Weight" type="Text" />
+                                <Component name="AddressStreet" type="Alphanumeric" />
+                                <Component name="AddressStreetName" type="Alphanumeric" />
+                                <Component name="AddressCity" type="Alphabetic" />
+                                <Component name="AddressCounty" type="Alphabetic" />
+                                <Component name="AddressStateCode" type="Alphabetic" />
+                                <Component name="AddressZipCode" type="Numeric" />
+                                <Component name="NormalizedAddress" type="Text" />
+                                <Component name="NormalizedAddressStreet" type="Text" />
+                                <Component name="NormalizedAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedAddressStreetName" type="Text" />
+                                <Component name="NormalizedAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedAddressCity" type="Text" />
+                                <Component name="NormalizedAddressStateCode" type="Text" />
+                                <Component name="NormalizedAddressZipCode" type="Text" />
+                                <Component name="OperatorLicenseNumber" type="Alphanumeric" />
+                                <Component name="OperatorLicenseClassCode" type="Text" />
+                                <Component name="OperatorLicenseRestrictions" type="Text" />
+                                <Component name="OperatorLicenseStatus" type="Text" />
+                                <Component name="OperatorLicenseStatusCode" type="Text" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="DMV" class="Error" description="DMV Error" version="1" />
+                        <ResponseType system="DMV" class="NoRecord" description="DMV No Record" version="1" />
+                        <ResponseType system="DMV" class="System" description="DMV System Response" version="2">
+                            <Components>
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateMonth" type="Numeric" />
+                                <Component name="NormalizedExpirationDateYear" type="Numeric" />
+                                <Component name="LicensePlateNumber" type="Text" />
+                                <Component name="VehicleTitleNumber" type="Text" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="DMV" class="Unknown" description="DMV Unknown Response" version="0" />
+                        <ResponseType system="DMV" class="VehicleRegistration" description="DMV Vehicle Registration" version="2">
+                            <Components>
+                                <Component name="AddressStreet" type="Text" />
+                                <Component name="AddressStreetName" type="Text" />
+                                <Component name="AddressCity" type="Text" />
+                                <Component name="AddressCountyCode" type="Text" />
+                                <Component name="AddressStateCode" type="Text" />
+                                <Component name="AddressZipCode" type="Text" />
+                                <Component name="AutoInsurance" type="Text" />
+                                <Component name="AutoInsuranceCarrier" type="Text" />
+                                <Component name="AutoInsurancePolicyNumber" type="Text" />
+                                <Component name="BirthDate" type="Date" />
+                                <Component name="CoOwnerAddressStreet" type="Text" />
+                                <Component name="CoOwnerAddressStreetName" type="Text" />
+                                <Component name="CoOwnerAddressStreetNameSecond" type="Text" />
+                                <Component name="CoOwnerAddressCity" type="Text" />
+                                <Component name="CoOwnerAddressCountyCode" type="Text" />
+                                <Component name="CoOwnerAddressStateCode" type="Text" />
+                                <Component name="CoOwnerAddressZipCode" type="Text" />
+                                <Component name="CoOwnerBirthDate" type="Date" />
+                                <Component name="CoOwnerHeight" type="Text" />
+                                <Component name="CoOwnerOperatorLicenseNumber" type="Alphanumeric" />
+                                <Component name="CoOwnerRaceCode" type="Text" />
+                                <Component name="CoOwnerSexCode" type="Text" />
+                                <Component name="CoOwnerWeight" type="Text" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="Height" type="Text" />
+                                <Component name="LicensePlateNumber" type="Text" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NormalizedAddress" type="Text" />
+                                <Component name="NormalizedAddressStreet" type="Text" />
+                                <Component name="NormalizedAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedAddressStreetName" type="Text" />
+                                <Component name="NormalizedAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedAddressCity" type="Text" />
+                                <Component name="NormalizedAddressStateCode" type="Text" />
+                                <Component name="NormalizedAddressZipCode" type="Text" />
+                                <Component name="NormalizedBirthDate" type="Date" />
+                                <Component name="NormalizedBirthDateDay" type="Numeric" />
+                                <Component name="NormalizedBirthDateMonth" type="Numeric" />
+                                <Component name="NormalizedBirthDateYear" type="Numeric" />
+                                <Component name="NormalizedCoOwnerAddress" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreet" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetName" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressCity" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStateCode" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressZipCode" type="Text" />
+                                <Component name="NormalizedCoOwnerBirthDate" type="Date" />
+                                <Component name="NormalizedCoOwnerBirthDateDay" type="Numeric" />
+                                <Component name="NormalizedCoOwnerBirthDateMonth" type="Numeric" />
+                                <Component name="NormalizedCoOwnerBirthDateYear" type="Numeric" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateMonth" type="Numeric" />
+                                <Component name="NormalizedExpirationDateYear" type="Numeric" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="NormalizedVehicleYear" type="Text" />
+                                <Component name="RaceCode" type="Text" />
+                                <Component name="SexCode" type="Text" />
+                                <Component name="OperatorLicenseNumber" type="Alphanumeric" />
+                                <Component name="VehicleIdentificationNumber" type="Text" />
+                                <Component name="VehicleMakeCode" type="Text" />
+                                <Component name="VehicleStyleCode" type="Text" />
+                                <Component name="VehicleTitleNumber" type="Text" />
+                                <Component name="VehicleYear" type="Text" />
+                                <Component name="Weight" type="Text" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="METERS" class="NoRecord" description="METERS No Record" version="1" />
+                        <ResponseType system="METERS" class="Unknown" description="METERS Unknown" version="0" />
+                        <ResponseType system="Nlets" class="AlarmExchangeRequest" description="Nlets Alarm Exchange Request" version="0" />
+                        <ResponseType system="Nlets" class="Unknown" description="Nlets Unknown" version="0" />
+                        <!-- <ResponseType system="NLETS" class="BoatRegistration" description="NLETS Boat Registration" version="1">
+                            <Components>
+                                <Component name="Address" type="Text" />
+                                <Component name="AddressStreet" type="Text" />
+                                <Component name="AddressStreetName" type="Text" />
+                                <Component name="AddressStreetNameSecond" type="Text" />
+                                <Component name="AddressCity" type="Text" />
+                                <Component name="AddressCounty" type="Text" />
+                                <Component name="AddressStateCode" type="Text" />
+                                <Component name="AddressZipCode" type="Text" />
+                                <Component name="NormalizedAddress" type="Text" />
+                                <Component name="NormalizedAddressStreet" type="Text" />
+                                <Component name="NormalizedAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedAddressStreetName" type="Text" />
+                                <Component name="NormalizedAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedAddressCity" type="Text" />
+                                <Component name="NormalizedAddressStateCode" type="Text" />
+                                <Component name="NormalizedAddressZipCode" type="Text" />
+                                <Component name="BoatHullIdNumber" type="Text" />
+                                <Component name="BoatMakeCode" type="Text" />
+                                <Component name="CoOwnerName" type="Name" />
+                                <Component name="CoOwnerNameLast" type="Text" />
+                                <Component name="CoOwnerNameFirst" type="Text" />
+                                <Component name="CoOwnerNameMiddle" type="Text" />
+                                <Component name="CoOwnerNameSuffix" type="Text" />
+                                <Component name="NormalizedCoOwnerName" type="Name" />
+                                <Component name="NormalizedCoOwnerNameLast" type="Text" />
+                                <Component name="NormalizedCoOwnerNameFirst" type="Text" />
+                                <Component name="NormalizedCoOwnerNameMiddle" type="Text" />
+                                <Component name="NormalizedCoOwnerNameSuffix" type="Text" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateDay" type="Text" />
+                                <Component name="NormalizedExpirationDateMonth" type="Text" />
+                                <Component name="NormalizedExpirationDateYear" type="Text" />
+                                <Component name="RegistrationStateCode" type="Text" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NameLast" type="Text" />
+                                <Component name="NameFirst" type="Text" />
+                                <Component name="NameMiddle" type="Text" />
+                                <Component name="NameSuffix" type="Text" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="RegistrationNumber" type="Text" />
+                                <Component name="RegistrationTypeCode" type="Text" />
+                            </Components>
+                        </ResponseType> -->
+                        <ResponseType system="Nlets" class="CandidateList" description="NLETS Candidate List" version="1" />
+                        <ResponseType system="Nlets" class="DriverLicense" description="NLETS Driver License" version="2">
+                            <Components>
+                                <Component name="Address" type="Text" />
+                                <Component name="AddressStreet" type="Text" />
+                                <Component name="AddressStreetName" type="Text" />
+                                <Component name="AddressStreetNameSecond" type="Text" />
+                                <Component name="AddressCity" type="Text" />
+                                <Component name="AddressCounty" type="Text" />
+                                <Component name="AddressCountyCode" type="Text" />
+                                <Component name="AddressCountryCode" type="Text" />
+                                <Component name="AddressStateCode" type="Text" />
+                                <Component name="AddressZipCode" type="Text" />
+                                <Component name="NormalizedAddress" type="Text" />
+                                <Component name="NormalizedAddressStreet" type="Text" />
+                                <Component name="NormalizedAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedAddressStreetName" type="Text" />
+                                <Component name="NormalizedAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedAddressCity" type="Text" />
+                                <Component name="NormalizedAddressStateCode" type="Text" />
+                                <Component name="NormalizedAddressZipCode" type="Text" />
+                                <Component name="AlsoKnownAs" type="Text" />
+                                <Component name="BirthDate" type="Date" />
+                                <Component name="NormalizedBirthDate" type="Date" />
+                                <Component name="NormalizedBirthDateDay" type="Text" />
+                                <Component name="NormalizedBirthDateMonth" type="Text" />
+                                <Component name="NormalizedBirthDateYear" type="Text" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateDay" type="Text" />
+                                <Component name="NormalizedExpirationDateMonth" type="Text" />
+                                <Component name="NormalizedExpirationDateYear" type="Text" />
+                                <Component name="EyeColorCode" type="Text" />
+                                <Component name="HairColorCode" type="Text" />
+                                <Component name="Height" type="Text" />
+                                <Component name="ImpliedOperatorLicenseStateCode" type="Text" />
+                                <Component name="IssueDate" type="Date" />
+                                <Component name="NormalizedIssueDate" type="Date" />
+                                <Component name="NormalizedIssueDateDay" type="Text" />
+                                <Component name="NormalizedIssueDateMonth" type="Text" />
+                                <Component name="NormalizedIssueDateYear" type="Text" />
+                                <Component name="OperatorLicenseStateCode" type="Text" />
+                                <Component name="OrganDonor" type="Text" />
+                                <Component name="MailingAddress" type="Text" />
+                                <Component name="MailingAddressStreet" type="Text" />
+                                <Component name="MailingAddressStreetName" type="Text" />
+                                <Component name="MailingAddressStreetSecond" type="Text" />
+                                <Component name="MailingAddressStreetNameSecond" type="Text" />
+                                <Component name="MailingAddressCity" type="Text" />
+                                <Component name="MailingAddressCounty" type="Text" />
+                                <Component name="MailingAddressStateCode" type="Text" />
+                                <Component name="MailingAddressZipCode" type="Text" />
+                                <Component name="NormalizedMailingAddress" type="Text" />
+                                <Component name="NormalizedMailingAddressStreet" type="Text" />
+                                <Component name="NormalizedMailingAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedMailingAddressStreetName" type="Text" />
+                                <Component name="NormalizedMailingAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedMailingAddressCity" type="Text" />
+                                <Component name="NormalizedMailingAddressStateCode" type="Text" />
+                                <Component name="NormalizedMailingAddressZipCode" type="Text" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NameLast" type="Text" />
+                                <Component name="NameFirst" type="Text" />
+                                <Component name="NameMiddle" type="Text" />
+                                <Component name="NameSuffix" type="Text" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="CommercialLicenseClassCode" type="Text" />
+                                <Component name="CommercialLicenseExpirationDate" type="Date" />
+                                <Component name="NormalizedCommercialLicenseExpirationDate" type="Date" />
+                                <Component name="NormalizedCommercialLicenseExpirationDateDay" type="Text" />
+                                <Component name="NormalizedCommercialLicenseExpirationDateMonth" type="Text" />
+                                <Component name="NormalizedCommercialLicenseExpirationDateYear" type="Text" />
+                                <Component name="CommercialLicenseStatus" type="Text" />
+                                <Component name="OperatorLicenseClassCode" type="Text" />
+                                <Component name="OperatorLicenseCommercialClassCode" type="Text" />
+                                <Component name="OperatorLicenseCommercialStatus" type="Text" />
+                                <Component name="OperatorLicenseNumber" type="Text" />
+                                <Component name="OperatorLicenseRestrictions" type="Text" />
+                                <Component name="OperatorLicenseStatus" type="Text" />
+                                <Component name="OperatorLicenseStateCode" type="Text" />
+                                <Component name="OperatorLicenseStatusCode" type="Text" />
+                                <Component name="RaceCode" type="Text" />
+                                <Component name="SexCode" type="Text" />
+                                <Component name="SocialSecurityNumber" type="Text" />
+                                <Component name="Weight" type="Text" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="Nlets" class="Error" description="NLETS Error" version="1" />
+                        <ResponseType system="Nlets" class="VehicleRegistration" description="NLETS Vehicle Registration" version="2">
+                            <Components>
+                                <Component name="Address" type="Text" />
+                                <Component name="AddressStreet" type="Text" />
+                                <Component name="AddressStreetName" type="Text" />
+                                <Component name="AddressStreetNameSecond" type="Text" />
+                                <Component name="AddressCity" type="Text" />
+                                <Component name="AddressCounty" type="Text" />
+                                <Component name="AddressStateCode" type="Text" />
+                                <Component name="AddressZipCode" type="Text" />
+                                <Component name="AutoInsurance" type="Text" />
+                                <Component name="BirthDate" type="Date" />
+                                <Component name="NormalizedBirthDate" type="Date" />
+                                <Component name="NormalizedBirthDateDay" type="Text" />
+                                <Component name="NormalizedBirthDateMonth" type="Text" />
+                                <Component name="NormalizedBirthDateYear" type="Text" />
+                                <Component name="NormalizedAddress" type="Text" />
+                                <Component name="NormalizedAddressStreet" type="Text" />
+                                <Component name="NormalizedAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedAddressStreetName" type="Text" />
+                                <Component name="NormalizedAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedAddressCity" type="Text" />
+                                <Component name="NormalizedAddressStateCode" type="Text" />
+                                <Component name="NormalizedAddressZipCode" type="Text" />
+                                <Component name="CoOwnerBirthDate" type="Date" />
+                                <Component name="NormalizedCoOwnerBirthDate" type="Date" />
+                                <Component name="NormalizedCoOwnerBirthDateDay" type="Text" />
+                                <Component name="NormalizedCoOwnerBirthDateMonth" type="Text" />
+                                <Component name="NormalizedCoOwnerBirthDateYear" type="Text" />
+                                <Component name="CoOwnerAddress" type="Text" />
+                                <Component name="CoOwnerAddressStreet" type="Text" />
+                                <Component name="CoOwnerAddressStreetName" type="Text" />
+                                <Component name="CoOwnerAddressStreetNameSecond" type="Text" />
+                                <Component name="CoOwnerAddressCity" type="Text" />
+                                <Component name="CoOwnerAddressCounty" type="Text" />
+                                <Component name="CoOwnerAddressStateCode" type="Text" />
+                                <Component name="CoOwnerAddressZipCode" type="Text" />
+                                <Component name="NormalizedCoOwnerAddress" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreet" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetNumber" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetName" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStreetNameSecond" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressCity" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressStateCode" type="Text" />
+                                <Component name="NormalizedCoOwnerAddressZipCode" type="Text" />
+                                <Component name="CoOwnerName" type="Name" />
+                                <Component name="CoOwnerNameLast" type="Text" />
+                                <Component name="CoOwnerNameFirst" type="Text" />
+                                <Component name="CoOwnerNameMiddle" type="Text" />
+                                <Component name="CoOwnerNameSuffix" type="Text" />
+                                <Component name="NormalizedCoOwnerName" type="Name" />
+                                <Component name="NormalizedCoOwnerNameLast" type="Text" />
+                                <Component name="NormalizedCoOwnerNameFirst" type="Text" />
+                                <Component name="NormalizedCoOwnerNameMiddle" type="Text" />
+                                <Component name="NormalizedCoOwnerNameSuffix" type="Text" />
+                                <Component name="CoOwnerOperatorLicenseNumber" type="Text" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDate" type="Date" />
+                                <Component name="NormalizedExpirationDateDay" type="Text" />
+                                <Component name="NormalizedExpirationDateMonth" type="Text" />
+                                <Component name="NormalizedExpirationDateYear" type="Text" />
+                                <Component name="FreeText" type="Text" />
+                                <Component name="ImpliedLicensePlateStateCode" type="Text" />
+                                <Component name="ImpliedOperatorLicenseStateCode" type="Text" />
+                                <Component name="IssueDate" type="Date" />
+                                <Component name="NormalizedIssueDate" type="Date" />
+                                <Component name="NormalizedIssueDateDay" type="Text" />
+                                <Component name="NormalizedIssueDateMonth" type="Text" />
+                                <Component name="NormalizedIssueDateYear" type="Text" />
+                                <Component name="LicensePlateExpirationDate" type="Date" />
+                                <Component name="NormalizedLicensePlateExpirationDate" type="Date" />
+                                <Component name="NormalizedLicensePlateExpirationDateDay" type="Text" />
+                                <Component name="NormalizedLicensePlateExpirationDateMonth" type="Text" />
+                                <Component name="NormalizedLicensePlateExpirationDateYear" type="Text" />
+                                <Component name="LicensePlateExpirationYear" type="Year" />
+                                <Component name="LicensePlateNumber" type="Text" />
+                                <Component name="LicensePlateStateCode" type="Text" />
+                                <Component name="LicensePlateStatusCode" type="Text" />
+                                <Component name="LicensePlateTypeCode" type="Text" />
+                                <Component name="LicensePlateYear" type="Year" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NameLast" type="Text" />
+                                <Component name="NameFirst" type="Text" />
+                                <Component name="NameMiddle" type="Text" />
+                                <Component name="NameSuffix" type="Text" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="OperatorLicenseExpirationYear" type="Year" />
+                                <Component name="OperatorLicenseNumber" type="Text" />
+                                <Component name="OperatorLicenseStateCode" type="Text" />
+                                <Component name="RegistrationEndDate" type="Date" />
+                                <Component name="NormalizedRegistrationEndDate" type="Date" />
+                                <Component name="NormalizedRegistrationEndDateDay" type="Text" />
+                                <Component name="NormalizedRegistrationEndDateMonth" type="Text" />
+                                <Component name="NormalizedRegistrationEndDateYear" type="Text" />
+                                <Component name="RegistrationNumber" type="Text" />
+                                <Component name="RegistrationStatus" type="Text" />
+                                <Component name="VehicleIdentificationNumber" type="Text" />
+                                <Component name="VehicleColorCode" type="Text" />
+                                <Component name="VehicleMakeCode" type="Text" />
+                                <Component name="VehicleModelCode" type="Text" />
+                                <Component name="VehicleStyleCode" type="Text" />
+                                <Component name="VehicleTitleNumber" type="Text" />
+                                <Component name="VehicleYear" type="Year" />
+                                <Component name="NormalizedVehicleYear" type="Year" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="Nlets" class="NoRecord" description="NLETS No Record" version="1" />
+                        <ResponseType system="Nlets" class="Response" description="NLETS Response" version="1" />
+                        <ResponseType system="Nlets" class="Unknown" description="Unknown" version="1" />
+                        <ResponseType system="NCIC" class="Administrative" description="NCIC Administrative" version="0" />
+                        <ResponseType system="NCIC" class="CriminalHistory" description="NCIC Criminal History" version="0" />
+                        <ResponseType system="NCIC" class="MissingPerson" description="NCIC Missing Person" version="0" />
+                        <ResponseType system="NCIC" class="Error" description="NCIC Error" version="1" />
+                        <ResponseType system="NCIC" class="NoRecord" description="NCIC No Record" version="0" />
+                        <ResponseType system="NCIC" class="ProtectionOrder" description="NCIC Protection Order" version="0" />
+                        <ResponseType system="NCIC" class="SexualOffender" description="NCIC Sexual Offender" version="0" />
+                        <ResponseType system="NCIC" class="StolenArticle" description="NCIC Stolen Article" version="2">
+                            <Components>
+                                <Component name="ArticleBrand" type="Text" />
+                                <Component name="ArticleSerialNumber" type="Text" />
+                                <Component name="ArticleTypeCode" type="Text" />
+                                <Component name="MiscellaneousDescriptiveText" type="Text" />
+                                <Component name="MessageKey" type="Text" />
+                                <Component name="NCICNumber" type="Text" />
+                                <Component name="OriginatingAgencyCaseNumber" type="Text" />
+                                <Component name="OriginatingAgencyIdentifier" type="Text" />
+                                <Component name="OwnerAppliedNumber" type="Text" />
+                                <Component name="TheftDate" type="Date" />
+                                <Component name="NormalizedTheftDate" type="Date" />
+                                <Component name="NormalizedTheftDateDay" type="Numeric" />
+                                <Component name="NormalizedTheftDateMonth" type="Numeric" />
+                                <Component name="NormalizedTheftDateYear" type="Numeric" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="NCIC" class="StolenBoat" description="NCIC Stolen Boat" version="0" />
+                        <ResponseType system="NCIC" class="StolenGun" description="NCIC Stolen Gun" version="2">
+                            <Components>
+                                <Component name="GunCaliber" type="Text" />
+                                <Component name="GunMake" type="Text" />
+                                <Component name="GunModel" type="Text" />
+                                <Component name="GunSerialNumber" type="Text" />
+                                <Component name="GunTypeCode" type="Text" />
+                                <Component name="MessageKey" type="Text" />
+                                <Component name="MiscellaneousDescriptiveText" type="Text" />
+                                <Component name="NCICNumber" type="Text" />
+                                <Component name="OriginatingAgencyCaseNumber" type="Text" />
+                                <Component name="OriginatingAgencyIdentifier" type="Text" />
+                                <Component name="TheftDate" type="Date" />
+                                <Component name="NormalizedTheftDate" type="Date" />
+                                <Component name="NormalizedTheftDateDay" type="Numeric" />
+                                <Component name="NormalizedTheftDateMonth" type="Numeric" />
+                                <Component name="NormalizedTheftDateYear" type="Numeric" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="NCIC" class="Response" description="NCIC Response" version="0" />
+                        <ResponseType system="NCIC" class="StolenVehicle" description="NCIC Stolen Vehicle" version="0" />
+                        <ResponseType system="NCIC" class="Unknown" description="NCIC Unknown" version="0" />
+                        <ResponseType system="NCIC" class="WantedPerson" description="NCIC Wanted Person" version="2">
+                            <Components>
+                                <Component name="AlsoKnownAs" type="Text" />
+                                <Component name="BirthDate" type="Date" />
+                                <Component name="NormalizedBirthDate" type="Date" />
+                                <Component name="NormalizedBirthDateDay" type="Numeric" />
+                                <Component name="NormalizedBirthDateMonth" type="Numeric" />
+                                <Component name="NormalizedBirthDateYear" type="Numeric" />
+                                <Component name="BirthPlaceCode" type="Text" />
+                                <Component name="CourtORI" type="Text" />
+                                <Component name="DNAIndicator" type="Text" />
+                                <Component name="ExpirationDate" type="Date" />
+                                <Component name="EyeColorCode" type="Text" />
+                                <Component name="FBINumber" type="Text" />
+                                <Component name="FingerPrintClassificationCode" type="Text" />
+                                <Component name="HairColorCode" type="Text" />
+                                <Component name="Height" type="Text" />
+                                <Component name="LastUpdateDate" type="Date" />
+                                <Component name="NormalizedLastUpdateDate" type="Date" />
+                                <Component name="NormalizedLastUpdateDateDay" type="Numeric" />
+                                <Component name="NormalizedLastUpdateDateMonth" type="Numeric" />
+                                <Component name="NormalizedLastUpdateDateYear" type="Numeric" />
+                                <Component name="LicensePlateNumber" type="Text" />
+                                <Component name="LicensePlateStateCode" type="Text" />
+                                <Component name="LicensePlateTypeCode" type="Text" />
+                                <Component name="LicensePlateYear" type="Year" />
+                                <Component name="MessageKey" type="Text" />
+                                <Component name="MiscellaneousDescriptiveText" type="Text" />
+                                <Component name="MiscellaneousNumber" type="Text" />
+                                <Component name="Name" type="Name" />
+                                <Component name="NormalizedName" type="Name" />
+                                <Component name="NormalizedNameFirst" type="Text" />
+                                <Component name="NormalizedNameMiddle" type="Text" />
+                                <Component name="NormalizedNameLast" type="Text" />
+                                <Component name="NormalizedNameSuffix" type="Text" />
+                                <Component name="NCICNumber" type="Text" />
+                                <Component name="OffenseCode" type="Text" />
+                                <Component name="OperatorLicenseNumber" type="Text" />
+                                <Component name="OperatorLicenseStateCode" type="Text" />
+                                <Component name="OperatorLicenseYear" type="Year" />
+                                <Component name="OriginalOffenseCode" type="Text" />
+                                <Component name="OriginatingAgencyCaseNumber" type="Text" />
+                                <Component name="OriginatingAgencyIdentifier" type="Text" />
+                                <Component name="ProtectionOrderNumber" type="Text" />
+                                <Component name="PurgeDate" type="Date" />
+                                <Component name="NormalizedPurgeDate" type="Date" />
+                                <Component name="NormalizedPurgeDateDay" type="Numeric" />
+                                <Component name="NormalizedPurgeDateMonth" type="Numeric" />
+                                <Component name="NormalizedPurgeDateYear" type="Numeric" />
+                                <Component name="RaceCode" type="Text" />
+                                <Component name="ScarsMarksTattoosCode" type="Text" />
+                                <Component name="SexCode" type="Text" />
+                                <Component name="SkinTypeCode" type="Text" />
+                                <Component name="VehicleColorCode" type="Text" />
+                                <Component name="VehicleIdentificationNumber" type="Text" />
+                                <Component name="VehicleMakeCode" type="Text" />
+                                <Component name="VehicleModelCode" type="Text" />
+                                <Component name="VehicleStyleCode" type="Text" />
+                                <Component name="VehicleYear" type="Year" />
+                                <Component name="Weight" type="Text" />
+                                <Component name="WarrantDate" type="Date" />
+                                <Component name="NormalizedWarrantDate" type="Date" />
+                                <Component name="NormalizedWarrantDateDay" type="Numeric" />
+                                <Component name="NormalizedWarrantDateMonth" type="Numeric" />
+                                <Component name="NormalizedWarrantDateYear" type="Numeric" />
+                                <Component name="WarrantNumber" type="Text" />
+                            </Components>
+                        </ResponseType>
+                        <ResponseType system="SWITCH" class="Error" description="SWITCH Error" version="1" />
+                        <ResponseType system="SWITCH" class="LogoffAccept" description="SWITCH Logoff Accepted" version="1" />
+                        <ResponseType system="SWITCH" class="LogonAccept" description="SWITCH Logon Accepted" version="1" />
+                        <ResponseType system="SWITCH" class="LogonFailed" description="SWITCH Logon Failed" version="1" />
+                        <ResponseType system="SWITCH" class="LogonRequired" description="SWITCH Logon Required" version="1" />
+                        <ResponseType system="SWITCH" class="Unknown" description="SWITCH Logon Required" version="0" />
+                        <ResponseType system="Unknown" class="Unknown" description="Unknown Response" version="0" />
+                    </ResponseTypes>
+                </System>
+            </Systems>
+        </State>
+    </States>
+</InterfaceSchema>

@@ -1,0 +1,81 @@
+CA_CLETS BASE v1.5 -- Test Log
+============================================================
+Date       : 2026-05-07
+JSON       : CA_CLETS_BASE.json
+Entity     : Article
+Combo      : IP.QA.O (Article by OAN)
+Test type  : T1 -- basic combo fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  SerialNumber              (blank)            not set
+  OwnerAppliedNumber        OAB754             typed
+  ArticleTypeCode           (blank)            not set
+  ArticleBrand              (blank)            not set
+  ArticleCategory           (blank)            not set
+  CaRequestPurposeCode      C                  initialValue (visible)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR1BQXEFNVFN441RPX8PADDR
+  MessageType : ArticleSingleQuery
+  keyReference: IP.QA.O
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    OwnerAppliedNumber   OAB754
+    CaRequestPurposeCode C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: IP.QA.O
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + OwnerAppliedNumber='OAB754'
+
+  QIDM attribute          Sent?  Value           Note
+  ----------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode    YES    C               visible initialValue
+  OwnerAppliedNumber      YES    OAB754          typed by user (set[] field)
+  ArticleSerialNumber     NO     --              blank (confirms IP.QA.O not IP.QA.S)
+  ArticleTypeCode         NO     --              any[] field, not populated
+  ArticleBrand            NO     --              any[] field, not populated
+  ArticleCategory         NO     --              any[] field, not populated
+
+  No serial in XML confirms IP.QA.O (OAN path) not IP.QA.S (serial path).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE
+  Note: No RMS Article QIDM exists in HIDLE. Article queries are CommSys-only.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: IP.QA.O fired correctly with OwnerAppliedNumber + CaRequestPurposeCode=C. No serial sent. No RMS co-fire (expected).
+  Detail: No response expected for test OAN.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1BQXEFNVFN441RPX8PADDR"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KR1BQXEFNVFN441RPX8PADDR</Id><OwnerAppliedNumber>OAB754</OwnerAppliedNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A -- no RMS Article QIDM

@@ -1,0 +1,372 @@
+California (CA) CLETS
+
+Disclaimer Statement
+
+California is a unique state in that most cases access by city agencies to CLETS is completed through a regional message switch at the county level, not directly to the state message switch. What does this mean to our partners? Well, just like every state supports different message transactios, every county supports different message transactions, which means each regional interface could essentially be treated like a state making California 60+ different interfaces instead of one to CLETS. Furthermore if your agency does have the option to connect directly to CLETS, the agency responsibility and vendor requirements are much greater than with other states as all transactions (requests and responses) must be logged and accessible for a minimum of three years, you must provide have ways to access these transactions for audit purposes at any time, you must support extended security requirements, and certify the back-end interface at each agency. CommSys shields most of these requirements from our partners, but to us, it means extra modules are necessary for a minimum configuration. See the ConnectCIC Master Price Book for further details.
+
+CommSys does offer a direct CLETS interface as a standard product and the basic query interface message transactions are listed below. Furthermore, CommSys has previously provided integration into several regional message switches in California, such as Ventura, Alameda, Monterey, San Mateo, and others. Because we have many of these regional interfaces completed in some capacity, plus we can utilize the ConnectCIC framework, we can most likely meet your requirements for less than it would cost you to build. As we complete each regional interface in California, it will be listed as a regional interface in all of our materials, including these ConnectCIC Dev Docs. However, if you do not see a regional interface you are interested in, we still most likely can accommodate you, please contact CommSys for additional details.
+
+Transport: TCP/IP CLETS (Unique to California)
+
+Routing and Configuration Information: Save Bytes (Primary) Mnemonic (Secondary)
+ The CLETS assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The CLETS assigned Mnemonic for a device should be placed in the <Authentication>/<Mnemonic> field in the ConnectCIC header.
+ The CLETS assigned User ID should be placed in the <Authentication>/<UserName> field in the ConnectCIC header.
+ The agency assigned Terminal Identifier should be placed in the <Authentication>/<DeviceId> field in the ConnectCIC header. This field is
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+required only when CLETS mnemonic pooling is used. If this field is not provided, the IP Address of the ConnectCIC server on the state network is used.
+
+Security Requirements:
+Agency must adhere to all requirements set forth by CLETS for operation of a direct connection. This includes network security including remote access and support of extensive logging requirements. Agencies can obtain this information from their CLETS contact.
+
+Logon Requirements: None
+
+Transaction Requirements: Beginning July 21, 2021 CLETS requires a "Purpose Code" field to be supplied with every CLETS transaction. The information regarding this purpose code was published by CLETS in Information Bulletin 20-03-CJIS and covers the "Purpose Code" field added to satisfy Assembly Bill (AB) 1747.
+Any transaction which does not supply a valid Purpose Code value will be rejected by CLETS. ConnectCIC does not default the value of field; it must be provided by the partner implementation as a user selectable field.
+The CLETS "Purpose Code" value must be supplied to ConnectCIC via the <CaRequestPurposeCode> element as a sibling to the transaction-specific elements covered in this document. The <CaRequestPurposeCode> element is mandatory for all transactions.
+The element is a single character value which may be one of the following:
+ C ­ Criminal Justice  I ­ Immigration Enforcement  U ­ Investigate Violations of Title 8, section 1325 of the United States Code
+
+Certification Requirements: California requires each agency to certify their CLETS interface with the California DOJ. The testing is mostly back-end certification to ensure the interface is connecting properly to CLETS and able to handle system changes.
+Interface Test Steps: 1. Establish Network Connectivity: From the CLETS server, DOJ should be able to ping your router and your network should recognize the CLETS IP addresses.
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+2. Session Establishment: DOJ staff member assures that test CLETS can establish a connection to your system and that reciprocal communication is established between the two networks (system handshake).
+3. Session Termination: This segment of testing will verify your system's ability to orderly terminate a CLETS session in the case of a CLETS abort, the peer aborts, or the peer orderly shuts down. The system should reset all processing controls associated with the session to their initialized states and return to the point of issuing a passive open.
+4. Deliver CLETS Message: Your agency needs to be able to send CLETS messages and receive messages back from CLETS. If a protocol violation occurs during this test phase, the CLETS system will disconnect/abort your session. Contact DOJ staff, (916) 227-3037 to assist you in determining the problem. Your agency should test each message type; i.e., a. 0 = Emergency Administrative Message b. 1 = Normal Administrative Message c. 2 = CLETS error d. 3 & 4 = Data Base Inquiry/Response (DMV/NLETS/NCIC are not available in test mode.)
+5. Handle Blocked Messages: This test segment determines if your agency is able to send and/or receive multiple large blocked messages. Since CLETS will always block larger messages, your agency's interface must be able to process them. This can be accomplished by a query that returns a large response to a mnemonic behind your interface. DOJ recommends the following inquiry from the Criminal History System (CHS) database be used: a. IH b. QHC.ORI.99000015.RTE c. ORI = an originating agency identifier number assigned to your agency. d. RTE = the person you want the inquiry response routed to (e.g., Sgt Robert Smith).
+6. Conduct Volume Test: This segment of the test is intended to determine your agency's ability to process a large volume of transactions and identify potential interface problems. Because your transactions will be monitored and captured as they are submitted during this testing segment, it must be tightly coordinated with DOJ staff. Typically your agency will be asked to submit up to 25 transactions (some with larger responses). CLETS will be patched to queue all the responses until a sufficient number has been generated. The patch will then be removed and the next message sent by your agency will trigger CLETS to return all the queued message responses. This procedure determines your agency's ability to process volume transactions.
+7. Queue overflow test: This test segment determines if your agency is able to handle the deferred acknowledgment process when CLETS is in an output queue overflow condition for an agency. CLETS will defer the confirmation for input messages (up to the negotiated window size) until the output queue is reduced to a level to allow CLETS to receive additional input. If the agency should send an additional message (more than the window size), CLETS will abort the session for violating the message window protocol. When the output queue has been
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+sufficiently reduced, CLETS will send the deferred confirmations to allow further input from the agency. 8. Test in production: Once you have successfully completed the above steps, you are ready to complete the final segment of the test process. At this point, DOJ will temporarily patch your test line over to production CLETS to test DMV, NCIC, and NLETS formats. When you are ready to be converted permanently to production, you'll need to During this final phase of testing, your interface will be patched into production CLETS to permit your agency to complete NCIC, NLETS, and DMV transactions. Because this is temporary, it will be affected if CLETS goes down for any reason. If you lose your connection, please call DOJ Staff at (916) 227-3037. Upon successful completion of all the above steps, your agency should submit a formal request to CAS to transfer you into production CLETS permanently. 9. A valid CLETS Purpose Code value must be supplied in the <CaRequestPurposeCode> element of the ConnectCIC transaction body as a sibling to all other transaction-specific fields. For more information about the CaRequestPurposeCode element, see the Transaction Requirements section below.
+
+Data-Mined Transactions:
+NCIC (QA, QB, QG, QV, QW) and DMV(IDOT) (Person and Vehicle) Tags returned from Data mining
+
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name
+
+XML Tag Name
+
+ArticleBrand
+
+ArticleBrand
+
+ArticleCategory
+
+ArticleCategory
+
+ArticleSerialNumber ArticleSerialNumber
+
+ArticleTypeCode
+
+ArticleTypeCode
+
+OwnerAppliedNumber OwnerAppliedNumber
+
+M/C/O C O C C C
+
+Size 6 1 20 6 20
+
+Possible Values
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleBrand, [ArticleCategory, ArticleTypeCode] 2. (In/Out) ArticleSerialNumber, ArticleTypeCode, [ArticleCategory, ArticleBrand] 3. (In/Out) OwnerAppliedNumber, ArticleBrand, [ArticleCategory, ArticleTypeCode] 4. (In/Out) OwnerAppliedNumber, ArticleTypeCode, [ArticleCategory, ArticleBrand]
+
+BoatQuery
+
+Field Name
+
+XML Tag Name
+
+BirthDate
+
+BirthDate
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+Name
+
+Name
+
+OwnerAppliedNumber OwnerAppliedNumber
+
+RegistrationNumber RegistrationNumber
+
+M/C/O C C C C C
+
+Size 8 20 30 20 8
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+State
+
+State
+
+O
+
+2
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber 2. (In/Out) OwnerAppliedNumber 3. (In/Out) RegistrationNumber, [State] 4. (Out) BirthDate, Name, [State] 5. (Out) BoatHullIdNumber, [State] 6. (Out) RegistrationNumber, [State]
+
+DriverHistoryQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+Attention
+
+Attention
+
+O
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+PurposeCode
+
+PurposeCode
+
+O
+
+SexCode
+
+SexCode
+
+C
+
+State
+
+State
+
+C
+
+Size 30 8 30 20 1 1 2
+
+Possible Values
+
+Possible Combinations 1. (In) Name, [BirthDate] 2. (In) OperatorLicenseNumber 3. (Out) BirthDate, Name, SexCode, State, [Attention, PurposeCode] 4. (Out) OperatorLicenseNumber, State, [Attention, PurposeCode]
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+AddressCounty
+
+AddressCounty
+
+O
+
+Age
+
+Age
+
+C
+
+APPSRequestIndicator APPSRequestIndicator O
+
+BirthDate
+
+BirthDate
+
+C
+
+CriminalIdNumber
+
+CriminalIdNumber
+
+C
+
+Height
+
+Height
+
+O
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+RaceCode
+
+RaceCode
+
+O
+
+SexCode
+
+SexCode
+
+C
+
+SocialSecurityNumber SocialSecurityNumber
+
+C
+
+State
+
+State
+
+O
+
+Size 3 2 1 8 11 3 30 20 1 1 11 2
+
+Possible Values
+
+Possible Combinations 1. (In) Name, [BirthDate] 2. (In) OperatorLicenseNumber 3. (In/Out) Age, Name, SexCode, [AddressCounty, APPSRequestIndicator, Height, RaceCode] 4. (In/Out) BirthDate, Name, SexCode, [AddressCounty, APPSRequestIndicator, Height,
+RaceCode] 5. (In/Out) CriminalIdNumber, [OperatorLicenseNumber, SocialSecurityNumber] 6. (In/Out) OperatorLicenseNumber, [CriminalIdNumber, SocialSecurityNumber] 7. (In/Out) SocialSecurityNumber, [CriminalIdNumber, OperatorLicenseNumber] 8. (Out) Name, BirthDate, SexCode, [State] 9. (Out) OperatorLicenseNumber, [State]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 5
+
+GunQuery
+
+Field Name Age BirthDate GunCaliber GunMake GunSerialNumber GunTypeCode Name
+
+XML Tag Name Age BirthDate GunCaliber GunMake GunSerialNumber GunTypeCode Name
+
+M/C/O C C O O C O C
+
+Size 2 8 4 3 20 2 30
+
+Possible Values
+
+Possible Combinations 1. (In/Out) GunSerialNumber, [GunCaliber, GunMake, GunTypeCode] 2. (in/Out) Name, Age 3. (In/Out) Name, BirthDate
+
+VehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+AddressCity
+
+AddressCity
+
+O 13
+
+AddressStreetNumber
+
+AddressStreetNumber
+
+O3
+
+FileCode
+
+FileCode
+
+C 1 A, B, C, E, F, H, I, L, M, P, S, T, V, X
+
+InfoCode
+
+InfoCode
+
+C 1 0, 1, 2, 3, 4, H, V
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateTypeCode LicensePlateTypeCode
+
+C 2 AP, CO, TK, TR, MC, RE, PE, TL, PC, AQ, AT, DX, EX, DL, AR, IP, TM
+
+LicensePlateYear
+
+LicensePlateYear
+
+C4
+
+Name
+
+Name
+
+C 35
+
+State
+
+State
+
+O2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 30
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In) LicensePlateNumber, FileCode, InfoCode 2. (In) LicensePlateNumber, LicensePlateTypeCode 3. (In) VehicleIdentificationNumber 4. (In/Out) LicensePlateNumber, [State] 5. (In/Out) Name, [AddressCity, AddressStreetNumber] 6. (In/Out) VehicleIdentificationNumber, [VehicleMakeCode] 7. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State
+[VehicleMakeCode, VehicleYear] 8. (Out) VehicleIdentificationNumber, State [VehicleMakeCode, VehicleYear]
+
+Transactions Supported: None
+
+Expanded Transactions Supported: None
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 6
+
+Hardware/Software Requirements:
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+Notes: None
+References:  NCIC 2000 Operations Manual  NLETS User Guide  CLETS System TCP/IP Spec.  CLETS CLEW Website Documentation  Various supporting documents including NCIC 2000 message switch/implementation updates
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 7
+
+

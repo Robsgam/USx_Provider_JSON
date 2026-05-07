@@ -1,0 +1,3447 @@
+Oregon (OR) LEDS
+Statement
+Transport: TCPIP
+
+Disclaimer
+
+Routing and Configuration Information: Mnemonic Routing
+ The LEDS assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The LEDS assigned Mnemonic for a device should be placed in the <Authentication>/<Mnemonic> field in the ConnectCIC header.
+Security Requirements: LEDS logs all computer transactions and inquiries and maintains the logs for two years. At the end of two year cycle, all stored data is destroyed with the exception of criminal history inquiries by SID and/or FBI number which are maintained forever.
+
+Logon Requirements: None known at this time.
+
+Certification Requirements: Agency sponsor is required.
+Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from Data mining
+
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name ArticleSerialNumber ArticleTypeCode
+
+XML Tag Name ArticleSerialNumber ArticleTypeCode
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+M/C/O M M
+
+Size 20 7
+
+Possible Values
+
+Page 1
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+1 Y, or blank
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode, [RelatedHitSearchIndicator]
+
+BoatQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+C
+
+RegistrationNumber
+
+RegistrationNumber
+
+C
+
+State
+
+State
+
+O
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+Size 20 8 2 1
+
+Possible Values Y, or blank
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber, [RegistrationNumber, State, RelatedHitSearchIndicator] 2. (In/Out) RegistrationNumber, [State, RelatedHitSearchIndicator]
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+C
+
+ImageIndicator
+
+ImageIndicator
+
+O
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+SexCode
+
+SexCode
+
+O
+
+State
+
+State
+
+C
+
+Size 8 1 30 20 1 2
+
+Possible Values Y, or blank
+
+Possible Combinations 1. (In) BirthDate, Name, [SexCode] 2. (In) OperatorLicenseNumber 3. (Out) BirthDate, Name, State, [SexCode, ImageIndicator] 4. (Out) OperatorLicenseNumber, State, [ImageIndicator]
+
+GunQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+GunSerialNumber
+
+GunSerialNumber
+
+M
+
+GunMake
+
+GunMake
+
+O
+
+GunCaliber
+
+GunCaliber
+
+O
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+Size 20 23 4 1
+
+Possible Values Y, or blank
+
+Possible Combinations 1. (In/Out) GunSerialNumber, [GunMake, GunCaliber, RelatedHitSearchIndicator]
+
+ImageQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+OperatorLicenseNumber OperatorLicenseNumber M
+
+20
+
+Possible Combinations 1. (In/Out) OperatorLicenseNumber
+
+VehicleRegistrationQuery
+
+Field Name LicensePlateNumber LicensePlateTypeCode LicensePlateYear
+
+XML Tag Name LicensePlateNumber LicensePlateTypeCode LicensePlateYear
+
+M/C/O Size Possible Values C 10 C2 C4
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+State
+
+State
+
+C2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In) LicensePlateNumber, [LicensePlateTypeCode, LicensePlateYear] 2. (In) VehicleIdentificationNumber, [VehicleMakeCode, VehicleYear] 3. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State 4. (Out) VehicleIdentificationNumber, State [VehicleMakeCode, VehicleYear]
+
+Transactions Supported:
+
+Computerized Criminal History (CCH)
+
+CCHCriminalHistoryAQQuery
+
+Field Name FormORI FreeText PurposeCode NletsDestination NletsDestination2 NletsDestination3 NletsDestination4 NletsDestination5 Requestor
+
+XML Tag Name FormORI FreeText PurposeCode NletsDestination NletsDestination2 NletsDestination3 NletsDestination4 NletsDestination5 Requestor
+
+M/C/O Size Possible Values
+
+O
+
+9
+
+M 14400
+
+M
+
+1
+
+M
+
+9
+
+O
+
+9
+
+O
+
+9
+
+O
+
+9
+
+O
+
+9
+
+M
+
+30
+
+Possible Combinations 1. (In/Out) FreeText, PurposeCode, Requestor, NletsDestination, [FormORI, NletsDestination2, NletsDestination3, NletsDestination4, NletsDestination5]
+
+CCHCriminalHistoryARQuery
+
+Field Name FormORI FreeText PurposeCode NletsDestination Requestor
+
+XML Tag Name FormORI FreeText PurposeCode NletsDestination Requestor
+
+M/C/O O M M M M
+
+Size 9
+14400 1 9 30
+
+Possible Values
+
+Possible Combinations 1. (In/Out) FreeText, PurposeCode, Requestor, NletsDestination, [FormORI]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+CCHCriminalHistoryFBI-RRQuery
+
+Field Name Address AddressZipCode AgencyName Building CityState FBINumber PurposeCode Requestor RequestorInitials StateIdNumber
+
+XML Tag Name Address AddressZipCode AgencyName Building CityState FBINumber PurposeCode Requestor RequestorInitials StateIdNumber
+
+M/C/O C C C O C M M M M O
+
+Size 30 9
+
+Possible Values
+
+30 30 10 1 30 3 8
+
+Possible Combinations 1. (In) Address, AddressZipCode, AgencyName, CityState, FBINumber, PurposeCode,
+Requestor, RequestorInitials, [Building, StateIdNumber] 2. (In) FBINumber, PurposeCode, Requestor, RequestorInitials, [StateIdNumber]
+
+CCHCriminalHistoryFQQuery
+
+Field Name Address AddressZipCode AgencyName Building CityState PurposeCode Requestor State StateIdNumber
+
+XML Tag Name Address AddressZipCode AgencyName Building CityState PurposeCode Requestor State StateIdNumber
+
+M/C/O C C O O C M M O M
+
+Size 30 9 30 30 30 1 30 2 8
+
+Possible Values
+
+Possible Combinations 1. (Out) Address, AddressZipCode, CityState, PurposeCode, Requestor, StateIdNumber,
+[AgencyName, Building, State] 2. (Out) PurposeCode, Requestor, StateIdNumber, [State]
+
+NOTE: This is for out of state inquiries only! User should use SID-RR for in state inquiries as specified by LEDS documentation.
+
+CCHCriminalHistoryIQQuery
+
+Field Name BirthDate FormORI MiscellaneousNumber Name PurposeCode RaceCode Requestor SexCode SocialSecurityNumber State State2 State3
+
+XML Tag Name BirthDate FormORI MiscellaneousNumber Name PurposeCode RaceCode Requestor SexCode SocialSecurityNumber State State2 State3
+
+M/C/O C O C M C O C C C O O O
+
+Size 8 9 15 30 1 1 30 1 9 2 2 2
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+State4 State5
+
+State4 State5
+
+O
+
+4
+
+O
+
+2
+
+Possible Combinations 1. (Out) BirthDate, Name, PurposeCode, Requestor, SexCode, [FormORI,
+MiscellaneousNumber, RaceCode, SocialSecurityNumber, State, State2, State3, State4, State5] 2. (Out) MiscellaneousNumber, Name, PurposeCode, Requestor, [FormORI, RaceCode, SexCode, State, State2, State3, State4, State5] 3. (Out) Name, PurposeCode, Requestor, SocialSecurityNumber, [FormORI, MiscellaneousNumber, RaceCode, SexCode, State, State2, State3, State4, State5]
+
+NOTE: This is for out of state inquiries only! User should use QH for in state inquiries as specified by LEDS documentation.
+
+CCHCriminalHistoryQHDQuery
+
+Field Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+XML Tag Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+M/C/O C C M M M O M M M C
+
+Size 8 15 30 1 1 30 30 3 1 9
+
+Possible Values
+
+Possible Combinations 1. (In) BirthDate, Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+[MiscellaneousNumber, Reason, SocialSecurityNumber] 2. (In) MiscellaneousNumber, Name, PurposeCode, RaceCode, Requestor, RequestorInitials,
+SexCode, [Reason, SocialSecurityNumber] 3. (In) Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+SocialSecurityNumber, [Reason]
+
+CCHCriminalHistoryQHQuery
+
+Field Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+XML Tag Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+M/C/O C C M M M O M M M C
+
+Size 8 15 30 1 1 30 30 3 1 9
+
+Possible Values
+
+Possible Combinations 1. (In) BirthDate, Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+[MiscellaneousNumber, Reason, SocialSecurityNumber] 2. (In) MiscellaneousNumber, Name, PurposeCode, RaceCode, Requestor, RequestorInitials,
+SexCode, [Reason, SocialSecurityNumber]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 5
+
+3. (In) Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode, SocialSecurityNumber, [Reason]
+
+CCHCriminalHistoryQWHDQuery
+
+Field Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+XML Tag Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+M/C/O C C M M M O M M M C
+
+Size 8 15 30 1 1 30 30 3 1 9
+
+Possible Values
+
+Possible Combinations 1. (In) BirthDate, Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+[MiscellaneousNumber, Reason, SocialSecurityNumber] 2. (In) MiscellaneousNumber, Name, PurposeCode, RaceCode, Requestor, RequestorInitials,
+SexCode, [Reason, SocialSecurityNumber] 3. (In) Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+SocialSecurityNumber, [Reason]
+
+CCHCriminalHistoryQWHQuery
+
+Field Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+XML Tag Name BirthDate MiscellaneousNumber Name PurposeCode RaceCode Reason Requestor RequestorInitials SexCode SocialSecurityNumber
+
+M/C/O C C M M M O M M M C
+
+Size 8 15 30 1 1 30 30 3 1 9
+
+Possible Values
+
+Possible Combinations 1. (In) BirthDate, Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+[MiscellaneousNumber, Reason, SocialSecurityNumber] 2. (In) MiscellaneousNumber, Name, PurposeCode, RaceCode, Requestor, RequestorInitials,
+SexCode, [Reason, SocialSecurityNumber] 3. (In) Name, PurposeCode, RaceCode, Requestor, RequestorInitials, SexCode,
+SocialSecurityNumber, [Reason]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 6
+
+CCHCriminalHistorySID-RRQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+FBINumber
+
+FBINumber
+
+O 10
+
+PurposeCode
+
+PurposeCode
+
+M
+
+1
+
+Requestor
+
+Requestor
+
+M 30
+
+MostRecentOnlyIndicator MostRecentOnlyIndicator O
+
+1 `Y" or `N'. `N' is default.
+
+RequestorInitials
+
+RequestorInitials
+
+M
+
+3
+
+StateIdNumber
+
+StateIdNumber
+
+M
+
+8
+
+Possible Combinations 1. (In/Out) PurposeCode, Requestor, RequestorInitials, StateIdNumber, [FBINumber,
+MostRecentOnlyIndicator]
+
+Canadian Basic Inquires (CBI)
+
+CPICBIArticleSingleQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ArticleSerialNumber
+
+ArticleSerialNumber
+
+M 23
+
+ArticleTypeCode
+
+ArticleTypeCode
+
+M2
+
+FormORI
+
+FormORI
+
+O9
+
+PersonPropertyInSiteIndicator PersonPropertyInSiteIndicator O 1
+
+ReasonCode
+
+ReasonCode
+
+O1
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode, [FormORI, PersonPropertyInSiteIndicator,
+ReasonCode]
+
+CPICBIBoatQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+C 12
+
+FormORI
+
+FormORI
+
+O9
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+PersonPropertyInSiteIndicator PersonPropertyInSiteIndicator O 1
+
+ReasonCode
+
+ReasonCode
+
+O1
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 7
+
+RegistrationNumber
+
+RegistrationNumber
+
+C7
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber, [FormORI, PersonPropertyInSiteIndicator, ReasonCode] 2. (In/Out) LicensePlateNumber, [FormORI, PersonPropertyInSiteIndicator, ReasonCode] 3. (In/Out) RegistrationNumber, [FormORI, PersonPropertyInSiteIndicator, ReasonCode]
+
+CPICBIDriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+M8
+
+FormORI
+
+FormORI
+
+O9
+
+Name
+
+Name
+
+M 30
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+PersonPropertyInSiteIndicator PersonPropertyInSiteIndicator O 1
+
+ReasonCode
+
+ReasonCode
+
+O1
+
+SexCode
+
+SexCode
+
+M1
+
+Possible Combinations 1. (In/Out) BirthDate, Name, SexCode, [FormORI, OperatorLicenseNumber,
+PersonPropertyInSiteIndicator, ReasonCode] 2. (In/Out) BirthDate, Name, SexCode, [FormORI, PersonPropertyInSiteIndicator, ReasonCode]
+
+CPICBIGunQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+FormORI
+
+FormORI
+
+O9
+
+GunSerialNumber
+
+GunSerialNumber
+
+O 23
+
+GunTypeCode
+
+GunTypeCode
+
+O2
+
+PersonPropertyInSiteIndicator PersonPropertyInSiteIndicator O 1
+
+ReasonCode
+
+ReasonCode
+
+O1
+
+Possible Combinations 1. (In/Out) [FormORI, GunSerialNumber, GunTypeCode, PersonPropertyInSiteIndicator,
+ReasonCode]
+
+CPICBIVehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+FormORI
+
+FormORI
+
+O9
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+NletsDestination
+
+NletsDestination
+
+O2
+
+PersonPropertyInSiteIndicator PersonPropertyInSiteIndicator O 1
+
+ReasonCode
+
+ReasonCode
+
+O1
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 17
+
+Possible Combinations 1. (In/Out) LicensePlateNumber, [FormORI, NletsDestination, PersonPropertyInSiteIndicator,
+ReasonCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 8
+
+2. (In/Out) VehicleIdentificationNumber, [FormORI, NletsDestination, PersonPropertyInSiteIndicator, ReasonCode]
+3. (In/Out) VehicleIdentificationNumber, [FormORI, PersonPropertyInSiteIndicator, ReasonCode]
+Person Entry (PE)
+
+PEWantedDetainerCancel
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+DetainerCaseNumber
+
+DetainerCaseNumber
+
+M 20
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+Possible Combinations 1. (In/Out) DetainerCaseNumber, Name, NCICNumber, OriginatingAgencyORI 2. (In/Out) DetainerCaseNumber, Name, OrginatingAgencyCaseNumber, OriginatingAgencyORI 3. (In/Out) DetainerCaseNumber, NCICNumber, OriginatingAgencyCaseNumber,
+OriginatingAgencyORI
+
+PEWantedDetainerEntry
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+DetainerCaseNumber
+
+DetainerCaseNumber
+
+M 20
+
+DetainerDate
+
+DetainerDate
+
+M8
+
+IncarceratingAgencyORI
+
+IncarceratingAgencyORI
+
+M9
+
+IncarcerationPlace
+
+IncarcerationPlace
+
+O 50
+
+IncarcerationStartDate
+
+IncarcerationStartDate
+
+O8
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+SentenceExpirationDate
+
+SentenceExpirationDate
+
+O8
+
+Possible Combinations 1. (In/Out) DetainerCaseNumber, DetainerDate, IncarceratingAgencyORI, Name, NCICNumber,
+OriginatingAgencyORI, [IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate] 2. (In/Out) DetainerCaseNumber, DetainerDate, IncarceratingAgencyORI, Name,
+OriginatingAgencyCaseNumber, OriginatingAgencyORI, [IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate] 3. (In/Out) DetainerCaseNumber, DetainerDate, IncarceratingAgencyORI, NCICNumber, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate]
+
+PEWantedDetainerModify
+
+Field Name DetainerCaseNumber DetainerDate IncarceratingAgencyORI IncarcerationPlace
+
+XML Tag Name DetainerCaseNumber DetainerDate IncarceratingAgencyORI IncarcerationPlace
+
+M/C/O Size Possible Values O 20 O8 O9 O 50
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 9
+
+IncarcerationStartDate
+
+IncarcerationStartDate
+
+O8
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+C9
+
+SentenceExpirationDate
+
+SentenceExpirationDate
+
+O8
+
+ValidatorName
+
+ValidatorName
+
+O 30
+
+Possible Combinations 1. (In/Out) Name, NCICNumber, OriginatingAgencyORI, [DetainerCaseNumber, DetainerDate,
+IncarceratingAgencyORI, IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate, ValidatorName] 2. (In/Out) Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [DetainerCaseNumber, DetainerDate, IncarceratingAgencyORI, IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate, ValidatorName] 3. (In/Out) NCICNumber, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [DetainerCaseNumber, DetainerDate, IncarceratingAgencyORI, IncarcerationPlace, IncarcerationStartDate, SentenceExpirationDate, ValidatorName]
+
+PEWantedFraudulentDataCancel
+
+Field Name FraudulentBirthDate FraudulentBirthDate2 FraudulentBirthDate3 FraudulentBirthDate4 FraudulentBirthDate5 FraudulentBirthDate6 FraudulentBirthDate7 FraudulentBirthDate8 FraudulentBirthDate9 FraudulentMiscellaneousNumber FraudulentMiscellaneousNumber2 FraudulentMiscellaneousNumber3 FraudulentMiscellaneousNumber4 FraudulentMiscellaneousNumber5 FraudulentMiscellaneousNumber6 FraudulentMiscellaneousNumber7 FraudulentMiscellaneousNumber8 FraudulentMiscellaneousNumber9 FraudulentName FraudulentName2 FraudulentName3 FraudulentName4 FraudulentName5 FraudulentName6 FraudulentName7 FraudulentName8 FraudulentName9 FraudulentOperatorLicenseNumber FraudulentOperatorLicenseNumber2 FraudulentOperatorLicenseNumber3
+
+XML Tag Name FraudulentBirthDate FraudulentBirthDate2 FraudulentBirthDate3 FraudulentBirthDate4 FraudulentBirthDate5 FraudulentBirthDate6 FraudulentBirthDate7 FraudulentBirthDate8 FraudulentBirthDate9 FraudulentMiscellaneousNumber FraudulentMiscellaneousNumber2 FraudulentMiscellaneousNumber3 FraudulentMiscellaneousNumber4 FraudulentMiscellaneousNumber5 FraudulentMiscellaneousNumber6 FraudulentMiscellaneousNumber7 FraudulentMiscellaneousNumber8 FraudulentMiscellaneousNumber9 FraudulentName FraudulentName2 FraudulentName3 FraudulentName4 FraudulentName5 FraudulentName6 FraudulentName7 FraudulentName8 FraudulentName9 FraudulentOperatorLicenseNumber FraudulentOperatorLicenseNumber2 FraudulentOperatorLicenseNumber3
+
+M/C/O Size Possible Values O8 O8 O8 O8 O8 O8 O8 O8 O8 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 20 O 20 O 20
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 10
+
+FraudulentOperatorLicenseNumber4 FraudulentOperatorLicenseNumber4
+
+O 20
+
+FraudulentOperatorLicenseNumber5 FraudulentOperatorLicenseNumber5
+
+O 20
+
+FraudulentOperatorLicenseNumber6 FraudulentOperatorLicenseNumber6
+
+O 20
+
+FraudulentOperatorLicenseNumber7 FraudulentOperatorLicenseNumber7
+
+O 20
+
+FraudulentOperatorLicenseNumber8 FraudulentOperatorLicenseNumber8
+
+O 20
+
+FraudulentOperatorLicenseNumber9 FraudulentOperatorLicenseNumber9
+
+O 20
+
+FraudulentOperatorLicenseStateCode FraudulentOperatorLicenseStateCode O 2
+
+FraudulentOperatorLicenseStateCode2 FraudulentOperatorLicenseStateCode2 O 2
+
+FraudulentOperatorLicenseStateCode3 FraudulentOperatorLicenseStateCode3 O 2
+
+FraudulentOperatorLicenseStateCode4 FraudulentOperatorLicenseStateCode4 O 2
+
+FraudulentOperatorLicenseStateCode5 FraudulentOperatorLicenseStateCode5 O 2
+
+FraudulentOperatorLicenseStateCode6 FraudulentOperatorLicenseStateCode6 O 2
+
+FraudulentOperatorLicenseStateCode7 FraudulentOperatorLicenseStateCode7 O 2
+
+FraudulentOperatorLicenseStateCode8 FraudulentOperatorLicenseStateCode8 O 2
+
+FraudulentOperatorLicenseStateCode9 FraudulentOperatorLicenseStateCode9 O 2
+
+FraudulentOperatorLicenseYear
+
+FraudulentOperatorLicenseYear
+
+O4
+
+FraudulentOperatorLicenseYear2
+
+FraudulentOperatorLicenseYear2
+
+O4
+
+FraudulentOperatorLicenseYear3
+
+FraudulentOperatorLicenseYear3
+
+O4
+
+FraudulentOperatorLicenseYear4
+
+FraudulentOperatorLicenseYear4
+
+O4
+
+FraudulentOperatorLicenseYear5
+
+FraudulentOperatorLicenseYear5
+
+O4
+
+FraudulentOperatorLicenseYear6
+
+FraudulentOperatorLicenseYear6
+
+O4
+
+FraudulentOperatorLicenseYear7
+
+FraudulentOperatorLicenseYear7
+
+O4
+
+FraudulentOperatorLicenseYear8
+
+FraudulentOperatorLicenseYear8
+
+O4
+
+FraudulentOperatorLicenseYear9
+
+FraudulentOperatorLicenseYear9
+
+O4
+
+FraudulentSocialSecurityNumber
+
+FraudulentSocialSecurityNumber
+
+O9
+
+FraudulentSocialSecurityNumber2 FraudulentSocialSecurityNumber2
+
+O9
+
+FraudulentSocialSecurityNumber3 FraudulentSocialSecurityNumber3
+
+O9
+
+FraudulentSocialSecurityNumber4 FraudulentSocialSecurityNumber4
+
+O9
+
+FraudulentSocialSecurityNumber5 FraudulentSocialSecurityNumber5
+
+O9
+
+FraudulentSocialSecurityNumber6 FraudulentSocialSecurityNumber6
+
+O9
+
+FraudulentSocialSecurityNumber7 FraudulentSocialSecurityNumber7
+
+O9
+
+FraudulentSocialSecurityNumber8 FraudulentSocialSecurityNumber8
+
+O9
+
+FraudulentSocialSecurityNumber9 FraudulentSocialSecurityNumber9
+
+O9
+
+LEDSRecordNumber
+
+LEDSRecordNumber
+
+C 10
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+O 10
+
+OriginatingAgencyCaseNumber
+
+OriginatingAgencyCaseNumber
+
+C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+Possible Combinations 1. (In/Out) OriginatingAgencyORI, Name, OriginatingAgencyCaseNumber, [FraudulentBirthDate,
+FraudulentBirthDate2, FraudulentBirthDate3, FraudulentBirthDate4, FraudulentBirthDate5, FraudulentBirthDate6, FraudulentBirthDate7, FraudulentBirthDate8, FraudulentBirthDate9, FraudulentMiscellaneousNumber, FraudulentMiscellaneousNumber2, FraudulentMiscellaneousNumber3, FraudulentMiscellaneousNumber4, FraudulentMiscellaneousNumber5, FraudulentMiscellaneousNumber6, FraudulentMiscellaneousNumber7, FraudulentMiscellaneousNumber8, FraudulentMiscellaneousNumber9, FraudulentName, FraudulentName2, FraudulentName3, FraudulentName4, FraudulentName5, FraudulentName6, FraudulentName7, FraudulentName8, FraudulentName9, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseNumber2, FraudulentOperatorLicenseNumber3, FraudulentOperatorLicenseNumber4, FraudulentOperatorLicenseNumber5, FraudulentOperatorLicenseNumber6, FraudulentOperatorLicenseNumber7,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 11
+
+FraudulentOperatorLicenseNumber8, FraudulentOperatorLicenseNumber9, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseStateCode2, FraudulentOperatorLicenseStateCode3, FraudulentOperatorLicenseStateCode4, FraudulentOperatorLicenseStateCode5, FraudulentOperatorLicenseStateCode6, FraudulentOperatorLicenseStateCode7, FraudulentOperatorLicenseStateCode8, FraudulentOperatorLicenseStateCode9, FraudulentOperatorLicenseYear, FraudulentOperatorLicenseYear2, FraudulentOperatorLicenseYear3, FraudulentOperatorLicenseYear4, FraudulentOperatorLicenseYear5, FraudulentOperatorLicenseYear6, FraudulentOperatorLicenseYear7, FraudulentOperatorLicenseYear8, FraudulentOperatorLicenseYear9, FraudulentSocialSecurityNumber, FraudulentSocialSecurityNumber2, FraudulentSocialSecurityNumber3, FraudulentSocialSecurityNumber4, FraudulentSocialSecurityNumber5, FraudulentSocialSecurityNumber6, FraudulentSocialSecurityNumber7, FraudulentSocialSecurityNumber8, FraudulentSocialSecurityNumber9, NCICNumber] 2. (In/Out) LEDSRecordNumber, Name, OriginatingAgencyORI, [FraudulentBirthDate, FraudulentBirthDate2, FraudulentBirthDate3, FraudulentBirthDate4, FraudulentBirthDate5, FraudulentBirthDate6, FraudulentBirthDate7, FraudulentBirthDate8, FraudulentBirthDate9, FraudulentMiscellaneousNumber, FraudulentMiscellaneousNumber2, FraudulentMiscellaneousNumber3, FraudulentMiscellaneousNumber4, FraudulentMiscellaneousNumber5, FraudulentMiscellaneousNumber6, FraudulentMiscellaneousNumber7, FraudulentMiscellaneousNumber8, FraudulentMiscellaneousNumber9, FraudulentName, FraudulentName2, FraudulentName3, FraudulentName4, FraudulentName5, FraudulentName6, FraudulentName7, FraudulentName8, FraudulentName9, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseNumber2, FraudulentOperatorLicenseNumber3, FraudulentOperatorLicenseNumber4, FraudulentOperatorLicenseNumber5, FraudulentOperatorLicenseNumber6, FraudulentOperatorLicenseNumber7, FraudulentOperatorLicenseNumber8, FraudulentOperatorLicenseNumber9, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseStateCode2, FraudulentOperatorLicenseStateCode3, FraudulentOperatorLicenseStateCode4, FraudulentOperatorLicenseStateCode5, FraudulentOperatorLicenseStateCode6, FraudulentOperatorLicenseStateCode7, FraudulentOperatorLicenseStateCode8, FraudulentOperatorLicenseStateCode9, FraudulentOperatorLicenseYear, FraudulentOperatorLicenseYear2, FraudulentOperatorLicenseYear3, FraudulentOperatorLicenseYear4, FraudulentOperatorLicenseYear5, FraudulentOperatorLicenseYear6, FraudulentOperatorLicenseYear7, FraudulentOperatorLicenseYear8, FraudulentOperatorLicenseYear9, FraudulentSocialSecurityNumber, FraudulentSocialSecurityNumber2, FraudulentSocialSecurityNumber3, FraudulentSocialSecurityNumber4, FraudulentSocialSecurityNumber5, FraudulentSocialSecurityNumber6, FraudulentSocialSecurityNumber7, FraudulentSocialSecurityNumber8, FraudulentSocialSecurityNumber9, NCICNumber]
+
+PEWantedFraudulentDataEntry
+
+Field Name FraudulentBirthDate FraudulentBirthDate2 FraudulentBirthDate3 FraudulentBirthDate4 FraudulentBirthDate5 FraudulentBirthDate6 FraudulentBirthDate7
+
+XML Tag Name FraudulentBirthDate FraudulentBirthDate2 FraudulentBirthDate3 FraudulentBirthDate4 FraudulentBirthDate5 FraudulentBirthDate6 FraudulentBirthDate7
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 12
+
+M/C/O Size Possible Values O8 O8 O8 O8 O8 O8 O8
+
+FraudulentBirthDate8
+
+FraudulentBirthDate8
+
+O8
+
+FraudulentBirthDate9
+
+FraudulentBirthDate9
+
+O8
+
+FraudulentMiscellaneousNumber
+
+FraudulentMiscellaneousNumber
+
+O 15
+
+FraudulentMiscellaneousNumber2 FraudulentMiscellaneousNumber2
+
+O 15
+
+FraudulentMiscellaneousNumber3 FraudulentMiscellaneousNumber3
+
+O 15
+
+FraudulentMiscellaneousNumber4 FraudulentMiscellaneousNumber4
+
+O 15
+
+FraudulentMiscellaneousNumber5 FraudulentMiscellaneousNumber5
+
+O 15
+
+FraudulentMiscellaneousNumber6 FraudulentMiscellaneousNumber6
+
+O 15
+
+FraudulentMiscellaneousNumber7 FraudulentMiscellaneousNumber7
+
+O 15
+
+FraudulentMiscellaneousNumber8 FraudulentMiscellaneousNumber8
+
+O 15
+
+FraudulentMiscellaneousNumber9 FraudulentMiscellaneousNumber9
+
+O 15
+
+FraudulentName
+
+FraudulentName
+
+O 30
+
+FraudulentName2
+
+FraudulentName2
+
+O 30
+
+FraudulentName3
+
+FraudulentName3
+
+O 30
+
+FraudulentName4
+
+FraudulentName4
+
+O 30
+
+FraudulentName5
+
+FraudulentName5
+
+O 30
+
+FraudulentName6
+
+FraudulentName6
+
+O 30
+
+FraudulentName7
+
+FraudulentName7
+
+O 30
+
+FraudulentName8
+
+FraudulentName8
+
+O 30
+
+FraudulentName9
+
+FraudulentName9
+
+O 30
+
+FraudulentOperatorLicenseNumber FraudulentOperatorLicenseNumber
+
+O 20
+
+FraudulentOperatorLicenseNumber2 FraudulentOperatorLicenseNumber2
+
+O 20
+
+FraudulentOperatorLicenseNumber3 FraudulentOperatorLicenseNumber3
+
+O 20
+
+FraudulentOperatorLicenseNumber4 FraudulentOperatorLicenseNumber4
+
+O 20
+
+FraudulentOperatorLicenseNumber5 FraudulentOperatorLicenseNumber5
+
+O 20
+
+FraudulentOperatorLicenseNumber6 FraudulentOperatorLicenseNumber6
+
+O 20
+
+FraudulentOperatorLicenseNumber7 FraudulentOperatorLicenseNumber7
+
+O 20
+
+FraudulentOperatorLicenseNumber8 FraudulentOperatorLicenseNumber8
+
+O 20
+
+FraudulentOperatorLicenseNumber9 FraudulentOperatorLicenseNumber9
+
+O 20
+
+FraudulentOperatorLicenseStateCode FraudulentOperatorLicenseStateCode O 2
+
+FraudulentOperatorLicenseStateCode2 FraudulentOperatorLicenseStateCode2 O 2
+
+FraudulentOperatorLicenseStateCode3 FraudulentOperatorLicenseStateCode3 O 2
+
+FraudulentOperatorLicenseStateCode4 FraudulentOperatorLicenseStateCode4 O 2
+
+FraudulentOperatorLicenseStateCode5 FraudulentOperatorLicenseStateCode5 O 2
+
+FraudulentOperatorLicenseStateCode6 FraudulentOperatorLicenseStateCode6 O 2
+
+FraudulentOperatorLicenseStateCode7 FraudulentOperatorLicenseStateCode7 O 2
+
+FraudulentOperatorLicenseStateCode8 FraudulentOperatorLicenseStateCode8 O 2
+
+FraudulentOperatorLicenseStateCode9 FraudulentOperatorLicenseStateCode9 O 2
+
+FraudulentOperatorLicenseYear
+
+FraudulentOperatorLicenseYear
+
+O4
+
+FraudulentOperatorLicenseYear2
+
+FraudulentOperatorLicenseYear2
+
+O4
+
+FraudulentOperatorLicenseYear3
+
+FraudulentOperatorLicenseYear3
+
+O4
+
+FraudulentOperatorLicenseYear4
+
+FraudulentOperatorLicenseYear4
+
+O4
+
+FraudulentOperatorLicenseYear5
+
+FraudulentOperatorLicenseYear5
+
+O4
+
+FraudulentOperatorLicenseYear6
+
+FraudulentOperatorLicenseYear6
+
+O4
+
+FraudulentOperatorLicenseYear7
+
+FraudulentOperatorLicenseYear7
+
+O4
+
+FraudulentOperatorLicenseYear8
+
+FraudulentOperatorLicenseYear8
+
+O4
+
+FraudulentOperatorLicenseYear9
+
+FraudulentOperatorLicenseYear9
+
+O4
+
+FraudulentSocialSecurityNumber
+
+FraudulentSocialSecurityNumber
+
+O9
+
+FraudulentSocialSecurityNumber2 FraudulentSocialSecurityNumber2
+
+O9
+
+FraudulentSocialSecurityNumber3 FraudulentSocialSecurityNumber3
+
+O9
+
+FraudulentSocialSecurityNumber4 FraudulentSocialSecurityNumber4
+
+O9
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 13
+
+FraudulentSocialSecurityNumber5 FraudulentSocialSecurityNumber6 FraudulentSocialSecurityNumber7 FraudulentSocialSecurityNumber8 FraudulentSocialSecurityNumber9 LEDSRecordNumber Name NCICNumber OriginatingAgencyCaseNumber OriginatingAgencyORI
+
+FraudulentSocialSecurityNumber5 FraudulentSocialSecurityNumber6 FraudulentSocialSecurityNumber7 FraudulentSocialSecurityNumber8 FraudulentSocialSecurityNumber9 LEDSRecordNumber Name NCICNumber OriginatingAgencyCaseNumber OriginatingAgencyORI
+
+O9 O9 O9 O9 O9 C 10 C 30 O 10 C 20 M9
+
+Possible Combinations 1. (In/Out) Name, OriginatingAgencyORI, OriginatingAgencyCaseNumber, [FraudulentBirthDate,
+FraudulentBirthDate2, FraudulentBirthDate3, FraudulentBirthDate4, FraudulentBirthDate5, FraudulentBirthDate6, FraudulentBirthDate7, FraudulentBirthDate8, FraudulentBirthDate9, FraudulentMiscellaneousNumber, FraudulentMiscellaneousNumber2, FraudulentMiscellaneousNumber3, FraudulentMiscellaneousNumber4, FraudulentMiscellaneousNumber5, FraudulentMiscellaneousNumber6, FraudulentMiscellaneousNumber7, FraudulentMiscellaneousNumber8, FraudulentMiscellaneousNumber9, FraudulentName, FraudulentName2, FraudulentName3, FraudulentName4, FraudulentName5, FraudulentName6, FraudulentName7, FraudulentName8, FraudulentName9, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseNumber2, FraudulentOperatorLicenseNumber3, FraudulentOperatorLicenseNumber4, FraudulentOperatorLicenseNumber5, FraudulentOperatorLicenseNumber6, FraudulentOperatorLicenseNumber7, FraudulentOperatorLicenseNumber8, FraudulentOperatorLicenseNumber9, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseStateCode2, FraudulentOperatorLicenseStateCode3, FraudulentOperatorLicenseStateCode4, FraudulentOperatorLicenseStateCode5, FraudulentOperatorLicenseStateCode6, FraudulentOperatorLicenseStateCode7, FraudulentOperatorLicenseStateCode8, FraudulentOperatorLicenseStateCode9, FraudulentOperatorLicenseYear, FraudulentOperatorLicenseYear2, FraudulentOperatorLicenseYear3, FraudulentOperatorLicenseYear4, FraudulentOperatorLicenseYear5, FraudulentOperatorLicenseYear6, FraudulentOperatorLicenseYear7, FraudulentOperatorLicenseYear8, FraudulentOperatorLicenseYear9, FraudulentSocialSecurityNumber, FraudulentSocialSecurityNumber2, FraudulentSocialSecurityNumber3, FraudulentSocialSecurityNumber4, FraudulentSocialSecurityNumber5, FraudulentSocialSecurityNumber6, FraudulentSocialSecurityNumber7, FraudulentSocialSecurityNumber8, FraudulentSocialSecurityNumber9, NCICNumber] 2. (In/Out) Name, OriginatingAgencyORI, LEDSRecordNumber, [FraudulentBirthDate, FraudulentBirthDate2, FraudulentBirthDate3, FraudulentBirthDate4, FraudulentBirthDate5, FraudulentBirthDate6, FraudulentBirthDate7, FraudulentBirthDate8, FraudulentBirthDate9, FraudulentMiscellaneousNumber, FraudulentMiscellaneousNumber2, FraudulentMiscellaneousNumber3, FraudulentMiscellaneousNumber4, FraudulentMiscellaneousNumber5, FraudulentMiscellaneousNumber6, FraudulentMiscellaneousNumber7, FraudulentMiscellaneousNumber8, FraudulentMiscellaneousNumber9, FraudulentName, FraudulentName2, FraudulentName3, FraudulentName4, FraudulentName5, FraudulentName6, FraudulentName7, FraudulentName8, FraudulentName9, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseNumber2, FraudulentOperatorLicenseNumber3, FraudulentOperatorLicenseNumber4, FraudulentOperatorLicenseNumber5, FraudulentOperatorLicenseNumber6, FraudulentOperatorLicenseNumber7, FraudulentOperatorLicenseNumber8, FraudulentOperatorLicenseNumber9, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseStateCode2,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 14
+
+FraudulentOperatorLicenseStateCode3, FraudulentOperatorLicenseStateCode4, FraudulentOperatorLicenseStateCode5, FraudulentOperatorLicenseStateCode6, FraudulentOperatorLicenseStateCode7, FraudulentOperatorLicenseStateCode8, FraudulentOperatorLicenseStateCode9, FraudulentOperatorLicenseYear, FraudulentOperatorLicenseYear2, FraudulentOperatorLicenseYear3, FraudulentOperatorLicenseYear4, FraudulentOperatorLicenseYear5, FraudulentOperatorLicenseYear6, FraudulentOperatorLicenseYear7, FraudulentOperatorLicenseYear8, FraudulentOperatorLicenseYear9, FraudulentSocialSecurityNumber, FraudulentSocialSecurityNumber2, FraudulentSocialSecurityNumber3, FraudulentSocialSecurityNumber4, FraudulentSocialSecurityNumber5, FraudulentSocialSecurityNumber6, FraudulentSocialSecurityNumber7, FraudulentSocialSecurityNumber8, FraudulentSocialSecurityNumber9, NCICNumber]
+
+PEWantedPersonCancel
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+CancellationDate
+
+CancellationDate
+
+M8
+
+LEDSRecordNumber
+
+LEDSRecordNumber
+
+C 10
+
+Name
+
+Name
+
+M 30
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber
+
+C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+ReasonForPersonRecordRemoval ReasonForPersonRecordRemoval O 21
+
+Possible Combinations 1. (In/Out) CancellationDate, LEDSRecordNumber, Name, OriginatingAgencyORI,
+[ReasonForPersonRecordRemoval] 2. (In/Out) CancellationDate, , Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI,
+[ReasonForPersonRecordRemoval]
+
+PEWantedPersonClear
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ClearDate
+
+ClearDate
+
+M8
+
+ContrabandRecoveredValue
+
+ContrabandRecoveredValue
+
+O8
+
+HitResultsIndicator
+
+HitResultsIndicator
+
+O2
+
+LEDSRecordNumber
+
+LEDSRecordNumber
+
+C 10
+
+Name
+
+Name
+
+C 30
+
+NumberMissingPersonsFound NumberMissingPersonsFound
+
+O 20
+
+NumberPersonsApprehended NumberPersonsApprehended
+
+O3
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber
+
+C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+OtherRecoveredPropertyValue OtherRecoveredPropertyValue
+
+O8
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+ReasonForPersonRecordRemoval ReasonForPersonRecordRemoval O 21
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveringAgencyORI
+
+RecoveringAgencyORI
+
+O9
+
+Possible Combinations 1. (In/Out) ClearDate, Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI,
+[ContrabandRecoveredValue, HitResultsIndicator, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 15
+
+PropertyRecoveredValue, ReasonForPersonRecordRemoval, RecoveringAgencyCaseNumber, RecoveringAgencyORI] 2. (In/Out) ClearDate, Name, LEDSRecordNumber, OriginatingAgencyORI, [ContrabandRecoveredValue, HitResultsIndicator, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PropertyRecoveredValue, ReasonForPersonRecordRemoval, RecoveringAgencyCaseNumber, RecoveringAgencyORI]
+
+PEWantedPersonEntry
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+AdditionalOffenseIndicator
+
+AdditionalOffenseIndicator
+
+O1
+
+AddressTypeCode
+
+AddressTypeCode
+
+O2
+
+BailAmount
+
+BailAmount
+
+M 10
+
+BirthDate
+
+BirthDate
+
+C8
+
+CautionMedicalConditionsCode
+
+CautionMedicalConditionsCode
+
+O2
+
+CitizenshipCode
+
+CitizenshipCode
+
+O2
+
+City
+
+City
+
+O 20
+
+County
+
+County
+
+O 20
+
+CourtORI
+
+CourtORI
+
+M9
+
+CourtORI2
+
+CourtORI2
+
+O9
+
+DNAIndicator
+
+DNAIndicator
+
+O1
+
+DNALocation
+
+DNALocation
+
+O1
+
+DocumentedAddressDate
+
+DocumentedAddressDate
+
+O8
+
+EmancipationDate
+
+EmancipationDate
+
+O 8 If juvenile = Y
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+ExtraditionLimitation
+
+ExtraditionLimitation
+
+O2
+
+EyeColorCode
+
+EyeColorCode
+
+O3
+
+FBINumber
+
+FBINumber
+
+O9
+
+FingerprintClassificationCode
+
+FingerprintClassificationCode
+
+O 20
+
+FraudulentBirthDate
+
+FraudulentBirthDate
+
+O8
+
+FraudulentMiscellaneousNumber FraudulentMiscellaneousNumber
+
+O 15
+
+FraudulentName
+
+FraudulentName
+
+O 30
+
+FraudulentOperatorLicenseNumber FraudulentOperatorLicenseNumber
+
+O 20
+
+FraudulentOperatorLicenseStateCode FraudulentOperatorLicenseStateCode O 2
+
+FraudulentOperatorLicenseYear
+
+FraudulentOperatorLicenseYear
+
+O4
+
+FraudulentSocialSecurityNumber FraudulentSocialSecurityNumber
+
+O9
+
+HairColorCode
+
+HairColorCode
+
+C3
+
+Height
+
+Height
+
+C3
+
+JuvenileIndicator
+
+JuvenileIndicator
+
+O 1 If juvenile = Y
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+O2
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+LinkageAgencyIdentifier
+
+LinkageAgencyIdentifier
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 500
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+C 30
+
+NotifyOriginatingAgencyIndicator
+
+NotifyOriginatingAgencyIndicator
+
+O1
+
+OffenseCode
+
+OffenseCode
+
+M4
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 16
+
+OffenseCodeDescription OperatorLicenseNumber OperatorLicenseStateCode OperatorLicenseYear OriginalOffenseCode OriginatingAgencyCaseNumber OriginatingAgencyORI PlaceOfBirth RaceCode ScarMarksTattooCode SexCode SkinToneCode SocialSecurityNumber StateCode StateIdNumber StreetName StreetNumber VehicleColorCode VehicleIdentificationNumber VehicleMakeCode VehicleModelCode VehicleStyleCode VehicleYear ViolationDate WarrantDate WarrantNumber WarrantType Weight ZipCode
+
+OffenseCodeDescription OperatorLicenseNumber OperatorLicenseStateCode OperatorLicenseYear OriginalOffenseCode OriginatingAgencyCaseNumber OriginatingAgencyORI PlaceOfBirth RaceCode ScarMarksTattooCode SexCode SkinToneCode SocialSecurityNumber StateCode StateIdNumber StreetName StreetNumber VehicleColorCode VehicleIdentificationNumber VehicleMakeCode VehicleModelCode VehicleStyleCode VehicleYear ViolationDate WarrantDate WarrantNumber WarrantType Weight ZipCode
+
+M 20 O 20 O2 O4 O4 M 20 M9 O2 C1 O 10 C1 O3 O9 O2 C 10 O 25 O7 O7 O 20 O 24 O3 O2 O4 M 8 If juvenile = Y M8 M 15 M3 C3 O 10
+
+Possible Combinations 1. (In/Out) BailAmount, BirthDate, CourtORI, HairColorCode, Height, Name, OffenseCode,
+OffenseCodeDescription, OriginatingAgencyCaseNumber, OriginatingAgencyORI, RaceCode, SexCode, WarrantDate, WarrantNumber, WarrantType, Weight, [AdditionalOffenseIndicator, AddressTypeCode, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, FraudulentBirthDate, FraudulentMiscellaneousNumber, FraudulentName, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseYear, FraudulentSocialSecurityNumber, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, ScarMarksTattooCode, SkinToneCode, SocialSecurityNumber, StateCode, StateIdNumber, StreetName, StreetNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ZipCode] 2. (In/Out) BailAmount, CourtORI, OffenseCode, OffenseCodeDescription, OriginatingAgencyCaseNumber, OriginatingAgencyORI, StateIdNumber, WarrantDate, WarrantNumber, WarrantType, [AdditionalOffenseIndicator, AddressTypeCode, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, FraudulentBirthDate, FraudulentMiscellaneousNumber, FraudulentName, FraudulentOperatorLicenseNumber,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 17
+
+FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseYear, FraudulentSocialSecurityNumber, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, Name, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, ScarMarksTattooCode, SexCode, SkinToneCode, SocialSecurityNumber, StateCode, StreetName, StreetNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight, ZipCode] 3. (In/Out) BailAmount, BirthDate, CourtORI, HairColorCode, Height, Name, OffenseCode, OffenseCodeDescription, OriginatingAgencyCaseNumber, OriginatingAgencyORI, RaceCode, SexCode, ViolationDate, WarrantNumber, WarrantType, Weight, [AdditionalOffenseIndicator, AddressTypeCode, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, FraudulentBirthDate, FraudulentMiscellaneousNumber, FraudulentName, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseYear, FraudulentSocialSecurityNumber, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, ScarMarksTattooCode, SkinToneCode, SocialSecurityNumber, StateCode, StateIdNumber, StreetName, StreetNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ZipCode] 4. (In/Out) BailAmount, CourtORI, OffenseCode, OffenseCodeDescription, OriginatingAgencyCaseNumber, OriginatingAgencyORI, StateIdNumber, ViolationDate, WarrantNumber, WarrantType, [AdditionalOffenseIndicator, AddressTypeCode, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EmancipationDate EyeColorCode, FBINumber, FingerprintClassificationCode, FraudulentBirthDate, FraudulentMiscellaneousNumber, FraudulentName, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseYear, FraudulentSocialSecurityNumber, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, Name, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, ScarMarksTattooCode, SexCode, SkinToneCode, SocialSecurityNumber, StateCode, StreetName, StreetNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight, ZipCode]
+
+PEWantedPersonLocate
+
+Field Name ContrabandRecoveredValue Extradition HitResultsIndicator LEDSRecordNumber Name NCICNumber NumberMissingPersonsFound NumberPersonsApprehended
+
+XML Tag Name ContrabandRecoveredValue Extradition HitResultsIndicator LEDSRecordNumber Name NCICNumber NumberMissingPersonsFound NumberPersonsApprehended
+
+M/C/O Size Possible Values O8 M4 O2 C 10 M 30 O 10 O 20 O3
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 18
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber
+
+C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+OtherRecoveredPropertyValue OtherRecoveredPropertyValue
+
+O8
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+ReasonForPersonRecordRemoval ReasonForPersonRecordRemoval O 21
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveryDate
+
+RecoveryDate
+
+M8
+
+Possible Combinations 1. (In/Out) Extradition, Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI,
+RecoveryDate, [ContrabandRecoveredValue, HitResultsIndicator, NCICNumber, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PropertyRecoveredValue, ReasonForPersonRecordRemoval, RecoveringAgencyCaseNumber,] 2. (In/Out) Extradition, Name, LEDSRecordNumber, OriginatingAgencyORI, RecoveryDate, [ContrabandRecoveredValue, HitResultsIndicator, NCICNumber, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PropertyRecoveredValue, ReasonForPersonRecordRemoval, RecoveringAgencyCaseNumber,]
+
+PEWantedPersonModify
+
+Field Name AdditionalOffenseIndicator AddressTypeCode BailAmount BirthDate CautionMedicalConditionsCode CitizenshipCode City County CourtORI CourtORI2 DNAIndicator DNALocation DocumentedAddressDate EmancipationDate EthnicityCode ExtraditionLimitation EyeColorCode FBINumber FingerprintClassificationCode HairColorCode Height JuvenileIndicator LEDSRecordNumber LicensePlateNumber LicensePlateStateCode LicensePlateTypeCode LicensePlateYear LinkageAgencyId
+
+XML Tag Name AdditionalOffenseIndicator AddressTypeCode BailAmount BirthDate CautionMedicalConditionsCode CitizenshipCode City County CourtORI CourtORI2 DNAIndicator DNALocation DocumentedAddressDate EmancipationDate EthnicityCode ExtraditionLimitation EyeColorCode FBINumber FingerprintClassificationCode HairColorCode Height
+LEDSRecordNumber LicensePlateNumber LicensePlateStateCode LicensePlateTypeCode LicensePlateYear LinkageAgencyId
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 19
+
+M/C/O Size Possible Values O1 O2 O 10 O8 O2 O2 O 20 O 20 O9 O9 O1 O 250 O8 O 8 If juvenile = Y O1 O2 O3 O9 O 20 O3 O3
+C 10 O 10 O2 O2 O4 O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 500
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+ModifiedMessageKey
+
+ModifiedMessageKey
+
+O4
+
+ModifiedName
+
+ModifiedName
+
+O 30
+
+ModifiedOriginatingAgencyCaseNumber ModifiedOriginatingAgencyCaseNumber O 20
+
+ModifiedOriginatingAgencyORI
+
+ModifiedOriginatingAgencyORI
+
+O9
+
+Name
+
+Name
+
+M 30
+
+NCICNumber
+
+NCICNumber
+
+O 10
+
+NotifyOriginatingAgencyIndicator
+
+NotifyOriginatingAgencyIndicator
+
+O1
+
+OffenseCode
+
+OffenseCode
+
+O4
+
+OffenseCodeDescription
+
+OffenseCodeDescription
+
+O 20
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode
+
+OperatorLicenseStateCode
+
+O2
+
+OperatorLicenseYear
+
+OperatorLicenseYear
+
+O4
+
+OriginalOffenseCode
+
+OriginalOffenseCode
+
+O4
+
+OriginatingAgencyCaseNumber
+
+OriginatingAgencyCaseNumber
+
+C 20
+
+OriginatingAgencyORI
+
+OriginatingAgencyORI
+
+M9
+
+PlaceOfBirth
+
+PlaceOfBirth
+
+O2
+
+RaceCode
+
+RaceCode
+
+O1
+
+RemoveAllVehicleInformationIndicator RemoveAllVehicleInformationIndicator O 1
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+SexCode
+
+SexCode
+
+O1
+
+SkinColorCode
+
+SkinColorCode
+
+O3
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateCode
+
+StateCode
+
+O2
+
+StateIDNumber
+
+StateIDNumber
+
+O 10
+
+StreetName
+
+StreetName
+
+O 25
+
+StreetNumber
+
+StreetNumber
+
+O7
+
+ValidatorName
+
+ValidatorName
+
+O 30
+
+VehicleColorCode
+
+VehicleColorCode
+
+O7
+
+VehicleIdentificationNumber
+
+VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+VehicleModelCode
+
+VehicleModelCode
+
+O3
+
+VehicleStyleCode
+
+VehicleStyleCode
+
+O2
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+ViolationDate
+
+ViolationDate
+
+O 8 If juvenile = Y
+
+WarrantDate
+
+WarrantDate
+
+O8
+
+WarrantNumber
+
+WarrantNumber
+
+O 15
+
+WarrantType
+
+WarrantType
+
+O3
+
+Weight
+
+Weight
+
+O3
+
+ZipCode
+
+ZipCode
+
+O 10
+
+Possible Combinations 1. (In/Out) Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI,
+[AdditionalOffenseIndicator, AddressTypeCode, BailAmount, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyId, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, ModifiedMessageKey, ModifiedName,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 20
+
+ModifiedOriginatingAgencyCaseNumber, ModifiedOriginatingAgencyORI, NCICNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OffenseCodeDescription, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, RemoveAllVehicleInformationIndicator, ScarsMarksTattoosCode, SexCode, SkinColorCode, SocialSecurityNumber, StateCode, StateIDNumber, StreetName, StreetNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, WarrantDate, WarrantNumber, WarrantType, Weight, ZipCode] 2. (In/Out) LEDSRecordNumber, Name, OriginatingAgencyORI, [AdditionalOffenseIndicator, AddressTypeCode, BailAmount, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyId, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, ModifiedMessageKey, ModifiedName, ModifiedOriginatingAgencyCaseNumber, ModifiedOriginatingAgencyORI, NCICNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OffenseCodeDescription, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, RemoveAllVehicleInformationIndicator, ScarsMarksTattoosCode, SexCode, SkinColorCode, SocialSecurityNumber, StateCode, StateIDNumber, StreetName, StreetNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, WarrantDate, WarrantNumber, WarrantType, Weight, ZipCode] 3. (In/Out) Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [AdditionalOffenseIndicator, AddressTypeCode, BailAmount, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyId, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, ModifiedMessageKey, ModifiedName, ModifiedOriginatingAgencyCaseNumber, ModifiedOriginatingAgencyORI, NCICNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OffenseCodeDescription, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, RemoveAllVehicleInformationIndicator, ScarsMarksTattoosCode, SexCode, SkinColorCode, SocialSecurityNumber, StateCode, StateIDNumber, StreetName, StreetNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantNumber, WarrantType, Weight, ZipCode] 4. (In/Out) LEDSRecordNumber, Name, OriginatingAgencyORI, [AdditionalOffenseIndicator, AddressTypeCode, BailAmount, BirthDate, CautionMedicalConditionsCode, CitizenshipCode, City, County, CourtORI, CourtORI2, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyId, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, ModifiedMessageKey, ModifiedName, ModifiedOriginatingAgencyCaseNumber, ModifiedOriginatingAgencyORI, NCICNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OffenseCodeDescription, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, PlaceOfBirth, RaceCode, RemoveAllVehicleInformationIndicator, ScarsMarksTattoosCode, SexCode, SkinColorCode, SocialSecurityNumber, StateCode, StateIDNumber, StreetName, StreetNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantNumber, WarrantType, Weight, ZipCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 21
+
+PEWantedPersonSupplementalCancel
+
+Field Name AddressTypeCode AddressTypeCode2 AddressTypeCode3 AddressTypeCode4 AddressTypeCode5 AddressTypeCode6 AddressTypeCode7 AddressTypeCode8 AddressTypeCode9 AlsoKnownAs AlsoKnownAs2 AlsoKnownAs3 AlsoKnownAs4 AlsoKnownAs5 AlsoKnownAs6 AlsoKnownAs7 AlsoKnownAs8 AlsoKnownAs9 BirthDate BirthDate2 BirthDate3 BirthDate4 BirthDate5 BirthDate6 BirthDate7 BirthDate8 BirthDate9 CautionMedicalConditionsCode CautionMedicalConditionsCode2 CautionMedicalConditionsCode3 CautionMedicalConditionsCode4 CautionMedicalConditionsCode5 CautionMedicalConditionsCode6 CautionMedicalConditionsCode7 CautionMedicalConditionsCode8 CautionMedicalConditionsCode9 CitizenshipCode CitizenshipCode2 CitizenshipCode3 CitizenshipCode4 CitizenshipCode5 CitizenshipCode6 CitizenshipCode7 CitizenshipCode8 CitizenshipCode9 City
+
+XML Tag Name AddressTypeCode AddressTypeCode2 AddressTypeCode3 AddressTypeCode4 AddressTypeCode5 AddressTypeCode6 AddressTypeCode7 AddressTypeCode8 AddressTypeCode9 AlsoKnownAs AlsoKnownAs2 AlsoKnownAs3 AlsoKnownAs4 AlsoKnownAs5 AlsoKnownAs6 AlsoKnownAs7 AlsoKnownAs8 AlsoKnownAs9 BirthDate BirthDate2 BirthDate3 BirthDate4 BirthDate5 BirthDate6 BirthDate7 BirthDate8 BirthDate9 CautionMedicalConditionsCode CautionMedicalConditionsCode2 CautionMedicalConditionsCode3 CautionMedicalConditionsCode4 CautionMedicalConditionsCode5 CautionMedicalConditionsCode6 CautionMedicalConditionsCode7 CautionMedicalConditionsCode8 CautionMedicalConditionsCode9 CitizenshipCode CitizenshipCode2 CitizenshipCode3 CitizenshipCode4 CitizenshipCode5 CitizenshipCode6 CitizenshipCode7 CitizenshipCode8 CitizenshipCode9 City
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 22
+
+M/C/O Size Possible Values O2 O2 O2 O2 O2 O2 O2 O2 O2 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O8 O8 O8 O8 O8 O8 O8 O8 O8 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O 20
+
+City2 City3 City4 City5 City6 City7 City8 City9 ConditionCode ConditionCode2 ConditionCode3 ConditionCode4 ConditionCode5 ConditionCode6 ConditionCode7 ConditionCode8 ConditionCode9 ConditionDescription ConditionDescription2 ConditionDescription3 ConditionDescription4 ConditionDescription5 ConditionDescription6 ConditionDescription7 ConditionDescription8 ConditionDescription9 ContactName ContactName2 ContactName3 ContactName4 ContactName5 ContactName6 ContactName7 ContactName8 ContactName9 ContactRelationship ContactRelationship2 ContactRelationship3 ContactRelationship4 ContactRelationship5 ContactRelationship6 ContactRelationship7 ContactRelationship8 ContactRelationship9 ContactTitle ContactTitle2 ContactTitle3 ContactTitle4 ContactTitle5 ContactTitle6 ContactTitle7
+
+City2 City3 City4 City5 City6 City7 City8 City9 ConditionCode ConditionCode2 ConditionCode3 ConditionCode4 ConditionCode5 ConditionCode6 ConditionCode7 ConditionCode8 ConditionCode9 ConditionDescription ConditionDescription2 ConditionDescription3 ConditionDescription4 ConditionDescription5 ConditionDescription6 ConditionDescription7 ConditionDescription8 ConditionDescription9 ContactName ContactName2 ContactName3 ContactName4 ContactName5 ContactName6 ContactName7 ContactName8 ContactName9 ContactRelationship ContactRelationship2 ContactRelationship3 ContactRelationship4 ContactRelationship5 ContactRelationship6 ContactRelationship7 ContactRelationship8 ContactRelationship9 ContactTitle ContactTitle2 ContactTitle3 ContactTitle4 ContactTitle5 ContactTitle6 ContactTitle7
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 23
+
+O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O4 O4 O4 O4 O4 O4 O4
+
+ContactTitle8 ContactTitle9 County County2 County3 County4 County5 County6 County7 County8 County9 DocumentedAddressDate DocumentedAddressDate2 DocumentedAddressDate3 DocumentedAddressDate4 DocumentedAddressDate5 DocumentedAddressDate6 DocumentedAddressDate7 DocumentedAddressDate8 DocumentedAddressDate9 ExtensionNumber ExtensionNumber2 ExtensionNumber3 ExtensionNumber4 ExtensionNumber5 ExtensionNumber6 ExtensionNumber7 ExtensionNumber8 ExtensionNumber9 ImageNCICNumber ImageNCICNumber2 ImageNCICNumber3 ImageNCICNumber4 ImageNCICNumber5 ImageNCICNumber6 ImageNCICNumber7 ImageNCICNumber8 ImageNCICNumber9 ImageTypeCode ImageTypeCode2 ImageTypeCode3 ImageTypeCode4 ImageTypeCode5 ImageTypeCode6 ImageTypeCode7 ImageTypeCode8 ImageTypeCode9 LEDSRecordNumber LicensePlateNumber LicensePlateNumber2 LicensePlateNumber3
+
+ContactTitle8 ContactTitle9 County County2 County3 County4 County5 County6 County7 County8 County9 DocumentedAddressDate DocumentedAddressDate2 DocumentedAddressDate3 DocumentedAddressDate4 DocumentedAddressDate5 DocumentedAddressDate6 DocumentedAddressDate7 DocumentedAddressDate8 DocumentedAddressDate9 ExtensionNumber ExtensionNumber2 ExtensionNumber3 ExtensionNumber4 ExtensionNumber5 ExtensionNumber6 ExtensionNumber7 ExtensionNumber8 ExtensionNumber9 ImageNCICNumber ImageNCICNumber2 ImageNCICNumber3 ImageNCICNumber4 ImageNCICNumber5 ImageNCICNumber6 ImageNCICNumber7 ImageNCICNumber8 ImageNCICNumber9 ImageTypeCode ImageTypeCode2 ImageTypeCode3 ImageTypeCode4 ImageTypeCode5 ImageTypeCode6 ImageTypeCode7 ImageTypeCode8 ImageTypeCode9 LEDSRecordNumber LicensePlateNumber LicensePlateNumber2 LicensePlateNumber3
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 24
+
+O4 O4 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O5 O5 O5 O5 O5 O5 O5 O5 O5 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O1 O1 O1 O1 O1 O1 O1 O1 O1 C 10 O 10 O 10 O 10
+
+LicensePlateNumber4 LicensePlateNumber5 LicensePlateNumber6 LicensePlateNumber7 LicensePlateNumber8 LicensePlateNumber9 LicensePlateStateCode LicensePlateStateCode2 LicensePlateStateCode3 LicensePlateStateCode4 LicensePlateStateCode5 LicensePlateStateCode6 LicensePlateStateCode7 LicensePlateStateCode8 LicensePlateStateCode9 LicensePlateTypeCode LicensePlateTypeCode2 LicensePlateTypeCode3 LicensePlateTypeCode4 LicensePlateTypeCode5 LicensePlateTypeCode6 LicensePlateTypeCode7 LicensePlateTypeCode8 LicensePlateTypeCode9 LicensePlateYear LicensePlateYear2 LicensePlateYear3 LicensePlateYear4 LicensePlateYear5 LicensePlateYear6 LicensePlateYear7 LicensePlateYear8 LicensePlateYear9 MiscellaneousNumber MiscellaneousNumber2 MiscellaneousNumber3 MiscellaneousNumber4 MiscellaneousNumber5 MiscellaneousNumber6 MiscellaneousNumber7 MiscellaneousNumber8 MiscellaneousNumber9 Moniker Moniker2 Moniker3 Moniker4 Moniker5 Moniker6 Moniker7 Moniker8 Moniker9
+
+LicensePlateNumber4 LicensePlateNumber5 LicensePlateNumber6 LicensePlateNumber7 LicensePlateNumber8 LicensePlateNumber9 LicensePlateStateCode LicensePlateStateCode2 LicensePlateStateCode3 LicensePlateStateCode4 LicensePlateStateCode5 LicensePlateStateCode6 LicensePlateStateCode7 LicensePlateStateCode8 LicensePlateStateCode9 LicensePlateTypeCode LicensePlateTypeCode2 LicensePlateTypeCode3 LicensePlateTypeCode4 LicensePlateTypeCode5 LicensePlateTypeCode6 LicensePlateTypeCode7 LicensePlateTypeCode8 LicensePlateTypeCode9 LicensePlateYear LicensePlateYear2 LicensePlateYear3 LicensePlateYear4 LicensePlateYear5 LicensePlateYear6 LicensePlateYear7 LicensePlateYear8 LicensePlateYear9 MiscellaneousNumber MiscellaneousNumber2 MiscellaneousNumber3 MiscellaneousNumber4 MiscellaneousNumber5 MiscellaneousNumber6 MiscellaneousNumber7 MiscellaneousNumber8 MiscellaneousNumber9 Moniker Moniker2 Moniker3 Moniker4 Moniker5 Moniker6 Moniker7 Moniker8 Moniker9
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 25
+
+O 10 O 10 O 10 O 10 O 10 O 10 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30
+
+Name NCICNumber OperatorLicenseNumber OperatorLicenseNumber2 OperatorLicenseNumber3 OperatorLicenseNumber4 OperatorLicenseNumber5 OperatorLicenseNumber6 OperatorLicenseNumber7 OperatorLicenseNumber8 OperatorLicenseNumber9 OperatorLicenseStateCode OperatorLicenseStateCode2 OperatorLicenseStateCode3 OperatorLicenseStateCode4 OperatorLicenseStateCode5 OperatorLicenseStateCode6 OperatorLicenseStateCode7 OperatorLicenseStateCode8 OperatorLicenseStateCode9 OperatorLicenseYear OperatorLicenseYear2 OperatorLicenseYear3 OperatorLicenseYear4 OperatorLicenseYear5 OperatorLicenseYear6 OperatorLicenseYear7 OperatorLicenseYear8 OperatorLicenseYear9 OriginatingAgencyCaseNumber OriginatingAgencyORI PhoneNumber PhoneNumber2 PhoneNumber3 PhoneNumber4 PhoneNumber5 PhoneNumber6 PhoneNumber7 PhoneNumber8 PhoneNumber9 ProtectedPersonDateOfBirth ProtectedPersonDateOfBirth2 ProtectedPersonDateOfBirth3 ProtectedPersonDateOfBirth4 ProtectedPersonDateOfBirth5 ProtectedPersonDateOfBirth6 ProtectedPersonDateOfBirth7 ProtectedPersonDateOfBirth8 ProtectedPersonDateOfBirth9 ProtectedPersonName ProtectedPersonName2
+
+Name NCICNumber OperatorLicenseNumber OperatorLicenseNumber2 OperatorLicenseNumber3 OperatorLicenseNumber4 OperatorLicenseNumber5 OperatorLicenseNumber6 OperatorLicenseNumber7 OperatorLicenseNumber8 OperatorLicenseNumber9 OperatorLicenseStateCode OperatorLicenseStateCode2 OperatorLicenseStateCode3 OperatorLicenseStateCode4 OperatorLicenseStateCode5 OperatorLicenseStateCode6 OperatorLicenseStateCode7 OperatorLicenseStateCode8 OperatorLicenseStateCode9 OperatorLicenseYear OperatorLicenseYear2 OperatorLicenseYear3 OperatorLicenseYear4 OperatorLicenseYear5 OperatorLicenseYear6 OperatorLicenseYear7 OperatorLicenseYear8 OperatorLicenseYear9 OriginatingAgencyCaseNumber OriginatingAgencyORI PhoneNumber PhoneNumber2 PhoneNumber3 PhoneNumber4 PhoneNumber5 PhoneNumber6 PhoneNumber7 PhoneNumber8 PhoneNumber9 ProtectedPersonDateOfBirth ProtectedPersonDateOfBirth2 ProtectedPersonDateOfBirth3 ProtectedPersonDateOfBirth4 ProtectedPersonDateOfBirth5 ProtectedPersonDateOfBirth6 ProtectedPersonDateOfBirth7 ProtectedPersonDateOfBirth8 ProtectedPersonDateOfBirth9 ProtectedPersonName ProtectedPersonName2
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 26
+
+M 30 O 10 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 C 20 M9 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O8 O8 O8 O8 O8 O8 O8 O8 O8 O 30 O 30
+
+ProtectedPersonName3
+
+ProtectedPersonName3
+
+O 30
+
+ProtectedPersonName4
+
+ProtectedPersonName4
+
+O 30
+
+ProtectedPersonName5
+
+ProtectedPersonName5
+
+O 30
+
+ProtectedPersonName6
+
+ProtectedPersonName6
+
+O 30
+
+ProtectedPersonName7
+
+ProtectedPersonName7
+
+O 30
+
+ProtectedPersonName8
+
+ProtectedPersonName8
+
+O 30
+
+ProtectedPersonName9
+
+ProtectedPersonName9
+
+O 30
+
+ProtectedPersonRace
+
+ProtectedPersonRace
+
+O1
+
+ProtectedPersonRace2
+
+ProtectedPersonRace2
+
+O1
+
+ProtectedPersonRace3
+
+ProtectedPersonRace3
+
+O1
+
+ProtectedPersonRace4
+
+ProtectedPersonRace4
+
+O1
+
+ProtectedPersonRace5
+
+ProtectedPersonRace5
+
+O1
+
+ProtectedPersonRace6
+
+ProtectedPersonRace6
+
+O1
+
+ProtectedPersonRace7
+
+ProtectedPersonRace7
+
+O1
+
+ProtectedPersonRace8
+
+ProtectedPersonRace8
+
+O1
+
+ProtectedPersonRace9
+
+ProtectedPersonRace9
+
+O1
+
+ProtectedPersonSex
+
+ProtectedPersonSex
+
+O1
+
+ProtectedPersonSex2
+
+ProtectedPersonSex2
+
+O1
+
+ProtectedPersonSex3
+
+ProtectedPersonSex3
+
+O1
+
+ProtectedPersonSex4
+
+ProtectedPersonSex4
+
+O1
+
+ProtectedPersonSex5
+
+ProtectedPersonSex5
+
+O1
+
+ProtectedPersonSex6
+
+ProtectedPersonSex6
+
+O1
+
+ProtectedPersonSex7
+
+ProtectedPersonSex7
+
+O1
+
+ProtectedPersonSex8
+
+ProtectedPersonSex8
+
+O1
+
+ProtectedPersonSex9
+
+ProtectedPersonSex9
+
+O1
+
+ProtectedPersonSocialSecurityNumber ProtectedPersonSocialSecurityNumber O 9
+
+ProtectedPersonSocialSecurityNumber2 ProtectedPersonSocialSecurityNumber2 O 9
+
+ProtectedPersonSocialSecurityNumber3 ProtectedPersonSocialSecurityNumber3 O 9
+
+ProtectedPersonSocialSecurityNumber4 ProtectedPersonSocialSecurityNumber4 O 9
+
+ProtectedPersonSocialSecurityNumber5 ProtectedPersonSocialSecurityNumber5 O 9
+
+ProtectedPersonSocialSecurityNumber6 ProtectedPersonSocialSecurityNumber6 O 9
+
+ProtectedPersonSocialSecurityNumber7 ProtectedPersonSocialSecurityNumber7 O 9
+
+ProtectedPersonSocialSecurityNumber8 ProtectedPersonSocialSecurityNumber8 O 9
+
+ProtectedPersonSocialSecurityNumber9 ProtectedPersonSocialSecurityNumber9 O 9
+
+ProtectionOrderConditionsCode
+
+ProtectionOrderConditionsCode
+
+O2
+
+ProtectionOrderConditionsCode2
+
+ProtectionOrderConditionsCode2
+
+O2
+
+ProtectionOrderConditionsCode3
+
+ProtectionOrderConditionsCode3
+
+O2
+
+ProtectionOrderConditionsCode4
+
+ProtectionOrderConditionsCode4
+
+O2
+
+ProtectionOrderConditionsCode5
+
+ProtectionOrderConditionsCode5
+
+O2
+
+ProtectionOrderConditionsCode6
+
+ProtectionOrderConditionsCode6
+
+O2
+
+ProtectionOrderConditionsCode7
+
+ProtectionOrderConditionsCode7
+
+O2
+
+ProtectionOrderConditionsCode8
+
+ProtectionOrderConditionsCode8
+
+O2
+
+ProtectionOrderConditionsCode9
+
+ProtectionOrderConditionsCode9
+
+O2
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+ScarsMarksTattoosCode2
+
+ScarsMarksTattoosCode2
+
+O 10
+
+ScarsMarksTattoosCode3
+
+ScarsMarksTattoosCode3
+
+O 10
+
+ScarsMarksTattoosCode4
+
+ScarsMarksTattoosCode4
+
+O 10
+
+ScarsMarksTattoosCode5
+
+ScarsMarksTattoosCode5
+
+O 10
+
+ScarsMarksTattoosCode6
+
+ScarsMarksTattoosCode6
+
+O 10
+
+ScarsMarksTattoosCode7
+
+ScarsMarksTattoosCode7
+
+O 10
+
+ScarsMarksTattoosCode8
+
+ScarsMarksTattoosCode8
+
+O 10
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 27
+
+ScarsMarksTattoosCode9 SocialSecurityNumber SocialSecurityNumber2 SocialSecurityNumber3 SocialSecurityNumber4 SocialSecurityNumber5 SocialSecurityNumber6 SocialSecurityNumber7 SocialSecurityNumber8 SocialSecurityNumber9 StateCode StateCode2 StateCode3 StateCode4 StateCode5 StateCode6 StateCode7 StateCode8 StateCode9 StateIdNumber StateIdNumber2 StateIdNumber3 StateIdNumber4 StateIdNumber5 StateIdNumber6 StateIdNumber7 StateIdNumber8 StateIdNumber9 StreetName StreetName2 StreetName3 StreetName4 StreetName5 StreetName6 StreetName7 StreetName8 StreetName9 StreetNumber StreetNumber2 StreetNumber3 StreetNumber4 StreetNumber5 StreetNumber6 StreetNumber7 StreetNumber8 StreetNumber9 VehicleColorCode VehicleColorCode2 VehicleColorCode3 VehicleColorCode4 VehicleColorCode5
+
+ScarsMarksTattoosCode9 SocialSecurityNumber SocialSecurityNumber2 SocialSecurityNumber3 SocialSecurityNumber4 SocialSecurityNumber5 SocialSecurityNumber6 SocialSecurityNumber7 SocialSecurityNumber8 SocialSecurityNumber9 StateCode StateCode2 StateCode3 StateCode4 StateCode5 StateCode6 StateCode7 StateCode8 StateCode9 StateIdNumber StateIdNumber2 StateIdNumber3 StateIdNumber4 StateIdNumber5 StateIdNumber6 StateIdNumber7 StateIdNumber8 StateIdNumber9 StreetName StreetName2 StreetName3 StreetName4 StreetName5 StreetName6 StreetName7 StreetName8 StreetName9 StreetNumber StreetNumber2 StreetNumber3 StreetNumber4 StreetNumber5 StreetNumber6 StreetNumber7 StreetNumber8 StreetNumber9 VehicleColorCode VehicleColorCode2 VehicleColorCode3 VehicleColorCode4 VehicleColorCode5
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 28
+
+O 10 O9 O9 O9 O9 O9 O9 O9 O9 O9 O2 O2 O2 O2 O2 O2 O2 O2 O2 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7
+
+VehicleColorCode6 VehicleColorCode7 VehicleColorCode8 VehicleColorCode9 VehicleIdentificationNumber VehicleIdentificationNumber2 VehicleIdentificationNumber3 VehicleIdentificationNumber4 VehicleIdentificationNumber5 VehicleIdentificationNumber6 VehicleIdentificationNumber7 VehicleIdentificationNumber8 VehicleIdentificationNumber9 VehicleMakeCode VehicleMakeCode2 VehicleMakeCode3 VehicleMakeCode4 VehicleMakeCode5 VehicleMakeCode6 VehicleMakeCode7 VehicleMakeCode8 VehicleMakeCode9 VehicleModelCode VehicleModelCode2 VehicleModelCode3 VehicleModelCode4 VehicleModelCode5 VehicleModelCode6 VehicleModelCode7 VehicleModelCode8 VehicleModelCode9 VehicleStyleCode VehicleStyleCode2 VehicleStyleCode3 VehicleStyleCode4 VehicleStyleCode5 VehicleStyleCode6 VehicleStyleCode7 VehicleStyleCode8 VehicleStyleCode9 VehicleYear VehicleYear2 VehicleYear3 VehicleYear4 VehicleYear5 VehicleYear6 VehicleYear7 VehicleYear8 VehicleYear9 ZipCode ZipCode2
+
+VehicleColorCode6 VehicleColorCode7 VehicleColorCode8 VehicleColorCode9 VehicleIdentificationNumber VehicleIdentificationNumber2 VehicleIdentificationNumber3 VehicleIdentificationNumber4 VehicleIdentificationNumber5 VehicleIdentificationNumber6 VehicleIdentificationNumber7 VehicleIdentificationNumber8 VehicleIdentificationNumber9 VehicleMakeCode VehicleMakeCode2 VehicleMakeCode3 VehicleMakeCode4 VehicleMakeCode5 VehicleMakeCode6 VehicleMakeCode7 VehicleMakeCode8 VehicleMakeCode9 VehicleModelCode VehicleModelCode2 VehicleModelCode3 VehicleModelCode4 VehicleModelCode5 VehicleModelCode6 VehicleModelCode7 VehicleModelCode8 VehicleModelCode9 VehicleStyleCode VehicleStyleCode2 VehicleStyleCode3 VehicleStyleCode4 VehicleStyleCode5 VehicleStyleCode6 VehicleStyleCode7 VehicleStyleCode8 VehicleStyleCode9 VehicleYear VehicleYear2 VehicleYear3 VehicleYear4 VehicleYear5 VehicleYear6 VehicleYear7 VehicleYear8 VehicleYear9 ZipCode ZipCode2
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 29
+
+O7 O7 O7 O7 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O3 O3 O3 O3 O3 O3 O3 O3 O3 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 10 O 10
+
+ZipCode3 ZipCode4 ZipCode5 ZipCode6 ZipCode7 ZipCode8 ZipCode9
+
+ZipCode3 ZipCode4 ZipCode5 ZipCode6 ZipCode7 ZipCode8 ZipCode9
+
+O 10 O 10 O 10 O 10 O 10 O 10 O 10
+
+Possible Combinations 1. (In/Out) Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [AddressTypeCode,
+AddressTypeCode2, AddressTypeCode3, AddressTypeCode4, AddressTypeCode5, AddressTypeCode6, AddressTypeCode7, AddressTypeCode8, AddressTypeCode9, AlsoKnownAs, AlsoKnownAs2, AlsoKnownAs3, AlsoKnownAs4, AlsoKnownAs5, AlsoKnownAs6, AlsoKnownAs7, AlsoKnownAs8, AlsoKnownAs9, BirthDate, BirthDate2, BirthDate3, BirthDate4, BirthDate5, BirthDate6, BirthDate7, BirthDate8, BirthDate9, CautionMedicalConditionsCode, CautionMedicalConditionsCode2, CautionMedicalConditionsCode3, CautionMedicalConditionsCode4, CautionMedicalConditionsCode5, CautionMedicalConditionsCode6, CautionMedicalConditionsCode7, CautionMedicalConditionsCode8, CautionMedicalConditionsCode9, CitizenshipCode, CitizenshipCode2, CitizenshipCode3, CitizenshipCode4, CitizenshipCode5, CitizenshipCode6, CitizenshipCode7, CitizenshipCode8, CitizenshipCode9, City, City2, City3, City4, City5, City6, City7, City8, City9, ConditionCode, ConditionCode2, ConditionCode3, ConditionCode4, ConditionCode5, ConditionCode6, ConditionCode7, ConditionCode8, ConditionCode9, ConditionDescription, ConditionDescription2, ConditionDescription3, ConditionDescription4, ConditionDescription5, ConditionDescription6, ConditionDescription7, ConditionDescription8, ConditionDescription9, ContactName, ContactName2, ContactName3, ContactName4, ContactName5, ContactName6, ContactName7, ContactName8, ContactName9, ContactRelationship, ContactRelationship2, ContactRelationship3, ContactRelationship4, ContactRelationship5, ContactRelationship6, ContactRelationship7, ContactRelationship8, ContactRelationship9, ContactTitle, ContactTitle2, ContactTitle3, ContactTitle4, ContactTitle5, ContactTitle6, ContactTitle7, ContactTitle8, ContactTitle9, County, County2, County3, County4, County5, County6, County7, County8, County9, DocumentedAddressDate, DocumentedAddressDate2, DocumentedAddressDate3, DocumentedAddressDate4, DocumentedAddressDate5, DocumentedAddressDate6, DocumentedAddressDate7, DocumentedAddressDate8, DocumentedAddressDate9, ExtensionNumber, ExtensionNumber2, ExtensionNumber3, ExtensionNumber4, ExtensionNumber5, ExtensionNumber6, ExtensionNumber7, ExtensionNumber8, ExtensionNumber9, ImageNCICNumber, ImageNCICNumber2, ImageNCICNumber3, ImageNCICNumber4, ImageNCICNumber5, ImageNCICNumber6, ImageNCICNumber7, ImageNCICNumber8, ImageNCICNumber9, ImageTypeCode, ImageTypeCode2, ImageTypeCode3, ImageTypeCode4, ImageTypeCode5, ImageTypeCode6, ImageTypeCode7, ImageTypeCode8, ImageTypeCode9, LicensePlateNumber, LicensePlateNumber2, LicensePlateNumber3, LicensePlateNumber4, LicensePlateNumber5, LicensePlateNumber6, LicensePlateNumber7, LicensePlateNumber8, LicensePlateNumber9, LicensePlateStateCode, LicensePlateStateCode2, LicensePlateStateCode3, LicensePlateStateCode4, LicensePlateStateCode5, LicensePlateStateCode6, LicensePlateStateCode7, LicensePlateStateCode8, LicensePlateStateCode9, LicensePlateTypeCode, LicensePlateTypeCode2, LicensePlateTypeCode3, LicensePlateTypeCode4, LicensePlateTypeCode5, LicensePlateTypeCode6, LicensePlateTypeCode7, LicensePlateTypeCode8, LicensePlateTypeCode9, LicensePlateYear, LicensePlateYear2, LicensePlateYear3, LicensePlateYear4, LicensePlateYear5, LicensePlateYear6, LicensePlateYear7, LicensePlateYear8, LicensePlateYear9, MiscellaneousNumber, MiscellaneousNumber2, MiscellaneousNumber3, MiscellaneousNumber4, MiscellaneousNumber5, MiscellaneousNumber6, MiscellaneousNumber7, MiscellaneousNumber8, MiscellaneousNumber9, Moniker, Moniker2, Moniker3, Moniker4, Moniker5, Moniker6,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 30
+
+Moniker7, Moniker8, Moniker9, NCICNumber, OperatorLicenseNumber, OperatorLicenseNumber2, OperatorLicenseNumber3, OperatorLicenseNumber4, OperatorLicenseNumber5, OperatorLicenseNumber6, OperatorLicenseNumber7, OperatorLicenseNumber8, OperatorLicenseNumber9, OperatorLicenseStateCode, OperatorLicenseStateCode2, OperatorLicenseStateCode3, OperatorLicenseStateCode4, OperatorLicenseStateCode5, OperatorLicenseStateCode6, OperatorLicenseStateCode7, OperatorLicenseStateCode8, OperatorLicenseStateCode9, OperatorLicenseYear, OperatorLicenseYear2, OperatorLicenseYear3, OperatorLicenseYear4, OperatorLicenseYear5, OperatorLicenseYear6, OperatorLicenseYear7, OperatorLicenseYear8, OperatorLicenseYear9, PhoneNumber, PhoneNumber2, PhoneNumber3, PhoneNumber4, PhoneNumber5, PhoneNumber6, PhoneNumber7, PhoneNumber8, PhoneNumber9, ProtectedPersonDateOfBirth, ProtectedPersonDateOfBirth2, ProtectedPersonDateOfBirth3, ProtectedPersonDateOfBirth4, ProtectedPersonDateOfBirth5, ProtectedPersonDateOfBirth6, ProtectedPersonDateOfBirth7, ProtectedPersonDateOfBirth8, ProtectedPersonDateOfBirth9, ProtectedPersonName, ProtectedPersonName2, ProtectedPersonName3, ProtectedPersonName4, ProtectedPersonName5, ProtectedPersonName6, ProtectedPersonName7, ProtectedPersonName8, ProtectedPersonName9, ProtectedPersonRace, ProtectedPersonRace2, ProtectedPersonRace3, ProtectedPersonRace4, ProtectedPersonRace5, ProtectedPersonRace6, ProtectedPersonRace7, ProtectedPersonRace8, ProtectedPersonRace9, ProtectedPersonSex, ProtectedPersonSex2, ProtectedPersonSex3, ProtectedPersonSex4, ProtectedPersonSex5, ProtectedPersonSex6, ProtectedPersonSex7, ProtectedPersonSex8, ProtectedPersonSex9, ProtectedPersonSocialSecurityNumber, ProtectedPersonSocialSecurityNumber2, ProtectedPersonSocialSecurityNumber3, ProtectedPersonSocialSecurityNumber4, ProtectedPersonSocialSecurityNumber5, ProtectedPersonSocialSecurityNumber6, ProtectedPersonSocialSecurityNumber7, ProtectedPersonSocialSecurityNumber8, ProtectedPersonSocialSecurityNumber9, ProtectionOrderConditionsCode, ProtectionOrderConditionsCode2, ProtectionOrderConditionsCode3, ProtectionOrderConditionsCode4, ProtectionOrderConditionsCode5, ProtectionOrderConditionsCode6, ProtectionOrderConditionsCode7, ProtectionOrderConditionsCode8, ProtectionOrderConditionsCode9, ScarsMarksTattoosCode, ScarsMarksTattoosCode2, ScarsMarksTattoosCode3, ScarsMarksTattoosCode4, ScarsMarksTattoosCode5, ScarsMarksTattoosCode6, ScarsMarksTattoosCode7, ScarsMarksTattoosCode8, ScarsMarksTattoosCode9, SocialSecurityNumber, SocialSecurityNumber2, SocialSecurityNumber3, SocialSecurityNumber4, SocialSecurityNumber5, SocialSecurityNumber6, SocialSecurityNumber7, SocialSecurityNumber8, SocialSecurityNumber9, StateCode, StateCode2, StateCode3, StateCode4, StateCode5, StateCode6, StateCode7, StateCode8, StateCode9, StateIdNumber, StateIdNumber2, StateIdNumber3, StateIdNumber4, StateIdNumber5, StateIdNumber6, StateIdNumber7, StateIdNumber8, StateIdNumber9, StreetName, StreetName2, StreetName3, StreetName4, StreetName5, StreetName6, StreetName7, StreetName8, StreetName9, StreetNumber, StreetNumber2, StreetNumber3, StreetNumber4, StreetNumber5, StreetNumber6, StreetNumber7, StreetNumber8, StreetNumber9, VehicleColorCode, VehicleColorCode2, VehicleColorCode3, VehicleColorCode4, VehicleColorCode5, VehicleColorCode6, VehicleColorCode7, VehicleColorCode8, VehicleColorCode9, VehicleIdentificationNumber, VehicleIdentificationNumber2, VehicleIdentificationNumber3, VehicleIdentificationNumber4, VehicleIdentificationNumber5, VehicleIdentificationNumber6, VehicleIdentificationNumber7, VehicleIdentificationNumber8, VehicleIdentificationNumber9, VehicleMakeCode, VehicleMakeCode2, VehicleMakeCode3, VehicleMakeCode4, VehicleMakeCode5, VehicleMakeCode6, VehicleMakeCode7, VehicleMakeCode8, VehicleMakeCode9, VehicleModelCode, VehicleModelCode2, VehicleModelCode3, VehicleModelCode4, VehicleModelCode5, VehicleModelCode6, VehicleModelCode7, VehicleModelCode8, VehicleModelCode9, VehicleStyleCode, VehicleStyleCode2, VehicleStyleCode3, VehicleStyleCode4, VehicleStyleCode5, VehicleStyleCode6, VehicleStyleCode7, VehicleStyleCode8, VehicleStyleCode9, VehicleYear, VehicleYear2, VehicleYear3,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 31
+
+VehicleYear4, VehicleYear5, VehicleYear6, VehicleYear7, VehicleYear8, VehicleYear9, ZipCode, ZipCode2, ZipCode3, ZipCode4, ZipCode5, ZipCode6, ZipCode7, ZipCode8, ZipCode9] 2. (In/Out) LEDSRecordNumber, Name, OriginatingAgencyORI, [AddressTypeCode, AddressTypeCode2, AddressTypeCode3, AddressTypeCode4, AddressTypeCode5, AddressTypeCode6, AddressTypeCode7, AddressTypeCode8, AddressTypeCode9, AlsoKnownAs, AlsoKnownAs2, AlsoKnownAs3, AlsoKnownAs4, AlsoKnownAs5, AlsoKnownAs6, AlsoKnownAs7, AlsoKnownAs8, AlsoKnownAs9, BirthDate, BirthDate2, BirthDate3, BirthDate4, BirthDate5, BirthDate6, BirthDate7, BirthDate8, BirthDate9, CautionMedicalConditionsCode, CautionMedicalConditionsCode2, CautionMedicalConditionsCode3, CautionMedicalConditionsCode4, CautionMedicalConditionsCode5, CautionMedicalConditionsCode6, CautionMedicalConditionsCode7, CautionMedicalConditionsCode8, CautionMedicalConditionsCode9, CitizenshipCode, CitizenshipCode2, CitizenshipCode3, CitizenshipCode4, CitizenshipCode5, CitizenshipCode6, CitizenshipCode7, CitizenshipCode8, CitizenshipCode9, City, City2, City3, City4, City5, City6, City7, City8, City9, ConditionCode, ConditionCode2, ConditionCode3, ConditionCode4, ConditionCode5, ConditionCode6, ConditionCode7, ConditionCode8, ConditionCode9, ConditionDescription, ConditionDescription2, ConditionDescription3, ConditionDescription4, ConditionDescription5, ConditionDescription6, ConditionDescription7, ConditionDescription8, ConditionDescription9, ContactName, ContactName2, ContactName3, ContactName4, ContactName5, ContactName6, ContactName7, ContactName8, ContactName9, ContactRelationship, ContactRelationship2, ContactRelationship3, ContactRelationship4, ContactRelationship5, ContactRelationship6, ContactRelationship7, ContactRelationship8, ContactRelationship9, ContactTitle, ContactTitle2, ContactTitle3, ContactTitle4, ContactTitle5, ContactTitle6, ContactTitle7, ContactTitle8, ContactTitle9, County, County2, County3, County4, County5, County6, County7, County8, County9, DocumentedAddressDate, DocumentedAddressDate2, DocumentedAddressDate3, DocumentedAddressDate4, DocumentedAddressDate5, DocumentedAddressDate6, DocumentedAddressDate7, DocumentedAddressDate8, DocumentedAddressDate9, ExtensionNumber, ExtensionNumber2, ExtensionNumber3, ExtensionNumber4, ExtensionNumber5, ExtensionNumber6, ExtensionNumber7, ExtensionNumber8, ExtensionNumber9, ImageNCICNumber, ImageNCICNumber2, ImageNCICNumber3, ImageNCICNumber4, ImageNCICNumber5, ImageNCICNumber6, ImageNCICNumber7, ImageNCICNumber8, ImageNCICNumber9, ImageTypeCode, ImageTypeCode2, ImageTypeCode3, ImageTypeCode4, ImageTypeCode5, ImageTypeCode6, ImageTypeCode7, ImageTypeCode8, ImageTypeCode9, LicensePlateNumber, LicensePlateNumber2, LicensePlateNumber3, LicensePlateNumber4, LicensePlateNumber5, LicensePlateNumber6, LicensePlateNumber7, LicensePlateNumber8, LicensePlateNumber9, LicensePlateStateCode, LicensePlateStateCode2, LicensePlateStateCode3, LicensePlateStateCode4, LicensePlateStateCode5, LicensePlateStateCode6, LicensePlateStateCode7, LicensePlateStateCode8, LicensePlateStateCode9, LicensePlateTypeCode, LicensePlateTypeCode2, LicensePlateTypeCode3, LicensePlateTypeCode4, LicensePlateTypeCode5, LicensePlateTypeCode6, LicensePlateTypeCode7, LicensePlateTypeCode8, LicensePlateTypeCode9, LicensePlateYear, LicensePlateYear2, LicensePlateYear3, LicensePlateYear4, LicensePlateYear5, LicensePlateYear6, LicensePlateYear7, LicensePlateYear8, LicensePlateYear9, MiscellaneousNumber, MiscellaneousNumber2, MiscellaneousNumber3, MiscellaneousNumber4, MiscellaneousNumber5, MiscellaneousNumber6, MiscellaneousNumber7, MiscellaneousNumber8, MiscellaneousNumber9, Moniker, Moniker2, Moniker3, Moniker4, Moniker5, Moniker6, Moniker7, Moniker8, Moniker9, NCICNumber, OperatorLicenseNumber, OperatorLicenseNumber2, OperatorLicenseNumber3, OperatorLicenseNumber4, OperatorLicenseNumber5, OperatorLicenseNumber6, OperatorLicenseNumber7, OperatorLicenseNumber8, OperatorLicenseNumber9, OperatorLicenseStateCode, OperatorLicenseStateCode2, OperatorLicenseStateCode3, OperatorLicenseStateCode4, OperatorLicenseStateCode5, OperatorLicenseStateCode6, OperatorLicenseStateCode7,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 32
+
+OperatorLicenseStateCode8, OperatorLicenseStateCode9, OperatorLicenseYear, OperatorLicenseYear2, OperatorLicenseYear3, OperatorLicenseYear4, OperatorLicenseYear5, OperatorLicenseYear6, OperatorLicenseYear7, OperatorLicenseYear8, OperatorLicenseYear9, PhoneNumber, PhoneNumber2, PhoneNumber3, PhoneNumber4, PhoneNumber5, PhoneNumber6, PhoneNumber7, PhoneNumber8, PhoneNumber9, ProtectedPersonDateOfBirth, ProtectedPersonDateOfBirth2, ProtectedPersonDateOfBirth3, ProtectedPersonDateOfBirth4, ProtectedPersonDateOfBirth5, ProtectedPersonDateOfBirth6, ProtectedPersonDateOfBirth7, ProtectedPersonDateOfBirth8, ProtectedPersonDateOfBirth9, ProtectedPersonName, ProtectedPersonName2, ProtectedPersonName3, ProtectedPersonName4, ProtectedPersonName5, ProtectedPersonName6, ProtectedPersonName7, ProtectedPersonName8, ProtectedPersonName9, ProtectedPersonRace, ProtectedPersonRace2, ProtectedPersonRace3, ProtectedPersonRace4, ProtectedPersonRace5, ProtectedPersonRace6, ProtectedPersonRace7, ProtectedPersonRace8, ProtectedPersonRace9, ProtectedPersonSex, ProtectedPersonSex2, ProtectedPersonSex3, ProtectedPersonSex4, ProtectedPersonSex5, ProtectedPersonSex6, ProtectedPersonSex7, ProtectedPersonSex8, ProtectedPersonSex9, ProtectedPersonSocialSecurityNumber, ProtectedPersonSocialSecurityNumber2, ProtectedPersonSocialSecurityNumber3, ProtectedPersonSocialSecurityNumber4, ProtectedPersonSocialSecurityNumber5, ProtectedPersonSocialSecurityNumber6, ProtectedPersonSocialSecurityNumber7, ProtectedPersonSocialSecurityNumber8, ProtectedPersonSocialSecurityNumber9, ProtectionOrderConditionsCode, ProtectionOrderConditionsCode2, ProtectionOrderConditionsCode3, ProtectionOrderConditionsCode4, ProtectionOrderConditionsCode5, ProtectionOrderConditionsCode6, ProtectionOrderConditionsCode7, ProtectionOrderConditionsCode8, ProtectionOrderConditionsCode9, ScarsMarksTattoosCode, ScarsMarksTattoosCode2, ScarsMarksTattoosCode3, ScarsMarksTattoosCode4, ScarsMarksTattoosCode5, ScarsMarksTattoosCode6, ScarsMarksTattoosCode7, ScarsMarksTattoosCode8, ScarsMarksTattoosCode9, SocialSecurityNumber, SocialSecurityNumber2, SocialSecurityNumber3, SocialSecurityNumber4, SocialSecurityNumber5, SocialSecurityNumber6, SocialSecurityNumber7, SocialSecurityNumber8, SocialSecurityNumber9, StateCode, StateCode2, StateCode3, StateCode4, StateCode5, StateCode6, StateCode7, StateCode8, StateCode9, StateIdNumber, StateIdNumber2, StateIdNumber3, StateIdNumber4, StateIdNumber5, StateIdNumber6, StateIdNumber7, StateIdNumber8, StateIdNumber9, StreetName, StreetName2, StreetName3, StreetName4, StreetName5, StreetName6, StreetName7, StreetName8, StreetName9, StreetNumber, StreetNumber2, StreetNumber3, StreetNumber4, StreetNumber5, StreetNumber6, StreetNumber7, StreetNumber8, StreetNumber9, VehicleColorCode, VehicleColorCode2, VehicleColorCode3, VehicleColorCode4, VehicleColorCode5, VehicleColorCode6, VehicleColorCode7, VehicleColorCode8, VehicleColorCode9, VehicleIdentificationNumber, VehicleIdentificationNumber2, VehicleIdentificationNumber3, VehicleIdentificationNumber4, VehicleIdentificationNumber5, VehicleIdentificationNumber6, VehicleIdentificationNumber7, VehicleIdentificationNumber8, VehicleIdentificationNumber9, VehicleMakeCode, VehicleMakeCode2, VehicleMakeCode3, VehicleMakeCode4, VehicleMakeCode5, VehicleMakeCode6, VehicleMakeCode7, VehicleMakeCode8, VehicleMakeCode9, VehicleModelCode, VehicleModelCode2, VehicleModelCode3, VehicleModelCode4, VehicleModelCode5, VehicleModelCode6, VehicleModelCode7, VehicleModelCode8, VehicleModelCode9, VehicleStyleCode, VehicleStyleCode2, VehicleStyleCode3, VehicleStyleCode4, VehicleStyleCode5, VehicleStyleCode6, VehicleStyleCode7, VehicleStyleCode8, VehicleStyleCode9, VehicleYear, VehicleYear2, VehicleYear3, VehicleYear4, VehicleYear5, VehicleYear6, VehicleYear7, VehicleYear8, VehicleYear9, ZipCode, ZipCode2, ZipCode3, ZipCode4, ZipCode5, ZipCode6, ZipCode7, ZipCode8, ZipCode9]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 33
+
+PEWantedPersonSupplementalEntry
+
+Field Name AddressTypeCode AddressTypeCode2 AddressTypeCode3 AddressTypeCode4 AddressTypeCode5 AddressTypeCode6 AddressTypeCode7 AddressTypeCode8 AddressTypeCode9 AlsoKnownAs AlsoKnownAs2 AlsoKnownAs3 AlsoKnownAs4 AlsoKnownAs5 AlsoKnownAs6 AlsoKnownAs7 AlsoKnownAs8 AlsoKnownAs9 BirthDate BirthDate2 BirthDate3 BirthDate4 BirthDate5 BirthDate6 BirthDate7 BirthDate8 BirthDate9 CautionMedicalConditionsCode CautionMedicalConditionsCode2 CautionMedicalConditionsCode3 CautionMedicalConditionsCode4 CautionMedicalConditionsCode5 CautionMedicalConditionsCode6 CautionMedicalConditionsCode7 CautionMedicalConditionsCode8 CautionMedicalConditionsCode9 CitizenshipCode CitizenshipCode2 CitizenshipCode3 CitizenshipCode4 CitizenshipCode5 CitizenshipCode6 CitizenshipCode7 CitizenshipCode8 CitizenshipCode9 City City2 City3
+
+XML Tag Name AddressTypeCode AddressTypeCode2 AddressTypeCode3 AddressTypeCode4 AddressTypeCode5 AddressTypeCode6 AddressTypeCode7 AddressTypeCode8 AddressTypeCode9 AlsoKnownAs AlsoKnownAs2 AlsoKnownAs3 AlsoKnownAs4 AlsoKnownAs5 AlsoKnownAs6 AlsoKnownAs7 AlsoKnownAs8 AlsoKnownAs9 BirthDate BirthDate2 BirthDate3 BirthDate4 BirthDate5 BirthDate6 BirthDate7 BirthDate8 BirthDate9 CautionMedicalConditionsCode CautionMedicalConditionsCode2 CautionMedicalConditionsCode3 CautionMedicalConditionsCode4 CautionMedicalConditionsCode5 CautionMedicalConditionsCode6 CautionMedicalConditionsCode7 CautionMedicalConditionsCode8 CautionMedicalConditionsCode9 CitizenshipCode CitizenshipCode2 CitizenshipCode3 CitizenshipCode4 CitizenshipCode5 CitizenshipCode6 CitizenshipCode7 CitizenshipCode8 CitizenshipCode9 City City2 City3
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 34
+
+M/C/O Size Possible Values O2 O2 O2 O2 O2 O2 O2 O2 O2 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O8 O8 O8 O8 O8 O8 O8 O8 O8 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O 20 O 20 O 20
+
+City4 City5 City6 City7 City8 City9 ConditionCode ConditionCode2 ConditionCode3 ConditionCode4 ConditionCode5 ConditionCode6 ConditionCode7 ConditionCode8 ConditionCode9 ConditionDescription ConditionDescription2 ConditionDescription3 ConditionDescription4 ConditionDescription5 ConditionDescription6 ConditionDescription7 ConditionDescription8 ConditionDescription9 ContactName ContactName2 ContactName3 ContactName4 ContactName5 ContactName6 ContactName7 ContactName8 ContactName9 ContactRelationship ContactRelationship2 ContactRelationship3 ContactRelationship4 ContactRelationship5 ContactRelationship6 ContactRelationship7 ContactRelationship8 ContactRelationship9 ContactTitle ContactTitle2 ContactTitle3 ContactTitle4 ContactTitle5 ContactTitle6 ContactTitle7 ContactTitle8 ContactTitle9
+
+City4 City5 City6 City7 City8 City9 ConditionCode ConditionCode2 ConditionCode3 ConditionCode4 ConditionCode5 ConditionCode6 ConditionCode7 ConditionCode8 ConditionCode9 ConditionDescription ConditionDescription2 ConditionDescription3 ConditionDescription4 ConditionDescription5 ConditionDescription6 ConditionDescription7 ConditionDescription8 ConditionDescription9 ContactName ContactName2 ContactName3 ContactName4 ContactName5 ContactName6 ContactName7 ContactName8 ContactName9 ContactRelationship ContactRelationship2 ContactRelationship3 ContactRelationship4 ContactRelationship5 ContactRelationship6 ContactRelationship7 ContactRelationship8 ContactRelationship9 ContactTitle ContactTitle2 ContactTitle3 ContactTitle4 ContactTitle5 ContactTitle6 ContactTitle7 ContactTitle8 ContactTitle9
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 35
+
+O 20 O 20 O 20 O 20 O 20 O 20 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 44 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O4 O4 O4 O4 O4 O4 O4 O4 O4
+
+County County2 County3 County4 County5 County6 County7 County8 County9 DocumentedAddressDate DocumentedAddressDate2 DocumentedAddressDate3 DocumentedAddressDate4 DocumentedAddressDate5 DocumentedAddressDate6 DocumentedAddressDate7 DocumentedAddressDate8 DocumentedAddressDate9 ExtensionNumber ExtensionNumber2 ExtensionNumber3 ExtensionNumber4 ExtensionNumber5 ExtensionNumber6 ExtensionNumber7 ExtensionNumber8 ExtensionNumber9 ImageNCICNumber ImageNCICNumber2 ImageNCICNumber3 ImageNCICNumber4 ImageNCICNumber5 ImageNCICNumber6 ImageNCICNumber7 ImageNCICNumber8 ImageNCICNumber9 ImageTypeCode ImageTypeCode2 ImageTypeCode3 ImageTypeCode4 ImageTypeCode5 ImageTypeCode6 ImageTypeCode7 ImageTypeCode8 ImageTypeCode9 LEDSRecordNumber LicensePlateNumber LicensePlateNumber2 LicensePlateNumber3 LicensePlateNumber4 LicensePlateNumber5
+
+County County2 County3 County4 County5 County6 County7 County8 County9 DocumentedAddressDate DocumentedAddressDate2 DocumentedAddressDate3 DocumentedAddressDate4 DocumentedAddressDate5 DocumentedAddressDate6 DocumentedAddressDate7 DocumentedAddressDate8 DocumentedAddressDate9 ExtensionNumber ExtensionNumber2 ExtensionNumber3 ExtensionNumber4 ExtensionNumber5 ExtensionNumber6 ExtensionNumber7 ExtensionNumber8 ExtensionNumber9 ImageNCICNumber ImageNCICNumber2 ImageNCICNumber3 ImageNCICNumber4 ImageNCICNumber5 ImageNCICNumber6 ImageNCICNumber7 ImageNCICNumber8 ImageNCICNumber9 ImageTypeCode ImageTypeCode2 ImageTypeCode3 ImageTypeCode4 ImageTypeCode5 ImageTypeCode6 ImageTypeCode7 ImageTypeCode8 ImageTypeCode9 LEDSRecordNumber LicensePlateNumber LicensePlateNumber2 LicensePlateNumber3 LicensePlateNumber4 LicensePlateNumber5
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 36
+
+O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O5 O5 O5 O5 O5 O5 O5 O5 O5 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O1 O1 O1 O1 O1 O1 O1 O1 O1 C 10 O 10 O 10 O 10 O 10 O 10
+
+LicensePlateNumber6 LicensePlateNumber7 LicensePlateNumber8 LicensePlateNumber9 LicensePlateStateCode LicensePlateStateCode2 LicensePlateStateCode3 LicensePlateStateCode4 LicensePlateStateCode5 LicensePlateStateCode6 LicensePlateStateCode7 LicensePlateStateCode8 LicensePlateStateCode9 LicensePlateTypeCode LicensePlateTypeCode2 LicensePlateTypeCode3 LicensePlateTypeCode4 LicensePlateTypeCode5 LicensePlateTypeCode6 LicensePlateTypeCode7 LicensePlateTypeCode8 LicensePlateTypeCode9 LicensePlateYear LicensePlateYear2 LicensePlateYear3 LicensePlateYear4 LicensePlateYear5 LicensePlateYear6 LicensePlateYear7 LicensePlateYear8 LicensePlateYear9 MiscellaneousNumber MiscellaneousNumber2 MiscellaneousNumber3 MiscellaneousNumber4 MiscellaneousNumber5 MiscellaneousNumber6 MiscellaneousNumber7 MiscellaneousNumber8 MiscellaneousNumber9 Moniker Moniker2 Moniker3 Moniker4 Moniker5 Moniker6 Moniker7 Moniker8 Moniker9 Name NCICNumber
+
+LicensePlateNumber6 LicensePlateNumber7 LicensePlateNumber8 LicensePlateNumber9 LicensePlateStateCode LicensePlateStateCode2 LicensePlateStateCode3 LicensePlateStateCode4 LicensePlateStateCode5 LicensePlateStateCode6 LicensePlateStateCode7 LicensePlateStateCode8 LicensePlateStateCode9 LicensePlateTypeCode LicensePlateTypeCode2 LicensePlateTypeCode3 LicensePlateTypeCode4 LicensePlateTypeCode5 LicensePlateTypeCode6 LicensePlateTypeCode7 LicensePlateTypeCode8 LicensePlateTypeCode9 LicensePlateYear LicensePlateYear2 LicensePlateYear3 LicensePlateYear4 LicensePlateYear5 LicensePlateYear6 LicensePlateYear7 LicensePlateYear8 LicensePlateYear9 MiscellaneousNumber MiscellaneousNumber2 MiscellaneousNumber3 MiscellaneousNumber4 MiscellaneousNumber5 MiscellaneousNumber6 MiscellaneousNumber7 MiscellaneousNumber8 MiscellaneousNumber9 Moniker Moniker2 Moniker3 Moniker4 Moniker5 Moniker6 Moniker7 Moniker8 Moniker9 Name NCICNumber
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 37
+
+O 10 O 10 O 10 O 10 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 15 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 O 30 M 30 O 10
+
+OperatorLicenseNumber OperatorLicenseNumber2 OperatorLicenseNumber3 OperatorLicenseNumber4 OperatorLicenseNumber5 OperatorLicenseNumber6 OperatorLicenseNumber7 OperatorLicenseNumber8 OperatorLicenseNumber9 OperatorLicenseStateCode OperatorLicenseStateCode2 OperatorLicenseStateCode3 OperatorLicenseStateCode4 OperatorLicenseStateCode5 OperatorLicenseStateCode6 OperatorLicenseStateCode7 OperatorLicenseStateCode8 OperatorLicenseStateCode9 OperatorLicenseYear OperatorLicenseYear2 OperatorLicenseYear3 OperatorLicenseYear4 OperatorLicenseYear5 OperatorLicenseYear6 OperatorLicenseYear7 OperatorLicenseYear8 OperatorLicenseYear9 OriginatingAgencyCaseNumber OriginatingAgencyORI PhoneNumber PhoneNumber2 PhoneNumber3 PhoneNumber4 PhoneNumber5 PhoneNumber6 PhoneNumber7 PhoneNumber8 PhoneNumber9 ProtectedPersonDateOfBirth ProtectedPersonDateOfBirth2 ProtectedPersonDateOfBirth3 ProtectedPersonDateOfBirth4 ProtectedPersonDateOfBirth5 ProtectedPersonDateOfBirth6 ProtectedPersonDateOfBirth7 ProtectedPersonDateOfBirth8 ProtectedPersonDateOfBirth9 ProtectedPersonName ProtectedPersonName2 ProtectedPersonName3 ProtectedPersonName4
+
+OperatorLicenseNumber OperatorLicenseNumber2 OperatorLicenseNumber3 OperatorLicenseNumber4 OperatorLicenseNumber5 OperatorLicenseNumber6 OperatorLicenseNumber7 OperatorLicenseNumber8 OperatorLicenseNumber9 OperatorLicenseStateCode OperatorLicenseStateCode2 OperatorLicenseStateCode3 OperatorLicenseStateCode4 OperatorLicenseStateCode5 OperatorLicenseStateCode6 OperatorLicenseStateCode7 OperatorLicenseStateCode8 OperatorLicenseStateCode9 OperatorLicenseYear OperatorLicenseYear2 OperatorLicenseYear3 OperatorLicenseYear4 OperatorLicenseYear5 OperatorLicenseYear6 OperatorLicenseYear7 OperatorLicenseYear8 OperatorLicenseYear9 OriginatingAgencyCaseNumber OriginatingAgencyORI PhoneNumber PhoneNumber2 PhoneNumber3 PhoneNumber4 PhoneNumber5 PhoneNumber6 PhoneNumber7 PhoneNumber8 PhoneNumber9 ProtectedPersonDateOfBirth ProtectedPersonDateOfBirth2 ProtectedPersonDateOfBirth3 ProtectedPersonDateOfBirth4 ProtectedPersonDateOfBirth5 ProtectedPersonDateOfBirth6 ProtectedPersonDateOfBirth7 ProtectedPersonDateOfBirth8 ProtectedPersonDateOfBirth9 ProtectedPersonName ProtectedPersonName2 ProtectedPersonName3 ProtectedPersonName4
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 38
+
+O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 C 20 M9 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O8 O8 O8 O8 O8 O8 O8 O8 O8 O 30 O 30 O 30 O 30
+
+ProtectedPersonName5
+
+ProtectedPersonName5
+
+O 30
+
+ProtectedPersonName6
+
+ProtectedPersonName6
+
+O 30
+
+ProtectedPersonName7
+
+ProtectedPersonName7
+
+O 30
+
+ProtectedPersonName8
+
+ProtectedPersonName8
+
+O 30
+
+ProtectedPersonName9
+
+ProtectedPersonName9
+
+O 30
+
+ProtectedPersonRace
+
+ProtectedPersonRace
+
+O1
+
+ProtectedPersonRace2
+
+ProtectedPersonRace2
+
+O1
+
+ProtectedPersonRace3
+
+ProtectedPersonRace3
+
+O1
+
+ProtectedPersonRace4
+
+ProtectedPersonRace4
+
+O1
+
+ProtectedPersonRace5
+
+ProtectedPersonRace5
+
+O1
+
+ProtectedPersonRace6
+
+ProtectedPersonRace6
+
+O1
+
+ProtectedPersonRace7
+
+ProtectedPersonRace7
+
+O1
+
+ProtectedPersonRace8
+
+ProtectedPersonRace8
+
+O1
+
+ProtectedPersonRace9
+
+ProtectedPersonRace9
+
+O1
+
+ProtectedPersonSex
+
+ProtectedPersonSex
+
+O1
+
+ProtectedPersonSex2
+
+ProtectedPersonSex2
+
+O1
+
+ProtectedPersonSex3
+
+ProtectedPersonSex3
+
+O1
+
+ProtectedPersonSex4
+
+ProtectedPersonSex4
+
+O1
+
+ProtectedPersonSex5
+
+ProtectedPersonSex5
+
+O1
+
+ProtectedPersonSex6
+
+ProtectedPersonSex6
+
+O1
+
+ProtectedPersonSex7
+
+ProtectedPersonSex7
+
+O1
+
+ProtectedPersonSex8
+
+ProtectedPersonSex8
+
+O1
+
+ProtectedPersonSex9
+
+ProtectedPersonSex9
+
+O1
+
+ProtectedPersonSocialSecurityNumber ProtectedPersonSocialSecurityNumber O 9
+
+ProtectedPersonSocialSecurityNumber2 ProtectedPersonSocialSecurityNumber2 O 9
+
+ProtectedPersonSocialSecurityNumber3 ProtectedPersonSocialSecurityNumber3 O 9
+
+ProtectedPersonSocialSecurityNumber4 ProtectedPersonSocialSecurityNumber4 O 9
+
+ProtectedPersonSocialSecurityNumber5 ProtectedPersonSocialSecurityNumber5 O 9
+
+ProtectedPersonSocialSecurityNumber6 ProtectedPersonSocialSecurityNumber6 O 9
+
+ProtectedPersonSocialSecurityNumber7 ProtectedPersonSocialSecurityNumber7 O 9
+
+ProtectedPersonSocialSecurityNumber8 ProtectedPersonSocialSecurityNumber8 O 9
+
+ProtectedPersonSocialSecurityNumber9 ProtectedPersonSocialSecurityNumber9 O 9
+
+ProtectionOrderConditionsCode
+
+ProtectionOrderConditionsCode
+
+O2
+
+ProtectionOrderConditionsCode2
+
+ProtectionOrderConditionsCode2
+
+O2
+
+ProtectionOrderConditionsCode3
+
+ProtectionOrderConditionsCode3
+
+O2
+
+ProtectionOrderConditionsCode4
+
+ProtectionOrderConditionsCode4
+
+O2
+
+ProtectionOrderConditionsCode5
+
+ProtectionOrderConditionsCode5
+
+O2
+
+ProtectionOrderConditionsCode6
+
+ProtectionOrderConditionsCode6
+
+O2
+
+ProtectionOrderConditionsCode7
+
+ProtectionOrderConditionsCode7
+
+O2
+
+ProtectionOrderConditionsCode8
+
+ProtectionOrderConditionsCode8
+
+O2
+
+ProtectionOrderConditionsCode9
+
+ProtectionOrderConditionsCode9
+
+O2
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+ScarsMarksTattoosCode2
+
+ScarsMarksTattoosCode2
+
+O 10
+
+ScarsMarksTattoosCode3
+
+ScarsMarksTattoosCode3
+
+O 10
+
+ScarsMarksTattoosCode4
+
+ScarsMarksTattoosCode4
+
+O 10
+
+ScarsMarksTattoosCode5
+
+ScarsMarksTattoosCode5
+
+O 10
+
+ScarsMarksTattoosCode6
+
+ScarsMarksTattoosCode6
+
+O 10
+
+ScarsMarksTattoosCode7
+
+ScarsMarksTattoosCode7
+
+O 10
+
+ScarsMarksTattoosCode8
+
+ScarsMarksTattoosCode8
+
+O 10
+
+ScarsMarksTattoosCode9
+
+ScarsMarksTattoosCode9
+
+O 10
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 39
+
+SocialSecurityNumber2 SocialSecurityNumber3 SocialSecurityNumber4 SocialSecurityNumber5 SocialSecurityNumber6 SocialSecurityNumber7 SocialSecurityNumber8 SocialSecurityNumber9 StateCode StateCode2 StateCode3 StateCode4 StateCode5 StateCode6 StateCode7 StateCode8 StateCode9 StateIdNumber StateIdNumber2 StateIdNumber3 StateIdNumber4 StateIdNumber5 StateIdNumber6 StateIdNumber7 StateIdNumber8 StateIdNumber9 StreetName StreetName2 StreetName3 StreetName4 StreetName5 StreetName6 StreetName7 StreetName8 StreetName9 StreetNumber StreetNumber2 StreetNumber3 StreetNumber4 StreetNumber5 StreetNumber6 StreetNumber7 StreetNumber8 StreetNumber9 VehicleColorCode VehicleColorCode2 VehicleColorCode3 VehicleColorCode4 VehicleColorCode5 VehicleColorCode6 VehicleColorCode7
+
+SocialSecurityNumber2 SocialSecurityNumber3 SocialSecurityNumber4 SocialSecurityNumber5 SocialSecurityNumber6 SocialSecurityNumber7 SocialSecurityNumber8 SocialSecurityNumber9 StateCode StateCode2 StateCode3 StateCode4 StateCode5 StateCode6 StateCode7 StateCode8 StateCode9 StateIdNumber StateIdNumber2 StateIdNumber3 StateIdNumber4 StateIdNumber5 StateIdNumber6 StateIdNumber7 StateIdNumber8 StateIdNumber9 StreetName StreetName2 StreetName3 StreetName4 StreetName5 StreetName6 StreetName7 StreetName8 StreetName9 StreetNumber StreetNumber2 StreetNumber3 StreetNumber4 StreetNumber5 StreetNumber6 StreetNumber7 StreetNumber8 StreetNumber9 VehicleColorCode VehicleColorCode2 VehicleColorCode3 VehicleColorCode4 VehicleColorCode5 VehicleColorCode6 VehicleColorCode7
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 40
+
+O9 O9 O9 O9 O9 O9 O9 O9 O2 O2 O2 O2 O2 O2 O2 O2 O2 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 10 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O 25 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7 O7
+
+VehicleColorCode8 VehicleColorCode9 VehicleIdentificationNumber VehicleIdentificationNumber2 VehicleIdentificationNumber3 VehicleIdentificationNumber4 VehicleIdentificationNumber5 VehicleIdentificationNumber6 VehicleIdentificationNumber7 VehicleIdentificationNumber8 VehicleIdentificationNumber9 VehicleMakeCode VehicleMakeCode2 VehicleMakeCode3 VehicleMakeCode4 VehicleMakeCode5 VehicleMakeCode6 VehicleMakeCode7 VehicleMakeCode8 VehicleMakeCode9 VehicleModelCode VehicleModelCode2 VehicleModelCode3 VehicleModelCode4 VehicleModelCode5 VehicleModelCode6 VehicleModelCode7 VehicleModelCode8 VehicleModelCode9 VehicleStyleCode VehicleStyleCode2 VehicleStyleCode3 VehicleStyleCode4 VehicleStyleCode5 VehicleStyleCode6 VehicleStyleCode7 VehicleStyleCode8 VehicleStyleCode9 VehicleYear VehicleYear2 VehicleYear3 VehicleYear4 VehicleYear5 VehicleYear6 VehicleYear7 VehicleYear8 VehicleYear9 ZipCode ZipCode2 ZipCode3 ZipCode4
+
+VehicleColorCode8 VehicleColorCode9 VehicleIdentificationNumber VehicleIdentificationNumber2 VehicleIdentificationNumber3 VehicleIdentificationNumber4 VehicleIdentificationNumber5 VehicleIdentificationNumber6 VehicleIdentificationNumber7 VehicleIdentificationNumber8 VehicleIdentificationNumber9 VehicleMakeCode VehicleMakeCode2 VehicleMakeCode3 VehicleMakeCode4 VehicleMakeCode5 VehicleMakeCode6 VehicleMakeCode7 VehicleMakeCode8 VehicleMakeCode9 VehicleModelCode VehicleModelCode2 VehicleModelCode3 VehicleModelCode4 VehicleModelCode5 VehicleModelCode6 VehicleModelCode7 VehicleModelCode8 VehicleModelCode9 VehicleStyleCode VehicleStyleCode2 VehicleStyleCode3 VehicleStyleCode4 VehicleStyleCode5 VehicleStyleCode6 VehicleStyleCode7 VehicleStyleCode8 VehicleStyleCode9 VehicleYear VehicleYear2 VehicleYear3 VehicleYear4 VehicleYear5 VehicleYear6 VehicleYear7 VehicleYear8 VehicleYear9 ZipCode ZipCode2 ZipCode3 ZipCode4
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 41
+
+O7 O7 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 20 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O 24 O3 O3 O3 O3 O3 O3 O3 O3 O3 O2 O2 O2 O2 O2 O2 O2 O2 O2 O4 O4 O4 O4 O4 O4 O4 O4 O4 O 10 O 10 O 10 O 10
+
+ZipCode5 ZipCode6 ZipCode7 ZipCode8 ZipCode9
+
+ZipCode5 ZipCode6 ZipCode7 ZipCode8 ZipCode9
+
+O 10 O 10 O 10 O 10 O 10
+
+Possible Combinations 1. (In/Out) Name, OriginatingAgencyCaseNumber, OriginatingAgencyORI, [AddressTypeCode,
+AddressTypeCode2, AddressTypeCode3, AddressTypeCode4, AddressTypeCode5, AddressTypeCode6, AddressTypeCode7, AddressTypeCode8, AddressTypeCode9, AlsoKnownAs, AlsoKnownAs2, AlsoKnownAs3, AlsoKnownAs4, AlsoKnownAs5, AlsoKnownAs6, AlsoKnownAs7, AlsoKnownAs8, AlsoKnownAs9, BirthDate, BirthDate2, BirthDate3, BirthDate4, BirthDate5, BirthDate6, BirthDate7, BirthDate8, BirthDate9, CautionMedicalConditionsCode, CautionMedicalConditionsCode2, CautionMedicalConditionsCode3, CautionMedicalConditionsCode4, CautionMedicalConditionsCode5, CautionMedicalConditionsCode6, CautionMedicalConditionsCode7, CautionMedicalConditionsCode8, CautionMedicalConditionsCode9, CitizenshipCode, CitizenshipCode2, CitizenshipCode3, CitizenshipCode4, CitizenshipCode5, CitizenshipCode6, CitizenshipCode7, CitizenshipCode8, CitizenshipCode9, City, City2, City3, City4, City5, City6, City7, City8, City9, ConditionCode, ConditionCode2, ConditionCode3, ConditionCode4, ConditionCode5, ConditionCode6, ConditionCode7, ConditionCode8, ConditionCode9, ConditionDescription, ConditionDescription2, ConditionDescription3, ConditionDescription4, ConditionDescription5, ConditionDescription6, ConditionDescription7, ConditionDescription8, ConditionDescription9, ContactName, ContactName2, ContactName3, ContactName4, ContactName5, ContactName6, ContactName7, ContactName8, ContactName9, ContactRelationship, ContactRelationship2, ContactRelationship3, ContactRelationship4, ContactRelationship5, ContactRelationship6, ContactRelationship7, ContactRelationship8, ContactRelationship9, ContactTitle, ContactTitle2, ContactTitle3, ContactTitle4, ContactTitle5, ContactTitle6, ContactTitle7, ContactTitle8, ContactTitle9, County, County2, County3, County4, County5, County6, County7, County8, County9, DocumentedAddressDate, DocumentedAddressDate2, DocumentedAddressDate3, DocumentedAddressDate4, DocumentedAddressDate5, DocumentedAddressDate6, DocumentedAddressDate7, DocumentedAddressDate8, DocumentedAddressDate9, ExtensionNumber, ExtensionNumber2, ExtensionNumber3, ExtensionNumber4, ExtensionNumber5, ExtensionNumber6, ExtensionNumber7, ExtensionNumber8, ExtensionNumber9, ImageNCICNumber, ImageNCICNumber2, ImageNCICNumber3, ImageNCICNumber4, ImageNCICNumber5, ImageNCICNumber6, ImageNCICNumber7, ImageNCICNumber8, ImageNCICNumber9, ImageTypeCode, ImageTypeCode2, ImageTypeCode3, ImageTypeCode4, ImageTypeCode5, ImageTypeCode6, ImageTypeCode7, ImageTypeCode8, ImageTypeCode9, LicensePlateNumber, LicensePlateNumber2, LicensePlateNumber3, LicensePlateNumber4, LicensePlateNumber5, LicensePlateNumber6, LicensePlateNumber7, LicensePlateNumber8, LicensePlateNumber9, LicensePlateStateCode, LicensePlateStateCode2, LicensePlateStateCode3, LicensePlateStateCode4, LicensePlateStateCode5, LicensePlateStateCode6, LicensePlateStateCode7, LicensePlateStateCode8, LicensePlateStateCode9, LicensePlateTypeCode, LicensePlateTypeCode2, LicensePlateTypeCode3, LicensePlateTypeCode4, LicensePlateTypeCode5, LicensePlateTypeCode6, LicensePlateTypeCode7, LicensePlateTypeCode8, LicensePlateTypeCode9, LicensePlateYear, LicensePlateYear2, LicensePlateYear3, LicensePlateYear4, LicensePlateYear5, LicensePlateYear6, LicensePlateYear7, LicensePlateYear8, LicensePlateYear9, MiscellaneousNumber, MiscellaneousNumber2, MiscellaneousNumber3, MiscellaneousNumber4, MiscellaneousNumber5, MiscellaneousNumber6, MiscellaneousNumber7, MiscellaneousNumber8, MiscellaneousNumber9, Moniker, Moniker2, Moniker3, Moniker4, Moniker5, Moniker6, Moniker7, Moniker8, Moniker9, NCICNumber, OperatorLicenseNumber, OperatorLicenseNumber2, OperatorLicenseNumber3, OperatorLicenseNumber4,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 42
+
+OperatorLicenseNumber5, OperatorLicenseNumber6, OperatorLicenseNumber7, OperatorLicenseNumber8, OperatorLicenseNumber9, OperatorLicenseStateCode, OperatorLicenseStateCode2, OperatorLicenseStateCode3, OperatorLicenseStateCode4, OperatorLicenseStateCode5, OperatorLicenseStateCode6, OperatorLicenseStateCode7, OperatorLicenseStateCode8, OperatorLicenseStateCode9, OperatorLicenseYear, OperatorLicenseYear2, OperatorLicenseYear3, OperatorLicenseYear4, OperatorLicenseYear5, OperatorLicenseYear6, OperatorLicenseYear7, OperatorLicenseYear8, OperatorLicenseYear9, PhoneNumber, PhoneNumber2, PhoneNumber3, PhoneNumber4, PhoneNumber5, PhoneNumber6, PhoneNumber7, PhoneNumber8, PhoneNumber9, ProtectedPersonDateOfBirth, ProtectedPersonDateOfBirth2, ProtectedPersonDateOfBirth3, ProtectedPersonDateOfBirth4, ProtectedPersonDateOfBirth5, ProtectedPersonDateOfBirth6, ProtectedPersonDateOfBirth7, ProtectedPersonDateOfBirth8, ProtectedPersonDateOfBirth9, ProtectedPersonName, ProtectedPersonName2, ProtectedPersonName3, ProtectedPersonName4, ProtectedPersonName5, ProtectedPersonName6, ProtectedPersonName7, ProtectedPersonName8, ProtectedPersonName9, ProtectedPersonRace, ProtectedPersonRace2, ProtectedPersonRace3, ProtectedPersonRace4, ProtectedPersonRace5, ProtectedPersonRace6, ProtectedPersonRace7, ProtectedPersonRace8, ProtectedPersonRace9, ProtectedPersonSex, ProtectedPersonSex2, ProtectedPersonSex3, ProtectedPersonSex4, ProtectedPersonSex5, ProtectedPersonSex6, ProtectedPersonSex7, ProtectedPersonSex8, ProtectedPersonSex9, ProtectedPersonSocialSecurityNumber, ProtectedPersonSocialSecurityNumber2, ProtectedPersonSocialSecurityNumber3, ProtectedPersonSocialSecurityNumber4, ProtectedPersonSocialSecurityNumber5, ProtectedPersonSocialSecurityNumber6, ProtectedPersonSocialSecurityNumber7, ProtectedPersonSocialSecurityNumber8, ProtectedPersonSocialSecurityNumber9, ProtectionOrderConditionsCode, ProtectionOrderConditionsCode2, ProtectionOrderConditionsCode3, ProtectionOrderConditionsCode4, ProtectionOrderConditionsCode5, ProtectionOrderConditionsCode6, ProtectionOrderConditionsCode7, ProtectionOrderConditionsCode8, ProtectionOrderConditionsCode9, ScarsMarksTattoosCode, ScarsMarksTattoosCode2, ScarsMarksTattoosCode3, ScarsMarksTattoosCode4, ScarsMarksTattoosCode5, ScarsMarksTattoosCode6, ScarsMarksTattoosCode7, ScarsMarksTattoosCode8, ScarsMarksTattoosCode9, SocialSecurityNumber, SocialSecurityNumber2, SocialSecurityNumber3, SocialSecurityNumber4, SocialSecurityNumber5, SocialSecurityNumber6, SocialSecurityNumber7, SocialSecurityNumber8, SocialSecurityNumber9, StateCode, StateCode2, StateCode3, StateCode4, StateCode5, StateCode6, StateCode7, StateCode8, StateCode9, StateIdNumber, StateIdNumber2, StateIdNumber3, StateIdNumber4, StateIdNumber5, StateIdNumber6, StateIdNumber7, StateIdNumber8, StateIdNumber9, StreetName, StreetName2, StreetName3, StreetName4, StreetName5, StreetName6, StreetName7, StreetName8, StreetName9, StreetNumber, StreetNumber2, StreetNumber3, StreetNumber4, StreetNumber5, StreetNumber6, StreetNumber7, StreetNumber8, StreetNumber9, VehicleColorCode, VehicleColorCode2, VehicleColorCode3, VehicleColorCode4, VehicleColorCode5, VehicleColorCode6, VehicleColorCode7, VehicleColorCode8, VehicleColorCode9, VehicleIdentificationNumber, VehicleIdentificationNumber2, VehicleIdentificationNumber3, VehicleIdentificationNumber4, VehicleIdentificationNumber5, VehicleIdentificationNumber6, VehicleIdentificationNumber7, VehicleIdentificationNumber8, VehicleIdentificationNumber9, VehicleMakeCode, VehicleMakeCode2, VehicleMakeCode3, VehicleMakeCode4, VehicleMakeCode5, VehicleMakeCode6, VehicleMakeCode7, VehicleMakeCode8, VehicleMakeCode9, VehicleModelCode, VehicleModelCode2, VehicleModelCode3, VehicleModelCode4, VehicleModelCode5, VehicleModelCode6, VehicleModelCode7, VehicleModelCode8, VehicleModelCode9, VehicleStyleCode, VehicleStyleCode2, VehicleStyleCode3, VehicleStyleCode4, VehicleStyleCode5, VehicleStyleCode6, VehicleStyleCode7, VehicleStyleCode8, VehicleStyleCode9, VehicleYear, VehicleYear2, VehicleYear3, VehicleYear4, VehicleYear5, VehicleYear6, VehicleYear7, VehicleYear8, VehicleYear9,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 43
+
+ZipCode, ZipCode2, ZipCode3, ZipCode4, ZipCode5, ZipCode6, ZipCode7, ZipCode8, ZipCode9] 2. (In/Out) LEDSRecordNumber, Name, OriginatingAgencyORI, [AddressTypeCode, AddressTypeCode2, AddressTypeCode3, AddressTypeCode4, AddressTypeCode5, AddressTypeCode6, AddressTypeCode7, AddressTypeCode8, AddressTypeCode9, AlsoKnownAs, AlsoKnownAs2, AlsoKnownAs3, AlsoKnownAs4, AlsoKnownAs5, AlsoKnownAs6, AlsoKnownAs7, AlsoKnownAs8, AlsoKnownAs9, BirthDate, BirthDate2, BirthDate3, BirthDate4, BirthDate5, BirthDate6, BirthDate7, BirthDate8, BirthDate9, CautionMedicalConditionsCode, CautionMedicalConditionsCode2, CautionMedicalConditionsCode3, CautionMedicalConditionsCode4, CautionMedicalConditionsCode5, CautionMedicalConditionsCode6, CautionMedicalConditionsCode7, CautionMedicalConditionsCode8, CautionMedicalConditionsCode9, CitizenshipCode, CitizenshipCode2, CitizenshipCode3, CitizenshipCode4, CitizenshipCode5, CitizenshipCode6, CitizenshipCode7, CitizenshipCode8, CitizenshipCode9, City, City2, City3, City4, City5, City6, City7, City8, City9, ConditionCode, ConditionCode2, ConditionCode3, ConditionCode4, ConditionCode5, ConditionCode6, ConditionCode7, ConditionCode8, ConditionCode9, ConditionDescription, ConditionDescription2, ConditionDescription3, ConditionDescription4, ConditionDescription5, ConditionDescription6, ConditionDescription7, ConditionDescription8, ConditionDescription9, ContactName, ContactName2, ContactName3, ContactName4, ContactName5, ContactName6, ContactName7, ContactName8, ContactName9, ContactRelationship, ContactRelationship2, ContactRelationship3, ContactRelationship4, ContactRelationship5, ContactRelationship6, ContactRelationship7, ContactRelationship8, ContactRelationship9, ContactTitle, ContactTitle2, ContactTitle3, ContactTitle4, ContactTitle5, ContactTitle6, ContactTitle7, ContactTitle8, ContactTitle9, County, County2, County3, County4, County5, County6, County7, County8, County9, DocumentedAddressDate, DocumentedAddressDate2, DocumentedAddressDate3, DocumentedAddressDate4, DocumentedAddressDate5, DocumentedAddressDate6, DocumentedAddressDate7, DocumentedAddressDate8, DocumentedAddressDate9, ExtensionNumber, ExtensionNumber2, ExtensionNumber3, ExtensionNumber4, ExtensionNumber5, ExtensionNumber6, ExtensionNumber7, ExtensionNumber8, ExtensionNumber9, ImageNCICNumber, ImageNCICNumber2, ImageNCICNumber3, ImageNCICNumber4, ImageNCICNumber5, ImageNCICNumber6, ImageNCICNumber7, ImageNCICNumber8, ImageNCICNumber9, ImageTypeCode, ImageTypeCode2, ImageTypeCode3, ImageTypeCode4, ImageTypeCode5, ImageTypeCode6, ImageTypeCode7, ImageTypeCode8, ImageTypeCode9, LicensePlateNumber, LicensePlateNumber2, LicensePlateNumber3, LicensePlateNumber4, LicensePlateNumber5, LicensePlateNumber6, LicensePlateNumber7, LicensePlateNumber8, LicensePlateNumber9, LicensePlateStateCode, LicensePlateStateCode2, LicensePlateStateCode3, LicensePlateStateCode4, LicensePlateStateCode5, LicensePlateStateCode6, LicensePlateStateCode7, LicensePlateStateCode8, LicensePlateStateCode9, LicensePlateTypeCode, LicensePlateTypeCode2, LicensePlateTypeCode3, LicensePlateTypeCode4, LicensePlateTypeCode5, LicensePlateTypeCode6, LicensePlateTypeCode7, LicensePlateTypeCode8, LicensePlateTypeCode9, LicensePlateYear, LicensePlateYear2, LicensePlateYear3, LicensePlateYear4, LicensePlateYear5, LicensePlateYear6, LicensePlateYear7, LicensePlateYear8, LicensePlateYear9, MiscellaneousNumber, MiscellaneousNumber2, MiscellaneousNumber3, MiscellaneousNumber4, MiscellaneousNumber5, MiscellaneousNumber6, MiscellaneousNumber7, MiscellaneousNumber8, MiscellaneousNumber9, Moniker, Moniker2, Moniker3, Moniker4, Moniker5, Moniker6, Moniker7, Moniker8, Moniker9, NCICNumber, OperatorLicenseNumber, OperatorLicenseNumber2, OperatorLicenseNumber3, OperatorLicenseNumber4, OperatorLicenseNumber5, OperatorLicenseNumber6, OperatorLicenseNumber7, OperatorLicenseNumber8, OperatorLicenseNumber9, OperatorLicenseStateCode, OperatorLicenseStateCode2, OperatorLicenseStateCode3, OperatorLicenseStateCode4, OperatorLicenseStateCode5, OperatorLicenseStateCode6, OperatorLicenseStateCode7, OperatorLicenseStateCode8, OperatorLicenseStateCode9, OperatorLicenseYear,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 44
+
+OperatorLicenseYear2, OperatorLicenseYear3, OperatorLicenseYear4, OperatorLicenseYear5, OperatorLicenseYear6, OperatorLicenseYear7, OperatorLicenseYear8, OperatorLicenseYear9, PhoneNumber, PhoneNumber2, PhoneNumber3, PhoneNumber4, PhoneNumber5, PhoneNumber6, PhoneNumber7, PhoneNumber8, PhoneNumber9, ProtectedPersonDateOfBirth, ProtectedPersonDateOfBirth2, ProtectedPersonDateOfBirth3, ProtectedPersonDateOfBirth4, ProtectedPersonDateOfBirth5, ProtectedPersonDateOfBirth6, ProtectedPersonDateOfBirth7, ProtectedPersonDateOfBirth8, ProtectedPersonDateOfBirth9, ProtectedPersonName, ProtectedPersonName2, ProtectedPersonName3, ProtectedPersonName4, ProtectedPersonName5, ProtectedPersonName6, ProtectedPersonName7, ProtectedPersonName8, ProtectedPersonName9, ProtectedPersonRace, ProtectedPersonRace2, ProtectedPersonRace3, ProtectedPersonRace4, ProtectedPersonRace5, ProtectedPersonRace6, ProtectedPersonRace7, ProtectedPersonRace8, ProtectedPersonRace9, ProtectedPersonSex, ProtectedPersonSex2, ProtectedPersonSex3, ProtectedPersonSex4, ProtectedPersonSex5, ProtectedPersonSex6, ProtectedPersonSex7, ProtectedPersonSex8, ProtectedPersonSex9, ProtectedPersonSocialSecurityNumber, ProtectedPersonSocialSecurityNumber2, ProtectedPersonSocialSecurityNumber3, ProtectedPersonSocialSecurityNumber4, ProtectedPersonSocialSecurityNumber5, ProtectedPersonSocialSecurityNumber6, ProtectedPersonSocialSecurityNumber7, ProtectedPersonSocialSecurityNumber8, ProtectedPersonSocialSecurityNumber9, ProtectionOrderConditionsCode, ProtectionOrderConditionsCode2, ProtectionOrderConditionsCode3, ProtectionOrderConditionsCode4, ProtectionOrderConditionsCode5, ProtectionOrderConditionsCode6, ProtectionOrderConditionsCode7, ProtectionOrderConditionsCode8, ProtectionOrderConditionsCode9, ScarsMarksTattoosCode, ScarsMarksTattoosCode2, ScarsMarksTattoosCode3, ScarsMarksTattoosCode4, ScarsMarksTattoosCode5, ScarsMarksTattoosCode6, ScarsMarksTattoosCode7, ScarsMarksTattoosCode8, ScarsMarksTattoosCode9, SocialSecurityNumber, SocialSecurityNumber2, SocialSecurityNumber3, SocialSecurityNumber4, SocialSecurityNumber5, SocialSecurityNumber6, SocialSecurityNumber7, SocialSecurityNumber8, SocialSecurityNumber9, StateCode, StateCode2, StateCode3, StateCode4, StateCode5, StateCode6, StateCode7, StateCode8, StateCode9, StateIdNumber, StateIdNumber2, StateIdNumber3, StateIdNumber4, StateIdNumber5, StateIdNumber6, StateIdNumber7, StateIdNumber8, StateIdNumber9, StreetName, StreetName2, StreetName3, StreetName4, StreetName5, StreetName6, StreetName7, StreetName8, StreetName9, StreetNumber, StreetNumber2, StreetNumber3, StreetNumber4, StreetNumber5, StreetNumber6, StreetNumber7, StreetNumber8, StreetNumber9, VehicleColorCode, VehicleColorCode2, VehicleColorCode3, VehicleColorCode4, VehicleColorCode5, VehicleColorCode6, VehicleColorCode7, VehicleColorCode8, VehicleColorCode9, VehicleIdentificationNumber, VehicleIdentificationNumber2, VehicleIdentificationNumber3, VehicleIdentificationNumber4, VehicleIdentificationNumber5, VehicleIdentificationNumber6, VehicleIdentificationNumber7, VehicleIdentificationNumber8, VehicleIdentificationNumber9, VehicleMakeCode, VehicleMakeCode2, VehicleMakeCode3, VehicleMakeCode4, VehicleMakeCode5, VehicleMakeCode6, VehicleMakeCode7, VehicleMakeCode8, VehicleMakeCode9, VehicleModelCode, VehicleModelCode2, VehicleModelCode3, VehicleModelCode4, VehicleModelCode5, VehicleModelCode6, VehicleModelCode7, VehicleModelCode8, VehicleModelCode9, VehicleStyleCode, VehicleStyleCode2, VehicleStyleCode3, VehicleStyleCode4, VehicleStyleCode5, VehicleStyleCode6, VehicleStyleCode7, VehicleStyleCode8, VehicleStyleCode9, VehicleYear, VehicleYear2, VehicleYear3, VehicleYear4, VehicleYear5, VehicleYear6, VehicleYear7, VehicleYear8, VehicleYear9, ZipCode, ZipCode2, ZipCode3, ZipCode4, ZipCode5, ZipCode6, ZipCode7, ZipCode8, ZipCode9]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 45
+
+Wanted Missing Person Inquires (WMP-I)
+
+WMPICorrectionsClientHitConfirmation
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BPSSTNumber
+
+BPSSTNumber
+
+O6
+
+CustodyOrApprehensionReasonText CustodyOrApprehensionReasonText M 120
+
+LEDSRecordNumber
+
+LEDSRecordNumber
+
+M 10
+
+NotifyingAgencyMnemonic
+
+NotifyingAgencyMnemonic
+
+O4
+
+Possible Combinations 1. (In/Out) CustodyOrApprehensionReasonText, LEDSRecordNumber, [BPSSTNumber,
+NotifyingAgencyMnemonic]
+
+WMPIMissingPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Age
+
+Age
+
+M2
+
+ExpandedNameSearchCode ExpandedNameSearchCode O 1 Y, or blank
+
+EyeColorCode
+
+EyeColorCode
+
+M3
+
+HairColorCode
+
+HairColorCode
+
+M3
+
+Height
+
+Height
+
+M3
+
+Name
+
+Name
+
+O 30
+
+RaceCode
+
+RaceCode
+
+M1
+
+SexCode
+
+SexCode
+
+M1
+
+Weight
+
+Weight
+
+M3
+
+Possible Combinations 1. (In/Out) Age, EyeColorCode, HairColorCode, Height, RaceCode, SexCode, Weight,
+[ExpandedNameSearchCode, Name]
+
+WMPIProbationParoleCorrectionsQuery
+
+Field Name Name Requestor RequestorInitials StateIdNumber
+
+XML Tag Name Name Requestor RequestorInitials StateIdNumber
+
+M/C/O C M M C
+
+Size 30 30 3 10
+
+Possible Values
+
+Possible Combinations 1. (In/Out) Name, Requestor, RequestorInitials 2. (In/Out) Requestor, RequestorInitials, StateIdNumber
+
+WMPIProtectiveOrderQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+C8
+
+ExpandedBirthDateSearchCode ExpandedBirthDateSearchCode O 1
+
+ExpandedNameSearchCode ExpandedNameSearchCode
+
+O 1 Y, or blank
+
+FBINumber
+
+FBINumber
+
+C9
+
+ImageIndicator
+
+ImageIndicator
+
+O 1 Y, or blank
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+C 15
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+C 20
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 46
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C
+
+RaceCode
+
+RaceCode
+
+O
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O
+
+SexCode
+
+SexCode
+
+O
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+C
+
+20 1 1 Y, or blank 1 9 20
+
+*** An inquiry of the Protection Order File may be made by NAM and one, more than one, or all of the following alphanumeric identifiers: DOB, FBI, MNU, SOC, and OLN. Additionally, inquiries may be made using vehicle data, NAM and OCA only, or NIC only.
+Possible Combinations
+
+1. (In/Out) [BirthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, FBINumber, ImageIndicator, LicensePlateNumber, MiscellaneousNumber, Name, NCICNumber, OperatorLicenseNumber, OriginatingAgencyCaseNumber, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, VehicleIdentificationNumber]
+
+WMPISexOffenderQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+C8
+
+ExpandedBirthDateSearchCode ExpandedBirthDateSearchCode O 1
+
+ExpandedNameSearchCode ExpandedNameSearchCode
+
+O1
+
+FBINumber
+
+FBINumber
+
+C9
+
+ImageIndicator
+
+ImageIndicator
+
+O1
+
+LEDSRecordNumber
+
+LEDSRecordNumber
+
+O 10
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+C 15
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+O 10
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber O 20
+
+PurposeCode
+
+PurposeCode
+
+C1
+
+RaceCode
+
+RaceCode
+
+C1
+
+Reason
+
+Reason
+
+O 30
+
+Requestor
+
+Requestor
+
+C 30
+
+RequestorInitials
+
+RequestorInitials
+
+C3
+
+SexCode
+
+SexCode
+
+C1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C9
+
+State
+
+State
+
+O2
+
+StateIdNumber
+
+StateIdNumber
+
+C 10
+
+Possible Combinations 1. (In) Name, PurposeCode, RaceCode, SexCode, RequestorInitials, Requestor, and one of the
+following (BirthDate, MiscellaneousNumber, SocialSecurityNumber), [Reason] 2. (In/Out) Name, and one or more of the following (BirthDate, FBINumber,
+MiscellaneousNumber, SocialSecurityNumber, OperatorLicenseNumber) or (Name and OriginatingAgencyCaseNumber only) [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, ImageIndicator, LEDSRecordNumber, RaceCode, SexCode, StateIdNumber] 3. (Out) BirthDate, Name, SexCode, [PurposeCode, Requestor, State] 4. (Out) FBINumber, [PurposeCode, Requestor, State] 5. (Out) MiscellaneousNumber, [PurposeCode, Requestor, State] 6. (Out) SocialSecurityNumber, [PurposeCode, Requestor, State] 7. (Out) StateIdNumber, [PurposeCode, Requestor, State]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 47
+
+WMPIUnidentifiedPersonQuery
+
+Field Name Age Area BodyPartsStatusCode EyeColorCode HairColorCode Height ImageIndicator RaceCode SexCode Weight
+
+XML Tag Name Age Area BodyPartsStatusCode EyeColorCode HairColorCode Height ImageIndicator RaceCode SexCode Weight
+
+M/C/O C O C C C C O C C C
+
+Size 2 3 15 3 3 3 1 1 1 3
+
+Possible Values
+
+Possible Combinations 1. (In/Out) Age, EyeColorCode, HairColorCode, Height, RaceCode, SexCode, Weight, [Area,
+ImageIndicator] 2. (In/Out) BodyPartsStatusCode, [Area, ImageIndicator, RaceCode, SexCode]
+
+WMPIWantedPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+C8
+
+ExpandedNameSearchCode ExpandedNameSearchCode
+
+O 1 Y, or blank
+
+FBINumber
+
+FBINumber
+
+C9
+
+ImageIndicator
+
+ImageIndicator
+
+O 1 Y, or blank
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+C2
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+C 15
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+C 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O 1 Y, or blank
+
+SexCode
+
+SexCode
+
+O1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C9
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+C 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+C 24
+
+*** An inquiry of the Wanted Person File may be made by NAM and one, more than one, or all of the following alphanumeric identifiers: DOB, FBI, MNU, SOC, and OLN. Additionally, inquiries may be made using vehicle data, NAM and OCA only, or NIC only.
+
+Possible Combinations
+
+1. (In/Out) [BirthDate, ExpandedNameSearchCode, FBINumber, ImageIndicator, LicensePlateNumber, LicensePlateStateCode, MiscellaneousNumber, Name, NCICNumber, OperatorLicenseNumber, OriginatingAgencyCaseNumber, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, VehicleIdentificationNumber, VehicleMakeCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 48
+
+Expanded Transactions Supported:
+
+LEDSCaseNumberQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+FormORI
+
+FormORI
+
+O9
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber M 20
+
+Possible Combinations 1. (In/Out) OriginatingAgencyCaseNumber, [FormORI]
+
+LEDSWantedPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+O 10
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+O 20
+
+BoatPartSerialNumber
+
+BoatPartSerialNumber
+
+O 20
+
+FormORI
+
+FormORI
+
+O9
+
+InvestigativeCode
+
+InvestigativeCode
+
+O4
+
+LEDSNumber
+
+LEDSNumber
+
+O 10
+
+LEDSNumber2
+
+LEDSNumber2
+
+O 10
+
+LEDSNumber3
+
+LEDSNumber3
+
+O 10
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+Mailbox
+
+Mailbox
+
+O4
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+O 30
+
+Nickname
+
+Nickname
+
+O 30
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode OperatorLicenseStateCode
+
+O2
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateIdNumber
+
+StateIdNumber
+
+O8
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+VehiclePartSerialNumber
+
+VehiclePartSerialNumber
+
+O 20
+
+Possible Combinations 1. (In/Out) [BirthDate, BoatHullIdNumber, BoatPartSerialNumber, FormORI, InvestigativeCode,
+LEDSNumber, LEDSNumber2, LEDSNumber3, LicensePlateNumber, LicensePlateStateCode, Mailbox, MiscellaneousNumber, Name, Nickname, OriginatingAgencyCaseNumber , OperatorLicenseNumber, OperatorLicenseStateCode, SocialSecurityNumber, StateIdNumber, VehicleIdentificationNumber, VehicleMakeCode, VehiclePartSerialNumber]
+
+NletsHazardousMaterialQuery
+
+Field Name ChemicalName FormORI UnitedNationsNumber
+
+XML Tag Name ChemicalName FormORI UnitedNationsNumber
+
+M/C/O C O C
+
+Possible Combinations 1. (In/Out) ChemicalName, [FormORI] 2. (In/Out) UnitedNationsNumber, [FormORI]
+
+Size 50 9 4
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 49
+
+NletsHazardousMaterialQuery
+
+Field Name ChemicalName FormORI UnitedNationsNumber
+
+XML Tag Name ChemicalName FormORI UnitedNationsNumber
+
+M/C/O C O C
+
+Possible Combinations 1. (In/Out) ChemicalName, [FormORI] 2. (In/Out) UnitedNationsNumber, [FormORI]
+
+Size 50 9 4
+
+Possible Values
+
+NletsLoJackQuery
+
+Field Name FormORI ReplyCode
+
+XML Tag Name FormORI ReplyCode
+
+Possible Combinations 1. (In/Out) [FormORI, ReplyCode]
+
+M/C/O O O
+
+Size 9 5
+
+Possible Values
+
+QueryPassThrough
+
+Field Name FreeText
+
+XML Tag Name FreeText
+
+Possible Combinations 1. (In/Out) [FreeText]
+
+M/C/O M
+
+Size Possible Values 100
+
+*This is a message key pass through and does not require the header of the message, only the body. Example: (Header)QA.TYP/YTHING.SER/123456
+
+Bolded text would be sent to ConnectCIC server in the FreeText tag.
+
+Hardware/Software Requirements:
+
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+
+Notes: None
+
+References:
+ NCIC 2000 Operations Manual  NLETS User Guide  LEDS Documentation
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 50
+
+

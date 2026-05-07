@@ -1,0 +1,2855 @@
+Illinois (IL) LEADS OFML
+Statement
+Transport: TCP/IP Foxtalk
+
+Disclaimer
+
+Routing and Configuration Information:
+Mnemonic Routing
+ The state assigned UserId for each user should be placed in the <Authentication>/<UserName> field in the ConnectCIC header.
+ The LEADS assigned ORI for a device or agency should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The LEADS assigned CDC name (maximum 10 characters) for the agency submitting the transaction should be placed in the <Authentication>/<CDCName> field. If only one agency is operating through the same message switch connection the CDC name can be set in the CDCName field found in the "Other State Settings" drop down list.
+ The state assigned ConnectionName should also be set in the "Other State Settings" drop down list.
+ The application device identifier used for routing responses should be placed in the <Authentication>/<Mnemonic> field in each transaction.
+
+Security Requirements: None known at this time
+
+Logon Requirements: None
+
+Certification Requirements:
+Excerpt From LEADS Administrative Rules - Section 1240.40 Connecting to LEADS a) To connect to LEADS, an agency must have computer hardware and computer software, and be connected to a communications link to the LEADS Data Center in Springfield. For each of these requirements, there are various options. In addition, the agency must meet certain planning and administrative responsibilities.
+ Notify LEADS Administrator When an agency desires to participate in LEADS and meets the qualifications described in Section 1240.30 or when an agency wishes to change its method of connecting to LEADS, it must make a written request at least 90 days in advance of the desired connection date. The request must be sent to the LEADS Administrator and must state: 1) When connection to LEADS is desired; and 2) What equipment and connecting options are planned by the agency.
+
+ Arrange a Conference - The agency must arrange for a conference between its own representatives, any hardware or software vendors involved, and the Department. The LEADS Administrator may waive the requirement for a formal meeting if the vendor has previously demonstrated the ability to
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+successfully interface with LEADS. The Department accepts no responsibility for misunderstanding of LEADS specifications and requirements that occurs between the local agency and its vendors.
+b) The LEADS Administrator must approve the agency's hardware and software configuration prior to the agency connecting to LEADS.
+
+Data-Mined Transactions:
+NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from Data mining
+
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name
+
+XML Tag Name
+
+ArticleSerialNumber ArticleSerialNumber
+
+ArticleTypeCode
+
+ArticleTypeCode
+
+OwnerAppliedNumber OwnerAppliedNumber
+
+M/C/O C M C
+
+Size 20 7 20
+
+Possible Values
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode 2. (In/Out) OwnerAppliedNumber, ArticleTypeCode
+
+BoatQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+C
+
+RegistrationNumber
+
+RegistrationNumber
+
+C
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+State
+
+State
+
+M
+
+State2
+
+State2
+
+O
+
+State3
+
+State3
+
+O
+
+State4
+
+State4
+
+O
+
+State5
+
+State5
+
+O
+
+Size 20 8 1 2 2 2 2 2
+
+Possible Values Y or blank
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber, State, [RelatedHitSearchIndicator, State2, State3, State4, State5] 2. (In/Out) RegistrationNumber, State, [RelatedHitSearchIndicator, State2, State3, State4, State5]
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+C
+
+ImageIndicator
+
+ImageIndicator
+
+O
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+SexCode
+
+SexCode
+
+C
+
+State
+
+State
+
+C
+
+Size Possible Values 10 1 30 20 1 1 2
+
+Possible Combinations 1. (In) Name, BirthDate, [ImageIndicator, RelatedHitSearchIndicator, SexCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+2. (In) OperatorLicenseNumber, [ImageIndicator, RelatedHitSearchIndicator] 3. (Out) Name, BirthDate, State[ImageIndicator, RelatedHitSearchIndicator, SexCode] 4. (Out) OperatorLicenseNumber, State[ImageIndicator, RelatedHitSearchIndicator]
+
+GunQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+GunCaliber
+
+GunCaliber
+
+O
+
+GunMake
+
+GunMake
+
+O
+
+GunSerialNumber
+
+GunSerialNumber
+
+M
+
+ImageIndicatot
+
+ImageIndicatot
+
+O
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O
+
+Size 4 3 20 1 1
+
+Possible Values
+Blank or Y Blank or Y
+
+Possible Combinations 1. (In/Out) GunSerialNumber, [GunCaliber, GunMake, ImageIndicator,
+RelatedHitSearchIndicator]
+
+VehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ImageIndicator
+
+ImageIndicator
+
+O 1 Blank or Y
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateTypeCode LicensePlateTypeCode
+
+O2
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O 1 Blank or Y
+
+State
+
+State
+
+O2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 20
+
+VehicleMake
+
+VehicleMake
+
+O 24
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In) LicensePlateNumber, [ImageIndicator, LicensePlateTypeCode, LicensePlateYear,
+RelatedHitSearchIndicator] 2. (In) VehicleIdentificationNumber, [RelatedHitSearchIndicator, VehicleMakeCode, VehicleYear] 3. (In/Out) [ImageIndicator, LicensePlateNumber, LicensePlateYear, RelatedHitSearchIndicator,
+State, VehicleIdentificationNumber, VehicleMake] 4. (Out) VehicleIdentificationNumber, State, [ImageIndicator, RelatedHitSearchIndicator,
+VehicleMakeCode, VehicleYear] 5. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State, [ImageIndicator,
+RelatedHitSearchIndicator]
+
+Transactions Supported:
+
+Computerized Criminal History (CCH) Package:
+
+CCHCriminalHistoryQHQuery
+
+Field Name Attention BirthDate MiscellaneousNumber
+
+XML Tag Name Attention BirthDate MiscellaneousNumber
+
+M/C/O M O C
+
+Size 30 10 15
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+Name
+
+Name
+
+M
+
+PurposeCode
+
+PurposeCode
+
+M
+
+RaceCode
+
+RaceCode
+
+O
+
+RequestingAgency
+
+RequestingAgency
+
+O
+
+SexCode
+
+SexCode
+
+O
+
+SocialSecurityNumber SocialSecurityNumber
+
+C
+
+30 1 Alpha: `A', `C', `D', `F', `H', `I', `J','S', `V', or `X' 1 20 1 9
+
+Possible Combinations 1. (In/Out) Attention, Name, PurposeCode, [BirthDate, MiscellaneousNumber, RaceCode,
+RequestingAgency, SexCode, SocialSecurityNumber]
+
+CCHCriminalHistoryQR1Query
+
+Field Name AddressCityState AgencyName Attention BuildingInformation FBINumber MailingAddress PurposeCode RequestingAgency StateIdNumber ZipCode
+
+XML Tag Name AddressCityState AgencyName Attention BuildingInformation FBINumber MailingAddress PurposeCode RequestingAgency StateIdNumber ZipCode
+
+M/C/O O O M O C O M O C O
+
+Size 30 30 30 30 10 30 1 20 10 9
+
+Possible Values Alpha: `A', `C', `D', `F', `H', `I', `J','S', `V', or `X'
+
+Possible Combinations 1. (In/Out) Attention, PurposeCode, StateIdNumber, [AddressCityState, AgencyName,
+BuildingInformation, ImageIndicator, MailingAddress, RequestingAgency, ZipCode] 2. (In/Out) Attention, PurposeCode, FBINumber, [AddressCityState, AgencyName,
+BuildingInformation, ImageIndicator, MailingAddress, RequestingAgency, ZipCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+CCHCriminalHistoryQRQuery
+
+Field Name AddressCityState AgencyName Attention BuildingInformation FBINumber AddressStreet PurposeCode RequestingAgency StateIdNumber UserId AddressZipCode
+
+XML Tag Name AddressCityState AgencyName Attention BuildingInformation FBINumber AddressStreet PurposeCode RequestingAgency StateIdNumber UserId AddressZipCode
+
+M/C/O O O M O C O M M C O O
+
+Size 30 30 30 30 10 30 1 20 10 2 9
+
+Possible Values Alpha: `A', `C', `D', `F', `H', `I', `J','S', `V', or `X'
+
+Possible Combinations 1. (In/Out) Attention, PurposeCode, RequestingAgency, FBINumber, [AddressCityState,
+AgencyName, BuildingInformation, AddressStreet, UserId, AddressZipCode] 2. (In/Out) Attention, PurposeCode, RequestingAgency, StateIdNumber, [AddressCityState,
+AgencyName, BuildingInformation, AddressStreet, UserId, AddressZipCode]
+
+Wanted Missing Person Entry (WMPE)
+
+WMPEMissingPersonCancel
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+CancellationDate
+
+CancellationDate
+
+M 10
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+Possible Combinations 1. (In/Out) CancellationDate, Name, NCICNumber, [PersonRecordRemovalReason] 2. (In/Out) CancellationDate, NCICNumber, OriginatingAgencyCaseNumber,
+[PersonRecordRemovalReason] 3. (In/Out) CancellationDate, Name, OriginatingAgencyCaseNumber,
+[PersonRecordRemovalReason] 4. (In/Out) CancellationDate, LeadsRecordNumber, Name, [PersonRecordRemovalReason]
+
+WMPEMissingPersonClear
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ClearDate
+
+ClearDate
+
+M 10
+
+ContrabandRecoveredValue ContrabandRecoveredValue
+
+O8
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NumberMissingPersonsFound NumberMissingPersonsFound O 20
+
+NumberPersonsApprehended NumberPersonsApprehended O 3
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 5
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveringAgencyORI
+
+RecoveringAgencyORI
+
+O9
+
+WantedPersonHitResultCode WantedPersonHitResultCode
+
+O2
+
+Possible Combinations 1. (In/Out) ClearDate, Name, NCICNumber,, [ContrabandRecoveredValue,
+NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI, WantedPersonHitResultCode] 2. (In/Out) ClearDate, NCICNumber, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI, WantedPersonHitResultCode] 3. (In/Out) ClearDate, Name, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI, WantedPersonHitResultCode] 4. (In/Out) ClearDate, LeadsRecordNumber, Name, [ContrabandRecoveredValue, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI, WantedPersonHitResultCode]
+
+WMPEMissingPersonEnter
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Age
+
+Age
+
+O2
+
+BirthDate
+
+BirthDate
+
+O 10
+
+BirthPlaceCode
+
+BirthPlaceCode
+
+O2
+
+BloodTypeCode
+
+BloodTypeCode
+
+O5
+
+BodyXRayCode
+
+BodyXRayCode
+
+O1
+
+CautionMedicalConditionsCode CautionMedicalConditionsCode O 2
+
+CDCName
+
+CDCName
+
+O3
+
+CircumcisionCode
+
+CircumcisionCode
+
+O1
+
+CitizenshipCode
+
+CitizenshipCode
+
+O2
+
+CorrectiveVisionPerscriptionCode CorrectiveVisionPerscriptionCode O 40
+
+DNAIndicator
+
+DNAIndicator
+
+O1
+
+DNALocation
+
+DNALocation
+
+O 250
+
+EmancipationDate
+
+EmancipationDate
+
+O 10
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+EyeColorCode
+
+EyeColorCode
+
+M3
+
+FBINumber
+
+FBINumber
+
+O9
+
+FingerprintClassificationCode FingerprintClassificationCode
+
+O 20
+
+FootprintIndicator
+
+FootprintIndicator
+
+O1
+
+HairColorCode
+
+HairColorCode
+
+M3
+
+Height
+
+Height
+
+M3
+
+JewelryTypeCode
+
+JewelryTypeCode
+
+O 50
+
+LastContactDate
+
+LastContactDate
+
+M 10
+
+LicensePlateMonth
+
+LicensePlateMonth
+
+O2
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+O2
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 6
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+LinkageAgencyIdentifier
+
+LinkageAgencyIdentifier
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MessageKey
+
+MessageKey
+
+M4
+
+MiscellaneousDescriptiveText MiscellaneousDescriptiveText
+
+O 500
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+MissingPersonCircumstanceCode MissingPersonCircumstanceCode O 1
+
+MissingPersonCode
+
+MissingPersonCode
+
+M2
+
+Name
+
+Name
+
+M 30
+
+NotifyOriginatingAgencyIndicator NotifyOriginatingAgencyIndicator O 1
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode
+
+OperatorLicenseStateCode
+
+O2
+
+OperatorLicenseYear
+
+OperatorLicenseYear
+
+O4
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber O 20
+
+PropertyDescriptionText
+
+PropertyDescriptionText
+
+O 100
+
+RaceCode
+
+RaceCode
+
+M1
+
+ReportingAgency
+
+ReportingAgency
+
+O 30
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+SexCode
+
+SexCode
+
+M1
+
+SkinToneCode
+
+SkinToneCode
+
+O3
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateIdNumber
+
+StateIdNumber
+
+O 10
+
+UserId
+
+UserId
+
+O 30
+
+VehicleColorCode
+
+VehicleColorCode
+
+O7
+
+VehicleIdentificationNumber
+
+VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+VehicleModelCode
+
+VehicleModelCode
+
+O3
+
+VehicleStyleCode
+
+VehicleStyleCode
+
+O2
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Weight
+
+Weight
+
+M3
+
+Possible Combinations 1. (In/Out) EyeColorCode, HairColorCode, Height, LastContactDate, MessageKey,
+MissingPersonCode, Name, RaceCode, SexCode, Weight, [Age, BirthDate, BirthPlaceCode, BloodTypeCode, BodyXRayCode, CautionMedicalConditionsCode, CDCName, CircumcisionCode, CitizenshipCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EmancipationDate, EthnicityCode, FBINumber, FingerprintClassificationCode, FootprintIndicator, JewelryTypeCode, LicensePlateMonth, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, MissingPersonCircumstanceCode, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginatingAgencyCaseNumber, PropertyDescriptionText, ReportingAgency, ScarsMarksTattoosCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, UserId, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear]
+
+WMPEMissingPersonLocate
+
+Field Name ContrabandRecoveredValue DispositionCode LeadsRecordNumber
+
+XML Tag Name ContrabandRecoveredValue DispositionCode LeadsRecordNumber
+
+M/C/O Size Possible Values O8 M4 C8
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 7
+
+MissingPersonHitResultCode MissingPersonHitResultCode
+
+O2
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NumberMissingPersonsFound NumberMissingPersonsFound O 20
+
+NumberPersonsApprehended NumberPersonsApprehended O 3
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+OtherRecoveredPropertyValue OtherRecoveredPropertyValue O 8
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveryDate
+
+RecoveryDate
+
+M 10
+
+Possible Combinations 1. (In/Out) DispositionCode, RecoveryDate, Name, NCICNumber, [ContrabandRecoveredValue,
+MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber] 2. (In/Out) DispositionCode, RecoveryDate, NCICNumber, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber] 3. (In/Out) DispositionCode, RecoveryDate, Name, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber] 4. (In/Out) DispositionCode, RecoveryDate, LeadsRecordNumber, Name, [ContrabandRecoveredValue, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber]
+
+WMPEMissingPersonModify
+
+Field Name AgencyCity BirthDate BirthPlaceCode BloodTypeCode BodyXRayCode CautionMedicalConditionsCode CircumcisionCode CitizenshipCode CorrectiveVisionPerscriptionCode DispositionCode DNAIndicator DNALocation EmancipationDate EthnicityCode EyeColorCode FBINumber FingerprintClassificationCode FootprintIndicator HairColorCode
+
+XML Tag Name AgencyCity BirthDate BirthPlaceCode BloodTypeCode BodyXRayCode CautionMedicalConditionsCode CircumcisionCode CitizenshipCode CorrectiveVisionPerscriptionCode DispositionCode DNAIndicator DNALocation EmancipationDate EthnicityCode EyeColorCode FBINumber FingerprintClassificationCode FootprintIndicator HairColorCode
+
+M/C/O Size Possible Values O4 O 10 O2 O5 O1 O2 O1 O2 O 40 O4 O1 O 250 O 10 O1 O3 O9 O 20 O1 O3
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 8
+
+Height
+
+Height
+
+O3
+
+ImageNCICNumber
+
+ImageNCICNumber
+
+O 10
+
+ImageTypeCode
+
+ImageTypeCode
+
+O1
+
+JewelryDescription
+
+JewelryDescription
+
+O 100
+
+JewelryTypeCode
+
+JewelryTypeCode
+
+O 50
+
+LastContactDate
+
+LastContactDate
+
+O 10
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+LicensePlateMonth
+
+LicensePlateMonth
+
+O2
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+O2
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+LinkageAgencyIdentifier
+
+LinkageAgencyIdentifier
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 200
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+MissingPersonCircumstanceCode MissingPersonCircumstanceCode O 1
+
+MissingPersonCode
+
+MissingPersonCode
+
+O2
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NewMessageKey
+
+NewMessageKey
+
+O4
+
+NewName
+
+NewName
+
+O 30
+
+NewORI
+
+NewORI
+
+O9
+
+NewOriginatingAgencyCaseNumber NewOriginatingAgencyCaseNumber O 20
+
+NotifyOriginatingAgencyIndicator NotifyOriginatingAgencyIndicator
+
+O1
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode
+
+OperatorLicenseStateCode
+
+O2
+
+OperatorLicenseYear
+
+OperatorLicenseYear
+
+O4
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber
+
+C 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+RecoveryDate
+
+RecoveryDate
+
+O 10
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+SexCode
+
+SexCode
+
+O1
+
+SkinToneCode
+
+SkinToneCode
+
+O3
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateIdNumber
+
+StateIdNumber
+
+O 10
+
+ValidatorName
+
+ValidatorName
+
+O 30
+
+VehicleColorCode
+
+VehicleColorCode
+
+O7
+
+VehicleIdentificationNumber
+
+VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+VehicleModelCode
+
+VehicleModelCode
+
+O3
+
+VehicleStyleCode
+
+VehicleStyleCode
+
+O2
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Weight
+
+Weight
+
+O3
+
+Possible Combinations 1. (In/Out) Name, NCICNumber, [BirthDate, BirthPlaceCode, BloodTypeCode, BodyXRayCode,
+CautionMedicalConditionsCode, CircumcisionCode, CitizenshipCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EmancipationDate, EthnicityCode, EyeColorCode, FBINumber, FingerprintClassificationCode, FootprintIndicator, HairColorCode, Height, JewelryDescription, JewelryTypeCode, LastContactDate, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 9
+
+LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, MissingPersonCircumstanceCode, MissingPersonCode, NewMessageKey, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, RaceCode, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight] 2. (In/Out) NCICNumber, OriginatingAgencyCaseNumber, [BirthDate, BirthPlaceCode, BloodTypeCode, BodyXRayCode, CautionMedicalConditionsCode, CircumcisionCode, CitizenshipCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EmancipationDate, EthnicityCode, EyeColorCode, FBINumber, FingerprintClassificationCode, FootprintIndicator, HairColorCode, Height, JewelryDescription, JewelryTypeCode, LastContactDate, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, MissingPersonCircumstanceCode, MissingPersonCode, NewMessageKey, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, RaceCode, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight] 3. (In/Out) Name, OriginatingAgencyCaseNumber, [BirthDate, BirthPlaceCode, BloodTypeCode, BodyXRayCode, CautionMedicalConditionsCode, CircumcisionCode, CitizenshipCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EmancipationDate, EthnicityCode, EyeColorCode, FBINumber, FingerprintClassificationCode, FootprintIndicator, HairColorCode, Height, JewelryDescription, JewelryTypeCode, LastContactDate, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, MissingPersonCircumstanceCode, MissingPersonCode, NewMessageKey, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, RaceCode, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight] 4. (In/Out) LeadsRecordNumber, Name, [AgencyCity, BirthDate, BirthPlaceCode, BloodTypeCode, BodyXRayCode, CautionMedicalConditionsCode, CircumcisionCode, CitizenshipCode, CorrectiveVisionPerscriptionCode, DispositionCode, DNAIndicator, DNALocation, EmancipationDate, EthnicityCode, EyeColorCode, FBINumber, FingerprintClassificationCode, FootprintIndicator, HairColorCode, Height, ImageNCICNumber, ImageTypeCode, JewelryDescription, JewelryTypeCode, LastContactDate, LicensePlateMonth, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MiscellaneousDescriptiveText, MiscellaneousNumber, MissingPersonCircumstanceCode, MissingPersonCode, NCICNumber, NewMessageKey, NewName, NewORI, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginatingAgencyCaseNumber, RaceCode, RecoveryDate, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, ValidatorName, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, Weight]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 10
+
+WMPEUnidentifiedPersonCancel
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+CancellationDate
+
+CancellationDate
+
+M8
+
+NCICNumber
+
+NCICNumber
+
+M 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber M 20
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+Possible Combinations 1. (In/Out) CancellationDate, NCICNumber, OriginatingAgencyCaseNumber,
+[PersonRecordRemovalReason]
+
+WMPEUnidentifiedPersonClear
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ClearDate
+
+ClearDate
+
+M8
+
+NCICNumber
+
+NCICNumber
+
+M 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber M 20
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+Possible Combinations 1. (In/Out) ClearDate, NCICNumber, OriginatingAgencyCaseNumber,
+[PersonRecordRemovalReason]
+
+WMPEUnidentifiedPersonEntry
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BloodTypeCode
+
+BloodTypeCode
+
+O5
+
+BodyFoundDate
+
+BodyFoundDate
+
+O8
+
+BodyPartsStatusCode
+
+BodyPartsStatusCode
+
+O 15
+
+BodyXRayCode
+
+BodyXRayCode
+
+O1
+
+CauseOfDeath
+
+CauseOfDeath
+
+O 30
+
+CircumcisionCode
+
+CircumcisionCode
+
+O1
+
+CorrectiveVisionPerscriptionCode
+
+CorrectiveVisionPerscriptionCode
+
+O 40
+
+DNAIndicator
+
+DNAIndicator
+
+O1
+
+DNALocation
+
+DNALocation
+
+O 250
+
+EstimatedBirthYear
+
+EstimatedBirthYear
+
+O9
+
+EstimatedDeathDate
+
+EstimatedDeathDate
+
+O8
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+EyeColorCode
+
+EyeColorCode
+
+M3
+
+FingerprintClassificationCode
+
+FingerprintClassificationCode
+
+O 20
+
+FootprintAvailableIndicator
+
+FootprintAvailableIndicator
+
+O1
+
+HairColorCode
+
+HairColorCode
+
+M3
+
+Height
+
+Height
+
+M3
+
+JewelryDescription
+
+JewelryDescription
+
+O 100
+
+JewelryTypeCode
+
+JewelryTypeCode
+
+O 50
+
+LinkageAgencyORI
+
+LinkageAgencyORI
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MedicalExaminerAgencyAndCaseNumber MedicalExaminerAgencyAndCaseNumber O 50
+
+MedicalExaminerLocality
+
+MedicalExaminerLocality
+
+O 30
+
+MedicalExaminerTelephoneNumber
+
+MedicalExaminerTelephoneNumber
+
+O 12
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 200
+
+NotifyOriginatingAgencyIndicator
+
+NotifyOriginatingAgencyIndicator
+
+O1
+
+OriginatingAgencyCaseNumber
+
+OriginatingAgencyCaseNumber
+
+M 20
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 11
+
+RaceCode ScarsMarksTattoosCode SexCode SubjectType Weight
+
+RaceCode ScarsMarksTattoosCode SexCode SubjectType Weight
+
+M1 O 10 M1 M1 M3
+
+Possible Combinations 1. (In/Out) EyeColorCode, HairColorCode, Height, OriginatingAgencyCaseNumber, RaceCode,
+SexCode, SubjectType, Weight, [BloodTypeCode, BodyFoundDate, BodyPartsStatusCode, BodyXRayCode, CauseOfDeath, CircumcisionCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EstimatedBirthYear, EstimatedDeathDate, EthnicityCode, FingerprintClassificationCode, FootprintAvailableIndicator, JewelryDescription, JewelryTypeCode, LinkageAgencyORI, LinkageCaseNumber, MedicalExaminerAgencyAndCaseNumber, MedicalExaminerLocality, MedicalExaminerTelephoneNumber, MiscellaneousDescriptiveText, NotifyOriginatingAgencyIndicator, ScarsMarksTattoosCode]
+
+WMPEUnidentifiedPersonModify
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BloodTypeCode
+
+BloodTypeCode
+
+O5
+
+BodyFoundDate
+
+BodyFoundDate
+
+O 10
+
+BodyPartsStatusCode
+
+BodyPartsStatusCode
+
+O 15
+
+BodyXRayCode
+
+BodyXRayCode
+
+O1
+
+CauseOfDeath
+
+CauseOfDeath
+
+O 30
+
+CircumcisionCode
+
+CircumcisionCode
+
+O1
+
+CorrectiveVisionPerscriptionCode
+
+CorrectiveVisionPerscriptionCode
+
+O 40
+
+DNAIndicator
+
+DNAIndicator
+
+O1
+
+DNALocation
+
+DNALocation
+
+O 250
+
+EstimatedBirthYear
+
+EstimatedBirthYear
+
+O9
+
+EstimatedDeathDate
+
+EstimatedDeathDate
+
+O 10
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+EyeColorCode
+
+EyeColorCode
+
+O3
+
+FingerprintClassificationCode
+
+FingerprintClassificationCode
+
+O 20
+
+FootprintAvailableIndicator
+
+FootprintAvailableIndicator
+
+O1
+
+HairColorCode
+
+HairColorCode
+
+O3
+
+Height
+
+Height
+
+O7
+
+JewelryDescription
+
+JewelryDescription
+
+O 100
+
+JewelryTypeCode
+
+JewelryTypeCode
+
+O 50
+
+LinkageAgencyORI
+
+LinkageAgencyORI
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MedicalExaminerAgencyAndCaseNumber MedicalExaminerAgencyAndCaseNumber O 50
+
+MedicalExaminerLocality
+
+MedicalExaminerLocality
+
+O 30
+
+MedicalExaminerTelephoneNumber
+
+MedicalExaminerTelephoneNumber
+
+O 12
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 200
+
+NCICNumber
+
+NCICNumber
+
+M 10
+
+NewMessageKey
+
+NewMessageKey
+
+O4
+
+NewORI
+
+NewORI
+
+O9
+
+NewOriginatingAgencyCaseNumber
+
+NewOriginatingAgencyCaseNumber
+
+O 20
+
+NotifyOriginatingAgencyIndicator
+
+NotifyOriginatingAgencyIndicator
+
+O1
+
+OriginatingAgencyCaseNumber
+
+OriginatingAgencyCaseNumber
+
+M 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 12
+
+SexCode ValidatorName Weight
+
+SexCode ValidatorName Weight
+
+O1 O 30 O7
+
+Possible Combinations 1. (In/Out) NCICNumber, OriginatingAgencyCaseNumber, [BloodTypeCode, BodyFoundDate,
+BodyPartsStatusCode, BodyXRayCode, CauseOfDeath, CircumcisionCode, CorrectiveVisionPerscriptionCode, DNAIndicator, DNALocation, EstimatedBirthYear, EstimatedDeathDate, EthnicityCode, EyeColorCode, FingerprintClassificationCode, FootprintAvailableIndicator, HairColorCode, Height, JewelryDescription, JewelryTypeCode, LinkageAgencyORI, LinkageCaseNumber, MedicalExaminerAgencyAndCaseNumber, MedicalExaminerLocality, MedicalExaminerTelephoneNumber, MiscellaneousDescriptiveText, NewMessageKey, NewORI, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, RaceCode, ScarsMarksTattoosCode, SexCode, ValidatorName, Weight]
+
+WMPEWantedPersonCancel
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+CancellationDate
+
+CancellationDate
+
+M 10
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+MessageKey
+
+MessageKey
+
+O4
+
+MiscellaneousDiscriptiveText MiscellaneousDiscriptiveText
+
+O 501
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+Possible Combinations 1. (In/Out) CancellationDate, Name, NCICNumber, [MessageKey, MiscellaneousDiscriptiveText,
+PersonRecordRemovalReason] 2. (In/Out) CancellationDate, NCICNumber, OriginatingAgencyCaseNumber, [MessageKey,
+MiscellaneousDiscriptiveText, PersonRecordRemovalReason] 3. (In/Out) CancellationDate, Name, OriginatingAgencyCaseNumber, [MessageKey,
+MiscellaneousDiscriptiveText, PersonRecordRemovalReason] 4. (In/Out) CancellationDate, LeadsRecordNumber, Name, [MessageKey,
+MiscellaneousDiscriptiveText, PersonRecordRemovalReason]
+
+WMPEWantedPersonClear
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ClearDate
+
+ClearDate
+
+M 10
+
+ContrabandRecoveredValue ContrabandRecoveredValue
+
+O8
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+MessageKey
+
+MessageKey
+
+O4
+
+MissingPersonHitResultCode MissingPersonHitResultCode
+
+O2
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NumberMissingPersonsFound NumberMissingPersonsFound O 20
+
+NumberPersonsApprehended NumberPersonsApprehended O 3
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 13
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveringAgencyORI
+
+RecoveringAgencyORI
+
+O9
+
+Possible Combinations 1. (In/Out) ClearDate, Name, NCICNumber, [ContrabandRecoveredValue, MessageKey,
+MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI] 2. (In/Out) ClearDate, NCICNumber, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MessageKey, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI] 3. (In/Out) ClearDate, Name, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MessageKey, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI] 4. (In/Out) ClearDate, LeadsRecordNumber, Name, [ContrabandRecoveredValue, MessageKey, MissingPersonHitResultCode, NumberMissingPersonsFound, NumberPersonsApprehended, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, RecoveringAgencyORI]
+
+WMPEWantedPersonEnter
+
+Field Name AdditionalOffenseIndicator AddressCity AddressCounty AddressStateCode AddressStreetName AddressStreetNumber AddressTypeCode AddressZipCode Age BirthDate BirthPlaceCode CautionMedicalConditionsCode CDCName CIL CitizenshipCode CourtORI DNAIndicator DNALocation DocumentedAddressDate EmancipationDate EthnicityCode ExtraditionLimitation EyeColorCode FBINumber FingerprintClassificationCode FraudulentBirthDate FraudulentMiscellaneousNumber FraudulentName
+
+XML Tag Name AdditionalOffenseIndicator AddressCity AddressCounty AddressStateCode AddressStreetName AddressStreetNumber AddressTypeCode AddressZipCode Age BirthDate BirthPlaceCode CautionMedicalConditionsCode CDCName CIL CitizenshipCode CourtORI DNAIndicator DNALocation DocumentedAddressDate EmancipationDate EthnicityCode ExtraditionLimitation EyeColorCode FBINumber FingerprintClassificationCode FraudulentBirthDate FraudulentMiscellaneousNumber FraudulentName
+
+M/C/O Size Possible Values O1 O 20 O 20 O2 O 25 O7 O2 O 10 O2 O 10 O2 O2 O3 O1 O2 O9 O1 O 250 O 10 O 10 O1 O2 O3 O9 O 20 O 10 O 15 O 30
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 14
+
+FraudulentOperatorLicenseNumber FraudulentOperatorLicenseNumber
+
+O 20
+
+FraudulentOperatorLicenseStateCode FraudulentOperatorLicenseStateCode O 2
+
+FraudulentOperatorLicenseYear
+
+FraudulentOperatorLicenseYear
+
+O4
+
+FraudulentSocialSecurityNumber FraudulentSocialSecurityNumber
+
+O9
+
+GEO
+
+GEO
+
+O 113
+
+HairColorCode
+
+HairColorCode
+
+M3
+
+Height
+
+Height
+
+M3
+
+ImageNCICNumber
+
+ImageNCICNumber
+
+O 10
+
+ImageTypeCode
+
+ImageTypeCode
+
+O1
+
+LicensePlateMonth
+
+LicensePlateMonth
+
+O2
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+O2
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+LinkageAgencyIdentifier
+
+LinkageAgencyIdentifier
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MessageKey
+
+MessageKey
+
+O4
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 500
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+M 30
+
+NotifyOriginatingAgencyIndicator
+
+NotifyOriginatingAgencyIndicator
+
+O1
+
+OffenseCode
+
+OffenseCode
+
+M 24
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode
+
+OperatorLicenseStateCode
+
+O2
+
+OperatorLicenseYear
+
+OperatorLicenseYear
+
+O4
+
+OriginalOffenseCode
+
+OriginalOffenseCode
+
+O4
+
+OriginatingAgencyCaseNumber
+
+OriginatingAgencyCaseNumber
+
+O 20
+
+RaceCode
+
+RaceCode
+
+M1
+
+ReportingAgency
+
+ReportingAgency
+
+O 30
+
+ScarsMarksTattoosCode
+
+ScarsMarksTattoosCode
+
+O 10
+
+SexCode
+
+SexCode
+
+M1
+
+SkinToneCode
+
+SkinToneCode
+
+O3
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateIdNumber
+
+StateIdNumber
+
+O 10
+
+UserId
+
+UserId
+
+O 30
+
+VehicleColorCode
+
+VehicleColorCode
+
+O7
+
+VehicleIdentificationNumber
+
+VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+VehicleModelCode
+
+VehicleModelCode
+
+O3
+
+VehicleStyleCode
+
+VehicleStyleCode
+
+O2
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+WarrantDate
+
+WarrantDate
+
+M 10
+
+WarrantNumber
+
+WarrantNumber
+
+O 15
+
+Weight
+
+Weight
+
+M3
+
+Possible Combinations 1. (In/Out) HairColorCode, Height, Name, OffenseCode, RaceCode, SexCode, WarrantDate,
+Weight, [AdditionalOffenseIndicator, AddressCity, AddressCounty, AddressStateCode, AddressStreetName, AddressStreetNumber, AddressTypeCode, AddressZipCode, Age, BirthDate, BirthPlaceCode, CautionMedicalConditionsCode, CDCName, CIL, CitizenshipCode, CourtORI, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionLimitation, EyeColorCode, FBINumber,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 15
+
+FingerprintClassificationCode, FraudulentBirthDate, FraudulentMiscellaneousNumber, FraudulentName, FraudulentOperatorLicenseNumber, FraudulentOperatorLicenseStateCode, FraudulentOperatorLicenseYear, FraudulentSocialSecurityNumber, GEO, ImageNCICNumber, ImageTypeCode, LicensePlateMonth, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MessageKey, MiscellaneousDescriptiveText, MiscellaneousNumber, NotifyOriginatingAgencyIndicator, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, OriginatingAgencyCaseNumber, ReportingAgency, ScarsMarksTattoosCode, SkinToneCode, SocialSecurityNumber, StateIdNumber, UserId, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, WarrantNumber]
+
+WMPEWantedPersonLocate
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+ContrabandRecoveredValue ContrabandRecoveredValue
+
+O8
+
+ExtraditionCode
+
+ExtraditionCode
+
+M4
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+MessageKey
+
+MessageKey
+
+O4
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NumberMissingPersonsFound NumberMissingPersonsFound O 20
+
+NumberPersonsApprehended NumberPersonsApprehended O 3
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+OtherRecoveredPropertyValue OtherRecoveredPropertyValue O 8
+
+PersonArmedIndicator
+
+PersonArmedIndicator
+
+O1
+
+PersonRecordRemovalReason PersonRecordRemovalReason O 21
+
+PropertyRecoveredValue
+
+PropertyRecoveredValue
+
+O8
+
+RecoveringAgencyCaseNumber RecoveringAgencyCaseNumber O 20
+
+RecoveryDate
+
+RecoveryDate
+
+M 10
+
+WantedPersonHitResultCode WantedPersonHitResultCode
+
+O2
+
+Possible Combinations 1. (In/Out) ExtraditionCode, RecoveryDate, Name, NCICNumber, [ContrabandRecoveredValue,
+MessageKey, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, WantedPersonHitResultCode] 2. (In/Out) ExtraditionCode, RecoveryDate, NCICNumber, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MessageKey, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, WantedPersonHitResultCode] 3. (In/Out) ExtraditionCode, RecoveryDate, Name, OriginatingAgencyCaseNumber, [ContrabandRecoveredValue, MessageKey, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, WantedPersonHitResultCode] 4. (In/Out) ExtraditionCode, RecoveryDate, LeadsRecordNumber, Name, [ContrabandRecoveredValue, MessageKey, NumberMissingPersonsFound, NumberPersonsApprehended, OtherRecoveredPropertyValue, PersonArmedIndicator, PersonRecordRemovalReason, PropertyRecoveredValue, RecoveringAgencyCaseNumber, WantedPersonHitResultCode]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 16
+
+WMPEWantedPersonModify
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+AdditionalOffenseIndicator
+
+AdditionalOffenseIndicator
+
+O1
+
+AddressCity
+
+AddressCity
+
+O 20
+
+AddressCounty
+
+AddressCounty
+
+O 20
+
+AddressStateCode
+
+AddressStateCode
+
+O2
+
+AddressStreetName
+
+AddressStreetName
+
+O 25
+
+AddressStreetNumber
+
+AddressStreetNumber
+
+O7
+
+AddressTypeCode
+
+AddressTypeCode
+
+O2
+
+AddressZipCode
+
+AddressZipCode
+
+O 10
+
+AgencyCity
+
+AgencyCity
+
+O4
+
+BirthDate
+
+BirthDate
+
+O 10
+
+BirthPlaceCode
+
+BirthPlaceCode
+
+O2
+
+CautionMedicalConditionsCode CautionMedicalConditionsCode
+
+O2
+
+CIL
+
+CIL
+
+O1
+
+CitizenshipCode
+
+CitizenshipCode
+
+O2
+
+CourtORI
+
+CourtORI
+
+O9
+
+DNAIndicator
+
+DNAIndicator
+
+O1
+
+DNALocation
+
+DNALocation
+
+O 250
+
+DocumentedAddressDate
+
+DocumentedAddressDate
+
+O 10
+
+EmancipationDate
+
+EmancipationDate
+
+O 10
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+ExtraditionCode
+
+ExtraditionCode
+
+O4
+
+ExtraditionLimitation
+
+ExtraditionLimitation
+
+O2
+
+EyeColorCode
+
+EyeColorCode
+
+O3
+
+FBINumber
+
+FBINumber
+
+O9
+
+FingerprintClassificationCode
+
+FingerprintClassificationCode
+
+O 20
+
+GEO
+
+GEO
+
+O 113
+
+HairColorCode
+
+HairColorCode
+
+O3
+
+Height
+
+Height
+
+O3
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+O2
+
+LicensePlateYear
+
+LicensePlateYear
+
+O4
+
+LinkageAgencyIdentifier
+
+LinkageAgencyIdentifier
+
+O9
+
+LinkageCaseNumber
+
+LinkageCaseNumber
+
+O 20
+
+MessageKey
+
+MessageKey
+
+O4
+
+MiscellaneousDescriptiveText
+
+MiscellaneousDescriptiveText
+
+O 500
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+NewMKE
+
+NewMKE
+
+O3
+
+NewName
+
+NewName
+
+O 30
+
+NewOriginatingAgencyCaseNumber NewOriginatingAgencyCaseNumber O 20
+
+NotifyOriginatingAgencyIndicator NotifyOriginatingAgencyIndicator
+
+O1
+
+OffenseCode
+
+OffenseCode
+
+O 24
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OperatorLicenseStateCode
+
+OperatorLicenseStateCode
+
+O2
+
+OperatorLicenseYear
+
+OperatorLicenseYear
+
+O4
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 17
+
+OriginalOffenseCode OriginatingAgencyCaseNumber RaceCode RecoveryDate ScarsMarksTattoosCode SexCode SkinToneCode SocialSecurityNumber VehicleColorCode VehicleIdentificationNumber VehicleMakeCode VehicleModelCode VehicleStyleCode VehicleYear ViolationDate WarrantDate WarrantNumber Weight
+
+OriginalOffenseCode OriginatingAgencyCaseNumber RaceCode RecoveryDate ScarsMarksTattoosCode SexCode SkinToneCode SocialSecurityNumber VehicleColorCode VehicleIdentificationNumber VehicleMakeCode VehicleModelCode VehicleStyleCode VehicleYear ViolationDate WarrantDate WarrantNumber Weight
+
+O4 C 20 O1 O 10 O 10 O1 O3 O9 O7 O 20 O 24 O3 O2 O4 O 10 O 10 O 15 O3
+
+Possible Combinations 1. (In/Out) Name, NCICNumber, [AdditionalOffenseIndicator, AddressCity, AddressCounty,
+AddressStateCode, AddressStreetName, AddressStreetNumber, AddressTypeCode, AddressZipCode, AgencyCity, BirthDate, BirthPlaceCode, CautionMedicalConditionsCode, CIL, CitizenshipCode, CourtORI, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, GEO, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MessageKey, MiscellaneousDescriptiveText, MiscellaneousNumber, NewMKE, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, RaceCode, RecoveryDate, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantDate, WarrantNumber, Weight] 2. (In/Out) NCICNumber, OriginatingAgencyCaseNumber, [AdditionalOffenseIndicator, AddressCity, AddressCounty, AddressStateCode, AddressStreetName, AddressStreetNumber, AddressTypeCode, AddressZipCode, AgencyCity, BirthDate, BirthPlaceCode, CautionMedicalConditionsCode, CIL, CitizenshipCode, CourtORI, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, GEO, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MessageKey, MiscellaneousDescriptiveText, MiscellaneousNumber, NewMKE, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, RaceCode, RecoveryDate, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantDate, WarrantNumber, Weight] 3. (In/Out) Name, OriginatingAgencyCaseNumber, [AdditionalOffenseIndicator, AddressCity, AddressCounty, AddressStateCode, AddressStreetName, AddressStreetNumber, AddressTypeCode, AddressZipCode, AgencyCity, BirthDate, BirthPlaceCode, CautionMedicalConditionsCode, CIL, CitizenshipCode, CourtORI, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, GEO,
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 18
+
+HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MessageKey, MiscellaneousDescriptiveText, MiscellaneousNumber, NewMKE, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, RaceCode, RecoveryDate, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantDate, WarrantNumber, Weight] 4. (In/Out) LeadsRecordNumber, Name, [AdditionalOffenseIndicator, AddressCity, AddressCounty, AddressStateCode, AddressStreetName, AddressStreetNumber, AddressTypeCode, AddressZipCode, AgencyCity, BirthDate, BirthPlaceCode, CautionMedicalConditionsCode, CIL, CitizenshipCode, CourtORI, DNAIndicator, DNALocation, DocumentedAddressDate, EmancipationDate, EthnicityCode, ExtraditionCode, ExtraditionLimitation, EyeColorCode, FBINumber, FingerprintClassificationCode, GEO, HairColorCode, Height, LicensePlateNumber, LicensePlateStateCode, LicensePlateTypeCode, LicensePlateYear, LinkageAgencyIdentifier, LinkageCaseNumber, MessageKey, MiscellaneousDescriptiveText, MiscellaneousNumber, NewMKE, NewName, NewOriginatingAgencyCaseNumber, NotifyOriginatingAgencyIndicator, OffenseCode, OperatorLicenseNumber, OperatorLicenseStateCode, OperatorLicenseYear, OriginalOffenseCode, RaceCode, RecoveryDate, ScarsMarksTattoosCode, SexCode, SkinToneCode, SocialSecurityNumber, VehicleColorCode, VehicleIdentificationNumber, VehicleMakeCode, VehicleModelCode, VehicleStyleCode, VehicleYear, ViolationDate, WarrantDate, WarrantNumber, Weight]
+
+Wanted Missing Person Inquiries (WMP-I)
+
+WMPIMissingPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Age
+
+Age
+
+M3
+
+AreaCode
+
+AreaCode
+
+O3
+
+EnhancedNameSearchIndicator EnhancedNameSearchIndicator O 1
+
+EthnicityCode
+
+EthnicityCode
+
+O1
+
+EyeColorCode
+
+EyeColorCode
+
+M3
+
+HairColorCode
+
+HairColorCode
+
+M3
+
+Height
+
+Height
+
+M3
+
+Name
+
+Name
+
+O 30
+
+RaceCode
+
+RaceCode
+
+M1
+
+SexCode
+
+SexCode
+
+M1
+
+Weight
+
+Weight
+
+M3
+
+Possible Combinations 1. (In/Out) Age, EyeColorCode, HairColorCode, Height, RaceCode, SexCode, Weight,
+[AreaCode, EnhancedNameSearchIndicator, EthnicityCode, Name]
+
+WMPIUnidentifiedPersonQuery
+
+Field Name Age AreaCode BodyPartsStatusCode EyeColorCode HairColorCode
+
+XML Tag Name Age AreaCode BodyPartsStatusCode EyeColorCode HairColorCode
+
+M/C/O Size Possible Values C2 O3 C 15 C3 C3
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 19
+
+Height
+
+Height
+
+C3
+
+ImageIndicator
+
+ImageIndicator
+
+O1
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+RaceCode
+
+RaceCode
+
+C1
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O1
+
+SexCode
+
+SexCode
+
+C1
+
+Weight
+
+Weight
+
+C3
+
+Possible Combinations 1. (In/Out) Age, EyeColorCode, HairColorCode, Height, RaceCode, SexCode, Weight,
+[ImageIndicator] 2. (In/Out) BodyPartsStatusCode, [AreaCode, ImageIndicator, RaceCode, SexCode] 3. (In/Out) NCICNumber, [ImageIndicator, RelatedHitSearchIndicator] 4. (In/Out) OriginatingAgencyCaseNumber, [ImageIndicator]
+
+WMPIWantedPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+O 10
+
+EnhancedNameSearchIndicator EnhancedNameSearchIndicator O 1
+
+ExpandedBirthDateSearchCode ExpandedBirthDateSearchCode O 1
+
+FBINumber
+
+FBINumber
+
+O9
+
+ImageIndicator
+
+ImageIndicator
+
+O1
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+O8
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+O 100
+
+NCICNumber
+
+NCICNumber
+
+O 10
+
+MessageKey
+
+MessageKey
+
+O5
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber O 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O1
+
+SexCode
+
+SexCode
+
+O1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+StateIdNumber
+
+StateIdNumber
+
+O 10
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+WarrantNumber
+
+WarrantNumber
+
+O 25
+
+Possible Combinations 1. (In/Out) Name, BirthDate, SexCode, [ImageIndicator, MessageKey] 2. (In/Out) Name, OriginatingAgencyCaseNumber, [EnhancedNameSearchIndicator,
+ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator] 3. (In/Out) Name, FBINumber, [BirthDate, RaceCode, SexCode, EnhancedNameSearchIndicator,
+ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator] 4. (In/Out) Name, MiscellaneousNumber, [BirthDate, RaceCode, SexCode,
+EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator] 5. (In/Out) Name, OperatorLicenseNumber, [EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 20
+
+6. (In/Out) Name, SocialSecurityNumber, [BirthDate, RaceCode, SexCode, EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator]
+7. (In/Out) Name, LicensePlateNumber, LicensePlateStateCode, [BirthDate, RaceCode, SexCode, EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator]
+8. (In/Out) Name, VehicleIdentificationNumber, VehicleMakeCode, [BirthDate, RaceCode, SexCode, EnhancedNameSearchIndicator, ExpandedBirthDateSearchCode, ImageIndicator, MessageKey, RelatedHitSearchIndicator]
+9. (In/Out) NCICNumber, [ImageIndicator, MessageKey, RelatedHitSearchIndicator]
+
+Expanded Transaction Supported:
+
+DriverLicenseByNameQuery
+
+Field Name AddressCity AddressCounty Age Name NextPage SexCode State
+
+XML Tag Name AddressCity AddressCounty Age Name NextPage SexCode State
+
+M/C/O O O O M O O O
+
+Size 20 20 2 8 20 1 2
+
+Possible Values
+
+Possible Combinations 1. (In/Out) Name, [AddressCity, AddressCounty, Age, NextPage, SexCode, State]
+
+FirearmsOwnersIdQuery
+
+Field Name BirthDate FirearmId Name SexCode
+
+XML Tag Name BirthDate FirearmId Name SexCode
+
+M/C/O C C C C
+
+Possible Combinations 1. (In) FirearmId 2. (In) Name, BirthDate, SexCode
+
+Size 8 12 30 1
+
+Possible Values
+
+IlLeadsDriverAbstractQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+BirthDate
+
+BirthDate
+
+O
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+SexCode
+
+SexCode
+
+O
+
+Possible Combinations 1. (In) Name, [BirthDate, SexCode] 2. (In) OperatorLicenseNumber
+
+Size 8 30 20 1
+
+Possible Values
+
+IlLeadsHandicapPlacardQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+HandicapPlacardNumber HandicapPlacardNumber M
+
+Size Possible Values 20
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 21
+
+Possible Combinations 1. (In) HandicapPlacardNumber
+
+IlLeadsLeadsTypeQuery
+
+Field Name DistrictCode MessageKeyModifier
+
+XML Tag Name DistrictCode MessageKeyModifier
+
+QueryMonthDay
+
+QueryMonthDay
+
+M/C/O O M
+M
+
+Size 2 1
+4
+
+Possible Values
+A ­ Article P - Plates Q - Title S ­ Security T ­ Gang Members V ­ Vehicle W ­ Wanted Person X ­ Sex Offender
+MMDD
+
+Possible Combinations 1. (In) MessageKeyModifier, QueryMonthDay, [DistrictCode]
+
+IlLeadsSoundExQuery
+
+Field Name Name PageNumber PageNumberOption PageSize
+
+XML Tag Name Name PageNumber PageNumberOption PageSize
+
+M/C/O C C O O
+
+Size 30 30 15 8
+
+Possible Values
+
+Possible Combinations 1. (In/Out) Name, [PageNumberOption, PageSize] 2. (In/Out) PageNumber, [PageNumberOption, PageSize]
+
+IlLeadsVehicleTitleQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+LeadsRecordNumber
+
+LeadsRecordNumber
+
+C8
+
+TitleNumber
+
+TitleNumber
+
+C 12
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In/Out) LeadsRecordNumber 2. (In/Out) TitleNumber 3. (In/Out) VehicleIdentificationNumber, [VehicleMakeCode, VehicleYear]
+
+IlLeadsWantedQWXQuery
+
+Field Name ImageIndicator LeadsRecordNumber
+
+XML Tag Name ImageIndicator LeadsRecordNumber
+
+M/C/O O M
+
+Size 1 8
+
+Possible Values
+
+Possible Combinations 1. (In/Out) LeadsRecordNumber, [ImageIndicator]
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 22
+
+Hardware/Software Requirements:
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+Notes: None
+References:  NCIC 2000 Operations Manual (12/99)  NLETS User Guide (10/1/98)  ISP Connection Manager Technical Reference (2/2000)
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 23
+
+

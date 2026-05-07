@@ -657,7 +657,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (OOS only)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
@@ -693,7 +693,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('4','4','4'); fields = @(
@@ -796,7 +796,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (OOS only)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'DecalNumber_Input';              node = Inp 'DecalNumber' 'Decal Number' '20' 'ROW_BOA_2' }

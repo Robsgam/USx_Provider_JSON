@@ -1,0 +1,703 @@
+Tennessee (TN) TIES
+Transport: TCP/IP
+Routing and Configuration Information: Route by ORI ­ Save Information is by token
+ The TIES assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+Security Requirements:
+Background Checks ­ Tennessee requires each vendor to have any personnel who will be working with secure data (transactions) to be fingerprinted for background checks and they require a NCIC card and Tennessee card charging $24 for each card ($48/person). You will also need to complete the security paperwork (CJIS Security Addendum and TBI Vendor Eligibility Form) before your first Tennessee agency is installed. These can be done directly with TBI. Information can be obtained through an agency or through the Tennessee Bureau of Investigation (615-744-4001).
+Logon Requirements: None
+Certification Requirements: None TBI does encourage Vendors to test against their TIES Test Server. CommSys has tested.
+Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from Data mining
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name ArticleSerialNumber ArticleTypeCode
+
+XML Tag Name ArticleSerialNumber ArticleTypeCode
+
+M/C/O M M
+
+Size 20 7
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode
+
+BoatQuery
+
+Field Name BoatHullIdNumber RegistrationNumber State InquiryTypeIndicator
+
+XML Tag Name BoatHullIdNumber RegistrationNumber State InquiryTypeIndicator
+
+M/C/O C C O O
+
+Size 20 8 2 1
+
+Possible Values
+1-Registration Check Only 2-Hot files Check Only 3-Registration and hotfiles check (default)
+
+Possible Combinations 1. (In/Out) BoatHullIdNumber, [State, InquiryTypeIndicator] 2. (In/Out) RegistrationNumber, [State, InquiryTypeIndicator]
+
+DriverHistoryQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+Attention
+
+Attention
+
+M
+
+BirthDate
+
+BirthDate
+
+C
+
+Name
+
+Name
+
+C
+
+OperatorLicenseNumber OperatorLicenseNumber C
+
+PurposeCode
+
+PurposeCode
+
+M
+
+SexCode
+
+SexCode
+
+C
+
+State
+
+State
+
+O
+
+Size 30 8 30 20 1 1 2
+
+Possible Values
+
+Possible Combinations 1. (In/Out) Attention, BirthDate, Name, PurposeCode, SexCode, [State] 2. (In/Out) Attention, OperatorLicenseNumber, PurposeCode, [State]
+
+DriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+C8
+
+ExpandedNameSearchCode ExpandedNameSearchCode O 1
+
+ImageIndicator
+
+ImageIndicator
+
+O 1 Y, N
+
+InquiryTypeIndicator
+
+InquiryTypeIndicator
+
+O 1 1-Registration Check Only 2-Hot files Check Only 3-Registration and hotfiles check (default)
+
+Name
+
+Name
+
+C 30
+
+OperatorLicenseNumber OperatorLicenseNumber
+
+C 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O 1
+
+SexCode
+
+SexCode
+
+C1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C9
+
+State
+
+State
+
+C2
+
+Possible Combinations 1. (In/Out) BirthDate, Name, SexCode, [ExpandedNameSearchCode, ImageIndicator, RaceCode, State, InquiryTypeIndicator, RelatedHitSearchIndicator] 2. (In) OperatorLicenseNumber 3. (Out) OperatorLicenseNumber, State *No hotfiles check conducted 4. (In) SocialSecurityNumber
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+GunQuery
+
+Field Name GunCaliber GunMake GunSerialNumber
+
+XML Tag Name GunCaliber GunMake GunSerialNumber
+
+M/C/O O O M
+
+Size 4 23 20
+
+Possible Values
+
+Possible Combinations 1. (In/Out) GunSerialNumber, [GunCaliber, GunMake]
+
+VehicleRegistrationQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+DealerLicensePlateNumber DealerLicensePlateNumber
+
+C 20
+
+HandicapPlacardNumber
+
+HandicapPlacardNumber
+
+C 20
+
+InquiryTypeIndicator
+
+InquiryTypeIndicator
+
+O 1 1-Registration Check Only 2-Hot files Check Only 3-Registration and hotfiles check (default)
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+C 10
+
+LicensePlateTypeCode
+
+LicensePlateTypeCode
+
+C2
+
+LicensePlateYear
+
+LicensePlateYear
+
+C4
+
+State
+
+State
+
+C2
+
+TemporaryLicensePlateNumber TemporaryLicensePlateNumber C 10
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+C 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O4
+
+VehicleYear
+
+VehicleYear
+
+O4
+
+Possible Combinations 1. (In) LicensePlateNumber, [InquiryTypeIndicator] 2. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State, [InquiryTypeIndicator] 3. (In/Out) VehicleIdentificationNumber, [InquiryTypeIndicator, State, VehicleMakeCode, VehicleYear] 4. (In) DealerLicensePlateNumber, [InquiryTypeIndicator] 5. (In) HandicapPlacardNumber *(No hot files check conducted) 6. (In) TemporaryLicensePlateNumber *(No hot files check conducted)
+
+Transactions Supported:
+
+Agency Operations and Support (AOS)
+
+AOSHazardousMaterialsQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+UnitedNationsNumber UnitedNationsNumber
+
+M
+
+Possible Combinations 1. (In/Out) UnitedNationsNumber
+
+Size Possible Values 4
+
+Expanded Transactions Supported:
+
+AlarmExchangeResponse
+
+Field Name AlarmResponse DestinationORI
+
+XML Tag Name AlarmResponse DestinationORI
+
+M/C/O M M
+
+Size Possible Values 14400
+9
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+FormORI
+
+FormORI
+
+O
+
+9
+
+Possible Combinations 1. (In/Out) AlarmResponse, DestinationORI, [FormORI]
+
+P1AlarmExchangeResponse
+
+Field Name AlarmResponse DestinationORI FormORI
+
+XML Tag Name AlarmResponse DestinationORI FormORI
+
+M/C/O M M O
+
+Size Possible Values 14400
+9 9
+
+Possible Combinations 1. (In/Out) AlarmResponse, DestinationORI, [FormORI]
+
+ProtectionOrderQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+O8
+
+ExpandedNameSearchCode ExpandedNameSearchCode
+
+O1
+
+FBINumber
+
+FBINumber
+
+O9
+
+ImageIndicator
+
+ImageIndicator
+
+O1
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+C 30
+
+NCICNumber
+
+NCICNumber
+
+C 10
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+ProtectionOrderNumber
+
+ProtectionOrderNumber
+
+C 15
+
+RaceCode
+
+RaceCode
+
+O1
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O1
+
+SexCode
+
+SexCode
+
+O1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+** An inquiry of the Protection Order File may be made by name and one, more than one, or all of the following alphanumeric identifiers: DOB, FBI, MNU, SOC, and OLN. Additionally, inquiries may be made using vehicle data, NAM and OCA only, NAM and PNO only, or NIC only.
+
+Possible Combinations 1. (In/Out) Name and an additional identifier, [BirthDate, ExpandedNameSearchCode, FBINumber, ImageIndicator, LicensePlateNumber, LicensePlateStateCode, MiscellaneousNumber, OperatorLicenseNumber, RaceCode, RelatedHitSearchIndicator, SexCode, SocialSecurityNumber, VehicleIdentificationNumber, VehicleMakeCode] 2. (In/Out) LicensePlateNumber, LicensePlateStateCode 3. (In/Out) VehicleIdentificationNumber, VehicleMakeCode 4. (In/Out) Name, OriginatingAgencyCaseNumber 5. (In/Out) Name, ProtectionOrderNumber 6. (In/Out) NCICNumber
+
+QueryPassThrough
+Field Name
+
+XML Tag Name
+
+M/C/O
+
+Size
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+Message Data
+
+FreeText
+
+M
+
+100
+
+Possible Combinations 1. FreeText
+
+*This is a message key pass through and does not require the header of the message, only the body. Example: (Header)QA.ORI/123456789.TYP/YTHING.SER/123456 Bolded text would be sent to ConnectCIC server in the FreeText tag.
+
+SexOffenderQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+O8
+
+ExpandedNameSearchCode ExpandedNameSearchCode
+
+O1
+
+FBINumber
+
+FBINumber
+
+O9
+
+ImageIndicator
+
+ImageIndicator
+
+O1
+
+LicensePlateNumber
+
+LicensePlateNumber
+
+O 10
+
+LicensePlateStateCode
+
+LicensePlateStateCode
+
+O2
+
+MiscellaneousNumber
+
+MiscellaneousNumber
+
+O 15
+
+Name
+
+Name
+
+C 30
+
+OperatorLicenseNumber
+
+OperatorLicenseNumber
+
+O 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+RaceCode
+
+RaceCode
+
+O1
+
+RelatedHitSearchIndicator
+
+RelatedHitSearchIndicator
+
+O1
+
+SexCode
+
+SexCode
+
+O1
+
+SexOffenderStatusCode
+
+SexOffenderStatusCode
+
+O1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+O9
+
+VehicleIdentificationNumber VehicleIdentificationNumber
+
+O 20
+
+VehicleMakeCode
+
+VehicleMakeCode
+
+O 24
+
+** An inquiry of the Convicted Sexual Offender Registry File may be made by name and one, more than one, or all of the following alphanumeric identifiers: DOB, FBI, MNU, SOC, OLN, LIC, and/or VIN.
+
+Possible Combinations 1. (In/Out) Name and an additional identifier, [BirthDate, ExpandedNameSearchCode, FBINumber, ImageIndicator, LicensePlateNumber, LicensePlateStateCode, MiscellaneousNumber, OperatorLicenseNumber, RaceCode, RelatedHitSearchIndicator, SexCode, SexOffenderStatusCode, SocialSecurityNumber, VehicleIdentificationNumber, VehicleMakeCode] 2. (In/Out) Name, OriginatingAgencyCaseNumber
+
+TnTiesBoatQuery
+
+Field Name
+
+XML Tag Name
+
+AddressCity
+
+AddressCity
+
+BirthDate
+
+BirthDate
+
+BoatHullIdNumber
+
+BoatHullIdNumber
+
+Name
+
+Name
+
+RegistrationNumber RegistrationNumber
+
+SocialSecurityNumber SocialSecurityNumber
+
+State
+
+State
+
+M/C/O C C C C C C C
+
+Size 20 8 20 30 8 9 2
+
+Possible Values
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 5
+
+Possible Combinations (Double asterisk "**" denotes registration ONLY queried; no hotfiles) 1. (In/Out) BoatHullIdNumber, [State] 2. (In/Out) RegistrationNumber, [State] 3. (In/Out) Name, BirthDate, [State] 4. (In)** Name, AddressCity 5. (In)** SocialSecurityNumber
+
+TnTiesDriverLicenseQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+AddressStreetNumber
+
+AddressStreetNumber
+
+O 30
+
+AddressStreetName
+
+AddressStreetName
+
+O 30
+
+AddressCity
+
+AddressCity
+
+O 30
+
+AddressCounty
+
+AddressCounty
+
+O 20
+
+Age
+
+Age
+
+O2
+
+BirthDate
+
+BirthDate
+
+C8
+
+ExpandedNameSearchCode ExpandedNameSearchCode O 1
+
+ImageIndicator
+
+ImageIndicator
+
+O 1 Y, N
+
+Name
+
+Name
+
+C 30
+
+NextPage
+
+NextPage
+
+O 20
+
+OperatorLicenseNumber OperatorLicenseNumber
+
+C 20
+
+SexCode
+
+SexCode
+
+C1
+
+RelatedHitSearchIndicator RelatedHitSearchIndicator O 1
+
+SocialSecurityNumber
+
+SocialSecurityNumber
+
+C9
+
+State
+
+State
+
+C2
+
+Possible Combinations (Double asterisk "**" denotes registration ONLY queried; no hotfiles) 1. (In)** Name, [AddressStreetName, AddressStreetNumber, AddressCity] 2. (In) Name, BirthDate, [SexCode, ImageIndicator, RelatedHitSearchIndicator, ExpandedNameSearchCode] 3. (In) SocialSecurityNumber, [ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, State, RelatedHitSearchIndicator] 4. (Out)** Name, [Age, SexCode, AddressCity, AddressCounty, NextPage] 5. (Out) Name, BirthDate, SexCode, [ImageIndicator, RelatedHitSearchIndicator, ExpandedNameSearchCode] 6. (In) OperatorLicenseNumber, [ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RelatedHitSearchIndicator] 7. (Out)** OperatorLicenseNumber, State 8. (In/Out) Name, OperatorLicenseNumber, [ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator, SexCode, State] 9. (In/Out) Name, SocialSecurityNumber, [ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator, SexCode, State]
+
+Hardware/Software Requirements:
+
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+
+Notes: None
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 6
+
+References:
+ NCIC 2000 Operations Manual  NLETS User Guide  TIES Operating Manual
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 7
+
+

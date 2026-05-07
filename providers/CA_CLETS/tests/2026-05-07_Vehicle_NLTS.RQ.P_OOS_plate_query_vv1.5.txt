@@ -1,0 +1,89 @@
+CA_CLETS BASE v1.5 -- Test Log
+============================================================
+Date       : 2026-05-07
+JSON       : CA_CLETS_BASE.json
+Entity     : Vehicle
+Combo      : NLTS.RQ.P (OOS plate query)
+Test type  : T1 -- basic combo fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  LicensePlateNumber        ABC234             typed
+  LicensePlateTypeCode      PC                 default
+  LicensePlateYear          2026               default
+  CaRequestPurposeCode      C                  initialValue (visible)
+  RegistrationState         AR                 selected (OOS routing)
+  VehicleIdentificationNumber (blank)          not set
+  VehicleMakeCode           (blank)            not set
+  VehicleYear               (blank)            not set
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR1A9YGY949SXSE40Y97MT91
+  MessageType : VehicleRegistrationQuery
+  keyReference: NLTS.RQ.P
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    LicensePlateNumber   ABC234
+    LicensePlateTypeCode PC
+    LicensePlateYear     2026
+    State                AR
+    CaRequestPurposeCode C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: NLTS.RQ.P
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + LicensePlateNumber='ABC234' + LicensePlateTypeCode='PC' + LicensePlateYear='2026' + RegistrationState='AR'
+
+  QIDM attribute               Sent?  Value           Note
+  ---------------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode         YES    C               visible initialValue
+  LicensePlateNumber           YES    ABC234          typed by user
+  LicensePlateTypeCode         YES    PC              default
+  LicensePlateYear             YES    2026            default
+  State                        YES    AR              selected -- triggers OOS routing
+  VehicleIdentificationNumber  NO     --              blank
+  VehicleMakeCode              NO     --              any[] field, not populated
+  VehicleYear                  NO     --              any[] field, not populated
+
+  State=AR present confirms NLTS.RQ.P (OOS) not IA.QV (in-state).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: licensePlateIn (Vehicle)
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69586250814],"tag":"abc234"}},"from":0,"size":50}
+  Note: RMS sent registrationStateAttrIds (numeric attr ID for AR) + plate tag. Confirms Patch 1 (state in any[]) working.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: NLTS.RQ.P fired correctly with State=AR (OOS). All 5 set[] fields present in XML. RMS co-fired plate+state search with numeric attr ID.
+  Detail: Response "No Returns" -- expected for test plate. NCIC state reverse-lookup working (AR -> 2-letter code in XML, numeric ID in RMS).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1A9YGY949SXSE40Y97MT91"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR1A9YGY949SXSE40Y97MT91</Id><LicensePlateYear>2026</LicensePlateYear><State>AR</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC234</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69586250814],"tag":"abc234"}},"from":0,"size":50}

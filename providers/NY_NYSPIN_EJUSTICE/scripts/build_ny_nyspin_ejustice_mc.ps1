@@ -515,7 +515,7 @@ $vehLayout = MakeLayouts @(
         title = 'OPTIONS - Leave blank for NY queries'
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_OPT_1' }
             )}
         )
@@ -568,7 +568,7 @@ $perLayout = MakeLayouts @(
         title = 'OPTIONS - Leave blank for NY queries'
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
             )}
         )
@@ -681,7 +681,7 @@ $boaLayout = MakeLayouts @(
         title = 'OPTIONS - Leave blank for NY queries'
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
             )}
         )

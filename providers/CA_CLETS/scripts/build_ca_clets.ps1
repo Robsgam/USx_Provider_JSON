@@ -531,7 +531,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
@@ -569,7 +569,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
@@ -665,7 +665,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'registrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
-                @{ id = 'registrationState_Input';   node = Sel 'registrationState'  'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'registrationState_Input';   node = Sel 'registrationState'  'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
                 @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(

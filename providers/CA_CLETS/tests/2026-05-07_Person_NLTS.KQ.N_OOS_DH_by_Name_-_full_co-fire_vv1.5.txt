@@ -1,0 +1,121 @@
+CA_CLETS BASE v1.5 -- Test Log
+============================================================
+Date       : 2026-05-07
+JSON       : CA_CLETS_BASE.json
+Entity     : Person
+Combo      : NLTS.KQ.N (OOS DH by Name - full co-fire)
+Test type  : T1 -- basic combo fire + co-fire verification
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     (blank)            not set
+  NameFirst                 John               typed
+  NameLast                  Smith              typed
+  BirthDate                 01/15/1980         selected
+  SexCode                   Male               selected
+  CaRequestPurposeCode      C                  initialValue (visible)
+  RegistrationState         ID                 selected (OOS routing)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+
+  REQUEST 1 -- DriverLicenseQuery (IN.L1 with OOS fields)
+  Transaction : 01KR1BE6SKX26GK0M6DCF73VMP
+  MessageType : DriverLicenseQuery
+  keyReference: IN.L1
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    State                ID
+    BirthDate            19800115
+    CaRequestPurposeCode C
+    Name                 SMITH, JOHN
+
+  REQUEST 2 -- DriverHistoryQuery (NLTS.KQ.N)
+  Transaction : 01KR1BE850V20VDPM14D92X9PW
+  MessageType : DriverHistoryQuery
+  keyReference: NLTS.KQ.N
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    State                ID
+    SexCode              M
+    BirthDate            19800115
+    CaRequestPurposeCode C
+    Name                 SMITH, JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  DL combo fired: IN.L1
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + NameLast='SMITH' + NameFirst='JOHN'; any[] matched -- BirthDate, RegistrationState
+
+  DH combo fired: NLTS.KQ.N
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + SexCode='M' + BirthDate='19800115' + NameLast='SMITH' + NameFirst='JOHN'; any[] matched -- RegistrationState='ID'
+
+  DL QIDM attributes          Sent?  Value           Note
+  ---------------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode         YES    C               visible initialValue
+  Name                         YES    SMITH, JOHN     FormatStringRuleHandler(', ')
+  BirthDate                    YES    19800115        CommsysParseDateRuleHandler (yyyy-MM-dd -> yyyyMMdd)
+  State                        YES    ID              NCIC reverse-lookup
+  OperatorLicenseNumber        NO     --              blank
+
+  DH QIDM attributes          Sent?  Value           Note
+  ---------------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode         YES    C               visible initialValue
+  Name                         YES    SMITH, JOHN     FormatStringRuleHandler(', ')
+  SexCode                      YES    M               NIBRS reverse-lookup confirmed
+  BirthDate                    YES    19800115        CommsysParseDateRuleHandler
+  State                        YES    ID              NCIC reverse-lookup
+  OperatorLicenseNumber        NO     --              blank
+  Attention                    NO     --              rule handler needs nameLast (shared pool)
+
+  Key observations:
+  - DH XML has SexCode=M but DL XML does NOT (DL QIDM has no SexCode attr) -- correct differentiation
+  - BirthDate format: yyyyMMdd in both (CommsysParseDateRuleHandler working)
+  - NIBRS sex reverse-lookup confirmed: form stores attr ID, XML gets "M"
+  - DL fired IN.L1 (not NLTS.DQ) because OLN is blank; State in any[] just gets sent along
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: firstNameLastNameDateOfBirth (Person)
+  RMS request: {"elasticQuery":{"lastName":"smith","firstName":"john","sexAttrId":"69586249083","dateOfBirth":"1980-01-15","registrationStateAttrId":"69586250812"},"from":0,"size":50}
+  Note: RMS sent full person search with name + sex attr ID + DOB + state attr ID. All Patch 3 fields present.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: NLTS.KQ.N fired correctly with all 5 set[] fields (CaPurpose + Name + Sex + DOB) + State in any[]. DL IN.L1 co-fired. SexCode NIBRS reverse-lookup confirmed (M). BirthDate format correct (yyyyMMdd).
+  Detail: Response "No Returns" -- expected. This test confirms: FormatStringRuleHandler, CommsysParseDateRuleHandler, NIBRS SexCode reverse-lookup, NCIC State reverse-lookup, DL+DH Name co-fire path. Most comprehensive Person test so far.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+--- DriverLicenseQuery ---
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1BE6SKX26GK0M6DCF73VMP"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR1BE6SKX26GK0M6DCF73VMP</Id><State>ID</State><BirthDate>19800115</BirthDate><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>SMITH, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+--- DriverHistoryQuery ---
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1BE850V20VDPM14D92X9PW"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KR1BE850V20VDPM14D92X9PW</Id><State>ID</State><SexCode>M</SexCode><BirthDate>19800115</BirthDate><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>SMITH, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"lastName":"smith","firstName":"john","sexAttrId":"69586249083","dateOfBirth":"1980-01-15","registrationStateAttrId":"69586250812"},"from":0,"size":50}

@@ -1,0 +1,85 @@
+CA_CLETS BASE v1.5 -- Test Log
+============================================================
+Date       : 2026-05-07
+JSON       : CA_CLETS_BASE.json
+Entity     : Person
+Combo      : IN.L1 (In-state DL by Name)
+Test type  : T1 -- basic combo fire
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  OperatorLicenseNumber     (blank)            not set
+  NameFirst                 John               typed
+  NameLast                  Doe                typed
+  BirthDate                 (blank)            not set
+  SexCode                   (blank)            not set
+  CaRequestPurposeCode      C                  initialValue (visible)
+  RegistrationState         (blank)            not set (in-state routing)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR1B34BD023N2HDS2J81BRE2
+  MessageType : DriverLicenseQuery
+  keyReference: IN.L1
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    CaRequestPurposeCode C
+    Name                 DOE, JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: IN.L1
+  Reason: set[] satisfied -- CaRequestPurposeCode='C' + NameLast='DOE' + NameFirst='JOHN'
+
+  DL QIDM attributes          Sent?  Value           Note
+  ---------------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode         YES    C               visible initialValue
+  Name                         YES    DOE, JOHN       FormatStringRuleHandler(', ')
+  OperatorLicenseNumber        NO     --              blank
+  BirthDate                    NO     --              blank (any[] field)
+  State                        NO     --              blank = in-state routing
+
+  DH co-fire: NO
+  Reason: DH NLTS.KQ.N requires set[]=[CaPurpose, SexCode, BirthDate, NameLast, NameFirst].
+  SexCode and BirthDate are blank, so NLTS.KQ.N does not fire. Correct behavior.
+
+  Name format confirmed: FormatStringRuleHandler produces "DOE, JOHN" (Last, First uppercase).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: firstNameLastName (Person)
+  RMS request: {"elasticQuery":{"lastName":"doe","firstName":"john"},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: IN.L1 fired correctly with Name + CaRequestPurposeCode=C, no State (in-state). DH did NOT co-fire (correct -- Sex+DOB blank). RMS co-fired name search.
+  Detail: Response "No Returns" -- expected for test name. FormatStringRuleHandler confirmed working (DOE, JOHN). Platform uppercased the name values.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR1B34BD023N2HDS2J81BRE2"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR1B34BD023N2HDS2J81BRE2</Id><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>DOE, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"lastName":"doe","firstName":"john"},"from":0,"size":50}
