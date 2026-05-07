@@ -1,0 +1,100 @@
+﻿================================================================
+  Build Report: NM_NMLETS_OFML_MC
+  Source: NM_NMLETS_OFML_MC.json
+  Generated: 2026-05-07 12:02
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'NM_NMLETS_OFML': 9 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
+  [WARN] QIF 'ENTITY_Article' field 'ArticleTypeCode' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)
+  [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [LIMITATION] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' ImageIndicator size=1
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' -> Person : 8 attrs, 2 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' -> Firearm : 4 attrs, 1 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' -> Boat : 3 attrs, 4 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr (Patch 3)
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[] (Patch 1)
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
+         NM_NMLETS_OFML_DriverLicenseQuery (query=DriverLicenseQuery)
+         NM_NMLETS_OFML_DriverHistoryQuery (query=DriverHistoryQuery)
+  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
+  [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Person : 2 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo 'DL.OLN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo 'DL.NAME': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' combo 'QG': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'BQ.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
+
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 64 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  Review WARN items -- they may cause runtime issues.
+
