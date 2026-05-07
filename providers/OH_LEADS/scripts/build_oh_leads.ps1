@@ -54,7 +54,7 @@
 #   DH uses DH-suffix fieldIds: operatorLicenseNumberDH, nameFirstDH, nameLastDH, birthDateDH, sexCodeDH
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = '1.1',
     [string]$Phase   = "base"
 )
 

@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.0'
+$Version = '1.1'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\OH_LEADS_MC.json"

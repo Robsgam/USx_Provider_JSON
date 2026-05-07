@@ -60,7 +60,7 @@
 # NAME FORMAT: Composite (FormatStringRuleHandler with ', ' separator -- Last,First)
 
 $ErrorActionPreference = "Stop"
-$Version = '1.0'
+$Version = '1.1'
 $DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT     = "$DIR\TN_TIES_BASE.json"
 $OUTREAD = "$DIR\TN_TIES_BASE_READABLE.json"

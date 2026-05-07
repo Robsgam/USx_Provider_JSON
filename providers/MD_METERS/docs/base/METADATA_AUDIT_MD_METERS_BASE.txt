@@ -1,0 +1,149 @@
+================================================================
+  Build Report: MD_METERS_BASE
+  Source: MD_METERS_BASE.json
+  Generated: 2026-05-07 14:35
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-05-07 14:36
+============================================================
+
+============================================================
+ METADATA AUDIT: MD_METERS
+============================================================
+  XML: MD_METERS.xml
+  JSON: MD_METERS_BASE.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [WARN] SecuritiesStolenQuery: in XML but NOT in JSON (not built)
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+
+--- CHECK 2: KeyReference Validation ---
+  [INFO] ZLRG.P: invented keyRef (not in XML) -- acceptable
+  [INFO] ZLRG.V: invented keyRef (not in XML) -- acceptable
+  [INFO] ZVEH.V: invented keyRef (not in XML) -- acceptable
+  [INFO] ZVEH.P: invented keyRef (not in XML) -- acceptable
+  [INFO] ZWAR.N: invented keyRef (not in XML) -- acceptable
+  [INFO] ZWAR.O: invented keyRef (not in XML) -- acceptable
+  [INFO] ZLDR.O: invented keyRef (not in XML) -- acceptable
+  [INFO] ZLDR.N: invented keyRef (not in XML) -- acceptable
+  [INFO] ZDRV.O: invented keyRef (not in XML) -- acceptable
+  [INFO] ZDRV.N: invented keyRef (not in XML) -- acceptable
+  [PASS] ZGUN: exists in XML GunQuery
+  [PASS] ZART: exists in XML ArticleSingleQuery
+  [INFO] ZBOA.H: invented keyRef (not in XML) -- acceptable
+  [INFO] ZBOA.R: invented keyRef (not in XML) -- acceptable
+  [INFO] ZBOA: XML keyRef (BoatQuery) not used in any JSON combo
+  [INFO] ZDRV: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] ZLDR: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] ZLRG: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+  [INFO] ZSEC: XML keyRef (SecuritiesStolenQuery) not used in any JSON combo
+  [INFO] ZVEH: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+  [INFO] ZWAR: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  DriverHistoryQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseExpirationYear: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   RaceCode: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   YearsPastViolationsWanted: in XML and QIDM
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [INFO]   firearmMake: in QIDM sourceField but not in XML
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
+  SecuritiesStolenQuery: (not built in JSON -- see CHECK 1)
+  VehicleRegistrationQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [INFO]   registrationState: in QIDM only (form-only field)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef ZART: set field 'ArticleTypeCode' present
+  [PASS]   keyRef ZART: set field 'ArticleSerialNumber' present
+  BoatQuery:
+  [INFO]   keyRef ZBOA: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZBOA: no exact match in JSON (may use invented keyRef)
+  DriverHistoryQuery:
+  [INFO]   keyRef ZDRV: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZDRV: no exact match in JSON (may use invented keyRef)
+  DriverLicenseQuery:
+  [INFO]   keyRef ZWAR: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZWAR: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZDRV: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZLDR: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZLDR: no exact match in JSON (may use invented keyRef)
+  GunQuery:
+  [PASS]   keyRef ZGUN: set field 'GunCaliber' present
+  [PASS]   keyRef ZGUN: set field 'GunMake' present
+  [PASS]   keyRef ZGUN: set field 'GunSerialNumber' present
+  VehicleRegistrationQuery:
+  [INFO]   keyRef ZVEH: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZVEH: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZLRG: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef ZLRG: no exact match in JSON (may use invented keyRef)
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] serialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseExpirationYear: maxLength 4 matches XML (OperatorLicenseExpirationYear)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] yearsPastViolationsWanted: maxLength 2 matches XML (YearsPastViolationsWanted)
+  [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleMakeCode: maxLength 24 matches XML (VehicleMakeCode)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 58 PASS / 0 FAIL / 1 WARN / 41 INFO
+============================================================
+

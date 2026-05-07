@@ -1,0 +1,162 @@
+================================================================
+  Build Report: CA_SAN_LUIS_OBISPO_BASE
+  Source: CA_SAN_LUIS_OBISPO_BASE.json
+  Generated: 2026-05-07 14:35
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-05-07 14:35
+============================================================
+
+============================================================
+ METADATA AUDIT: CA_SAN_LUIS_OBISPO
+============================================================
+  XML: CA_SAN_LUIS_OBISPO.xml
+  JSON: CA_SAN_LUIS_OBISPO_BASE.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+
+--- CHECK 2: KeyReference Validation ---
+  [INFO] RQ.P: invented keyRef (not in XML) -- acceptable
+  [INFO] RQ.V: invented keyRef (not in XML) -- acceptable
+  [INFO] QV.V: invented keyRef (not in XML) -- acceptable
+  [INFO] QV.P: invented keyRef (not in XML) -- acceptable
+  [INFO] DQ.O: invented keyRef (not in XML) -- acceptable
+  [INFO] L1.N: invented keyRef (not in XML) -- acceptable
+  [INFO] L1.O: invented keyRef (not in XML) -- acceptable
+  [INFO] KQ.N: invented keyRef (not in XML) -- acceptable
+  [INFO] KQ.O: invented keyRef (not in XML) -- acceptable
+  [INFO] B2.N: invented keyRef (not in XML) -- acceptable
+  [INFO] B2.O: invented keyRef (not in XML) -- acceptable
+  [PASS] QGB: exists in XML GunQuery
+  [PASS] QA: exists in XML ArticleSingleQuery
+  [PASS] BQ: exists in XML BoatQuery
+  [PASS] QB: exists in XML BoatQuery
+  [INFO] 4#: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+  [INFO] 4V: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+  [INFO] B2: XML keyRef (DriverHistoryQuery) not used in any JSON combo
+  [INFO] DQ: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] KQ: XML keyRef (DriverHistoryQuery) not used in any JSON combo
+  [INFO] L1: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] QV: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+  [INFO] QVC: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] RQ: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleBrand: in XML and QIDM
+  [PASS]   ArticleCategory: in XML and QIDM
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   registrationState: in QIDM only (form-only field)
+  DriverHistoryQuery:
+  [INFO]   Attention: in XML only (form-only pattern -- expected)
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [INFO]   PurposeCode: in XML only (form-only pattern -- expected)
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [PASS]   GunTypeCode: in XML and QIDM
+  [INFO]   firearmMake: in QIDM sourceField but not in XML
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
+  VehicleRegistrationQuery:
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [PASS]   VehicleYear: in XML and QIDM
+  [INFO]   registrationState: in QIDM only (form-only field)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef QA: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef QA: any field 'ArticleBrand' present
+  [PASS]   keyRef QA: any field 'ArticleCategory' present
+  [PASS]   keyRef QA: any field 'ArticleTypeCode' present
+  BoatQuery:
+  [PASS]   keyRef BQ: any field 'State' present
+  [PASS]   keyRef QB: any field 'State' present
+  DriverHistoryQuery:
+  [INFO]   keyRef B2: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef B2: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef KQ: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef KQ: no exact match in JSON (may use invented keyRef)
+  DriverLicenseQuery:
+  [INFO]   keyRef L1: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef L1: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef DQ: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef DQ: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef QVC: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef QVC: no exact match in JSON (may use invented keyRef)
+  GunQuery:
+  [PASS]   keyRef QGB: set field 'GunSerialNumber' present
+  [PASS]   keyRef QGB: any field 'GunCaliber' present
+  [PASS]   keyRef QGB: any field 'GunMake' present
+  [PASS]   keyRef QGB: any field 'GunTypeCode' present
+  VehicleRegistrationQuery:
+  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef RQ: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef RQ: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef 4#: no exact match in JSON (may use invented keyRef)
+  [INFO]   keyRef 4V: no exact match in JSON (may use invented keyRef)
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] articleBrand: maxLength 6 matches XML (ArticleBrand)
+  [PASS] articleCategory: maxLength 1 matches XML (ArticleCategory)
+  [PASS] serialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [WARN] operatorLicenseNumber: QIF maxLength 20 > XML maxLength 17 (OperatorLicenseNumber) -- server may reject
+  [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleMakeCode: maxLength 4 matches XML (VehicleMakeCode)
+  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 64 PASS / 0 FAIL / 1 WARN / 49 INFO
+============================================================
+

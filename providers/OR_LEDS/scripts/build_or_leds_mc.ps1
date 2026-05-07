@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds_mc.ps1
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = '1.1',
     [string]$Phase   = "mc"
 )
 
