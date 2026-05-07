@@ -445,6 +445,7 @@ if (Test-Path $pairingsConfigPath) {
         $pairingsConfig = Get-Content $pairingsConfigPath -Raw | ConvertFrom-Json
         $universalPairings = @{}
         foreach ($p in $pairingsConfig.pairings) {
+            if ($p.providerSpecific -eq $true) { continue }
             $universalPairings[$p.category] = $p.source
         }
         Info "Loaded $($universalPairings.Count) universal code type pairings"

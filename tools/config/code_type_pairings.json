@@ -5,7 +5,7 @@
     { "category": "NCIC_FIREARM_TYPE",       "source": "NCIC",      "field": "FirearmType",           "status": "confirmed" },
     { "category": "NCIC_FIREARM_MAKE",       "source": "NCIC",      "field": "FirearmMake",           "status": "confirmed", "note": "FIREARM only, NOT vehicle (AP #24)" },
     { "category": "NCIC_FIREARM_CALIBER",    "source": "NCIC",      "field": "FirearmCaliber",        "status": "confirmed", "note": "FormInput also valid" },
-    { "category": "NCIC_ARTICLE_TYPE",       "source": "CA_CLETS",  "field": "ArticleTypeCode",       "status": "confirmed", "note": "NCIC gives empty dropdown" },
+    { "category": "NCIC_ARTICLE_TYPE",       "source": "CA_CLETS",  "field": "ArticleTypeCode",       "status": "confirmed", "note": "NCIC gives empty on NJ. CA uses CA_CLETS. Other providers may use NCIC (untested). Provider-specific.", "providerSpecific": true },
     { "category": "YES_NO_UNKNOWN",          "source": "NCIC",      "field": "ImageIndicator,RandomRequest", "status": "confirmed", "note": "Y/N only. NIBRS adds Unknown" },
     { "category": "NIBRS_SEX",               "source": "NIBRS",     "field": "SexCode",               "status": "confirmed", "note": "CommSys-only fallback. Prefer attributeTypeId=SEX + codeTypeProvider=NIBRS" },
     { "category": "NIBRS_RACE",              "source": "NIBRS",     "field": "RaceCode",              "status": "confirmed", "note": "NOT attributeTypeId=RACE (AP #3). NCIC = empty" },
