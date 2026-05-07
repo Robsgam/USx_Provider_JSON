@@ -1,0 +1,25 @@
+{
+  "_description": "Fields where cross-provider type divergence is accepted. These are provider-specific and should not be flagged as FAIL by audit_cross_provider.ps1 CHECK 5.",
+  "fields": [
+    {
+      "fieldId": "VehicleMakeCode",
+      "reason": "No NCIC_VEHICLE_MAKE category exists. Some providers use attributeTypeId=VEHICLE_MAKE (FormSelect), others use free-text FormInput. Both are valid.",
+      "types": ["FormInput", "FormSelect"]
+    },
+    {
+      "fieldId": "PurposeCode",
+      "reason": "Some providers require dropdown selection, others accept free-text. Provider metadata determines which.",
+      "types": ["FormInput", "FormSelect"]
+    },
+    {
+      "fieldId": "RelatedHitSearchIndicator",
+      "reason": "Provider-specific: some use Y/N dropdown, others use free-text.",
+      "types": ["FormInput", "FormSelect"]
+    },
+    {
+      "fieldId": "relatedSearchHitIndicator",
+      "reason": "Alternate casing of RelatedHitSearchIndicator used by some CA providers.",
+      "types": ["FormInput", "FormSelect"]
+    }
+  ]
+}

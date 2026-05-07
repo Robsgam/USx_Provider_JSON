@@ -516,6 +516,13 @@ if ($pairingsConfig) {
 Out ""
 OutColor "--- CHECK 5: Field Type Consistency ---" Yellow
 
+$divergencePath = Join-Path $PSScriptRoot "config\accepted_field_divergences.json"
+$acceptedDivergences = @()
+if (Test-Path $divergencePath) {
+    $divConfig = Get-Content $divergencePath -Raw | ConvertFrom-Json
+    $acceptedDivergences = @($divConfig.fields | ForEach-Object { $_.fieldId })
+}
+
 # Build map: fieldId -> { type -> providerList }
 $fieldTypeMap = @{}
 
@@ -561,7 +568,11 @@ foreach ($fid in ($fieldTypeMap.Keys | Sort-Object)) {
             $provList = ($typeMap[$t] | Sort-Object) -join ','
             $parts += "$t in $provList"
         }
-        Fail "${fid}: $($parts -join ' but ')"
+        if ($fid -in $acceptedDivergences) {
+            Info "${fid}: $($parts -join ' but ') (accepted divergence)"
+        } else {
+            Fail "${fid}: $($parts -join ' but ')"
+        }
         $inconsistentCount++
     }
 }

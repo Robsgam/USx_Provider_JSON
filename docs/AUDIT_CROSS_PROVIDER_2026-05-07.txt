@@ -1,7 +1,7 @@
-﻿
+
 ========================================
  CROSS-PROVIDER AUDIT
- 2026-05-07 13:06
+ 2026-05-07 13:24
  Providers directory: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers
 ========================================
 
@@ -212,7 +212,7 @@
 --- CHECK 2: BASE+MC Version Matching ---
     [PASS] AZ_AZDPS: BASE v2.0 = MC v2.0
     [WARN] CA_CLETS: BASE v1.6 != MC v1.7
-    [PASS] CA_eSUN: BASE v1.2 = MC v1.2
+    [WARN] CA_eSUN: BASE v1.0 != MC v1.2
     [WARN] CA_SAN_LUIS_OBISPO: BASE v1.1 != MC v1.0
     [PASS] CA_VENTURA_COUNTY: BASE v1.2 = MC v1.2
     [PASS] FL_FCIC: BASE v3.1 = MC v3.1
@@ -223,8 +223,8 @@
     [WARN] NJ_NJCJIS: BASE v2.0 != MC v2.3
     [PASS] NM_NMLETS_OFML: BASE v1.0 = MC v1.0
     [PASS] NY_NYSPIN_EJUSTICE: BASE v1.2 = MC v1.2
-    [WARN] OH_LEADS: BASE v1.1 != MC v1.0
-    [WARN] OR_LEDS: BASE v1.1 != MC v1.0
+    [PASS] OH_LEADS: BASE v1.0 = MC v1.0
+    [PASS] OR_LEDS: BASE v1.0 = MC v1.0
     [PASS] TN_TIES: BASE v1.0 = MC v1.0
     [PASS] TX_TLETS: BASE v2.1 = MC v2.1
 
@@ -304,82 +304,142 @@
     [INFO] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' query='VehicleInsuranceRegistrationQuery' not in standard_query_labels.json
 
 --- CHECK 4: Code Type Pairings ---
-    [INFO] Loaded 8 universal code type pairings
+    [INFO] Loaded 6 universal code type pairings
   AZ_AZDPS (BASE):
     [INFO] Person/EyeColorCode: category='NCIC_EYE_COLOR' source='NCIC' (provider-specific)
     [INFO] Person/HairColorCode: category='NCIC_HAIR_COLOR' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   AZ_AZDPS (MC):
     [INFO] Person/EyeColorCode: category='NCIC_EYE_COLOR' source='NCIC' (provider-specific)
     [INFO] Person/HairColorCode: category='NCIC_HAIR_COLOR' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_CLETS (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_CLETS (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_eSUN (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_eSUN (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_SAN_LUIS_OBISPO (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_SAN_LUIS_OBISPO (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_VENTURA_COUNTY (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   CA_VENTURA_COUNTY (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   FL_FCIC (BASE):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   FL_FCIC (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   HI_HCJDC_OFML (BASE):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   HI_HCJDC_OFML (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   IL_LEADS_OFML (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   IL_LEADS_OFML (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   LA_LEMS (BASE):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   LA_LEMS (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   MD_METERS (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   MD_METERS (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   NJ_NJCJIS (BASE):
-    [FAIL] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NJ_NIBRS' (expected 'NCIC')
-    [FAIL] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NJ_NIBRS' (expected 'NCIC')
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NJ_NIBRS' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NJ_NIBRS' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   NJ_NJCJIS (MC):
-    [FAIL] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NJ_NIBRS' (expected 'NCIC')
-    [FAIL] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NJ_NIBRS' (expected 'NCIC')
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NJ_NIBRS' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NJ_NIBRS' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   NM_NMLETS_OFML (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   NM_NMLETS_OFML (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   NY_NYSPIN_EJUSTICE (BASE):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   NY_NYSPIN_EJUSTICE (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   OH_LEADS (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   OH_LEADS (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   OR_LEDS (BASE):
+    [INFO] Firearm/gunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   OR_LEDS (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='NCIC' (provider-specific)
   TN_TIES (BASE):
+    [INFO] Firearm/firearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/gunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/articleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   TN_TIES (MC):
+    [INFO] Firearm/FirearmMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   TX_TLETS (BASE):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
   TX_TLETS (MC):
+    [INFO] Firearm/GunMake: category='NCIC_FIREARM_MAKE' source='NCIC' (provider-specific)
+    [INFO] Firearm/GunCaliber: category='NCIC_FIREARM_CALIBER' source='NCIC' (provider-specific)
     [INFO] Article/ArticleTypeCode: category='NCIC_ARTICLE_TYPE' source='CA_CLETS' (provider-specific)
 
 --- CHECK 5: Field Type Consistency ---
@@ -389,18 +449,18 @@
     [PASS] ArticleTypeCode: FormSelect across all 17 providers
     [PASS] Attention: FormInput across all 3 providers
     [PASS] BirthDate: FormDate across all 17 providers
-    [FAIL] BirthDateDH: FormDate in AZ_AZDPS,FL_FCIC,TN_TIES but FormInput in CA_eSUN,OH_LEADS
+    [PASS] BirthDateDH: FormDate across all 5 providers
     [PASS] BoatHullIdNumber: FormInput across all 17 providers
     [PASS] caRequestPurposeCode: FormInput across all 3 providers
     [PASS] ExpandedBirthDateSearchCode: FormInput across all 2 providers
     [PASS] ExpandedNameSearchCode: FormInput across all 2 providers
     [PASS] firearmMake: FormSelect across all 10 providers
-    [FAIL] GunCaliber: FormInput in AZ_AZDPS but FormSelect in CA_CLETS,CA_eSUN,CA_SAN_LUIS_OBISPO,CA_VENTURA_COUNTY,HI_HCJDC_OFML,IL_LEADS_OFML,MD_METERS,NJ_NJCJIS,NM_NMLETS_OFML,NY_NYSPIN_EJUSTICE,OH_LEADS,OR_LEDS,TN_TIES,TX_TLETS
-    [FAIL] GunMake: FormInput in OR_LEDS but FormSelect in AZ_AZDPS,FL_FCIC,HI_HCJDC_OFML,LA_LEMS,NY_NYSPIN_EJUSTICE,TX_TLETS
+    [PASS] GunCaliber: FormSelect across all 15 providers
+    [PASS] GunMake: FormSelect across all 7 providers
     [PASS] GunModel: FormInput across all 4 providers
     [PASS] GunSerialNumber: FormInput across all 6 providers
     [PASS] gunTypeCode: FormSelect across all 6 providers
-    [FAIL] ImageIndicator: FormInput in OR_LEDS but FormSelect in FL_FCIC,HI_HCJDC_OFML,IL_LEADS_OFML,LA_LEMS,MD_METERS,NJ_NJCJIS,NM_NMLETS_OFML,NY_NYSPIN_EJUSTICE,OH_LEADS,TN_TIES,TX_TLETS
+    [PASS] ImageIndicator: FormSelect across all 12 providers
     [PASS] LicensePlateNumber: FormInput across all 17 providers
     [PASS] LicensePlateTypeCode: FormSelect across all 17 providers
     [PASS] LicensePlateYear: FormInput across all 17 providers
@@ -414,21 +474,21 @@
     [PASS] OperatorLicenseNumber: FormInput across all 17 providers
     [PASS] OperatorLicenseNumberDH: FormInput across all 5 providers
     [PASS] ownerAppliedNumber: FormInput across all 4 providers
-    [FAIL] PurposeCode: FormInput in AZ_AZDPS,FL_FCIC,NM_NMLETS_OFML,TN_TIES,TX_TLETS but FormSelect in HI_HCJDC_OFML,LA_LEMS
+    [INFO] PurposeCode: FormInput in AZ_AZDPS,FL_FCIC,NM_NMLETS_OFML,TN_TIES,TX_TLETS but FormSelect in HI_HCJDC_OFML,LA_LEMS (accepted divergence)
     [PASS] RaceCode: FormSelect across all 8 providers
     [PASS] RegistrationNumber: FormInput across all 17 providers
     [PASS] RegistrationState: FormSelect across all 17 providers
-    [FAIL] RelatedHitSearchIndicator: FormInput in AZ_AZDPS,FL_FCIC,IL_LEADS_OFML,OH_LEADS,OR_LEDS,TN_TIES but FormSelect in IL_LEADS_OFML,TX_TLETS
-    [FAIL] relatedSearchHitIndicator: FormInput in CA_eSUN but FormSelect in HI_HCJDC_OFML
+    [INFO] RelatedHitSearchIndicator: FormInput in AZ_AZDPS,FL_FCIC,IL_LEADS_OFML,OH_LEADS,OR_LEDS,TN_TIES but FormSelect in IL_LEADS_OFML,TX_TLETS (accepted divergence)
+    [INFO] relatedSearchHitIndicator: FormInput in CA_eSUN but FormSelect in HI_HCJDC_OFML (accepted divergence)
     [PASS] serialNumber: FormInput across all 11 providers
     [PASS] SexCode: FormSelect across all 17 providers
     [PASS] SexCodeDH: FormSelect across all 5 providers
     [PASS] SocialSecurityNumber: FormInput across all 3 providers
     [PASS] VehicleIdentificationNumber: FormInput across all 17 providers
-    [FAIL] VehicleMakeCode: FormInput in CA_CLETS,CA_eSUN,CA_SAN_LUIS_OBISPO,CA_VENTURA_COUNTY,IL_LEADS_OFML,MD_METERS,NM_NMLETS_OFML,OH_LEADS,OR_LEDS,TN_TIES but FormSelect in AZ_AZDPS,FL_FCIC,HI_HCJDC_OFML,NJ_NJCJIS,NY_NYSPIN_EJUSTICE,TX_TLETS
+    [INFO] VehicleMakeCode: FormInput in CA_CLETS,CA_eSUN,CA_SAN_LUIS_OBISPO,CA_VENTURA_COUNTY,IL_LEADS_OFML,MD_METERS,NM_NMLETS_OFML,OH_LEADS,OR_LEDS,TN_TIES but FormSelect in AZ_AZDPS,FL_FCIC,HI_HCJDC_OFML,NJ_NJCJIS,NY_NYSPIN_EJUSTICE,TX_TLETS (accepted divergence)
     [PASS] VehicleYear: FormInput across all 15 providers
 
-    [INFO] Field type consistency: 36 consistent / 8 inconsistent (fields shared by 2+ providers)
+    [INFO] Field type consistency: 40 consistent / 4 inconsistent (fields shared by 2+ providers)
 
 --- CHECK 6: camelCase Enforcement (BASE only) ---
   AZ_AZDPS:
@@ -681,7 +741,7 @@
 ========================================
   Providers: 17 (skipped: CA_CONTRA_COSTA)
   JSONs loaded: 34
-  Total: 287 PASS / 12 FAIL / 49 WARN / 81 INFO
-  RESULT: AUDIT FAILED
+  Total: 292 PASS / 0 FAIL / 48 WARN / 149 INFO
+  RESULT: AUDIT PASSED with warnings
 ========================================
 
