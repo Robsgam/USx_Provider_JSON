@@ -21,20 +21,20 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.3 | 67P/0F/5W/1LIM (BASE camelCase) 0W/1LIM (MC) IMPORTED | queriesToDeselect VehReg/Stolen, RandomRequest, NCIC state, Patch 1+3+6+7+8 |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.1 | 64P/0F/1W/4LIM IMPORTED | 6-transaction build, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.2 | 72P/0F/0W/5LIM IMPORTED | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
-| AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 69P/0F/0W/4LIM IMPORTED | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
+| AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 70P/0F/0W/4LIM IMPORTED | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.1 | 101P/0F/1W/4LIM 21+60 PASS IMPORTED | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.1 | 73P/0F/13W/3LIM IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
 | LA_LEMS | providers/LA_LEMS/ | v2.0 | 48P/0F/32W/4LIM IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.7 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.2 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) BUILT | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |
-| CA_eSUN | providers/CA_eSUN/ | v1.2 | 69P/0F/3W/5LIM (BASE) 69P/0F/3W/5LIM (MC) BUILT | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
+| CA_eSUN | providers/CA_eSUN/ | v1.2 | 70P/0F/3W/5LIM (BASE) 70P/0F/3W/5LIM (MC) BUILT | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
 | CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.1 | 63P/0F/0W/4LIM (BASE) 63P/0F/0W/4LIM (MC) BUILT | Regional interface, no CaRequestPurposeCode, short keyRefs, MC multi-card (13 cards) |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.0 | 59P/0F/7W/0LIM (BASE) 59P/0F/3W/0LIM (MC) BUILT | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
 | MD_METERS | providers/MD_METERS/ | v1.0 | 67P/0F/5W/5LIM (BASE) 67P/0F/2W/5LIM (MC) BUILT | 6 basic queries, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (11 cards) |
-| OH_LEADS | providers/OH_LEADS/ | v1.1 | 75P/0F/4W/4LIM (BASE) 75P/0F/3W/4LIM (MC) BUILT | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
+| OH_LEADS | providers/OH_LEADS/ | v1.1 | 76P/0F/4W/4LIM (BASE) 76P/0F/3W/4LIM (MC) BUILT | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
 | NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.0 | 64P/0F/2W/4LIM (BASE) 64P/0F/1W/4LIM (MC) BUILT | 6 basic queries, GunModel field, MC multi-card (11 cards) |
-| OR_LEDS | providers/OR_LEDS/ | v1.1 | 58P/0F/3W/1LIM (BASE) 58P/0F/2W/1LIM (MC) BUILT | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
+| OR_LEDS | providers/OR_LEDS/ | v1.1 | 58P/0F/2W/1LIM (BASE) 58P/0F/1W/1LIM (MC) BUILT | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
 | TN_TIES | providers/TN_TIES/ | v1.1 | 79P/0F/4W/3LIM (BASE) 79P/0F/1W/3LIM (MC) BUILT | 6 basic queries, 28 combos, no State initialValue, MC multi-card (14 cards), DH-suffix |
 
 ## Legacy Repos (READ-ONLY)
