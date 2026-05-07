@@ -1,11 +1,12 @@
 # build_ca_clets_mc.ps1  -- CA_CLETS v1.x MC
 # MC variant: PascalCase fieldIds, no Patch 8 (CAD rename).
-# Same QIDMs and combos as BASE. Phase 1 single-card.
+# Phase 2 multi-card. Cross-entity combos (IN.VP, IG.QGH, NLTS.BQ.N).
+# CAD_DISPATCH + FIRST_RESPONDER context cards.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.6'
+$Version  = '1.7'
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_CLETS_MC.json"
@@ -470,39 +471,77 @@ $caBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 2: ENTITIES (PascalCase fieldIds)
+# BUNDLE 2: ENTITIES -- MC VARIANT (5 QIFs, multi-card layouts)
+#
+# Vehicle:  4 cards (OPTIONS + PLATE SEARCH + VIN SEARCH + NAME SEARCH)
+# Person:   3 cards (OPTIONS + OLN SEARCH + NAME SEARCH)
+# Firearm:  3 cards (OPTIONS + SERIAL SEARCH + NAME SEARCH)
+# Article:  3 cards (OPTIONS + SERIAL SEARCH + OAN SEARCH)
+# Boat:     5 cards (OPTIONS + HULL + REGISTRATION + OAN + NAME SEARCH)
+#
+# Shared OPTIONS card: fields used by multiple combos (RegistrationState,
+# CaRequestPurposeCode) live on a separate card to avoid duplicate fieldId
+# across cards (= ISE). NCIC state pattern: visible RegistrationState,
+# NO initialValue (blank default -- LIMITATION #30).
 # =====================================================================
 
+# ------------------------------------------------------------------
+# Vehicle -- 4 cards (MC)
+# OPTIONS: RegistrationState + CaRequestPurposeCode (shared by all combos)
+# PLATE SEARCH: Plate + PlateType + PlateYear
+# VIN SEARCH: VIN + VehicleMake + VehicleYear
+# NAME SEARCH: First + Last (cross-entity IN.VP)
+# ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_PLATE'
+        title = 'PLATE SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '30' 'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = '2026' } }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'VehicleMakeCode_Input'; node = Inp 'VehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_4' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'VehicleYear'     'Vehicle Year' '4' 'ROW_VEH_4' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_VIN'
+        title = 'VIN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '30' 'ROW_VEH_VIN_1' }
             )}
-            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_5' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_5' }
+            @{ id = 'ROW_VEH_VIN_2'; cols = @('6','6'); fields = @(
+                @{ id = 'VehicleMakeCode_Input'; node = Inp 'VehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_VIN_2' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'VehicleYear'     'Vehicle Year' '4' 'ROW_VEH_VIN_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_VEH_NAME'
+        title = 'NAME SEARCH (Vehicle by Owner)'
+        rows  = @(
+            @{ id = 'ROW_VEH_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_NAME_1' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleRegistrationQuery (IA.QV/IA.QVK + NLTS.RQ OOS + IN.VP name). MC cross-entity.'
+    description  = 'Vehicle queries -- MC: OPTIONS (State + Purpose) + PLATE (IA.QV/NLTS.RQ.P) + VIN (IA.QVK/NLTS.RQ.V) + NAME (IN.VP cross-entity)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -510,29 +549,49 @@ $vehicleForm = [PSCustomObject]@{
     targetEntity = 'Vehicle'
 }
 
+# ------------------------------------------------------------------
+# Person -- 3 cards (MC)
+# OPTIONS: RegistrationState + CaRequestPurposeCode (shared by DL + DH)
+# OLN SEARCH: OperatorLicenseNumber
+# NAME SEARCH: First + Last + DOB + Sex (DL IN.L1 + DH NLTS.KQ.N)
+# ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER'
-        title = 'PERSON SEARCH'
+        id    = 'CARD_PER_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_OLN'
+        title = 'OLN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                                          'ROW_PER_3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_3' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_NAME'
+        title = 'NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
+            )}
+            @{ id = 'ROW_PER_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                                          'ROW_PER_NAME_2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_NAME_2' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ).'
+    description  = 'Person queries -- MC: OPTIONS (State + Purpose) + OLN (ID.L1/NLTS.DQ/NLTS.KQ.O) + NAME (IN.L1/NLTS.KQ.N)'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -540,29 +599,49 @@ $personForm = [PSCustomObject]@{
     targetEntity = 'Person'
 }
 
+# ------------------------------------------------------------------
+# Firearm -- 3 cards (MC)
+# OPTIONS: CaRequestPurposeCode (shared by serial + name combos)
+# SERIAL SEARCH: Serial + Make + Caliber + Type (IG.QGB)
+# NAME SEARCH: First + Last (cross-entity IG.QGH)
+# ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
-        id    = 'CARD_GUN'
-        title = 'FIREARM SEARCH'
+        id    = 'CARD_GUN_OPT'
+        title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'SerialNumber_Input'; node = Inp 'SerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
-                @{ id = 'FirearmMake_Input';  node = Sel 'FirearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_GUN_OPT_1'; cols = @('4'); fields = @(
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
-                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+        )
+    }
+    @{
+        id    = 'CARD_GUN_SERIAL'
+        title = 'SERIAL SEARCH'
+        rows  = @(
+            @{ id = 'ROW_GUN_SERIAL_1'; cols = @('6','6'); fields = @(
+                @{ id = 'SerialNumber_Input'; node = Inp 'SerialNumber' 'Serial Number' '20' 'ROW_GUN_SERIAL_1' }
+                @{ id = 'FirearmMake_Input';  node = Sel 'FirearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_1' }
             )}
-            @{ id = 'ROW_GUN_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_3' }
+            @{ id = 'ROW_GUN_SERIAL_2'; cols = @('6','6'); fields = @(
+                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_2' }
+                @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_GUN_NAME'
+        title = 'NAME SEARCH (Gun by Owner)'
+        rows  = @(
+            @{ id = 'ROW_GUN_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_NAME_1' }
             )}
         )
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- IG.QGB (serial) + IG.QGH (name). MC cross-entity.'
+    description  = 'Firearm query -- MC: OPTIONS (Purpose) + SERIAL (IG.QGB) + NAME (IG.QGH cross-entity)'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'
@@ -570,25 +649,47 @@ $firearmsForm = [PSCustomObject]@{
     targetEntity = 'Firearm'
 }
 
+# ------------------------------------------------------------------
+# Article -- 3 cards (MC)
+# OPTIONS: CaRequestPurposeCode (shared by serial + OAN combos)
+# SERIAL SEARCH: Serial + ArticleType + Brand (IP.QA.S)
+# OAN SEARCH: OwnerAppliedNumber (IP.QA.O)
+# ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
-        id    = 'CARD_ART'
-        title = 'ARTICLE SEARCH'
+        id    = 'CARD_ART_OPT'
+        title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'SerialNumber_Input';       node = Inp 'SerialNumber'       'Serial Number'        '20' 'ROW_ART_1' }
-                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_ART_OPT_1'; cols = @('4'); fields = @(
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';    node = Inp 'ArticleBrand'    'Brand'        '6'                                                                     'ROW_ART_2' }
+        )
+    }
+    @{
+        id    = 'CARD_ART_SERIAL'
+        title = 'SERIAL SEARCH'
+        rows  = @(
+            @{ id = 'ROW_ART_SERIAL_1'; cols = @('12'); fields = @(
+                @{ id = 'SerialNumber_Input'; node = Inp 'SerialNumber' 'Serial Number' '20' 'ROW_ART_SERIAL_1' }
+            )}
+            @{ id = 'ROW_ART_SERIAL_2'; cols = @('6','6'); fields = @(
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_SERIAL_2' }
+                @{ id = 'ArticleBrand_Input';    node = Inp 'ArticleBrand'    'Brand'        '6'                                                                     'ROW_ART_SERIAL_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_ART_OAN'
+        title = 'OAN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_ART_OAN_1'; cols = @('12'); fields = @(
+                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_OAN_1' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- IP.QA (serial, OAN). CA property inquiry.'
+    description  = 'Article query -- MC: OPTIONS (Purpose) + SERIAL (IP.QA.S) + OAN (IP.QA.O)'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -596,30 +697,68 @@ $articleForm = [PSCustomObject]@{
     targetEntity = 'Article'
 }
 
+# ------------------------------------------------------------------
+# Boat -- 5 cards (MC)
+# OPTIONS: RegistrationState + CaRequestPurposeCode (shared by all combos)
+# HULL SEARCH: BoatHullIdNumber (IA.QB.H / NLTS.BQ.H)
+# REGISTRATION SEARCH: RegistrationNumber (IA.QB.R / NLTS.BQ.R)
+# OAN SEARCH: OwnerAppliedNumber (IA.QB.O)
+# NAME SEARCH: First + Last + DOB (cross-entity NLTS.BQ.N)
+# ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        id    = 'CARD_BOA_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationNumber_Input';  node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';   node = Sel 'RegistrationState'  'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('6','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_2' }
-                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_2' }
+        )
+    }
+    @{
+        id    = 'CARD_BOA_HULL'
+        title = 'HULL SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_HULL_1'; cols = @('12'); fields = @(
+                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_HULL_1' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_BOA_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_BOA_3' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'   'ROW_BOA_3' }
+        )
+    }
+    @{
+        id    = 'CARD_BOA_REG'
+        title = 'REGISTRATION SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_REG_1'; cols = @('12'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_BOA_OAN'
+        title = 'OAN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_OAN_1'; cols = @('12'); fields = @(
+                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_OAN_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_BOA_NAME'
+        title = 'NAME SEARCH (Boat by Owner)'
+        rows  = @(
+            @{ id = 'ROW_BOA_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_BOA_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_BOA_NAME_1' }
+            )}
+            @{ id = 'ROW_BOA_NAME_2'; cols = @('12'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_BOA_NAME_2' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg, name). MC cross-entity.'
+    description  = 'Boat queries -- MC: OPTIONS (State + Purpose) + HULL (IA.QB.H/NLTS.BQ.H) + REG (IA.QB.R/NLTS.BQ.R) + OAN (IA.QB.O) + NAME (NLTS.BQ.N cross-entity)'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
