@@ -50,7 +50,7 @@
 #   Name+DOB+Sex -> DL DLICN + DH DALH co-fire.
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 

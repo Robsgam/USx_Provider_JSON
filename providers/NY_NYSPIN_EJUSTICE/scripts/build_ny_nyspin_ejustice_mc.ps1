@@ -33,7 +33,7 @@
 # DL+DH co-fire: CONFIRMED (DGRP removed in BASE)
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.2",
     [string]$Phase   = "mc"
 )
 

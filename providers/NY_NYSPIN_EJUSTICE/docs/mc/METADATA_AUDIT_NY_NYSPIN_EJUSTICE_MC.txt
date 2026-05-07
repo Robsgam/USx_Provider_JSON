@@ -1,0 +1,199 @@
+﻿================================================================
+  Build Report: NY_NYSPIN_EJUSTICE_MC
+  Source: NY_NYSPIN_EJUSTICE_MC.json
+  Generated: 2026-05-07 14:17
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-05-07 14:17
+============================================================
+
+============================================================
+ METADATA AUDIT: NY_NYSPIN_EJUSTICE
+============================================================
+  XML: NY_NYSPIN_EJUSTICE.XML
+  JSON: NY_NYSPIN_EJUSTICE_MC.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [WARN] CBICanadaDriverLicenseQuery: in XML but NOT in JSON (not built)
+  [WARN] CBICanadaVehicleRegistrationQuery: in XML but NOT in JSON (not built)
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [WARN] NyNyspinBoatBINQQuery: in XML but NOT in JSON (not built)
+  [WARN] NyNyspinBoatRegistrationNameQuery: in XML but NOT in JSON (not built)
+  [WARN] NyNyspinDriverLicenseNameQuery: in XML but NOT in JSON (not built)
+  [WARN] NyNyspinNicbAllFilesQuery: in XML but NOT in JSON (not built)
+  [WARN] NyNyspinVehicleRegistrationNameQuery: in XML but NOT in JSON (not built)
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+  [WARN] WMPIPersonMINQQuery: in XML but NOT in JSON (not built)
+  [WARN] WMPIPersonWINQQuery: in XML but NOT in JSON (not built)
+  [WARN] WMPIProtectionOrderQuery: in XML but NOT in JSON (not built)
+
+--- CHECK 2: KeyReference Validation ---
+  [PASS] RVIN: exists in XML VehicleRegistrationQuery
+  [PASS] RVEH: exists in XML VehicleRegistrationQuery
+  [PASS] RCAR: exists in XML VehicleRegistrationQuery
+  [PASS] DLIC: exists in XML DriverLicenseQuery
+  [INFO] DLICN: invented keyRef (not in XML) -- acceptable
+  [PASS] DALL: exists in XML DriverHistoryQuery
+  [INFO] DALH: invented keyRef (not in XML) -- acceptable
+  [PASS] GINQ: exists in XML GunQuery
+  [PASS] AINQ: exists in XML ArticleSingleQuery
+  [PASS] BVEH: exists in XML BoatQuery
+  [PASS] BVIN: exists in XML BoatQuery
+  [PASS] RVEH: exists in XML BoatQuery
+  [PASS] RCAR: exists in XML BoatQuery
+  [INFO] BINQ: XML keyRef (NyNyspinBoatBINQQuery) not used in any JSON combo
+  [INFO] BNAM: XML keyRef (NyNyspinBoatRegistrationNameQuery) not used in any JSON combo
+  [INFO] DGRP: XML keyRef (NyNyspinDriverLicenseNameQuery) not used in any JSON combo
+  [INFO] MINQ: XML keyRef (WMPIPersonMINQQuery) not used in any JSON combo
+  [INFO] OINQ: XML keyRef (WMPIProtectionOrderQuery) not used in any JSON combo
+  [INFO] RGRP: XML keyRef (NyNyspinVehicleRegistrationNameQuery) not used in any JSON combo
+  [INFO] RNAM: XML keyRef (NyNyspinVehicleRegistrationNameQuery) not used in any JSON combo
+  [INFO] WINQ: XML keyRef (WMPIPersonWINQQuery) not used in any JSON combo
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [INFO]   RelatedHitSearchIndicator: in XML only (form-only pattern -- expected)
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+  DriverHistoryQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [WARN]   NyNyspinTransactionName: in XML but not in QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [INFO]   PurposeCode: in XML only (form-only pattern -- expected)
+  [INFO]   Requestor: in XML only (form-only pattern -- expected)
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   NameFirst: in QIDM sourceField but not in XML
+  [INFO]   NameLast: in QIDM sourceField but not in XML
+  [INFO]   NameMiddle: in QIDM sourceField but not in XML
+  [INFO]   NameSuffix: in QIDM sourceField but not in XML
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   NameFirst: in QIDM sourceField but not in XML
+  [INFO]   NameLast: in QIDM sourceField but not in XML
+  [INFO]   NameMiddle: in QIDM sourceField but not in XML
+  [INFO]   NameSuffix: in QIDM sourceField but not in XML
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [INFO]   RelatedHitSearchIndicator: in XML only (form-only pattern -- expected)
+  [INFO]   ImageIndicator: in QIDM only (form-only field)
+  NyNyspinBoatBINQQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinBoatRegistrationNameQuery: (not built in JSON -- see CHECK 1)
+  CBICanadaDriverLicenseQuery: (not built in JSON -- see CHECK 1)
+  CBICanadaVehicleRegistrationQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinDriverLicenseNameQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinNicbAllFilesQuery: (not built in JSON -- see CHECK 1)
+  WMPIPersonMINQQuery: (not built in JSON -- see CHECK 1)
+  WMPIPersonWINQQuery: (not built in JSON -- see CHECK 1)
+  WMPIProtectionOrderQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinVehicleRegistrationNameQuery: (not built in JSON -- see CHECK 1)
+  VehicleRegistrationQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [PASS]   VehicleYear: in XML and QIDM
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef AINQ: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef AINQ: set field 'ArticleTypeCode' present
+  [PASS]   keyRef AINQ: any field 'ImageIndicator' present
+  [INFO]   keyRef AINQ: XML any field 'RelatedHitSearchIndicator' not in JSON (form-only)
+  BoatQuery:
+  [PASS]   keyRef RVEH: set field 'RegistrationNumber' present
+  [PASS]   keyRef RVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef RCAR: set field 'BoatHullIdNumber' present
+  [PASS]   keyRef RCAR: any field 'ImageIndicator' present
+  [PASS]   keyRef BVEH: set field 'RegistrationNumber' present
+  [PASS]   keyRef BVEH: set field 'State' present
+  [PASS]   keyRef BVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef BVIN: set field 'BoatHullIdNumber' present
+  [PASS]   keyRef BVIN: set field 'State' present
+  [PASS]   keyRef BVIN: any field 'ImageIndicator' present
+  DriverHistoryQuery:
+  [PASS]   keyRef DALL: any field 'ImageIndicator' present
+  [INFO]   keyRef DALL: XML any field 'NyNyspinTransactionName' not in JSON any[] or set[]
+  [PASS]   keyRef DALL: any field 'ImageIndicator' present
+  [INFO]   keyRef DALL: XML any field 'NyNyspinTransactionName' not in JSON any[] or set[]
+  DriverLicenseQuery:
+  [PASS]   keyRef DLIC: set field 'OperatorLicenseNumber' present
+  [PASS]   keyRef DLIC: any field 'ImageIndicator' present
+  [PASS]   keyRef DLIC: any field 'State' present
+  [WARN]   keyRef DLIC: XML set field 'BirthDate' missing from JSON set[]
+  [WARN]   keyRef DLIC: XML set field 'Name' missing from JSON set[]
+  [WARN]   keyRef DLIC: XML set field 'SexCode' missing from JSON set[]
+  [PASS]   keyRef DLIC: any field 'ImageIndicator' present
+  [PASS]   keyRef DLIC: any field 'State' present
+  GunQuery:
+  [PASS]   keyRef GINQ: set field 'GunSerialNumber' present
+  [PASS]   keyRef GINQ: any field 'GunCaliber' present
+  [PASS]   keyRef GINQ: any field 'GunMake' present
+  [INFO]   keyRef GINQ: XML any field 'RelatedHitSearchIndicator' not in JSON (form-only)
+  VehicleRegistrationQuery:
+  [PASS]   keyRef RVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef RCAR: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef RCAR: any field 'ImageIndicator' present
+  [PASS]   keyRef RVIN: set field 'State' present
+  [PASS]   keyRef RVIN: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef RVIN: any field 'ImageIndicator' present
+  [PASS]   keyRef RVIN: any field 'VehicleMakeCode' present
+  [PASS]   keyRef RVIN: any field 'VehicleYear' present
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] ArticleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] RegistrationNumber: maxLength 10 matches XML (RegistrationNumber)
+  [PASS] NameLast: maxLength 35 matches XML (Name)
+  [PASS] NameFirst: maxLength 35 matches XML (Name)
+  [PASS] NameMiddle: maxLength 35 matches XML (Name)
+  [INFO] NameSuffix: QIF maxLength 10 < XML maxLength 35 (Name) -- conservative, OK
+  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] NameLast: maxLength 35 matches XML (Name)
+  [PASS] NameFirst: maxLength 35 matches XML (Name)
+  [PASS] NameMiddle: maxLength 35 matches XML (Name)
+  [INFO] NameSuffix: QIF maxLength 10 < XML maxLength 35 (Name) -- conservative, OK
+  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] GunSerialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] VehicleYear: maxLength 4 matches XML (VehicleYear)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 94 PASS / 0 FAIL / 14 WARN / 33 INFO
+============================================================
+
