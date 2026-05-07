@@ -1,10 +1,10 @@
 # build_ca_esun.ps1  -- CA_eSUN v1.x BASE
-# Builds CA_ESUN_BASE.json from source\CA_ESUN.xml metadata + HIDLE.json.
+# Builds CA_eSUN_BASE.json from source\CA_eSUN.xml metadata + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1 -Version X.X -Phase base
 #
 # INPUTS:
-#   source\CA_ESUN.xml   -- XML metadata [AUTHORITATIVE]
+#   source\CA_eSUN.xml   -- XML metadata [AUTHORITATIVE]
 #   source\HIDLE.json    -- RMS structural template
 #
 # METADATA SUMMARY (CA_eSUN -- 6 basic queries, 20 combos in XML):
@@ -55,9 +55,9 @@ param(
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
-$OUT      = "$DIR\CA_ESUN_BASE.json"
-$OUTREAD  = "$DIR\CA_ESUN_BASE_READABLE.json"
-$VEROUT   = "$PHASEDIR\CA_ESUN_v${Version}_${DATE}.json"
+$OUT      = "$DIR\CA_eSUN_BASE.json"
+$OUTREAD  = "$DIR\CA_eSUN_BASE_READABLE.json"
+$VEROUT   = "$PHASEDIR\CA_eSUN_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -110,6 +110,10 @@ function SelH($fid, $lbl, $extra, $parentId) {
 
 function Dt($fid, $lbl, $parentId) {
     N 'FormDate' 'Date' @{ fieldId = $fid; label = $lbl } $false $false @() $parentId
+}
+
+function DtH($fid, $lbl, $parentId) {
+    N 'FormDate' 'Date' @{ fieldId = $fid; label = $lbl } $false $true @() $parentId
 }
 
 function BuildMultiCardLayout($cardDefs) {
@@ -166,7 +170,7 @@ function MakeLayouts($cardDefs) {
 }
 
 # =====================================================================
-# BUNDLE 1: CA_ESUN PROVIDER
+# BUNDLE 1: CA_eSUN PROVIDER
 # =====================================================================
 
 # 1a. AUTHENTICATION
@@ -188,12 +192,12 @@ $auth = [PSCustomObject]@{
             requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
         }
     )
-    description                = 'Authentication configuration for CA_ESUN'
+    description                = 'Authentication configuration for CA_eSUN'
     handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'CA_ESUN'
+    name                       = 'CA_eSUN'
     type                       = 'AUTHENTICATION'
     deviceRegistrationOptional = $false
-    provider                   = 'CA_ESUN'
+    provider                   = 'CA_eSUN'
     providerType               = 'Commsys'
     signInRequired             = $false
 }
@@ -201,19 +205,19 @@ $auth = [PSCustomObject]@{
 # 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE
 $hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
 $results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
-$results.name        = 'CA_ESUN_Results'
-$results.description = 'Results mapping for CA_ESUN'
-$results.provider    = 'CA_ESUN'
+$results.name        = 'CA_eSUN_Results'
+$results.description = 'Results mapping for CA_eSUN'
+$results.provider    = 'CA_eSUN'
 
 # 1c. QUERYMESSAGEFORMAT
 $qmf = [PSCustomObject]@{
     description          = 'Configuration for Query format'
     handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'CA_ESUN_QueryMessageFormat'
+    name                 = 'CA_eSUN_QueryMessageFormat'
     type                 = 'QUERYMESSAGEFORMAT'
     authenticationParent = 'LawEnforcementTransaction'
     payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'CA_ESUN'
+    provider             = 'CA_eSUN'
 }
 
 # =====================================================================
@@ -239,9 +243,9 @@ $artQuery = [PSCustomObject]@{
     )
     description     = 'ArticleSingleQuery -- QA (serial). Property inquiry.'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_ESUN_ArticleSingleQuery'
+    name            = 'CA_eSUN_ArticleSingleQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'CA_ESUN'
+    provider        = 'CA_eSUN'
     providerType    = 'Commsys'
     query           = 'ArticleSingleQuery'
     queryLabel      = 'Article'
@@ -277,9 +281,9 @@ $boatQuery = [PSCustomObject]@{
     )
     description     = 'BoatQuery -- BQ.H (hull), BQ.R (reg). 6 XML combos collapsed to 2.'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_ESUN_BoatQuery'
+    name            = 'CA_eSUN_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'CA_ESUN'
+    provider        = 'CA_eSUN'
     providerType    = 'Commsys'
     query           = 'BoatQuery'
     queryLabel      = 'Boat'
@@ -343,10 +347,10 @@ $dlQuery = [PSCustomObject]@{
     )
     description     = 'DriverLicenseQuery -- L1.N/L1.O (in-state), DQ.N/DQ.O (OOS).'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_ESUN_DriverLicenseQuery'
+    name            = 'CA_eSUN_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
     autoSelect      = $true
-    provider        = 'CA_ESUN'
+    provider        = 'CA_eSUN'
     providerType    = 'Commsys'
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
@@ -422,10 +426,10 @@ $dhQuery = [PSCustomObject]@{
     )
     description     = 'DriverHistoryQuery -- L1.N/L1.O (in-state), KQ.N/KQ.O (OOS). DH-suffix fieldIds for co-fire.'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_ESUN_DriverHistoryQuery'
+    name            = 'CA_eSUN_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
     autoSelect      = $true
-    provider        = 'CA_ESUN'
+    provider        = 'CA_eSUN'
     providerType    = 'Commsys'
     query           = 'DriverHistoryQuery'
     queryLabel      = 'Driver History'
@@ -478,9 +482,9 @@ $gunQuery = [PSCustomObject]@{
     )
     description     = 'GunQuery -- QGB (serial), QGH (name). Firearm query with name-based search.'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'CA_ESUN_GunQuery'
+    name            = 'CA_eSUN_GunQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'CA_ESUN'
+    provider        = 'CA_eSUN'
     providerType    = 'Commsys'
     query           = 'GunQuery'
     queryLabel      = 'Firearm'
@@ -568,10 +572,10 @@ $vehRegQuery = [PSCustomObject]@{
     )
     description        = 'VehicleRegistrationQuery -- QV.P/QV.V (in-state), RQ.P/RQ.V (OOS), VP.N/VP.D (owner search).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
-    name               = 'CA_ESUN_VehicleRegistrationQuery'
+    name               = 'CA_eSUN_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
     autoSelect         = $true
-    provider           = 'CA_ESUN'
+    provider           = 'CA_eSUN'
     providerType       = 'Commsys'
     query              = 'VehicleRegistrationQuery'
     queryLabel         = 'Vehicle Registration'
@@ -580,10 +584,10 @@ $vehRegQuery = [PSCustomObject]@{
 
 $esunBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $artQuery, $boatQuery, $dlQuery, $dhQuery, $gunQuery, $vehRegQuery)
-    description    = "Provider configuration for CA_ESUN v${Version}"
-    name           = 'CA_ESUN'
+    description    = "Provider configuration for CA_eSUN v${Version}"
+    name           = 'CA_eSUN'
     type           = 'BUNDLE'
-    provider       = 'CA_ESUN'
+    provider       = 'CA_eSUN'
 }
 
 # =====================================================================
@@ -676,7 +680,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'nameLastDH_Input';  node = InpH 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'birthDateDH_Input'; node = InpH 'birthDateDH' 'Date of Birth (DH)' '10' 'ROW_PER_DH_3' }
+                @{ id = 'birthDateDH_Input'; node = DtH  'birthDateDH' 'Date of Birth (DH)' 'ROW_PER_DH_3' }
                 @{ id = 'sexCodeDH_Input';   node = SelH 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
             )}
         )
@@ -800,7 +804,7 @@ $entitiesBundle = [PSCustomObject]@{
         $vehicleForm, $personForm,
         $firearmsForm, $articleForm, $boatForm
     )
-    description    = 'Entity form configurations for CA_ESUN'
+    description    = 'Entity form configurations for CA_eSUN'
     name           = 'ENTITIES'
     type           = 'BUNDLE'
     order          = [PSCustomObject]@{
@@ -812,7 +816,7 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE, with CA_ESUN patches)
+# BUNDLE 3: RMS (from HIDLE, with CA_eSUN patches)
 # =====================================================================
 $rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
 $rmsVehQidm = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
@@ -924,7 +928,7 @@ $jsonReadable = $output | ConvertTo-Json -Depth 100
 [System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText($VEROUT,  $json,         [System.Text.UTF8Encoding]::new($false))
 
-Write-Host "Built CA_ESUN_BASE.json v${Version}"
+Write-Host "Built CA_eSUN_BASE.json v${Version}"
 Write-Host "  -> $OUT (minified)"
 Write-Host "  -> $OUTREAD (readable)"
 Write-Host "  -> $VEROUT (phase archive)"

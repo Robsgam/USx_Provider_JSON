@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: OR_LEDS_BASE
   Source: OR_LEDS_BASE.json
-  Generated: 2026-05-07 10:37
+  Generated: 2026-05-07 13:15
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -18,10 +18,14 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Firearm
     gunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
+    gunMake [Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
     gunTypeCode [Type]
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
 
   Entity: Person
+    imageIndicator [Image (Y)] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     registrationState [State (leave blank for OR)]
@@ -90,5 +94,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 9
+  Form dropdowns: 11
   QRDM code type attrs: 13

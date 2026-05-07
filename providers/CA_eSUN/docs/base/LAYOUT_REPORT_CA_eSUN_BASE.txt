@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN_BASE
   Source: CA_eSUN_BASE.json
-  Generated: 2026-05-07 10:36
+  Generated: 2026-05-07 13:19
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,17 +9,17 @@ LAYOUT SUMMARY
 === CA_eSUN_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=10
-  Person | entity=Person | qidm= | cards=1 fields=8
+  Person | entity=Person | qidm= | cards=1 fields=7
   Firearm | entity=Firearm | qidm= | cards=1 fields=6
   Article | entity=Article | qidm= | cards=1 fields=4
   Boat | entity=Boat | qidm= | cards=1 fields=3
 QIDMs: 6
-  CA_ESUN_ArticleSingleQuery | attrs=5 combos=1 autoSelect=
-  CA_ESUN_BoatQuery | attrs=4 combos=2 autoSelect=
-  CA_ESUN_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
-  CA_ESUN_DriverHistoryQuery | attrs=8 combos=4 autoSelect=True
-  CA_ESUN_GunQuery | attrs=9 combos=2 autoSelect=
-  CA_ESUN_VehicleRegistrationQuery | attrs=12 combos=6 autoSelect=True
+  CA_eSUN_ArticleSingleQuery | attrs=5 combos=1 autoSelect=
+  CA_eSUN_BoatQuery | attrs=4 combos=2 autoSelect=
+  CA_eSUN_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
+  CA_eSUN_DriverHistoryQuery | attrs=8 combos=4 autoSelect=True
+  CA_eSUN_GunQuery | attrs=9 combos=2 autoSelect=
+  CA_eSUN_VehicleRegistrationQuery | attrs=12 combos=6 autoSelect=True
 
 
 LAYOUT DETAIL
@@ -70,7 +70,7 @@ LAYOUT DETAIL
         nameFirstDH (Text | maxLen=30)
         nameLastDH (Text | maxLen=30)
       ROW ROW_PER_DH_3 [6 6]
-        birthDateDH (Text | maxLen=10)
+        birthDateDH (FormDate)
         sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
 
 === Firearm ===

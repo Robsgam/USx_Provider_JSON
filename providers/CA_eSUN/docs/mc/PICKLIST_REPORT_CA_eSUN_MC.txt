@@ -1,65 +1,65 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_eSUN_BASE
-  Source: CA_eSUN_BASE.json
-  Generated: 2026-05-07 10:36
+  PICKLIST / DROPDOWN REPORT: CA_eSUN_MC
+  Source: CA_eSUN_MC.json
+  Generated: 2026-05-07 13:19
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    articleTypeCode [Article Type]
+    ArticleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
 
   Entity: Boat
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
 
   Entity: Firearm
-    firearmMake [Make]
+    FirearmMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    gunCaliber [Caliber]
+    GunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    gunTypeCode [Type]
+    GunTypeCode [Type]
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
 
   Entity: Person
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
-    sexCode [Sex]
+    SexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    sexCodeDH [Sex (DH)]
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    licensePlateTypeCode [Plate Type] (default=PC)
+    LicensePlateTypeCode [Plate Type] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 --------------------------------------------------
 
   Config Type: QUERYINPUTDATAMAPPING
-    Config: CA_ESUN_BoatQuery
+    Config: CA_eSUN_BoatQuery
       State -> State
         codeTypeProvider=NCIC
-    Config: CA_ESUN_DriverLicenseQuery
+    Config: CA_eSUN_DriverLicenseQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
       State -> State
         codeTypeProvider=NCIC
-    Config: CA_ESUN_DriverHistoryQuery
+    Config: CA_eSUN_DriverHistoryQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
       State -> State
         codeTypeProvider=NCIC
-    Config: CA_ESUN_VehicleRegistrationQuery
+    Config: CA_eSUN_VehicleRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
 
   Config Type: QUERYRESULTDATAMAPPING
-    Config: CA_ESUN_Results
+    Config: CA_eSUN_Results
       AddressStateCode -> AddressStateCode
         codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
       EyeColorCode -> EyeColorCode
@@ -82,22 +82,22 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 --------------------------------------------------
 
-  QIDM: CA_ESUN_BoatQuery
+  QIDM: CA_eSUN_BoatQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: CA_ESUN_DriverLicenseQuery
+  QIDM: CA_eSUN_DriverLicenseQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
-  QIDM: CA_ESUN_DriverLicenseQuery
+  QIDM: CA_eSUN_DriverLicenseQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: CA_ESUN_DriverHistoryQuery
+  QIDM: CA_eSUN_DriverHistoryQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
-  QIDM: CA_ESUN_DriverHistoryQuery
+  QIDM: CA_eSUN_DriverHistoryQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: CA_ESUN_VehicleRegistrationQuery
+  QIDM: CA_eSUN_VehicleRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
 ======================================================================

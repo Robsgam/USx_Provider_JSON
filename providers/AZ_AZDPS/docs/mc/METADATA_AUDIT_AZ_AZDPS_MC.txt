@@ -1,0 +1,218 @@
+﻿================================================================
+  Build Report: AZ_AZDPS_MC
+  Source: AZ_AZDPS_MC.json
+  Generated: 2026-05-07 13:15
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-05-07 13:15
+============================================================
+
+============================================================
+ METADATA AUDIT: AZ_AZDPS
+============================================================
+  XML: AZ_AZDPS.xml
+  JSON: AZ_AZDPS_MC.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [WARN] AzAzdpsBoatQuery: in XML but NOT in JSON (not built)
+  [PASS] AzAzdpsDriverLicenseQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [WARN] DriverLicenseQuery: in XML but NOT in JSON (not built)
+  [PASS] GunQuery: in XML and JSON
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+  [FAIL] WMPIMissingPersonInquiry: in JSON but NOT in XML (invalid query)
+  [FAIL] WMPIWantedPersonInquiry: in JSON but NOT in XML (invalid query)
+
+--- CHECK 2: KeyReference Validation ---
+  [PASS] ACVR: exists in XML VehicleRegistrationQuery
+  [INFO] ACVRV: invented keyRef (not in XML) -- acceptable
+  [PASS] DQ: exists in XML AzAzdpsDriverLicenseQuery
+  [INFO] DQN: invented keyRef (not in XML) -- acceptable
+  [INFO] DQSS: invented keyRef (not in XML) -- acceptable
+  [PASS] ACWL: exists in XML AzAzdpsDriverLicenseQuery
+  [PASS] KQ: exists in XML DriverHistoryQuery
+  [INFO] KQH: invented keyRef (not in XML) -- acceptable
+  [PASS] ACQG: exists in XML GunQuery
+  [PASS] ACQA: exists in XML ArticleSingleQuery
+  [PASS] ACQB: exists in XML BoatQuery
+  [INFO] ACQBH: invented keyRef (not in XML) -- acceptable
+  [PASS] BQ: exists in XML BoatQuery
+  [INFO] BQH: invented keyRef (not in XML) -- acceptable
+  [INFO] ACQW: invented keyRef (not in XML) -- acceptable
+  [INFO] ACQWN: invented keyRef (not in XML) -- acceptable
+  [INFO] ACQM: invented keyRef (not in XML) -- acceptable
+  [INFO] ACQMN: invented keyRef (not in XML) -- acceptable
+  [INFO] DQP: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [PASS]   BadgeNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  [INFO]   dexStateUserId: in QIDM only (form-only field)
+  AzAzdpsBoatQuery: (not built in JSON -- see CHECK 1)
+  AzAzdpsDriverLicenseQuery:
+  [PASS]   BadgeNumber: in XML and QIDM
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   SocialSecurityNumber: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   dexStateUserId: in QIDM only (form-only field)
+  [INFO]   NameFirst: in QIDM sourceField but not in XML
+  [INFO]   NameLast: in QIDM sourceField but not in XML
+  [INFO]   NameMiddle: in QIDM sourceField but not in XML
+  [INFO]   NameSuffix: in QIDM sourceField but not in XML
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+  BoatQuery:
+  [PASS]   BadgeNumber: in XML and QIDM
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   dexStateUserId: in QIDM only (form-only field)
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+  DriverHistoryQuery:
+  [PASS]   Attention: in XML and QIDM
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   PurposeCode: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [INFO]   BirthDateDH: in QIDM sourceField but not in XML
+  [INFO]   NameFirstDH: in QIDM sourceField but not in XML
+  [INFO]   NameLastDH: in QIDM sourceField but not in XML
+  [INFO]   NameMiddleDH: in QIDM sourceField but not in XML
+  [INFO]   NameSuffixDH: in QIDM sourceField but not in XML
+  [INFO]   OperatorLicenseNumberDH: in QIDM sourceField but not in XML
+  [INFO]   SexCodeDH: in QIDM sourceField but not in XML
+  [INFO]   StateDH: in QIDM sourceField but not in XML
+  DriverLicenseQuery: (not built in JSON -- see CHECK 1)
+  GunQuery:
+  [PASS]   BadgeNumber: in XML and QIDM
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunModel: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  [INFO]   dexStateUserId: in QIDM only (form-only field)
+  VehicleRegistrationQuery:
+  [PASS]   BadgeNumber: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [PASS]   VehicleYear: in XML and QIDM
+  [INFO]   dexStateUserId: in QIDM only (form-only field)
+  [INFO]   RegistrationState: in QIDM only (form-only field)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef ACQA: set field 'BadgeNumber' present
+  [PASS]   keyRef ACQA: set field 'ArticleTypeCode' present
+  [PASS]   keyRef ACQA: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef ACQA: any field 'RelatedHitSearchIndicator' present
+  AzAzdpsDriverLicenseQuery:
+  [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' present
+  [PASS]   keyRef DQ: any field 'State' present
+  [INFO]   keyRef DQ: XML set field 'Name' is in JSON any[] (demoted)
+  [INFO]   keyRef DQ: XML set field 'SexCode' is in JSON any[] (demoted)
+  [INFO]   keyRef DQ: XML set field 'BirthDate' is in JSON any[] (demoted)
+  [PASS]   keyRef DQ: any field 'State' present
+  [INFO]   keyRef DQ: XML set field 'SocialSecurityNumber' is in JSON any[] (demoted)
+  [PASS]   keyRef ACWL: set field 'BadgeNumber' present
+  [PASS]   keyRef ACWL: set field 'BirthDate' present
+  [PASS]   keyRef ACWL: set field 'Name' present
+  [PASS]   keyRef ACWL: set field 'SexCode' present
+  [PASS]   keyRef ACWL: any field 'OperatorLicenseNumber' present
+  [PASS]   keyRef ACWL: any field 'State' present
+  BoatQuery:
+  [PASS]   keyRef ACQB: set field 'BadgeNumber' present
+  [PASS]   keyRef ACQB: set field 'RegistrationNumber' present
+  [PASS]   keyRef ACQB: any field 'BoatHullIdNumber' present
+  [PASS]   keyRef ACQB: any field 'RelatedHitSearchIndicator' present
+  [PASS]   keyRef ACQB: set field 'BadgeNumber' present
+  [INFO]   keyRef ACQB: XML set field 'BoatHullIdNumber' is in JSON any[] (demoted)
+  [PASS]   keyRef ACQB: any field 'RegistrationNumber' present
+  [PASS]   keyRef ACQB: any field 'RelatedHitSearchIndicator' present
+  [PASS]   keyRef BQ: set field 'RegistrationNumber' present
+  [PASS]   keyRef BQ: any field 'BoatHullIdNumber' present
+  [PASS]   keyRef BQ: any field 'State' present
+  [INFO]   keyRef BQ: XML set field 'BoatHullIdNumber' is in JSON any[] (demoted)
+  [PASS]   keyRef BQ: any field 'RegistrationNumber' present
+  [PASS]   keyRef BQ: any field 'State' present
+  DriverHistoryQuery:
+  [PASS]   keyRef KQ: set field 'State' present
+  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' present
+  [PASS]   keyRef KQ: any field 'PurposeCode' present
+  [PASS]   keyRef KQ: any field 'Attention' present
+  [PASS]   keyRef KQ: set field 'State' present
+  [INFO]   keyRef KQ: XML set field 'Name' is in JSON any[] (demoted)
+  [INFO]   keyRef KQ: XML set field 'BirthDate' is in JSON any[] (demoted)
+  [INFO]   keyRef KQ: XML set field 'SexCode' is in JSON any[] (demoted)
+  [PASS]   keyRef KQ: any field 'PurposeCode' present
+  [PASS]   keyRef KQ: any field 'Attention' present
+  GunQuery:
+  [PASS]   keyRef ACQG: set field 'BadgeNumber' present
+  [PASS]   keyRef ACQG: set field 'GunSerialNumber' present
+  [PASS]   keyRef ACQG: any field 'GunMake' present
+  [PASS]   keyRef ACQG: any field 'GunModel' present
+  [PASS]   keyRef ACQG: any field 'GunCaliber' present
+  [PASS]   keyRef ACQG: any field 'RelatedHitSearchIndicator' present
+  VehicleRegistrationQuery:
+  [PASS]   keyRef ACVR: set field 'BadgeNumber' present
+  [PASS]   keyRef ACVR: set field 'LicensePlateNumber' present
+  [PASS]   keyRef ACVR: any field 'LicensePlateYear' present
+  [PASS]   keyRef ACVR: any field 'LicensePlateTypeCode' present
+  [PASS]   keyRef ACVR: any field 'State' present
+  [PASS]   keyRef ACVR: set field 'BadgeNumber' present
+  [INFO]   keyRef ACVR: XML set field 'VehicleIdentificationNumber' is in JSON any[] (demoted)
+  [PASS]   keyRef ACVR: any field 'VehicleMakeCode' present
+  [PASS]   keyRef ACVR: any field 'VehicleYear' present
+  [PASS]   keyRef ACVR: any field 'State' present
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] ArticleSerialNumber: maxLength 11 matches XML (ArticleSerialNumber)
+  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] SocialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
+  [PASS] NameLast: maxLength 30 matches XML (Name)
+  [INFO] NameFirst: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] NameMiddle: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] NameSuffix: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
+  [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] PurposeCode: maxLength 1 matches XML (PurposeCode)
+  [PASS] Attention: maxLength 30 matches XML (Attention)
+  [PASS] NameLastDH: maxLength 30 matches XML (Name)
+  [INFO] NameFirstDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] NameMiddleDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] NameSuffixDH: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
+  [PASS] GunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
+  [PASS] GunModel: maxLength 11 matches XML (GunModel)
+  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] VehicleYear: maxLength 4 matches XML (VehicleYear)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 117 PASS / 2 FAIL / 2 WARN / 47 INFO
+============================================================
+

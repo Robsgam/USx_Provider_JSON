@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-05-07 12:03
+  Generated: 2026-05-07 13:16
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === OH_LEADS_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=6 fields=10
-  Person | entity=Person | qidm= | cards=4 fields=9
+  Person | entity=Person | qidm= | cards=4 fields=8
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=3 fields=3
   Boat | entity=Boat | qidm= | cards=2 fields=3
@@ -82,7 +82,7 @@ LAYOUT DETAIL
         NameFirstDH (Text | maxLen=30)
         NameLastDH (Text | maxLen=30)
       ROW ROW_PER_DH3 [6 6]
-        BirthDateDH (Text | maxLen=10)
+        BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_PER_DH4 [6 6]
         PurposeCodeDH (Text | maxLen=1)

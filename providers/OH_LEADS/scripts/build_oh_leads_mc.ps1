@@ -697,7 +697,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';  node = InpH 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'BirthDateDH_Input'; node = InpH 'BirthDateDH' 'DOB (DH)' '10' 'ROW_PER_DH3' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)' 'ROW_PER_DH3' }
                 @{ id = 'SexCodeDH_Input';   node = SelH 'SexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
             )}
             @{ id = 'ROW_PER_DH4'; cols = @('6','6'); hidden = $true; fields = @(

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_MC
   Source: AZ_AZDPS_MC.json
-  Generated: 2026-05-07 12:13
+  Generated: 2026-05-07 13:15
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -10,7 +10,7 @@ LAYOUT SUMMARY
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=5
   Person | entity=Person | qidm= | cards=7 fields=24
-  Firearm | entity=Firearm | qidm= | cards=1 fields=5
+  Firearm | entity=Firearm | qidm= | cards=1 fields=4
   Article | entity=Article | qidm= | cards=1 fields=3
   Boat | entity=Boat | qidm= | cards=3 fields=4
 QIDMs: 8
@@ -115,7 +115,7 @@ LAYOUT DETAIL
       ROW ROW_GUN_2 [4 4 4]
         GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
         GunModel (Text | maxLen=11)
-        GunCaliber (Text | maxLen=4)
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
       ROW ROW_GUN_3 [4]
         RelatedHitSearchIndicator (Text | maxLen=1)
 

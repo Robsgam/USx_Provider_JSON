@@ -22,7 +22,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent)
+$repoRoot = Split-Path $PSScriptRoot -Parent
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
@@ -70,106 +70,114 @@ function Get-ComboInfo($qidm) {
     return $combos
 }
 
+# Build a short label for a combo (e.g., "FRQ+Plate", "KQ+OLN", "IA.QV")
+# This is what test log filenames typically contain.
+function Get-ComboShortLabel($combo) {
+    $kr = $combo.KeyReference
+    if (-not $kr) { return $null }
+
+    # For dotted keyRefs (CA providers: IA.QV, NLTS.RQ.P, etc.) return as-is
+    if ($kr -match '\.') { return $kr }
+
+    # Extract prefix (FRQ, DQ, KQ, QG, QA, QB, BQ, RQ, QV, QW, FDQ, FBQ, etc.)
+    $prefix = ""
+    if ($kr -match '^(FRQ|FDQ|FBQ|NLTS|QB|QV|QW|QG|QA|BQ|RQ|DQ|KQ)') {
+        $prefix = $Matches[1]
+    } elseif ($kr -match '^([A-Z]{2,4})') {
+        $prefix = $Matches[1]
+    }
+    if (-not $prefix) { return $kr }
+
+    # Determine the field keyword from what remains after the prefix
+    $remainder = $kr.Substring($prefix.Length)
+    $fieldWord = ""
+
+    # Map common field names to their test-log abbreviations
+    if ($remainder -match 'LicensePlateNumber') { $fieldWord = "Plate" }
+    elseif ($remainder -match 'VehicleIdentificationNumber') { $fieldWord = "VIN" }
+    elseif ($remainder -match 'OperatorLicenseNumber') { $fieldWord = "OLN" }
+    elseif ($remainder -match '^Name$') { $fieldWord = "Name" }
+    elseif ($remainder -match 'GunSerialNumber|ArticleSerialNumber|serialNumber') { $fieldWord = "Serial" }
+    elseif ($remainder -match 'NCICNumber') { $fieldWord = "NCIC" }
+    elseif ($remainder -match 'ProcessControlNumber') { $fieldWord = "PCN" }
+    elseif ($remainder -match 'BoatHullIdNumber') { $fieldWord = "Hull" }
+    elseif ($remainder -match 'RegistrationNumber') { $fieldWord = "Reg" }
+    elseif ($remainder -match 'CoastGuardDocumentNumber') { $fieldWord = "CG" }
+    elseif ($remainder -match 'DecalNumber') { $fieldWord = "Decal" }
+    elseif ($remainder -match 'TitleLienInformation') { $fieldWord = "Title" }
+    elseif ($remainder -match 'OwnerAppliedNumber') { $fieldWord = "OAN" }
+    else { $fieldWord = $remainder }
+
+    return "$prefix+$fieldWord"
+}
+
 function Match-TestLogToCombo($logName, $combo, $providerName) {
-    # Strategy: fuzzy match on keyReference substring in the test log filename
     $kr = $combo.KeyReference
     if (-not $kr) { return $false }
 
-    # Direct keyReference match (e.g., "FRQ+Plate" matches keyRef "FRQLicensePlateNumber")
-    # Extract the prefix from keyReference (e.g., "FRQ" from "FRQLicensePlateNumber")
-    $krPrefix = ""
-    if ($kr -match '^([A-Z]{2,5}\.?[A-Z]{0,5}\.?[A-Z]?)') {
-        $krPrefix = $Matches[1]
-    }
-
-    # Also try dotted keyRefs (e.g., "IA.QV" from CA providers)
-    $krClean = $kr
-
-    # Check if the log filename contains the keyReference or its prefix
     $logUpper = $logName.ToUpper()
-    $krUpper = $krClean.ToUpper()
-
-    # Exact keyReference in filename (e.g., "IA.QV" in "CA_CLETS_Vehicle_IA.QV_...")
-    if ($logUpper -match [regex]::Escape($krUpper)) { return $true }
-
-    # Entity match + keyRef prefix match (e.g., "Vehicle" + "FRQ" in filename)
     $entity = $combo.Entity
-    if ($entity -and $logUpper.Contains($entity.ToUpper())) {
-        # Try prefix (FRQ, DQ, KQ, QG, QA, QB, BQ, RQ, QV, QW, FDQ, FBQ, etc.)
-        if ($kr -match '^([A-Z]{2,4})') {
-            $prefix = $Matches[1]
-            # Check for prefix in filename with word boundary (e.g., _FRQ+ or _FRQ_ or _FRQ.)
-            if ($logUpper -match "[\._\+]$($prefix.ToUpper())[\._\+\s]|_$($prefix.ToUpper())\+|_$($prefix.ToUpper())_") {
-                return $true
-            }
-        }
-        # Try dotted prefix (e.g., IA.QV, NLTS.RQ.P)
-        if ($kr -match '^([A-Z]+\.[A-Z]+(?:\.[A-Z]+)?)') {
-            $dottedPrefix = $Matches[1]
-            if ($logUpper.Contains($dottedPrefix.ToUpper())) { return $true }
-        }
+
+    # ── TIER 1: Exact keyReference in filename ──
+    # e.g., "IA.QV" or "FRQLicensePlateNumber" literally in the filename
+    if ($logUpper.Contains($kr.ToUpper())) { return $true }
+
+    # ── TIER 2: Short label match (PREFIX+FIELD) ──
+    # Test logs commonly use format: DATE_Entity_PREFIX+Field_Description.txt
+    # e.g., "2026-05-01_Vehicle_FRQ+Plate_..." matches combo with label "FRQ+Plate"
+    # Use boundary-aware match to prevent "RQ+Plate" matching inside "FRQ+Plate"
+    $shortLabel = Get-ComboShortLabel $combo
+    if ($shortLabel) {
+        $escaped = [regex]::Escape($shortLabel.ToUpper())
+        if ($logUpper -match "(^|[_\.\s])${escaped}([_\.\+\s]|$)") { return $true }
     }
 
-    # Fallback: check if combo short label appears (e.g., "Plate" for LicensePlateNumber in set[])
-    # This is very generous fuzzy matching
-    $entity = $combo.Entity
-    if ($entity -and $logUpper.Contains($entity.ToUpper())) {
-        # Check for primary field keywords
-        foreach ($sf in $combo.Set) {
-            $fieldKeyword = $sf -replace '(License|Plate|Number|Registration|Operator|Vehicle|Identification|Serial|Article|Type|Code|Boat|Hull|Id|Coast|Guard|Document|Process|Control|Owner|Applied|Birth|Date|NCIC|Title|Lien|Information|Decal)', '$1'
-            # Extract the most meaningful word from the field name
-            if ($sf -match 'LicensePlateNumber') {
-                if ($logUpper -match 'PLATE') { return $true }
+    # ── TIER 3: Entity + exact prefix match ──
+    # Must match entity AND the combo prefix with appropriate delimiters
+    if (-not $entity) { return $false }
+    if (-not $logUpper.Contains($entity.ToUpper())) { return $false }
+
+    # Extract the combo prefix (FRQ, DQ, KQ, QG, QA, QB, BQ, RQ, QV, QW, FDQ, FBQ, etc.)
+    $prefix = ""
+    if ($kr -match '^(FRQ|FDQ|FBQ|NLTS|QB|QV|QW|QG|QA|BQ|RQ|DQ|KQ)') {
+        $prefix = $Matches[1]
+    }
+    # For dotted keyRefs, extract the dotted prefix
+    $dottedPrefix = ""
+    if ($kr -match '^([A-Z]+\.[A-Z]+(?:\.[A-Z]+)?)') {
+        $dottedPrefix = $Matches[1]
+    }
+
+    if ($prefix) {
+        $pUpper = $prefix.ToUpper()
+        # Match prefix with delimiter boundaries: _FRQ+ _FRQ_ .FRQ. _FRQ.
+        if ($logUpper -match "[\._]${pUpper}[\+\._]|[\._]${pUpper}\b") {
+            # Prefix matched inside the entity's filename. Now verify field alignment
+            # to avoid FRQ+Plate matching a FRQ+VIN test log when they share prefix.
+            $shortLabel2 = Get-ComboShortLabel $combo
+            if ($shortLabel2) {
+                $fieldPart = ($shortLabel2 -split '\+', 2)[1]
+                if ($fieldPart) {
+                    $fUpper = $fieldPart.ToUpper()
+                    # Check if the field keyword is also in the filename
+                    if ($logUpper.Contains($fUpper)) { return $true }
+                }
             }
-            if ($sf -match 'VehicleIdentificationNumber') {
-                if ($logUpper -match 'VIN') { return $true }
-            }
-            if ($sf -match 'OperatorLicenseNumber') {
-                if ($logUpper -match 'OLN') { return $true }
-            }
-            if ($sf -match 'Name(Last|First)') {
-                if ($logUpper -match '[\._]NAME[\._\+]|_NAME_|BY.NAME') { return $true }
-            }
-            if ($sf -match 'GunSerialNumber|serialNumber') {
-                if ($logUpper -match 'SERIAL') { return $true }
-            }
-            if ($sf -match 'ArticleSerialNumber') {
-                if ($logUpper -match 'SERIAL') { return $true }
-            }
-            if ($sf -match 'NCICNumber') {
-                if ($logUpper -match 'NCIC') { return $true }
-            }
-            if ($sf -match 'ProcessControlNumber') {
-                if ($logUpper -match 'PCN') { return $true }
-            }
-            if ($sf -match 'BoatHullIdNumber') {
-                if ($logUpper -match 'HULL') { return $true }
-            }
-            if ($sf -match 'RegistrationNumber') {
-                if ($logUpper -match 'REG(?!ISTRATIONSTATE)') { return $true }
-            }
-            if ($sf -match 'CoastGuardDocumentNumber') {
-                if ($logUpper -match 'COAST.?GUARD|CG') { return $true }
-            }
-            if ($sf -match 'DecalNumber') {
-                if ($logUpper -match 'DECAL') { return $true }
-            }
-            if ($sf -match 'TitleLienInformation') {
-                if ($logUpper -match 'TITLE') { return $true }
-            }
-            if ($sf -match 'OwnerAppliedNumber') {
-                if ($logUpper -match 'OAN|OWNER') { return $true }
-            }
+            # If we could not determine a specific field, the prefix alone is not enough
+            # to avoid false positives. Fall through to tier 4.
         }
     }
+    if ($dottedPrefix) {
+        if ($logUpper.Contains($dottedPrefix.ToUpper())) { return $true }
+    }
+
+    # ── TIER 4: Entity + primary set field keyword ──
+    # Last resort: match entity + a distinctive keyword from the first set[] field
+    # Only use this if there is exactly one distinguishing set field pattern
+    # (to avoid false positives between combos sharing entity)
+    # We intentionally do NOT match here -- tiers 1-3 should cover standard naming.
 
     return $false
-}
-
-function Format-ComboLabel($combo) {
-    $kr = $combo.KeyReference
-    $setStr = ($combo.Set -join ', ')
-    return "$kr  set=[$setStr]"
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -284,7 +292,8 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         foreach ($c in $entCombos) {
             $setStr = ($c.Set -join ', ')
             $anyStr = if ($c.Any.Count -gt 0) { " any=[$($c.Any -join ', ')]" } else { "" }
-            Out-Line "        $($c.KeyReference)  set=[$setStr]$anyStr"
+            $label = Get-ComboShortLabel $c
+            Out-Line "        $($c.KeyReference) ($label)  set=[$setStr]$anyStr"
         }
     }
 
@@ -340,18 +349,20 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
             if ($matched) {
                 $entTested++
                 $testedCombos++
+                $label = Get-ComboShortLabel $c
                 $entResults += [PSCustomObject]@{
-                    Mark = [char]0x2713  # checkmark
-                    Combo = $c.KeyReference
-                    File = $matchFile
+                    Mark  = [char]0x2713  # checkmark
+                    Combo = "$($c.KeyReference) ($label)"
+                    File  = $matchFile
                     Color = "Green"
                 }
             } else {
+                $label = Get-ComboShortLabel $c
                 $untestedCombos += $c
                 $entResults += [PSCustomObject]@{
-                    Mark = [char]0x2717  # X mark
-                    Combo = $c.KeyReference
-                    File = "NOT TESTED"
+                    Mark  = [char]0x2717  # X mark
+                    Combo = "$($c.KeyReference) ($label)"
+                    File  = "NOT TESTED"
                     Color = "Red"
                 }
             }
@@ -364,7 +375,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-LineColor "    $ent ($queryName): $entTested/$entTotal combos tested ($pct%)" $pctColor
 
         foreach ($r in $entResults) {
-            $padCombo = $r.Combo.PadRight(30)
+            $padCombo = $r.Combo.PadRight(40)
             if ($r.Color -eq "Green") {
                 Out-LineColor "      $($r.Mark) $padCombo -- $($r.File)" "Green"
             } else {
@@ -377,7 +388,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     Out-Line ""
     Out-LineColor "  CHECK 4: SQVR Alignment" "Yellow"
 
-    $sqvrPath = Join-Path $provDir "docs" "${provName}_SQVR.txt"
+    $sqvrPath = Join-Path (Join-Path $provDir "docs") "${provName}_SQVR.txt"
     $sqvrConfirmed = 0
     $sqvrPending = 0
     $sqvrExists = $false
@@ -392,7 +403,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line "    [CONFIRMED]: $sqvrConfirmed"
         Out-Line "    [PENDING]:   $sqvrPending"
 
-        # Compare: SQVR confirmed should roughly match test log count
+        # Compare: SQVR confirmed should roughly match tested combo count
         $sqvrAligned = ($sqvrConfirmed -eq $testedCombos)
         if ($sqvrAligned) {
             Out-LineColor "    Alignment: YES (SQVR confirmed=$sqvrConfirmed, tested combos=$testedCombos)" "Green"
@@ -442,7 +453,8 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line ""
         Out-Line "    Missing tests:"
         foreach ($u in $untestedCombos) {
-            Out-LineColor "      - $($u.Entity) $($u.Query) $($u.KeyReference)" "Red"
+            $label = Get-ComboShortLabel $u
+            Out-LineColor "      - $($u.Entity) $($u.Query) $($u.KeyReference) ($label)" "Red"
         }
     }
 
@@ -485,12 +497,12 @@ $colTests = 8
 $colCov = 10
 $colSqvr = 12
 
-$header = "Provider".PadRight($colProv) +
-          "Combos".PadRight($colCombo) +
-          "Tests".PadRight($colTests) +
-          "Coverage".PadRight($colCov) +
-          "SQVR Match"
-Out-LineColor $header "White"
+$hdr = "Provider".PadRight($colProv) +
+       "Combos".PadRight($colCombo) +
+       "Tests".PadRight($colTests) +
+       "Coverage".PadRight($colCov) +
+       "SQVR Match"
+Out-LineColor $hdr "White"
 Out-Line ("-" * ($colProv + $colCombo + $colTests + $colCov + $colSqvr))
 
 foreach ($row in ($summaryRows | Sort-Object Provider)) {
@@ -511,10 +523,14 @@ foreach ($row in ($summaryRows | Sort-Object Provider)) {
 # Totals
 $totalAllCombos = ($summaryRows | Measure-Object -Property Combos -Sum).Sum
 $totalAllTests = ($summaryRows | Measure-Object -Property Tests -Sum).Sum
-$overallPct = if ($totalAllCombos -gt 0) { [math]::Round(($summaryRows | ForEach-Object {
-    $pctVal = $_.Coverage -replace '%',''
-    if ($pctVal -match '^\d+$') { [int]$pctVal * $_.Combos / 100 } else { 0 }
-} | Measure-Object -Sum).Sum / $totalAllCombos * 100) } else { 0 }
+$weightedMatched = 0
+foreach ($row in $summaryRows) {
+    $pctVal = $row.Coverage -replace '%',''
+    if ($pctVal -match '^\d+$') {
+        $weightedMatched += [int]$pctVal * $row.Combos / 100
+    }
+}
+$overallPct = if ($totalAllCombos -gt 0) { [math]::Round($weightedMatched / $totalAllCombos * 100) } else { 0 }
 
 Out-Line ("-" * ($colProv + $colCombo + $colTests + $colCov + $colSqvr))
 

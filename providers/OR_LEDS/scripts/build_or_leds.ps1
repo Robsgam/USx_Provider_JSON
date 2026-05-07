@@ -502,7 +502,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'raceCode_Input';  node = Sel 'raceCode'  'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_4' }
             )}
             @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
-                @{ id = 'imageIndicator_Input';          node = Inp 'imageIndicator'          'Image (Y)' '1' 'ROW_PER_5' @{ initialValue = 'Y' } }
+                @{ id = 'imageIndicator_Input';          node = Sel 'imageIndicator'          'Image (Y)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_5' }
                 @{ id = 'relatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Related Hit (Y)' '1' 'ROW_PER_5' }
             )}
         )
@@ -525,7 +525,7 @@ $faLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '23' 'ROW_GUN_1' }
-                @{ id = 'gunMake_Input';      node = Inp 'gunMake'      'Make'           '23' 'ROW_GUN_1' }
+                @{ id = 'gunMake_Input';      node = Sel 'gunMake'      'Make'           @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
                 @{ id = 'gunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }

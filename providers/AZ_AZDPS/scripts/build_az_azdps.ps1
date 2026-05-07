@@ -715,7 +715,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_FA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'Make_FA_Input';   node = Sel 'GunMake'    'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
                 @{ id = 'Model_FA_Input';  node = Inp 'GunModel'   'Model'   '11' 'ROW_FA_2' }
-                @{ id = 'Cal_FA_Input';    node = Inp 'GunCaliber' 'Caliber' '4'  'ROW_FA_2' }
+                @{ id = 'Cal_FA_Input';    node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
             )}
             @{ id = 'ROW_FA_3'; cols = @('4'); fields = @(
                 @{ id = 'RelHit_FA_Input'; node = Inp 'RelatedHitSearchIndicator' 'Related Hit (Y)' '1' 'ROW_FA_3' }
