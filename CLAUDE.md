@@ -14,7 +14,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 ```
 
-## Provider Status (updated 2026-05-06)
+## Provider Status (updated 2026-05-07)
 
 | Provider | Path | Version | Status | Use as reference for |
 |---|---|---|---|---|
@@ -25,7 +25,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | FL_FCIC | providers/FL_FCIC/ | v3.1 | 101P/0F/1W/4LIM 21+60 PASS IMPORTED | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.1 | 73P/0F/13W/3LIM IMPORTED | TX-specific queries (DPSI/REG/VIN+FRT), EmailAddress QIDM-only pattern |
 | LA_LEMS | providers/LA_LEMS/ | v2.0 | 48P/0F/32W/4LIM IMPORTED | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
-| CA_CLETS | providers/CA_CLETS/ | v1.7 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
+| CA_CLETS | providers/CA_CLETS/ | v1.6 (BASE) v1.7 (MC) | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) IMPORTED | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.2 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) BUILT | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |
 | CA_eSUN | providers/CA_eSUN/ | v1.2 | 70P/0F/3W/5LIM (BASE) 70P/0F/3W/5LIM (MC) BUILT | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |

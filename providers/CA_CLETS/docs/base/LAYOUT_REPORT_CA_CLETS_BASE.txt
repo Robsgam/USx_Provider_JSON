@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-07 10:25
+  Generated: 2026-05-07 14:04
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === CA_CLETS_BASE.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=6
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
   Person | entity=Person | qidm= | cards=1 fields=4
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=4
@@ -40,7 +40,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_3 [12]
         vehicleIdentificationNumber (Text | maxLen=30)
       ROW ROW_VEH_4 [6 6]
-        vehicleMakeCode (Text | maxLen=4)
+        vehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
 
 === Person ===

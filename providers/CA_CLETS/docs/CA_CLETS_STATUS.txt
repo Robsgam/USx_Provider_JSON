@@ -1,7 +1,7 @@
 CA_CLETS -- Build Status
 =========================
-Last updated: 2026-05-06
-Current version: v1.5 (PlateType=PC + PlateYear=2026 defaults, PurposeCode layout fix)
+Last updated: 2026-05-07
+Current version: v1.6 (VehicleMakeCode dropdown, Stats cleanup)
 Provider: CA_CLETS
 
 ARCHITECTURE
@@ -31,7 +31,7 @@ CA-SPECIFIC
 - No VehicleStolenQuery (combined with VehicleRegistrationQuery)
 - No RandomRequest (not in CA metadata)
 - No State initialValue on any form (LIMITATION #30: in-state IA.* vs OOS NLTS.* routing)
-- No PlateType/PlateYear defaults (prevents NLTS.RQ from firing on in-state queries)
+- PlateType=PC, PlateYear=2026 defaults (standard, safe because State is combo routing discriminator)
 - 2 Person QIDMs co-fire by design (DL + DH)
 - MC: person fields (NameFirst, NameLast, BirthDate) on Vehicle/Firearm/Boat forms for cross-entity combos
 
@@ -57,6 +57,7 @@ VALIDATOR RESULTS
   | MC      | v1.4    | 67P/0F/1W/7LIM       | CLEAN  | 2026-05-06 |
   | BASE    | v1.5    | 64P/0F/0W/5LIM       | CLEAN  | 2026-05-06 |
   | MC      | v1.5    | 68P/0F/0W/7LIM       | CLEAN  | 2026-05-06 |
+  | BASE    | v1.6    | 64P/0F/0W/5LIM       | CLEAN  | 2026-05-07 |
 
   BASE WARN (0): All false-positive WARNs resolved (validator now recognizes camelCase fieldIds)
   MC WARN (0): Clean
