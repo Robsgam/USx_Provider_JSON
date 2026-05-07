@@ -1,0 +1,174 @@
+﻿================================================================
+  Build Report: IL_LEADS_OFML_MC
+  Source: IL_LEADS_OFML_MC.json
+  Generated: 2026-05-07 12:01
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- IL_LEADS_OFML_MC.json
+================================================================
+
+--- QIDM: IL_LEADS_OFML_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 3
+
+    [FIRES] Z2.P
+      set: [LicensePlateNumber]
+      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RelatedHitSearchIndicator, RegistrationState] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RelatedHitSearchIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>Z2.P</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] Z2.V
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator, VehicleMakeCode, VehicleYear, RegistrationState] -> matched: [ImageIndicator, RelatedHitSearchIndicator, VehicleMakeCode, VehicleYear, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>Z2.V</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] Z5
+      set: [LicensePlateNumber]
+      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RelatedHitSearchIndicator] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>Z5</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+--- QIDM: IL_LEADS_OFML_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] Z2.N
+      set: [BirthDate, NameLast, NameFirst]
+      any: [ImageIndicator, OperatorLicenseNumber, RelatedHitSearchIndicator, SexCode] -> matched: [ImageIndicator, OperatorLicenseNumber, RelatedHitSearchIndicator, SexCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>Z2.N</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] Z2.O
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState] -> matched: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>Z2.O</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: IL_LEADS_OFML_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+
+    [FIRES] QG
+      set: [SerialNumber]
+      any: [GunCaliber, FirearmMake, ImageIndicator, RelatedHitSearchIndicator] -> matched: [GunCaliber, FirearmMake, ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: IL_LEADS_OFML_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES] QA
+      set: [SerialNumber, ArticleTypeCode]
+      any: [OwnerAppliedNumber] -> matched: [OwnerAppliedNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+      </Transaction>
+
+--- QIDM: IL_LEADS_OFML_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 5  |  Combos: 2
+
+    [FIRES] BQ.H
+      set: [BoatHullIdNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState] -> matched: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQ.R
+      set: [RegistrationNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState] -> matched: [ImageIndicator, RelatedHitSearchIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+================================================================
+
+
