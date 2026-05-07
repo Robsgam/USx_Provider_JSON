@@ -1,34 +1,35 @@
 TX_TLETS -- Build Status
 ========================
-Last updated: 2026-05-06
-Current version: v2.1 BASE + v2.1 MC
+Last updated: 2026-05-07
+Current version: v2.2 BASE + v2.2 MC
 Provider: TX_TLETS
 Phase: Phase 1 (BASE) + Phase 2 (MC) -- rebuilt from scratch
 
 BUILD RESULTS
 =============
-  BASE (v2.1):
-    Validator: 73 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
+  BASE (v2.2):
+    Validator: 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
     Verify:    2 FAIL (EmailAddress not in QIF -- expected, pending handler)
-    Queries:   17 FIRE / 4 SKIP
+    Queries:   18 FIRE / 5 SKIP
 
-  MC (v2.1):
-    Validator: 73 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
+  MC (v2.2):
+    Validator: 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
     Verify:    2 FAIL (EmailAddress not in QIF -- expected, pending handler)
-    Queries:   17 FIRE / 4 SKIP
+    Queries:   18 FIRE / 5 SKIP
 
-  Import: IMPORTED 2026-05-06
+  Import: IMPORTED 2026-05-06 (v2.1), re-import needed for v2.2
 
 ARCHITECTURE (v2.0)
 ===================
   Bundles: 3 (ENTITIES first, TX_TLETS second, RMS third)
   Entities: Vehicle, Person, Firearm, Article, Boat
 
-  TX_TLETS Configurations (9):
+  TX_TLETS Configurations (10):
     TX_TLETS                                        AUTHENTICATION
     TX_TLETS_Results                                QUERYRESULTDATAMAPPING
     TX_TLETS_QueryMessageFormat                     QUERYMESSAGEFORMAT
     TX_TLETS_VehicleInsuranceRegistrationQuery      QUERYINPUTDATAMAPPING  (7 combos)
+    TX_TLETS_VehicleStolenQuery                     QUERYINPUTDATAMAPPING  (2 combos) [v2.2]
     TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (3 combos)
     TX_TLETS_DriverHistoryQuery                     QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_GunQuery                               QUERYINPUTDATAMAPPING  (2 combos)
@@ -42,7 +43,7 @@ ARCHITECTURE (v2.0)
     Patch 7: autoSelect=true on all RMS QIDMs
     Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
 
-  Total CommSys combos: 21
+  Total CommSys combos: 23 (v2.2: +2 VehicleStolenQuery)
   Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
 
 WARN ACKNOWLEDGMENT (13 WARNs)
@@ -109,6 +110,10 @@ Format: [PASS] / [FAIL] / [PENDING]
   VEH-6: QV VIN (VIN only)                        CommSys         [PENDING]
   VEH-7: DPSI (StickerNumber)                     CommSys         [PENDING]
 
+  VEHICLE (VehicleStolenQuery -- 2 combos, v2.2)
+  VEH-8: QV.P Stolen Plate (Plate)                CommSys         [PENDING]
+  VEH-9: QV.V Stolen VIN (VIN)                    CommSys         [PENDING]
+
   PERSON -- Driver License (3 combos)
   PER-1: DQ OLN (OLN)                             CommSys+RMS     [PENDING]
   PER-2: DQ Name (Name+DOB+Sex)                   CommSys+RMS     [PENDING]
@@ -135,6 +140,11 @@ Format: [PASS] / [FAIL] / [PENDING]
 
 BUILD LOG (newest first)
 ========================
+  v2.2  2026-05-07  Add VehicleStolenQuery (metadata gap fix)
+    Added VehicleStolenQuery QIDM (QV.P plate, QV.V VIN)
+    queriesToDeselect mutual exclusion with VehicleInsuranceRegistrationQuery
+    78P/0F/13W/3LIM (was 73P at v2.1)
+
   v2.1  2026-05-06  PlateType/PlateYear defaults (cross-provider audit)
     PlateType=PC, PlateYear=2026 on both BASE+MC
     WARN 14->13 (PlateYear missing initialValue resolved)

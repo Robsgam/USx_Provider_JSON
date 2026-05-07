@@ -214,8 +214,9 @@ TOOLS
       9. Provider canonical structure (dirs, docs)
       10. Report file completeness (all 8 reports per variant)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
+      12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md, BASE vs MC)
     Sources of truth extracted at runtime. FAILS (exit 1) on any issue.
-    Usage: .\audit_repo.ps1 [-Category <1-11>]
+    Usage: .\audit_repo.ps1 [-Category <1-12>]
 
   tools/audit_cad.ps1
     CAD dispatch field alignment auditor. Validates camelCase fieldIds for

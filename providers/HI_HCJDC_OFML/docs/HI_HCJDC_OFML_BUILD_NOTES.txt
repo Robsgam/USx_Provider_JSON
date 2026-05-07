@@ -41,6 +41,16 @@ HIDLE.json DIFFERENCES (our build is correct per XML):
 
 ================================================================================
 VERSION HISTORY (newest first)
+v1.1  2026-05-07  Add VehicleStolenQuery
+  CHANGED
+    - Added VehicleStolenQuery QIDM with 2 combos: QV.P (plate), QV.V (VIN)
+    - Added queriesToDeselect mutual exclusion between VehicleRegistrationQuery and VehicleStolenQuery
+    - VehicleRegistrationQuery: autoSelect=true, queriesToDeselect=VehicleStolenQuery
+    - VehicleStolenQuery: autoSelect=false (officer must manually check), queriesToDeselect=VehicleRegistrationQuery
+    - Invented keyRefs QV.P and QV.V per LIMITATION #21 (metadata has duplicate QV)
+    - 7 transactions, 17 combos total (was 6 transactions, 15 combos)
+    - Validator: 70P/0F/1W/4LIM (was 65P/0F/1W/4LIM)
+
 v1.0  2026-04-28  Initial BASE build
   CHANGED
     - Full build from XML metadata + HIDLE RMS reference

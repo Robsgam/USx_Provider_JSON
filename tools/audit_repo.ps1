@@ -610,6 +610,92 @@ foreach ($pd in $providerDirs) {
 }
 }
 
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 12: Version consistency (build script vs docs vs CLAUDE.md)
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 12) {
+Write-Host ""
+Write-Host "--- CATEGORY 12: Version Consistency ---" -ForegroundColor Yellow
+
+$claudeMdLines = Get-Content "$repoRoot\CLAUDE.md"
+$flaggedProviders = @('CA_CONTRA_COSTA')
+
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    # Extract version from BASE build script
+    $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
+    if (-not $baseScript) { Info "${provName} -- no build script found"; continue }
+
+    $scriptText = [System.IO.File]::ReadAllText($baseScript.FullName)
+    $scriptVersion = $null
+    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+        $scriptVersion = $Matches[1]
+    }
+    if (-not $scriptVersion) { Info "${provName} -- no version in build script"; continue }
+
+    # Check CLAUDE.md version
+    $claudeVersion = $null
+    foreach ($line in $claudeMdLines) {
+        if ($line -match "^\|\s*$provName\s*\|.*\|\s*v([^\s|]+)\s*\|") {
+            $claudeVersion = $Matches[1]
+            break
+        }
+    }
+    if ($claudeVersion -and $claudeVersion -ne $scriptVersion) {
+        if ($isFlagged) { Info "FLAGGED: ${provName} -- CLAUDE.md says v${claudeVersion}, build script says v${scriptVersion}" }
+        else { Fail "${provName} -- CLAUDE.md version (v${claudeVersion}) != build script (v${scriptVersion})" }
+    } elseif ($claudeVersion) {
+        Pass "${provName} -- CLAUDE.md version matches build script (v${scriptVersion})"
+    }
+
+    # Check STATUS.txt version
+    $statusFile = "$($pd.FullName)\docs\${provName}_STATUS.txt"
+    if (Test-Path $statusFile) {
+        $statusText = [System.IO.File]::ReadAllText($statusFile)
+        $statusHasVersion = $statusText -match "v$([regex]::Escape($scriptVersion))"
+        if (-not $statusHasVersion) {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- STATUS.txt does not mention v${scriptVersion}" }
+            else { Fail "${provName} -- STATUS.txt does not mention current version v${scriptVersion}" }
+        } else {
+            Pass "${provName} -- STATUS.txt mentions v${scriptVersion}"
+        }
+    }
+
+    # Check SQVR version
+    $sqvrFile = "$($pd.FullName)\docs\${provName}_SQVR.txt"
+    if (Test-Path $sqvrFile) {
+        $sqvrText = [System.IO.File]::ReadAllText($sqvrFile)
+        $sqvrHasVersion = $sqvrText -match "v$([regex]::Escape($scriptVersion))"
+        if (-not $sqvrHasVersion) {
+            if ($isFlagged) { Info "FLAGGED: ${provName} -- SQVR does not mention v${scriptVersion}" }
+            else { Fail "${provName} -- SQVR does not mention current version v${scriptVersion}" }
+        } else {
+            Pass "${provName} -- SQVR mentions v${scriptVersion}"
+        }
+    }
+
+    # Check MC build script version matches BASE
+    $mcScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*_mc*' -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($mcScript) {
+        $mcText = [System.IO.File]::ReadAllText($mcScript.FullName)
+        $mcVersion = $null
+        if ($mcText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+            $mcVersion = $Matches[1]
+        }
+        if ($mcVersion -and $mcVersion -ne $scriptVersion) {
+            Fail "${provName} -- BASE version (v${scriptVersion}) != MC version (v${mcVersion})"
+        } elseif ($mcVersion) {
+            Pass "${provName} -- BASE and MC versions match (v${scriptVersion})"
+        }
+    }
+}
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

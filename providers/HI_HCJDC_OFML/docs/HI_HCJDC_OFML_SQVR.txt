@@ -1,25 +1,25 @@
 HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
-Last updated: 2026-05-04
-JSON version: v1.0 BASE / v1.0-mc MC
-Validator: 62 PASS / 0 FAIL / 5 WARN / 4 LIMITATION (2026-05-04, monorepo re-validation)
-Live test: PENDING (not yet imported)
+Last updated: 2026-05-07
+JSON version: v1.1 BASE / v1.1 MC
+Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
+Live test: PENDING (not yet imported at v1.1)
 
 NOTE: No live tests have been performed. All combos are [PENDING].
-Import has not occurred. XML capture will happen during first live test
-session following GATE 2/3 (per-test log with XML capture).
+Import at v1.0 completed 2026-05-06. Re-import needed for v1.1 (VehicleStolenQuery added).
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built HI production JSON, comparison only)
 Devdoc: HI_HCJDC_OFML.pdf (CommSys devdoc)
 
 Architecture notes:
-  - 6 transactions, 15 combos
+  - 7 transactions, 17 combos (v1.1: +VehicleStolenQuery 2 combos)
   - NCIC state pattern (single RegistrationState, codeTypeProvider=NCIC, initialValue=HI)
   - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS)
   - Empty any[] on all combos (XML <Any> inside <Set> = optional companions)
   - VehicleTypeCode default=1 (Auto) for in-state M55L/M55S routing
   - DL/DH share Person entity: autoSelect + queriesToDeselect bidirectional
+  - VehReg/VehStolen share Vehicle entity: autoSelect + queriesToDeselect bidirectional
   - Name format: 4 components (First Last Middle Suffix) with space separators
   - Date format: MMddyyyy
 
@@ -79,6 +79,34 @@ Architecture notes:
 
   RMS co-fire [PENDING]
     RMS Vehicle combo should fire alongside CommSys
+
+================================================================================
+1b. VehicleStolenQuery -- Vehicle Entity (v1.1)
+================================================================================
+
+  QIDM: VehicleStolenQueryQIDM
+  QIF:  Vehicle (shared with VehicleRegistrationQuery)
+  autoSelect: false (officer must manually check)
+  queriesToDeselect: VehicleRegistrationQuery (mutual exclusion)
+  Combos: QV.P (plate), QV.V (VIN)
+
+  QV.P -- Stolen Vehicle by Plate [PENDING]
+    set: LicensePlateNumber
+    any: RegistrationState
+    keyReference: QV.P (invented, LIMITATION #21)
+
+  QV.V -- Stolen Vehicle by VIN [PENDING]
+    set: VehicleIdentificationNumber
+    any: VehicleMakeCode, ImageIndicator
+    keyReference: QV.V (invented, LIMITATION #21)
+
+  Priority order: QV.P > QV.V [PENDING]
+    Plate before VIN
+
+  VehReg/VehStolen mutual exclusion [PENDING]
+    Checking VehicleStolenQuery unchecks VehicleRegistrationQuery and vice versa.
+    VehicleRegistrationQuery is autoSelect=true (default checked).
+    VehicleStolenQuery is autoSelect=false (officer must opt in).
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -221,7 +249,7 @@ RMS BUNDLE
 SUMMARY
 ================================================================================
 
-  Total combos: 15 CommSys + RMS co-fires
+  Total combos: 17 CommSys + RMS co-fires (v1.1: +2 VehicleStolenQuery)
   [CONFIRMED]: NONE
   [PENDING]: ALL (no live tests performed)
-  Next step: Import JSON and run 8-phase live test protocol
+  Next step: Re-import v1.1 JSON and run 8-phase live test protocol

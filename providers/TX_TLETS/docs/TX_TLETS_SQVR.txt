@@ -1,9 +1,9 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-05-06
-JSON version: v2.1 BASE + v2.1 MC
-Live test: NOT YET TESTED -- import PENDING
-Validator: 73 PASS / 0 FAIL / 13 WARN / 3 LIMITATION (v2.1)
+Last updated: 2026-05-07
+JSON version: v2.2 BASE + v2.2 MC
+Live test: NOT YET TESTED -- re-import needed for v2.2
+Validator: 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION (v2.2)
 Verify: 2 FAIL (EmailAddress pending handler -- expected)
 
 NOTE: All combos [PENDING] until exhaustive testing with per-test log captures (GATE 2/3).
@@ -69,6 +69,34 @@ EMAILADDRESS NOTE:
 
   RMS co-fire [PENDING]
     RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
+
+================================================================================
+1b. VehicleStolenQuery -- Vehicle Entity (v2.2)
+================================================================================
+
+  QIDM: TX_TLETS_VehicleStolenQuery
+  QIF:  Vehicle (shared with VehicleInsuranceRegistrationQuery)
+  queryLabel: Vehicle Stolen
+  autoSelect: false (officer must manually check)
+  queriesToDeselect: VehicleInsuranceRegistrationQuery (mutual exclusion)
+
+  QV.P -- Stolen Vehicle by Plate [PENDING]
+    set: LicensePlateNumber
+    any: RegionId, State
+    keyReference: QV.P (invented, LIMITATION #21)
+
+  QV.V -- Stolen Vehicle by VIN [PENDING]
+    set: VehicleIdentificationNumber
+    any: RegionId
+    keyReference: QV.V (invented, LIMITATION #21)
+
+  Priority order: QV.P > QV.V [PENDING]
+    Plate before VIN.
+
+  VehInsReg/VehStolen mutual exclusion [PENDING]
+    Checking VehicleStolenQuery unchecks VehicleInsuranceRegistrationQuery and vice versa.
+    VehicleInsuranceRegistrationQuery is autoSelect=true (default checked).
+    VehicleStolenQuery is autoSelect=false (officer must opt in).
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -231,10 +259,10 @@ RMS BUNDLE
 SUMMARY
 ================================================================================
 
-  CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
+  CommSys QIDMs: 7 (VehicleInsuranceReg, VehicleStolen, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 21
+  Total CommSys combos: 23 (v2.2: +2 VehicleStolenQuery)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
   [CONFIRMED]: NONE
   [PENDING]: ALL
-  MC variant: v2.0-mc (same QIDMs, multi-card layout)
+  MC variant: v2.2 (same QIDMs, multi-card layout)

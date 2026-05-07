@@ -1,7 +1,7 @@
 FL_FCIC Build Status
 ====================
-Current version : v3.0
-Last updated    : 2026-05-05
+Current version : v3.1
+Last updated    : 2026-05-07
 Output file     : FL_FCIC_BASE.json
 Build script    : scripts/build_fl_fcic.ps1
 Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
@@ -85,13 +85,13 @@ ENTITY FORM FIELDS
 
 BUILD SCRIPTS
 -------------
-  build_fl_fcic.ps1 -- rebuild BASE JSON from scratch (v3.0)
-  build_fl_fcic_mc.ps1 -- rebuild MC JSON from scratch (v3.0-mc)
+  build_fl_fcic.ps1 -- rebuild BASE JSON from scratch (v3.1)
+  build_fl_fcic_mc.ps1 -- rebuild MC JSON from scratch (v3.1)
   Run:
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
     & .\scripts\build_fl_fcic.ps1 -Version "3.0"
 
-LIVE TEST STATUS -- BASE v3.0
+LIVE TEST STATUS -- BASE v3.1
 ------------------------------
   Date: 2026-05-01
   Result: 21 PASS / 0 FAIL
@@ -126,7 +126,7 @@ LIVE TEST STATUS -- BASE v3.0
   - PurposeCode: changed from FormSelect (DEX_INQUIRY_PURPOSE_CODE) to FormInput w/ initialValue=C
   - GunMake: fixed from FormInput to FormSelect (NCIC_FIREARM_MAKE/NCIC) — cross-provider consistency
 
-LIVE TEST STATUS -- MC v3.0-mc
+LIVE TEST STATUS -- MC v3.1
 -------------------------------
   Date: 2026-05-01
   Result: 47 PASS / 0 FAIL / 2 LIMITATION

@@ -1,39 +1,33 @@
 HI_HCJDC_OFML STATUS
 ====================
-Last Updated: 2026-05-05
+Last Updated: 2026-05-07
 
-BASE v1.0
-  Validator: 64 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
-  Verify:    0 FAIL (Patch 8 applied -- LicensePlateNumberIn eliminated)
-  Queries:   15 FIRE / 0 SKIP
-  Import:    IMPORTED 2026-05-06
+BASE v1.1
+  Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+  Verify:    CLEAN
+  Queries:   17 FIRE / 0 SKIP
+  Import:    IMPORTED 2026-05-06 (v1.0), re-import needed for v1.1
   Live Test: PENDING
 
-MC v1.0-mc
-  Validator: 64 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
-  Verify:    0 FAIL (Patch 8 applied -- LicensePlateNumberIn eliminated)
-  Queries:   15 FIRE / 0 SKIP
-  Import:    IMPORTED 2026-05-06
+MC v1.1
+  Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
+  Verify:    CLEAN
+  Queries:   17 FIRE / 0 SKIP
+  Import:    IMPORTED 2026-05-06 (v1.0), re-import needed for v1.1
   Live Test: PENDING
 
-  FIXED 2026-05-05:
-    - AUTH keyReference='AUTH' added to combination
-    - RMS Person autoSelect=true added (Patch 7)
-    - RMS Vehicle autoSelect=true added (Patch 7)
-    - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
-    - READABLE JSON now generated for both BASE and MC
+  v1.1 CHANGES (2026-05-07):
+    - Added VehicleStolenQuery QIDM (QV.P plate, QV.V VIN)
+    - Added queriesToDeselect mutual exclusion (VehReg <-> VehStolen)
+    - VehicleRegistrationQuery now autoSelect=true with queriesToDeselect
+    - Version bump: v1.0 -> v1.1
 
-  REMAINING WARNs (2):
-    1. Vehicle ImageIndicator not in any combo set[]/any[] -- will not serialize (needs fix)
-    2. Vehicle State initialValue='HI' with In/Out combos -- LIMITATION #30 (documented, no fix)
+  REMAINING WARNs (1):
+    1. Vehicle State initialValue='HI' with In/Out combos -- LIMITATION #30 (documented, no fix)
 
   REMAINING LIMITATIONs (4):
     1-3. Combo ordering (Vehicle, DL, DH) -- operational priority correct
     4. DL+DH single form without DH-suffix -- known constraint (AP #14 / LIMITATION #25)
-
-  PENDING:
-    - Vehicle ImageIndicator in combo any[] -- needs build script fix
-    - First import test to confirm NCIC state + VehicleTypeCode patterns
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built, for comparison)

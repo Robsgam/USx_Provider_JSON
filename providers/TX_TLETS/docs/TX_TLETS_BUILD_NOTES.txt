@@ -5,6 +5,21 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v2.2  2026-05-07  Add VehicleStolenQuery (metadata gap fix)
+--------------------------------------------------------------------------------
+CHANGED : Added VehicleStolenQuery QIDM with 2 combos: QV.P (plate), QV.V (VIN).
+          Added queriesToDeselect mutual exclusion between VehicleInsuranceRegistrationQuery
+          and VehicleStolenQuery. VehInsReg: autoSelect=true, deselects VehStolen.
+          VehStolen: autoSelect=false (officer opt-in), deselects VehInsReg.
+REASON  : TX metadata (TLETS v30) defines StolenVehicleQuery with inquiry combos (QV x2)
+          but these were not built in v2.0/v2.1. Gap found during cross-provider metadata audit.
+          Invented keyRefs QV.P and QV.V per LIMITATION #21 (duplicate QV in metadata).
+SCRIPT  : scripts/build_tx_tlets.ps1 + scripts/build_tx_tlets_mc.ps1
+OUTPUT  : TX_TLETS_BASE.json + TX_TLETS_MC.json (+ readable variants)
+RESULTS : 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION | Verify: 2 FAIL (EmailAddress)
+          Query count: 18 FIRE / 5 SKIP (was 17 FIRE / 4 SKIP at v2.1)
+
+--------------------------------------------------------------------------------
 v2.1  2026-05-06  PlateType/PlateYear defaults (cross-provider audit)
 --------------------------------------------------------------------------------
 CHANGED : LicensePlateTypeCode initialValue='PC', LicensePlateYear initialValue='2026' (both BASE+MC).
