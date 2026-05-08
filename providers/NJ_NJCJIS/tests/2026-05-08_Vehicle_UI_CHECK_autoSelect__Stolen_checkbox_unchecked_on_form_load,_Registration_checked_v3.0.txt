@@ -1,69 +1,50 @@
-﻿NJ_NJCJIS BASE v3.0 -- Test Log
+NJ_NJCJIS BASE v3.0 -- Test Log
 ============================================================
 Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Vehicle
 Combo      : UI_CHECK (autoSelect: Stolen checkbox unchecked on form load, Registration checked)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T1
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
 ================================================================================
 
-  Field                     Value              Source
-  ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  No submission -- UI observation only.
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
-  Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
-  keyReference: UI_CHECK
-
-  Fields sent in XML request:
-    Element              Value
-    -------------------  -------------------
-    [FieldName]          [VALUE]
+  N/A -- UI behavior test, no query submitted.
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: UI_CHECK
-  Reason: [which set[] fields were populated]
+  autoSelect behavior observed:
+    VehicleRegistrationQuery (autoSelect=true):  checkbox lights up when plate entered
+    VehicleStolenQuery (autoSelect=false):       checkbox does NOT light up, no error
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  Interpretation: autoSelect=true activates the query checkbox when set[] fields
+  are populated. autoSelect=false prevents auto-activation -- officer must manually
+  check. This is field-entry-triggered, not pre-checked on form load.
 
-================================================================================
-RMS CO-FIRE (if applicable)
-================================================================================
-
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  Engineering doc correction: "automatically selected when the user opens the
+  search form" is misleading. Actual behavior: auto-selected when set[] fields
+  are populated by the user.
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: VehicleRegistrationQuery auto-selects on plate entry. VehicleStolenQuery
+  stays unchecked and shows no error. autoSelect=false confirmed working.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+N/A -- no query submitted.
