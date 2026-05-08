@@ -5651,10 +5651,64 @@
                                                                                                              "licensePlateTypeCode",
                                                                                                              "imageIndicator",
                                                                                                              "licensePlateYear"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "randomRequest"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EQUALS",
+                                                                                                                        "value":  [
+                                                                                                                                      "Y"
+                                                                                                                                  ]
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "RQ_RAND",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "licensePlateNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
+                                                                                                             "licensePlateTypeCode",
+                                                                                                             "imageIndicator",
+                                                                                                             "licensePlateYear"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "vehicleIdentificationNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
+                                                                                                             "imageIndicator"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "randomRequest"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EQUALS",
+                                                                                                                        "value":  [
+                                                                                                                                      "Y"
+                                                                                                                                  ]
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
+                                                                            "keyReference":  "RQN_RAND",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -5673,7 +5727,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).",
+                                                   "description":  "VehicleRegistrationQuery -- 4 combos: RQ_RAND/RQ (plate), RQN_RAND/RQN (VIN). RAND=stolen-only (RandomRequest=Y). Defaulted fields in any[] (LIMITATION #31).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "NJ_NJCJIS_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -5985,7 +6039,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NJ_NJCJIS v2.9",
+                        "description":  "Provider configuration for NJ_NJCJIS v3.0",
                         "name":  "NJ_NJCJIS",
                         "type":  "BUNDLE",
                         "provider":  "NJ_NJCJIS"

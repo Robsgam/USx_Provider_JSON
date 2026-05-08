@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-08 12:57
+  Generated: 2026-05-08 13:47
 ================================================================
 QUERY SIMULATION
 ================
@@ -60,11 +60,43 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+
+    [FIRES] RQ_RAND
+      set: [licensePlateNumber]
+      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
 
     [FIRES] RQ
       set: [licensePlateNumber]
       any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES] RQN_RAND
+      set: [vehicleIdentificationNumber]
+      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

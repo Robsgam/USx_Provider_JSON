@@ -15,8 +15,8 @@
 #   Changed: RegistrationNumber maxLength 8->20, State/PlateType to set[] on VehicleReg
 #   All keyRefs have duplicates in XML -- invented distinct keyRefs per LIMITATION #21
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 10 combos):
-#   VehicleRegistrationQuery   RQ (Plate) + RQN (VIN) -- RandomRequest mandatory in set[]
+# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 12 combos):
+#   VehicleRegistrationQuery   RQ_RAND/RQ (Plate) + RQN_RAND/RQN (VIN) -- conditions for RAND/FULL routing
 #   VehicleStolenQuery         QVN (NCIC#) + QVP (Plate) + QVV (VIN) -- new transaction
 #   DriverLicenseQuery         DQN (OLN) + DQ (Name)
 #   GunQuery                   QG -- adds GunModel + ImageIndicator
@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.9",
+    [string]$Version = "3.0",
     [string]$Phase   = "base"
 )
 
@@ -213,6 +213,8 @@ $qmf = [PSCustomObject]@{
 # 1d. VehicleRegistrationQuery
 #   autoSelect=true, NO queriesToDeselect.
 #   Defaulted fields (RandomRequest, State, PlateType) in any[] per LIMITATION #31.
+#   4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
+#   RAND combos first (more specific via conditions), default combos as fallback.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -226,9 +228,29 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('licensePlateNumber')
+                any        = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear')
+                conditions = @([PSCustomObject]@{ field = @('randomRequest'); operator = 'EQUALS'; value = @('Y') })
+            }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RQ_RAND'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('vehicleIdentificationNumber')
+                any        = @('randomRequest','registrationState','imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('randomRequest'); operator = 'EQUALS'; value = @('Y') })
+            }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQN_RAND'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -238,7 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).'
+    description        = 'VehicleRegistrationQuery -- 4 combos: RQ_RAND/RQ (plate), RQN_RAND/RQN (VIN). RAND=stolen-only (RandomRequest=Y). Defaulted fields in any[] (LIMITATION #31).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'

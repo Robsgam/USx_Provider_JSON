@@ -10,11 +10,11 @@
 #   Article: 1 card (same as BASE)
 #   Boat:    1 card (same as BASE -- only 3 fields, no State in v2)
 #
-# QIDMs: identical to BASE (6 QIDMs, 10 combos)
+# QIDMs: identical to BASE (6 QIDMs, 12 combos)
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "2.9",
+    [string]$Version = "3.0",
     [string]$Phase   = "mc"
 )
 
@@ -173,6 +173,8 @@ $qmf = [PSCustomObject]@{
 # 1d. VehicleRegistrationQuery
 #     autoSelect=true, NO queriesToDeselect.
 #     Defaulted fields in any[] per LIMITATION #31.
+#     4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
+#     RAND combos first (more specific via conditions), default combos as fallback.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -186,9 +188,29 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('LicensePlateNumber')
+                any        = @('RandomRequest','RegistrationState','LicensePlateTypeCode','ImageIndicator','LicensePlateYear')
+                conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
+            }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RQ_RAND'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RandomRequest','RegistrationState','LicensePlateTypeCode','ImageIndicator','LicensePlateYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('VehicleIdentificationNumber')
+                any        = @('RandomRequest','RegistrationState','ImageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
+            }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQN_RAND'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -198,7 +220,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).'
+    description        = 'VehicleRegistrationQuery -- 4 combos: RQ_RAND/RQ (plate), RQN_RAND/RQN (VIN). RAND=stolen-only (RandomRequest=Y). Defaulted fields in any[] (LIMITATION #31).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -667,9 +689,9 @@ $output = [PSCustomObject]@{
 $json = $output | ConvertTo-Json -Depth 100 -Compress
 $jsonReadable = $output | ConvertTo-Json -Depth 100
 
-# Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
-$json = $json -replace 'LicensePlateNumberIn', 'licensePlateNumber'
-$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'licensePlateNumber'
+# Patch 8: LicensePlateNumberIn -> LicensePlateNumber (MC uses PascalCase, not camelCase)
+$json = $json -replace 'LicensePlateNumberIn', 'LicensePlateNumber'
+$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'LicensePlateNumber'
 
 $OUTREADABLE = "$DIR\NJ_NJCJIS_MC_READABLE.json"
 [System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
