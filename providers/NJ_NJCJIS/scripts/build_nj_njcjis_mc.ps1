@@ -14,7 +14,7 @@
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "2.6",
+    [string]$Version = "2.7",
     [string]$Phase   = "mc"
 )
 
@@ -397,7 +397,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $njBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehStolenQuery, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for NJ_NJCJIS v${Version} MC"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'

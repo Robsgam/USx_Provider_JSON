@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-08 09:24
+  Generated: 2026-05-08 09:30
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -41,12 +41,12 @@ VALIDATOR RESULTS
   [WARN] Firearm missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
-  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
-  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' ImageIndicator size=1
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' -> Vehicle : 6 attrs, 3 combos
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' ImageIndicator size=1
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' ImageIndicator size=1
   [LIMITATION] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -66,8 +66,8 @@ VALIDATOR RESULTS
   [PASS] Article : 1 QIDMs, 1 QIF(s)
   [PASS] Person : 1 QIDMs, 1 QIF(s)
   [LIMITATION] Vehicle: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
-         NJ_NJCJIS_VehicleRegistrationQuery (query=VehicleRegistrationQuery)
          NJ_NJCJIS_VehicleStolenQuery (query=VehicleStolenQuery)
+         NJ_NJCJIS_VehicleRegistrationQuery (query=VehicleRegistrationQuery)
   [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
   [PASS] Firearm : 1 QIDMs, 1 QIF(s)
@@ -85,11 +85,11 @@ VALIDATOR RESULTS
   [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
-  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQ': all set[]/any[] fields resolvable
-  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo 'QVN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo 'QVP': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo 'QVV': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo 'RQN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo 'DQN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'NJ_NJCJIS_GunQuery' combo 'QG': all set[]/any[] fields resolvable

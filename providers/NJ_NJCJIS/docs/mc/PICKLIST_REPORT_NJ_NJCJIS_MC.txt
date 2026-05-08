@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-08 09:24
+  Generated: 2026-05-08 09:30
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -49,10 +49,10 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 --------------------------------------------------
 
   Config Type: QUERYINPUTDATAMAPPING
-    Config: NJ_NJCJIS_VehicleRegistrationQuery
+    Config: NJ_NJCJIS_VehicleStolenQuery
       State -> State
         codeTypeProvider=NCIC
-    Config: NJ_NJCJIS_VehicleStolenQuery
+    Config: NJ_NJCJIS_VehicleRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
     Config: NJ_NJCJIS_DriverLicenseQuery
@@ -85,10 +85,10 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 --------------------------------------------------
 
-  QIDM: NJ_NJCJIS_VehicleRegistrationQuery
+  QIDM: NJ_NJCJIS_VehicleStolenQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: NJ_NJCJIS_VehicleStolenQuery
+  QIDM: NJ_NJCJIS_VehicleRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
   QIDM: NJ_NJCJIS_DriverLicenseQuery

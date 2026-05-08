@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-08 09:24
+  Generated: 2026-05-08 09:30
 ================================================================
 QUERY SIMULATION
 ================
@@ -10,41 +10,6 @@ QUERY SIMULATION
 ================================================================
   CommSys Query Simulator -- NJ_NJCJIS_BASE.json
 ================================================================
-
---- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
-
-    [FIRES] RQ
-      set: [licensePlateNumber]
-      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <RandomRequest>N</RandomRequest>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
-
-    [FIRES] RQN
-      set: [vehicleIdentificationNumber]
-      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <RandomRequest>N</RandomRequest>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
 
 --- QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle] ---
     Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
@@ -92,6 +57,41 @@ QUERY SIMULATION
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+--- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] RQ
+      set: [licensePlateNumber]
+      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES] RQN
+      set: [vehicleIdentificationNumber]
+      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
 --- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---

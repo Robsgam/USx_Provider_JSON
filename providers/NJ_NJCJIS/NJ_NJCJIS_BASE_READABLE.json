@@ -5488,114 +5488,6 @@
                                                                           "targetField":  "LicensePlateNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "LicensePlateTypeCode",
-                                                                          "size":  2,
-                                                                          "sourceField":  [
-                                                                                              "licensePlateTypeCode"
-                                                                                          ],
-                                                                          "targetField":  "LicensePlateTypeCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "LicensePlateYear",
-                                                                          "size":  4,
-                                                                          "sourceField":  [
-                                                                                              "licensePlateYear"
-                                                                                          ],
-                                                                          "targetField":  "LicensePlateYear"
-                                                                      },
-                                                                      {
-                                                                          "name":  "RandomRequest",
-                                                                          "size":  1,
-                                                                          "sourceField":  [
-                                                                                              "randomRequest"
-                                                                                          ],
-                                                                          "targetField":  "RandomRequest"
-                                                                      },
-                                                                      {
-                                                                          "name":  "State",
-                                                                          "size":  2,
-                                                                          "sourceField":  [
-                                                                                              "registrationState"
-                                                                                          ],
-                                                                          "targetField":  "State",
-                                                                          "codeTypeProvider":  "NCIC"
-                                                                      },
-                                                                      {
-                                                                          "name":  "VehicleIdentificationNumber",
-                                                                          "size":  20,
-                                                                          "sourceField":  [
-                                                                                              "vehicleIdentificationNumber"
-                                                                                          ],
-                                                                          "targetField":  "VehicleIdentificationNumber"
-                                                                      }
-                                                                  ],
-                                                   "combinations":  [
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "licensePlateNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "randomRequest",
-                                                                                                             "registrationState",
-                                                                                                             "licensePlateTypeCode",
-                                                                                                             "imageIndicator",
-                                                                                                             "licensePlateYear"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "RQ",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "vehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "randomRequest",
-                                                                                                             "registrationState",
-                                                                                                             "imageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "RQN",
-                                                                            "state":  "In/Out"
-                                                                        }
-                                                                    ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).",
-                                                   "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "NJ_NJCJIS_VehicleRegistrationQuery",
-                                                   "type":  "QUERYINPUTDATAMAPPING",
-                                                   "autoSelect":  true,
-                                                   "queriesToDeselect":  [
-                                                                             "VehicleStolenQuery"
-                                                                         ],
-                                                   "provider":  "NJ_NJCJIS",
-                                                   "providerType":  "Commsys",
-                                                   "query":  "VehicleRegistrationQuery",
-                                                   "queryLabel":  "Vehicle Registration",
-                                                   "targetEntity":  "Vehicle"
-                                               },
-                                               {
-                                                   "attributes":  [
-                                                                      {
-                                                                          "name":  "ImageIndicator",
-                                                                          "size":  1,
-                                                                          "sourceField":  [
-                                                                                              "imageIndicator"
-                                                                                          ],
-                                                                          "targetField":  "ImageIndicator"
-                                                                      },
-                                                                      {
-                                                                          "name":  "LicensePlateNumber",
-                                                                          "size":  10,
-                                                                          "sourceField":  [
-                                                                                              "licensePlateNumber"
-                                                                                          ],
-                                                                          "targetField":  "LicensePlateNumber"
-                                                                      },
-                                                                      {
                                                                           "name":  "NCICNumber",
                                                                           "size":  10,
                                                                           "sourceField":  [
@@ -5683,6 +5575,114 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "VehicleStolenQuery",
                                                    "queryLabel":  "Vehicle Stolen",
+                                                   "targetEntity":  "Vehicle"
+                                               },
+                                               {
+                                                   "attributes":  [
+                                                                      {
+                                                                          "name":  "ImageIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "imageIndicator"
+                                                                                          ],
+                                                                          "targetField":  "ImageIndicator"
+                                                                      },
+                                                                      {
+                                                                          "name":  "LicensePlateNumber",
+                                                                          "size":  10,
+                                                                          "sourceField":  [
+                                                                                              "licensePlateNumber"
+                                                                                          ],
+                                                                          "targetField":  "LicensePlateNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "LicensePlateTypeCode",
+                                                                          "size":  2,
+                                                                          "sourceField":  [
+                                                                                              "licensePlateTypeCode"
+                                                                                          ],
+                                                                          "targetField":  "LicensePlateTypeCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "LicensePlateYear",
+                                                                          "size":  4,
+                                                                          "sourceField":  [
+                                                                                              "licensePlateYear"
+                                                                                          ],
+                                                                          "targetField":  "LicensePlateYear"
+                                                                      },
+                                                                      {
+                                                                          "name":  "RandomRequest",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "randomRequest"
+                                                                                          ],
+                                                                          "targetField":  "RandomRequest"
+                                                                      },
+                                                                      {
+                                                                          "name":  "State",
+                                                                          "size":  2,
+                                                                          "sourceField":  [
+                                                                                              "registrationState"
+                                                                                          ],
+                                                                          "targetField":  "State",
+                                                                          "codeTypeProvider":  "NCIC"
+                                                                      },
+                                                                      {
+                                                                          "name":  "VehicleIdentificationNumber",
+                                                                          "size":  20,
+                                                                          "sourceField":  [
+                                                                                              "vehicleIdentificationNumber"
+                                                                                          ],
+                                                                          "targetField":  "VehicleIdentificationNumber"
+                                                                      }
+                                                                  ],
+                                                   "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "licensePlateNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
+                                                                                                             "licensePlateTypeCode",
+                                                                                                             "imageIndicator",
+                                                                                                             "licensePlateYear"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "RQ",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "vehicleIdentificationNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
+                                                                                                             "imageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
+                                                                            "keyReference":  "RQN",
+                                                                            "state":  "In/Out"
+                                                                        }
+                                                                    ],
+                                                   "description":  "VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).",
+                                                   "handlerFunction":  "CommsysTransactionRequestHandler",
+                                                   "name":  "NJ_NJCJIS_VehicleRegistrationQuery",
+                                                   "type":  "QUERYINPUTDATAMAPPING",
+                                                   "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "VehicleStolenQuery"
+                                                                         ],
+                                                   "provider":  "NJ_NJCJIS",
+                                                   "providerType":  "Commsys",
+                                                   "query":  "VehicleRegistrationQuery",
+                                                   "queryLabel":  "Vehicle Registration",
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
@@ -5986,7 +5986,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NJ_NJCJIS v2.6",
+                        "description":  "Provider configuration for NJ_NJCJIS v2.7",
                         "name":  "NJ_NJCJIS",
                         "type":  "BUNDLE",
                         "provider":  "NJ_NJCJIS"

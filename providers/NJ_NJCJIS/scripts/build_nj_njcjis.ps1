@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.6",
+    [string]$Version = "2.7",
     [string]$Phase   = "base"
 )
 
@@ -458,7 +458,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $njBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehStolenQuery, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for NJ_NJCJIS v${Version}"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'
