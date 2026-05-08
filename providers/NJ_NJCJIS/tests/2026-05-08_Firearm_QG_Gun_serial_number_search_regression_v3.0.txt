@@ -4,7 +4,7 @@ Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Firearm
 Combo      : QG (Gun serial number search regression)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T8
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -12,58 +12,63 @@ FORM STATE (what was on the form when submitted)
 
   Field                     Value              Source
   ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  gunSerialNumber           ABC123454          typed
+  imageIndicator            N                  default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4EF1CE6Z1G26T91NJNVHQ0
+  MessageType : GunQuery
   keyReference: QG
 
   Fields sent in XML request:
     Element              Value
     -------------------  -------------------
-    [FieldName]          [VALUE]
+    ImageIndicator       N
+    GunSerialNumber      ABC123454
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: QG
-  Reason: [which set[] fields were populated]
+  Combination fired: QG (serial number search)
+  Reason: gunSerialNumber in set[]
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  -------------------------
+  ImageIndicator            YES    N               hidden default
+  GunSerialNumber           YES    ABC123454       typed
+  GunMakeCode               NO     --              not entered
+  GunTypeCode               NO     --              not entered
+  GunCaliber                NO     --              not entered
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: serialNumber (expected)
+  RMS request: not captured in this test (no RMS request pasted)
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: GunQuery fired with serial number. Only ImageIndicator + GunSerialNumber
+  sent — no extra fields. CommSys XML correct. No Returns expected for test serial.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4EF1CE6Z1G26T91NJNVHQ0"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KR4EF1CE6Z1G26T91NJNVHQ0</Id><ImageIndicator>N</ImageIndicator><GunSerialNumber>ABC123454</GunSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+Not captured in this test.
