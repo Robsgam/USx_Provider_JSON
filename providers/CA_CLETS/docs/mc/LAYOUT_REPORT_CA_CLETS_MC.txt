@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-08 12:55
+  Generated: 2026-05-08 15:49
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === CA_CLETS_MC.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=4 fields=8
+  Vehicle | entity=Vehicle | qidm= | cards=4 fields=7
   Person | entity=Person | qidm= | cards=3 fields=4
   Firearm | entity=Firearm | qidm= | cards=3 fields=4
   Article | entity=Article | qidm= | cards=3 fields=4
@@ -43,7 +43,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_VIN_1 [12]
         VehicleIdentificationNumber (Text | maxLen=30)
       ROW ROW_VEH_VIN_2 [6 6]
-        VehicleMakeCode (Text | maxLen=4)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         VehicleYear (Text | maxLen=4)
     CARD "CARD_VEH_NAME"
       ROW ROW_VEH_NAME_1 [6 6]

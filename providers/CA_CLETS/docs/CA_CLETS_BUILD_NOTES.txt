@@ -1,13 +1,14 @@
 CA_CLETS -- Build Notes
 ========================
 
-v1.6 (2026-05-07) -- VehicleMakeCode dropdown + Stats cleanup
+v1.6 (2026-05-07/08) -- VehicleMakeCode dropdown + Stats cleanup
   CHANGED: VehicleMakeCode from FormInput (free-text) to FormSelect with attributeTypeId='VEHICLE_MAKE',
            codeTypeProvider='NCIC'. Matches NJ, FL, AZ pattern for vehicle make dropdown.
            Removed abandoned Stats info card feature (AddInfoCard function, -Stats switch).
+           MC script updated 2026-05-08 to match BASE (was still FormInput).
   REASON:  All imported providers (NJ, FL, AZ) use dropdown for VehicleMakeCode. Free-text required
            officers to know NCIC make codes; dropdown provides searchable list.
-  VALIDATOR: BASE 64P/0F/0W/5LIM | Verify CLEAN
+  VALIDATOR: BASE 64P/0F/0W/5LIM | MC 68P/0F/0W/7LIM | Verify CLEAN
 
 v1.5 (2026-05-06) -- PlateType/PlateYear defaults + PurposeCode layout fix
   CHANGED: LicensePlateTypeCode initialValue='PC', LicensePlateYear initialValue='2026' (both BASE+MC).
