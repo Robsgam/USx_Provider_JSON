@@ -1,0 +1,81 @@
+﻿NJ_NJCJIS BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Vehicle
+Combo      : RQN_RAND (VIN search RandomRequest=Y, RAND conditions routing)
+Test type  : T11
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 5656RTHSRUY      typed
+  registrationState         NJ                 default (initialValue)
+  randomRequest             Y                  changed by user (was N)
+  imageIndicator            N                  default (hidden)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR4FAASQJ0F5TGHSCJD8Q5JJ
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQN_RAND
+
+  Fields sent in XML request:
+    Element                      Value
+    ---------------------------  ---------------------------
+    VehicleIdentificationNumber  5656RTHSRUY
+    ImageIndicator               N
+    State                        NJ
+    RandomRequest                Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQN_RAND (conditions: randomRequest EQUALS Y)
+  Reason: vehicleIdentificationNumber in set[], randomRequest=Y satisfies EQUALS condition
+
+  QIDM attribute               Sent?  Value           Note
+  ---------------------------  -----  --------------  -------------------------
+  ImageIndicator               YES    N               hidden default
+  VehicleIdentificationNumber  YES    5656RTHSRUY     typed
+  RandomRequest                YES    Y               user-changed from N to Y
+  State                        YES    NJ              NCIC reverse-lookup
+  LicensePlateNumber           NO     --              not entered
+  LicensePlateTypeCode         NO     --              not entered (VIN path)
+  LicensePlateYear             NO     --              not entered (VIN path)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: vehicleIdentificationNumber
+  RMS request fields: registrationStateAttrIds=[69509884952], vinNumber=5656rthsruy
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleRegistrationQuery fired via VIN+RAND path (RQN_RAND). Conditions
+  routing accepted RandomRequest=Y on VIN path. No plate fields sent. RMS co-fired
+  with vinNumber. No Returns expected for test VIN.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4FAASQJ0F5TGHSCJD8Q5JJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR4FAASQJ0F5TGHSCJD8Q5JJ</Id><VehicleIdentificationNumber>5656RTHSRUY</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NJ</State><RandomRequest>Y</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"5656rthsruy"}},"from":0,"size":50}
