@@ -1,0 +1,80 @@
+NJ_NJCJIS BASE vv2.9 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Vehicle
+Combo      : RQN (VehReg VIN search - basic combo)
+Test type  : T3 - Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber RSDFSTTRYERJH    typed
+  registrationState         NJ                 default (initialValue)
+  randomRequest             N                  default (initialValue)
+  imageIndicator            N                  default (initialValue)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR3XMP76A9Q3J9J0Q57D8NTZ
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQN
+
+  Fields sent in XML request:
+    Element                      Value
+    ---------------------------  -------------------
+    VehicleIdentificationNumber  RSDFSTTRYERJH
+    ImageIndicator               N
+    State                        NJ
+    RandomRequest                N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQN
+  Reason: set[vehicleIdentificationNumber] populated; any[] satisfied by defaults
+
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  ImageIndicator              YES    N               default, in any[]
+  LicensePlateNumber          NO     --              not entered (RQ combo field)
+  LicensePlateTypeCode        NO     --              not entered (RQ combo field)
+  LicensePlateYear            NO     --              not entered
+  RandomRequest               YES    N               default, in any[]
+  State                       YES    NJ              NCIC reverse-lookup
+  VehicleIdentificationNumber YES    RSDFSTTRYERJH   user-entered, in set[]
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: vinNumberSearch
+  RMS request fields: vinNumber=rsdfsttryerjh, registrationStateAttrIds=[69509884952]
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleRegistrationQuery RQN fired correctly with VIN + defaults. No plate fields sent. RMS co-fired.
+  Detail: No Returns (test VIN).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR3XMP76A9Q3J9J0Q57D8NTZ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR3XMP76A9Q3J9J0Q57D8NTZ</Id><VehicleIdentificationNumber>RSDFSTTRYERJH</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NJ</State><RandomRequest>N</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"rsdfsttryerjh"}},"from":0,"size":50}
