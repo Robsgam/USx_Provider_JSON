@@ -173,6 +173,9 @@ Platform evaluates ALL Person QIDMs from one shared field-value pool regardless 
 ### LIMITATION #27: No AttributeArrayWrapperRuleHandler on RMS sex
 Wraps sexAttrId in array → RMS 400. HIDLE default (useAttributeId=true, no handler) is correct.
 
+### LIMITATION #31: initialValue fields not counted for set[] combo evaluation
+Platform combo evaluator ignores `initialValue` defaults on FormSelect/FormInput when evaluating `set[]` requirements. Only fields the user actively enters or changes are counted as "populated." Fields with `initialValue` (State=NJ, PlateType=PC, RandomRequest=N, ImageIndicator=Y/N) must go in `any[]`, not `set[]`. Confirmed NJ v2.6: VehicleStolenQuery fired but VehicleRegistrationQuery did not until defaulted fields were moved from set[] to any[].
+
 ---
 
 ## Field Configuration Rules
