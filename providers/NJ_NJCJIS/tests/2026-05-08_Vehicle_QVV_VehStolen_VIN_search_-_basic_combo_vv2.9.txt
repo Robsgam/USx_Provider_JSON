@@ -1,0 +1,77 @@
+NJ_NJCJIS BASE vv2.9 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Vehicle
+Combo      : QVV (VehStolen VIN search - basic combo)
+Test type  : T6 - Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber PUGH20LKSGYIP    typed
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            N                  default (initialValue)
+  [Vehicle Stolen]          checked            persisted from T5 (not manually checked this test)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR3Y7T796PW9K7F4AJT268ZD
+  MessageType : VehicleStolenQuery
+  keyReference: QVV
+
+  Fields sent in XML request:
+    Element                      Value
+    ---------------------------  -------------------
+    VehicleIdentificationNumber  PUGH20LKSGYIP
+    ImageIndicator               N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QVV
+  Reason: set[vehicleIdentificationNumber] populated; any[imageIndicator] satisfied by default
+
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  ImageIndicator              YES    N               default, in any[]
+  LicensePlateNumber          NO     --              not entered
+  NCICNumber                  NO     --              not entered (QVN combo field)
+  State                       NO     --              initialValue only, not in QVV arrays
+  VehicleIdentificationNumber YES    PUGH20LKSGYIP   user-entered, in set[]
+  VehicleMakeCode             NO     --              not entered
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: vinNumberSearch
+  RMS request fields: vinNumber=pugh20lksgyip, registrationStateAttrIds=[69509884952]
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleStolenQuery QVV fired correctly. VIN + ImageIndicator sent. RMS co-fired.
+  Detail: Stolen checkbox persisted from T5 -- user did NOT manually check it this test. This is expected platform behavior (checkbox state persists between submissions). State not serialized (not in QVV combo arrays). No Returns (test VIN).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR3Y7T796PW9K7F4AJT268ZD"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KR3Y7T796PW9K7F4AJT268ZD</Id><VehicleIdentificationNumber>PUGH20LKSGYIP</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"pugh20lksgyip"}},"from":0,"size":50}
