@@ -1,0 +1,63 @@
+NJ_NJCJIS BASE vv2.9 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : ALL (Vehicle, Person, Firearm, Article, Boat)
+Combo      : NONE (Negative test - empty form)
+Test type  : T17 - Phase 8 Negative (empty form submission)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  All tabs checked in default state (no user-entered data):
+  - Vehicle: only defaults (State=NJ, PlateType=PC, Year=2026, RandomRequest=N, ImageIndicator=N)
+  - Person: only defaults (State=NJ, ImageIndicator=Y)
+  - Firearm: only default (ImageIndicator=N)
+  - Article: only default (ImageIndicator=N)
+  - Boat: only default (ImageIndicator=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  No request sent -- submit button disabled/unavailable on all tabs.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  No combo fired on any entity.
+  Reason: no set[] fields populated on any tab. Platform correctly prevents submission
+  when only defaults/initialValues are present and no user-entered data satisfies
+  any combo's set[] requirements.
+
+  This confirms: platform evaluates set[] before enabling submit. initialValue-only
+  fields do NOT satisfy set[] (consistent with LIMITATION #31).
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  N/A -- no request sent.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Submit disabled on all 5 entity tabs when no set[] fields are populated. Correct negative behavior.
+  Detail: Tested Vehicle, Person, Firearm, Article, Boat tabs. All show submit unavailable in default state. Confirms platform requires at least one set[] field to be user-populated before allowing submission.
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+No request -- submit not available.
+
+================================================================================
+RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+================================================================================
+
+N/A
