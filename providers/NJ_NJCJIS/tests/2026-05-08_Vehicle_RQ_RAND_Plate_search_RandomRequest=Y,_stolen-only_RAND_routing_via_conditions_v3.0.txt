@@ -1,10 +1,10 @@
-﻿NJ_NJCJIS BASE v3.0 -- Test Log
+NJ_NJCJIS BASE v3.0 -- Test Log
 ============================================================
 Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Vehicle
 Combo      : RQ_RAND (Plate search RandomRequest=Y, stolen-only RAND routing via conditions)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T3
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -12,58 +12,74 @@ FORM STATE (what was on the form when submitted)
 
   Field                     Value              Source
   ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  licensePlateNumber        ABC1234            typed
+  registrationState         NJ                 default (initialValue)
+  licensePlateTypeCode      PC                 default (initialValue)
+  licensePlateYear          2026               default (initialValue)
+  randomRequest             Y                  changed by user (was N)
+  imageIndicator            N                  default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4CSDJASC46GVRZV7XV7VAT
+  MessageType : VehicleRegistrationQuery
   keyReference: RQ_RAND
 
   Fields sent in XML request:
     Element              Value
     -------------------  -------------------
-    [FieldName]          [VALUE]
+    ImageIndicator       N
+    LicensePlateYear     2026
+    State                NJ
+    RandomRequest        Y
+    LicensePlateTypeCode PC
+    LicensePlateNumber   ABC1234
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: RQ_RAND
-  Reason: [which set[] fields were populated]
+  Combination fired: RQ_RAND (conditions: randomRequest EQUALS Y)
+  Reason: licensePlateNumber in set[], randomRequest=Y satisfies EQUALS condition
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  ImageIndicator            YES    N               hidden default
+  LicensePlateNumber        YES    ABC1234         typed
+  LicensePlateTypeCode      YES    PC              default
+  LicensePlateYear          YES    2026            dynamic default
+  RandomRequest             YES    Y               user-changed from N to Y
+  State                     YES    NJ              NCIC reverse-lookup
+  VehicleIdentificationNumber NO   --              not entered
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: licensePlateIn
+  RMS request fields: registrationStateAttrIds=[69509884952], tag=abc1234
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: VehicleRegistrationQuery fired with RandomRequest=Y. Conditions routing
+  accepted the RAND path. XML identical structure to T2 except RandomRequest=Y.
+  No Returns expected for test plate.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4CSDJASC46GVRZV7XV7VAT"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR4CSDJASC46GVRZV7XV7VAT</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><RandomRequest>Y</RandomRequest><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"tag":"abc1234"}},"from":0,"size":50}
