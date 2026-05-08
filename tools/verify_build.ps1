@@ -6,7 +6,7 @@
     3. RMS QIDM name vs sourceField alignment
     4. Cross-bundle fieldId consistency
     5. camelCase enforcement (when provider has been migrated)
-    6. NJ reference pattern comparison (ImageIndicator, queryLabel, etc.)
+    6. Standard pattern comparison (ImageIndicator, queryLabel, etc.)
   FAILS the build if any check fails. Called automatically by build_report.ps1.
 
   Usage: .\verify_build.ps1 -Path <provider.json>
@@ -231,7 +231,7 @@ if ($CamelCase) {
     Info "camelCase check skipped (use -CamelCase to enable)"
 }
 
-# ── CHECK 6: NJ reference pattern comparison ─────────────────────────────────
+# ── CHECK 6: Standard pattern comparison ──────────────────────────────────────
 Write-Host ""
 Write-Host "--- CHECK 6: Reference Pattern Check ---" -ForegroundColor Yellow
 
