@@ -30,36 +30,68 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v2.9  2026-05-08  [describe change here]
+v2.9  2026-05-08  *** LOCKED -- READY FOR LIVE TEST ***
   CHANGED
-    -
+    - VehReg: autoSelect=true, NO queriesToDeselect (default query)
+    - VehStolen: NO autoSelect, queriesToDeselect=[VehicleRegistrationQuery] (opt-in)
+    - Same config as v2.7 but with confirmed working autoSelect/deselect behavior
   REASON
-    -
-v2.8  2026-05-08  [describe change here]
+    - v2.8 bidirectional queriesToDeselect deadlocked (same as v2.3)
+    - User requested simplest approach: VehReg default, Stolen manual opt-in
+  RESULT
+    - LIVE TEST: 16/16 PASS (T2-T17, 2026-05-08)
+    - All 11 combos + OOS + any[] fields + negative confirmed
+
+v2.8  2026-05-08  FAILED -- bidirectional queriesToDeselect deadlock
   CHANGED
-    -
+    - Both QIDMs have queriesToDeselect pointing at each other
+    - VehReg: autoSelect=true, queriesToDeselect=[VehicleStolenQuery]
+    - VehStolen: NO autoSelect, queriesToDeselect=[VehicleRegistrationQuery]
   REASON
-    -
-v2.7  2026-05-08  [describe change here]
+    - Attempted to prevent manual co-selection from v2.7
+  RESULT
+    - "original 2 error pop up" -- same deadlock as v2.3
+
+v2.7  2026-05-08  PARTIAL -- warning + manual co-selection allowed
   CHANGED
-    -
+    - Reordered QIDMs: VehStolen before VehReg in configurations array
   REASON
-    -
-v2.6  2026-05-08  [describe change here]
+    - v2.6 had VehStolen auto-selecting because evaluated last in JSON order
+  RESULT
+    - VehReg auto-selects correctly on plate entry
+    - Warning "You cannot run Vehicle Stolen with Vehicle Registration" appears (cosmetic)
+    - Both checkboxes can be manually co-checked (queriesToDeselect one-directional on manual click)
+
+v2.6  2026-05-08  PARTIAL -- Stolen still auto-selects (ordering issue)
   CHANGED
-    -
+    - Moved defaulted fields from set[] to any[] on VehReg combos
+    - RQ: randomRequest, registrationState, licensePlateTypeCode -> any[]
+    - RQN: randomRequest, registrationState -> any[]
   REASON
-    -
-v2.5  2026-05-08  [describe change here]
+    - LIMITATION #31: initialValue not counted for set[] by platform combo evaluator
+  RESULT
+    - Both QIDMs have autoSelect=true, last in JSON order wins (VehStolen after VehReg)
+    - "are you doing it backwards?" -- Stolen auto-selects, not Reg
+
+v2.5  2026-05-08  FAILED -- only Stolen auto-selects
   CHANGED
-    -
+    - Added autoSelect=true to VehStolen (both QIDMs now have autoSelect)
   REASON
-    -
-v2.4  2026-05-08  [describe change here]
+    - v2.4 had simpler QVP combo (1 set field) stealing auto-select from RQ (4 set fields)
+  RESULT
+    - Discovered LIMITATION #31: initialValue fields not counted for set[]
+    - VehReg RQ had 3 defaulted fields in set[] that platform ignored
+
+v2.4  2026-05-08  FAILED -- VehStolen lights up first on plate entry
   CHANGED
-    -
+    - VehReg: queriesToDeselect=[VehicleStolenQuery]
+    - VehStolen: no queriesToDeselect
+    - Initial attempt at dual Vehicle QIDM with one-way deselect
   REASON
-    -
+    - New VehicleStolenQuery shares Vehicle form; needs checkbox routing
+  RESULT
+    - QVP combo (set=[licensePlateNumber]) simpler than RQ, fires first
+    - "vehicle stolen lights up first when i enter a plate"
 v2.3  2026-05-07  Monorepo rebuild with latest tools
   CHANGED
     - Rebuilt with current validate.ps1/build_report.ps1 toolchain

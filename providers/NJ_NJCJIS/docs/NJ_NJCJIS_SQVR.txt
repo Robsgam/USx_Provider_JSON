@@ -1,174 +1,175 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-05-06
-JSON version: v2.3 BASE / v2.3 MC
-Validator: BASE 67P/0F/5W/1LIM | MC 67P/0F/0W/1LIM (2026-05-07)
-Live test: BASE 17/17 PASS, MC 57/57 PASS (2026-04-29)
-Simulation: BASE 11/11 FIRE, MC 11/11 FIRE (2026-04-30)
+Last updated: 2026-05-08
+JSON version: v2.9 BASE (LOCKED) / v2.3 MC
+Live test: BASE 16/16 PASS (2026-05-08), MC 57/57 PASS (2026-04-29)
 
-NOTE: Live tests (2026-04-29) were performed without per-test XML log captures.
-[CONFIRMED] markers are based on test summary results.
-CommSys simulation logs with XML captures added 2026-04-30 (tests/ directory).
+*** JSON LOCKED -- v2.9 BASE is frozen. Do not modify unless explicitly instructed. ***
 
-KNOWN LIMITATIONS (1, validator [LIMITATION] items, no action needed):
+KNOWN LIMITATIONS (2):
   1. DL combo order: DQN(2 set) before DQ(3 set) -- correct by operational priority (OLN before Name)
-
-FIXES APPLIED 2026-04-30:
-  - AUTH combo: added keyReference "AUTH"
-  - RMS Person/Vehicle QIDMs: added autoSelect=true
-  - Validator: tuned 3 false positives (PlateType alt fieldId, VehicleYear result-only, ParallelQuery optional)
+  2. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================
 
-  QIDM: VehicleRegistrationQueryQIDM
+  QIDM: NJ_NJCJIS_VehicleRegistrationQuery
   QIF:  Vehicle
-  Combos: RQ (plate+state), RQN (VIN)
-  Optional fields: PlateYear, VehicleMakeCode, VehicleModelCode, ImageIndicator
+  autoSelect: true (default query, auto-selects when plate/VIN entered)
+  queriesToDeselect: NONE (avoids bidirectional deadlock)
+  Combos: RQ (plate), RQN (VIN)
 
-  RQ -- Plate + State + PlateType + RandomRequest [CONFIRMED]
-    set: licensePlateNumber, RegistrationState, LicensePlateType, RandomRequest
-    any: PlateYear, VehicleMakeCode, VehicleModelCode, ImageIndicator
+  RQ -- Plate search [CONFIRMED T2, T13]
+    set: licensePlateNumber
+    any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
-    Defaults: State=NJ, PlateType=PC, PlateYear=2026, RandomRequest=N, Image=N
-    NCIC state reverse-lookup: NJ=69509884952, PA=69509887513
+    Defaults: State=NJ, PlateType=PC, PlateYear=2026, RandomRequest=N, ImageIndicator=N
+    T2: in-state NJ, all 6 fields sent
+    T13: OOS MA, NCIC reverse-lookup confirmed (attrId 69509889422)
 
-  RQN -- VIN + RandomRequest [CONFIRMED]
-    set: VehicleIdentificationNumber, RandomRequest
-    any: PlateYear, VehicleMakeCode, VehicleModelCode, ImageIndicator
+  RQN -- VIN search [CONFIRMED T3]
+    set: vehicleIdentificationNumber
+    any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
+    T3: VIN + State + RandomRequest + ImageIndicator sent
 
-  OOS -- Plate with non-NJ state [CONFIRMED]
-    State=PA tested, correct keyRef selected
-
-  Priority -- Plate+VIN both filled [CONFIRMED]
-    RQ fires (plate wins), RQN does not override
-
-  RMS co-fire [CONFIRMED]
-    RMS Vehicle combo fires alongside CommSys on plate and VIN paths
+  RMS co-fire [CONFIRMED T2, T3, T13]
+    licensePlateIn: tag + registrationStateAttrIds
+    vinNumberSearch: vinNumber + registrationStateAttrIds
 
 ================================================================================
 2. VehicleStolenQuery -- Vehicle Entity
 ================================================================================
 
-  QIDM: VehicleStolenQueryQIDM
+  QIDM: NJ_NJCJIS_VehicleStolenQuery
   QIF:  Vehicle (shared with VehicleReg)
+  autoSelect: NONE (officer manually checks Stolen checkbox)
+  queriesToDeselect: VehicleRegistrationQuery (checking Stolen unchecks Reg)
   Combos: QVN (NCIC#), QVP (plate), QVV (VIN)
 
-  QVN -- NCIC Number [CONFIRMED]
-    set: NCICNumber
-    any: ImageIndicator
+  QVN -- NCIC Number [CONFIRMED T4]
+    set: ncicNumber
+    any: imageIndicator
     keyReference: QVN
+    T4: NCICNumber + ImageIndicator sent. State NOT serialized (not in QVN arrays).
 
-  QVP -- Plate [CONFIRMED via co-fire]
-    set: licensePlateNumber, RegistrationState, LicensePlateType
-    any: ImageIndicator
+  QVP -- Plate search [CONFIRMED T5, T15]
+    set: licensePlateNumber
+    any: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
     keyReference: QVP
-    Co-fires with VehicleReg RQ on shared fields (LIMITATION #1)
+    T5: Plate + State + ImageIndicator sent. RMS co-fired.
+    T15: VehicleMakeCode=PASS_FORD added. RMS included makeNcicCode.
 
-  QVV -- VIN [CONFIRMED via co-fire]
-    set: VehicleIdentificationNumber
-    any: ImageIndicator
+  QVV -- VIN search [CONFIRMED T6]
+    set: vehicleIdentificationNumber
+    any: imageIndicator
     keyReference: QVV
-    Co-fires with VehicleReg RQN on shared fields
+    T6: VIN + ImageIndicator sent. State NOT serialized (not in QVV arrays).
+    Note: Stolen checkbox persisted from T5 (expected platform behavior).
+
+  RMS co-fire [CONFIRMED T5, T6, T15]
+    licensePlateIn: tag + registrationStateAttrIds
+    vinNumberSearch: vinNumber + registrationStateAttrIds
 
 ================================================================================
 3. DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  QIDM: DriverLicenseQueryQIDM
+  QIDM: NJ_NJCJIS_DriverLicenseQuery
   QIF:  Person
+  autoSelect: true
   Combos: DQN (OLN), DQ (Name+DOB)
-  Optional fields: SexCode, ImageIndicator
 
-  DQN -- OLN + State [CONFIRMED]
-    set: OperatorLicenseNumber, RegistrationState
-    any: SexCode, ImageIndicator
+  DQN -- OLN + State [CONFIRMED T7]
+    set: operatorLicenseNumber, registrationState
+    any: imageIndicator
     keyReference: DQN
-    Defaults: State=NJ, ImageIndicator=Y
+    T7: OLN + State + ImageIndicator sent. State serialized from initialValue in set[].
+    Note: registrationState in set[] with initialValue='NJ' -- combo fires despite LIMITATION #31.
 
-  DQ -- Name + DOB + State [CONFIRMED]
-    set: Name, BirthDate, RegistrationState
-    any: SexCode, ImageIndicator
+  DQ -- Name + DOB [CONFIRMED T8, T14]
+    set: birthDate, nameLast, nameFirst
+    any: imageIndicator, sexCode, registrationState
     keyReference: DQ
-    Name uses FormatStringRuleHandler: "LAST, FIRST"
-    BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
+    T8: Name=DOE, JANE (FormatStringRuleHandler `, `). BirthDate=01011985 (CommsysParseDateRuleHandler).
+    T14: SexCode=F confirmed (NIBRS reverse-lookup). All any[] fields populated.
 
-  OOS -- OLN with non-NJ state [CONFIRMED]
-    State=NY tested
-
-  Priority -- OLN+Name+DOB all filled [CONFIRMED]
-    DQN fires (OLN wins over Name)
-
-  Sex optional [CONFIRMED]
-    SexCode=M -> NIBRS reverse-lookup -> 69509891711 (RMS attrId)
-    CommSys XML: <SexCode>M</SexCode>
-
-  RMS co-fire [CONFIRMED]
-    RMS Person combo fires alongside CommSys on OLN and Name paths
+  RMS co-fire [CONFIRMED T7, T8, T14]
+    dlNumber: OLN + registrationStateAttrId
+    name: lastName + firstName + dateOfBirth + registrationStateAttrId + sexAttrId
 
 ================================================================================
 4. GunQuery -- Firearm Entity
 ================================================================================
 
-  QIDM: GunQueryQIDM
+  QIDM: NJ_NJCJIS_GunQuery
   QIF:  Firearm
   Combos: QG
-  Optional fields: GunMake, GunCaliber, GunModel, ImageIndicator
 
-  QG -- Serial Number [CONFIRMED]
-    set: SerialNumber
-    any: GunMake, GunCaliber, GunModel, ImageIndicator
+  QG -- Serial Number [CONFIRMED T9, T16]
+    set: serialNumber
+    any: gunCaliber, firearmMake, gunModel, imageIndicator
     keyReference: QG
-
-  QG + all optionals [CONFIRMED]
-    Serial + Make + Caliber + Model + Image all present in XML
+    T9: Serial + ImageIndicator (minimal)
+    T16: All 5 fields (GunMake=32, GunCaliber=9 as NCIC codes, GunModel=M7P SHIELD)
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
 ================================================================================
 
-  QIDM: ArticleSingleQueryQIDM
+  QIDM: NJ_NJCJIS_ArticleSingleQuery
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [CONFIRMED]
-    set: SerialNumber, ArticleTypeCode
-    any: ImageIndicator
+  QA -- Serial + ArticleType [CONFIRMED T10]
+    set: serialNumber, articleTypeCode
+    any: imageIndicator
     keyReference: QA
+    T10: Serial + ArticleTypeCode=BBICYCL + ImageIndicator sent.
 
 ================================================================================
 6. BoatQuery -- Boat Entity
 ================================================================================
 
-  QIDM: BoatQueryQIDM
+  QIDM: NJ_NJCJIS_BoatQuery
   QIF:  Boat
   Combos: QB (Registration), QBN (Hull ID)
   No State field on Boat (removed in v2 metadata)
 
-  QB -- Registration Number [CONFIRMED]
-    set: RegistrationNumber
-    any: ImageIndicator
+  QB -- Registration Number [CONFIRMED T11]
+    set: registrationNumber
+    any: imageIndicator
     keyReference: QB
+    T11: RegistrationNumber + ImageIndicator sent.
 
-  QBN -- Hull ID [CONFIRMED]
-    set: HullIdentificationNumber
-    any: ImageIndicator
+  QBN -- Hull ID [CONFIRMED T12]
+    set: boatHullIdNumber
+    any: imageIndicator
     keyReference: QBN
+    T12: BoatHullIdNumber + ImageIndicator sent.
+
+================================================================================
+NEGATIVE TESTS
+================================================================================
+
+  Empty form -- all tabs [CONFIRMED T17]
+    Submit disabled on all 5 entity tabs when no set[] fields populated.
+    Platform requires user-entered data to satisfy at least one combo's set[].
 
 ================================================================================
 RMS BUNDLE
 ================================================================================
 
-  RMS co-fire tested on Vehicle (plate, VIN) and Person (OLN, Name) [CONFIRMED]
   Patches applied: 1 (Vehicle state), 3 (Person state), 6 (cleanup)
+  RMS co-fire confirmed: Vehicle (plate T2/T5, VIN T3/T6), Person (OLN T7, Name T8/T14)
 
 ================================================================================
 SUMMARY
 ================================================================================
 
-  Total combos: 11 CommSys + 6 RMS
-  [CONFIRMED]: ALL (17 BASE + 57 MC live tests)
+  Total combos: 11 CommSys + RMS
+  [CONFIRMED]: ALL 11 combos + OOS + any[] fields + negative
   [PENDING]: NONE
-  Simulation logs: 10 files (5 BASE + 5 MC) in tests/ with XML captures (2026-04-30)
+  Live tests: 16/16 PASS (2026-05-08)
+  Test logs: 16 files in tests/ with XML captures
