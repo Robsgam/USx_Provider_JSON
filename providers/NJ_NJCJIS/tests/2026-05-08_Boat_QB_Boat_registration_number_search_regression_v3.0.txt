@@ -1,0 +1,71 @@
+﻿NJ_NJCJIS BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Boat
+Combo      : QB (Boat registration number search regression)
+Test type  : T10
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationNumber        234234235          typed
+  imageIndicator            N                  default (hidden)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR4EVK9GB9E1E39PHKE49K6A
+  MessageType : BoatQuery
+  keyReference: QB
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       N
+    RegistrationNumber   234234235
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QB (registration number search)
+  Reason: registrationNumber in set[]
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  -------------------------
+  ImageIndicator            YES    N               hidden default
+  RegistrationNumber        YES    234234235       typed
+  BoatHullIdNumber          NO     --              not entered (QBN would fire)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: not captured (no RMS request pasted)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: BoatQuery fired with registration number only. QB combo matched correctly.
+  No hull ID sent. No Returns expected for test data.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4EVK9GB9E1E39PHKE49K6A"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KR4EVK9GB9E1E39PHKE49K6A</Id><ImageIndicator>N</ImageIndicator><RegistrationNumber>234234235</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+Not captured in this test.
