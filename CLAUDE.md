@@ -18,7 +18,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS/ | v2.9 | LOCKED -- 16/16 PASS (BASE) 67P/0F/0W/1LIM (MC) | queriesToDeselect VehReg/Stolen, RandomRequest, NCIC state, Patch 1+3+6+7+8 |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.0 | LOCKED -- 16/16 PASS (BASE) 69P/0F/0W/1LIM (MC) | conditions routing (RAND/FULL), queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.1 | 70P/0F/1W/4LIM (BASE) 70P/0F/1W/4LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.2 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) NEW | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
