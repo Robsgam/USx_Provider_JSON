@@ -303,8 +303,8 @@ AUTHORITATIVE SOURCE FILES (read-only)
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
     DH-suffix pattern, GunQuery sourceField naming).
 
-  providers/NJ_NJCJIS/
-    v2.9 BASE LOCKED (2026-05-08) -- 16/16 live tests PASS. Do not modify.
+  providers/NJ_NJCJIS_LOCKED/
+    v3.0 BASE LOCKED (2026-05-08) -- 14/14 live tests PASS. Do not modify.
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
     AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
 

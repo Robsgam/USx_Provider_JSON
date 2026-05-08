@@ -27,7 +27,7 @@ param(
 if (-not $ProviderDir) {
     $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
     $knownPaths = @{
-        'NJ_NJCJIS'           = "$repoRoot\providers\NJ_NJCJIS"
+        'NJ_NJCJIS'           = "$repoRoot\providers\NJ_NJCJIS_LOCKED"
         'NY_NYSPIN_EJUSTICE'  = "$repoRoot\providers\NY_NYSPIN_EJUSTICE"
         'HI_HCJDC_OFML'       = "$repoRoot\providers\HI_HCJDC_OFML"
         'AZ_AZDPS'            = "$repoRoot\providers\AZ_AZDPS"

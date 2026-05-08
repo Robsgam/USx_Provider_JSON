@@ -15,8 +15,25 @@
 
 param(
     [string]$Version = "3.0",
-    [string]$Phase   = "mc"
+    [string]$Phase   = "mc",
+    [switch]$Unlock
 )
+
+# ── LOCK GATE ──
+$statusFile = Join-Path (Resolve-Path "$PSScriptRoot\..").Path "docs\NJ_NJCJIS_STATUS.txt"
+if (Test-Path $statusFile) {
+    $statusContent = Get-Content $statusFile -Raw
+    if ($statusContent -match 'LOCKED' -and -not $Unlock) {
+        Write-Host ""
+        Write-Host "  ██  JSON LOCKED  ██" -ForegroundColor Red
+        Write-Host "  NJ_NJCJIS is frozen. Pass -Unlock to override." -ForegroundColor Red
+        Write-Host ""
+        exit 1
+    }
+    if ($Unlock) {
+        Write-Host "  [UNLOCK] Lock override accepted. Proceeding with build." -ForegroundColor Yellow
+    }
+}
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year

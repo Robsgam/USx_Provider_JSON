@@ -12,7 +12,7 @@
 
   Usage:
     .\audit_cad.ps1                                  # scan all providers
-    .\audit_cad.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
+    .\audit_cad.ps1 -Path providers\NJ_NJCJIS_LOCKED\NJ_NJCJIS_BASE.json
     .\audit_cad.ps1 -Variant MC                      # scan all MC JSONs
     .\audit_cad.ps1 -OutFile docs\cad_audit.txt      # write to file
 #>
