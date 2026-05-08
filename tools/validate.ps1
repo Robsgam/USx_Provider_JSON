@@ -645,7 +645,7 @@ if ($entitiesBundle) {
         }
 
         # ImageIndicator: only WARN if a QIDM maps it but form doesn't have it
-        if (-not $fids.Contains('ImageIndicator')) {
+        if (-not $fids.Contains('ImageIndicator') -and -not $fids.Contains('imageIndicator')) {
             if ($entitiesWithImageIndicatorQidm.ContainsKey($entity)) {
                 Write-Warn "$entity missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field"
             }

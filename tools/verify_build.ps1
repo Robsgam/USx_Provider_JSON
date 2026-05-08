@@ -7,6 +7,7 @@
     4. Cross-bundle fieldId consistency
     5. camelCase enforcement (when provider has been migrated)
     6. Standard pattern comparison (ImageIndicator, queryLabel, etc.)
+    7. Cross-variant consistency (BASE vs MC field type mismatches)
   FAILS the build if any check fails. Called automatically by build_report.ps1.
 
   Usage: .\verify_build.ps1 -Path <provider.json>
@@ -277,6 +278,79 @@ if ($rmsBundle) {
     if ($rmsAutoSelectCount -gt 0) {
         Pass "All $rmsAutoSelectCount RMS QIDMs have autoSelect=true"
     }
+}
+
+# ── CHECK 7: Cross-variant consistency (BASE vs MC field types) ──────────────
+Write-Host ""
+Write-Host "--- CHECK 7: Cross-Variant Consistency ---" -ForegroundColor Yellow
+
+$isBase = $jsonName -match '_BASE$'
+$isMc   = $jsonName -match '_MC$'
+$providerDir = Split-Path $resolved -Parent
+
+if ($isBase) {
+    $mcName = $jsonName -replace '_BASE$', '_MC.json'
+    $mcPath = Join-Path $providerDir $mcName
+} elseif ($isMc) {
+    $baseName = $jsonName -replace '_MC$', '_BASE.json'
+    $mcPath = $null
+    $basePath = Join-Path $providerDir $baseName
+}
+
+$otherPath = if ($isBase) { $mcPath } elseif ($isMc) { $basePath } else { $null }
+
+if ($otherPath -and (Test-Path $otherPath)) {
+    $otherJson = [System.IO.File]::ReadAllText($otherPath) | ConvertFrom-Json
+    $otherEntities = $otherJson.bundles | Where-Object { $_.provider -eq 'MARK43' }
+    $thisEntities = $entitiesBundle
+    $otherLabel = if ($isBase) { 'MC' } else { 'BASE' }
+    $thisLabel = if ($isBase) { 'BASE' } else { 'MC' }
+
+    $fieldTypeDiffs = 0
+    foreach ($thisCfg in $thisEntities.configurations) {
+        if ($thisCfg.type -ne 'QUERYINPUTFORM') { continue }
+        $entity = $thisCfg.targetEntity
+        $otherCfg = $otherEntities.configurations | Where-Object { $_.type -eq 'QUERYINPUTFORM' -and $_.targetEntity -eq $entity }
+        if (-not $otherCfg) { continue }
+
+        $thisText = $thisCfg | ConvertTo-Json -Depth 100 -Compress
+        $otherText = $otherCfg | ConvertTo-Json -Depth 100 -Compress
+
+        $thisFields = @{}
+        foreach ($m in [regex]::Matches($thisText, '"fieldId"\s*:\s*"([^"]+)"[^}]*?"resolvedName"\s*:\s*"([^"]+)"')) {
+            $thisFields[$m.Groups[1].Value] = $m.Groups[2].Value
+        }
+        foreach ($m in [regex]::Matches($thisText, '"resolvedName"\s*:\s*"([^"]+)"[^}]*?"fieldId"\s*:\s*"([^"]+)"')) {
+            if (-not $thisFields.ContainsKey($m.Groups[2].Value)) {
+                $thisFields[$m.Groups[2].Value] = $m.Groups[1].Value
+            }
+        }
+
+        $otherFields = @{}
+        foreach ($m in [regex]::Matches($otherText, '"fieldId"\s*:\s*"([^"]+)"[^}]*?"resolvedName"\s*:\s*"([^"]+)"')) {
+            $otherFields[$m.Groups[1].Value] = $m.Groups[2].Value
+        }
+        foreach ($m in [regex]::Matches($otherText, '"resolvedName"\s*:\s*"([^"]+)"[^}]*?"fieldId"\s*:\s*"([^"]+)"')) {
+            if (-not $otherFields.ContainsKey($m.Groups[2].Value)) {
+                $otherFields[$m.Groups[2].Value] = $m.Groups[1].Value
+            }
+        }
+
+        foreach ($fid in $thisFields.Keys) {
+            $caseMatch = $otherFields.Keys | Where-Object { $_ -ieq $fid } | Select-Object -First 1
+            if ($caseMatch -and $thisFields[$fid] -ne $otherFields[$caseMatch]) {
+                Fail "$entity field '$fid': $thisLabel=$($thisFields[$fid]) but $otherLabel=$($otherFields[$caseMatch])"
+                $fieldTypeDiffs++
+            }
+        }
+    }
+    if ($fieldTypeDiffs -eq 0) {
+        Pass "All shared fields have matching types across $thisLabel and $otherLabel"
+    }
+} elseif ($otherPath) {
+    Info "No $( if ($isBase) {'MC'} else {'BASE'} ) JSON found -- skipping cross-variant check"
+} else {
+    Info "Not a BASE/MC variant -- skipping cross-variant check"
 }
 
 # ── SUMMARY ───────────────────────────────────────────────────────────────────

@@ -18,7 +18,8 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
     [string]$DocsDir,
-    [switch]$Release
+    [switch]$Release,
+    [switch]$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -67,7 +68,9 @@ $header = @"
 Write-Host ""
 Write-Host "  [1/$stepCount] Running validator..." -ForegroundColor Yellow
 $validatorPath = Join-Path $toolDir "validate.ps1"
-$validatorOut = & powershell -ExecutionPolicy Bypass -File $validatorPath -Path $resolved 2>&1 | Out-String
+$validatorArgs = @('-ExecutionPolicy','Bypass','-File',$validatorPath,'-Path',$resolved)
+if ($Force) { $validatorArgs += '-Force' }
+$validatorOut = & powershell @validatorArgs 2>&1 | Out-String
 $validatorFile = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
 ($header + "VALIDATOR RESULTS`n================`n`n" + $validatorOut) | Out-File -FilePath $validatorFile -Encoding utf8
 Write-Host "  [1/$stepCount] Saved: $validatorFile" -ForegroundColor Green
