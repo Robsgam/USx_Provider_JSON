@@ -1,0 +1,67 @@
+TEST LOG
+========
+Provider: CA_CLETS
+Version:  v1.6 BASE
+Date:     2026-05-08
+Entity:   Person
+Query:    DriverLicenseQuery + DriverHistoryQuery (co-fire)
+Combo:    NLTS.DQ (DL) + NLTS.KQ.O (DH)
+KeyRef:   NLTS.DQ / NLTS.KQ.O
+Test:     T6 - In-state DL by OLN + DH co-fire
+
+FORM STATE
+==========
+CaRequestPurposeCode: C (dropdown)
+OperatorLicenseNumber: D123456778 (text)
+State: CA (dropdown, explicitly selected)
+NameFirst: [blank]
+NameLast: [blank]
+BirthDate: [blank]
+SexCode: [blank]
+
+EXPECTED
+========
+DL combo NLTS.DQ fires: set[caRequestPurposeCode, operatorLicenseNumber, registrationState]
+DH combo NLTS.KQ.O co-fires: set[caRequestPurposeCode, operatorLicenseNumber], any[registrationState]
+Two transactions in XML output.
+
+RAW XML REQUEST 1 (DriverLicenseQuery)
+======================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR42FMAGMNCWVEDEG7CFWKSA"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR42FMAGMNCWVEDEG7CFWKSA</Id><State>CA</State><OperatorLicenseNumber>D123456778</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RAW XML REQUEST 2 (DriverHistoryQuery)
+======================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR42FNXZHS5NS59JSPM9CRH8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KR42FNXZHS5NS59JSPM9CRH8</Id><State>CA</State><OperatorLicenseNumber>D123456778</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS REQUEST
+===========
+{"elasticQuery":{"dlNumber":"d123456778","registrationStateAttrId":"69586251012"},"from":0,"size":50}
+
+RMS RESPONSE
+============
+No Returns
+
+FIELD ANALYSIS
+==============
+DL Transaction:
+  CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+  OLN: D123456778 -> <OperatorLicenseNumber>D123456778</OperatorLicenseNumber> CORRECT
+  State: CA -> <State>CA</State> CORRECT (NCIC reverse-lookup on Person)
+
+DH Transaction:
+  CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+  OLN: D123456778 -> <OperatorLicenseNumber>D123456778</OperatorLicenseNumber> CORRECT
+  State: CA -> <State>CA</State> CORRECT (sent via any[])
+
+RMS:
+  dlNumber: "d123456778" (lowercase) CORRECT
+  registrationStateAttrId: "69586251012" (string, not array) CORRECT (Person pattern)
+
+CO-FIRE ANALYSIS
+================
+DL+DH co-fire confirmed. Both checkboxes auto-selected.
+NLTS.DQ (DL): OLN + State in set[] -> fires
+NLTS.KQ.O (DH): OLN in set[], State in any[] -> co-fires
+Two separate Transaction elements with different IDs.
+
+RESULT: PASS

@@ -3,8 +3,8 @@ CONNECTCIC PLATFORM CONSTRAINTS
 What CAN'T I do? What breaks? What are the confirmed dead ends?
 
 Consolidated from: PLATFORM_LIMITATIONS.txt, ANTI_PATTERNS.txt, JSON_LIMITATIONS.txt
-Last updated: 2026-05-06
-Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, HI_HCJDC_OFML, LA_LEMS
+Last updated: 2026-05-08
+Source: NJ_NJCJIS, NY_NYSPIN_EJUSTICE, AZ_AZDPS, FL_FCIC, HI_HCJDC_OFML, LA_LEMS, CA_CLETS
 
 Legend:
   CONFIRMED    = verified in live testing (version/date noted)
@@ -26,12 +26,15 @@ LIMITATION #1: set[] and any[] control combination selection -- not field sendin
     extras in NJ v2.1 and still returned results. Merge is preferred unless server
     rejects specific unknown fields.
 
-  CLARIFICATION (confirmed FL_FCIC 2026-05-05):
+  CLARIFICATION (confirmed FL_FCIC 2026-05-05, CA_CLETS 2026-05-08):
     any[] is NOT a minimum-one-required gate. A combo fires when all set[] fields
-    are populated, even if NO any[] field is populated. Tested: FBQ+Hull combo
-    (set=[BoatHullIdNumber], any=[Decal,Reg,TitleLien,ImageIndicator]) fired with
-    only BoatHullIdNumber filled and all any[] fields blank. The any[] array
-    controls which optional fields CAN serialize, not whether the combo matches.
+    are populated, even if NO any[] field is populated. The any[] array controls
+    which optional fields CAN serialize, not whether the combo matches.
+    Tested: FL_FCIC FBQ+Hull combo (set=[BoatHullIdNumber],
+    any=[Decal,Reg,TitleLien,ImageIndicator]) fired with only set[] filled.
+    CA_CLETS NLTS.KQ.O (any=[registrationState]) fired with State blank.
+    CA_CLETS IP.QA.S (any=[articleBrand,articleTypeCode]) fired with both blank.
+    Server accepted all queries without error.
 
   OPERATIONAL CONCERN (flagged 2026-04-29):
     When priority routing selects one combo over another (e.g., RQ wins over RQN
@@ -359,6 +362,23 @@ LIMITATION #30: initialValue on State changes combo routing (in-state -> OOS)
   Do NOT use initialValue: When provider has separate in-state vs OOS combos
     (e.g., NY).
 
+--------------------------------------------------------------------------------
+
+LIMITATION #31: initialValue fields not counted for set[] combo evaluation
+  CONFIRMED: NJ v2.6 (VehicleStolenQuery/VehicleRegistrationQuery 2026-04-10)
+  Behavior: Platform combo evaluator ignores initialValue defaults on
+    FormSelect/FormInput when evaluating set[] requirements. Only fields the
+    user actively enters or changes are counted as "populated." Fields with
+    initialValue (PlateType=PC, RandomRequest=N, ImageIndicator=Y/N) must go
+    in any[], not set[].
+  Impact: QIDM combinations must not include defaulted-only fields in set[].
+  SCOPE REFINEMENT (CA_CLETS 2026-05-08): CaRequestPurposeCode with
+    initialValue='C' IS counted for set[] evaluation. All CA_CLETS combos
+    include caRequestPurposeCode in set[] and fire correctly with the default.
+    LIMITATION #31 may only apply to attributeTypeId-based fields (STATE) or
+    autoSelect-involved QIDMs, not regular FormInput/FormSelect defaults.
+    Further testing needed to confirm the precise scope boundary.
+
 ================================================================================
 SECTION 6 -- CODE TYPE AND DROPDOWN CONSTRAINTS
 ================================================================================
@@ -661,6 +681,7 @@ CROSS-REFERENCE INDEX
   LIMITATION #28 -> Section 3 (Multi-Entity)
   LIMITATION #29 -> Section 3 (Multi-Entity)
   LIMITATION #30 -> Section 5 (Combo Routing)
+  LIMITATION #31 -> Section 5 (Combo Routing)
   AP #1  -> Section 2 (folded into LIMITATION #4)
   AP #2  -> Section 2 (Field Encoding)
   AP #3  -> Section 2 (Field Encoding)

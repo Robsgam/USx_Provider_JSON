@@ -1,0 +1,63 @@
+TEST LOG
+========
+Provider: CA_CLETS
+Version:  v1.6 BASE
+Date:     2026-05-08
+Entity:   Person
+Query:    DriverLicenseQuery + DriverHistoryQuery (co-fire)
+Combo:    ID.L1 (DL) + NLTS.KQ.O (DH)
+KeyRef:   ID.L1 / NLTS.KQ.O
+Test:     T8 - NCIC DL by OLN (no State) + DH co-fire
+
+FORM STATE
+==========
+CaRequestPurposeCode: C (dropdown)
+OperatorLicenseNumber: XL978745214 (text)
+State: [blank]
+NameFirst: [blank]
+NameLast: [blank]
+BirthDate: [blank]
+SexCode: [blank]
+
+RAW XML REQUEST 1 (DriverLicenseQuery - ID.L1)
+===============================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR433T57A36GEAAVT2P43J2W"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR433T57A36GEAAVT2P43J2W</Id><OperatorLicenseNumber>XL978745214</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RAW XML REQUEST 2 (DriverHistoryQuery - NLTS.KQ.O)
+===================================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR433VS7Q6TE9VJ92JV6Q31C"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KR433VS7Q6TE9VJ92JV6Q31C</Id><OperatorLicenseNumber>XL978745214</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS REQUEST
+===========
+{"elasticQuery":{"dlNumber":"xl978745214"},"from":0,"size":50}
+
+RMS RESPONSE
+============
+No Returns
+
+FIELD ANALYSIS
+==============
+DL (ID.L1):
+  OLN: XL978745214 -> <OperatorLicenseNumber>XL978745214</OperatorLicenseNumber> CORRECT (uppercased)
+  CaRequestPurposeCode: C CORRECT
+  State: absent CORRECT (blank)
+
+DH (NLTS.KQ.O):
+  OLN: XL978745214 -> <OperatorLicenseNumber>XL978745214</OperatorLicenseNumber> CORRECT
+  CaRequestPurposeCode: C CORRECT
+  State: absent CORRECT
+
+RMS: dlNumber="xl978745214" CORRECT (lowercase, no state)
+
+PLATFORM BEHAVIOR NOTE
+======================
+NLTS.KQ.O combo has any[registrationState] but State was blank.
+Combo fired anyway on set[] alone (caRequestPurposeCode + operatorLicenseNumber).
+Platform may treat any[] as optional when set[] is fully satisfied.
+This differs from simulator behavior (simulator would skip on unmatched any[]).
+
+PERSON SUMMARY: 5/5 combos PASS
+  DL: NLTS.DQ (T6), IN.L1 (T7), ID.L1 (T8)
+  DH: NLTS.KQ.O (T6, T8 co-fire), NLTS.KQ.N (T7 co-fire)
+
+RESULT: PASS

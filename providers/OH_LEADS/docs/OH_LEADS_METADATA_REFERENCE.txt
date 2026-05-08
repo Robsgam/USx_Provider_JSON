@@ -1,0 +1,384 @@
+﻿OH_LEADS METADATA REFERENCE
+============================
+Generated: 2026-05-08
+Source: OH_LEADS.xml (metadata) + OH_LEADS_BASE.json
+Metadata: 188 total transactions, 6 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 9)
+================================================================================
+
+METADATA FIELDS (5):
+  ArticleSerialNumber       Alphanumeric  maxLen=20  Article Serial Number
+  ArticleTypeCode           Alphanumeric  maxLen= 7  Article Type Code
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Indicator
+  NCICNumber                Alphanumeric  maxLen= 9  NCIC Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Indicator
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber     ArticleTypeCode, ArticleSerialNumber                   ImageIndicator, RelatedHitS...
+  QA            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   QA.S           set[articleTypeCode, serialNumber]
+  BUILT   QA.N           set[ncicNumber]
+
+================================================================================
+2. BoatQuery (version 14)
+================================================================================
+
+METADATA FIELDS (5):
+  BoatHullIdNumber          Alphanumeric  maxLen=20  Boat Hull Identification Number
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Indicator
+  RegistrationNumber        Alphanumeric  maxLen= 8  Registration Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Indicator
+  State                     Alphanumeric  maxLen= 2  State Code
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  BQ            RegistrationNumber      RegistrationNumber                                     State
+  QB            RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, ImageIndi...
+  BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
+  QB            BoatHullIdNumber        BoatHullIdNumber                                       ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   BQ.R           set[registrationNumber]
+  BUILT   BQ.H           set[boatHullIdNumber]
+  BUILT   QB.R           set[registrationNumber]
+  BUILT   QB.H           set[boatHullIdNumber]
+
+================================================================================
+3. DriverHistoryQuery (version 9)
+================================================================================
+
+METADATA FIELDS (8):
+  Attention             Alphanumeric  maxLen=30  Attention
+  BirthDate             Date          maxLen= 8  Birth Date
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  PurposeCode           Alphanumeric  maxLen= 1  Purpose Code
+  ReasonCode            Alphanumeric  maxLen=30  Reason Code
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  State                 Alphanumeric  maxLen= 2  State Code
+
+METADATA COMBINATIONS (3 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, PurposeCode, State
+  KQ            Name                    SexCode, BirthDate, Name                               Attention, PurposeCode, State
+  BMVIMS        OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, ReasonCode
+
+BUILD COVERAGE (3 of 3 built):
+  BUILT   KQ.O           set[operatorLicenseNumberDH]
+  BUILT   KQ.N           set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   BMVIMS         set[operatorLicenseNumberDH]
+
+================================================================================
+4. DriverLicenseQuery (version 27)
+================================================================================
+
+METADATA FIELDS (10):
+  BirthDate             Date          maxLen= 8  Birth Date
+  ImageIndicator        Alphabetic    maxLen= 1  Image Request Indicator
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  ReasonCode            Alphanumeric  maxLen=15  Reason Code
+  Requestor             Alphanumeric  maxLen=15  Requestor
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  SocialSecurityNumber  Numeric       maxLen= 9  Social Security Number
+  State                 Alphanumeric  maxLen= 2  State Code
+  UserName              Alphanumeric  maxLen=15  User Name
+
+METADATA COMBINATIONS (7 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DL            OperatorLicenseNumber   OperatorLicenseNumber                                  --
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
+  DN            Name                    Name                                                   --
+  DQ            Name                    SexCode, BirthDate, Name                               State
+  QWA           Name                    BirthDate, Name                                        --
+  BMVIMS        OperatorLicenseNumber   OperatorLicenseNumber                                  ReasonCode, Requestor, User...
+  BMVIMS        SocialSecurityNumber    SocialSecurityNumber                                   ReasonCode, Requestor, User...
+
+BUILD COVERAGE (4 of 7 built):
+  BUILT   DQ.O           set[operatorLicenseNumber]
+  BUILT   DQ.N           set[sexCode, birthDate, nameLast, nameFirst]
+  BUILT   DL             set[operatorLicenseNumber]
+  BUILT   DN             set[nameLast, nameFirst]
+  SKIP    QWA            Name -- MC expansion candidate
+  SKIP    BMVIMS         OperatorLicenseNumber -- MC expansion candidate
+  SKIP    BMVIMS         SocialSecurityNumber -- MC expansion candidate
+
+================================================================================
+5. GunQuery (version 6)
+================================================================================
+
+METADATA FIELDS (4):
+  GunCaliber                Alphanumeric  maxLen= 4  Gun Caliber
+  GunMake                   Alphanumeric  maxLen=23  Gun Make
+  GunSerialNumber           Alphanumeric  maxLen=20  Gun Serial Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        GunMake, GunCaliber, Relate...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QG             set[serialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 30)
+================================================================================
+
+METADATA FIELDS (11):
+  AddressCounty               Alphanumeric  maxLen= 4  Address County
+  DealerPlateType             Alphanumeric  maxLen= 1  Dealer Plate Indicator
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Alphanumeric  maxLen= 4  License Plate Year
+  Name                        Alphanumeric  maxLen=30  Name
+  SocialSecurityNumber        Alphanumeric  maxLen= 9  Social Security Number
+  State                       Alphanumeric  maxLen= 2  State Code
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen= 4  Vehicle Make Code
+  VehicleYear                 Alphanumeric  maxLen= 4  Vehicle Year
+
+METADATA COMBINATIONS (9 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ATDP          LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, DealerPl...  --
+  RP            LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode               --
+  RQ            LicensePlateNumber      State, LicensePlateNumber, LicensePlateTypeCode, L...  --
+  QV            LicensePlateNumber      LicensePlateNumber                                     State
+  RV            VehicleIdentificationNumber  VehicleIdentificationNumber                            --
+  RS            SocialSecurityNumber    SocialSecurityNumber                                   --
+  RN            Name                    Name                                                   AddressCounty
+  RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, VehicleMakeCode, Vehi...  State
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            --
+
+BUILD COVERAGE (9 of 9 built):
+  BUILT   ATDP           set[licensePlateNumber, licensePlateTypeCode, dealerPlateType]
+  BUILT   RQ.P           set[registrationState, licensePlateNumber, licensePlateTypeCode, licensePlateYear]
+  BUILT   RP             set[licensePlateNumber, licensePlateTypeCode]
+  BUILT   QV.P           set[licensePlateNumber]
+  BUILT   RQ.V           set[vehicleIdentificationNumber, vehicleMakeCode, vehicleYear]
+  BUILT   RV             set[vehicleIdentificationNumber]
+  BUILT   QV.V           set[vehicleIdentificationNumber]
+  BUILT   RS             set[ownerSocialSecurityNumber]
+  BUILT   RN             set[ownerLastName, ownerFirstName]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         2      2     0  100% (COMPLETE)
+  BoatQuery                                  4      4     0  100% (COMPLETE)
+  DriverHistoryQuery                         3      3     0  100% (COMPLETE)
+  DriverLicenseQuery                         7      4     3  57%
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   9      9     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   26     23     3  88%
+
+================================================================================
+MC EXPANSION CANDIDATES (3 combos not in BASE)
+================================================================================
+
+  QWA            Name                     (DriverLicenseQuery)
+  BMVIMS         OperatorLicenseNumber    (DriverLicenseQuery)
+  BMVIMS         SocialSecurityNumber     (DriverLicenseQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (182 of 188 in metadata)
+================================================================================
+
+  AlarmExchangeResponse                    v4    1 combos
+  AOSHitConfirmationRequest                v2    1 combos
+  AOSHitConfirmationResponse               v2    1 combos
+  AOSOrionQuery                            v3    2 combos
+  ArticleCancel                            v4    1 combos
+  ArticleClear                             v4    1 combos
+  ArticleEntry                             v4    1 combos
+  ArticleLocate                            v4    1 combos
+  ArticleModify                            v4    1 combos
+  BoatCancel                               v4    1 combos
+  BoatClear                                v4    1 combos
+  BoatEntry                                v4    1 combos
+  BoatLocate                               v4    1 combos
+  BoatModify                               v4    1 combos
+  CBIArticleSingleQuery                    v4    1 combos
+  CBIBoatQuery                             v7    2 combos
+  CBIDriverLicenseQuery                    v5    1 combos
+  CBIGunQuery                              v4    1 combos
+  CBIVehicleRegistrationQuery              v6    2 combos
+  CCHCriminalHistoryAQQuery                v2    1 combos
+  CCHCriminalHistoryFQQuery                v5    1 combos
+  CCHCriminalHistoryHITZQuery              v4    1 combos
+  CCHCriminalHistoryIQQuery                v9    3 combos
+  CCHCriminalHistoryITNQuery               v4    1 combos
+  CCHCriminalHistoryQHOQuery               v4    1 combos
+  CCHCriminalHistoryQHQuery                v13   5 combos
+  CCHCriminalHistoryQROQuery               v4    1 combos
+  CCHCriminalHistoryQRQuery                v9    3 combos
+  CCHCriminalHistoryQWIQuery               v4    1 combos
+  CCHCriminalHistorySERCHQuery             v5    1 combos
+  CCHCriminalHistorySERQuery               v5    1 combos
+  CCHCriminalHistoryZCOQuery               v4    1 combos
+  CCHCriminalHistoryZIOQuery               v4    1 combos
+  CCHCriminalHistoryZRQuery                v5    1 combos
+  CCHCriminalHistoryZSOQuery               v4    1 combos
+  GunCancel                                v6    2 combos
+  GunClear                                 v6    2 combos
+  GunEntry                                 v8    3 combos
+  GunLocate                                v4    1 combos
+  GunModify                                v4    1 combos
+  IdentityTheftCancel                      v5    3 combos
+  IdentityTheftEntry                       v3    1 combos
+  IdentityTheftModify                      v5    3 combos
+  IdentityTheftQuery                       v3    2 combos
+  IdentityTheftSupplementalCancel          v5    3 combos
+  IdentityTheftSupplementalEntry           v5    3 combos
+  ImageQuery                               v9    1 combos
+  LicensePlateCancel                       v4    1 combos
+  LicensePlateClear                        v4    1 combos
+  LicensePlateEntry                        v4    1 combos
+  LicensePlateLocate                       v4    1 combos
+  LicensePlateModify                       v6    2 combos
+  LoJackQuery                              v3    1 combos
+  OhLeadsAtadd                             v2    1 combos
+  OhLeadsAtbus                             v2    1 combos
+  OhLeadsAtdlr                             v2    1 combos
+  OhLeadsATLN                              v4    1 combos
+  OhLeadsAtnam                             v2    1 combos
+  OhLeadsAtnum                             v2    1 combos
+  OhLeadsATVIN                             v4    1 combos
+  OhLeadsCop3                              v3    1 combos
+  OhLeadsCopp                              v3    1 combos
+  OhLeadsCsq                               v2    1 combos
+  OhLeadsDcop                              v3    1 combos
+  OhLeadsDrc                               v2    1 combos
+  OhLeadsDs                                v2    1 combos
+  OhLeadsEcop                              v3    1 combos
+  OhLeadsEcp                               v3    1 combos
+  OhLeadsEmergencyContactQuery             v4    3 combos
+  OhLeadsET                                v4    1 combos
+  OhLeadsExt                               v3    1 combos
+  OhLeadsGq                                v2    1 combos
+  OhLeadsIaq                               v2    1 combos
+  OhLeadsIpsq                              v4    3 combos
+  OhLeadsMcop                              v3    1 combos
+  OhLeadsMcp                               v3    1 combos
+  OhLeadsNws                               v2    1 combos
+  OhLeadsQcp                               v7    5 combos
+  OhLeadsQgb                               v4    2 combos
+  OhLeadsRn                                v2    1 combos
+  OhLeadsRnq                               v4    2 combos
+  OhLeadsRs                                v2    1 combos
+  OhLeadsSon                               v3    1 combos
+  OhLeadsSoq                               v3    1 combos
+  OhLeadsSwq                               v3    1 combos
+  OhLeadsTv                                v5    3 combos
+  OhLeadsVeh                               v3    1 combos
+  OhLeadsWar                               v3    1 combos
+  OhLeadsWarrantByZIPQuery                 v3    1 combos
+  OhLeadsWw                                v11   9 combos
+  OhLeadsXT                                v4    1 combos
+  OhLeadsZa                                v4    2 combos
+  OhLeadsZb                                v4    2 combos
+  OhLeadsZg                                v4    2 combos
+  OhLeadsZv                                v5    3 combos
+  OhLeadsZw                                v4    2 combos
+  PEDentalDataCancel                       v2    1 combos
+  PEDentalDataEntry                        v2    1 combos
+  PEDentalDataModify                       v2    1 combos
+  PEIUnidentifiedPersonQuery               v2    1 combos
+  PEMissingPersonCancel                    v3    2 combos
+  PEMissingPersonClear                     v3    2 combos
+  PEMissingPersonEntry                     v7    6 combos
+  PEMissingPersonLocate                    v3    2 combos
+  PEMissingPersonModify                    v3    2 combos
+  PEMissingPersonSupplementalCancel        v3    2 combos
+  PersonMissingCancel                      v4    1 combos
+  PersonMissingClear                       v4    1 combos
+  PersonMissingEntry                       v4    1 combos
+  PersonMissingLocate                      v4    1 combos
+  PersonMissingModify                      v6    2 combos
+  PersonWantedCancel                       v4    1 combos
+  PersonWantedClear                        v4    1 combos
+  PersonWantedEntry                        v4    1 combos
+  PersonWantedLocate                       v4    1 combos
+  PersonWantedModify                       v6    2 combos
+  PEUnidentifiedPersonCancel               v2    1 combos
+  PEUnidentifiedPersonClear                v2    1 combos
+  PEUnidentifiedPersonEntry                v2    1 combos
+  PEUnidentifiedPersonModify               v2    1 combos
+  PEUnidentifiedPersonSuppementalCancel    v2    1 combos
+  PEUnidentifiedPersonSuppementalEntry     v2    1 combos
+  PEWantedPersonAdditionalWarrantCancel    v7    2 combos
+  PEWantedPersonAdditionalWarrantClear     v7    2 combos
+  PEWantedPersonAdditionalWarrantEntry     v7    2 combos
+  PEWantedPersonCancel                     v11   4 combos
+  PEWantedPersonClear                      v12   4 combos
+  PEWantedPersonDetainerCancel             v9    3 combos
+  PEWantedPersonDetainerEntry              v9    3 combos
+  PEWantedPersonEntry                      v5    1 combos
+  PEWantedPersonFraudulentCancel           v11   4 combos
+  PEWantedPersonFraudulentEntry            v11   4 combos
+  PEWantedPersonLocate                     v11   4 combos
+  PEWantedPersonModify                     v11   4 combos
+  PEWantedPersonSupplementalCancel         v11   4 combos
+  PEWantedPersonSupplementalEntry          v11   4 combos
+  SnowMobileQuery                          v5    3 combos
+  VehicleCancel                            v5    2 combos
+  VehicleClear                             v5    2 combos
+  VehicleEntry                             v7    3 combos
+  VehicleLocate                            v4    1 combos
+  VehicleModify                            v8    3 combos
+  WantedPersonQuery                        v11   4 combos
+  WMPEDentalInformationCancel              v6    2 combos
+  WMPEDentalInformationEntry               v6    2 combos
+  WMPEDentalInformationModify              v6    2 combos
+  WMPEMissingPersonCancel                  v9    3 combos
+  WMPEMissingPersonClear                   v10   3 combos
+  WMPEMissingPersonEntry                   v6    1 combos
+  WMPEMissingPersonLocate                  v9    3 combos
+  WMPEMissingPersonModify                  v8    3 combos
+  WMPEMissingPersonSupplementalCancel      v8    3 combos
+  WMPEMissingPersonSupplementalEntry       v10   4 combos
+  WMPEMissingPersonWithInformationCancel   v8    3 combos
+  WMPEMissingPersonWithInformationEntry    v8    3 combos
+  WMPEMissingPersonWithInformationModify   v8    3 combos
+  WMPEMissingPersonWithInformationSupplementalCancel v8    3 combos
+  WMPEMissingPersonWithInformationSupplementalEntry v8    3 combos
+  WMPEProtectionOrderCancel                v10   4 combos
+  WMPEProtectionOrderClear                 v10   4 combos
+  WMPEProtectionOrderEntry                 v4    1 combos
+  WMPEProtectionOrderModify                v10   4 combos
+  WMPEProtectionOrderSupplementalCancel    v10   4 combos
+  WMPESexOffenderCancel                    v8    3 combos
+  WMPESexOffenderClear                     v8    3 combos
+  WMPESexOffenderEntry                     v4    1 combos
+  WMPESexOffenderModify                    v8    3 combos
+  WMPESexOffenderSupplementalCancel        v8    3 combos
+  WMPESexOffenderSupplementalEntry         v8    3 combos
+  WMPESupervisedReleaseCancel              v8    3 combos
+  WMPESupervisedReleaseClear               v8    3 combos
+  WMPESupervisedReleaseEntry               v4    1 combos
+  WMPESupervisedReleaseFraudulentCancel    v10   4 combos
+  WMPESupervisedReleaseFraudulentEntry     v10   4 combos
+  WMPESupervisedReleaseModify              v8    3 combos
+  WMPESupervisedReleaseSupplementalCancel  v10   4 combos
+  WMPESupervisedReleaseSupplementalEntry   v10   4 combos
+  WMPIMissingPersonQuery                   v4    1 combos
+  WMPIProtectionOrderQuery                 v14   6 combos
+  WMPISexOffendeQuery                      v8    3 combos
+  WMPIUnidentifiedPersonQuery              v8    3 combos
+  WMPIWantedPersonQuery                    v7    3 combos
+
+

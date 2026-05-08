@@ -1,0 +1,261 @@
+﻿CA_VENTURA_COUNTY METADATA REFERENCE
+=====================================
+Generated: 2026-05-08
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_BASE.json
+Metadata: 6 total transactions, 6 queries built in JSON
+
+CaRequestPurposeCode: Mandatory on ALL transactions.
+  Values: C (Criminal Justice), I (Immigration Enforcement), U (Title 8 violations)
+  Default: C
+
+================================================================================
+1. ArticleSingleQuery (version 1)
+================================================================================
+
+METADATA FIELDS (6):
+  ArticleBrand         Alphanumeric  maxLen= 6  A mandatory field used to identify the brand name of the ...
+  ArticleCategory      Alphanumeric  maxLen= 1  major category of the property
+  ArticleSerialNumber  Alphanumeric  maxLen=20  A mandatory field if the OAN is not used. It provides the...
+  ArticleTypeCode      Alphanumeric  maxLen= 6  identifies the article of property
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  OwnerAppliedNumber   Alphanumeric  maxLen=20  A unique identification number or inscription which is pe...
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IP.QA         ArticleSerialNumber     CaRequestPurposeCode, ArticleSerialNumber              ArticleBrand, ArticleCatego...
+  IP.QA         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleBrand, ArticleCatego...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   IP.QA.S        set[caRequestPurposeCode, serialNumber]
+  BUILT   IP.QA.O        set[caRequestPurposeCode, ownerAppliedNumber]
+
+================================================================================
+2. BoatQuery (version 1)
+================================================================================
+
+METADATA FIELDS (7):
+  BirthDate            Date          maxLen= 8  Date of birth
+  BoatHullIdNumber     Alphanumeric  maxLen=20  The Builders hull identification numbers
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  Name                 Name          maxLen=30  The name of the person associated to this record.
+  OwnerAppliedNumber   Alphanumeric  maxLen=20  An identification number which is permanently engraved, e...
+  RegistrationNumber   Alphanumeric  maxLen= 8  The vessel registration number (Certification of Registra...
+  State                Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (7 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IA.QB         BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber                 --
+  IA.QB         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               --
+  IA.QB         RegistrationNumber      CaRequestPurposeCode, RegistrationNumber               State
+  IV.4B         RegistrationNumber      CaRequestPurposeCode, RegistrationNumber               --
+  NLTS.BQ       Name                    CaRequestPurposeCode, Name, BirthDate, State           --
+  NLTS.BQ       BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber, State          --
+  NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
+
+BUILD COVERAGE (5 of 7 built):
+  BUILT   IA.QB.H        set[caRequestPurposeCode, boatHullIdNumber]
+  BUILT   IA.QB.O        set[caRequestPurposeCode, ownerAppliedNumber]
+  BUILT   IA.QB.R        set[caRequestPurposeCode, registrationNumber]
+  BUILT   NLTS.BQ.H      set[caRequestPurposeCode, boatHullIdNumber, registrationState]
+  BUILT   NLTS.BQ.R      set[caRequestPurposeCode, registrationNumber, registrationState]
+  SKIP    IV.4B          RegistrationNumber -- MC expansion candidate
+
+================================================================================
+3. DriverHistoryQuery (version 1)
+================================================================================
+
+METADATA FIELDS (8):
+  Attention             Text          maxLen=30  Name of requester
+  BirthDate             Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode  Alphabetic    maxLen= 1  CA Request Purpose Code
+  Name                  Name          maxLen=30  The name of the person associated to this record.
+  OperatorLicenseNumber Alphanumeric  maxLen=20  An field used as a personal identifier number denoting th...
+  PurposeCode           Alphabetic    maxLen= 1  purpose
+  SexCode               Alphabetic    maxLen= 1  The gender of the person.
+  State                 Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IN.B2         Name                    CaRequestPurposeCode, Name                             BirthDate
+  ID.B2         OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
+  NLTS.KQ       Name                    CaRequestPurposeCode, BirthDate, Name, SexCode         Attention, PurposeCode, State
+  NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   NLTS.KQ.N      set[caRequestPurposeCode, birthDate, nameLast, nameFirst, sexCode]
+  BUILT   NLTS.KQ.O      set[caRequestPurposeCode, operatorLicenseNumber]
+  BUILT   IN.B2          set[caRequestPurposeCode, nameLast, nameFirst]
+  BUILT   ID.B2          set[caRequestPurposeCode, operatorLicenseNumber]
+
+================================================================================
+4. DriverLicenseQuery (version 1)
+================================================================================
+
+METADATA FIELDS (12):
+  AddressCounty         Alphanumeric  maxLen= 3  county for address
+  Age                   Numeric       maxLen= 2  age of person
+  BirthDate             Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode  Alphabetic    maxLen= 1  CA Request Purpose Code
+  CriminalIdNumber      Alphanumeric  maxLen=11  criminal id number
+  Height                Numeric       maxLen= 3  The person's height, expressed in feet and inches.
+  Name                  Name          maxLen=30  The name of the person associated to this record.
+  OperatorLicenseNumber Text          maxLen=20  An field used as a personal identifier number denoting th...
+  RaceCode              Alphabetic    maxLen= 1  The race or ethnicity that most closely describes the per...
+  SexCode               Alphabetic    maxLen= 1  The gender of the person.
+  SocialSecurityNumber  Numeric       maxLen= 9  The person's Social Security System identification number.
+  State                 Text          maxLen= 2  identifying state
+
+METADATA COMBINATIONS (8 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IN.L1         Name                    CaRequestPurposeCode, Name                             BirthDate
+  ID.L1         OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
+  IR.QVC        Name                    CaRequestPurposeCode                                   AddressCounty, Height, Race...
+  IR.QVC        OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            CriminalIdNumber, SocialSec...
+  IR.QVC        CriminalIdNumber        CaRequestPurposeCode, CriminalIdNumber                 OperatorLicenseNumber, Soci...
+  IR.QVC        SocialSecurityNumber    CaRequestPurposeCode, SocialSecurityNumber             CriminalIdNumber, OperatorL...
+  NLTS.DQ       Name                    CaRequestPurposeCode                                   --
+  NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
+
+BUILD COVERAGE (3 of 8 built):
+  BUILT   NLTS.DQ        set[caRequestPurposeCode, operatorLicenseNumber, registrationState]
+  BUILT   ID.L1          set[caRequestPurposeCode, operatorLicenseNumber]
+  BUILT   IN.L1          set[caRequestPurposeCode, nameLast, nameFirst]
+  SKIP    IR.QVC         Name -- MC expansion candidate
+  SKIP    IR.QVC         OperatorLicenseNumber -- MC expansion candidate
+  SKIP    IR.QVC         CriminalIdNumber -- MC expansion candidate
+  SKIP    IR.QVC         SocialSecurityNumber -- MC expansion candidate
+
+================================================================================
+5. GunQuery (version 1)
+================================================================================
+
+METADATA FIELDS (8):
+  Age                  Numeric       maxLen= 2  age of person
+  BirthDate            Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  GunCaliber           Numeric       maxLen= 4  Caliber is the diameter of the bore and refers to the siz...
+  GunMake              Alphanumeric  maxLen= 3  A mandatory field containing the name, brand, or make of ...
+  GunSerialNumber      Alphanumeric  maxLen=20  The serial number on a firearm is a mandatory field. The ...
+  GunTypeCode          Alphabetic    maxLen= 2  category and class of the gun
+  Name                 Name          maxLen=30  The name of the person associated to this record.
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IG.QGB        GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
+  IG.QGH        Name                    CaRequestPurposeCode, Name                             --
+
+BUILD COVERAGE (1 of 2 built):
+  BUILT   IG.QGB         set[caRequestPurposeCode, serialNumber]
+  SKIP    IG.QGH         Name -- MC expansion candidate
+
+================================================================================
+6. VehicleRegistrationQuery (version 1)
+================================================================================
+
+METADATA FIELDS (11):
+  AddressCity                 Text          maxLen=13  The city of residence of the person in the record.
+  AddressStreetNumber         Text          maxLen= 3  street number of address
+  CaRequestPurposeCode        Alphabetic    maxLen= 1  CA Request Purpose Code
+  LicensePlateNumber          Alphanumeric  maxLen=10  The license plate number.
+  LicensePlateTypeCode        Alphabetic    maxLen= 2  A code which shows the type of use generally expected of ...
+  LicensePlateYear            Year          maxLen= 4  The year a vehicle registration expires; or, if not curre...
+  Name                        Name          maxLen=35  The name of the person associated to this record.
+  State                       Alphanumeric  maxLen= 2  identifying state
+  VehicleIdentificationNumber Alphanumeric  maxLen=30  The manufacturer's assigned vehicle identification number...
+  VehicleMakeCode             Alphanumeric  maxLen= 4  The brand or manufacturer's name of a vehicle.
+  VehicleYear                 Year          maxLen= 4  The model year of a vehicle.
+
+METADATA COMBINATIONS (20 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IA.QV         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               State
+  IA.QVK        VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      VehicleMakeCode
+  IV.4I         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4C         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4M         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4L         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4T         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4A         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               LicensePlateTypeCode
+  IV.4F         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4S         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4E         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IL.A1         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4H         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4P         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4K         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+  IV.4V         VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      --
+  IV.4          LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, MessageK...  --
+  NLTS.RQ       LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  VehicleMakeCode, VehicleYear
+  NLTS.RQ       VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber,...  VehicleMakeCode, VehicleYear
+  IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
+
+BUILD COVERAGE (4 of 20 built):
+  BUILT   NLTS.RQ.P      set[caRequestPurposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+  BUILT   NLTS.RQ.V      set[caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
+  BUILT   IA.QVK         set[caRequestPurposeCode, vehicleIdentificationNumber]
+  BUILT   IA.QV          set[caRequestPurposeCode, licensePlateNumber]
+  SKIP    IV.4I          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4C          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4M          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4L          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4T          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4A          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4F          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4S          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4E          LicensePlateNumber -- MC expansion candidate
+  SKIP    IL.A1          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4H          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4P          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4K          LicensePlateNumber -- MC expansion candidate
+  SKIP    IV.4V          VehicleIdentificationNumber -- MC expansion candidate
+  SKIP    IV.4           LicensePlateNumber -- MC expansion candidate
+  SKIP    IN.VP          Name -- MC expansion candidate
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         2      2     0  100% (COMPLETE)
+  BoatQuery                                  7      5     2  71%
+  DriverHistoryQuery                         4      4     0  100% (COMPLETE)
+  DriverLicenseQuery                         8      3     5  38%
+  GunQuery                                   2      1     1  50%
+  VehicleRegistrationQuery                  20      4    16  20%
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   43     19    24  44%
+
+================================================================================
+MC EXPANSION CANDIDATES (22 combos not in BASE)
+================================================================================
+
+  IV.4B          RegistrationNumber       (BoatQuery)
+  IR.QVC         Name                     (DriverLicenseQuery)
+  IR.QVC         OperatorLicenseNumber    (DriverLicenseQuery)
+  IR.QVC         CriminalIdNumber         (DriverLicenseQuery)
+  IR.QVC         SocialSecurityNumber     (DriverLicenseQuery)
+  IG.QGH         Name                     (GunQuery)
+  IV.4I          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4C          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4M          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4L          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4T          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4A          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4F          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4S          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4E          LicensePlateNumber       (VehicleRegistrationQuery)
+  IL.A1          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4H          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4P          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4K          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4V          VehicleIdentificationNumber (VehicleRegistrationQuery)
+  IV.4           LicensePlateNumber       (VehicleRegistrationQuery)
+  IN.VP          Name                     (VehicleRegistrationQuery)
+
+

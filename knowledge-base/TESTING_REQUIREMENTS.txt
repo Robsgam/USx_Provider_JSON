@@ -1,7 +1,7 @@
 CONNECTCIC TESTING REQUIREMENTS
 ==================================
 How to build, test, and validate a provider JSON.
-Last updated: 2026-05-06
+Last updated: 2026-05-08
 
 Consolidated from: BUILD_CHECKLIST.txt, TESTING_LIMITATIONS.txt, DEFAULTS_USABILITY.txt.
 
@@ -80,6 +80,13 @@ SECTION 2 -- PRE-BUILD CHECKLIST
   [ ] Check FIELD_REFERENCE.txt codeType table for every dropdown field
 
   METADATA VERIFICATION (do this THIRD):
+  [ ] Run extract_metadata_reference.ps1 to generate METADATA_REFERENCE.txt:
+      powershell.exe -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1
+        -XmlPath source/<PROVIDER>.xml -Path <PROVIDER>_BASE.json
+        -OutFile docs/<PROVIDER>_METADATA_REFERENCE.txt
+      This maps ALL metadata transactions, fields, and combination requirements
+      (Set/Any/Choice) for the provider. Use it to verify combo requirements
+      before writing any test instructions.
   [ ] Confirm all target transactions are in the provider XML (MessageKey
       list). Any missing -> flag in SQVR and include in gap summary.
   [ ] Run PDF vs XML gap check: compare devdoc "Basic Queries Supported"
@@ -523,7 +530,8 @@ SECTION 8 -- INSTANCE-SPECIFIC BEHAVIORS (TEST ON FIRST IMPORT)
     If <State> contains 2-letter code: NCIC reverse-lookup works.
     If <State> is absent or contains numeric ID: fall back to dual-field
       pattern.
-    Confirmed: NJ (2026-04-20), AZ (2026-04-20), NY (confirmed working)
+    Confirmed: NJ (2026-04-20), AZ (2026-04-20), NY (confirmed working),
+      CA_CLETS (2026-05-08 T3 ST-1)
     Unconfirmed: FL, HI, TX, LA
     Why instance-specific: codeTypeProvider=NCIC requires a registered
       reverse-lookup entry in the instance's code type registry.
@@ -582,7 +590,7 @@ SECTION 10 -- CONFIRMATION STATUS MATRIX
 
   | Feature                    | NJ  | AZ  | FL  | NY  | HI  | TX  | LA  | CA  |
   |----------------------------|-----|-----|-----|-----|-----|-----|-----|-----|
-  | NCIC state reverse-lookup  | YES | YES | --  | YES | --  | --  | --  | --  |
+  | NCIC state reverse-lookup  | YES | YES | --  | YES | --  | --  | --  | YES |
   | SexCode reverse-lookup     | YES | YES | YES | --  | --  | --  | --  | --  |
   | dexStateUserId badge       | --  | YES | --  | --  | --  | --  | --  | --  |
   | FIRST_RESPONDER layout     | --  | --  | --  | --  | --  | --  | --  | --  |

@@ -1,0 +1,257 @@
+﻿LA_LEMS METADATA REFERENCE
+===========================
+Generated: 2026-05-08
+Source: LA_LEMS.xml (metadata) + LA_LEMS_BASE.json
+Metadata: 84 total transactions, 6 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 6)
+================================================================================
+
+METADATA FIELDS (3):
+  ArticleSerialNumber Alphanumeric  maxLen=20  the serial number for a property
+  ArticleTypeCode     Alphanumeric  maxLen= 7  the type of article
+  Attention           Alphanumeric  maxLen=30  Attention
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber     ArticleSerialNumber                                    ArticleTypeCode, Attention
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QA             set[ArticleSerialNumber]
+
+================================================================================
+2. BoatQuery (version 6)
+================================================================================
+
+METADATA FIELDS (4):
+  Attention          Alphanumeric  maxLen=30  Attention
+  BoatHullIdNumber   Alphanumeric  maxLen=20  boat hull identification number
+  RegistrationNumber Alphanumeric  maxLen= 8  registration number
+  State              Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QB            BoatHullIdNumber        BoatHullIdNumber                                       Attention
+  BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
+  QB            RegistrationNumber      RegistrationNumber                                     Attention
+  BQ            RegistrationNumber      RegistrationNumber                                     State
+
+BUILD COVERAGE (2 of 4 built):
+  BUILT   BQ             set[RegistrationNumber, RegistrationState]
+  BUILT   QB             set[BoatHullIdNumber]
+
+================================================================================
+3. DriverHistoryQuery (version 7)
+================================================================================
+
+METADATA FIELDS (6):
+  BirthDate             Date          maxLen= 8  Date of Birth. 8 numeric characters, CCYYMMDD.
+  Name                  Name          maxLen=30  Name. Minimum of 3 and maximum of 30 characters including...
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator (Driver) License Number. Up to 20 alphanumeric c...
+  PurposeCode           Alphabetic    maxLen= 1  Purpose Code. 1 alphabetic character. A - Applicant C - C...
+  SexCode               Alphabetic    maxLen= 1  Sex. 1 alphabetic character (M OR F).
+  State                 Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            Name                    BirthDate, Name, PurposeCode, SexCode                  State
+  KQ            OperatorLicenseNumber   OperatorLicenseNumber, PurposeCode                     State
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumber, PurposeCode]
+  BUILT   KQName         set[SexCode, BirthDate, NameLast, NameFirst, PurposeCode]
+  SKIP    KQ             Name -- MC expansion candidate
+  SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
+
+================================================================================
+4. DriverLicenseQuery (version 8)
+================================================================================
+
+METADATA FIELDS (12):
+  Attention             Alphanumeric  maxLen=30  Attention
+  BirthDate             Date          maxLen= 8  Date of Birth. 8 numeric characters, CCYYMMDD.
+  ImageIndicator        Alphabetic    maxLen= 1  Image Indicator
+  Name                  Name          maxLen=30  Name. Minimum of 3 and maximum of 30 characters including...
+  OperatorLicenseNumber Alphanumeric  maxLen=17  Operator (Driver) License Number. Up to 20 alphanumeric c...
+  RaceCode              Alphabetic    maxLen= 1  Race. 1 alphabetic character. A - Asian B - Black I - Ame...
+  SexCode               Alphabetic    maxLen= 1  Sex. 1 alphabetic character (M OR F).
+  State                 Alphanumeric  maxLen= 2  identifying state
+  State2                Alphanumeric  maxLen= 2  identifying state
+  State3                Alphanumeric  maxLen= 2  identifying state
+  State4                Alphanumeric  maxLen= 2  identifying state
+  State5                Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (6 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DP            OperatorLicenseNumber   OperatorLicenseNumber, ImageIndicator                  Attention
+  QWDN          Name                    BirthDate, Name, RaceCode, SexCode                     State, State2, State3, Stat...
+  QWDN          OperatorLicenseNumber   OperatorLicenseNumber                                  State, State2, State3, Stat...
+  QWA           Name                    BirthDate, Name, SexCode                               Attention, RaceCode, ImageI...
+  DQ            Name                    BirthDate, Name, SexCode                               Attention, State, State2, S...
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  State, State2, State3, Stat...
+
+BUILD COVERAGE (4 of 6 built):
+  BUILT   DP             set[OperatorLicenseNumber, ImageIndicator]
+  BUILT   DQ             set[OperatorLicenseNumber]
+  BUILT   QWDN           set[SexCode, BirthDate, NameLast, NameFirst, RaceCode]
+  BUILT   QWA            set[SexCode, BirthDate, NameLast, NameFirst]
+
+================================================================================
+5. GunQuery (version 6)
+================================================================================
+
+METADATA FIELDS (4):
+  Attention       Alphanumeric  maxLen=30  Attention
+  GunMake         Alphanumeric  maxLen= 3  make of gun
+  GunSerialNumber Alphanumeric  maxLen=20  serial number for gun
+  GunTypeCode     Alphanumeric  maxLen= 3  type of gun
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        Attention, GunMake, GunType...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QG             set[GunSerialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 7)
+================================================================================
+
+METADATA FIELDS (10):
+  Attention                   Alphanumeric  maxLen=30  Attention
+  LicensePlateNumber          Alphanumeric  maxLen=10  License plate. From 1 to 10 characters consisting of lett...
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License plate type. 2 alphabetic characters. Must be a va...
+  LicensePlateYear            Year          maxLen= 4  License plate year of expiration. 4 numeric characters. M...
+  State                       Alphanumeric  maxLen= 2  identifying state
+  State2                      Alphanumeric  maxLen= 2  identifying state
+  State3                      Alphanumeric  maxLen= 2  identifying state
+  State4                      Alphanumeric  maxLen= 2  identifying state
+  State5                      Alphanumeric  maxLen= 2  identifying state
+  VehicleIdentificationNumber Alphanumeric  maxLen=17  Vehicle Identification Number. 17 alphanumeric characters...
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  RQS           LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, LicenseP...  Attention, State2, State3, ...
+  RQS           VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Attention, State2, State3, ...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   RQSLicensePlateNumber set[LicensePlateNumber, RegistrationState]
+  BUILT   RQSVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
+  SKIP    RQS            LicensePlateNumber -- MC expansion candidate
+  SKIP    RQS            VehicleIdentificationNumber -- MC expansion candidate
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  BoatQuery                                  4      2     2  50%
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         6      4     2  67%
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   2      2     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   16     12     4  75%
+
+================================================================================
+MC EXPANSION CANDIDATES (4 combos not in BASE)
+================================================================================
+
+  KQ             Name                     (DriverHistoryQuery)
+  KQ             OperatorLicenseNumber    (DriverHistoryQuery)
+  RQS            LicensePlateNumber       (VehicleRegistrationQuery)
+  RQS            VehicleIdentificationNumber (VehicleRegistrationQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (78 of 84 in metadata)
+================================================================================
+
+  AFISPhotoQuery                           v3    1 combos
+  AOSLojackQuery                           v4    1 combos
+  CriminalHistoryAQQuery                   v7    1 combos
+  CriminalHistoryARQuery                   v3    1 combos
+  CriminalHistoryC14Query                  v6    1 combos
+  CriminalHistoryC1Query                   v7    1 combos
+  CriminalHistoryC2Query                   v8    1 combos
+  CriminalHistoryC3Query                   v8    1 combos
+  CriminalHistoryC4Query                   v6    5 combos
+  CriminalHistoryC5Query                   v6    1 combos
+  CriminalHistoryFQQuery                   v8    1 combos
+  CriminalHistoryIQQuery                   v7    3 combos
+  CriminalHistoryQHQuery                   v8    4 combos
+  CriminalHistoryQRQuery                   v7    2 combos
+  CriminalHistoryZRQuery                   v7    2 combos
+  ImageQuery                               v3    1 combos
+  InsuranceQuery                           v8    2 combos
+  LogoffRequest                            v4    1 combos
+  LogonRequest                             v5    1 combos
+  QueryPassThrough                         v6    1 combos
+  WMPEDentalDataCancel                     v3    1 combos
+  WMPEDentalDataEntry                      v3    1 combos
+  WMPEDentalDataModify                     v3    1 combos
+  WMPEMissingPersonCancel                  v3    3 combos
+  WMPEMissingPersonClear                   v3    3 combos
+  WMPEMissingPersonEntry                   v3    2 combos
+  WMPEMissingPersonLocate                  v3    3 combos
+  WMPEMissingPersonModify                  v3    3 combos
+  WMPEMissingPersonPersonWithInformationCancel v3    1 combos
+  WMPEMissingPersonPersonWithInformationEntry v3    1 combos
+  WMPEMissingPersonPWISupplementalCancel   v3    1 combos
+  WMPEMissingPersonPWISupplementalEntry    v3    1 combos
+  WMPEMissingPersonSupplementalCancel      v3    3 combos
+  WMPEMissingPersonSupplementalEntry       v3    3 combos
+  WMPEPersonWithInformationModify          v3    1 combos
+  WMPEProtectionOrderCancel                v3    4 combos
+  WMPEProtectionOrderClear                 v3    4 combos
+  WMPEProtectionOrderEntry                 v3    1 combos
+  WMPEProtectionOrderModify                v3    4 combos
+  WMPEProtectionOrderSupplementalCancel    v3    4 combos
+  WMPEProtectionOrderSupplementalEntry     v3    4 combos
+  WMPESexOffenderCancel                    v3    3 combos
+  WMPESexOffenderClear                     v3    3 combos
+  WMPESexOffenderEntry                     v3    1 combos
+  WMPESexOffenderModify                    v3    3 combos
+  WMPESexOffenderSupplementalCancel        v3    3 combos
+  WMPESexOffenderSupplementalEntry         v3    3 combos
+  WMPESupervisedReleaseCancel              v3    3 combos
+  WMPESupervisedReleaseClear               v3    3 combos
+  WMPESupervisedReleaseEntry               v3    1 combos
+  WMPESupervisedReleaseFraudulentDataCancel v3    3 combos
+  WMPESupervisedReleaseFraudulentDataEntry v3    3 combos
+  WMPESupervisedReleaseModify              v3    3 combos
+  WMPESupervisedReleaseSupplementalCancel  v3    1 combos
+  WMPESupervisedReleaseSupplementalEntry   v3    1 combos
+  WMPEUnidentifiedPersonCancel             v3    1 combos
+  WMPEUnidentifiedPersonClear              v3    1 combos
+  WMPEUnidentifiedPersonEntry              v3    1 combos
+  WMPEUnidentifiedPersonModify             v3    1 combos
+  WMPEUnidentifiedPersonSupplementalCancel v3    1 combos
+  WMPEUnidentifiedPersonSupplementalEntry  v3    1 combos
+  WMPEWantedPersonCancel                   v3    1 combos
+  WMPEWantedPersonClear                    v3    1 combos
+  WMPEWantedPersonDetainerCancel           v3    1 combos
+  WMPEWantedPersonDetainerEntry            v3    1 combos
+  WMPEWantedPersonDetainerModify           v3    3 combos
+  WMPEWantedPersonEntry                    v3    2 combos
+  WMPEWantedPersonFraudulentDataCancel     v3    3 combos
+  WMPEWantedPersonFraudulentDataEntry      v3    3 combos
+  WMPEWantedPersonLocate                   v3    1 combos
+  WMPEWantedPersonModify                   v3    3 combos
+  WMPEWantedPersonSupplementalCancel       v3    3 combos
+  WMPEWantedPersonSupplementalEntry        v3    3 combos
+  WMPIMissingPersonQuery                   v4    1 combos
+  WMPIProtectionOrderQuery                 v4    4 combos
+  WMPISexOffenderQuery                     v4    2 combos
+  WMPIUnidentifiedPersonQuery              v4    4 combos
+  WMPIWantedPersonQuery                    v4    4 combos
+
+

@@ -1,0 +1,274 @@
+﻿AZ_AZDPS METADATA REFERENCE
+============================
+Generated: 2026-05-08
+Source: AZ_AZDPS.xml (metadata) + AZ_AZDPS_BASE.json
+Metadata: 36 total transactions, 8 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 2)
+================================================================================
+
+METADATA FIELDS (4):
+  ArticleSerialNumber       Alphanumeric  maxLen=11  Article Serial Number
+  ArticleTypeCode           Alphanumeric  maxLen= 7  Article Type Code
+  BadgeNumber               Alphanumeric  maxLen= 4  Badge Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Request Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACQA          ArticleTypeCode         BadgeNumber, ArticleTypeCode, ArticleSerialNumber      RelatedHitSearchIndicator
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   ACQA           set[dexStateUserId, ArticleTypeCode, ArticleSerialNumber]
+
+================================================================================
+2. AzAzdpsDriverLicenseQuery (version 3)
+================================================================================
+
+METADATA FIELDS (7):
+  BadgeNumber           Alphanumeric  maxLen= 4  Badge Number
+  BirthDate             Date          maxLen= 8  Birth Date
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  SocialSecurityNumber  Alphanumeric  maxLen= 9  Social Security Number
+  State                 Alphanumeric  maxLen= 2  State Code
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  State
+  DQ            Name                    Name, SexCode, BirthDate                               State
+  DQ            SocialSecurityNumber    SocialSecurityNumber                                   --
+  ACWL          Name                    BadgeNumber, BirthDate, Name, SexCode                  OperatorLicenseNumber, State
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   DQ             set[OperatorLicenseNumber]
+  BUILT   DQN            set[NameLast, NameFirst, SexCode, BirthDate]
+  BUILT   DQSS           set[SocialSecurityNumber]
+  BUILT   ACWL           set[dexStateUserId, BirthDate, NameLast, NameFirst, SexCode]
+
+================================================================================
+3. BoatQuery (version 3)
+================================================================================
+
+METADATA FIELDS (5):
+  BadgeNumber               Alphanumeric  maxLen= 4  Badge Number
+  BoatHullIdNumber          Alphanumeric  maxLen=20  Boat Hull Identification Number
+  RegistrationNumber        Alphanumeric  maxLen= 8  Registration Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Request Indicator
+  State                     Alphabetic    maxLen= 2  State
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACQB          RegistrationNumber      BadgeNumber, RegistrationNumber                        BoatHullIdNumber, RelatedHi...
+  ACQB          BoatHullIdNumber        BadgeNumber, BoatHullIdNumber                          RegistrationNumber, Related...
+  BQ            RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, State
+  BQ            BoatHullIdNumber        BoatHullIdNumber                                       RegistrationNumber, State
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   ACQB           set[dexStateUserId, RegistrationNumber]
+  BUILT   ACQBH          set[dexStateUserId, BoatHullIdNumber]
+  BUILT   BQ             set[RegistrationNumber]
+  BUILT   BQH            set[BoatHullIdNumber]
+
+================================================================================
+4. DriverHistoryQuery (version 3)
+================================================================================
+
+METADATA FIELDS (7):
+  Attention             Alphanumeric  maxLen=30  Attention
+  BirthDate             Date          maxLen= 8  Birth Date
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  PurposeCode           Alphanumeric  maxLen= 1  Purpose Code
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  State                 Alphanumeric  maxLen= 2  State Code
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            OperatorLicenseNumber   State, OperatorLicenseNumber                           PurposeCode, Attention
+  KQ            Name                    State, Name, BirthDate, SexCode                        PurposeCode, Attention
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   KQ             set[StateDH, OperatorLicenseNumberDH]
+  BUILT   KQH            set[StateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+
+================================================================================
+5. GunQuery (version 3)
+================================================================================
+
+METADATA FIELDS (6):
+  BadgeNumber               Alphanumeric  maxLen= 4  BadgeNumber
+  GunCaliber                Alphanumeric  maxLen= 4  GunCaliber
+  GunMake                   Alphanumeric  maxLen= 4  GunMake
+  GunModel                  Alphanumeric  maxLen=11  GunModel
+  GunSerialNumber           Alphanumeric  maxLen=11  GunSerialNumber
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  RelatedHitSearchIndicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACQG          GunSerialNumber         BadgeNumber, GunSerialNumber                           GunMake, GunModel, GunCalib...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   ACQG           set[dexStateUserId, GunSerialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 5)
+================================================================================
+
+METADATA FIELDS (8):
+  BadgeNumber                 Alphanumeric  maxLen= 4  Badge Number
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Alphanumeric  maxLen= 4  License Plate Year
+  State                       Alphanumeric  maxLen= 2  State
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen= 4  Vehicle Make Code
+  VehicleYear                 Alphanumeric  maxLen= 4  Vehicle Year
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACVR          LicensePlateNumber      BadgeNumber, LicensePlateNumber                        LicensePlateYear, LicensePl...
+  ACVR          VehicleIdentificationNumber  BadgeNumber, VehicleIdentificationNumber               VehicleMakeCode, VehicleYea...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   ACVR           set[dexStateUserId, LicensePlateNumber]
+  BUILT   ACVRV          set[dexStateUserId, VehicleIdentificationNumber]
+
+================================================================================
+7. WMPIMissingPersonInquiry (version 1)
+================================================================================
+
+METADATA FIELDS (13):
+  Age                       Alphanumeric  maxLen= 2  Age
+  AreaCode                  Alphanumeric  maxLen= 3  Area Code
+  ExpandedNameSearchCode    Alphanumeric  maxLen= 1  Expanded Name Search Code
+  EyeColorCode              Alphanumeric  maxLen= 3  Eye Color Code
+  FormORI                   Alphanumeric  maxLen= 9  FormOR I
+  HairColorCode             Alphanumeric  maxLen= 3  Hair Color Code
+  Height                    Alphanumeric  maxLen= 3  Height
+  Name                      Alphanumeric  maxLen=30  Name
+  NCICNumber                Alphanumeric  maxLen=10  NCIC Number
+  RaceCode                  Alphanumeric  maxLen= 1  Race Code
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Indicator
+  SexCode                   Alphanumeric  maxLen= 1  Sex Code
+  Weight                    Alphanumeric  maxLen= 3  Weight
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACQM          Name                    Age, SexCode, RaceCode, Height, Weight, EyeColorCo...  FormORI, ExpandedNameSearch...
+  ACQM          NCICNumber              NCICNumber                                             FormORI, RelatedHitSearchIn...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   ACQM           set[Age, SexCode, RaceCode, Height, Weight, EyeColorCode, HairColorCode, NameLast, NameFirst]
+  BUILT   ACQMN          set[NCICNumber]
+
+================================================================================
+8. WMPIWantedPersonInquiry (version 1)
+================================================================================
+
+METADATA FIELDS (17):
+  BirthDate                   Alphanumeric  maxLen= 8  Birth Date
+  ExpandedBirthDateSearchCode Alphanumeric  maxLen= 1  Expanded Birth Date Search Code
+  ExpandedNameSearchCode      Alphanumeric  maxLen= 1  Expanded Name Search Code
+  FBINumber                   Alphanumeric  maxLen= 9  FBI Number
+  LicensePlateNumber          Alphanumeric  maxLen=20  License Plate Number
+  LicensePlateStateCode       Alphanumeric  maxLen= 2  License Plate State Code
+  MiscellaneousNumber         Alphanumeric  maxLen=15  Miscellaneous Number
+  Name                        Alphanumeric  maxLen=30  Name
+  NCICNumber                  Alphanumeric  maxLen=10  NCIC Number
+  OperatorLicenseNumber       Alphanumeric  maxLen=20  Operator License Number
+  OriginatingAgencyCaseNumber Alphanumeric  maxLen=20  Originating Agency Case Number
+  RaceCode                    Alphanumeric  maxLen= 1  Race Code
+  RelatedHitSearchIndicator   Alphanumeric  maxLen= 1  Related Hit Search Indicator
+  SexCode                     Alphanumeric  maxLen= 1  Sex Code
+  SocialSecurityNumber        Alphanumeric  maxLen= 9  Social Security Number
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen=24  Vehicle Make Code
+
+METADATA COMBINATIONS (20 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ACQW          Name                    Name, BirthDate, SexCode, RaceCode                     RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, FBINumber                                        RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, SocialSecurityNumber                             RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, MiscellaneousNumber                              RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, OperatorLicenseNumber                            RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, VehicleIdentificationNumber, VehicleMakeCode     RelatedHitSearchIndicator, ...
+  ACQW          LicensePlateNumber      LicensePlateNumber, LicensePlateStateCode              Name, RelatedHitSearchIndic...
+  ACQW          Name                    Name, OriginatingAgencyCaseNumber                      RelatedHitSearchIndicator, ...
+  ACQW          NCICNumber              NCICNumber                                             RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, BirthDate                                        RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, BirthDate, SexCode, RaceCode                     RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, FBINumber                                        RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, SocialSecurityNumber                             RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, MiscellaneousNumber                              RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, OperatorLicenseNumber                            RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, VehicleIdentificationNumber, VehicleMakeCode     RelatedHitSearchIndicator, ...
+  ACQW          LicensePlateNumber      LicensePlateNumber, LicensePlateStateCode              Name, RelatedHitSearchIndic...
+  ACQW          Name                    Name, OriginatingAgencyCaseNumber                      RelatedHitSearchIndicator, ...
+  ACQW          NCICNumber              NCICNumber                                             RelatedHitSearchIndicator, ...
+  ACQW          Name                    Name, BirthDate                                        RelatedHitSearchIndicator, ...
+
+BUILD COVERAGE (2 of 20 built):
+  BUILT   ACQW           set[NameLast, NameFirst, BirthDate, SexCode, RaceCode]
+  BUILT   ACQWN          set[NCICNumber]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  AzAzdpsDriverLicenseQuery                  4      4     0  100% (COMPLETE)
+  BoatQuery                                  4      4     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   2      2     0  100% (COMPLETE)
+  WMPIMissingPersonInquiry                   2      2     0  100% (COMPLETE)
+  WMPIWantedPersonInquiry                   20      2    18  10%
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   36     18    18  50%
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (28 of 36 in metadata)
+================================================================================
+
+  AzAzdpsBoatQuery                         v2    5 combos
+  DriverLicenseQuery                       v5    5 combos
+  WMPEMissingPersonCancel                  v1    2 combos
+  WMPEMissingPersonClear                   v1    2 combos
+  WMPEMissingPersonEntry                   v1    1 combos
+  WMPEMissingPersonLocate                  v1    1 combos
+  WMPEMissingPersonModify                  v1    2 combos
+  WMPEProtectionOrderCancel                v1    1 combos
+  WMPEProtectionOrderClear                 v1    1 combos
+  WMPEProtectionOrderEntry                 v1    1 combos
+  WMPEProtectionOrderModify                v1    1 combos
+  WMPESupervisedReleaseCancel              v1    3 combos
+  WMPESupervisedReleaseClear               v1    3 combos
+  WMPESupervisedReleaseEntry               v1    1 combos
+  WMPESupervisedReleaseModify              v1    2 combos
+  WMPEUnidentifiedPersonCancel             v1    1 combos
+  WMPEUnidentifiedPersonClear              v1    1 combos
+  WMPEUnidentifiedPersonEntry              v1    1 combos
+  WMPEUnidentifiedPersonModify             v1    1 combos
+  WMPEWantedPersonCancel                   v1    1 combos
+  WMPEWantedPersonClear                    v1    2 combos
+  WMPEWantedPersonEntry                    v1    1 combos
+  WMPEWantedPersonLocate                   v1    3 combos
+  WMPEWantedPersonModify                   v1    1 combos
+  WMPIProtectionOrderInquiry               v1    15 combos
+  WMPISexOffenderInquiry                   v1    9 combos
+  WMPISexOffenderRegistrationInquiry       v1    1 combos
+  WMPIUnidentifiedPersonInquiry            v1    4 combos
+
+

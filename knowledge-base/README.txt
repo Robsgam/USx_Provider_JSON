@@ -1,7 +1,7 @@
 ﻿CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
-Last updated: 2026-05-07
+Last updated: 2026-05-08
 Covers: 19 providers in consolidated monorepo
   Active (8): NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS
   New (11): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_CLETS_OCATS/CA_eSUN/CA_SAN_LUIS_OBISPO/
@@ -47,7 +47,7 @@ FILES IN THIS FOLDER (9 files, organized by question)
                            A/B/C), known query patterns, field naming constraints
 
   PLATFORM_CONSTRAINTS.txt "What CAN'T I do? What breaks?"
-                           All 30 platform limitations (#1-#30) + all 27 anti-patterns
+                           All 31 platform limitations (#1-#31) + all 27 anti-patterns
                            (AP #1-#27) organized by category. Anti-patterns folded into
                            their related constraints. Confirmed dead ends.
 
@@ -93,6 +93,7 @@ FILES IN THIS FOLDER (9 files, organized by question)
     Article type dropdown:          FIELD_REFERENCE.txt Section 2 (codeTypeSource=CA_CLETS)
     QIDM merge vs split:           QIDM_REFERENCE.txt Section 4
     DL+DH multi-query patterns:    QIDM_REFERENCE.txt Section 5
+    Metadata combo requirements:    Per-provider docs/<PROVIDER>_METADATA_REFERENCE.txt
     Import error messages:          IMPORT_ERRORS.txt
     Provider-specific constraints:  PROVIDER_CONSTRAINTS.txt
     First-import test checklist:    TESTING_REQUIREMENTS.txt Section 8
@@ -246,6 +247,16 @@ TOOLS
     naming, required dirs/files, report completeness, freshness, JSON internal
     provider name, source materials, phase archives, release bundle.
     Usage: .\audit_structure.ps1 [-Path <provider-dir>] [-OutFile <path>]
+
+  tools/extract_metadata_reference.ps1
+    Generates per-provider METADATA_REFERENCE.txt from metadata XML + provider
+    JSON. Extracts: field definitions, combination requirements (Set/Any/Choice),
+    build coverage map, MC expansion candidates, unbuilt transactions.
+    Usage: .\extract_metadata_reference.ps1 -XmlPath <xml> -Path <json> [-OutFile <path>] [-All]
+    Run with -All to regenerate METADATA_REFERENCE.txt for all 18 providers.
+    Output: docs/<PROVIDER>_METADATA_REFERENCE.txt (per-provider deliverable).
+    Cross-references built QIDM combos against metadata combos by keyReference.
+    Standard deliverable alongside SQVR.txt and STATUS.txt.
 
   tools/audit_test_coverage.ps1
     Test coverage auditor. Maps QIDM combinations to test log files, generates

@@ -1,0 +1,200 @@
+﻿TN_TIES METADATA REFERENCE
+===========================
+Generated: 2026-05-08
+Source: TN_TIES.xml (metadata) + TN_TIES_BASE.json
+Metadata: 13 total transactions, 6 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 6)
+================================================================================
+
+METADATA FIELDS (2):
+  ArticleSerialNumber Alphanumeric  maxLen=20  Article Serial Number
+  ArticleTypeCode     Alphanumeric  maxLen= 7  Type Code for an Article
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QA             set[serialNumber, articleTypeCode]
+
+================================================================================
+2. BoatQuery (version 12)
+================================================================================
+
+METADATA FIELDS (4):
+  BoatHullIdNumber     Alphanumeric  maxLen=20  Boat Hull ID Number
+  InquiryTypeIndicator Numeric       maxLen= 1  Inquiry Type
+  RegistrationNumber   Alphanumeric  maxLen= 8  Registration Number
+  State                Alphabetic    maxLen= 2  State Code
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  BB            BoatHullIdNumber        BoatHullIdNumber                                       InquiryTypeIndicator, State
+  BB            RegistrationNumber      RegistrationNumber                                     InquiryTypeIndicator, State
+  QB            BoatHullIdNumber        BoatHullIdNumber                                       InquiryTypeIndicator
+  QB            RegistrationNumber      RegistrationNumber                                     InquiryTypeIndicator
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   BB.H           set[boatHullIdNumber]
+  BUILT   BB.R           set[registrationNumber]
+  BUILT   QB.H           set[boatHullIdNumber]
+  BUILT   QB.R           set[registrationNumber]
+
+================================================================================
+3. DriverHistoryQuery (version 9)
+================================================================================
+
+METADATA FIELDS (7):
+  Attention             Alphabetic    maxLen=30  Name of Requestor
+  BirthDate             Date          maxLen= 8  Date of Birth
+  Name                  Name          maxLen=30  Name of Person
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Driver License Number
+  PurposeCode           Alphabetic    maxLen= 1  Purpose Code
+  SexCode               Alphabetic    maxLen= 1  Gender of Person
+  State                 Alphanumeric  maxLen= 2  Identifying State
+
+METADATA COMBINATIONS (3 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            Name                    Attention, Name, BirthDate, SexCode, PurposeCode       State
+  KQ            OperatorLicenseNumber   Attention, OperatorLicenseNumber, PurposeCode          State
+  DQ05          OperatorLicenseNumber   OperatorLicenseNumber                                  --
+
+BUILD COVERAGE (3 of 3 built):
+  BUILT   KQ.N           set[nameLastDH, nameFirstDH, birthDateDH, sexCodeDH, purposeCode]
+  BUILT   KQ.O           set[operatorLicenseNumberDH, purposeCode]
+  BUILT   DQ05           set[operatorLicenseNumberDH]
+
+================================================================================
+4. DriverLicenseQuery (version 15)
+================================================================================
+
+METADATA FIELDS (11):
+  BirthDate                 Date          maxLen= 8  Date of Birth
+  ExpandedNameSearchCode    Alphanumeric  maxLen= 1  Expanded Name Search Indicator
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Indicator
+  InquiryTypeIndicator      Numeric       maxLen= 1  Inquiry Type
+  Name                      Name          maxLen=30  Name of Person
+  OperatorLicenseNumber     Alphanumeric  maxLen=20  Driver License Number
+  RaceCode                  Alphabetic    maxLen= 1  Race Code
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Indicator
+  SexCode                   Alphabetic    maxLen= 1  Gender of Person
+  SocialSecurityNumber      Alphanumeric  maxLen=20  Social Security Number
+  State                     Alphanumeric  maxLen= 2  Identifying State
+
+METADATA COMBINATIONS (6 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DQ01          OperatorLicenseNumber   OperatorLicenseNumber                                  ExpandedNameSearchCode, Ima...
+  DQ02          Name                    Name, BirthDate, SexCode                               InquiryTypeIndicator
+  DQ06          SocialSecurityNumber    SocialSecurityNumber                                   ExpandedNameSearchCode, Ima...
+  DQ            Name                    Name, BirthDate, SexCode, State                        InquiryTypeIndicator
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           --
+  QWA           Name                    Name, BirthDate, SexCode                               ExpandedNameSearchCode, Ima...
+
+BUILD COVERAGE (6 of 6 built):
+  BUILT   DQ.N           set[nameLast, nameFirst, birthDate, sexCode, registrationState]
+  BUILT   DQ.O           set[operatorLicenseNumber, registrationState]
+  BUILT   QWA            set[nameLast, nameFirst, birthDate, sexCode]
+  BUILT   DQ01           set[operatorLicenseNumber]
+  BUILT   DQ02           set[nameLast, nameFirst, birthDate, sexCode]
+  BUILT   DQ06           set[socialSecurityNumber]
+
+================================================================================
+5. GunQuery (version 6)
+================================================================================
+
+METADATA FIELDS (3):
+  GunCaliber      Alphanumeric  maxLen= 4  Caliber of Gun
+  GunMake         Alphanumeric  maxLen= 3  Make of Gun
+  GunSerialNumber Alphanumeric  maxLen=20  Serial Number of Gun
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QG             set[serialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 22)
+================================================================================
+
+METADATA FIELDS (11):
+  DealerLicensePlateNumber    Alphanumeric  maxLen=10  Dealer License Plate Number
+  HandicapPlacardNumber       Alphanumeric  maxLen=10  Placard Plate Number
+  InquiryTypeIndicator        Numeric       maxLen= 1  Inquiry Type
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphabetic    maxLen= 2  Type of License Plate
+  LicensePlateYear            Year          maxLen= 4  Year the License Plate Expires
+  State                       Alphanumeric  maxLen= 2  Identifying State
+  TemporaryLicensePlateNumber Alphanumeric  maxLen=10  Temporary Tag Number
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen= 4  Make of Vehicle
+  VehicleYear                 Year          maxLen= 4  Year of Vehicle
+
+METADATA COMBINATIONS (13 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  RQ01          LicensePlateNumber      LicensePlateNumber                                     InquiryTypeIndicator
+  RV01          LicensePlateNumber      LicensePlateNumber                                     InquiryTypeIndicator
+  RQ03          VehicleIdentificationNumber  VehicleIdentificationNumber                            InquiryTypeIndicator
+  RV03          VehicleIdentificationNumber  VehicleIdentificationNumber                            InquiryTypeIndicator
+  RQ06          HandicapPlacardNumber   HandicapPlacardNumber                                  --
+  RQ05          DealerLicensePlateNumber  DealerLicensePlateNumber                               InquiryTypeIndicator
+  RQ07          TemporaryLicensePlateNumber  TemporaryLicensePlateNumber                            --
+  RV            LicensePlateNumber      LicensePlateNumber, LicensePlateYear, LicensePlate...  InquiryTypeIndicator
+  RQ            LicensePlateNumber      LicensePlateNumber, LicensePlateYear, LicensePlate...  InquiryTypeIndicator
+  RQ            VehicleIdentificationNumber  State, VehicleIdentificationNumber                     InquiryTypeIndicator, Vehic...
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            InquiryTypeIndicator, Vehic...
+  QV            LicensePlateNumber      LicensePlateNumber                                     InquiryTypeIndicator, Licen...
+  QV            DealerLicensePlateNumber  DealerLicensePlateNumber                               InquiryTypeIndicator
+
+BUILD COVERAGE (13 of 13 built):
+  BUILT   RV             set[licensePlateNumber, licensePlateYear, licensePlateTypeCode, registrationState]
+  BUILT   RQ.P           set[licensePlateNumber, licensePlateYear, licensePlateTypeCode, registrationState]
+  BUILT   RQ.V           set[registrationState, vehicleIdentificationNumber]
+  BUILT   RQ01           set[licensePlateNumber]
+  BUILT   RV01           set[licensePlateNumber]
+  BUILT   RQ03           set[vehicleIdentificationNumber]
+  BUILT   RV03           set[vehicleIdentificationNumber]
+  BUILT   RQ06           set[handicapPlacardNumber]
+  BUILT   RQ05           set[dealerLicensePlateNumber]
+  BUILT   RQ07           set[temporaryLicensePlateNumber]
+  BUILT   QV.V           set[vehicleIdentificationNumber]
+  BUILT   QV.P           set[licensePlateNumber]
+  BUILT   QV.D           set[dealerLicensePlateNumber]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  BoatQuery                                  4      4     0  100% (COMPLETE)
+  DriverHistoryQuery                         3      3     0  100% (COMPLETE)
+  DriverLicenseQuery                         6      6     0  100% (COMPLETE)
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                  13     13     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   28     28     0  100%
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (7 of 13 in metadata)
+================================================================================
+
+  AOSHazardousMaterialsQuery               v5    1 combos
+  P1AlarmExchangeResponse                  v4    1 combos
+  ProtectionOrderQuery                     v9    4 combos
+  SexOffenderQuery                         v6    1 combos
+  TnTiesBoatQuery                          v11   4 combos
+  TnTiesDriverLicenseQuery                 v16   10 combos
+  WMPIWantedPersonQuery                    v2    1 combos
+
+

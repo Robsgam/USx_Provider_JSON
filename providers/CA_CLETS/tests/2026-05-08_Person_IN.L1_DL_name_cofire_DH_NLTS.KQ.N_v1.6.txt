@@ -1,0 +1,71 @@
+TEST LOG
+========
+Provider: CA_CLETS
+Version:  v1.6 BASE
+Date:     2026-05-08
+Entity:   Person
+Query:    DriverLicenseQuery + DriverHistoryQuery (co-fire)
+Combo:    IN.L1 (DL) + NLTS.KQ.N (DH)
+KeyRef:   IN.L1 / NLTS.KQ.N
+Test:     T7 - DL name search + DH co-fire (Name+DOB+Sex)
+
+FORM STATE
+==========
+CaRequestPurposeCode: C (dropdown)
+NameLast: DOE (text)
+NameFirst: JANE (text)
+BirthDate: 1985-01-01 (date picker)
+SexCode: F (dropdown)
+OperatorLicenseNumber: [blank]
+State: [blank]
+
+EXPECTED
+========
+DL combo IN.L1 fires: set[caRequestPurposeCode, nameLast, nameFirst], any[birthDate, registrationState]
+DH combo NLTS.KQ.N co-fires: set[caRequestPurposeCode, birthDate, nameLast, nameFirst, sexCode], any[registrationState]
+Two transactions. DL has Name+DOB but no SexCode. DH has Name+DOB+SexCode.
+
+RAW XML REQUEST 1 (DriverLicenseQuery - IN.L1)
+===============================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR42J1795X12WFNTYQY5TCJW"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR42J1795X12WFNTYQY5TCJW</Id><BirthDate>19850101</BirthDate><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>DOE, JANE</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RAW XML REQUEST 2 (DriverHistoryQuery - NLTS.KQ.N)
+===================================================
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR42J32F8EKWXAWWJZMP91BS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KR42J32F8EKWXAWWJZMP91BS</Id><SexCode>F</SexCode><BirthDate>19850101</BirthDate><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>DOE, JANE</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS REQUEST
+===========
+{"elasticQuery":{"lastName":"doe","firstName":"jane","sexAttrId":"69586243428","dateOfBirth":"1985-01-01"},"from":0,"size":50}
+
+RMS RESPONSE
+============
+No Returns
+
+FIELD ANALYSIS
+==============
+DL Transaction (IN.L1):
+  CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+  Name: DOE, JANE -> <Name>DOE, JANE</Name> CORRECT (FormatStringRuleHandler: LAST, FIRST)
+  BirthDate: 1985-01-01 -> <BirthDate>19850101</BirthDate> CORRECT (CommsysParseDateRuleHandler: yyyyMMdd)
+  SexCode: absent from DL XML CORRECT (not in DL QIDM attributes)
+  State: absent CORRECT (blank)
+
+DH Transaction (NLTS.KQ.N):
+  CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+  Name: DOE, JANE -> <Name>DOE, JANE</Name> CORRECT
+  BirthDate: 19850101 CORRECT
+  SexCode: F -> <SexCode>F</SexCode> CORRECT (NIBRS reverse-lookup confirmed on CA_CLETS)
+  State: absent CORRECT (blank, in any[])
+
+RMS:
+  lastName: "doe", firstName: "jane" CORRECT
+  sexAttrId: "69586243428" CORRECT (CA Female attr ID, string not array)
+  dateOfBirth: "1985-01-01" CORRECT (ISO format for RMS)
+
+HANDLER CONFIRMATION
+====================
+FormatStringRuleHandler: DOE + JANE -> "DOE, JANE" (LAST, FIRST with ", " separator)
+CommsysParseDateRuleHandler: 1985-01-01 -> 19850101 (yyyy-MM-dd -> yyyyMMdd)
+NIBRS SexCode reverse-lookup: F -> <SexCode>F</SexCode> (attr ID 69586243428 -> "F")
+
+RESULT: PASS

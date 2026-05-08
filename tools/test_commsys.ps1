@@ -35,6 +35,7 @@ if ($qidms.Count -eq 0) {
 # ── Test data per entity ──
 $testData = @{}
 $testData["Person"] = @{
+    caRequestPurposeCode       = "C"
     OperatorLicenseNumber      = "D123456789"
     RegistrationState          = "NJ"
     State                      = "NY"
@@ -76,6 +77,7 @@ $testData["Person"] = @{
     FormORI                         = "MK1234567"
 }
 $testData["Vehicle"] = @{
+    caRequestPurposeCode        = "C"
     LicensePlateNumber          = "ABC1234"
     LicensePlateYear            = "2024"
     LicensePlateTypeCode        = "PC"
@@ -95,6 +97,7 @@ $testData["Vehicle"] = @{
     dexStateUserId              = "BADGE"
 }
 $testData["Firearm"] = @{
+    caRequestPurposeCode      = "C"
     serialNumber              = "ABC12345"
     GunSerialNumber           = "ABC12345"
     firearmMake               = "SMTH"
@@ -108,6 +111,7 @@ $testData["Firearm"] = @{
     dexStateUserId            = "BADGE"
 }
 $testData["Article"] = @{
+    caRequestPurposeCode      = "C"
     serialNumber              = "SN12345678"
     ArticleSerialNumber       = "SN12345678"
     ArticleTypeCode           = "COMP"
@@ -119,6 +123,7 @@ $testData["Article"] = @{
     dexStateUserId            = "BADGE"
 }
 $testData["Boat"] = @{
+    caRequestPurposeCode       = "C"
     BoatHullIdNumber           = "FL1234AB56H7"
     RegistrationNumber         = "FL1234AB"
     DecalNumber                = "FL12345678"
@@ -132,6 +137,7 @@ $testData["Boat"] = @{
     RegistrationState          = "FL"
     State                      = "FL"
     CoastGuardDocumentNumber   = "CG123456"
+    OwnerAppliedNumber         = "OAN12345"
     NCICNumber                 = "B123456789"
     ProcessControlNumber       = "0000012345"
     NameFirst                  = "John"

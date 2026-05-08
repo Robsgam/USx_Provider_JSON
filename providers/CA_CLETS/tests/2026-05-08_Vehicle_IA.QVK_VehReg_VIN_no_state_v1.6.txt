@@ -1,0 +1,43 @@
+TEST LOG
+========
+Provider: CA_CLETS
+Version:  v1.6 BASE
+Date:     2026-05-08
+Entity:   Vehicle
+Query:    VehicleRegistrationQuery
+Combo:    IA.QVK
+KeyRef:   IA.QVK
+Test:     T4 - NCIC VIN search (no State)
+
+FORM STATE
+==========
+CaRequestPurposeCode: C (dropdown)
+VehicleIdentificationNumber: 47y45yt6785 (text)
+State: [blank]
+LicensePlateNumber: [blank]
+
+RAW XML REQUEST
+===============
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR42AQXTFBMC8PQPXZQD1GQJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR42AQXTFBMC8PQPXZQD1GQJ</Id><VehicleIdentificationNumber>47Y45YT6785</VehicleIdentificationNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS REQUEST
+===========
+{"elasticQuery":{"vehicle":{"vinNumber":"47y45yt6785"}},"from":0,"size":50}
+
+RMS RESPONSE
+============
+No Returns
+
+FIELD ANALYSIS
+==============
+CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+VIN: 47y45yt6785 -> <VehicleIdentificationNumber>47Y45YT6785</VehicleIdentificationNumber> CORRECT (uppercased)
+State: [blank] -> absent from XML CORRECT
+RMS VIN: vinNumber="47y45yt6785" CORRECT
+
+COMBO ANALYSIS
+==============
+IA.QVK fired: set[caRequestPurposeCode, vehicleIdentificationNumber] both populated.
+No State -> IA path (NCIC interstate).
+
+RESULT: PASS

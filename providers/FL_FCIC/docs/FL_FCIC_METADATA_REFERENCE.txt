@@ -1,0 +1,597 @@
+﻿FL_FCIC METADATA REFERENCE
+===========================
+Generated: 2026-05-08
+Source: FL_FCIC.xml (metadata) + FL_FCIC_BASE.json
+Metadata: 177 total transactions, 8 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 9)
+================================================================================
+
+METADATA FIELDS (8):
+  ArticleSerialNumber       Alphanumeric  maxLen=20  the indentifying serial number of an article
+  ArticleTypeCode           Alphanumeric  maxLen= 7  Shall be a valid code from Part 1 of the code manual or h...
+  ImageIndicator            Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  NCICNumber                Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
+  OwnerAppliedNumber        Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  ProcessControlNumber      Alphanumeric  maxLen=10  FCIC process control number
+  RelatedHitSearchIndicator Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                 Alphanumeric  maxLen=30  attention
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   ImageIndicator, RelatedHitS...
+  QA            OwnerAppliedNumber      ArticleTypeCode, OwnerAppliedNumber                    ImageIndicator, RelatedHitS...
+  QA            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
+  QA            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
+  BUILT   QAOwnerAppliedNumber set[ArticleTypeCode, OwnerAppliedNumber]
+  BUILT   QANCICNumber   set[NCICNumber]
+  BUILT   QAProcessControlNumber set[ProcessControlNumber]
+  SKIP    QA             ArticleSerialNumber -- MC expansion candidate
+  SKIP    QA             OwnerAppliedNumber -- MC expansion candidate
+  SKIP    QA             NCICNumber -- MC expansion candidate
+  SKIP    QA             ProcessControlNumber -- MC expansion candidate
+
+================================================================================
+2. BoatQuery (version 18)
+================================================================================
+
+METADATA FIELDS (17):
+  BirthDate                 Date          maxLen= 8  Shall be a valid Gregorian Date (CCYYMMDD). The DOB shall...
+  BoatHullIdNumber          Alphanumeric  maxLen=62  Single zero only, run of zeros only, single alphabetic on...
+  CoastGuardDocumentNumber  Alphanumeric  maxLen= 8  Single zero only, run of zeros only, single alphabetic on...
+  DecalNumber               Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  ImageIndicator            Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  Name                      Name          maxLen=60  name of person
+  NCICNumber                Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
+  ProcessControlNumber      Alphanumeric  maxLen=10  FCIC process control number
+  RegistrationNumber        Alphanumeric  maxLen= 8  Single zero only, run of zeros only, single alphabetic on...
+  RelatedHitSearchIndicator Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                 Alphanumeric  maxLen=30  attention
+  State                     Alphanumeric  maxLen= 2  identifying state
+  State2                    Alphanumeric  maxLen= 2  identifying state
+  State3                    Alphanumeric  maxLen= 2  identifying state
+  State4                    Alphanumeric  maxLen= 2  identifying state
+  State5                    Alphanumeric  maxLen= 2  identifying state
+  TitleLienInformation      Alphanumeric  maxLen=10  title lien information
+
+METADATA COMBINATIONS (12 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  FBQ           BoatHullIdNumber        BoatHullIdNumber                                       DecalNumber, RegistrationNu...
+  FBQ           DecalNumber             DecalNumber                                            BoatHullIdNumber, Registrat...
+  FBQ           RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, DecalNumb...
+  FBQ           TitleLienInformation    TitleLienInformation                                   BoatHullIdNumber, DecalNumb...
+  QB            BoatHullIdNumber        BoatHullIdNumber                                       ImageIndicator, Registratio...
+  QB            CoastGuardDocumentNumber  CoastGuardDocumentNumber                               ImageIndicator, RelatedHitS...
+  QB            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
+  QB            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
+  QB            RegistrationNumber      RegistrationNumber                                     ImageIndicator, RelatedHitS...
+  BQ            Name                    BirthDate, Name, State                                 BoatHullIdNumber, Registrat...
+  BQ            BoatHullIdNumber        BoatHullIdNumber, State                                RegistrationNumber, Request...
+  BQ            RegistrationNumber      RegistrationNumber, State                              BoatHullIdNumber, Requestor...
+
+BUILD COVERAGE (12 of 12 built):
+  BUILT   BQName         set[BirthDate, NameLast, NameFirst, RegistrationState]
+  BUILT   BQBoatHullIdNumber set[BoatHullIdNumber, RegistrationState]
+  BUILT   BQRegistrationNumber set[RegistrationNumber, RegistrationState]
+  BUILT   QBBoatHullIdNumber set[BoatHullIdNumber, RelatedHitSearchIndicator]
+  BUILT   QBRegistrationNumber set[RegistrationNumber, RelatedHitSearchIndicator]
+  BUILT   FBQBoatHullIdNumber set[BoatHullIdNumber]
+  BUILT   FBQRegistrationNumber set[RegistrationNumber]
+  BUILT   FBQDecalNumber set[DecalNumber]
+  BUILT   FBQTitleLienInformation set[TitleLienInformation]
+  BUILT   QBCoastGuardDocumentNumber set[CoastGuardDocumentNumber]
+  BUILT   QBNCICNumber   set[NCICNumber]
+  BUILT   QBProcessControlNumber set[ProcessControlNumber]
+  SKIP    FBQ            BoatHullIdNumber -- MC expansion candidate
+  SKIP    FBQ            DecalNumber -- MC expansion candidate
+  SKIP    FBQ            RegistrationNumber -- MC expansion candidate
+  SKIP    FBQ            TitleLienInformation -- MC expansion candidate
+  SKIP    QB             BoatHullIdNumber -- MC expansion candidate
+  SKIP    QB             CoastGuardDocumentNumber -- MC expansion candidate
+  SKIP    QB             NCICNumber -- MC expansion candidate
+  SKIP    QB             ProcessControlNumber -- MC expansion candidate
+  SKIP    QB             RegistrationNumber -- MC expansion candidate
+  SKIP    BQ             Name -- MC expansion candidate
+  SKIP    BQ             BoatHullIdNumber -- MC expansion candidate
+  SKIP    BQ             RegistrationNumber -- MC expansion candidate
+
+================================================================================
+3. DriverHistoryQuery (version 15)
+================================================================================
+
+METADATA FIELDS (8):
+  Attention             Alphanumeric  maxLen=30  periods should not be used with rank and/or initials
+  BirthDate             Date          maxLen= 8  Shall be a valid Gregorian Date (CCYYMMDD). The DOB shall...
+  Name                  Name          maxLen=30  name of person
+  OperatorLicenseNumber Alphanumeric  maxLen=20  single zero only or run of zeros only shall be prohibited
+  PurposeCode           Alphabetic    maxLen= 1  valid values include: A, C, D, E, F, H, J, O, R
+  Requestor             Alphanumeric  maxLen=30  attention
+  SexCode               Alphabetic    maxLen= 1  Shall be a valid code from Part 4 of the code manual
+  State                 Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            Name                    BirthDate, Name, SexCode, State                        Attention, PurposeCode, Req...
+  KQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           Attention, PurposeCode, Req...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, RegistrationState, PurposeCode]
+  BUILT   KQName         set[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState, PurposeCode]
+  SKIP    KQ             Name -- MC expansion candidate
+  SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
+
+================================================================================
+4. DriverLicenseQuery (version 20)
+================================================================================
+
+METADATA FIELDS (13):
+  BirthDate                 Date          maxLen= 8  Shall be a valid Gregorian Date (CCYYMMDD). The DOB shall...
+  ExpandedNameSearchCode    Alphabetic    maxLen= 1  Must be Y or N
+  ImageIndicator            Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  Name                      Name          maxLen=80  name of person
+  OperatorLicenseNumber     Alphanumeric  maxLen=20  single zero only or run of zeros only shall be prohibited
+  OperatorLicenseStateCode  Alphanumeric  maxLen= 2  Operator License State
+  RelatedHitSearchIndicator Alphabetic    maxLen= 1  Must be Y or N
+  SexCode                   Alphabetic    maxLen= 1  Shall be a valid code from Part 4 of the code manual
+  State                     Alphanumeric  maxLen= 2  identifying state
+  State2                    Alphanumeric  maxLen= 2  identifying state
+  State3                    Alphanumeric  maxLen= 2  identifying state
+  State4                    Alphanumeric  maxLen= 2  identifying state
+  State5                    Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (6 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  FDQ           Name                    BirthDate, Name, SexCode                               ImageIndicator
+  FDQ           OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator
+  QW            Name                    BirthDate, Name                                        OperatorLicenseNumber, Expa...
+  QW            OperatorLicenseNumber   Name, OperatorLicenseNumber                            ExpandedNameSearchCode, Ima...
+  DQ            Name                    BirthDate, Name, SexCode, State                        State2, State3, State4, Sta...
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           State2, State3, State4, Sta...
+
+BUILD COVERAGE (4 of 6 built):
+  BUILT   DQOperatorLicenseNumber set[OperatorLicenseNumber, RegistrationState]
+  BUILT   FDQOperatorLicenseNumber set[OperatorLicenseNumber]
+  BUILT   DQName         set[BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
+  BUILT   FDQName        set[BirthDate, NameLast, NameFirst, SexCode]
+  SKIP    FDQ            Name -- MC expansion candidate
+  SKIP    FDQ            OperatorLicenseNumber -- MC expansion candidate
+  SKIP    QW             Name -- MC expansion candidate
+  SKIP    QW             OperatorLicenseNumber -- MC expansion candidate
+  SKIP    DQ             Name -- MC expansion candidate
+  SKIP    DQ             OperatorLicenseNumber -- MC expansion candidate
+
+================================================================================
+5. GunQuery (version 11)
+================================================================================
+
+METADATA FIELDS (7):
+  GunMake                   Alphanumeric  maxLen=23  Shall be a valid code from the NCIC code manual
+  GunSerialNumber           Alphanumeric  maxLen=11  Shall validate field length and type
+  ImageIndicator            Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  NCICNumber                Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
+  ProcessControlNumber      Alphanumeric  maxLen=10  FCIC process control number
+  RelatedHitSearchIndicator Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                 Alphanumeric  maxLen=30  attention
+
+METADATA COMBINATIONS (3 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        GunMake, ImageIndicator, Re...
+  QG            NCICNumber              NCICNumber                                             GunMake, ImageIndicator, Re...
+  QG            ProcessControlNumber    ProcessControlNumber                                   GunMake, ImageIndicator, Re...
+
+BUILD COVERAGE (3 of 3 built):
+  BUILT   QGGunSerialNumber set[GunSerialNumber]
+  BUILT   QGNCICNumber   set[NCICNumber]
+  BUILT   QGProcessControlNumber set[ProcessControlNumber]
+  SKIP    QG             GunSerialNumber -- MC expansion candidate
+  SKIP    QG             NCICNumber -- MC expansion candidate
+  SKIP    QG             ProcessControlNumber -- MC expansion candidate
+
+================================================================================
+6. VehicleRegistrationQuery (version 15)
+================================================================================
+
+METADATA FIELDS (17):
+  DecalNumber                 Alphanumeric  maxLen=10  Single zero only, run of zeros only, single alphabetic on...
+  ImageIndicator              Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  LicensePlateNumber          Alphanumeric  maxLen=10  The values 'UNK', 'UNKN', 'UNKNOWN' shall be prohibited. ...
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  Shall be a valid code from part 8 of the code manual
+  LicensePlateYear            Year          maxLen= 4  Shall have a value of 'NX' or a value greater than or equ...
+  RelatedHitSearchIndicator   Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                   Alphanumeric  maxLen=30  attention
+  State                       Alphanumeric  maxLen= 2  identifying state
+  State2                      Alphanumeric  maxLen= 2  identifying state
+  State3                      Alphanumeric  maxLen= 2  identifying state
+  State4                      Alphanumeric  maxLen= 2  identifying state
+  State5                      Alphanumeric  maxLen= 2  identifying state
+  TitleLienInformation        Alphanumeric  maxLen= 8  title lien information
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Shall validate length and type. Single zero only, run of ...
+  VehicleMakeCode             Alphanumeric  maxLen=24  The first four characters shall be a valid code from part...
+  VehicleYear                 Year          maxLen= 4  Shall have a value less than or equal to the current year...
+  VINSequenceNumber           Alphanumeric  maxLen= 2  VIN sequence number
+
+METADATA COMBINATIONS (8 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  FRQ           DecalNumber             DecalNumber, LicensePlateYear                          Requestor, ImageIndicator
+  FRQ           LicensePlateNumber      LicensePlateNumber                                     LicensePlateYear, Requestor...
+  FRQ           TitleLienInformation    TitleLienInformation                                   Requestor, ImageIndicator
+  FRQ           VehicleIdentificationNumber  VehicleIdentificationNumber                            Requestor, VINSequenceNumbe...
+  QV            LicensePlateNumber      LicensePlateNumber                                     ImageIndicator, RelatedHitS...
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
+  RQ            LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, LicenseP...  Requestor, State2, State3, ...
+  RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Requestor, State2, State3, ...
+
+BUILD COVERAGE (6 of 8 built):
+  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
+  BUILT   FRQLicensePlateNumber set[LicensePlateNumber]
+  BUILT   FRQVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  BUILT   FRQDecalNumber set[DecalNumber, LicensePlateYear]
+  BUILT   FRQTitleLienInformation set[TitleLienInformation]
+  SKIP    FRQ            DecalNumber -- MC expansion candidate
+  SKIP    FRQ            LicensePlateNumber -- MC expansion candidate
+  SKIP    FRQ            TitleLienInformation -- MC expansion candidate
+  SKIP    FRQ            VehicleIdentificationNumber -- MC expansion candidate
+  SKIP    QV             LicensePlateNumber -- MC expansion candidate
+  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
+  SKIP    RQ             LicensePlateNumber -- MC expansion candidate
+  SKIP    RQ             VehicleIdentificationNumber -- MC expansion candidate
+
+================================================================================
+7. VehicleStolenQuery (version 14)
+================================================================================
+
+METADATA FIELDS (11):
+  ImageIndicator              Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  LicensePlateNumber          Alphanumeric  maxLen=10  The values 'UNK', 'UNKN', 'UNKNOWN' shall be prohibited. ...
+  NCICNumber                  Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
+  OwnerAppliedNumber          Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  PartSerialNumber            Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  ProcessControlNumber        Alphanumeric  maxLen=10  FCIC process control number
+  RelatedHitSearchIndicator   Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                   Alphanumeric  maxLen=30  attention
+  State                       Alphanumeric  maxLen= 2  identifying state
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Shall validate length and type. Single zero only, run of ...
+  VehicleMakeCode             Alphanumeric  maxLen=24  The first four characters shall be a valid code from part...
+
+METADATA COMBINATIONS (6 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QV            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
+  QV            LicensePlateNumber      LicensePlateNumber + Choice[VehicleIdentificationN...  ImageIndicator, RelatedHitS...
+  QV            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
+  QV            OwnerAppliedNumber      OwnerAppliedNumber                                     ImageIndicator, RelatedHitS...
+  QV            PartSerialNumber        PartSerialNumber                                       ImageIndicator, RelatedHitS...
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (2 of 6 built):
+  BUILT   QVLicensePlateNumber set[LicensePlateNumber]
+  BUILT   QVVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  SKIP    QV             ProcessControlNumber -- MC expansion candidate
+  SKIP    QV             LicensePlateNumber -- MC expansion candidate
+  SKIP    QV             NCICNumber -- MC expansion candidate
+  SKIP    QV             OwnerAppliedNumber -- MC expansion candidate
+  SKIP    QV             PartSerialNumber -- MC expansion candidate
+  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
+
+================================================================================
+8. WantedPersonQuery (version 18)
+================================================================================
+
+METADATA FIELDS (26):
+  BirthDate                   Date          maxLen= 8  Shall be a valid Gregorian Date (CCYYMMDD). The DOB shall...
+  DepartmentCorrectionsNumber Alphanumeric  maxLen= 6  department corrections number
+  ExpandedNameSearchCode      Alphabetic    maxLen= 1  Must be Y or N
+  FBINumber                   Alphanumeric  maxLen= 9  Shall be one of the following formats: up to 7 numeric, 1...
+  ImageIndicator              Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
+  JuvenileJusticeNumber       Alphanumeric  maxLen=10  juvenile justice number
+  LicensePlateNumber          Alphanumeric  maxLen=10  The values 'UNK', 'UNKN', 'UNKNOWN' shall be prohibited. ...
+  LicensePlateStateCode       Alphanumeric  maxLen= 2  part 6 codes from the code manual are used as reference only
+  LocalIdNumber               Alphanumeric  maxLen=10  local identification number
+  MiscellaneousNumber         Alphanumeric  maxLen=15  miscellaneous number
+  Name                        Name          maxLen=30  name of person
+  NCICNumber                  Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
+  OperatorLicenseNumber       Alphanumeric  maxLen=20  single zero only or run of zeros only shall be prohibited
+  OriginatingAgencyCaseNumber Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  OwnerAppliedNumber          Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  ProcessControlNumber        Alphanumeric  maxLen=10  FCIC process control number
+  RaceCode                    Alphabetic    maxLen= 1  Shall be a valid code from part 4 of code manual
+  RelatedHitSearchIndicator   Alphabetic    maxLen= 1  Must be Y or N
+  Requestor                   Alphanumeric  maxLen=30  attention
+  SerialNumber                Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
+  SexCode                     Alphabetic    maxLen= 1  Shall be a valid code from Part 4 of the code manual
+  SocialSecurityNumber        Alphanumeric  maxLen= 9  social security number
+  StateIdNumber               Alphanumeric  maxLen=10  state identification number
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Shall validate length and type. Single zero only, run of ...
+  VehicleMake                 Alphanumeric  maxLen=24  Vehicle Make
+  VehicleMakeCode             Alphanumeric  maxLen=24  The first four characters shall be a valid code from part...
+
+METADATA COMBINATIONS (11 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QW            DepartmentCorrectionsNumber  DepartmentCorrectionsNumber                            BirthDate, ExpandedNameSear...
+  QW            JuvenileJusticeNumber   JuvenileJusticeNumber                                  BirthDate, DepartmentCorrec...
+  QW            LicensePlateNumber      LicensePlateNumber                                     BirthDate, DepartmentCorrec...
+  QW            LocalIdNumber           LocalIdNumber                                          BirthDate, DepartmentCorrec...
+  QW            Name                    Name                                                   DepartmentCorrectionsNumber...
+  QW            NCICNumber              NCICNumber                                             BirthDate, DepartmentCorrec...
+  QW            OwnerAppliedNumber      OwnerAppliedNumber                                     BirthDate, DepartmentCorrec...
+  QW            ProcessControlNumber    ProcessControlNumber                                   BirthDate, DepartmentCorrec...
+  QW            SerialNumber            SerialNumber                                           BirthDate, DepartmentCorrec...
+  QW            StateIdNumber           StateIdNumber                                          BirthDate, DepartmentCorrec...
+  QW            VehicleIdentificationNumber  VehicleIdentificationNumber                            BirthDate, DepartmentCorrec...
+
+BUILD COVERAGE (2 of 11 built):
+  BUILT   QWOperatorLicenseNumber set[NameLast, NameFirst, OperatorLicenseNumber]
+  BUILT   QWName         set[BirthDate, NameLast, NameFirst]
+  SKIP    QW             DepartmentCorrectionsNumber -- MC expansion candidate
+  SKIP    QW             JuvenileJusticeNumber -- MC expansion candidate
+  SKIP    QW             LicensePlateNumber -- MC expansion candidate
+  SKIP    QW             LocalIdNumber -- MC expansion candidate
+  SKIP    QW             Name -- MC expansion candidate
+  SKIP    QW             NCICNumber -- MC expansion candidate
+  SKIP    QW             OwnerAppliedNumber -- MC expansion candidate
+  SKIP    QW             ProcessControlNumber -- MC expansion candidate
+  SKIP    QW             SerialNumber -- MC expansion candidate
+  SKIP    QW             StateIdNumber -- MC expansion candidate
+  SKIP    QW             VehicleIdentificationNumber -- MC expansion candidate
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         4      4     0  100% (COMPLETE)
+  BoatQuery                                 12     12     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         6      4     2  67%
+  GunQuery                                   3      3     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   8      6     2  75%
+  VehicleStolenQuery                         6      2     4  33%
+  WantedPersonQuery                         11      2     9  18%
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   52     35    17  67%
+
+================================================================================
+MC EXPANSION CANDIDATES (52 combos not in BASE)
+================================================================================
+
+  QA             ArticleSerialNumber      (ArticleSingleQuery)
+  QA             OwnerAppliedNumber       (ArticleSingleQuery)
+  QA             NCICNumber               (ArticleSingleQuery)
+  QA             ProcessControlNumber     (ArticleSingleQuery)
+  FBQ            BoatHullIdNumber         (BoatQuery)
+  FBQ            DecalNumber              (BoatQuery)
+  FBQ            RegistrationNumber       (BoatQuery)
+  FBQ            TitleLienInformation     (BoatQuery)
+  QB             BoatHullIdNumber         (BoatQuery)
+  QB             CoastGuardDocumentNumber (BoatQuery)
+  QB             NCICNumber               (BoatQuery)
+  QB             ProcessControlNumber     (BoatQuery)
+  QB             RegistrationNumber       (BoatQuery)
+  BQ             Name                     (BoatQuery)
+  BQ             BoatHullIdNumber         (BoatQuery)
+  BQ             RegistrationNumber       (BoatQuery)
+  KQ             Name                     (DriverHistoryQuery)
+  KQ             OperatorLicenseNumber    (DriverHistoryQuery)
+  FDQ            Name                     (DriverLicenseQuery)
+  FDQ            OperatorLicenseNumber    (DriverLicenseQuery)
+  QW             Name                     (DriverLicenseQuery)
+  QW             OperatorLicenseNumber    (DriverLicenseQuery)
+  DQ             Name                     (DriverLicenseQuery)
+  DQ             OperatorLicenseNumber    (DriverLicenseQuery)
+  QG             GunSerialNumber          (GunQuery)
+  QG             NCICNumber               (GunQuery)
+  QG             ProcessControlNumber     (GunQuery)
+  FRQ            DecalNumber              (VehicleRegistrationQuery)
+  FRQ            LicensePlateNumber       (VehicleRegistrationQuery)
+  FRQ            TitleLienInformation     (VehicleRegistrationQuery)
+  FRQ            VehicleIdentificationNumber (VehicleRegistrationQuery)
+  QV             LicensePlateNumber       (VehicleRegistrationQuery)
+  QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
+  RQ             LicensePlateNumber       (VehicleRegistrationQuery)
+  RQ             VehicleIdentificationNumber (VehicleRegistrationQuery)
+  QV             ProcessControlNumber     (VehicleStolenQuery)
+  QV             LicensePlateNumber       (VehicleStolenQuery)
+  QV             NCICNumber               (VehicleStolenQuery)
+  QV             OwnerAppliedNumber       (VehicleStolenQuery)
+  QV             PartSerialNumber         (VehicleStolenQuery)
+  QV             VehicleIdentificationNumber (VehicleStolenQuery)
+  QW             DepartmentCorrectionsNumber (WantedPersonQuery)
+  QW             JuvenileJusticeNumber    (WantedPersonQuery)
+  QW             LicensePlateNumber       (WantedPersonQuery)
+  QW             LocalIdNumber            (WantedPersonQuery)
+  QW             Name                     (WantedPersonQuery)
+  QW             NCICNumber               (WantedPersonQuery)
+  QW             OwnerAppliedNumber       (WantedPersonQuery)
+  QW             ProcessControlNumber     (WantedPersonQuery)
+  QW             SerialNumber             (WantedPersonQuery)
+  QW             StateIdNumber            (WantedPersonQuery)
+  QW             VehicleIdentificationNumber (WantedPersonQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (169 of 177 in metadata)
+================================================================================
+
+  AdministrativeMessage                    v9    2 combos
+  AOSAircraftRegistrationQuery             v8    1 combos
+  AOSFloridaAdministrativeMessage          v6    1 combos
+  AOSFloridaHitConfirmationRequest         v8    1 combos
+  AOSFloridaHitConfirmationResponse        v8    1 combos
+  AOSHazardousMaterialQuery                v7    1 combos
+  AOSNletsAdministrativeMessage            v6    1 combos
+  AOSNletsHitConfirmationRequest           v7    1 combos
+  AOSNletsHitConfirmationResponse          v7    1 combos
+  AOSOrionQuery                            v6    3 combos
+  AOSORIQuery                              v7    1 combos
+  BEPImageCancel                           v2    1 combos
+  BEPImageEntry                            v15   1 combos
+  BEPImageModify                           v2    1 combos
+  BEPStolenArticleCancel                   v19   1 combos
+  BEPStolenArticleClear                    v18   1 combos
+  BEPStolenArticleEntry                    v21   1 combos
+  BEPStolenArticleLocate                   v23   1 combos
+  BEPStolenArticleModify                   v23   1 combos
+  BEPStolenBoatCancel                      v22   1 combos
+  BEPStolenBoatClear                       v20   1 combos
+  BEPStolenBoatEntry                       v24   1 combos
+  BEPStolenBoatLocate                      v20   1 combos
+  BEPStolenBoatModify                      v24   1 combos
+  BEPStolenGunCancel                       v22   1 combos
+  BEPStolenGunClear                        v23   1 combos
+  BEPStolenGunEntry                        v21   1 combos
+  BEPStolenGunLocate                       v21   1 combos
+  BEPStolenGunModify                       v21   1 combos
+  BEPStolenPlateCancel                     v19   1 combos
+  BEPStolenPlateClear                      v18   1 combos
+  BEPStolenPlateEntry                      v20   1 combos
+  BEPStolenPlateLocate                     v16   1 combos
+  BEPStolenPlateModify                     v18   1 combos
+  BEPStolenVehicleCancel                   v20   1 combos
+  BEPStolenVehicleClear                    v20   1 combos
+  BEPStolenVehicleEntry                    v21   1 combos
+  BEPStolenVehicleLocate                   v19   1 combos
+  BEPStolenVehicleModify                   v22   1 combos
+  BEPWantedPersonCancel                    v23   1 combos
+  BEPWantedPersonClear                     v24   1 combos
+  BEPWantedPersonEntry                     v30   1 combos
+  BEPWantedPersonLocate                    v24   1 combos
+  BEPWantedPersonModify                    v29   1 combos
+  CAEStolenSecuritiesCancel                v9    1 combos
+  CAEStolenSecuritiesClear                 v9    1 combos
+  CAEStolenSecuritiesEntry                 v9    1 combos
+  CAEStolenSecuritiesLocate                v9    1 combos
+  CAEStolenSecuritiesModify                v9    1 combos
+  CAINicbImpoundCancel                     v9    1 combos
+  CAINicbImpoundEntry                      v13   1 combos
+  CAINicbImpoundModify                     v11   1 combos
+  CAINicbQuery                             v1    1 combos
+  CAIStolenSecuritiesQuery                 v7    1 combos
+  CanadianBoatQuery                        v9    1 combos
+  CanadianDriverLicenseQuery               v10   1 combos
+  CanadianGunQuery                         v9    1 combos
+  CanadianPersonQuery                      v4    1 combos
+  CanadianSecuritiesQuery                  v2    1 combos
+  CanadianSingleArticleQuery               v10   1 combos
+  CanadianVehicleQuery                     v15   1 combos
+  CanadianVehicleRegistrationQuery         v11   2 combos
+  CCHCriminalHistoryAQQuery                v3    1 combos
+  CCHCriminalHistoryARQuery                v2    1 combos
+  CCHCriminalHistoryFCIQuery               v14   1 combos
+  CCHCriminalHistoryFCQuery                v13   1 combos
+  CCHCriminalHistoryFCXQuery               v4    1 combos
+  CCHCriminalHistoryFHQuery                v12   1 combos
+  CCHCriminalHistoryFQIQuery               v10   1 combos
+  CCHCriminalHistoryFQQuery                v8    1 combos
+  CCHCriminalHistoryFSQuery                v12   1 combos
+  CCHCriminalHistoryIQQuery                v2    1 combos
+  CCHCriminalHistoryQHQuery                v10   1 combos
+  CCHCriminalHistoryQRQuery                v10   1 combos
+  CCHCriminalHistoryQWIQuery               v10   1 combos
+  CCHCriminalHistoryZIQuery                v10   2 combos
+  CCHCriminalHistoryZRQuery                v9    2 combos
+  CCHCriminalHistoryZRSQuery               v10   2 combos
+  CCHNletsSupplementalInfoQuery            v10   1 combos
+  ConcealedWeaponQuery                     v10   2 combos
+  FlChildProtectionQuery                   v4    1 combos
+  FlFcicAbandonedBoatEntry                 v11   1 combos
+  FlFcicAbandonedVehicleEntry              v9    1 combos
+  FlFcicAtqQuery                           v1    1 combos
+  FlFcicClassRegistrationQuery             v5    1 combos
+  FlFcicConcealedWeaponCarryQuery          v5    1 combos
+  FlFcicFqlQuery                           v1    1 combos
+  FlFcicIdentityTheftCancel                v9    1 combos
+  FlFcicIdentityTheftEnter                 v9    1 combos
+  FlFcicIdentityTheftEnterSupplemental     v9    1 combos
+  FlFcicIdentityTheftModify                v9    1 combos
+  FlFcicIdentityTheftQuery                 v5    1 combos
+  FlFcicNiqQuery                           v2    1 combos
+  FlFcicNletsImmigrantAlienQuery           v6    1 combos
+  FlFcicRecoveredArticle                   v9    1 combos
+  FlFcicSerializedStolenSecuritiesLocate   v2    1 combos
+  FlFcicStateWarrantQuery                  v9    1 combos
+  FlFcicStolenVehiclePartCancel            v9    1 combos
+  FlFcicStolenVehiclePartClear             v9    1 combos
+  FlFcicStolenVehiclePartEntry             v9    1 combos
+  FlFcicStolenVehiclePartLocate            v9    1 combos
+  FlFcicStolenVehiclePartModify            v9    1 combos
+  FlFcicUserCodeQuery                      v5    2 combos
+  FlInterpolFullPersonQuery                v2    1 combos
+  FlInterpolPersonQuery                    v2    1 combos
+  ImageQuery                               v12   6 combos
+  LojackSpeedUpQuery                       v13   1 combos
+  LojackTurnOffQuery                       v12   1 combos
+  NicsDeniedTransactionQuery               v5    1 combos
+  NletsParoleProbationCorrectionsQuery     v6    1 combos
+  NletsSexOffenderRegistrationQuery        v6    1 combos
+  VehicleRegistrationNameQuery             v7    1 combos
+  VehicleTitleLeinQuery                    v11   3 combos
+  WMPEDetainerCancel                       v10   2 combos
+  WMPEDetainerEntry                        v10   2 combos
+  WMPEDetainerModify                       v10   2 combos
+  WMPEExtremeRiskProtectionOrderSupplementalCancel v2    2 combos
+  WMPEExtremeRiskProtectionOrderSupplementalEntry v2    2 combos
+  WMPEImageCancel                          v4    1 combos
+  WMPEImageEntry                           v15   1 combos
+  WMPEImageModify                          v2    1 combos
+  WMPEMissingJuvenileEntry                 v13   1 combos
+  WMPEMissingPersonCancel                  v10   1 combos
+  WMPEMissingPersonClear                   v10   1 combos
+  WMPEMissingPersonEntry                   v14   2 combos
+  WMPEMissingPersonLocate                  v12   1 combos
+  WMPEMissingPersonModify                  v11   1 combos
+  WMPEPersonFraudulentDataCancel           v10   3 combos
+  WMPEPersonFraudulentDataEntry            v10   3 combos
+  WMPEPersonSupplementalCancel             v11   3 combos
+  WMPEPersonSupplementalEntry              v11   3 combos
+  WMPEPersonWithInformationCancel          v10   1 combos
+  WMPEPersonWithInformationEntry           v30   1 combos
+  WMPEPersonWithInformationModify          v10   1 combos
+  WMPEPersonWithInformationSupplimentalCancel v10   1 combos
+  WMPEPersonWithInformationSupplimentalEntry v10   1 combos
+  WMPEProtectionOrderCancel                v2    1 combos
+  WMPEProtectionOrderEntry                 v12   1 combos
+  WMPEProtectionOrderModify                v10   1 combos
+  WMPEProtectionOrderSupplementalCancel    v8    2 combos
+  WMPEProtectionOrderSupplementalEntry     v8    2 combos
+  WMPESexOffenderCancel                    v10   1 combos
+  WMPESexOffenderEntry                     v10   1 combos
+  WMPESexOffenderModify                    v12   1 combos
+  WMPESexOffenderSupplementalCancel        v10   2 combos
+  WMPESexOffenderSupplementalEntry         v10   2 combos
+  WMPESupervisedReleaseClear               v10   1 combos
+  WMPESupervisedReleaseEntry               v10   1 combos
+  WMPESupervisedReleaseModify              v10   1 combos
+  WMPESupplementalDentalDataCancel         v8    1 combos
+  WMPESupplementalDentalDataEntry          v8    1 combos
+  WMPESupplementalDentalDataModify         v8    1 combos
+  WMPEUnidentifiedPersonCancel             v10   1 combos
+  WMPEUnidentifiedPersonClear              v10   1 combos
+  WMPEUnidentifiedPersonEntry              v10   1 combos
+  WMPEUnidentifiedPersonModify             v10   1 combos
+  WMPEUnidentifiedSupplementalDataCancel   v8    1 combos
+  WMPEUnidentifiedSupplementalSMTEntry     v8    1 combos
+  WMPEWantedJuvenileEntry                  v8    1 combos
+  WMPEWantedPersonCancel                   v17   1 combos
+  WMPEWantedPersonClear                    v19   1 combos
+  WMPEWantedPersonEntry                    v23   1 combos
+  WMPEWantedPersonLocate                   v17   1 combos
+  WMPEWantedPersonModify                   v21   1 combos
+  WMPIMissingPersonQuery                   v8    1 combos
+  WMPIProtectionOrderQuery                 v9    1 combos
+  WMPISexOffenderQuery                     v10   1 combos
+  WMPIUnidentifiedPersonQuery              v8    1 combos
+  WMPIWantedPersonQuery                    v10   1 combos
+
+

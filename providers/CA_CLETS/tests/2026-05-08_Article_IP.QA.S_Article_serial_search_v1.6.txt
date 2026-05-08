@@ -1,0 +1,38 @@
+TEST LOG
+========
+Provider: CA_CLETS
+Version:  v1.6 BASE
+Date:     2026-05-08
+Entity:   Article
+Query:    ArticleSingleQuery
+Combo:    IP.QA.S
+KeyRef:   IP.QA.S
+Test:     T10 - Article serial search
+
+FORM STATE
+==========
+CaRequestPurposeCode: C (default)
+ArticleSerialNumber: ART233454 (text)
+ArticleTypeCode: [blank]
+ArticleBrand: [blank]
+
+RAW XML REQUEST
+===============
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4595YGH8JBWZGXJSQHENSM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KR4595YGH8JBWZGXJSQHENSM</Id><CaRequestPurposeCode>C</CaRequestPurposeCode><ArticleSerialNumber>ART233454</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+FIELD ANALYSIS
+==============
+ArticleSerialNumber: ART233454 -> <ArticleSerialNumber>ART233454</ArticleSerialNumber> CORRECT
+CaRequestPurposeCode: C -> <CaRequestPurposeCode>C</CaRequestPurposeCode> CORRECT
+ArticleTypeCode: [blank] -> absent NOTED (metadata requires at least one Any field)
+
+METADATA NOTE
+=============
+Metadata combination IP.QA requires Set{CaRequestPurposeCode, ArticleSerialNumber, Any{ArticleBrand, ArticleCategory, ArticleTypeCode}}.
+Our QIDM correctly maps any[articleBrand, articleTypeCode].
+Platform fired combo without any[] fields populated.
+Server accepted query without error.
+Platform does NOT enforce any[] as a gating requirement — fires on set[] alone.
+This matches T8 finding (NLTS.KQ.O fired with empty any[registrationState]).
+
+RESULT: PASS

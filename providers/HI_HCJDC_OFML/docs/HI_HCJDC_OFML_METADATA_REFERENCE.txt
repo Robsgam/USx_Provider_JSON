@@ -1,0 +1,193 @@
+﻿HI_HCJDC_OFML METADATA REFERENCE
+=================================
+Generated: 2026-05-08
+Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_BASE.json
+Metadata: 15 total transactions, 7 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 4)
+================================================================================
+
+METADATA FIELDS (3):
+  ArticleSerialNumber       Alphanumeric  maxLen=20  Article Serial Number
+  ArticleTypeCode           Alphanumeric  maxLen= 7  Article Type Code
+  RelatedSearchHitIndicator Alphanumeric  maxLen= 1  Related Search Hit Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA                                    ArticleSerialNumber, ArticleTypeCode                   RelatedSearchHitIndicator
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QA             set[ArticleSerialNumber, ArticleTypeCode]
+
+================================================================================
+2. BoatQuery (version 5)
+================================================================================
+
+METADATA FIELDS (4):
+  BoatHullIdNumber          Alphanumeric  maxLen=20  Boat Hull ID Number
+  RegistrationNumber        Alphanumeric  maxLen= 8  Registration Number
+  RelatedSearchHitIndicator Alphanumeric  maxLen= 1  Related Search Hit Indicator
+  State                     Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  BQ            RegistrationNumber                                                             State
+  QB                                                                                           RelatedSearchHitIndicator
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   BQ             set[RegistrationNumber]
+  BUILT   QB             set[BoatHullIdNumber]
+
+================================================================================
+3. DriverHistoryQuery (version 4)
+================================================================================
+
+METADATA FIELDS (7):
+  Attention             Alphanumeric  maxLen=30  Attention
+  BirthDate             Alphanumeric  maxLen= 8  Birth Date
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  PurposeCode           Alphanumeric  maxLen= 1  Purpose Code
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  State                 Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, PurposeCode, State
+  KQ            Name                    SexCode, BirthDate, Name                               Attention, PurposeCode, State
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   KQN            set[OperatorLicenseNumber]
+  BUILT   KQ             set[SexCode, BirthDate, NameLast, NameFirst]
+
+================================================================================
+4. DriverLicenseQuery (version 4)
+================================================================================
+
+METADATA FIELDS (9):
+  BirthDate             Alphanumeric  maxLen= 8  Birth Date
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  State                 Alphanumeric  maxLen= 2  State
+  State2                Alphanumeric  maxLen= 2  State 2
+  State3                Alphanumeric  maxLen= 2  State 3
+  State4                Alphanumeric  maxLen= 2  State 4
+  State5                Alphanumeric  maxLen= 2  State 5
+
+METADATA COMBINATIONS (3 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  State, State2, State3, Stat...
+  DQ            SexCode                 SexCode, BirthDate, Name                               State, State2, State3, Stat...
+  QW            Name                    BirthDate, Name                                        SexCode
+
+BUILD COVERAGE (3 of 3 built):
+  BUILT   DQN            set[OperatorLicenseNumber]
+  BUILT   DQ             set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   QW             set[BirthDate, NameLast, NameFirst]
+
+================================================================================
+5. GunQuery (version 4)
+================================================================================
+
+METADATA FIELDS (5):
+  GunCaliber                Alphanumeric  maxLen= 4  Gun Caliber
+  GunMake                   Alphanumeric  maxLen=10  Gun Make
+  GunModel                  Alphanumeric  maxLen=20  Gun Model
+  GunSerialNumber           Alphanumeric  maxLen=20  Gun Serial Number
+  RelatedSearchHitIndicator Alphanumeric  maxLen= 1  Related Search Hit Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, GunMod...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QG             set[GunSerialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 5)
+================================================================================
+
+METADATA FIELDS (13):
+  ImageIndicator              Alphanumeric  maxLen= 1  Image Indicator
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Alphanumeric  maxLen= 4  License Plate Year
+  State                       Alphanumeric  maxLen= 2  State
+  State2                      Alphanumeric  maxLen= 2  State 2
+  State3                      Alphanumeric  maxLen= 2  State 3
+  State4                      Alphanumeric  maxLen= 2  State 4
+  State5                      Alphanumeric  maxLen= 2  State 5
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen=20  Vehicle Make Code
+  VehicleTypeCode             Alphanumeric  maxLen= 1  Mainframe Vehicle Type Code
+  VehicleYear                 Alphanumeric  maxLen= 4  Vehicle Year
+
+METADATA COMBINATIONS (6 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  RQ            LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, LicenseP...  State, State2, State3, Stat...
+  RQ            VehicleIdentificationNumber  VehicleIdentificationNumber                            State, State2, State3, Stat...
+  QV            LicensePlateNumber      LicensePlateNumber, State                              --
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber, VehicleMakeCode           ImageIndicator
+  M55L          LicensePlateNumber      VehicleTypeCode, LicensePlateNumber                    --
+  M55S          VehicleIdentificationNumber  VehicleTypeCode, VehicleIdentificationNumber           --
+
+BUILD COVERAGE (6 of 6 built):
+  BUILT   M55L           set[VehicleTypeCode, LicensePlateNumber]
+  BUILT   M55S           set[VehicleTypeCode, VehicleIdentificationNumber]
+  BUILT   RQ             set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  BUILT   QVV            set[VehicleIdentificationNumber, VehicleMakeCode]
+  BUILT   QVP            set[LicensePlateNumber, RegistrationState]
+  BUILT   RQV            set[VehicleIdentificationNumber]
+  SKIP    QV             LicensePlateNumber -- MC expansion candidate
+  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
+
+================================================================================
+7. VehicleStolenQuery -- NOT IN METADATA
+================================================================================
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  BoatQuery                                  2      2     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         3      3     0  100% (COMPLETE)
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   6      6     0  100% (COMPLETE)
+  VehicleStolenQuery                         0      2     0  N/A
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   15     17     0  113%
+
+================================================================================
+MC EXPANSION CANDIDATES (2 combos not in BASE)
+================================================================================
+
+  QV             LicensePlateNumber       (VehicleRegistrationQuery)
+  QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (9 of 15 in metadata)
+================================================================================
+
+  CCHCriminalHistoryAQQuery                v4    1 combos
+  CCHCriminalHistoryFQQuery                v4    1 combos
+  CCHCriminalHistoryIQQuery                v4    3 combos
+  CCHCriminalHistoryQHQuery                v4    5 combos
+  CCHCriminalHistoryQRQuery                v5    2 combos
+  CCHCriminalHistoryZRQuery                v4    2 combos
+  SecuritiesStolenQuery                    v6    4 combos
+  StolenVehicleQuery                       v4    2 combos
+  WantedPersonQuery                        v5    2 combos
+
+

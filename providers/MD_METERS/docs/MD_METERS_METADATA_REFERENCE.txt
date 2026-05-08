@@ -1,0 +1,168 @@
+﻿MD_METERS METADATA REFERENCE
+=============================
+Generated: 2026-05-08
+Source: MD_METERS.xml (metadata) + MD_METERS_BASE.json
+Metadata: 10 total transactions, 6 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 3)
+================================================================================
+
+METADATA FIELDS (2):
+  ArticleSerialNumber Alphanumeric  maxLen=20  Article Serial Number
+  ArticleTypeCode     Alphanumeric  maxLen= 7  Article Type Code
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZART          ArticleSerialNumber     ArticleTypeCode, ArticleSerialNumber                   --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   ZART           set[serialNumber, articleTypeCode]
+
+================================================================================
+2. BoatQuery (version 4)
+================================================================================
+
+METADATA FIELDS (3):
+  BoatHullIdNumber   Alphanumeric  maxLen=20  Boat Hull ID Number
+  ImageIndicator     Alphabetic    maxLen= 1  Image Indicator
+  RegistrationNumber Alphanumeric  maxLen= 8  Registration Number
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZBOA          BoatHullIdNumber        BoatHullIdNumber                                       RegistrationNumber, ImageIn...
+  ZBOA          RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, ImageIndi...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   ZBOA.H         set[boatHullIdNumber]
+  BUILT   ZBOA.R         set[registrationNumber]
+
+================================================================================
+3. DriverHistoryQuery (version 6)
+================================================================================
+
+METADATA FIELDS (5):
+  BirthDate             Alphanumeric  maxLen= 8  Birth Date
+  ImageIndicator        Alphabetic    maxLen= 1  Image Indicator
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  SexCode               Alphabetic    maxLen= 1  Sex Code
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZDRV          OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator
+  ZDRV          Name                    BirthDate, Name, SexCode                               ImageIndicator
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   ZDRV.O         set[operatorLicenseNumber]
+  BUILT   ZDRV.N         set[birthDate, nameLast, nameFirst, sexCode]
+
+================================================================================
+4. DriverLicenseQuery (version 7)
+================================================================================
+
+METADATA FIELDS (9):
+  BirthDate                     Alphanumeric  maxLen= 8  Birth Date
+  ImageIndicator                Alphabetic    maxLen= 1  Image Indicator
+  Name                          Alphanumeric  maxLen=30  Name
+  OperatorLicenseExpirationYear Alphanumeric  maxLen= 4  Operator License Expiration Year
+  OperatorLicenseNumber         Alphanumeric  maxLen=20  Operator License Number
+  RaceCode                      Alphanumeric  maxLen= 1  Race Code
+  SexCode                       Alphanumeric  maxLen= 1  Sex Code
+  State                         Alphanumeric  maxLen= 2  State
+  YearsPastViolationsWanted     Alphanumeric  maxLen= 2  Years Past Violations Wanted
+
+METADATA COMBINATIONS (5 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZWAR          OperatorLicenseNumber   Name, OperatorLicenseExpirationYear, OperatorLicen...  State, ImageIndicator
+  ZWAR          Name                    BirthDate, Name, RaceCode, SexCode                     ImageIndicator
+  ZDRV          OperatorLicenseNumber   OperatorLicenseNumber                                  YearsPastViolationsWanted, ...
+  ZLDR          Name                    BirthDate, Name, SexCode                               State, ImageIndicator
+  ZLDR          OperatorLicenseNumber   OperatorLicenseNumber                                  State, ImageIndicator
+
+BUILD COVERAGE (4 of 5 built):
+  BUILT   ZWAR.N         set[birthDate, nameLast, nameFirst, raceCode, sexCode]
+  BUILT   ZWAR.O         set[nameLast, nameFirst, operatorLicenseNumber, raceCode, sexCode]
+  BUILT   ZLDR.O         set[operatorLicenseNumber]
+  BUILT   ZLDR.N         set[birthDate, nameLast, nameFirst, sexCode]
+  SKIP    ZDRV           OperatorLicenseNumber -- MC expansion candidate
+
+================================================================================
+5. GunQuery (version 3)
+================================================================================
+
+METADATA FIELDS (3):
+  GunCaliber      Alphanumeric  maxLen= 4  Gun Caliber
+  GunMake         Alphanumeric  maxLen=23  Gun Make
+  GunSerialNumber Alphanumeric  maxLen=20  Gun Serial Number
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZGUN          GunMake                 GunCaliber, GunMake, GunSerialNumber                   --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   ZGUN           set[gunCaliber, firearmMake, serialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 6)
+================================================================================
+
+METADATA FIELDS (7):
+  ImageIndicator              Alphabetic    maxLen= 1  Image Indicator
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Alphanumeric  maxLen= 4  License Plate Year
+  State                       Alphanumeric  maxLen= 2  State
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen=24  Vehicle Make Code
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZVEH          VehicleIdentificationNumber  VehicleIdentificationNumber                            VehicleMakeCode, ImageIndic...
+  ZVEH          LicensePlateNumber      LicensePlateNumber                                     ImageIndicator
+  ZLRG          LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, LicenseP...  State, ImageIndicator
+  ZLRG          VehicleIdentificationNumber  VehicleIdentificationNumber                            State, ImageIndicator
+
+BUILD COVERAGE (4 of 4 built):
+  BUILT   ZLRG.P         set[licensePlateNumber, licensePlateTypeCode, licensePlateYear]
+  BUILT   ZLRG.V         set[vehicleIdentificationNumber]
+  BUILT   ZVEH.V         set[vehicleIdentificationNumber]
+  BUILT   ZVEH.P         set[licensePlateNumber]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  BoatQuery                                  2      2     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         5      4     1  80%
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   4      4     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   15     14     1  93%
+
+================================================================================
+MC EXPANSION CANDIDATES (1 combos not in BASE)
+================================================================================
+
+  ZDRV           OperatorLicenseNumber    (DriverLicenseQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (4 of 10 in metadata)
+================================================================================
+
+  LogoffRequest                            v4    1 combos
+  LogonRequest                             v4    1 combos
+  P1AlarmExchangeResponse                  v4    1 combos
+  SecuritiesStolenQuery                    v3    4 combos
+
+

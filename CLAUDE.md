@@ -446,6 +446,9 @@ powershell -ExecutionPolicy Bypass -File tools/test_layout.ps1 -Path providers/<
 # CommSys query simulator (form data -> combo matching -> XML output)
 powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
+# Metadata reference generator (combo requirements from XML + JSON coverage)
+powershell -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1 -XmlPath providers/<PROVIDER>/source/<PROVIDER>.xml -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -OutFile providers/<PROVIDER>/docs/<PROVIDER>_METADATA_REFERENCE.txt
+
 # Full build report (runs all 8: validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit)
 powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
@@ -527,6 +530,10 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 **TRIGGER: You discover a new limitation, anti-pattern, or import error**
 - Add to the appropriate KB file (PLATFORM_CONSTRAINTS.txt, IMPORT_ERRORS.txt)
 - Fire the KB update trigger above
+
+**TRIGGER: You complete a provider build (BASE or MC JSON created/updated)**
+- Run extract_metadata_reference.ps1 to generate/update METADATA_REFERENCE.txt
+- Commit alongside the JSON and build reports
 
 **TRIGGER: You create a new provider folder**
 - Verify folder name matches XML filename (minus .xml) BEFORE creating
@@ -669,6 +676,7 @@ providers/<PROVIDER>/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
+│   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
 │   ├── base/                              # BASE variant reports (8 files)
 │   └── mc/                                # MC variant reports (if applicable)

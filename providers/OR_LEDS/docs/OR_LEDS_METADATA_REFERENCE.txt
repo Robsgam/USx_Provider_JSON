@@ -1,0 +1,165 @@
+﻿OR_LEDS METADATA REFERENCE
+===========================
+Generated: 2026-05-08
+Source: OR_LEDS.xml (metadata) + OR_LEDS_BASE.json
+Metadata: 45 total transactions, 5 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 4)
+================================================================================
+
+METADATA FIELDS (2):
+  ArticleSerialNumber Alphanumeric  maxLen=20  Serial Number
+  ArticleTypeCode     Alphanumeric  maxLen= 7  Type
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QA             set[serialNumber, articleTypeCode]
+
+================================================================================
+2. BoatQuery (version 3)
+================================================================================
+
+METADATA FIELDS (3):
+  BoatHullIdNumber   Alphanumeric  maxLen=20  Hull Identification Number
+  RegistrationNumber Alphanumeric  maxLen= 8  Registration Number
+  State              Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  BQ            RegistrationNumber      RegistrationNumber                                     State
+  BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   BQ.R           set[registrationNumber]
+  BUILT   BQ.H           set[boatHullIdNumber]
+
+================================================================================
+3. DriverLicenseQuery (version 3)
+================================================================================
+
+METADATA FIELDS (6):
+  BirthDate             Alphanumeric  maxLen= 8  Birth Date
+  ImageIndicator        Alphabetic    maxLen= 1  Image Indicator
+  Name                  Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  SexCode               Alphanumeric  maxLen= 1  Sex
+  State                 Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DQ            Name                    BirthDate, Name, SexCode                               ImageIndicator, State
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
+
+BUILD COVERAGE (4 of 2 built):
+  BUILT   DQ.OO          set[operatorLicenseNumber, registrationState]
+  BUILT   DQ.NO          set[birthDate, nameLast, nameFirst, registrationState]
+  BUILT   DQ.O           set[operatorLicenseNumber]
+  BUILT   DQ.N           set[birthDate, nameLast, nameFirst]
+
+================================================================================
+4. GunQuery (version 3)
+================================================================================
+
+METADATA FIELDS (3):
+  GunCaliber      Alphanumeric  maxLen= 4  Caliber
+  GunMake         Alphanumeric  maxLen=23  Make
+  GunSerialNumber Alphanumeric  maxLen=11  Serial Number
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   QG             set[serialNumber]
+
+================================================================================
+5. VehicleRegistrationQuery (version 3)
+================================================================================
+
+METADATA FIELDS (5):
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Year          maxLen= 4  License Plate Year
+  State                       Alphanumeric  maxLen= 2  State
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  RQ            LicensePlateNumber      LicensePlateNumber                                     LicensePlateTypeCode, Licen...
+  RQ            VehicleIdentificationNumber  VehicleIdentificationNumber                            State
+
+BUILD COVERAGE (4 of 2 built):
+  BUILT   RQ.PO          set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+  BUILT   RQ.VO          set[vehicleIdentificationNumber, registrationState]
+  BUILT   RQ.V           set[vehicleIdentificationNumber]
+  BUILT   RQ.P           set[licensePlateNumber]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      1     0  100% (COMPLETE)
+  BoatQuery                                  2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         2      4     0  200%
+  GunQuery                                   1      1     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   2      4     0  200%
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                    8     12     0  150%
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (40 of 45 in metadata)
+================================================================================
+
+  CCHCriminalHistoryAQQuery                v3    1 combos
+  CCHCriminalHistoryARQuery                v3    1 combos
+  CCHCriminalHistoryFBI-RRQuery            v3    2 combos
+  CCHCriminalHistoryFQQuery                v3    2 combos
+  CCHCriminalHistoryIQQuery                v3    3 combos
+  CCHCriminalHistoryQHDQuery               v3    3 combos
+  CCHCriminalHistoryQHQuery                v3    3 combos
+  CCHCriminalHistoryQWHDQuery              v3    3 combos
+  CCHCriminalHistoryQWHQuery               v3    3 combos
+  CCHCriminalHistorySID-RRQuery            v3    2 combos
+  CPICBIArticleSingleQuery                 v3    1 combos
+  CPICBIBoatQuery                          v3    3 combos
+  CPICBIDriverLicenseQuery                 v3    2 combos
+  CPICBIGunQuery                           v3    1 combos
+  CPICBIVehicleRegistrationQuery           v3    4 combos
+  LEDSCaseNumberQuery                      v3    1 combos
+  LEDSWantedPersonQuery                    v3    1 combos
+  NletsHazardousMaterialQuery              v3    2 combos
+  NletsLoJackQuery                         v3    1 combos
+  PEWantedDetainerCancel                   v1    1 combos
+  PEWantedDetainerEntry                    v1    1 combos
+  PEWantedDetainerModify                   v1    1 combos
+  PEWantedFraudulentDataCancel             v1    1 combos
+  PEWantedFraudulentDataEntry              v1    1 combos
+  PEWantedPersonCancel                     v1    2 combos
+  PEWantedPersonClear                      v1    2 combos
+  PEWantedPersonEntry                      v2    5 combos
+  PEWantedPersonLocate                     v1    2 combos
+  PEWantedPersonModify                     v1    3 combos
+  PEWantedPersonSupplementalAddressCancel  v1    1 combos
+  PEWantedPersonSupplementalAddressEntry   v1    1 combos
+  PEWantedPersonSupplementalCancel         v2    1 combos
+  PEWantedPersonSupplementalEntry          v1    1 combos
+  WMPICorrectionsClientHitConfirmation     v3    1 combos
+  WMPIMissingPersonQuery                   v3    1 combos
+  WMPIProbationParoleCorrectionsQuery      v4    2 combos
+  WMPIProtectiveOrderQuery                 v3    1 combos
+  WMPISexOffenderQuery                     v3    7 combos
+  WMPIUnidentifiedPersonQuery              v3    2 combos
+  WMPIWantedPersonQuery                    v3    1 combos
+
+
