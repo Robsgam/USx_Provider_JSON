@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.8",
+    [string]$Version = "2.9",
     [string]$Phase   = "base"
 )
 
@@ -210,13 +210,8 @@ $qmf = [PSCustomObject]@{
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery
-# XML (2026-04-28): VehicleRegistrationQuery v1
-#   4 combos in XML (RAND x2, FULL x2) -- identical set[] per primary field.
-#   Collapse to 2 effective combos: RQ (plate), RQN (VIN).
-#   RandomRequest mandatory in set[] (Y=random check, N=full request).
-#   State mandatory in set[] (was any[] in old XML).
-#   LicensePlateTypeCode mandatory in set[] for plate combo.
-#   ImageIndicator new, in any[].
+#   autoSelect=true, NO queriesToDeselect.
+#   Defaulted fields (RandomRequest, State, PlateType) in any[] per LIMITATION #31.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -247,7 +242,6 @@ $vehRegQuery = [PSCustomObject]@{
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
     autoSelect         = $true
-    queriesToDeselect  = @('VehicleStolenQuery')
     provider           = 'NJ_NJCJIS'
     providerType       = 'Commsys'
     query              = 'VehicleRegistrationQuery'
@@ -261,7 +255,7 @@ $vehRegQuery = [PSCustomObject]@{
 #   3 combos all keyRef QV in XML -> invented QVN/QVP/QVV (LIMITATION #21)
 #   Targets Vehicle entity (same as VehicleReg) -- different query = separate QIDM, no conflict.
 #   NO autoSelect -- officer manually checks when needed.
-#   queriesToDeselect=[VehicleRegistrationQuery] -- mutual exclusion toggle (manual clicks only).
+#   queriesToDeselect=[VehicleRegistrationQuery] -- checking Stolen unchecks Registration.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
