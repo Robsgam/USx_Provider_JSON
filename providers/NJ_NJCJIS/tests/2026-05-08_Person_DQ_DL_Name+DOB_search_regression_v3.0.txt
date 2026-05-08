@@ -4,7 +4,7 @@ Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Person
 Combo      : DQ (DL Name+DOB search regression)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T7
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -12,58 +12,70 @@ FORM STATE (what was on the form when submitted)
 
   Field                     Value              Source
   ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  nameLastName              DOE                typed
+  nameFirstName             JOHN               typed
+  birthDate                 01/01/1985         typed
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            Y                  default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4DMFYR5KVECZ904GSMZTEF
+  MessageType : DriverLicenseQuery
   keyReference: DQ
 
   Fields sent in XML request:
     Element              Value
     -------------------  -------------------
-    [FieldName]          [VALUE]
+    ImageIndicator       Y
+    State                NJ
+    BirthDate            01011985
+    Name                 DOE, JOHN
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: DQ
-  Reason: [which set[] fields were populated]
+  Combination fired: DQ (Name+DOB search)
+  Reason: nameLastName in set[], birthDate + nameFirstName in any[]
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  ImageIndicator            YES    Y               hidden default
+  Name                      YES    DOE, JOHN       FormatStringRuleHandler (Last, First)
+  BirthDate                 YES    01011985        CommsysParseDateRuleHandler (yyyy-MM-dd -> MMddyyyy)
+  State                     YES    NJ              NCIC reverse-lookup
+  OperatorLicenseNumber     NO     --              not entered (DQN would fire if present)
+  SexCode                   NO     --              not entered
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: firstAndLastName
+  RMS request fields: lastName=doe, firstName=john, dateOfBirth=1985-01-01, registrationStateAttrId=69509884952
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: DriverLicenseQuery fired via Name+DOB path (DQ). FormatStringRuleHandler
+  correctly formatted "DOE, JOHN". CommsysParseDateRuleHandler converted yyyy-MM-dd
+  to MMddyyyy. RMS co-fired with name + DOB + state. No Returns expected for test data.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4DMFYR5KVECZ904GSMZTEF"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR4DMFYR5KVECZ904GSMZTEF</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><BirthDate>01011985</BirthDate><Name>DOE, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"lastName":"doe","firstName":"john","dateOfBirth":"1985-01-01","registrationStateAttrId":"69509884952"},"from":0,"size":50}
