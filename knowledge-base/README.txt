@@ -202,7 +202,7 @@ TOOLS
     Full monorepo consistency audit. Checks KB docs, build scripts, tools,
     provider JSONs, and CLAUDE.md for drift, stale references, missing
     documentation, banned patterns, report completeness, and cross-provider
-    JSON consistency. 11 categories:
+    JSON consistency. 16 categories:
       1. Banned patterns repo-wide
       2. Report step count consistency
       3. QueryLabel standard
@@ -215,8 +215,12 @@ TOOLS
       10. Report file completeness (all 8 reports per variant)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
       12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md, BASE vs MC)
+      13. BUILD_NOTES version coverage (current version has an entry)
+      14. JSON_INVENTORY version coverage (current version has an entry)
+      15. STATUS.txt score accuracy (PASS count matches validator report)
+      16. Phase archive completeness (base/ has snapshot for current version)
     Sources of truth extracted at runtime. FAILS (exit 1) on any issue.
-    Usage: .\audit_repo.ps1 [-Category <1-12>]
+    Usage: .\audit_repo.ps1 [-Category <1-16>]
 
   tools/audit_cad.ps1
     CAD dispatch field alignment auditor. Validates camelCase fieldIds for
