@@ -122,7 +122,7 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 6 tools (validator + layout + query sim + picklist + HTML + verify).
+    Master build report. Runs all 8 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit).
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
 

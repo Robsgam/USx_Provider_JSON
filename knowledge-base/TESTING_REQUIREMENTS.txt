@@ -392,8 +392,8 @@ SECTION 5 -- DEFAULTS AND USABILITY
 
   CROSS-PROJECT AUDIT (2026-05-06):
 
-    PlateType=PC and PlateYear=<year> are now MANDATORY for all 8 providers.
-    Confirmed applied: all 8 providers as of 2026-05-06.
+    PlateType=PC and PlateYear=<year> are now MANDATORY for all 18 active providers.
+    Confirmed applied: all 18 active providers as of 2026-05-06.
     See PROVIDER_CONSTRAINTS.txt cross-provider rule #5.
 
     | Default      | NJ     | NY     | HI     | AZ     | FL     | TX     | LA     | CA     |
@@ -407,6 +407,9 @@ SECTION 5 -- DEFAULTS AND USABILITY
 
     Legend: (S) = Safe/correct  (!) = Has in/out split, review on import
             -- = Intentionally blank (correct)   n/a = not in metadata
+
+    New providers (11): defaults applied during initial build. See
+    individual STATUS.txt files.
 
     STATE DEFAULT SAFETY:
       NJ  -- SAFE. NCIC state pattern, all combos In/Out. State=NJ.
@@ -588,6 +591,9 @@ SECTION 10 -- CONFIRMATION STATUS MATRIX
   FL sex: confirmed working on single-QIF design (FL-9). Entity-split
   designs break reverse-lookup due to duplicate targetField (LIMITATION #28).
 
+  New providers (11): instance-specific behaviors untested. Test on first
+  import per TESTING_SCHEDULE.
+
 ================================================================================
 SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
 ================================================================================
@@ -619,7 +625,7 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
 
   GATE 5 -- BEFORE DECLARING PASS OR DONE:
   [GATE] Verify tests/ contains one log file per test (count must match)
-  [GATE] Verify docs/base/ (and docs/mc/) has all 6 report files
+  [GATE] Verify docs/base/ (and docs/mc/) has all 8 report files
   [GATE] Verify docs/<PROVIDER>_STATUS.txt is current
   [GATE] Verify docs/<PROVIDER>_SQVR.txt exists with [CONFIRMED]/
          [PENDING] markers
@@ -794,9 +800,9 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
     1. For each provider, create build script in scripts/:
        build_<provider>.ps1 (BASE) and build_<provider>_mc.ps1 (MC)
     2. Build scripts MUST include: post-build validator call, dual output
-       (minified + readable), all 6 RMS patches
+       (minified + readable), RMS patches (1, 2, 3, 6)
     3. Run build_report.ps1 after each build
-    4. Commit JSON + 6 reports per variant
+    4. Commit JSON + 8 reports per variant
     5. Update STATUS.txt, SQVR.txt, JSON_INVENTORY.md
     6. Push after each provider completes
 

@@ -46,6 +46,7 @@ Individual repos are preserved for history but are now read-only. All active wor
 - [HI_HCJDC_OFML](https://github.com/Robsgam/HI_HCJDC_OFML) (Robsgam)
 - [NY_NYSPIN_EJUSTICE](https://github.com/Robsgam/NY_NYSPIN_EJUSTICE) (Robsgam)
 - [AZ_AZDPS](https://github.com/Robsgam/AZ_AZDPS) (Robsgam)
+- [CA_CLETS](https://github.com/Robsgam/CA_CLETS) (Robsgam)
 - [FL_FCIC_JSON](https://github.com/LooseConnection/FL_FCIC_JSON) (LooseConnection)
 - [TX_TLETS_JSON](https://github.com/LooseConnection/TX_TLETS_JSON) (LooseConnection)
 - [LA_LEMS (formerly LA_LETTS_OFML)](https://github.com/LooseConnection/LA_LETTS_OFML) (LooseConnection)
@@ -449,6 +450,10 @@ powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/
 # Called automatically by build_report.ps1 as step 6. Can also run standalone:
 powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -CamelCase
+
+# Full monorepo audit (16 categories: banned patterns, versions, docs, structure, cross-provider)
+powershell -ExecutionPolicy Bypass -File tools/audit_repo.ps1
+powershell -ExecutionPolicy Bypass -File tools/audit_repo.ps1 -Category 12   # run single category
 ```
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
@@ -475,7 +480,7 @@ Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL
 - Name format: `<PROVIDER>_v<X.Y>_<date>.json` or `<PROVIDER>_v<X.Y>.json`
 - Document every JSON in `docs/JSON_INVENTORY.md`
 - Keep all JSONs in project root
-- `bump_version.ps1` archives current before rebuilding
+- Build scripts handle version archiving. Phase snapshots are saved to phases/base/ and phases/mc/.
 
 ---
 
@@ -578,7 +583,7 @@ These are not suggestions. Each gate BLOCKS progression to the next step. Do not
 
 ### GATE 1: After Every JSON Build or Edit
 
-1. Run `build_report.ps1 -Path <json>` (validator + layout + query sim + picklist + HTML)
+1. Run `build_report.ps1 -Path <json>` (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit)
 2. Verify 0 FAIL in validator output
 3. Commit the JSON + all 8 report files to `docs/base/` or `docs/mc/`
 4. `git push` immediately
