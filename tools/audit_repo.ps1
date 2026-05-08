@@ -3,7 +3,7 @@
   Mechanically checks KB docs, build scripts, tools, provider JSONs, and
   CLAUDE.md for drift, stale references, missing documentation, banned
   patterns, report completeness, and cross-provider JSON consistency.
-  16 categories, sources of truth extracted at runtime (not hardcoded).
+  18 categories, sources of truth extracted at runtime (not hardcoded).
 
   FAILS (exit 1) if any check fails. Run after any KB, tool, or CLAUDE.md edit.
 
@@ -863,6 +863,117 @@ foreach ($pd in $providerDirs) {
     } else {
         if ($isFlagged) { Info "FLAGGED: ${provName} -- phases/base/ missing" }
         else { Fail "${provName} -- phases/base/ directory missing" }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 17: Validator WARN audit (read existing reports, flag >0 WARN)
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 17) {
+Write-Host ""
+Write-Host "--- CATEGORY 17: Validator WARN Audit ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    foreach ($variant in @('base','mc')) {
+        $tag = $variant.ToUpper()
+        $reportFile = "$($pd.FullName)\docs\$variant\VALIDATOR_REPORT_${provName}_${tag}.txt"
+        if (-not (Test-Path $reportFile)) { continue }
+
+        $reportText = [System.IO.File]::ReadAllText($reportFile)
+
+        # Extract WARN count from results line
+        $warnCount = 0
+        if ($reportText -match '(\d+)\s*WARN') {
+            $warnCount = [int]$Matches[1]
+        }
+
+        if ($warnCount -gt 0) {
+            # Extract individual WARN lines for detail
+            $warnLines = @($reportText -split "`n" | Where-Object { $_ -match '^\s*\[WARN\]' })
+            $categories = @{}
+            foreach ($wl in $warnLines) {
+                $cat = if ($wl -match 'Attention') { 'Attention-in-combo' }
+                elseif ($wl -match 'ImageIndicator.*missing') { 'ImageIndicator-missing' }
+                elseif ($wl -match 'ImageIndicator.*initialValue') { 'ImageIndicator-default' }
+                elseif ($wl -match 'codeTypeSource.*NCIC.*empty') { 'ArticleType-source' }
+                elseif ($wl -match 'non-suffixed sourceField') { 'DH-suffix' }
+                elseif ($wl -match 'initialValue.*changes combo') { 'State-routing' }
+                elseif ($wl -match 'keyReference.*appears in multiple') { 'KeyRef-collision' }
+                elseif ($wl -match 'dead HIDLE') { 'RMS-Patch6' }
+                elseif ($wl -match 'not found in.*QIF') { 'QIDM-field-mismatch' }
+                elseif ($wl -match 'EmailAddress') { 'EmailAddress-QIDM-only' }
+                else { 'other' }
+                if (-not $categories[$cat]) { $categories[$cat] = 0 }
+                $categories[$cat]++
+            }
+            $detail = ($categories.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { "$($_.Key)($($_.Value))" }) -join ', '
+            if ($isFlagged) {
+                Info "FLAGGED: ${provName} ${tag} has ${warnCount} WARN: $detail"
+            } else {
+                Info "${provName} ${tag} has ${warnCount} WARN: $detail"
+            }
+        } else {
+            Pass "${provName} ${tag} -- 0 WARN (clean)"
+        }
+    }
+}
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 18: camelCase fieldId cross-provider consistency
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Category -eq 0 -or $Category -eq 18) {
+Write-Host ""
+Write-Host "--- CATEGORY 18: camelCase FieldId Consistency ---" -ForegroundColor Yellow
+
+$flaggedProviders = @('CA_CONTRA_COSTA')
+$knownPascalFields = @(
+    'RegistrationState','SexCode','RaceCode','ImageIndicator',
+    'OperatorLicenseNumber','NameFirst','NameLast','NameMiddle','NameSuffix',
+    'BirthDate','LicensePlateTypeCode','LicensePlateYear',
+    'VehicleIdentificationNumber','VehicleMakeCode','VehicleYear','VehicleBodyStyle',
+    'GunSerialNumber','GunMake','GunCaliber','GunModel',
+    'ArticleSerialNumber','ArticleTypeCode','RegistrationNumber','BoatHullIdNumber',
+    'RelatedHitSearchIndicator','OperatorLicenseNumberDH','NameFirstDH','NameLastDH',
+    'NameMiddleDH','NameSuffixDH','BirthDateDH','SexCodeDH'
+)
+
+$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
+foreach ($pd in $providerDirs) {
+    $provName = $pd.Name
+    $isFlagged = $provName -in $flaggedProviders
+
+    $readableJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE_READABLE.json' | Select-Object -First 1
+    if (-not $readableJson) { continue }
+
+    $text = [System.IO.File]::ReadAllText($readableJson.FullName)
+
+    # Find all fieldId values in form fields
+    $fieldIds = @([regex]::Matches($text, '"fieldId"\s*:\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+
+    # Check each for PascalCase (starts with uppercase) when camelCase equivalent exists
+    $pascalHits = @()
+    foreach ($fid in $fieldIds) {
+        if ($fid -cin $knownPascalFields) {
+            $pascalHits += $fid
+        }
+    }
+
+    if ($pascalHits.Count -gt 0) {
+        $hitList = ($pascalHits | Select-Object -Unique | Sort-Object) -join ', '
+        if ($isFlagged) {
+            Info "FLAGGED: ${provName} has PascalCase fieldIds: $hitList"
+        } else {
+            Info "${provName} has $($pascalHits.Count) PascalCase fieldId(s): $hitList"
+        }
+    } else {
+        Pass "${provName} -- all fieldIds are camelCase"
     }
 }
 }

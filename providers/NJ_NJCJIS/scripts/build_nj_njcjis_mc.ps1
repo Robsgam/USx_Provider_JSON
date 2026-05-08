@@ -14,7 +14,7 @@
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "2.3",
+    [string]$Version = "2.4",
     [string]$Phase   = "mc"
 )
 
@@ -169,7 +169,9 @@ $qmf = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1d. VehicleRegistrationQuery (identical to BASE)
+# 1d. VehicleRegistrationQuery
+#     VehicleReg: autoSelect=true + queriesToDeselect=[VehicleStolenQuery]
+#     (default, deselects Stolen)
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -209,7 +211,9 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. VehicleStolenQuery (mutual exclusion with VehicleReg)
+# 1e. VehicleStolenQuery
+#     No queriesToDeselect -- one-way deselect from VehicleReg avoids
+#     deadlock (confirmed v2.3 live test)
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
@@ -244,7 +248,6 @@ $vehStolenQuery = [PSCustomObject]@{
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleStolenQuery'
     type               = 'QUERYINPUTDATAMAPPING'
-    queriesToDeselect  = @('VehicleRegistrationQuery')
     provider           = 'NJ_NJCJIS'
     providerType       = 'Commsys'
     query              = 'VehicleStolenQuery'

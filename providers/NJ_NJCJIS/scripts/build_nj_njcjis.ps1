@@ -33,9 +33,9 @@
 # DUAL VEHICLE QIDM:
 #   VehicleRegistrationQuery and VehicleStolenQuery both target Vehicle entity.
 #   Different query values = separate QIDMs, no LIMITATION #2 conflict.
-#   Mutual exclusion via queriesToDeselect: officer checks one, the other unchecks.
-#   VehicleReg has autoSelect=true (default checked). VehicleStolen is manual-only.
-#   No auto-evaluation deadlock because only one QIDM has autoSelect (AP #14 safe).
+#   VehicleReg: autoSelect=true + queriesToDeselect=[VehicleStolenQuery] (default, deselects Stolen)
+#   VehicleStolen: NO queriesToDeselect (officer manually checks; one-way deselect avoids deadlock)
+#   Bidirectional queriesToDeselect deadlocks even with single autoSelect (confirmed v2.3 live test).
 #
 # STATE HANDLING (NCIC pattern, confirmed NJ v1.0):
 #   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=NJ)
@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.3",
+    [string]$Version = "2.4",
     [string]$Phase   = "base"
 )
 
@@ -260,7 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
 # XML (2026-04-28): VehicleStolenQuery v1
 #   3 combos all keyRef QV in XML -> invented QVN/QVP/QVV (LIMITATION #21)
 #   Targets Vehicle entity (same as VehicleReg) -- different query = separate QIDM, no conflict.
-#   Mutual exclusion via queriesToDeselect -- officer manually checks to run stolen query.
+#   No queriesToDeselect -- one-way deselect from VehicleReg avoids deadlock.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
@@ -295,7 +295,6 @@ $vehStolenQuery = [PSCustomObject]@{
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleStolenQuery'
     type               = 'QUERYINPUTDATAMAPPING'
-    queriesToDeselect  = @('VehicleRegistrationQuery')
     provider           = 'NJ_NJCJIS'
     providerType       = 'Commsys'
     query              = 'VehicleStolenQuery'
