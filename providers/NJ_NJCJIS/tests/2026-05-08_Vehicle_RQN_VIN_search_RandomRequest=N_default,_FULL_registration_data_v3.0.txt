@@ -1,69 +1,81 @@
-﻿NJ_NJCJIS BASE v3.0 -- Test Log
+NJ_NJCJIS BASE v3.0 -- Test Log
 ============================================================
 Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Vehicle
 Combo      : RQN (VIN search RandomRequest=N default, FULL registration data)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T4
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
 ================================================================================
 
-  Field                     Value              Source
-  ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  Field                     Value                    Source
+  ------------------------  -----------------------  --------------------------------
+  vehicleIdentificationNumber 1HG34KKSDHFUU3JKDHF9  typed
+  registrationState         NJ                       default (initialValue)
+  randomRequest             N                        default (initialValue)
+  imageIndicator            N                        default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4CXD9AGG217F90JMA00WJS
+  MessageType : VehicleRegistrationQuery
   keyReference: RQN
 
   Fields sent in XML request:
-    Element              Value
-    -------------------  -------------------
-    [FieldName]          [VALUE]
+    Element                      Value
+    ---------------------------  ---------------------------
+    VehicleIdentificationNumber  1HG34KKSDHFUU3JKDHF9
+    ImageIndicator               N
+    State                        NJ
+    RandomRequest                N
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: RQN
-  Reason: [which set[] fields were populated]
+  Combination fired: RQN (FULL VIN, conditions fallback -- RandomRequest!=Y)
+  Reason: vehicleIdentificationNumber in set[], defaulted fields in any[]
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute               Sent?  Value                    Note
+  ---------------------------  -----  -----------------------  -------------------------
+  ImageIndicator               YES    N                        hidden default
+  LicensePlateNumber           NO     --                       not entered
+  LicensePlateTypeCode         NO     --                       not sent (plate fields omitted)
+  LicensePlateYear             NO     --                       not sent
+  RandomRequest                YES    N                        default
+  State                        YES    NJ                       NCIC reverse-lookup
+  VehicleIdentificationNumber  YES    1HG34KKSDHFUU3JKDHF9     typed
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: vehicleIdentificationNumber
+  RMS request fields: registrationStateAttrIds=[69509884952], vinNumber=1hg34kksdhfuu3jkdhf9
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: VehicleRegistrationQuery fired via VIN path (RQN). Only VIN + State +
+  RandomRequest + ImageIndicator sent -- no plate fields. RMS co-fired with vinNumber.
+  No Returns expected for test VIN.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4CXD9AGG217F90JMA00WJS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KR4CXD9AGG217F90JMA00WJS</Id><VehicleIdentificationNumber>1HG34KKSDHFUU3JKDHF9</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NJ</State><RandomRequest>N</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"1hg34kksdhfuu3jkdhf9"}},"from":0,"size":50}
