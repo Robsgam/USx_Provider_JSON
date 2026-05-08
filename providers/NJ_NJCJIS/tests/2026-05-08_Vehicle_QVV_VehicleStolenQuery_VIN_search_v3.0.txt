@@ -1,0 +1,83 @@
+﻿NJ_NJCJIS BASE v3.0 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Vehicle
+Combo      : QVV (VehicleStolenQuery VIN search)
+Test type  : T13
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 45346534TY       typed
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            N                  default (hidden)
+  [Vehicle Stolen checkbox] checked            manually checked by user
+  [Vehicle Reg checkbox]    unchecked          auto-unchecked by queriesToDeselect
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR4FJRNWK6SG7AADRBNKE5W1
+  MessageType : VehicleStolenQuery
+  keyReference: QVV
+
+  Fields sent in XML request:
+    Element                      Value
+    ---------------------------  ---------------------------
+    VehicleIdentificationNumber  45346534TY
+    ImageIndicator               N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QVV (VIN stolen search)
+  Reason: vehicleIdentificationNumber in set[]
+
+  QIDM attribute               Sent?  Value           Note
+  ---------------------------  -----  --------------  -------------------------
+  ImageIndicator               YES    N               hidden default
+  VehicleIdentificationNumber  YES    45346534TY      typed
+  LicensePlateNumber           NO     --              not entered
+  NCICNumber                   NO     --              not entered
+  State                        NO     --              not sent (VIN stolen path)
+  VehicleMakeCode              NO     --              not entered
+
+  autoSelect behavior confirmed:
+    - Stolen checkbox manually checked -> Registration auto-unchecked
+    - Only VehicleStolenQuery fired (no VehicleRegistrationQuery in XML)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: vehicleIdentificationNumber
+  RMS request fields: registrationStateAttrIds=[69509884952], vinNumber=45346534ty
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleStolenQuery fired via VIN path (QVV). Only VIN + ImageIndicator
+  sent — no State, no plate. RMS co-fired with vinNumber. autoSelect=false confirmed.
+  No Returns expected for test VIN.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4FJRNWK6SG7AADRBNKE5W1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KR4FJRNWK6SG7AADRBNKE5W1</Id><VehicleIdentificationNumber>45346534TY</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"45346534ty"}},"from":0,"size":50}
