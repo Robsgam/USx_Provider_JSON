@@ -64,6 +64,61 @@ $header = @"
 
 "@
 
+# --- PRE. Build Script Lint ---
+Write-Host ""
+Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
+$scriptsDir = Join-Path $jsonDir "scripts"
+$lintWarnings = @()
+$lintWarnCount = 0
+if (Test-Path $scriptsDir) {
+    $buildScripts = Get-ChildItem -Path $scriptsDir -Filter "build_*.ps1" -File
+    if ($buildScripts.Count -eq 0) {
+        $lintWarnings += "[INFO] No build_*.ps1 scripts found in $scriptsDir"
+    }
+    foreach ($script in $buildScripts) {
+        $scriptName = $script.Name
+        $scriptWarns = @()
+
+        # Hardcoded PlateYear (4-digit year literal, not $currentYear)
+        $yearHits = Select-String -Path $script.FullName -Pattern "initialValue\s*=\s*['""]?(20(?:2[4-9]|[3-9]\d))['""]?" | Where-Object { $_.Line -notmatch '\$currentYear' -and $_.Line -notmatch '^\s*#' }
+        foreach ($hit in $yearHits) {
+            $scriptWarns += "  [WARN] Line $($hit.LineNumber): Hardcoded PlateYear '$($hit.Matches[0].Groups[1].Value)' -- [FIX] Use `$currentYear instead"
+            $lintWarnCount++
+        }
+
+        # LicensePlateNumberIn (banned -- not in Patch 8 rename context)
+        $bannedHits = Select-String -Path $script.FullName -Pattern "LicensePlateNumberIn" | Where-Object { $_.Line -notmatch '-replace' -and $_.Line -notmatch '^\s*#' -and $_.Line -notmatch 'Patch\s*8' }
+        foreach ($hit in $bannedHits) {
+            $scriptWarns += "  [WARN] Line $($hit.LineNumber): LicensePlateNumberIn (banned) -- [FIX] Use licensePlateNumber"
+            $lintWarnCount++
+        }
+
+        # AP #23: autoSelect as string instead of boolean
+        $ap23Hits = Select-String -Path $script.FullName -Pattern "autoSelect\s*=\s*['""](?:true|false)['""]" | Where-Object { $_.Line -notmatch '^\s*#' }
+        foreach ($hit in $ap23Hits) {
+            $scriptWarns += "  [WARN] Line $($hit.LineNumber): autoSelect as string (AP #23) -- [FIX] Use `$true/`$false (boolean)"
+            $lintWarnCount++
+        }
+
+        if ($scriptWarns.Count -gt 0) {
+            $lintWarnings += "${scriptName}: $($scriptWarns.Count) warning(s)"
+            $lintWarnings += $scriptWarns
+        } else {
+            $lintWarnings += "${scriptName}: CLEAN"
+        }
+    }
+} else {
+    $lintWarnings += "[INFO] No scripts/ directory found at $scriptsDir"
+}
+$lintFile = Join-Path $DocsDir "LINT_REPORT_$jsonName.txt"
+$lintBody = ($lintWarnings -join "`n")
+($header + "BUILD SCRIPT LINT`n=================`n`n" + $lintBody + "`n") | Out-File -FilePath $lintFile -Encoding utf8
+if ($lintWarnCount -gt 0) {
+    Write-Host "  [PRE] $lintWarnCount warning(s) found -- see $lintFile" -ForegroundColor Red
+} else {
+    Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
+}
+
 # --- 1. Validator ---
 Write-Host ""
 Write-Host "  [1/$stepCount] Running validator..." -ForegroundColor Yellow
@@ -184,6 +239,9 @@ if ($Release) {
     if (Test-Path $cadFile) {
         Copy-Item $cadFile (Join-Path $releaseDir "CAD_AUDIT_$jsonName.txt") -Force
     }
+    if (Test-Path $lintFile) {
+        Copy-Item $lintFile (Join-Path $releaseDir "LINT_REPORT_$jsonName.txt") -Force
+    }
 
     $releaseCount = (Get-ChildItem $releaseDir -File).Count
     Write-Host "  [9/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
@@ -199,6 +257,7 @@ $warn = ([regex]::Matches($validatorOut, '\[WARN\]')).Count
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host "  REPORT COMPLETE" -ForegroundColor Green
+Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } else { "CLEAN" })" -ForegroundColor $(if ($lintWarnCount -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })

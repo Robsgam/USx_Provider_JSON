@@ -432,7 +432,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (29 scripts in `tools/`)
+## Tools (31 scripts in `tools/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -460,6 +460,8 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `audit_test_coverage.ps1` | Test coverage matrix (QIDM combos vs test logs, SQVR alignment, orphan detection) | `-Path <json>` `-OutFile` |
 | `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
 | `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
+| `sync_provider_table.ps1` | Auto-updates CLAUDE.md provider table scores from validator reports | `-DryRun` `-OutFile` |
+| `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
 
 ### Metadata & Extraction
 
@@ -510,6 +512,13 @@ powershell -ExecutionPolicy Bypass -File tools/score_all.ps1 -Quick
 
 # Build script linter (catch anti-patterns before build)
 powershell -ExecutionPolicy Bypass -File tools/lint_build_scripts.ps1
+
+# Preflight rebuild plan (single provider or all)
+powershell -ExecutionPolicy Bypass -File tools/preflight_rebuild.ps1 -Provider <NAME> -Quick
+powershell -ExecutionPolicy Bypass -File tools/preflight_rebuild.ps1 -All -Quick
+
+# Sync CLAUDE.md scores after rebuilds
+powershell -ExecutionPolicy Bypass -File tools/sync_provider_table.ps1
 ```
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
