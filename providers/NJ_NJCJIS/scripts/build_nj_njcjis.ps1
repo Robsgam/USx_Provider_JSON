@@ -313,6 +313,7 @@ $vehStolenQuery = [PSCustomObject]@{
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleStolenQuery'
     type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $false
     queriesToDeselect  = @('VehicleRegistrationQuery')
     provider           = 'NJ_NJCJIS'
     providerType       = 'Commsys'
