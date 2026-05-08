@@ -1,38 +1,84 @@
 CONNECTCIC QIDM REFERENCE
 ==========================
 How to set up query routing: QIDMs, combinations, and multi-query forms.
-Last updated: 2026-05-06
+Last updated: 2026-05-08
 Source: NJ_NJCJIS (v2.0), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v2.0),
         FL_FCIC (v3.0), BUILD_RULES.txt, PLATFORM_CONSTRAINTS.txt
+        + Engineering doc (Crinnger Fagundes de Oliveira, 2026-05-08)
 
 ================================================================================
 SECTION 1 -- QIDM PROPERTY REFERENCE
 ================================================================================
 
-  Required properties on every QIDM:
-    attributes          array of attribute objects
-    combinations        array of combination objects
-    description         human-readable string
-    handlerFunction     'CommsysTransactionRequestHandler'
-    name                unique config name (e.g., 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery')
-    type                'QUERYINPUTDATAMAPPING'
-    provider            provider name (e.g., 'NY_NYSPIN_EJUSTICE')
-    providerType        'Commsys'
-    query               MetaData transaction name (e.g., 'VehicleRegistrationQuery')
-    queryLabel          display label ('Vehicle Registration', 'Driver License', etc.)
-    targetEntity        entity name matching QIF targetEntity ('Vehicle','Person','Boat',etc.)
+  Full Configuration Structure:
+  {
+    "version": 1,
+    "name": "<PROVIDER>_<QueryName>",
+    "description": "Mapping for <QueryName> in <PROVIDER>",
+    "type": "QUERYINPUTDATAMAPPING",
+    "provider": "<PROVIDER>",
+    "providerType": "Commsys",
+    "query": "<QueryName>",
+    "queryLabel": "<Display Label>",
+    "targetEntity": "<Entity>",
+    "autoSelect": true,
+    "order": 3,
+    "queriesToDeselect": ["<OtherQueryName>"],
+    "handlerFunction": "CommsysTransactionRequestHandler",
+    "attributes": [...],
+    "combinations": [...],
+    "behaviors": []
+  }
 
-  Optional properties:
-    autoSelect          true -- fires automatically when its set[] fields are present
-    queriesToDeselect   array of other QIDM names to deselect when this one fires
+  -----------------------------------------------------------------------
+  Identity & Versioning
+  -----------------------------------------------------------------------
+    name          String  REQUIRED  Unique name. Convention: {PROVIDER}_{QueryName}
+    version       Integer REQUIRED  Starts at 1, increments on each update
+    description   String  optional  Human-readable description
+    type          String  REQUIRED  Always 'QUERYINPUTDATAMAPPING'
 
-  Attribute properties:
-    name                unique name within this QIDM; used in combination primaryFieldReference
-    size                max length from XML (must match XML spec)
-    sourceField         array of form fieldIds that populate this attribute
-    targetField         XML element name in outbound request
-    rule                optional rule handler (CommsysParseDateRuleHandler, FormatStringRuleHandler)
-    codeTypeProvider    'NIBRS' -- required when field uses codeTypeCategory=NIBRS_SEX on form
+  -----------------------------------------------------------------------
+  Provider & Query Identification
+  -----------------------------------------------------------------------
+    provider      String  REQUIRED  Must match the name used in the Bundle
+    providerType  String  optional  Technology type. Currently supported: 'Commsys'
+    query         String  REQUIRED  Internal query name. Matches the form submission
+    queryLabel    String  optional  Display label shown in UI. Falls back to query value
+    targetEntity  String  REQUIRED  'Person','Vehicle','Gun','Boat','Article'
+
+  -----------------------------------------------------------------------
+  UI / Behavior Metadata
+  -----------------------------------------------------------------------
+    autoSelect    Boolean optional  Whether query checkbox is pre-checked when search
+                                    form loads. Defaults to true if omitted.
+                                    NOTE: This controls the UI checkbox state, NOT
+                                    combo evaluation. set[]/any[] control firing.
+    order         Integer optional  Display order within provider group. Lower = first.
+    queriesToDeselect  List<String>  optional  Queries to deselect when this one is
+                                    selected. Enforces mutual exclusivity (e.g.,
+                                    selecting DL deselects DH).
+
+  -----------------------------------------------------------------------
+  Request Processing
+  -----------------------------------------------------------------------
+    handlerFunction  String  REQUIRED  Handler that builds the outgoing message.
+                     'CommsysTransactionRequestHandler'      -- Commsys providers
+                     'RecordsArchiveRestPayloadHandler'      -- REST-based providers
+    behaviors        List    optional  Additional behavioral rules. Currently not
+                                       used -- set to empty array [].
+
+  -----------------------------------------------------------------------
+  Attribute Properties (elements of the attributes[] array)
+  -----------------------------------------------------------------------
+    name          String  REQUIRED  Identifier; used in combination primaryFieldReference
+    sourceField   List<String>  REQUIRED  Keys from user input map (usually 1 element)
+    targetField   String  REQUIRED  Field name in provider's request format
+    size          Integer optional  Max character length (truncation/validation)
+    rule          Object  optional  Transformation rule. See RULE_HANDLERS.txt
+    codeTypeProvider  String  optional  'NIBRS' -- required for sex code fields
+
+    For full attribute handler reference: knowledge-base/RULE_HANDLERS.txt
 
   PROPERTY NAME RULE: Use 'keyReference' not 'keyRef' on QIDM combinations.
     Wrong property name causes silent null, then import rejection.
@@ -44,12 +90,28 @@ SECTION 2 -- COMBINATION BASICS
   Read combination rules from XML first, then PDF.
   MetaData XML is the build authority. DevDoc/PDF is secondary reference only.
 
+  Full combination structure:
+  {
+    "keyReference": "<unique key>",
+    "primaryFieldReference": "<attribute name>",
+    "state": "In/Out",
+    "requirements": {
+      "set": ["field1", "field2"],
+      "any": ["field3", "field4"],
+      "conditions": [...],       // optional -- see SECTION 2a
+      "defaults": [...]          // optional -- see SECTION 2b
+    }
+  }
+
   Every combination needs:
     keyReference          -- unique per QIDM (import error if duplicated)
-    set[]                 -- required fields; ALL must be present to match
-    any[]                 -- optional fields recognized by this combination
-    primaryFieldReference -- attribute name (NOT sourceField name) of the primary search field
-    state                 -- 'In/Out' for standard queries
+    primaryFieldReference -- attribute name (NOT sourceField name) of the primary field
+    state                 -- direction of validity:
+                              'In'     = input validation only (user -> provider)
+                              'Out'    = output validation only (provider -> user)
+                              'In/Out' = both directions (standard for most combos)
+    requirements.set[]    -- required fields; ALL must be present to match
+    requirements.any[]    -- optional fields; accepted but not required
 
   set[] and any[] reference QIDM attribute names when those attributes have a
   1:1 sourceField. When an attribute has multiple sourceFields (composite fields
@@ -72,6 +134,130 @@ SECTION 2 -- COMBINATION BASICS
       content in the XML, not by keyRef. keyRef is platform-internal only.
     Confirmed working: NY v1.19 (invented DALH accepted, both paths fire correctly).
     See also: AP #5 (anti-pattern: duplicate keyReference in one QIDM).
+
+================================================================================
+SECTION 2a -- CONDITIONS (Advanced Field Constraints)
+================================================================================
+
+  Conditions are extra validation rules applied AFTER set[]/any[] are satisfied.
+  All conditions in the list must pass (AND logic). They restrict which combos
+  apply based on field VALUES, not just field presence.
+
+  Each condition object:
+    operator    String        REQUIRED  The type of check (see table below)
+    field       List<String>  REQUIRED  Field(s) the condition applies to
+    value       List<String>  depends   Value(s) to compare against
+
+  -----------------------------------------------------------------------
+  Available Operators
+  -----------------------------------------------------------------------
+
+  Operator      Description                              value required  Backend
+  ------------- ---------------------------------------- --------------- -------
+  EQUALS        Field value must equal value[0]           Yes (1 value)   Yes
+                (case-insensitive)
+  NOT_EQUALS    Field value must NOT equal value[0]       Yes (1 value)   Yes
+                (case-insensitive)
+  IN            Field value must be one of value[]        Yes (1+)        Yes
+                (case-insensitive). "null" literal
+                matches absent field.
+  NOT_IN        Field value must NOT be any of value[]    Yes (1+)        Yes
+                (case-insensitive)
+  REGEX         Field value must match the full regex     Yes (1 pattern) Yes
+                pattern (Pattern.matches)
+  EXISTS        Field must have a non-blank value         No              Yes
+                (not null, not empty, not whitespace)
+  NOT_EXISTS    Field must be absent, null, or blank      No              Yes
+  EXCLUSIVE     Only ONE of the listed fields may have    No              NO
+                a value at the same time. Enforced by                     (UI only)
+                the frontend ONLY -- backend always
+                passes this check.
+
+  -----------------------------------------------------------------------
+  Condition Examples
+  -----------------------------------------------------------------------
+
+  State routing (in-state vs OOS):
+    { "field": ["State"], "operator": "EQUALS", "value": ["CA"] }
+    -> Valid only if State is exactly "CA".
+
+    { "field": ["RegistrationState"], "operator": "NOT_EQUALS", "value": ["CA"] }
+    -> Valid only if RegistrationState is anything other than "CA".
+
+  PurposeCode filtering:
+    { "field": ["PurposeCode"], "operator": "IN", "value": ["C", "I", "null"] }
+    -> Valid if PurposeCode is "C", "I", or absent ("null" = no value).
+
+    { "field": ["PurposeCode"], "operator": "NOT_IN", "value": ["X", "Y"] }
+    -> Valid if PurposeCode is not "X" or "Y".
+
+  ORI format validation:
+    { "field": ["ORI"], "operator": "REGEX", "value": ["^[A-Za-z]{2}[A-Za-z0-9]{7}$"] }
+    -> Valid if ORI matches 2 letters + 7 alphanumeric.
+
+  Field presence:
+    { "field": ["LicensePlateNumber"], "operator": "EXISTS" }
+    -> Valid only if LicensePlateNumber is present and non-blank.
+
+    { "field": ["MiddleName"], "operator": "NOT_EXISTS" }
+    -> Valid only if MiddleName is absent or blank.
+
+  Mutual exclusion (UI only):
+    { "operator": "EXCLUSIVE", "field": ["BirthDate", "Age"] }
+    -> User cannot provide both BirthDate and Age. UI-enforced only.
+
+  -----------------------------------------------------------------------
+  Build Implications
+  -----------------------------------------------------------------------
+
+  Conditions enable combo routing by VALUE without splitting QIDMs:
+    - In-state vs OOS: use EQUALS/NOT_EQUALS on State/RegistrationState
+    - PurposeCode routing: use IN with allowed purpose codes
+    - These are server-side enforced (except EXCLUSIVE) -- they work.
+    - CA providers use conditions for RegistrationState + PurposeCode routing.
+
+  When building: if MetaData XML shows the same keyRef with different state
+  routing, conditions may already exist in the metadata. Check before inventing
+  separate combos.
+
+================================================================================
+SECTION 2b -- DEFAULTS (Default Field Values)
+================================================================================
+
+  Defaults allow a combination to inject a value for a field when the user has
+  not provided it. Applied server-side before sending the request to the provider.
+
+  Rules:
+    - The field set as a default MUST also appear in any[] (it's optional)
+    - The default is applied only if the field is NOT in the user's input
+    - Explicit user values always take precedence
+    - Type: List of { "field": "<name>", "value": "<default>" }
+
+  Example:
+  {
+    "requirements": {
+      "set": ["LicensePlateNumber"],
+      "any": ["LicensePlateTypeCode"],
+      "defaults": [
+        { "field": "LicensePlateTypeCode", "value": "PC" }
+      ]
+    }
+  }
+  If user does not provide LicensePlateTypeCode, the system injects "PC".
+
+  -----------------------------------------------------------------------
+  Build Implications
+  -----------------------------------------------------------------------
+
+  - defaults are SERVER-SIDE. Different from QIF initialValue (UI-side).
+  - QIF initialValue: sets the form field default that the user sees and can change.
+    Platform combo evaluator IGNORES initialValue for set[] (LIMITATION #31).
+  - QIDM defaults: injected by the server AFTER combo validation passes.
+    The server sends the default to the provider even if the user didn't touch it.
+  - Both mechanisms can coexist: initialValue shows "PC" in the dropdown,
+    defaults injects "PC" server-side if the user somehow clears it.
+  - For our builds: PlateType=PC uses QIF initialValue (visible to user).
+    QIDM defaults are used by some CA metadata combos for PurposeCode routing.
 
 ================================================================================
 SECTION 3 -- COMBINATION ROUTING
@@ -342,3 +528,136 @@ SECTION 7 -- FIELD NAMING CONSTRAINTS
       exactly.
     QIDM targetField remains 'LicensePlateNumber' (outbound XML element
       unchanged).
+
+================================================================================
+SECTION 8 -- IMPORT VALIDATION RULES
+================================================================================
+
+  When a QUERYINPUTDATAMAPPING is imported, the system validates:
+
+  1. combinations must not be empty
+  2. Each combination must have at least one field in set[] or any[]
+  3. keyReference values must be unique within the configuration
+  4. All field names in set[] and any[] must have a corresponding attribute
+  5. Each attribute must have non-blank name, non-blank targetField,
+     and at least one entry in sourceField
+
+  Our validator (tools/validate.ps1) checks rules 3-5. Rules 1-2 are caught
+  by the platform import. If the validator passes clean, import should succeed
+  for structural QIDM issues.
+
+================================================================================
+SECTION 9 -- SYSTEM PROCESSING FLOW
+================================================================================
+
+  How the system uses QUERYINPUTDATAMAPPING configurations at runtime:
+
+  User submits query form
+        |
+        v
+  System identifies targetEntity (Person, Vehicle, etc.)
+        |
+        v
+  Loads all QUERYINPUTDATAMAPPING configs for the department
+    -> filters by targetEntity
+    -> groups by provider
+        |
+        v
+  For each provider + query:
+    -> validates user input against combinations (first match fires)
+    -> if valid: runs attributes through their rules (handlers)
+    -> calls handlerFunction to build the outgoing message
+    -> sends to the Interface Agent / provider
+
+  The `order` field controls display sequence in the UI.
+  The `queriesToDeselect` field is used by the frontend to deselect related queries.
+  The `autoSelect` field determines whether the query checkbox is pre-checked.
+
+  IMPORTANT: Platform evaluates ONE QIDM per (targetEntity, query) pair
+    (LIMITATION #2). Multiple QIDMs with the same targetEntity+query -- only
+    one is evaluated. The others are silently ignored.
+
+================================================================================
+SECTION 10 -- COMBINATION EXAMPLES (from engineering reference)
+================================================================================
+
+  Simple -- OLN only:
+  {
+    "keyReference": "OperatorLicenseNumber",
+    "primaryFieldReference": "OperatorLicenseNumber",
+    "state": "In",
+    "requirements": { "set": ["OperatorLicenseNumber"], "any": null }
+  }
+
+  With optional fields:
+  {
+    "keyReference": "BirthDateNameSexCode",
+    "primaryFieldReference": "BirthDate",
+    "state": "In/Out",
+    "requirements": {
+      "set": ["BirthDate", "Name", "SexCode"],
+      "any": ["ExpandedNameSearchCode", "ImageIndicator", "RaceCode", "State"]
+    }
+  }
+
+  With EXCLUSIVE condition:
+  {
+    "keyReference": "PurposeCodeNameLastBirthDate",
+    "primaryFieldReference": "Name",
+    "requirements": {
+      "set": ["PurposeCode", "NameFirst", "NameLast", "BirthDate"],
+      "any": ["ORI"],
+      "conditions": [
+        { "operator": "EXCLUSIVE", "field": ["BirthDate", "Age"] }
+      ]
+    }
+  }
+
+  With multiple conditions (NOT_EQUALS + IN + REGEX):
+  {
+    "keyReference": "RQLicensePlateTypeYearOut",
+    "primaryFieldReference": "LicensePlateNumber",
+    "state": "Out",
+    "requirements": {
+      "set": ["PurposeCode", "LicensePlateNumber", "LicensePlateYear",
+              "RegistrationState"],
+      "any": ["ORI"],
+      "conditions": [
+        { "field": ["RegistrationState"], "operator": "NOT_EQUALS",
+          "value": ["CA"] },
+        { "field": ["PurposeCode"], "operator": "IN",
+          "value": ["C", "I"] },
+        { "field": ["ORI"], "operator": "REGEX",
+          "value": ["^[A-Za-z]{2}[A-Za-z0-9]{7}$"] }
+      ]
+    }
+  }
+
+  With conditions AND defaults:
+  {
+    "keyReference": "RQLicensePlateDefaultTypeOut",
+    "primaryFieldReference": "LicensePlateNumber",
+    "state": "Out",
+    "requirements": {
+      "set": ["PurposeCode", "LicensePlateNumber", "LicensePlateYear",
+              "RegistrationState"],
+      "any": ["ORI", "LicensePlateTypeCode"],
+      "conditions": [
+        { "field": ["RegistrationState"], "operator": "NOT_EQUALS",
+          "value": ["CA"] },
+        { "field": ["PurposeCode"], "operator": "IN",
+          "value": ["C", "I"] }
+      ],
+      "defaults": [
+        { "field": "LicensePlateTypeCode", "value": "PC" }
+      ]
+    }
+  }
+
+  REST provider -- flexible combination (any single field triggers):
+  {
+    "requirements": {
+      "set": null,
+      "any": ["firstName", "lastName", "dateOfBirth", "sex", "race", "ssn"]
+    }
+  }
