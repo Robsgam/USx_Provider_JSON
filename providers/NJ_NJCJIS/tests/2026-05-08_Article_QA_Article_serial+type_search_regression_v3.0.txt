@@ -4,7 +4,7 @@ Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Article
 Combo      : QA (Article serial+type search regression)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T9
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -12,58 +12,64 @@ FORM STATE (what was on the form when submitted)
 
   Field                     Value              Source
   ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  serialNumber              AVC67347889        typed
+  articleTypeCode           BBICYCT            selected from dropdown
+  imageIndicator            N                  default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4EQ58DN50WR16Y79K492YE
+  MessageType : ArticleSingleQuery
   keyReference: QA
 
   Fields sent in XML request:
     Element              Value
     -------------------  -------------------
-    [FieldName]          [VALUE]
+    ImageIndicator       N
+    ArticleTypeCode      BBICYCT
+    ArticleSerialNumber  AVC67347889
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: QA
-  Reason: [which set[] fields were populated]
+  Combination fired: QA (serial + type search)
+  Reason: serialNumber AND articleTypeCode both in set[]
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  -------------------------
+  ArticleSerialNumber       YES    AVC67347889     typed
+  ArticleTypeCode           YES    BBICYCT         selected (NCIC_ARTICLE_TYPE / CA_CLETS)
+  ImageIndicator            YES    N               hidden default
+
+  Note: Both set[] fields required — serial alone does not fire combo.
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: not captured (no RMS request pasted)
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: ArticleSingleQuery fired with both set[] fields populated (serial + type).
+  All 3 QIDM attributes serialized correctly. No Returns expected for test data.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4EQ58DN50WR16Y79K492YE"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KR4EQ58DN50WR16Y79K492YE</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCT</ArticleTypeCode><ArticleSerialNumber>AVC67347889</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+Not captured in this test.
