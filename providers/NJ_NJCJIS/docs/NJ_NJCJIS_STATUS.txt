@@ -1,49 +1,44 @@
-﻿NJ_NJCJIS STATUS
+NJ_NJCJIS STATUS
 =================
 Last updated: 2026-05-08
 
-  *** JSON LOCKED -- v2.9 BASE is frozen. Do not modify unless explicitly instructed. ***
+  *** JSON LOCKED -- v3.0 BASE is frozen. Do not modify unless explicitly instructed. ***
 
-  BASE  v2.9  -- READY FOR LIVE TEST -- 16/16 PASS (2026-05-08)
+  BASE  v3.0  -- LOCKED -- 14/14 PASS (2026-05-08) -- full combo coverage
   MC    v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 57/57 PASS (2026-04-29)
 
-  BASE v2.9 LIVE TEST MATRIX (2026-05-08):
-    T2   Vehicle  RQ   VehReg plate         PASS  (plate+state+plateType+year+random+image)
-    T3   Vehicle  RQN  VehReg VIN           PASS  (VIN+state+random+image)
-    T4   Vehicle  QVN  VehStolen NCIC#      PASS  (NCICNumber+image)
-    T5   Vehicle  QVP  VehStolen plate      PASS  (plate+state+image, RMS co-fire)
-    T6   Vehicle  QVV  VehStolen VIN        PASS  (VIN+image, checkbox persisted from T5)
-    T7   Person   DQN  DL OLN              PASS  (OLN+state+image, RMS co-fire)
-    T8   Person   DQ   DL Name+DOB         PASS  (Name+DOB+state+image, rule handlers confirmed)
-    T9   Firearm  QG   Firearm serial      PASS  (serial+image)
-    T10  Article  QA   Article serial+type  PASS  (serial+typeCode+image)
-    T11  Boat     QB   Boat reg            PASS  (regNumber+image)
-    T12  Boat     QBN  Boat hull           PASS  (hullId+image)
-    T13  Vehicle  RQ   OOS State=MA        PASS  (NCIC reverse-lookup, RMS attr ID changes per state)
-    T14  Person   DQ   Name+Sex            PASS  (SexCode=F, NIBRS reverse-lookup, RMS sexAttrId string)
-    T15  Vehicle  QVP  Stolen+Make         PASS  (VehicleMakeCode text field, RMS makeNcicCode)
-    T16  Firearm  QG   All any[] fields    PASS  (serial+make+caliber+model+image)
-    T17  ALL      --   Negative empty form PASS  (submit disabled on all 5 tabs, no set[] populated)
+  BASE v3.0 LIVE TEST MATRIX (2026-05-08):
+    T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)
+    T2   Vehicle  RQ     VehReg plate FULL       PASS  (plate+state+plateType+year+random=N+image)
+    T3   Vehicle  RQ_RAND VehReg plate RAND      PASS  (plate+state+plateType+year+random=Y+image, conditions routing)
+    T4   Vehicle  RQN    VehReg VIN FULL         PASS  (VIN+state+random=N+image)
+    T5   Vehicle  QVP    VehStolen plate         PASS  (plate+state+image, autoSelect=false, queriesToDeselect)
+    T6   Person   DQN    DL OLN                  PASS  (OLN+state+image, RMS co-fire)
+    T7   Person   DQ     DL Name+DOB             PASS  (Name+DOB+state+image, FormatString+ParseDate handlers)
+    T8   Firearm  QG     Firearm serial          PASS  (serial+image)
+    T9   Article  QA     Article serial+type      PASS  (serial+typeCode+image, both set[] fields required)
+    T10  Boat     QB     Boat reg                PASS  (regNumber+image)
+    T11  Vehicle  RQN_RAND VehReg VIN RAND       PASS  (VIN+state+random=Y+image, conditions routing)
+    T12  Vehicle  QVN    VehStolen NCIC#         PASS  (NCICNumber+image, no State sent)
+    T13  Vehicle  QVV    VehStolen VIN           PASS  (VIN+image, autoSelect=false, RMS co-fire)
+    T14  Boat     QBN    Boat hull ID            PASS  (hullId+image)
 
-  KEY FINDINGS (v2.9 testing):
-    - VehReg autoSelect=true, NO queriesToDeselect (default query)
-    - VehStolen NO autoSelect, queriesToDeselect=[VehicleRegistrationQuery] (opt-in)
-    - Bidirectional queriesToDeselect deadlocks (confirmed v2.3, v2.8)
+  KEY FINDINGS (v3.0 testing):
+    - conditions routing WORKS: RAND combos (EQUALS Y) fire first, FULL combos fall back
+    - autoSelect=false WORKS: Stolen checkbox requires manual check, does not auto-activate
+    - queriesToDeselect WORKS: checking Stolen auto-unchecks Registration
     - LIMITATION #31: initialValue not counted for set[] -- affects submit button gating
-    - LIMITATION #31 refinement: DQN fired with registrationState in set[] + initialValue
-      Suggests #31 affects autoSelect evaluation and submit gating, not combo matching per se
-    - Checkbox state persists between submissions (T6: Stolen persisted from T5)
-    - NCIC state reverse-lookup confirmed OOS (MA attr ID 69509889422 vs NJ 69509884952)
-    - SexCode NIBRS reverse-lookup confirmed (F -> sexAttrId 69509894381, string not array)
+    - autoSelect=true triggers on field entry (not form load) -- engineering doc misleading
+    - All 13 CommSys combos confirmed across 5 entities
 
 METADATA VERSION:
   XML: NJ_NJCJIS.xml (2026-04-28) -- 6 transactions, 6 message keys
   PDF: NJ_NJCJIS.pdf (2026-04-28) -- Basic Queries + WMPI (WMPI excluded per source authority)
 
-CHANGES v2.3 -> v2.9 (2026-05-08):
-  v2.4-v2.8: iterative Vehicle query fixes (autoSelect, queriesToDeselect, set[]->any[])
-  v2.9: FINAL -- VehReg autoSelect=true no deselect, VehStolen manual+deselects VehReg
-  See BUILD_NOTES.txt for full version history.
+CHANGES v2.9 -> v3.0 (2026-05-08):
+  1. VehicleRegistrationQuery: 2 combos -> 4 combos with conditions routing (RAND/FULL)
+  2. VehicleStolenQuery: added autoSelect=false (manual checkbox only)
+  3. MC Patch 8: LicensePlateNumberIn -> LicensePlateNumber (PascalCase fix)
 
 LIMITATIONS (2):
   1. DL combo order: DQN(2 set) before DQ(3 set) -- correct by operational priority
@@ -51,22 +46,16 @@ LIMITATIONS (2):
 
 ================================================================================
 BUILD LOG  (newest first)
-  v3.0  2026-05-08  build_nj_njcjis.ps1
-    Output : C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
-    Archive: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\phases\base\NJ_NJCJIS_v3.0_2026-05-08.json
-  v3.0  2026-05-08  build_nj_njcjis.ps1
-    Output : C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
-    Archive: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\phases\base\NJ_NJCJIS_v3.0_2026-05-08.json
+  v3.0  2026-05-08  build_nj_njcjis.ps1 -- conditions routing + autoSelect=false + MC Patch 8
+    Output : providers/NJ_NJCJIS/NJ_NJCJIS_BASE.json
+    Archive: providers/NJ_NJCJIS/phases/base/NJ_NJCJIS_v3.0_2026-05-08.json
+    Live test: 14/14 PASS (full combo coverage)
   v2.9  2026-05-08  build_nj_njcjis.ps1
-    Output : C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
-    Archive: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\providers\NJ_NJCJIS\phases\base\NJ_NJCJIS_v2.9_2026-05-08.json
-  v2.9  2026-05-08  Vehicle query fix FINAL + 16/16 live tests PASS
+    Output : providers/NJ_NJCJIS/NJ_NJCJIS_BASE.json
+    Live test: 16/16 PASS
   v2.4-v2.8  2026-05-08  iterative Vehicle query fixes (see BUILD_NOTES.txt)
   v2.3  2026-05-06  Monorepo rebuild (BASE+MC) with latest tools
   v2.2  2026-05-05  camelCase fieldId rename (BASE only)
   v2.1  2026-05-05  Patch 7+8 + AUTH keyRef
   v2.0  2026-04-28  Full rebuild from new XML metadata (BASE+MC)
 ================================================================================
-
-
-
