@@ -479,7 +479,7 @@ AP #21: templateColumns must be array of strings
     entities render briefly, then the interface crashes with a JavaScript error.
     The error appears as "the whole module that loads the json threw an error."
   Correct approach: ALWAYS use array of strings: ["6", "6"], ["3", "3", "3",
-    "3"], ["12"]. Reference NJ_NJCJIS.json or FL_FCIC_BASE.json.
+    "3"], ["12"]. See CLAUDE.md Layout Structure section.
   Root cause: PowerShell/C# custom serializers that stringify arrays.
     JavaScriptSerializer returns ArrayList which custom formatters may flatten
     to "elem1 elem2" instead of preserving the array structure.
@@ -494,7 +494,7 @@ AP #22: maxLength must be string, not number
   Why it fails: Platform form input handlers expect string constraints. Numeric
     maxLength may cause type coercion failures or silent constraint bypass.
   Correct approach: ALWAYS use string: "maxLength": "20", NOT "maxLength": 20.
-    Reference NJ_NJCJIS.json or FL_FCIC_BASE.json.
+    See CLAUDE.md Layout Structure section.
   Root cause: Same serializer issue as AP #21. C# int types serialize as JSON
     numbers.
   Detection: Run tools/validate.ps1 -- catches this as FAIL.

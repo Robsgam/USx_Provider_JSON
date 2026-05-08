@@ -8,7 +8,7 @@ Covers: 19 providers in consolidated monorepo
             IL_LEADS_OFML/MD_METERS/OH_LEADS/NM_NMLETS_OFML/OR_LEDS/TN_TIES
 
 CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
-  NJ_NJCJIS is the structural reference for all new builds.
+  Each provider JSON is standalone. CLAUDE.md and KB docs are the build authority.
   Phase model: single-entity, single-card QIFs. Confirm all QIDMs before layout work.
   NCIC state pattern confirmed NJ + AZ. NIBRS sex confirmed NJ + AZ + FL.
   Avoid old NJ v3.x (split entity) and old NY v1.0-v1.21 (multi-form) as templates.
@@ -133,7 +133,7 @@ TOOLS
       3. RMS QIDM name vs sourceField alignment
       4. Cross-bundle fieldId consistency
       5. camelCase enforcement (opt-in via -CamelCase flag)
-      6. NJ reference pattern comparison (queryLabel, ImageIndicator, keyReference, state)
+      6. Standard pattern comparison (queryLabel, ImageIndicator, keyReference, state)
     Called automatically by build_report.ps1 as step 6. Can also run standalone.
     Usage: -Path <json> [-CamelCase]
     FAILS the build (exit 1) if any check fails.
@@ -292,12 +292,9 @@ AUTHORITATIVE SOURCE FILES (read-only)
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
     DH-suffix pattern, GunQuery sourceField naming).
 
-  providers/NJ_NJCJIS/   *** CONFIRMED BASELINE ***
-    Phase 1 standup COMPLETE -- v2.0, 64P/0F/3W/2LIM (2026-04-29).
+  providers/NJ_NJCJIS/
+    v2.9 BASE LOCKED (2026-05-08) -- 16/16 live tests PASS. Do not modify.
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
-    NJ_NJCJIS_BASE.json = permanent Phase 1 reference (do not overwrite).
-    Best reference for: NCIC state pattern, NIBRS sex pattern, RMS person state patch,
-    Phase 1 single-card architecture, build script structure.
     AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
 
   providers/NY_NYSPIN_EJUSTICE/
