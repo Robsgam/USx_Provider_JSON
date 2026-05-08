@@ -1,10 +1,10 @@
-﻿NJ_NJCJIS BASE v3.0 -- Test Log
+NJ_NJCJIS BASE v3.0 -- Test Log
 ============================================================
 Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Vehicle
 Combo      : QVP (VehicleStolenQuery plate, manually check Stolen checkbox)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T5
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -12,58 +12,73 @@ FORM STATE (what was on the form when submitted)
 
   Field                     Value              Source
   ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  licensePlateNumber        ABC123             typed
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            N                  default (hidden)
+  [Vehicle Stolen checkbox] checked            manually checked by user
+  [Vehicle Reg checkbox]    unchecked          auto-unchecked by queriesToDeselect
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4D4ND57BCS13ER8SBMHX2E
+  MessageType : VehicleStolenQuery
   keyReference: QVP
 
   Fields sent in XML request:
     Element              Value
     -------------------  -------------------
-    [FieldName]          [VALUE]
+    ImageIndicator       N
+    State                NJ
+    LicensePlateNumber   ABC123
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: QVP
-  Reason: [which set[] fields were populated]
+  Combination fired: QVP (plate stolen search)
+  Reason: licensePlateNumber in set[], Stolen checkbox manually checked
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute               Sent?  Value        Note
+  ---------------------------  -----  -----------  -------------------------
+  ImageIndicator               YES    N            hidden default
+  LicensePlateNumber           YES    ABC123       typed
+  State                        YES    NJ           NCIC reverse-lookup
+  NCICNumber                   NO     --           not entered
+  VehicleIdentificationNumber  NO     --           not entered
+  VehicleMakeCode              NO     --           not entered
+
+  autoSelect behavior confirmed:
+    - Stolen checkbox manually checked -> Registration auto-unchecked (queriesToDeselect)
+    - Only VehicleStolenQuery fired (no VehicleRegistrationQuery in XML)
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: licensePlateIn
+  RMS request fields: registrationStateAttrIds=[69509884952], tag=abc123
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: VehicleStolenQuery fired with plate. queriesToDeselect correctly
+  unchecked Registration. autoSelect=false confirmed -- Stolen only fires when
+  manually checked. No Returns expected for test plate.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4D4ND57BCS13ER8SBMHX2E"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KR4D4ND57BCS13ER8SBMHX2E</Id><ImageIndicator>N</ImageIndicator><State>NJ</State><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"tag":"abc123"}},"from":0,"size":50}
