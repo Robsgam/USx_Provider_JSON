@@ -18,7 +18,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.0 | LOCKED -- 14/14 PASS full combo coverage | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
+| NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.0 | 69P/0F/5W/1LIM LOCKED -- 14/14 PASS full combo coverage | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.1 | 70P/0F/1W/4LIM (BASE) 70P/0F/1W/4LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.2 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) NEW | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
@@ -432,34 +432,76 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools — Run Before Every Import
+## Tools (27 scripts in `tools/`)
 
-All shared tools are in `tools/`. Provider-agnostic.
+All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
+
+### Core Build Pipeline (run every build via build_report.ps1)
+
+| # | Tool | Purpose | Key flags |
+|---|---|---|---|
+| 1 | `validate.ps1` | 6-phase structural validator (encoding, bundles, QIF types, QIDM refs, autoSelect, combos) | `-Path <json>` `-ShowDetail` `-Force` (override lock) |
+| 2 | `render_layout.ps1` | CLI layout tree renderer | `-Path <json>` `-Summary` `-Entity` `-Variant` `-QidmOnly` |
+| 3 | `test_commsys.ps1` | CommSys query simulator (combo matching + XML output) | `-Path <json>` `-Entity` `-Combo` `-OutFile` |
+| 4 | `report_picklists.ps1` | Scans FormSelect dropdowns + QRDM/QIDM code types | `-Path <json>` `-OutFile` |
+| 5 | `render_html.ps1` | Self-contained HTML layout report with color-coded fields and QIDM tables | `-Path <json>` `-OutFile` |
+| 6 | `verify_build.ps1` | Post-build verification (banned patterns, fieldId consistency, reference patterns) | `-Path <json>` `-CamelCase` |
+| 7 | `audit_metadata.ps1` | Validates QIDM configs against authoritative XML metadata | `-Path <json>` `-OutFile` |
+| 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
+| -- | `build_report.ps1` | **Master orchestrator** — runs all 8 above + saves reports to docs/ | `-Path <json>` `-Release` (bundles to release/) |
+
+### Auditors (repo-wide checks)
+
+| Tool | Purpose | Key flags |
+|---|---|---|
+| `audit_repo.ps1` | Full monorepo audit (16 categories: banned patterns, versions, docs, structure, cross-provider) | `-Category <1-16>` |
+| `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
+| `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
+| `audit_test_coverage.ps1` | Test coverage matrix (QIDM combos vs test logs, SQVR alignment, orphan detection) | `-Path <json>` `-OutFile` |
+
+### Metadata & Extraction
+
+| Tool | Purpose | Key flags |
+|---|---|---|
+| `extract_metadata_reference.ps1` | Generates METADATA_REFERENCE.txt from XML + JSON (field definitions, combo requirements, coverage) | `-XmlPath <xml>` `-Path <json>` `-OutFile` `-All` |
+| `extract_queries.ps1` | Parses metadata XML into SQVR-ready tracking file | `-XmlPath <xml>` `-OutFile` |
+| `diff_docs.ps1` | Diffs updated engineering docs against KB files (NEW/REMOVED/CONFIRMED per category) | `-NewDoc` `-KbFile` `-OutFile` `-Provider` |
+
+### Provider Lifecycle
+
+| Tool | Purpose | Key flags |
+|---|---|---|
+| `new_provider.ps1` | Scaffolds new provider (canonical structure, build scripts, doc templates, tool registrations) | `-XmlPath <xml>` `-PdfPath` `-Force` |
+| `lock_provider.ps1` | One-command lock/unlock (folder rename, STATUS.txt, cascading reference updates) | `-Provider <name>` `-Action <Lock\|Unlock>` |
+| `new_test_log.ps1` | Creates stub test log in tests/ (GATE 2 requirement) | `-Provider` `-Variant` `-Version` `-Entity` `-Combo` `-Description` |
+| `post_test.ps1` | Instant-save after test (artifacts, STATUS, SQVR, commit, push) | `-Provider` `-Entity` `-Query` `-Combo` `-Result` `-Description` |
+
+### Utilities
+
+| Tool | Purpose | Key flags |
+|---|---|---|
+| `test_layout.ps1` | QIF layout validator + HTML form preview | `-Path <json>` |
+| `compare_hidle.ps1` | Compares provider RMS bundle against HIDLE.json template | `-Path <json>` |
+| `build_codetype_test.ps1` | Generates CODETYPE_TEST.json for dropdown validation | `-OutFile` |
+| `check_docs.ps1` | Documentation consistency gate (version numbers across all provider docs) | (no args) |
+| `preflight_check.ps1` | Pre-build validation against PROVIDER_CONFIG.txt | (no args) |
+| `map_cad_fields.ps1` | Maps CAD field names to provider JSON fieldIds (MATCH/CASE_MISMATCH/NO_MATCH) | `-Path <json>` `-CadFields` `-OutFile` `-GeneratePatch` |
+| `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
+
+### Quick Reference
 
 ```powershell
-# 6-phase validator (encoding, bundles, QIF types, QIDM refs, autoSelect, combos)
-powershell -ExecutionPolicy Bypass -File tools/validate.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
-
-# Layout tree validator + HTML form preview
-powershell -ExecutionPolicy Bypass -File tools/test_layout.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
-
-# CommSys query simulator (form data -> combo matching -> XML output)
-powershell -ExecutionPolicy Bypass -File tools/test_commsys.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
-
-# Metadata reference generator (combo requirements from XML + JSON coverage)
-powershell -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1 -XmlPath providers/<PROVIDER>/source/<PROVIDER>.xml -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -OutFile providers/<PROVIDER>/docs/<PROVIDER>_METADATA_REFERENCE.txt
-
-# Full build report (runs all 8: validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit)
+# Full build pipeline (runs all 8 tools, saves reports)
 powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
 
-# Post-build verification (banned_patterns.txt, fieldId consistency, reference patterns)
-# Called automatically by build_report.ps1 as step 6. Can also run standalone:
-powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
-powershell -ExecutionPolicy Bypass -File tools/verify_build.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -CamelCase
-
-# Full monorepo audit (16 categories: banned patterns, versions, docs, structure, cross-provider)
+# Full monorepo audit (16 categories)
 powershell -ExecutionPolicy Bypass -File tools/audit_repo.ps1
-powershell -ExecutionPolicy Bypass -File tools/audit_repo.ps1 -Category 12   # run single category
+
+# Metadata reference (run after every build)
+powershell -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1 -XmlPath providers/<PROVIDER>/source/<PROVIDER>.xml -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -OutFile providers/<PROVIDER>/docs/<PROVIDER>_METADATA_REFERENCE.txt
+
+# Test log stub (GATE 2, before every test)
+powershell -ExecutionPolicy Bypass -File tools/new_test_log.ps1 -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
 ```
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.

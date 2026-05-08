@@ -25,6 +25,7 @@ $infoCount = 0
 function Fail($msg) { Write-Host "  [FAIL] $msg" -ForegroundColor Red; $script:failCount++ }
 function Pass($msg) { Write-Host "  [PASS] $msg" -ForegroundColor Green; $script:passCount++ }
 function Info($msg) { Write-Host "  [INFO] $msg" -ForegroundColor Gray; $script:infoCount++ }
+function DocPrefix($name) { $name -replace '_LOCKED$', '' }
 
 # ── Active file filter ────────────────────────────────────────────────────────
 $excludePattern = '(\\|/)(?:archive|v1|source|templates|phases)(\\|/|$)'
@@ -436,6 +437,7 @@ $requiredDocs = @('STATUS.txt','SQVR.txt','BUILD_NOTES.txt','JSON_INVENTORY.md')
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    $docPrefix = DocPrefix $provName
 
     # Required subdirectories
     foreach ($rd in $requiredDirs) {
@@ -446,11 +448,11 @@ foreach ($pd in $providerDirs) {
         }
     }
 
-    # Required doc files (prefixed with provider name for STATUS/SQVR/BUILD_NOTES)
+    # Required doc files (prefixed with canonical provider name for STATUS/SQVR/BUILD_NOTES)
     $docsDir = Join-Path $pd.FullName 'docs'
     if (Test-Path $docsDir) {
         foreach ($rd in $requiredDocs) {
-            $pattern = if ($rd -eq 'JSON_INVENTORY.md') { $rd } else { "${provName}_$rd" }
+            $pattern = if ($rd -eq 'JSON_INVENTORY.md') { $rd } else { "${docPrefix}_$rd" }
             $found = Get-ChildItem $docsDir -File | Where-Object { $_.Name -eq $pattern }
             if ($found) {
                 Pass "${provName} -- docs/$pattern exists"
@@ -623,6 +625,7 @@ $flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    $docPrefix = DocPrefix $provName
     $isFlagged = $provName -in $flaggedProviders
 
     # Extract version from BASE build script
@@ -637,10 +640,10 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { Info "${provName} -- no version in build script"; continue }
 
-    # Check CLAUDE.md version
+    # Check CLAUDE.md version (match on canonical name without _LOCKED)
     $claudeVersion = $null
     foreach ($line in $claudeMdLines) {
-        if ($line -match "^\|\s*$provName\s*\|.*\|\s*v([^\s|]+)\s*\|") {
+        if ($line -match "^\|\s*$docPrefix\s*\|.*\|\s*v([^\s|]+)\s*\|") {
             $claudeVersion = $Matches[1]
             break
         }
@@ -653,7 +656,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Check STATUS.txt version
-    $statusFile = "$($pd.FullName)\docs\${provName}_STATUS.txt"
+    $statusFile = "$($pd.FullName)\docs\${docPrefix}_STATUS.txt"
     if (Test-Path $statusFile) {
         $statusText = [System.IO.File]::ReadAllText($statusFile)
         $statusHasVersion = $statusText -match "v$([regex]::Escape($scriptVersion))"
@@ -666,7 +669,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Check SQVR version
-    $sqvrFile = "$($pd.FullName)\docs\${provName}_SQVR.txt"
+    $sqvrFile = "$($pd.FullName)\docs\${docPrefix}_SQVR.txt"
     if (Test-Path $sqvrFile) {
         $sqvrText = [System.IO.File]::ReadAllText($sqvrFile)
         $sqvrHasVersion = $sqvrText -match "v$([regex]::Escape($scriptVersion))"
@@ -707,6 +710,7 @@ $flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    $docPrefix = DocPrefix $provName
     $isFlagged = $provName -in $flaggedProviders
 
     $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
@@ -720,7 +724,7 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { continue }
 
-    $bnFile = "$($pd.FullName)\docs\${provName}_BUILD_NOTES.txt"
+    $bnFile = "$($pd.FullName)\docs\${docPrefix}_BUILD_NOTES.txt"
     if (Test-Path $bnFile) {
         $bnText = [System.IO.File]::ReadAllText($bnFile)
         if ($bnText -match '\(no builds yet\)') {
@@ -787,9 +791,10 @@ $flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    $docPrefix = DocPrefix $provName
     $isFlagged = $provName -in $flaggedProviders
 
-    $statusFile = "$($pd.FullName)\docs\${provName}_STATUS.txt"
+    $statusFile = "$($pd.FullName)\docs\${docPrefix}_STATUS.txt"
     if (-not (Test-Path $statusFile)) { continue }
 
     $statusText = [System.IO.File]::ReadAllText($statusFile)
@@ -806,7 +811,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Extract PASS count from validator report
-    $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${provName}_BASE.txt"
+    $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
     if (-not (Test-Path $reportFile)) { continue }
 
     $reportText = [System.IO.File]::ReadAllText($reportFile)
@@ -878,11 +883,12 @@ $flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    $docPrefix = DocPrefix $provName
     $isFlagged = $provName -in $flaggedProviders
 
     foreach ($variant in @('base','mc')) {
         $tag = $variant.ToUpper()
-        $reportFile = "$($pd.FullName)\docs\$variant\VALIDATOR_REPORT_${provName}_${tag}.txt"
+        $reportFile = "$($pd.FullName)\docs\$variant\VALIDATOR_REPORT_${docPrefix}_${tag}.txt"
         if (-not (Test-Path $reportFile)) { continue }
 
         $reportText = [System.IO.File]::ReadAllText($reportFile)

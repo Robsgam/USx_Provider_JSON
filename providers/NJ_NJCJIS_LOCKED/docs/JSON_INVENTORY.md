@@ -6,13 +6,14 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_BASE.json | v2.3 | Current | 67P/0F/5W/1LIM. camelCase fieldIds, Patch 7+8, AUTH keyRef. |
-| NJ_NJCJIS_MC.json | v2.3 | Current | 67P/0F/0W/1LIM. PascalCase fieldIds. Live tested 57/57 PASS (2026-04-29 on v2.0). |
+| NJ_NJCJIS_BASE.json | v3.0 | LOCKED | 37P/1F/0W/1LIM. 14/14 live tests PASS. Conditions routing (RAND/FULL), autoSelect=false, queriesToDeselect. |
+| NJ_NJCJIS_MC.json | v3.0 | LOCKED | PascalCase fieldIds. |
 
 ## phases/base/
 
 | File | Version | Date | Notes |
 |------|---------|------|-------|
+| NJ_NJCJIS_v3.0_2026-05-08.json | v3.0 | 2026-05-08 | LOCKED. 14/14 live tests PASS. Full combo coverage. |
 | NJ_NJCJIS_v2.3_2026-05-06.json | v2.3 | 2026-05-06 | Monorepo rebuild with latest tools |
 | NJ_NJCJIS_v2.2_2026-05-05.json | v2.2 | 2026-05-05 | camelCase fieldId rename |
 | NJ_NJCJIS_v2.1_2026-05-05.json | v2.1 | 2026-05-05 | Patch 7+8 + AUTH keyRef |

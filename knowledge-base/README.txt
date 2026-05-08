@@ -1,4 +1,4 @@
-﻿CONNECTCIC KNOWLEDGE BASE
+CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
 Last updated: 2026-05-08
@@ -274,6 +274,24 @@ TOOLS
     artifacts, updates docs (STATUS, SQVR), commits, and pushes. Supports
     XML capture and form state documentation.
     Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
+
+  tools/lock_provider.ps1
+    One-command lock/unlock for provider folders. Renames folder to/from
+    _LOCKED suffix, updates STATUS.txt, cascades reference updates across
+    CLAUDE.md, KB README.txt, new_test_log.ps1, and audit_cad.ps1.
+    Usage: .\lock_provider.ps1 -Provider <name> -Action <Lock|Unlock>
+
+  tools/map_cad_fields.ps1
+    Maps CAD field names to provider JSON fieldIds. Reports MATCH,
+    CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects BASE vs MC variant.
+    Generates Patch 8 rename map code snippet.
+    Usage: .\map_cad_fields.ps1 -Path <json> -CadFields <comma-separated|file> [-OutFile <path>] [-GeneratePatch]
+
+  tools/diff_docs.ps1
+    Diffs updated engineering docs against KB files. Extracts 7 element
+    types (fields, handlers, queries, keyRefs, operators, properties,
+    limitations). Reports NEW, REMOVED, CONFIRMED per category.
+    Usage: .\diff_docs.ps1 -NewDoc <path> [-KbFile <path>] [-OutFile <path>] [-Provider <name>]
 
 ================================================================================
 PREREQUISITES
