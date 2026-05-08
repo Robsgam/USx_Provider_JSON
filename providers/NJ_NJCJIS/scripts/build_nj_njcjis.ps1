@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.4",
+    [string]$Version = "2.5",
     [string]$Phase   = "base"
 )
 
@@ -260,6 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
 # XML (2026-04-28): VehicleStolenQuery v1
 #   3 combos all keyRef QV in XML -> invented QVN/QVP/QVV (LIMITATION #21)
 #   Targets Vehicle entity (same as VehicleReg) -- different query = separate QIDM, no conflict.
+#   autoSelect=true so checkbox lights up; VehicleReg queriesToDeselect immediately unchecks it.
 #   No queriesToDeselect -- one-way deselect from VehicleReg avoids deadlock.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
@@ -295,6 +296,7 @@ $vehStolenQuery = [PSCustomObject]@{
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleStolenQuery'
     type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
     provider           = 'NJ_NJCJIS'
     providerType       = 'Commsys'
     query              = 'VehicleStolenQuery'
