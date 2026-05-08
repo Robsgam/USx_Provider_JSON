@@ -1,10 +1,38 @@
 CONNECTCIC RULE HANDLERS -- Complete Reference
 ===================================================
-Last updated: 2026-05-06
+Last updated: 2026-05-08
 Source: HIDLE.json + CA_ESUN.json + all built provider JSONs
+        + Engineering doc (Crinnger Fagundes de Oliveira, 2026-05-08)
 
 24 unique handlers across the ConnectCIC provider JSON ecosystem.
 Found at 4 property paths in the JSON structure.
+
+================================================================================
+  CONFIGURATION MODEL -- Attribute Object
+================================================================================
+
+  Every mapped field is an Attribute object. The `rule` property defines which
+  handler processes the value. Full attribute structure:
+
+  {
+    "name":           "AttrName",           // identifier; some handlers use this
+    "rule": {
+      "function":     "HandlerClassName",   // primary handler
+      "arguments":    ["arg1", "arg2"]      // handler-specific arguments
+    },
+    "fallbackRule": {
+      "function":     "FallbackHandler",    // executed when primary value absent
+      "arguments":    ["..."]
+    },
+    "sourceField":    ["key1", "key2"],     // keys in userArguments map
+    "targetField":    "TargetField",        // destination field in output
+    "attributeType":  "STATE",              // used by CommsysResultAttributeMappingRuleHandler
+    "codeTypeSource": "NCIC"               // used by CommsysResultAttributeMappingRuleHandler
+  }
+
+  fallbackRule: Triggered automatically by the framework when the primary
+  attribute value is absent. Common pattern: primary rule does code lookup,
+  fallbackRule uses regex to extract from free text.
 
 ================================================================================
   PROPERTY PATHS
@@ -97,98 +125,312 @@ Found at 4 property paths in the JSON structure.
      All builds:   YES -- exactly one
 
 ================================================================================
-  RULE HANDLERS (14) -- rule.function / fallbackRule.function on attrs
+  RULE HANDLERS -- QIDM (outbound query building)
 ================================================================================
 
-  These are attribute-level transformation handlers that modify field values
-  during query building (QIDM) or result parsing (QRDM).
+  These are attribute-level handlers configured on QIDM attributes in build
+  scripts. They transform form field values into CommSys XML element values.
 
-  --- QIDM (outbound query building) ---
-
+  --------------------------------------------------------------------------
   10. CommsysGetDexStateUserIdRuleHandler
+  --------------------------------------------------------------------------
       Config type:  AUTHENTICATION attribute (UserName)
-      Arguments:    ['true']
-      Purpose:      Extracts DEX state user ID from officer RMS profile
+      Arguments:    ['true'] = required, ['false'] = optional
+      Purpose:      Retrieves DEX State user ID from logged-in user profile
       Source:       HIDLE.json (Auth config)
       All builds:   YES
 
+      Resolution logic:
+        1. Check if userArguments already has DEX_STATE_USER_ID_DEFAULT
+        2. If not, fetch via UserProfileService
+        3. If isRequired=true and ID absent -> MissingRequiredInputException
+        4. Validates DEX certification expiration date -> exception if expired
+
+      Config:
+        {
+          "name": "UserName",
+          "rule": { "function": "CommsysGetDexStateUserIdRuleHandler",
+                    "arguments": ["true"] },
+          "sourceField": ["dexStateUserId"],
+          "targetField": "UserName"
+        }
+
+  --------------------------------------------------------------------------
   11. CommsysParseDateRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QIDM attribute (BirthDate)
-      Arguments:    ['yyyy-MM-dd', '<provider-format>']
-      Purpose:      Converts ISO date to provider-specific format
+      Arguments:    ['<input-format>', '<output-format>']
+                    args[0] = input format (Java DateTimeFormatter pattern)
+                    args[1] = output format
+      Purpose:      Converts date string from one format to another
       Source:       Build script (on BirthDate attrs in DL/DH QIDMs)
       All builds:   YES (any provider with Person DL/DH queries)
-      Note:         Second argument is provider-specific (MMddyyyy, yyyyMMdd)
 
+      Returns null if the date cannot be parsed.
+
+      Provider formats:
+        NJ:  ['yyyy-MM-dd', 'MMddyyyy']
+        CA:  ['yyyy-MM-dd', 'yyyyMMdd']
+        Check devdoc for each provider's expected format.
+
+      Config:
+        {
+          "name": "BirthDate",
+          "rule": { "function": "CommsysParseDateRuleHandler",
+                    "arguments": ["yyyy-MM-dd", "MMddyyyy"] },
+          "sourceField": ["birthDate"],
+          "targetField": "BirthDate"
+        }
+
+  --------------------------------------------------------------------------
   12. FormatStringRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QIDM attribute (Name), also QRDM
-      Arguments:    separators (count = sourceField count - 1)
+      Arguments:    list of separator strings
+                    count MUST equal sourceField count minus 1 (AP #15)
       Purpose:      Concatenates multiple sourceFields with separators
-      Source:       Build script (on Name attrs with Last,First,Middle format)
+      Source:       Build script (on Name attrs)
       All builds:   YES (any provider with Name queries)
-      AP #15:       Arguments count MUST equal sourceField count minus 1
 
+      Behavior:
+        - Iterates over sourceField in order
+        - Fetches each value from userArguments
+        - Empty/null fields are SKIPPED
+        - Separators are inserted between FOUND values only
+
+      Example: sourceField=["LastName","FirstName"], arguments=[", "]
+        Input:  { "LastName": "DOE", "FirstName": "JOHN" }
+        Output: "DOE, JOHN"
+
+      3-field example: sourceField=["Street","City","Zip"], arguments=[", "," - "]
+        Input:  { "Street": "123 Main", "City": "Springfield", "Zip": "12345" }
+        Output: "123 Main, Springfield - 12345"
+
+      Config:
+        {
+          "name": "Name",
+          "rule": { "function": "FormatStringRuleHandler",
+                    "arguments": [", "] },
+          "sourceField": ["nameLast", "nameFirst"],
+          "targetField": "Name"
+        }
+
+  --------------------------------------------------------------------------
   13. CommsysGetLastNameFirstNameInitialRuleHandler
-      Config type:  QIDM attribute (Attention)
-      Arguments:    none
-      Purpose:      Formats officer name as "LastName, FirstName Initial"
-      Source:       CA_ESUN template only
-      All builds:   NO -- CA_ESUN/LA_LEMS pattern only
+  --------------------------------------------------------------------------
+      Config type:  QIDM attribute (Attention / RequestingOfficer)
+      Arguments:    none (ignores userArguments and attribute)
+      Purpose:      Formats logged-in user's name as "LastName FirstInitial"
+      Source:       CA_ESUN template, LA_LEMS
+      All builds:   NO -- CA_ESUN/LA_LEMS Attention pattern only
 
+      Output format:
+        lastName="Smith", firstName="John"  -> "Smith J"
+        lastName="Doe",   firstName=""      -> "Doe"
+        Invalid profile                     -> null
+
+      Config:
+        {
+          "name": "Attention",
+          "rule": { "function": "CommsysGetLastNameFirstNameInitialRuleHandler" },
+          "sourceField": [],
+          "targetField": "Attention"
+        }
+
+  --------------------------------------------------------------------------
   14. IgnoreUserValueRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QIDM attribute
-      Arguments:    varies
-      Purpose:      Ignores user input, passes raw sourceField value
+      Arguments:    list of values to ignore (case-insensitive)
+      Purpose:      Filters unwanted values -- returns null if value matches
+                    any configured ignore code, otherwise returns original value
       Source:       CA_ESUN template only
-      All builds:   NO -- DEAD END (AP #4). Does NOT substitute argument.
-      Status:       DO NOT USE in new builds
+      All builds:   NO
+      Status:       DEAD END for state hardcoding (AP #4)
 
+      Behavior:
+        - Reads sourceField value from userArguments
+        - Compares against arguments list (case-insensitive)
+        - If match found: returns null (suppresses the field)
+        - If no match: returns original value unchanged
+
+      Example: arguments=["UNK","XXX","000"]
+        Input "BLU" -> "BLU" (passed through)
+        Input "UNK" -> null  (filtered out)
+        Input "unk" -> null  (case-insensitive)
+
+      WHY AP #4 (dead end for state hardcoding): This handler FILTERS values
+      but does NOT SUBSTITUTE them. Cannot use it to replace a user value with
+      a hardcoded state code. Use InpH with initialValue instead.
+
+  --------------------------------------------------------------------------
   15. CommsysArticleAttributeRuleHandler
-      Config type:  QIDM attribute (ArticleTypeCode)
-      Arguments:    none
-      Purpose:      Maps article-specific attributes for CommSys
-      Source:       CA_ESUN template only
-      All builds:   NO -- CA_ESUN/FL pattern only
+  --------------------------------------------------------------------------
+      Config type:  QRDM attribute (ArticleTypeCode, ArticleCategory, etc.)
+      Arguments:    [mode, optional-alt-key]
+                    mode: "FIRST_CHAR" (default) or "REMAINDER"
+                    alt-key: alternative key in userArguments (overrides sourceField)
+      Purpose:      Extracts first character or remainder of an article code
+      Source:       CA_ESUN template, HIDLE QRDM
+      All builds:   YES (in QRDM via HIDLE)
 
-  --- QRDM (inbound result parsing) ---
+      Examples (input "JE123"):
+        FIRST_CHAR -> "J"
+        REMAINDER  -> "E123"
+      Single character input "X":
+        REMAINDER  -> "" (empty string)
 
+      Config (first char):
+        {
+          "name": "ArticleCategory",
+          "rule": { "function": "CommsysArticleAttributeRuleHandler",
+                    "arguments": ["FIRST_CHAR"] },
+          "sourceField": ["ArticleCode"],
+          "targetField": "ArticleCategory"
+        }
+
+================================================================================
+  RULE HANDLERS -- QRDM (inbound result parsing)
+================================================================================
+
+  These are attribute-level handlers on QRDM attributes. They transform
+  CommSys response data into display values. All inherited from HIDLE.json.
+
+  --------------------------------------------------------------------------
   16. CommsysResultAttributeMappingRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QRDM attribute (primary rule)
-      Arguments:    none (uses codeTypeCategory/codeTypeSource on attr)
-      Purpose:      Maps CommSys result codes back to RMS attributes
+      Arguments:    none (uses additionalFields on the attribute)
+      Purpose:      Maps a raw code to a display value using system attribute tables
       Source:       HIDLE.json (QRDM config)
       All builds:   YES -- used on State, Sex, Race, Eye, Hair, Color, Make, Style
 
+      Required additional fields on attribute:
+        codeTypeSource:   code source identifier (e.g. "NCIC")
+        + ONE of:
+          codeTypeCategory: category for AttributeSource lookup
+          attributeType:    type for AttributesDataMapping lookup
+
+      Operation modes:
+        If codeTypeCategory present -> lookup via AttributeSource (by code or description)
+        If attributeType present    -> lookup via AttributesDataMapping (code -> link -> type -> display)
+
+      Returns null if code not found. Lookup is case-insensitive and also
+      accepts a description as input.
+
+      Config:
+        {
+          "name": "AddressStateCode",
+          "rule": { "function": "CommsysResultAttributeMappingRuleHandler" },
+          "sourceField": ["AddressStateCode"],
+          "targetField": "AddressStateCode",
+          "attributeType": "STATE",
+          "codeTypeSource": "NCIC"
+        }
+
+  --------------------------------------------------------------------------
   17. CommysResultFallbackRegexRuleHandler
-      Config type:  QRDM attribute (fallbackRule)
-      Arguments:    regex pattern, replacement, optional 'rule'/'trim'
-      Purpose:      Regex-based fallback field extraction from raw text
+  --------------------------------------------------------------------------
+      Config type:  QRDM attribute (fallbackRule only)
+      Arguments:    chained directives (processed in order)
+      Purpose:      Extracts values from free-text (messageData) via regex
       Source:       HIDLE.json (QRDM config)
       All builds:   YES -- paired with primary rules as fallback
       Note:         Typo in name (Commys not Commsys) is correct -- do not fix
 
+      Reads userArguments["messageData"] as the text source.
+      Iterates over regex patterns in order -- returns the first match.
+      Then applies configured transformations to the result.
+
+      Argument directives:
+        "regex:<pattern>"   Regex pattern (multiple allowed, tested in order)
+        "uppercase"         Converts result to uppercase
+        "lowercase"         Converts result to lowercase
+        "maxLength:<n>"     Truncates result to N characters
+        "rule"              After extraction, execute the primary rule handler on result
+
+      Config:
+        {
+          "name": "LicensePlate",
+          "rule": { "function": "CommsysGetStateCodeRuleHandler" },
+          "fallbackRule": {
+            "function": "CommysResultFallbackRegexRuleHandler",
+            "arguments": [
+              "regex:LIC/([A-Z0-9]{1,8})/",
+              "regex:PLATE:\\s*([A-Z0-9]+)",
+              "uppercase",
+              "maxLength:8",
+              "rule"
+            ]
+          },
+          "sourceField": ["LicensePlate"],
+          "targetField": "LicensePlate"
+        }
+
+  --------------------------------------------------------------------------
   18. HeightParserRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QRDM attribute (Height, HeightFeet, HeightInches, HeightDisplay)
-      Arguments:    format array + output type ('height'/'feet'/'inches'/'total')
-      Purpose:      Parses height values (e.g. "510" to feet/inches)
+      Arguments:    [field-list, output-type]
+                    field-list: ["Height"] for Commsys, ["HeightFeet","HeightInches"] for RMS
+                    output-type: "height" (default), "feet", "inches", "total"
+      Purpose:      Normalizes height values from Commsys (3-digit) or RMS formats
       Source:       HIDLE.json (QRDM + RMS Results)
       All builds:   YES
 
+      Output types:
+        "height"  -> display format "5' 9""
+        "feet"    -> feet only "5"
+        "inches"  -> inches only "9"
+        "total"   -> total inches "69"
+
+      Commsys 3-digit format: "509" -> 5 feet 9 inches
+      RMS two-field format: HeightFeet="5", HeightInches="9"
+
+  --------------------------------------------------------------------------
   19. ParseCommsysNameRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QRDM attribute (NameFirst, NameLast, NameMiddle, Name)
-      Arguments:    format arrays for name parsing
-      Purpose:      Parses "LAST, FIRST MIDDLE" format from CommSys
+      Arguments:    4 arrays defining 3-level fallback + separators
+                    [0]: normalized parts keys [last, first, middle]
+                    [1]: combined normalized name keys
+                    [2]: common name keys
+                    [3]: separators for building full Name field
+      Purpose:      Parses and resolves name fields with 3-level fallback
       Source:       HIDLE.json (QRDM config)
       All builds:   YES
+      Note:         Returns different fields based on attribute.name value
+                    (NameFirst, NameLast, NameMiddle, or Name)
 
+      Resolution priority (tries each level until one produces a result):
+        1. Normalized parts (NormalizedNameLast + NormalizedNameFirst)
+        2. Combined normalized name (NormalizedName) -- parsed by comma/space
+        3. Common name (Name) -- same parsing as step 2
+
+      Combined name parsing rules:
+        With comma:    "DOE, JOHN Q"          -> last=DOE, first=JOHN, middle=Q
+        3 tokens:      "SMITH JOHN MICHAEL"   -> last=SMITH, first=JOHN, middle=MICHAEL
+        Last tok 1chr: "DOE JOHN Q"           -> last=DOE, first=JOHN, middle=Q
+        Comma no space:"MAYES,JEFFERY SCOTT"  -> last=MAYES, first=JEFFERY, middle=SCOTT
+
+      Supersedes FormatNameRuleHandler (deprecated).
+
+  --------------------------------------------------------------------------
   20. ParseCommsysVehicleYearRuleHandler
+  --------------------------------------------------------------------------
       Config type:  QRDM attribute (VehicleYear)
-      Arguments:    ['50'] (century cutoff)
-      Purpose:      Parses 2-digit or 4-digit vehicle year
+      Arguments:    [threshold] (integer, e.g. 50)
+      Purpose:      Normalizes 2-digit vehicle years to 4-digit using threshold
       Source:       HIDLE.json (QRDM config)
       All builds:   YES
 
+      Expansion logic (4-digit years returned unchanged):
+        yy < threshold  -> 2000 + yy  (e.g. 25 -> 2025)
+        yy >= threshold -> 1900 + yy  (e.g. 75 -> 1975)
+
+  --------------------------------------------------------------------------
   21. truncate
+  --------------------------------------------------------------------------
       Config type:  QRDM attribute (SocialSecurityNumber)
       Arguments:    none (uses size property on attribute)
       Purpose:      Truncates field value to attribute size
@@ -196,31 +438,78 @@ Found at 4 property paths in the JSON structure.
       All builds:   YES
       Note:         Lowercase name -- not a typo
 
-  --- RMS result parsing ---
-
+  --------------------------------------------------------------------------
   22. FormatArrayRuleHandler
+  --------------------------------------------------------------------------
       Config type:  RMS QRDM attribute (Cautions, WarrantDetails, Addresses, etc.)
-      Arguments:    format arrays for nested object display
-      Purpose:      Formats array/nested result values for display
+      Arguments:    [source-field-paths, target-field-names]
+                    Supports dot notation and brackets for nested arrays
+      Purpose:      Transforms nested JSON arrays using declarative field mapping
       Source:       HIDLE.json (RMS Results)
       All builds:   YES
 
-  23. FormatNameRuleHandler
+      Nested field syntax:
+        Source: "warrantCharges[chargeName,chargeCount]"
+        Target: "Charges[Name,Count]"
+        Maps nested array fields to renamed target fields.
+
+      Input is a JSON string in userArguments (key from sourceField[0]).
+
+  --------------------------------------------------------------------------
+  23. FormatNameRuleHandler (DEPRECATED)
+  --------------------------------------------------------------------------
       Config type:  RMS QRDM attribute (Name)
       Arguments:    format arrays
       Purpose:      Formats name fields from RMS response
       Source:       HIDLE.json (RMS Results)
-      All builds:   YES
+      All builds:   YES (still in HIDLE, but superseded by ParseCommsysNameRuleHandler)
+      Status:       DEPRECATED -- do not use in new configurations
 
-  --- RMS query building ---
+================================================================================
+  RULE HANDLERS -- RMS query building
+================================================================================
 
+  --------------------------------------------------------------------------
   24. AttributeArrayWrapperRuleHandler
+  --------------------------------------------------------------------------
       Config type:  RMS QIDM attribute (registrationStateAttrIds, raceAttrIds)
       Arguments:    none
-      Purpose:      Wraps single attribute ID value in array format
+      Purpose:      Wraps a single value in list string format: value -> [value]
       Source:       HIDLE.json (RMS QIDMs)
       All builds:   YES
       LIMITATION #27: Do NOT use on sexAttrId -- causes RMS 400
+
+      Returns null if sourceField not present in userArguments.
+
+================================================================================
+  CODE MAPPING HANDLERS (response-side)
+================================================================================
+
+  These handlers map Commsys response codes to Federated Search internal codes
+  using static configuration lists. All are response-side (QRDM) only.
+  All inherited from HIDLE.json -- no build script action needed.
+
+  Handler                              | Maps           | Static Config
+  -------------------------------------|----------------|------------------
+  CommsysGetArticleCodeRuleHandler     | Article codes  | articleCategoryCodes
+  CommsysGetRaceCodeRuleHandler        | Race codes     | raceCodes
+  CommsysGetSexCodeRuleHandler         | Sex codes      | sexCodes
+  CommsysGetStateCodeRuleHandler       | State codes    | stateCodes
+  CommsysGetLicensePlateCodeRuleHandler| Plate types    | licensePlateTypeCodes
+  CommsysGetVehicleCodeRuleHandler     | Vehicle codes  | articleCategoryCodes (shared)
+
+  All take List<String> input, use first element as code.
+  Return mapped code or null if not found.
+
+================================================================================
+  IMAGE HANDLERS (response-side)
+================================================================================
+
+  CommsysImageDataRuleHandler   Extracts ImageData from image source object
+  CommsysImageIdRuleHandler     Extracts ImageId from image source object
+
+  Both require Configuration object (throw ConfigurationNotProvidedException
+  if absent). Inherited from HIDLE.json.
 
 ================================================================================
   SPECIAL HANDLER
@@ -245,11 +534,42 @@ Found at 4 property paths in the JSON structure.
   Total ecosystem:         24 unique handlers
 
 ================================================================================
+  HANDLER SUMMARY TABLE (from engineering doc)
+================================================================================
+
+  Handler                                  | Use Case                        | External Svc
+  -----------------------------------------|---------------------------------|-----------
+  FormatStringRuleHandler                  | Concatenate fields w/ separators| No
+  FormatArrayRuleHandler                   | Transform nested JSON arrays    | No
+  ParseCommsysNameRuleHandler              | Name parsing w/ 3-level fallback| No
+  CommsysParseDateRuleHandler              | Convert date format             | No
+  HeightParserRuleHandler                  | Normalize height (Commsys/RMS)  | No
+  CommsysResultAttributeMappingRuleHandler | Map code to display value       | Yes (Attrs)
+  CommsysGetArticleCodeRuleHandler         | Map article category code       | No (static)
+  CommsysGetRaceCodeRuleHandler            | Map race code                   | No (static)
+  CommsysGetSexCodeRuleHandler             | Map sex code                    | No (static)
+  CommsysGetStateCodeRuleHandler           | Map state code                  | No (static)
+  CommsysGetLicensePlateCodeRuleHandler    | Map license plate type code     | No (static)
+  CommsysGetVehicleCodeRuleHandler         | Map vehicle code                | No (static)
+  ParseCommsysVehicleYearRuleHandler       | Normalize year (2->4 digit)     | No
+  CommsysArticleAttributeRuleHandler       | Extract part of article code    | No
+  IgnoreUserValueRuleHandler               | Filter unwanted values          | No
+  CommysResultFallbackRegexRuleHandler     | Extract via regex from text     | No
+  AttributeArrayWrapperRuleHandler         | Wrap value in list              | No
+  CommsysGetDexStateUserIdRuleHandler      | Get DEX user ID                 | Yes (Profile)
+  CommsysGetLastNameFirstNameInitialRuleHandler | Format user name            | Yes (Profile)
+  CommsysImageDataRuleHandler              | Extract ImageData               | Yes (Config)
+  CommsysImageIdRuleHandler                | Extract ImageId                 | Yes (Config)
+
+================================================================================
   DEAD ENDS / DO NOT USE
 ================================================================================
 
-  IgnoreUserValueRuleHandler -- AP #4. Does not substitute argument value.
-                                Only found in CA_ESUN. Do not add to new builds.
+  IgnoreUserValueRuleHandler -- AP #4. Does not SUBSTITUTE values.
+    Returns null for matching codes, original value for non-matching.
+    Useful for filtering unwanted response codes (e.g. "UNK", "XXX").
+    DEAD END for state hardcoding because it cannot replace a value with
+    a different one. Use InpH with initialValue for hardcoded defaults.
 
 ================================================================================
   BUILD SCRIPT CHECKLIST
