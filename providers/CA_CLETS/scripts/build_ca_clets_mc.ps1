@@ -278,6 +278,7 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # DriverHistoryQuery -- PascalCase
+# PurposeCode: separate optional DH field per metadata+devdoc, maps from same form field as CaRequestPurposeCode
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -292,6 +293,7 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('CaRequestPurposeCode'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )

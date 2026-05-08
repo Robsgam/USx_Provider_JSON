@@ -329,6 +329,7 @@ $dlQuery = [PSCustomObject]@{
 # XML v22: 2 combos (NLTS.KQ Name, NLTS.KQ OLN) -- both Nlets
 # CA has no in-state DH; all DH goes through Nlets
 # DL+DH co-fire on OLN is intentional (standard police workflow)
+# PurposeCode: separate optional DH field per metadata+devdoc, maps from same form field as CaRequestPurposeCode
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
@@ -344,6 +345,7 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCode'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
