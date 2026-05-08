@@ -318,7 +318,5 @@ AUTHORITATIVE SOURCE FILES (read-only)
 ARCHIVE
 ================================================================================
 
-  knowledge-base/archive/
-    Contains the original pre-consolidation KB files (18 files).
-    Preserved for reference only. All content has been merged into the 9 files above.
-    Do not use archived files for builds -- use the consolidated versions.
+  Archive deleted 2026-05-08. All content was merged into the 9 active KB files above
+  during the 2026-05-04 consolidation.
