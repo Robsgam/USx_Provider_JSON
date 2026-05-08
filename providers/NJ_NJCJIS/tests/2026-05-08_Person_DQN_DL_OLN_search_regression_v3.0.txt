@@ -4,66 +4,75 @@ Date       : 2026-05-08
 JSON       : NJ_NJCJIS_BASE.json
 Entity     : Person
 Combo      : DQN (DL OLN search regression)
-Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+Test type  : T6
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
 ================================================================================
 
-  Field                     Value              Source
-  ------------------------  -----------------  --------------------------------
-  [FieldName]               [value]            [typed / default / hidden]
+  Field                     Value                    Source
+  ------------------------  -----------------------  --------------------------------
+  operatorLicenseNumber     D1234567890123456        typed
+  registrationState         NJ                       default (initialValue)
+  imageIndicator            Y                        default (hidden)
 
 ================================================================================
 REQUEST SUMMARY
 ================================================================================
 
   Route       : MK43RS -> ConnectCic
-  Transaction : [TRANSACTION ID FROM XML]
-  MessageType : [MessageType from XML]
+  Transaction : 01KR4DERW1ZJRXQTT6EWDC3A7S
+  MessageType : DriverLicenseQuery
   keyReference: DQN
 
   Fields sent in XML request:
-    Element              Value
-    -------------------  -------------------
-    [FieldName]          [VALUE]
+    Element                  Value
+    -----------------------  -----------------------
+    ImageIndicator           Y
+    State                    NJ
+    OperatorLicenseNumber    D1234567890123456
 
 ================================================================================
 FIELD ANALYSIS
 ================================================================================
 
-  Combination fired: DQN
-  Reason: [which set[] fields were populated]
+  Combination fired: DQN (OLN search)
+  Reason: operatorLicenseNumber in set[]
 
-  QIDM attribute       Sent?  Value           Note
-  -------------------  -----  --------------  --------------------------------
-  [attrName]           YES    [value]         [mapped from fieldId X]
-  [attrName]           NO     --              [sourceField empty]
+  QIDM attribute            Sent?  Value                    Note
+  ------------------------  -----  -----------------------  -------------------------
+  ImageIndicator            YES    Y                        hidden default
+  OperatorLicenseNumber     YES    D1234567890123456        typed
+  State                     YES    NJ                       NCIC reverse-lookup
+  Name                      NO     --                       not entered
+  BirthDate                 NO     --                       not entered
+  SexCode                   NO     --                       not entered
 
 ================================================================================
 RMS CO-FIRE (if applicable)
 ================================================================================
 
-  RMS combo fired: [combo name or NONE]
-  RMS request fields: [list or N/A]
+  RMS combo fired: licenseNumber
+  RMS request fields: registrationStateAttrId=69509884952, dlNumber=D1234567890123456
 
 ================================================================================
 RESULT
 ================================================================================
 
-  [PASS / FAIL]
+  PASS
 
-  Reason: [one line -- what confirmed PASS, or what broke for FAIL]
-  Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
-
-================================================================================
-RAW XML REQUEST (from browser F12 > Network > select request > Payload)
-================================================================================
-
-[PASTE RAW XML HERE]
+  Reason: DriverLicenseQuery fired via OLN path (DQN). NCIC state reverse-lookup
+  working. RMS co-fired with dlNumber + registrationStateAttrId (singular, not array).
+  No Returns expected for test OLN.
 
 ================================================================================
-RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+RAW XML REQUEST (from server logs)
 ================================================================================
 
-[PASTE RAW RMS JSON HERE OR DELETE THIS SECTION]
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR4DERW1ZJRXQTT6EWDC3A7S"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR4DERW1ZJRXQTT6EWDC3A7S</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><OperatorLicenseNumber>D1234567890123456</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"D1234567890123456","registrationStateAttrId":"69509884952"},"from":0,"size":50}
