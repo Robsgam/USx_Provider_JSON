@@ -1,0 +1,81 @@
+NJ_NJCJIS BASE vv2.9 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Person
+Combo      : DQ (DL Name search - basic combo)
+Test type  : T8 - Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  nameLast                  SMITH              typed
+  nameFirst                 JOHN               typed
+  birthDate                 1985-01-01         date picker
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            Y                  default (initialValue)
+  sexCode                   (not selected)     default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR3Z4RQ0NPF36VHB9VJD8CME
+  MessageType : DriverLicenseQuery
+  keyReference: DQ
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       Y
+    State                NJ
+    BirthDate            01011985
+    Name                 SMITH, JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQ
+  Reason: set[birthDate, nameLast, nameFirst] populated; any[imageIndicator, registrationState] satisfied by defaults
+
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  BirthDate                   YES    01011985        CommsysParseDateRuleHandler (yyyy-MM-dd -> MMddyyyy)
+  ImageIndicator              YES    Y               default, in any[]
+  Name                        YES    SMITH, JOHN     FormatStringRuleHandler (', ' separator)
+  OperatorLicenseNumber       NO     --              not entered (DQN combo field)
+  SexCode                     NO     --              not selected
+  State                       YES    NJ              NCIC reverse-lookup, in any[]
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: name + DOB search
+  RMS request fields: lastName=smith, firstName=john, dateOfBirth=1985-01-01, registrationStateAttrId=69509884952
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DriverLicenseQuery DQ fired correctly. Name formatted (SMITH, JOHN), BirthDate converted (01011985). RMS co-fired.
+  Detail: No Returns (test name). Both rule handlers confirmed working: FormatStringRuleHandler (', ' separator) and CommsysParseDateRuleHandler (yyyy-MM-dd -> MMddyyyy).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR3Z4RQ0NPF36VHB9VJD8CME"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KR3Z4RQ0NPF36VHB9VJD8CME</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><BirthDate>01011985</BirthDate><Name>SMITH, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+================================================================================
+
+{"elasticQuery":{"lastName":"smith","firstName":"john","dateOfBirth":"1985-01-01","registrationStateAttrId":"69509884952"},"from":0,"size":50}
