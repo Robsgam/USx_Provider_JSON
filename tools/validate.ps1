@@ -106,7 +106,7 @@ foreach ($b in $json.bundles) {
     if (-not $b.name) { Write-Fail "Bundle missing 'name' property"; continue }
     if (-not $b.type) { Write-Fail "Bundle '$($b.name)' missing 'type' property"; continue }
     if ($b.type -ne 'BUNDLE') { Write-Fail "Bundle '$($b.name)' type='$($b.type)' -- must be 'BUNDLE' (confirmed import failure)" }
-    if (-not $b.provider) { Write-Warn "Bundle '$($b.name)' missing 'provider' property" }
+    if (-not $b.provider) { Write-Warn "Bundle '$($b.name)' missing 'provider' property"; Write-Host "    [FIX] Add 'provider' property to bundle '$($b.name)' -- ENTITIES uses 'MARK43', provider bundle uses provider name, RMS uses 'RMS'" -ForegroundColor Cyan }
 
     if ($b.name -eq "ENTITIES") { $entitiesBundle = $b }
     elseif ($b.name -eq "RMS") { $rmsBundle = $b }
@@ -121,13 +121,15 @@ foreach ($b in $json.bundles) {
 
 if (-not $entitiesBundle) { Write-Fail "No ENTITIES bundle found" }
 if ($providerBundles.Count -eq 0) { Write-Fail "No provider bundle found" }
-if (-not $rmsBundle) { Write-Warn "No RMS bundle (optional but expected)" }
+if (-not $rmsBundle) { Write-Warn "No RMS bundle (optional but expected)"; Write-Host "    [FIX] Add a third bundle named 'RMS' with provider='RMS' -- clone from templates/HIDLE.json and apply standard patches" -ForegroundColor Cyan }
 
 # Bundle count (exactly 3: ENTITIES + Provider + RMS)
 if ($json.bundles.Count -lt 3) {
     Write-Warn "Only $($json.bundles.Count) bundles -- expected 3 (ENTITIES + Provider + RMS)"
+    Write-Host "    [FIX] Add the missing bundle(s) -- every provider JSON requires exactly 3: ENTITIES (QIFs), Provider (AUTH+QMF+QRDM+QIDMs), RMS (from HIDLE.json)" -ForegroundColor Cyan
 } elseif ($json.bundles.Count -gt 3) {
     Write-Warn "$($json.bundles.Count) bundles -- expected exactly 3 (ENTITIES + Provider + RMS)"
+    Write-Host "    [FIX] Remove extra bundles -- merge provider configs into a single provider bundle or remove duplicates" -ForegroundColor Cyan
 }
 
 # RmsRestPayloadHandler QIDMs must be in RMS bundle, not provider bundle
@@ -183,19 +185,23 @@ if ($entitiesBundle) {
             Write-Pass "ENTITIES order is nested object with 'default' key"; Inc-Pass
             if (-not $entitiesBundle.order.CAD_DISPATCH) {
                 Write-Warn "ENTITIES order missing 'CAD_DISPATCH' key -- CAD dispatch view will use default order"
+                Write-Host "    [FIX] Add 'CAD_DISPATCH' key to ENTITIES order object with entity array (typically Vehicle first: ['Vehicle','Person','Firearm','Article','Boat'])" -ForegroundColor Cyan
             } else {
                 foreach ($cadEnt in $entitiesBundle.order.CAD_DISPATCH) {
                     if ($entitiesBundle.order.default -notcontains $cadEnt) {
                         Write-Warn "ENTITIES order CAD_DISPATCH lists '$cadEnt' not in default order array"
+                        Write-Host "    [FIX] Either add '$cadEnt' to the 'default' order array, or remove it from 'CAD_DISPATCH'" -ForegroundColor Cyan
                     }
                 }
             }
             if (-not $entitiesBundle.order.FIRST_RESPONDER) {
                 Write-Warn "ENTITIES order missing 'FIRST_RESPONDER' key -- first responder view will use default order"
+                Write-Host "    [FIX] Add 'FIRST_RESPONDER' key to ENTITIES order object with entity array (typically same as CAD_DISPATCH)" -ForegroundColor Cyan
             } else {
                 foreach ($frEnt in $entitiesBundle.order.FIRST_RESPONDER) {
                     if ($entitiesBundle.order.default -notcontains $frEnt) {
                         Write-Warn "ENTITIES order FIRST_RESPONDER lists '$frEnt' not in default order array"
+                        Write-Host "    [FIX] Either add '$frEnt' to the 'default' order array, or remove it from 'FIRST_RESPONDER'" -ForegroundColor Cyan
                     }
                 }
             }
@@ -221,6 +227,7 @@ if ($entitiesBundle) {
         }
     } else {
         Write-Warn "No entity order array defined"
+        Write-Host "    [FIX] Add 'order' object to ENTITIES bundle: {default:[...], CAD_DISPATCH:[...], FIRST_RESPONDER:[...]} using targetEntity values" -ForegroundColor Cyan
     }
 
     foreach ($cfg in $entitiesBundle.configurations) {
@@ -231,6 +238,7 @@ if ($entitiesBundle) {
                 Write-Fail "ENTITIES bundle contains $($cfg.type) '$($cfg.name)' -- belongs in provider or RMS bundle"
             } else {
                 Write-Warn "ENTITIES bundle contains non-QIF: $($cfg.name) (type=$($cfg.type))"
+                Write-Host "    [FIX] Move '$($cfg.name)' (type=$($cfg.type)) to the provider or RMS bundle -- ENTITIES bundle should only contain QUERYINPUTFORM configs" -ForegroundColor Cyan
             }
             continue
         }
@@ -246,12 +254,14 @@ if ($entitiesBundle) {
         }
         if (-not $cfg.label) {
             Write-Warn "QIF '$($cfg.name)' missing 'label' property"
+            Write-Host "    [FIX] Add 'label' property to QIF '$($cfg.name)' with a descriptive name (e.g. 'Vehicle Query', 'Person Query')" -ForegroundColor Cyan
         }
         if ($cfg.combinations) {
             Write-Fail "QIF '$($cfg.name)' has 'combinations' array -- combinations belong on QIDMs, not QIFs"
         }
         if ($cfg.providerType -eq 'Commsys') {
             Write-Warn "QIF '$($cfg.name)' has providerType='Commsys' -- QIF should not have CommSys providerType (confirmed AZ v2.0)"
+            Write-Host "    [FIX] Remove 'providerType' property from QIF '$($cfg.name)' -- providerType belongs on QIDMs, not QIFs" -ForegroundColor Cyan
         }
 
         # Extract fieldIds from all layout variants
@@ -303,6 +313,7 @@ if ($entitiesBundle) {
                     if ($tc -is [System.Array] -and $node.nodes) {
                         if ($tc.Count -ne $node.nodes.Count) {
                             Write-Warn "QIF '$($cfg.name)' layout '$layoutName' node '$nodeName': templateColumns has $($tc.Count) entries but Row has $($node.nodes.Count) children -- misaligned columns"
+                            Write-Host "    [FIX] In build script: adjust templateColumns to match child count ($($node.nodes.Count)) or add/remove child fields to match column count ($($tc.Count))" -ForegroundColor Cyan
                         }
                     }
                 }
@@ -330,6 +341,7 @@ if ($entitiesBundle) {
                     if ($node.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $node.type.resolvedName -eq 'FormSelect') {
                         if ($node.props.initialValue -ne 'PC') {
                             Write-Warn "QIF '$($cfg.name)' PlateType initialValue='$($node.props.initialValue)' -- standard is 'PC'"
+                            Write-Host "    [FIX] In build script: set initialValue='PC' on the PlateType FormSelect field" -ForegroundColor Cyan
                         } else {
                             Write-Pass "QIF '$($cfg.name)' PlateType initialValue='PC'"; Inc-Pass
                         }
@@ -337,46 +349,55 @@ if ($entitiesBundle) {
                     if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$') {
                         if (-not $node.props.initialValue) {
                             Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' missing initialValue -- standard is current year"
+                            Write-Host "    [FIX] In build script: add initialValue=`$currentYear (dynamic) on the '$($node.props.fieldId)' field" -ForegroundColor Cyan
                         }
                     }
                     if ($node.props.fieldId -eq 'ImageIndicator') {
                         $expectedImgInit = if ($cfg.targetEntity -eq 'Person') { 'Y' } else { 'N' }
                         if ($node.props.initialValue -ne $expectedImgInit) {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator initialValue='$($node.props.initialValue)' -- expected '$expectedImgInit' for $($cfg.targetEntity)"
+                            Write-Host "    [FIX] In build script: set ImageIndicator initialValue='$expectedImgInit' (Person='Y', other entities='N')" -ForegroundColor Cyan
                         } else {
                             Write-Pass "QIF '$($cfg.name)' ImageIndicator default='$expectedImgInit' for $($cfg.targetEntity)"; Inc-Pass
                         }
                         if ($node.type.resolvedName -and $node.type.resolvedName -ne 'FormSelect') {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator is $($node.type.resolvedName) -- should be FormSelect with YES_NO_UNKNOWN"
+                            Write-Host "    [FIX] In build script: change ImageIndicator from $($node.type.resolvedName) to FormSelect with codeTypeCategory='YES_NO_UNKNOWN', codeTypeSource='NCIC'" -ForegroundColor Cyan
                         }
                     }
                     # AP #24: NCIC_FIREARM_MAKE on Vehicle form field
                     if ($node.props.codeTypeCategory -and $node.props.codeTypeCategory -match 'FIREARM' -and $cfg.targetEntity -eq 'Vehicle') {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' uses codeTypeCategory='$($node.props.codeTypeCategory)' on Vehicle -- firearm makes only (AP #24)"
+                        Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormInput (text) or use attributeTypeId='VEHICLE_MAKE' -- no NCIC_VEHICLE_MAKE category exists" -ForegroundColor Cyan
                     }
                     # AP #6: YES_NO should be YES_NO_UNKNOWN
                     if ($node.props.codeTypeCategory -eq 'YES_NO') {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' codeTypeCategory='YES_NO' -- should be 'YES_NO_UNKNOWN' (AP #6: empty dropdown)"
+                        Write-Host "    [FIX] In build script: change codeTypeCategory from 'YES_NO' to 'YES_NO_UNKNOWN' on field '$($node.props.fieldId)'" -ForegroundColor Cyan
                     }
                     # AP #7: NCIC_ARTICLE_TYPE requires CA_CLETS source
                     if ($node.props.codeTypeCategory -eq 'NCIC_ARTICLE_TYPE' -and $node.props.codeTypeSource -eq 'NCIC') {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)"
+                        Write-Host "    [FIX] In build script: change codeTypeSource from 'NCIC' to 'CA_CLETS' on field '$($node.props.fieldId)'" -ForegroundColor Cyan
                     }
                     # AP #13: NIBRS_RACE requires NIBRS source
                     if ($node.props.codeTypeCategory -eq 'NIBRS_RACE' -and $node.props.codeTypeSource -eq 'NCIC') {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' NIBRS_RACE with codeTypeSource='NCIC' -- empty dropdown, use 'NIBRS' (AP #13)"
+                        Write-Host "    [FIX] In build script: change codeTypeSource from 'NCIC' to 'NIBRS' on field '$($node.props.fieldId)'" -ForegroundColor Cyan
                     }
                     # Generic: categories that don't populate under NCIC codeTypeSource
                     if ($node.props.codeTypeSource -eq 'NCIC' -and $node.props.codeTypeCategory) {
                         $nonNcicCategories = @('NIBRS_SEX','NIBRS_ETHNICITY','VEHICLE_BODY_STYLE','VEHICLE_TYPE')
                         if ($nonNcicCategories -contains $node.props.codeTypeCategory) {
                             Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' codeTypeCategory='$($node.props.codeTypeCategory)' with codeTypeSource='NCIC' -- empty dropdown, needs different source"
+                            Write-Host "    [FIX] In build script: change codeTypeSource from 'NCIC' to the correct source for '$($node.props.codeTypeCategory)' -- check FIELD_REFERENCE.txt Section 2 for valid pairings" -ForegroundColor Cyan
                         }
                     }
                     # STATE field visibility pattern
                     if ($node.props.attributeTypeId -eq 'STATE' -and $node.props.hidden -ne $true) {
                         if ($node.type.resolvedName -eq 'FormInput') {
                             Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' visible FormInput with attributeTypeId='STATE' -- use FormSelect with codeTypeProvider='NCIC' or hide for outbound-only"
+                            Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) with attributeTypeId='STATE', or to hidden FormInput (InpH) if outbound-only" -ForegroundColor Cyan
                         }
                     }
                     # Visible Attention FormInput: only flag if a QIDM auto-fills it via handler
@@ -396,12 +417,14 @@ if ($entitiesBundle) {
                             }
                             if ($attnAutoFilled) {
                                 Write-Warn "QIF '$($cfg.name)' has visible $fieldType with fieldId='Attention' -- QIDM auto-fills via handler, should be hidden"
+                                Write-Host "    [FIX] In build script: set hidden=`$true on the Attention field (or change to InpH) -- CommsysGetLastNameFirstNameInitialRuleHandler fills it automatically" -ForegroundColor Cyan
                             }
                         }
                     }
                     # AP #3: attributeTypeId='RACE' on form field without codeTypeProvider (sends numeric ID, not code)
                     if ($node.props.attributeTypeId -eq 'RACE' -and -not $node.props.codeTypeProvider) {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' has attributeTypeId='RACE' without codeTypeProvider -- sends numeric ID, use codeTypeCategory='NIBRS_RACE' or add codeTypeProvider (AP #3)"
+                        Write-Host "    [FIX] In build script: add codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS' to field '$($node.props.fieldId)' and remove attributeTypeId='RACE'" -ForegroundColor Cyan
                     }
                     # Y-only fields should be FormInput, not FormSelect
                     $yOnlyFields = @('RelatedHitSearchIndicator','ExpandedNameSearchCode','ExpandedBirthDateSearchIndicator')
@@ -412,23 +435,28 @@ if ($entitiesBundle) {
                     if ($node.props.fieldId -match '^SexCode(DH|OOS)?$') {
                         if ($node.props.attributeTypeId -ne 'SEX') {
                             Write-Warn "QIF '$($cfg.name)' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work"
+                            Write-Host "    [FIX] In build script: add attributeTypeId='SEX' to the SexCode FormSelect field" -ForegroundColor Cyan
                         }
                         if ($node.props.codeTypeProvider -ne 'NIBRS') {
                             Write-Warn "QIF '$($cfg.name)' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values"
+                            Write-Host "    [FIX] In build script: add codeTypeProvider='NIBRS' to the SexCode FormSelect field" -ForegroundColor Cyan
                         }
                         if ($node.props.codeTypeCategory) {
                             Write-Warn "QIF '$($cfg.name)' SexCode field has codeTypeCategory='$($node.props.codeTypeCategory)' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS instead"
+                            Write-Host "    [FIX] In build script: remove codeTypeCategory='$($node.props.codeTypeCategory)' from SexCode and use attributeTypeId='SEX' + codeTypeProvider='NIBRS'" -ForegroundColor Cyan
                         }
                     }
                     # LicensePlateNumber fieldId check — canonical name is licensePlateNumber (no In/Out suffix)
                     if ($node.props.fieldId -match '^LicensePlateNumber(In|Out)$' -and $cfg.targetEntity -eq 'Vehicle') {
                         Write-Warn "QIF '$($cfg.name)' uses deprecated fieldId='$($node.props.fieldId)' -- use 'licensePlateNumber' (no In/Out suffix)"
+                        Write-Host "    [FIX] In build script: rename fieldId from '$($node.props.fieldId)' to 'licensePlateNumber' and update all QIDM sourceField references" -ForegroundColor Cyan
                     }
                     # PlateYear current year check
                     if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$' -and $node.props.initialValue) {
                         $currentYear = (Get-Date).Year.ToString()
                         if ($node.props.initialValue -ne $currentYear) {
                             Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' initialValue='$($node.props.initialValue)' -- current year is $currentYear"
+                            Write-Host "    [FIX] In build script: update '$($node.props.fieldId)' initialValue to '$currentYear' (use `$currentYear dynamic variable)" -ForegroundColor Cyan
                         }
                     }
                 }
@@ -462,9 +490,11 @@ if ($entitiesBundle) {
                 if ($formRoot.props) {
                     if ($formRoot.props.hidePageItems -ne $true) {
                         Write-Warn "QIF '$($cfg.name)' layout '$layoutName' FORM_ROOT missing hidePageItems=true"
+                        Write-Host "    [FIX] In build script: add hidePageItems=`$true to FORM_ROOT props in '$layoutName' layout" -ForegroundColor Cyan
                     }
                     if ($formRoot.props.layout -ne 'page') {
                         Write-Warn "QIF '$($cfg.name)' layout '$layoutName' FORM_ROOT layout='$($formRoot.props.layout)' -- expected 'page'"
+                        Write-Host "    [FIX] In build script: set FORM_ROOT props.layout='page' in '$layoutName' layout" -ForegroundColor Cyan
                     }
                 }
             }
@@ -479,6 +509,7 @@ if ($entitiesBundle) {
                         $parentNode = $layoutNodes[$n.parent]
                         if ($parentNode.nodes -and $parentNode.nodes -notcontains $nName) {
                             Write-Warn "QIF '$($cfg.name)' layout '$layoutName': node '$nName' parent='$($n.parent)' but parent does not list it as child"
+                            Write-Host "    [FIX] In build script: add '$nName' to the nodes[] array of parent '$($n.parent)' in '$layoutName' layout" -ForegroundColor Cyan
                         }
                     }
                 }
@@ -517,6 +548,7 @@ if ($entitiesBundle) {
         foreach ($rl in $requiredLayouts) {
             if ($layoutNames -notcontains $rl) {
                 Write-Warn "QIF '$($cfg.name)' missing '$rl' layout variant"
+                Write-Host "    [FIX] In build script: add '$rl' layout variant to QIF '$($cfg.name)' -- clone from 'default' layout and add CONTEXT_INFO_CARD for CAD/FR variants" -ForegroundColor Cyan
             }
         }
 
@@ -538,6 +570,7 @@ if ($entitiesBundle) {
                     }
                     if ($title -match '<[a-zA-Z/]') {
                         Write-Warn "QIF '$($cfg.name)' layout '$layoutName' node '$nName' title contains HTML tag: '$title' -- renders as plain text (LIMITATION #11)"
+                        Write-Host "    [FIX] In build script: remove HTML tags from card title -- use plain ASCII text only" -ForegroundColor Cyan
                     }
                 }
                 if ($n.props -and $n.props.fieldId) {
@@ -604,6 +637,7 @@ if ($entitiesBundle) {
         foreach ($qe in $qifEntities) {
             if ($orderEntities -notcontains $qe) {
                 Write-Warn "QIF targetEntity '$qe' not in order array"
+                Write-Host "    [FIX] Add '$qe' to the ENTITIES order.default array (and CAD_DISPATCH/FIRST_RESPONDER)" -ForegroundColor Cyan
             }
         }
     }
@@ -640,6 +674,7 @@ if ($entitiesBundle) {
                 if (-not $found -and $expected.altFieldIds) { foreach ($alt in $expected.altFieldIds) { if ($fids.Contains($alt)) { $found = $true; break } } }
                 if (-not $found) {
                     Write-Warn "$entity missing fieldId '$($expected.fieldId)' -- $($expected.reason)"
+                    Write-Host "    [FIX] In build script: add a FormSelect field with fieldId='$($expected.fieldId)' to the $entity QIF" -ForegroundColor Cyan
                 }
             }
         }
@@ -648,12 +683,14 @@ if ($entitiesBundle) {
         if (-not $fids.Contains('ImageIndicator') -and -not $fids.Contains('imageIndicator')) {
             if ($entitiesWithImageIndicatorQidm.ContainsKey($entity)) {
                 Write-Warn "$entity missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field"
+                Write-Host "    [FIX] In build script: add hidden FormSelect with fieldId='ImageIndicator', codeTypeCategory='YES_NO_UNKNOWN', initialValue='Y' (Person) or 'N' (other) to $entity QIF" -ForegroundColor Cyan
             }
         }
 
         if ($entity -eq 'Vehicle') {
             if (-not $fids.Contains('PlateYear') -and -not $fids.Contains('LicensePlateYear') -and -not $fids.Contains('licensePlateYear')) {
                 Write-Warn "Vehicle missing PlateYear/LicensePlateYear -- standard default is current year"
+                Write-Host "    [FIX] In build script: add FormInput with fieldId='LicensePlateYear' and initialValue=`$currentYear to Vehicle QIF" -ForegroundColor Cyan
             }
             if (-not $fids.Contains('VehicleYear') -and -not $fids.Contains('VehicleModelYear')) {
                 Write-Info "Vehicle has no VehicleYear/VehicleModelYear input field (ok if year is result-only)"
@@ -715,6 +752,7 @@ foreach ($bundle in $providerBundles) {
     foreach ($cfg in $bundle.configurations) {
         if ($cfg.type -and $knownConfigTypes -notcontains $cfg.type) {
             Write-Warn "Provider bundle '$($bundle.name)' config '$($cfg.name)' has unknown type '$($cfg.type)' -- may be silently ignored"
+            Write-Host "    [FIX] Change config type to one of: QUERYINPUTDATAMAPPING, AUTHENTICATION, QUERYMESSAGEFORMAT, QUERYRESULTDATAMAPPING" -ForegroundColor Cyan
         }
     }
 }
@@ -790,6 +828,7 @@ foreach ($bundle in $providerBundles) {
             if ($attr.rule -and $attr.rule.function -and $attr.rule.function -is [string]) {
                 if ($knownHandlers -notcontains $attr.rule.function) {
                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' rule.function='$($attr.rule.function)' -- not in known handlers list (typo?)"
+                    Write-Host "    [FIX] Check spelling of rule.function='$($attr.rule.function)' -- see RULE_HANDLERS.txt for valid handler names" -ForegroundColor Cyan
                 }
             }
         }
@@ -806,6 +845,7 @@ foreach ($bundle in $providerBundles) {
         foreach ($attr in $cfg.attributes) {
             if ($attr.sourceField -and $attr.sourceField -is [string]) {
                 Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' sourceField is STRING '$($attr.sourceField)' -- should be ARRAY @('$($attr.sourceField)')"
+                Write-Host "    [FIX] In build script: change sourceField='$($attr.sourceField)' to sourceField=@('$($attr.sourceField)') (wrap in array)" -ForegroundColor Cyan
             }
         }
 
@@ -820,6 +860,7 @@ foreach ($bundle in $providerBundles) {
         foreach ($attr in $cfg.attributes) {
             if ($attr.size -eq $null) {
                 Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' missing size property"
+                Write-Host "    [FIX] In build script: add size=<number> to attr '$($attr.name)' (check metadata XML for expected field length)" -ForegroundColor Cyan
             }
         }
 
@@ -845,6 +886,7 @@ foreach ($bundle in $providerBundles) {
         }
         if ($phantomFields.Count -gt 0) {
             Write-Warn "QIDM '$($cfg.name)' has $($phantomFields.Count) sourceField(s) not found in $entity QIF:"
+            Write-Host "    [FIX] Add matching form fields to $entity QIF, or add a rule handler to auto-populate these attributes, or remove them from the QIDM" -ForegroundColor Cyan
             foreach ($pf in $phantomFields) { Write-Host "         $pf" -ForegroundColor Yellow }
         }
 
@@ -859,12 +901,14 @@ foreach ($bundle in $providerBundles) {
                 else {
                     $comboIdx = [array]::IndexOf($cfg.combinations, $combo)
                     Write-Warn "QIDM '$($cfg.name)' combo at index $comboIdx missing keyReference -- platform uses keyRef for combo identification"
+                    Write-Host "    [FIX] In build script: add a unique keyReference string to combo at index $comboIdx (e.g. derived from query type + primary field)" -ForegroundColor Cyan
                 }
                 if ($combo.requirements -and $combo.requirements.set) {
                     foreach ($reqField in $combo.requirements.set) {
                         if ($entityFields -and -not $entityFields.Contains($reqField)) {
                             if ($systemSourceFields -notcontains $reqField) {
                                 Write-Warn "QIDM '$($cfg.name)' combo '$($combo.keyReference)' set[] references '$reqField' not in QIF fieldIds"
+                                Write-Host "    [FIX] Add field '$reqField' to the $entity QIF, or remove '$reqField' from this combo's set[] array" -ForegroundColor Cyan
                             }
                         }
                     }
@@ -874,6 +918,7 @@ foreach ($bundle in $providerBundles) {
                         if ($entityFields -and -not $entityFields.Contains($reqField)) {
                             if ($systemSourceFields -notcontains $reqField) {
                                 Write-Warn "QIDM '$($cfg.name)' combo '$($combo.keyReference)' any[] references '$reqField' not in QIF fieldIds"
+                                Write-Host "    [FIX] Add field '$reqField' to the $entity QIF, or remove '$reqField' from this combo's any[] array" -ForegroundColor Cyan
                             }
                         }
                     }
@@ -901,6 +946,7 @@ foreach ($bundle in $providerBundles) {
                 if ($comboProps -contains 'name') {
                     $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                     Write-Warn "QIDM '$($cfg.name)' combo '$comboId' has 'name' property -- should use 'keyReference' only"
+                    Write-Host "    [FIX] In build script: remove 'name' property from combo '$comboId' -- platform uses 'keyReference' for identification" -ForegroundColor Cyan
                 }
             }
 
@@ -911,9 +957,11 @@ foreach ($bundle in $providerBundles) {
                     if (-not $combo.state) {
                         $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                         Write-Warn "QIDM '$($cfg.name)' combo '$comboId' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'"
+                        Write-Host "    [FIX] In build script: add state='In/Out' to combo '$comboId' (or 'In'/'Out' if provider has separate in-state/OOS routing)" -ForegroundColor Cyan
                     } elseif ($validStates -notcontains $combo.state) {
                         $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                         Write-Warn "QIDM '$($cfg.name)' combo '$comboId' state='$($combo.state)' -- must be 'In', 'Out', or 'In/Out'"
+                        Write-Host "    [FIX] In build script: change state='$($combo.state)' to one of: 'In', 'Out', 'In/Out'" -ForegroundColor Cyan
                     }
                 }
             }
@@ -923,6 +971,7 @@ foreach ($bundle in $providerBundles) {
                 $missingPfr = @($cfg.combinations | Where-Object { -not $_.primaryFieldReference })
                 if ($missingPfr.Count -gt 0) {
                     Write-Warn "QIDM '$($cfg.name)' has $($missingPfr.Count) combo(s) missing 'primaryFieldReference'"
+                    Write-Host "    [FIX] In build script: add primaryFieldReference to each combo -- use the QIDM attribute name for the primary search field (e.g. 'LicensePlateNumber', 'Name')" -ForegroundColor Cyan
                 }
             }
 
@@ -951,6 +1000,7 @@ foreach ($bundle in $providerBundles) {
                 if ($combo.primaryFieldReference -and $attrNames -notcontains $combo.primaryFieldReference) {
                     $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                     Write-Warn "QIDM '$($cfg.name)' combo '$comboId' primaryFieldReference='$($combo.primaryFieldReference)' not in attribute names"
+                    Write-Host "    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: $($attrNames -join ', '))" -ForegroundColor Cyan
                 }
             }
 
@@ -962,6 +1012,7 @@ foreach ($bundle in $providerBundles) {
                     if ($setCount -eq 0 -and $anyCount -eq 0) {
                         $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                         Write-Warn "QIDM '$($cfg.name)' combo '$comboId' has empty requirements (no set[], no any[]) -- fires on any form state"
+                        Write-Host "    [FIX] In build script: add set[] and/or any[] arrays to combo '$comboId' requirements with the fields that should trigger this combo" -ForegroundColor Cyan
                     }
                 }
             }
@@ -1011,6 +1062,7 @@ foreach ($bundle in $providerBundles) {
         if (-not $cfg.provider) { Write-Fail "QIDM '$($cfg.name)' missing provider" }
         elseif ($cfg.provider -ne $bundle.name) {
             Write-Warn "QIDM '$($cfg.name)' provider='$($cfg.provider)' does not match bundle name '$($bundle.name)'"
+            Write-Host "    [FIX] In build script: change QIDM provider from '$($cfg.provider)' to '$($bundle.name)' to match the parent bundle" -ForegroundColor Cyan
         }
         if (-not $cfg.query) { Write-Fail "QIDM '$($cfg.name)' missing query" }
         else {
@@ -1030,11 +1082,12 @@ foreach ($bundle in $providerBundles) {
             $expectedEntity = $queryEntityMap[$cfg.query]
             if ($expectedEntity -and $cfg.targetEntity -ne $expectedEntity) {
                 Write-Warn "QIDM '$($cfg.name)' query='$($cfg.query)' targets '$($cfg.targetEntity)' -- expected '$expectedEntity'"
+                Write-Host "    [FIX] Change targetEntity from '$($cfg.targetEntity)' to '$expectedEntity', or verify query='$($cfg.query)' is correct for this entity" -ForegroundColor Cyan
             }
         }
-        if (-not $cfg.description) { Write-Warn "QIDM '$($cfg.name)' missing description property" }
-        if (-not $cfg.providerType) { Write-Warn "QIDM '$($cfg.name)' missing providerType property" }
-        elseif ($cfg.providerType -ne 'Commsys') { Write-Warn "QIDM '$($cfg.name)' providerType='$($cfg.providerType)' -- expected 'Commsys'" }
+        if (-not $cfg.description) { Write-Warn "QIDM '$($cfg.name)' missing description property"; Write-Host "    [FIX] In build script: add description property to QIDM '$($cfg.name)' (e.g. descriptive text of what this QIDM does)" -ForegroundColor Cyan }
+        if (-not $cfg.providerType) { Write-Warn "QIDM '$($cfg.name)' missing providerType property"; Write-Host "    [FIX] In build script: add providerType='Commsys' to QIDM '$($cfg.name)'" -ForegroundColor Cyan }
+        elseif ($cfg.providerType -ne 'Commsys') { Write-Warn "QIDM '$($cfg.name)' providerType='$($cfg.providerType)' -- expected 'Commsys'"; Write-Host "    [FIX] In build script: change providerType from '$($cfg.providerType)' to 'Commsys'" -ForegroundColor Cyan }
 
         # Check queryLabel standard (AP #25)
         if ($cfg.handlerFunction -eq 'CommsysTransactionRequestHandler') {
@@ -1051,6 +1104,7 @@ foreach ($bundle in $providerBundles) {
                 $expectedLabel = $standardLabels[$cfg.query]
                 if ($expectedLabel -and $cfg.queryLabel -ne $expectedLabel) {
                     Write-Warn "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' -- standard is '$expectedLabel' (AP #25)"
+                    Write-Host "    [FIX] In build script: change queryLabel from '$($cfg.queryLabel)' to '$expectedLabel'" -ForegroundColor Cyan
                 }
                 if ($cfg.queryLabel -match 'Query') {
                     Write-Info "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' contains 'Query' -- label by search type not query name (AP #25)"
@@ -1058,9 +1112,11 @@ foreach ($bundle in $providerBundles) {
                 $badLabels = @('Vehicle','Person','NCIC','DMV','FCIC','NJCJIS','TLETS','LEMS','AZDPS','NYSPIN')
                 if ($badLabels -contains $cfg.queryLabel) {
                     Write-Warn "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' -- do not use entity or system names as labels (AP #25)"
+                    Write-Host "    [FIX] In build script: change queryLabel to describe the search type (e.g. 'Vehicle Registration', 'Driver License', 'Firearm') per AP #25" -ForegroundColor Cyan
                 }
             } else {
                 Write-Warn "QIDM '$($cfg.name)' missing queryLabel property"
+                Write-Host "    [FIX] In build script: add queryLabel property to QIDM '$($cfg.name)' -- see QIDM_REFERENCE.txt for standard labels per query type" -ForegroundColor Cyan
             }
         }
 
@@ -1084,8 +1140,10 @@ foreach ($bundle in $providerBundles) {
             if ($attr.rule -and $attr.rule.function -eq 'CommsysGetDexStateUserIdRuleHandler') {
                 if (-not $attr.rule.arguments -or -not ($attr.rule.arguments -is [System.Array]) -or $attr.rule.arguments.Count -eq 0) {
                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' CommsysGetDexStateUserIdRuleHandler missing arguments -- needs @('true')"
+                    Write-Host "    [FIX] In build script: add arguments=@('true') to the CommsysGetDexStateUserIdRuleHandler rule on attr '$($attr.name)'" -ForegroundColor Cyan
                 } elseif ($attr.rule.arguments[0] -ne 'true') {
                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' CommsysGetDexStateUserIdRuleHandler arguments[0]='$($attr.rule.arguments[0])' -- expected 'true'"
+                    Write-Host "    [FIX] In build script: change arguments[0] from '$($attr.rule.arguments[0])' to 'true'" -ForegroundColor Cyan
                 }
             }
         }
@@ -1115,6 +1173,7 @@ foreach ($bundle in $providerBundles) {
                     if ($attr.targetField -eq 'SexCode') {
                         if ($attr.size -ne $null -and $attr.size -ne 1) {
                             Write-Warn "QIDM '$($cfg.name)' SexCode attr '$($attr.name)' size=$($attr.size) -- expected 1"
+                            Write-Host "    [FIX] In build script: change SexCode attr size from $($attr.size) to 1" -ForegroundColor Cyan
                         }
                         if (-not $attr.codeTypeProvider) {
                             $sfs = @()
@@ -1128,6 +1187,7 @@ foreach ($bundle in $providerBundles) {
                         } else {
                             if ($attr.codeTypeProvider -ne 'NIBRS') {
                                 Write-Warn "QIDM '$($cfg.name)' SexCode codeTypeProvider='$($attr.codeTypeProvider)' -- expected 'NIBRS' (AP #2)"
+                                Write-Host "    [FIX] In build script: change SexCode QIDM attr codeTypeProvider from '$($attr.codeTypeProvider)' to 'NIBRS'" -ForegroundColor Cyan
                             } else {
                                 Write-Pass "QIDM '$($cfg.name)' SexCode has codeTypeProvider='NIBRS' (AP #2)"; Inc-Pass
                             }
@@ -1141,6 +1201,7 @@ foreach ($bundle in $providerBundles) {
                 if ($attr.targetField -eq 'ImageIndicator' -or $attr.name -eq 'ImageIndicator') {
                     if ($attr.size -ne 1) {
                         Write-Warn "QIDM '$($cfg.name)' ImageIndicator size=$($attr.size) -- expected 1"
+                        Write-Host "    [FIX] In build script: change ImageIndicator attr size from $($attr.size) to 1" -ForegroundColor Cyan
                     } else {
                         Write-Pass "QIDM '$($cfg.name)' ImageIndicator size=1"; Inc-Pass
                     }
@@ -1154,6 +1215,7 @@ foreach ($bundle in $providerBundles) {
                     }
                     if (-not $imgInCombo) {
                         Write-Warn "QIDM '$($cfg.name)' ImageIndicator attr '$imgFieldName' not in any combo set[]/any[] -- will not serialize to XML"
+                        Write-Host "    [FIX] In build script: add '$imgFieldName' to the any[] array of every combo in QIDM '$($cfg.name)'" -ForegroundColor Cyan
                     }
                 }
             }
@@ -1182,11 +1244,13 @@ foreach ($bundle in $providerBundles) {
                 foreach ($sf in $sfs) {
                     if ($sf -match '^LicensePlateNumber(In|Out)$') {
                         Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' sourceField='$sf' uses deprecated In/Out suffix -- use 'licensePlateNumber' instead"
+                        Write-Host "    [FIX] In build script: change sourceField from '$sf' to 'licensePlateNumber' and update combo set[]/any[] references" -ForegroundColor Cyan
                     }
                 }
                 # targetField should be XML element name (LicensePlateNumber), not form fieldId variant
                 if ($attr.targetField -match '^LicensePlateNumber(In|Out)$') {
                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' targetField='$($attr.targetField)' -- XML element should be 'LicensePlateNumber' (targetField is XML name, not form fieldId)"
+                    Write-Host "    [FIX] In build script: change targetField from '$($attr.targetField)' to 'LicensePlateNumber'" -ForegroundColor Cyan
                 }
             }
 
@@ -1205,6 +1269,7 @@ foreach ($bundle in $providerBundles) {
                         }
                         if ($attnInCombo) {
                             Write-Warn "QIDM '$($cfg.name)' Attention attr '$($attr.name)' in combo set[]/any[] -- auto-fill handler present, should not be in combos"
+                            Write-Host "    [FIX] In build script: remove '$($attr.name)' from all combo set[]/any[] arrays in QIDM '$($cfg.name)' -- handler auto-fills without combo trigger" -ForegroundColor Cyan
                         }
                     }
                 }
@@ -1226,10 +1291,13 @@ foreach ($bundle in $providerBundles) {
                                 if (-not $dateArgs -or -not ($dateArgs -is [System.Array]) -or $dateArgs.Count -ne 2) {
                                     $ac = if ($dateArgs -is [System.Array]) { $dateArgs.Count } else { 0 }
                                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' CommsysParseDateRuleHandler needs exactly 2 arguments (has $ac) -- @('yyyy-MM-dd','<provider-format>')"
+                                    Write-Host "    [FIX] In build script: set arguments=@('yyyy-MM-dd','<provider-date-format>') on attr '$($attr.name)' (check metadata for target format)" -ForegroundColor Cyan
                                 } elseif ($dateArgs[0] -ne 'yyyy-MM-dd') {
                                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' CommsysParseDateRuleHandler first argument='$($dateArgs[0])' -- expected 'yyyy-MM-dd'"
+                                    Write-Host "    [FIX] In build script: change first argument from '$($dateArgs[0])' to 'yyyy-MM-dd' (FormDate always sends ISO format)" -ForegroundColor Cyan
                                 } elseif ($dateArgs[1] -notmatch '^[yMd\-/]+$') {
                                     Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' CommsysParseDateRuleHandler second argument='$($dateArgs[1])' -- does not look like a date format"
+                                    Write-Host "    [FIX] In build script: change second argument to a valid date format string (e.g. 'MMddyyyy', 'yyyyMMdd') per provider metadata" -ForegroundColor Cyan
                                 }
                             }
                         }
@@ -1242,6 +1310,7 @@ foreach ($bundle in $providerBundles) {
         foreach ($attr in $cfg.attributes) {
             if ($attr.codeTypeCategory -eq 'NCIC_FIREARM_MAKE' -and $entity -ne 'Firearm') {
                 Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses NCIC_FIREARM_MAKE on $entity -- firearm makes only (AP #24)"
+                Write-Host "    [FIX] In build script: remove codeTypeCategory='NCIC_FIREARM_MAKE' from $entity attr '$($attr.name)' -- use FormInput (text) for vehicle make" -ForegroundColor Cyan
             }
         }
 
@@ -1270,6 +1339,7 @@ foreach ($bundle in $providerBundles) {
                     if (-not $commsysAttrSourceFields.Contains($cf)) {
                         $cId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                         Write-Warn "QIDM '$($cfg.name)' combo '$cId' field '$cf' in set[]/any[] has no matching attribute sourceField"
+                        Write-Host "    [FIX] Add a QIDM attribute with sourceField=['$cf'] to QIDM '$($cfg.name)', or remove '$cf' from combo '$cId' set[]/any[]" -ForegroundColor Cyan
                     }
                 }
             }
@@ -1279,6 +1349,7 @@ foreach ($bundle in $providerBundles) {
         foreach ($attr in $cfg.attributes) {
             if ($attr.rule -and $attr.rule.function -eq 'IgnoreUserValueRuleHandler') {
                 Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses IgnoreUserValueRuleHandler -- DEAD END, does not substitute argument (AP #4)"
+                Write-Host "    [FIX] In build script: replace IgnoreUserValueRuleHandler with a hidden FormInput (InpH) with initialValue set to the desired value" -ForegroundColor Cyan
             }
         }
     }
@@ -1319,6 +1390,7 @@ if ($rmsBundle) {
         if ($cfg.type -ne "QUERYINPUTDATAMAPPING") { continue }
         if (-not $cfg.combinations -or $cfg.combinations.Count -eq 0) {
             Write-Warn "RMS QIDM '$($cfg.name)' has no combinations -- RMS query will never fire"
+            Write-Host "    [FIX] In build script: add combinations from HIDLE.json template for this entity type, then apply standard patches" -ForegroundColor Cyan
         }
     }
 
@@ -1430,6 +1502,7 @@ if ($rmsBundle) {
         }
         if (-not $hasRegState) {
             Write-Warn "RMS Person QIDM '$($cfg.name)' missing registrationState attribute (Patch 3)"
+            Write-Host "    [FIX] In build script: add registrationState attr with sourceField=['RegistrationState'], targetField='registrationStateAttrId', useAttributeId=true to RMS Person QIDM" -ForegroundColor Cyan
         } else {
             Write-Pass "RMS Person QIDM '$($cfg.name)' has registrationState attr (Patch 3)"; Inc-Pass
             # G-8: RegistrationState must also be in every Person combo any[]
@@ -1444,6 +1517,7 @@ if ($rmsBundle) {
                 if (-not $hasInAny) {
                     $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
                     Write-Warn "RMS Person QIDM '$($cfg.name)' combo '$comboId' missing 'RegistrationState' in any[] -- person search ignores state filter (Patch 3)"
+                    Write-Host "    [FIX] In build script: add 'RegistrationState' to the any[] array of RMS Person combo '$comboId'" -ForegroundColor Cyan
                 }
             }
         }
@@ -1480,10 +1554,12 @@ if ($rmsBundle) {
         foreach ($attr in $cfg.attributes) {
             if ($attr.targetField -eq 'registrationStateAttrId') {
                 Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' targetField='registrationStateAttrId' (singular) -- Vehicle must use plural 'registrationStateAttrIds' (Patch 4)"
+                Write-Host "    [FIX] In build script: change targetField from 'registrationStateAttrId' to 'registrationStateAttrIds' (plural) on RMS Vehicle attr '$($attr.name)'" -ForegroundColor Cyan
             }
             if ($attr.targetField -eq 'registrationStateAttrIds') {
                 if (-not $attr.rule -or $attr.rule.function -ne 'AttributeArrayWrapperRuleHandler') {
                     Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' registrationStateAttrIds missing AttributeArrayWrapperRuleHandler (Patch 5)"
+                    Write-Host "    [FIX] In build script: add rule={function:'AttributeArrayWrapperRuleHandler'} to RMS Vehicle registrationStateAttrIds attr" -ForegroundColor Cyan
                 }
             }
         }
@@ -1499,6 +1575,7 @@ if ($rmsBundle) {
         }
         if (-not $vehicleHasRegStateInAny) {
             Write-Warn "RMS Vehicle QIDM '$($cfg.name)' no combo has 'RegistrationState' in any[] (Patch 1 -- plate search ignores state)"
+            Write-Host "    [FIX] In build script: add 'RegistrationState' to the any[] array of the RMS Vehicle licensePlateIn combo" -ForegroundColor Cyan
         } else {
             Write-Pass "RMS Vehicle QIDM '$($cfg.name)' has RegistrationState in combo any[] (Patch 1)"; Inc-Pass
         }
@@ -1528,6 +1605,7 @@ foreach ($q in $qidms) {
                             if ($node.props -and $node.props.fieldId -eq $fid -and $node.props.initialValue) {
                                 if (-not $warnedStateL30.ContainsKey($warnKey)) {
                                     Write-Warn "QIDM '$($q.name)' has separate In/Out combos but $entity State field '$fid' has initialValue='$($node.props.initialValue)' -- changes combo routing (LIMITATION #30)"
+                                    Write-Host "    [FIX] In build script: remove initialValue from State field '$fid' -- use card title hints instead (e.g. 'Leave blank for in-state queries')" -ForegroundColor Cyan
                                     $warnedStateL30[$warnKey] = $true
                                 }
                             }
@@ -1612,6 +1690,7 @@ foreach ($entity in $entityQidms.Keys) {
                 Write-Pass "$entity : DH QIDM uses DH-suffix fieldIds (AP #14)"; Inc-Pass
                 if ($dhNonSuffixed.Count -gt 0) {
                     Write-Warn "$entity : DH QIDM has $($dhNonSuffixed.Count) non-suffixed sourceField(s): $($dhNonSuffixed -join ', ') -- all DH user fields need DH suffix"
+                    Write-Host "    [FIX] In build script: rename DH sourceFields to DH-suffix variants (e.g. NameFirst->NameFirstDH, BirthDate->BirthDateDH) and update form fieldIds to match" -ForegroundColor Cyan
                 }
             }
             # Check DL QIDM doesn't accidentally use DH-suffix fields
@@ -1622,6 +1701,7 @@ foreach ($entity in $entityQidms.Keys) {
                 foreach ($sf in $sfs) {
                     if ($sf -match 'DH$') {
                         Write-Warn "$entity : DL QIDM attr '$($attr.name)' uses DH-suffix sourceField '$sf' -- DL should use base fieldIds, not DH variants"
+                        Write-Host "    [FIX] In build script: change DL QIDM attr '$($attr.name)' sourceField from '$sf' to '$($sf -replace 'DH$','')' (remove DH suffix)" -ForegroundColor Cyan
                     }
                 }
             }
@@ -1656,6 +1736,7 @@ foreach ($entity in $entityQidms.Keys) {
             if ($allKeyRefs[$kr].Count -gt 1) {
                 $qNames = ($allKeyRefs[$kr] | Sort-Object -Unique) -join ', '
                 Write-Warn "$entity : keyReference '$kr' appears in multiple QIDMs: $qNames -- may cause routing confusion"
+                Write-Host "    [FIX] In build script: rename keyReference '$kr' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)" -ForegroundColor Cyan
             }
         }
     }
@@ -1710,6 +1791,7 @@ foreach ($bundle in $providerBundles) {
         Write-Pass "AUTHENTICATION present"; Inc-Pass
         if ($auth.handlerFunction -and $auth.handlerFunction -ne 'CommsysOriAuthenticationHandler') {
             Write-Warn "AUTHENTICATION '$($auth.name)' handlerFunction='$($auth.handlerFunction)' -- expected 'CommsysOriAuthenticationHandler'"
+            Write-Host "    [FIX] In build script: change AUTH handlerFunction from '$($auth.handlerFunction)' to 'CommsysOriAuthenticationHandler'" -ForegroundColor Cyan
         }
         if ($auth.attributes) {
             $hasDexHandler = $false
@@ -1720,8 +1802,10 @@ foreach ($bundle in $providerBundles) {
                     $hasDexHandler = $true
                     if (-not $attr.rule.arguments -or -not ($attr.rule.arguments -is [System.Array]) -or $attr.rule.arguments.Count -eq 0) {
                         Write-Warn "AUTH '$($auth.name)' attr '$($attr.name)' CommsysGetDexStateUserIdRuleHandler missing arguments -- needs @('true')"
+                        Write-Host "    [FIX] In build script: add arguments=@('true') to the CommsysGetDexStateUserIdRuleHandler rule on AUTH attr '$($attr.name)'" -ForegroundColor Cyan
                     } elseif ($attr.rule.arguments[0] -ne 'true') {
                         Write-Warn "AUTH '$($auth.name)' attr '$($attr.name)' CommsysGetDexStateUserIdRuleHandler arguments[0]='$($attr.rule.arguments[0])' -- expected 'true'"
+                        Write-Host "    [FIX] In build script: change AUTH DexStateUserId arguments[0] from '$($attr.rule.arguments[0])' to 'true'" -ForegroundColor Cyan
                     }
                 }
                 if ($attr.name -eq 'ORI' -or $attr.targetField -eq 'ORI') { $hasORI = $true }
@@ -1729,6 +1813,7 @@ foreach ($bundle in $providerBundles) {
             }
             if (-not $hasDexHandler) {
                 Write-Warn "AUTH '$($auth.name)' missing CommsysGetDexStateUserIdRuleHandler on UserName attribute"
+                Write-Host "    [FIX] In build script: add a UserName attribute with rule={function:'CommsysGetDexStateUserIdRuleHandler', arguments:['true']} to AUTH config" -ForegroundColor Cyan
             }
             if (-not $hasORI) { Write-Fail "AUTH '$($auth.name)' missing ORI attribute -- auth will fail on every query" }
             if (-not $hasMnemonic) { Write-Fail "AUTH '$($auth.name)' missing Mnemonic attribute -- auth will fail on every query" }
@@ -1739,24 +1824,30 @@ foreach ($bundle in $providerBundles) {
             foreach ($authCombo in $auth.combinations) {
                 if (-not $authCombo.keyReference) {
                     Write-Warn "AUTH '$($auth.name)' combination missing keyReference"
+                    Write-Host "    [FIX] In build script: add keyReference='AUTH' (or unique string) to AUTH combination" -ForegroundColor Cyan
                 }
                 if ($authCombo.requirements -and $authCombo.requirements.set) {
                     if ($authCombo.requirements.set -notcontains 'ORI') {
                         Write-Warn "AUTH '$($auth.name)' combo set[] missing 'ORI' -- auth may not fire"
+                        Write-Host "    [FIX] In build script: add 'ORI' to AUTH combo requirements.set[] array" -ForegroundColor Cyan
                     }
                     if ($authCombo.requirements.set -notcontains 'Mnemonic') {
                         Write-Warn "AUTH '$($auth.name)' combo set[] missing 'Mnemonic' -- auth may not fire"
+                        Write-Host "    [FIX] In build script: add 'Mnemonic' to AUTH combo requirements.set[] array" -ForegroundColor Cyan
                     }
                 }
             }
         } else {
             Write-Warn "AUTH '$($auth.name)' has no combinations -- auth pattern may not fire"
+            Write-Host "    [FIX] In build script: add combinations array to AUTH with at least one combo containing requirements.set=['ORI','Mnemonic']" -ForegroundColor Cyan
         }
         if ($auth.signInRequired -ne $false -and $auth.signInRequired -ne $null) {
             Write-Warn "AUTH '$($auth.name)' signInRequired='$($auth.signInRequired)' -- expected false"
+            Write-Host "    [FIX] In build script: set signInRequired=`$false on AUTH config" -ForegroundColor Cyan
         }
         if ($auth.deviceRegistrationOptional -ne $false -and $auth.deviceRegistrationOptional -ne $null) {
             Write-Warn "AUTH '$($auth.name)' deviceRegistrationOptional='$($auth.deviceRegistrationOptional)' -- expected false"
+            Write-Host "    [FIX] In build script: set deviceRegistrationOptional=`$false on AUTH config" -ForegroundColor Cyan
         }
     }
 
@@ -1765,16 +1856,21 @@ foreach ($bundle in $providerBundles) {
         Write-Pass "QUERYMESSAGEFORMAT present"; Inc-Pass
         if ($qmf.handlerFunction -and $qmf.handlerFunction -ne 'CommsysWsiOutgoingMessageHandler') {
             Write-Warn "QMF '$($qmf.name)' handlerFunction='$($qmf.handlerFunction)' -- expected 'CommsysWsiOutgoingMessageHandler'"
+            Write-Host "    [FIX] In build script: change QMF handlerFunction from '$($qmf.handlerFunction)' to 'CommsysWsiOutgoingMessageHandler'" -ForegroundColor Cyan
         }
         if (-not $qmf.authenticationParent) {
             Write-Warn "QMF '$($qmf.name)' missing authenticationParent -- expected 'LawEnforcementTransaction'"
+            Write-Host "    [FIX] In build script: add authenticationParent='LawEnforcementTransaction' to QMF config" -ForegroundColor Cyan
         } elseif ($qmf.authenticationParent -ne 'LawEnforcementTransaction') {
             Write-Warn "QMF '$($qmf.name)' authenticationParent='$($qmf.authenticationParent)' -- expected 'LawEnforcementTransaction'"
+            Write-Host "    [FIX] In build script: change authenticationParent from '$($qmf.authenticationParent)' to 'LawEnforcementTransaction'" -ForegroundColor Cyan
         }
         if (-not $qmf.payloadParent) {
             Write-Warn "QMF '$($qmf.name)' missing payloadParent -- expected 'LawEnforcementTransaction'"
+            Write-Host "    [FIX] In build script: add payloadParent='LawEnforcementTransaction' to QMF config" -ForegroundColor Cyan
         } elseif ($qmf.payloadParent -ne 'LawEnforcementTransaction') {
             Write-Warn "QMF '$($qmf.name)' payloadParent='$($qmf.payloadParent)' -- expected 'LawEnforcementTransaction'"
+            Write-Host "    [FIX] In build script: change payloadParent from '$($qmf.payloadParent)' to 'LawEnforcementTransaction'" -ForegroundColor Cyan
         }
     }
 
@@ -1783,6 +1879,7 @@ foreach ($bundle in $providerBundles) {
         Write-Pass "QUERYRESULTDATAMAPPING present"; Inc-Pass
         if ($results.handlerFunction -and $results.handlerFunction -ne 'CommsysResultsHandler') {
             Write-Warn "QRDM '$($results.name)' handlerFunction='$($results.handlerFunction)' -- expected 'CommsysResultsHandler'"
+            Write-Host "    [FIX] In build script: change QRDM handlerFunction from '$($results.handlerFunction)' to 'CommsysResultsHandler'" -ForegroundColor Cyan
         }
     }
 }
@@ -1791,14 +1888,17 @@ foreach ($bundle in $providerBundles) {
 if ($rmsBundle) {
     if (-not $rmsBundle.provider) {
         Write-Warn "RMS bundle missing 'provider' property -- expected 'RMS'"
+        Write-Host "    [FIX] In build script: add provider='RMS' to the RMS bundle" -ForegroundColor Cyan
     } elseif ($rmsBundle.provider -ne 'RMS') {
         Write-Warn "RMS bundle provider='$($rmsBundle.provider)' -- expected 'RMS'"
+        Write-Host "    [FIX] In build script: change RMS bundle provider from '$($rmsBundle.provider)' to 'RMS'" -ForegroundColor Cyan
     }
     # Check for unknown config types in RMS bundle
     $knownRmsTypes = @('QUERYINPUTDATAMAPPING','AUTHENTICATION','QUERYMESSAGEFORMAT','QUERYRESULTDATAMAPPING','QUERYRESULTSLAYOUT')
     foreach ($cfg in $rmsBundle.configurations) {
         if ($cfg.type -and $knownRmsTypes -notcontains $cfg.type) {
             Write-Warn "RMS bundle config '$($cfg.name)' has unknown type '$($cfg.type)' -- may be silently ignored"
+            Write-Host "    [FIX] Change config type to one of: QUERYINPUTDATAMAPPING, AUTHENTICATION, QUERYMESSAGEFORMAT, QUERYRESULTDATAMAPPING, QUERYRESULTSLAYOUT" -ForegroundColor Cyan
         }
     }
     $rmsAuth = $rmsBundle.configurations | Where-Object { $_.type -eq "AUTHENTICATION" }
@@ -1810,6 +1910,7 @@ if ($rmsBundle) {
         Write-Pass "RMS AUTHENTICATION present"; Inc-Pass
         if ($rmsAuth.handlerFunction -and $rmsAuth.handlerFunction -ne 'RestAuthenticationHandler') {
             Write-Warn "RMS AUTH handlerFunction='$($rmsAuth.handlerFunction)' -- expected 'RestAuthenticationHandler'"
+            Write-Host "    [FIX] In build script: change RMS AUTH handlerFunction from '$($rmsAuth.handlerFunction)' to 'RestAuthenticationHandler'" -ForegroundColor Cyan
         }
     }
     else { Write-Fail "RMS bundle missing AUTHENTICATION config" }
@@ -1817,6 +1918,7 @@ if ($rmsBundle) {
         Write-Pass "RMS QUERYMESSAGEFORMAT present"; Inc-Pass
         if ($rmsQmf.handlerFunction -and $rmsQmf.handlerFunction -ne 'RestRequestHandler') {
             Write-Warn "RMS QMF handlerFunction='$($rmsQmf.handlerFunction)' -- expected 'RestRequestHandler'"
+            Write-Host "    [FIX] In build script: change RMS QMF handlerFunction from '$($rmsQmf.handlerFunction)' to 'RestRequestHandler'" -ForegroundColor Cyan
         }
     }
     else { Write-Fail "RMS bundle missing QUERYMESSAGEFORMAT config" }
@@ -1824,6 +1926,7 @@ if ($rmsBundle) {
         Write-Pass "RMS QUERYRESULTDATAMAPPING present"; Inc-Pass
         if ($rmsResults.handlerFunction -and $rmsResults.handlerFunction -ne 'RmsRestResultsHandler') {
             Write-Warn "RMS QRDM handlerFunction='$($rmsResults.handlerFunction)' -- expected 'RmsRestResultsHandler'"
+            Write-Host "    [FIX] In build script: change RMS QRDM handlerFunction from '$($rmsResults.handlerFunction)' to 'RmsRestResultsHandler'" -ForegroundColor Cyan
         }
     }
     else { Write-Fail "RMS bundle missing QUERYRESULTDATAMAPPING config" }
@@ -1831,6 +1934,7 @@ if ($rmsBundle) {
         Write-Pass "RMS QUERYRESULTSLAYOUT present"; Inc-Pass
         if ($rmsLayout.handlerFunction -and $rmsLayout.handlerFunction -ne 'QueryResultsLayoutHandler') {
             Write-Warn "RMS QRSL handlerFunction='$($rmsLayout.handlerFunction)' -- expected 'QueryResultsLayoutHandler'"
+            Write-Host "    [FIX] In build script: change RMS QRSL handlerFunction from '$($rmsLayout.handlerFunction)' to 'QueryResultsLayoutHandler'" -ForegroundColor Cyan
         }
     }
     else { Write-Fail "RMS bundle missing QUERYRESULTSLAYOUT config" }
@@ -1839,6 +1943,7 @@ if ($rmsBundle) {
     if ($rmsBundle.ParallelQuery -and $rmsBundle.ParallelQuery.function) {
         if ($rmsBundle.ParallelQuery.function -ne 'parallelQueryHandler') {
             Write-Warn "RMS bundle ParallelQuery.function='$($rmsBundle.ParallelQuery.function)' -- expected 'parallelQueryHandler'"
+            Write-Host "    [FIX] In build script: change RMS ParallelQuery.function from '$($rmsBundle.ParallelQuery.function)' to 'parallelQueryHandler'" -ForegroundColor Cyan
         } else {
             Write-Pass "RMS bundle ParallelQuery.function='parallelQueryHandler'"; Inc-Pass
         }
@@ -1850,6 +1955,7 @@ if ($rmsBundle) {
     $rmsBundleProps = $rmsBundle | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
     if ($rmsBundleProps -contains 'ruleHandlers') {
         Write-Warn "RMS bundle has 'ruleHandlers' property -- expected structured handler properties (PayloadHandler, ParallelQuery, etc.), not ruleHandlers array"
+        Write-Host "    [FIX] In build script: remove 'ruleHandlers' array from RMS bundle -- use individual handler properties (PayloadHandler, ParallelQuery) from HIDLE.json template" -ForegroundColor Cyan
     }
 
     $rmsQidms = @($rmsBundle.configurations | Where-Object { $_.type -eq "QUERYINPUTDATAMAPPING" })
@@ -1863,6 +1969,7 @@ if ($rmsBundle) {
     foreach ($rq in $rmsQidms) {
         if ($rq.autoSelect -ne $true) {
             Write-Warn "RMS QIDM '$($rq.name)' autoSelect is not true -- RMS queries should auto-fire with CommSys"
+            Write-Host "    [FIX] In build script: set autoSelect=`$true on RMS QIDM '$($rq.name)'" -ForegroundColor Cyan
         } else {
             Write-Pass "RMS QIDM '$($rq.name)' autoSelect=true"; Inc-Pass
         }
@@ -1871,8 +1978,10 @@ if ($rmsBundle) {
         }
         if ($rq.queryLabel -and $rq.queryLabel -ne 'RMS') {
             Write-Warn "RMS QIDM '$($rq.name)' queryLabel='$($rq.queryLabel)' -- expected 'RMS'"
+            Write-Host "    [FIX] In build script: change RMS QIDM queryLabel from '$($rq.queryLabel)' to 'RMS'" -ForegroundColor Cyan
         } elseif (-not $rq.queryLabel) {
             Write-Warn "RMS QIDM '$($rq.name)' missing queryLabel -- expected 'RMS'"
+            Write-Host "    [FIX] In build script: add queryLabel='RMS' to RMS QIDM '$($rq.name)'" -ForegroundColor Cyan
         }
     }
 
@@ -1904,6 +2013,7 @@ if ($rmsBundle) {
                 foreach ($sf in $sfs) {
                     if ($deadList -contains $sf) {
                         Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE sourceField '$sf' -- remove per Patch 6"
+                        Write-Host "    [FIX] In build script: remove attribute with sourceField='$sf' from RMS $($cfg.targetEntity) QIDM and remove '$sf' from all combo set[]/any[] arrays" -ForegroundColor Cyan
                     }
                 }
             }
@@ -1912,6 +2022,7 @@ if ($rmsBundle) {
             foreach ($combo in $cfg.combinations) {
                 if ($combo.keyReference -and $deadCombos -contains $combo.keyReference) {
                     Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE combo '$($combo.keyReference)' -- remove per Patch 6"
+                    Write-Host "    [FIX] In build script: remove combo '$($combo.keyReference)' from RMS $($cfg.targetEntity) QIDM '$($cfg.name)'" -ForegroundColor Cyan
                 }
             }
         }
@@ -1970,6 +2081,7 @@ foreach ($q in $qidms) {
         }
         if ($anyUnresolvable.Count -gt 0) {
             Write-Warn "QIDM '$($q.name)' combo '$keyRef': unresolvable any[] fields: $($anyUnresolvable -join ', ')"
+            Write-Host "    [FIX] Add form fields for: $($anyUnresolvable -join ', ') to the $entity QIF, or remove them from combo '$keyRef' any[]" -ForegroundColor Cyan
         }
     }
 }

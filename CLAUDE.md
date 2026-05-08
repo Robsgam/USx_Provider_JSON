@@ -432,7 +432,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (27 scripts in `tools/`)
+## Tools (29 scripts in `tools/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -458,6 +458,8 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
 | `audit_test_coverage.ps1` | Test coverage matrix (QIDM combos vs test logs, SQVR alignment, orphan detection) | `-Path <json>` `-OutFile` |
+| `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
+| `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
 
 ### Metadata & Extraction
 
@@ -502,6 +504,12 @@ powershell -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1 -X
 
 # Test log stub (GATE 2, before every test)
 powershell -ExecutionPolicy Bypass -File tools/new_test_log.ps1 -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
+
+# Provider scorecard (all providers at a glance)
+powershell -ExecutionPolicy Bypass -File tools/score_all.ps1 -Quick
+
+# Build script linter (catch anti-patterns before build)
+powershell -ExecutionPolicy Bypass -File tools/lint_build_scripts.ps1
 ```
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
