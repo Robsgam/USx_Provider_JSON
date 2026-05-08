@@ -1,0 +1,80 @@
+NJ_NJCJIS BASE vv2.9 -- Test Log
+============================================================
+Date       : 2026-05-08
+JSON       : NJ_NJCJIS_BASE.json
+Entity     : Vehicle
+Combo      : QVP (VehStolen plate search with VehicleMakeCode - any[] field)
+Test type  : T15 - Phase 3 ANY field (VehicleMakeCode)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        MAKE123            typed
+  vehicleMakeCode           PASS_FORD          typed
+  registrationState         NJ                 default (initialValue)
+  imageIndicator            N                  default (initialValue)
+  [Vehicle Stolen]          checked            manual checkbox
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KR405SHZCMNSA2FVBSYEGTNV
+  MessageType : VehicleStolenQuery
+  keyReference: QVP
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    VehicleMakeCode      PASS_FORD
+    ImageIndicator       N
+    State                NJ
+    LicensePlateNumber   MAKE123
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QVP
+  Reason: set[licensePlateNumber] populated; any[imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode] multiple satisfied
+
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  ImageIndicator              YES    N               default, in any[]
+  LicensePlateNumber          YES    MAKE123         user-entered, in set[]
+  NCICNumber                  NO     --              not entered
+  State                       YES    NJ              NCIC reverse-lookup, in any[]
+  VehicleIdentificationNumber NO     --              not entered, in any[]
+  VehicleMakeCode             YES    PASS_FORD       user-entered, in any[]
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: licensePlateIn (+ makeNcicCode)
+  RMS request fields: tag=make123, registrationStateAttrIds=[69509884952], makeNcicCode=PASS_FORD
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleStolenQuery QVP fired with VehicleMakeCode populated. All 4 fields sent in XML.
+  Detail: RMS included makeNcicCode in search -- confirms RMS Vehicle QIDM handles make as text field. No Returns (test plate).
+
+================================================================================
+RAW XML REQUEST (from browser F12 > Network > select request > Payload)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KR405SHZCMNSA2FVBSYEGTNV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KR405SHZCMNSA2FVBSYEGTNV</Id><VehicleMakeCode>PASS_FORD</VehicleMakeCode><ImageIndicator>N</ImageIndicator><State>NJ</State><LicensePlateNumber>MAKE123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (if applicable -- from browser F12 > Network > RMS request)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"makeNcicCode":"PASS_FORD","tag":"make123"}},"from":0,"size":50}
