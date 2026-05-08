@@ -14,7 +14,7 @@
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "2.5",
+    [string]$Version = "2.6",
     [string]$Phase   = "mc"
 )
 
@@ -185,19 +185,19 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RandomRequest','RegistrationState','LicensePlateTypeCode'); any = @('ImageIndicator','LicensePlateYear') }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RandomRequest','RegistrationState','LicensePlateTypeCode','ImageIndicator','LicensePlateYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RandomRequest','RegistrationState'); any = @('ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RandomRequest','RegistrationState','ImageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQN'
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
+    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'

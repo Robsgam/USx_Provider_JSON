@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "2.5",
+    [string]$Version = "2.6",
     [string]$Phase   = "base"
 )
 
@@ -230,19 +230,19 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','randomRequest','registrationState','licensePlateTypeCode'); any = @('imageIndicator','licensePlateYear') }
+            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','randomRequest','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('randomRequest','registrationState','imageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQN'
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.'
+    description        = 'VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'

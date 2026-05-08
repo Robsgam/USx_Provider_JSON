@@ -5533,12 +5533,12 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "licensePlateNumber",
-                                                                                                             "randomRequest",
-                                                                                                             "registrationState",
-                                                                                                             "licensePlateTypeCode"
+                                                                                                             "licensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
+                                                                                                             "licensePlateTypeCode",
                                                                                                              "imageIndicator",
                                                                                                              "licensePlateYear"
                                                                                                          ]
@@ -5550,11 +5550,11 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "vehicleIdentificationNumber",
-                                                                                                             "randomRequest",
-                                                                                                             "registrationState"
+                                                                                                             "vehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "randomRequest",
+                                                                                                             "registrationState",
                                                                                                              "imageIndicator"
                                                                                                          ]
                                                                                              },
@@ -5563,7 +5563,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ (plate), RQN (VIN). RandomRequest mandatory.",
+                                                   "description":  "VehicleRegistrationQuery -- RQ (plate), RQN (VIN). Defaulted fields in any[] (initialValue not counted by set[] eval).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "NJ_NJCJIS_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -5986,7 +5986,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NJ_NJCJIS v2.5",
+                        "description":  "Provider configuration for NJ_NJCJIS v2.6",
                         "name":  "NJ_NJCJIS",
                         "type":  "BUNDLE",
                         "provider":  "NJ_NJCJIS"
