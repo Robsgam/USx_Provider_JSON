@@ -1,0 +1,247 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-08 14:54:02
+JSON: NJ_NJCJIS_BASE.json
+========================================================================
+
+QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle]
+Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
+------------------------------------------------------------------------
+
+  [FIRES] QVN
+    REQUIRED (set): [ncicNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: ncicNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+  [FIRES] QVP
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode]
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+  [FIRES] QVV
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [imageIndicator, vehicleMakeCode]
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: imageIndicator, vehicleMakeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] RQ_RAND
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+      condition: randomRequest EQUALS Y
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [FIRES] RQ
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [FIRES] RQN_RAND
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [randomRequest, registrationState, imageIndicator]
+      condition: randomRequest EQUALS Y
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: randomRequest, registrationState, imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [FIRES] RQN
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [randomRequest, registrationState, imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: randomRequest, registrationState, imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <RandomRequest>N</RandomRequest>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+QIDM: NJ_NJCJIS_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] DQN
+    REQUIRED (set): [operatorLicenseNumber, registrationState]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber + registrationState
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DQ
+    REQUIRED (set): [birthDate, nameLast, nameFirst]
+    OPTIONAL (any): [imageIndicator, sexCode, registrationState]
+    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst
+      Defaults/optional: imageIndicator, sexCode, registrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+QIDM: NJ_NJCJIS_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 5  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QG
+    REQUIRED (set): [serialNumber]
+    OPTIONAL (any): [gunCaliber, firearmMake, gunModel, imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: serialNumber
+      Defaults/optional: gunCaliber, firearmMake, gunModel, imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+QIDM: NJ_NJCJIS_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QA
+    REQUIRED (set): [serialNumber, articleTypeCode]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: serialNumber + articleTypeCode
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+QIDM: NJ_NJCJIS_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] QB
+    REQUIRED (set): [registrationNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: registrationNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+  [FIRES] QBN
+    REQUIRED (set): [boatHullIdNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+========================================================================

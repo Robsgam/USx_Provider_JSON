@@ -10,7 +10,8 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
     [string]$Entity,
-    [string]$Combo
+    [string]$Combo,
+    [string]$OutFile
 )
 
 $ErrorActionPreference = "Stop"
@@ -356,9 +357,105 @@ foreach ($qidm in $qidms) {
     }
 }
 
+# ── Save reference file ──
+if ($OutFile) {
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.AppendLine("CommSys Query Simulator -- Test Case Reference")
+    [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
+    [void]$sb.AppendLine("JSON: $(Split-Path $Path -Leaf)")
+    [void]$sb.AppendLine("=" * 72)
+
+    foreach ($qidm in $qidms) {
+        $ent = $qidm.targetEntity
+        if ($Entity -and $ent -ne $Entity) { continue }
+
+        [void]$sb.AppendLine("")
+        [void]$sb.AppendLine("QIDM: $($qidm.name) [$ent]")
+        [void]$sb.AppendLine("Query: $($qidm.query)  |  Attrs: $($qidm.attributes.Count)  |  Combos: $($qidm.combinations.Count)")
+        [void]$sb.AppendLine("-" * 72)
+
+        $formData = $testData[$ent]
+        if (-not $formData) {
+            [void]$sb.AppendLine("  [SKIP] No test data for '$ent'")
+            continue
+        }
+
+        $filledNames = Get-FilledRefs $qidm $formData
+
+        foreach ($c in $qidm.combinations) {
+            $kr = $c.keyReference
+            if (-not $kr) { $kr = $c.keyRef }
+            if ($Combo -and $kr -ne $Combo) { continue }
+
+            $setFields = @()
+            if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
+            $anyFields = @()
+            if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
+
+            $condFields = @()
+            if ($c.requirements -and $c.requirements.conditions) {
+                foreach ($cond in $c.requirements.conditions) {
+                    $flds = if ($cond.field -is [System.Array]) { $cond.field -join ',' } else { $cond.field }
+                    $vals = if ($cond.value -is [System.Array]) { $cond.value -join ',' } else { $cond.value }
+                    $condFields += "  condition: $flds $($cond.operator) $vals"
+                }
+            }
+
+            $setOk = $true
+            $missing = @()
+            foreach ($f in $setFields) {
+                if ($filledNames -notcontains $f) { $setOk = $false; $missing += $f }
+            }
+
+            $anyOk = $true
+            $matched = @()
+            if ($anyFields.Count -gt 0) {
+                $anyOk = $false
+                foreach ($f in $anyFields) {
+                    if ($filledNames -contains $f) { $anyOk = $true; $matched += $f }
+                }
+            }
+
+            $fires = $setOk -and $anyOk
+
+            [void]$sb.AppendLine("")
+            if ($fires) {
+                [void]$sb.AppendLine("  [FIRES] $kr")
+            } else {
+                $reason = ""
+                if (-not $setOk) { $reason = "missing set: $($missing -join ', ')" }
+                elseif (-not $anyOk) { $reason = "no any[] match" }
+                [void]$sb.AppendLine("  [SKIP] $kr -- $reason")
+            }
+            [void]$sb.AppendLine("    REQUIRED (set): [$($setFields -join ', ')]")
+            [void]$sb.AppendLine("    OPTIONAL (any): [$($anyFields -join ', ')]")
+            foreach ($cf in $condFields) { [void]$sb.AppendLine("    $cf") }
+
+            if ($fires) {
+                [void]$sb.AppendLine("    TEST INSTRUCTIONS: Enter values for: $($setFields -join ' + ')")
+                if ($anyFields.Count -gt 0) {
+                    [void]$sb.AppendLine("      Defaults/optional: $($anyFields -join ', ')")
+                }
+
+                $xml = Build-Xml $qidm $c $formData
+                [void]$sb.AppendLine("    EXPECTED XML:")
+                foreach ($line in $xml.Split([Environment]::NewLine)) {
+                    if ($line.Trim()) { [void]$sb.AppendLine("      $line") }
+                }
+            }
+        }
+    }
+
+    [void]$sb.AppendLine("")
+    [void]$sb.AppendLine("=" * 72)
+    [System.IO.File]::WriteAllText($OutFile, $sb.ToString(), [System.Text.UTF8Encoding]::new($false))
+    Write-Host "  Saved test reference: $OutFile" -ForegroundColor Green
+}
+
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host "  Filter: -Entity <name>  -Combo <keyRef>" -ForegroundColor DarkGray
 Write-Host "  Edit testData in script to change form values." -ForegroundColor DarkGray
+Write-Host "  Save: -OutFile <path> to save test case reference." -ForegroundColor DarkGray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
