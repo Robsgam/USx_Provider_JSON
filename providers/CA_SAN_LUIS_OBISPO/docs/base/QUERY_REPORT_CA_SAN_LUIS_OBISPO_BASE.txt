@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_BASE
   Source: CA_SAN_LUIS_OBISPO_BASE.json
-  Generated: 2026-05-11 09:06
+  Generated: 2026-05-11 10:38
 ================================================================
 QUERY SIMULATION
 ================
@@ -46,22 +46,6 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-    [FIRES] QV.V
-      set: [vehicleIdentificationNumber]
-      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
-      </Transaction>
-
     [FIRES] QV.P
       set: [licensePlateNumber]
       any: [licensePlateTypeCode, licensePlateYear] -> matched: [licensePlateTypeCode, licensePlateYear]
@@ -78,21 +62,24 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
---- QIDM: CA_SAN_LUIS_OBISPO_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
-
-    [FIRES] DQ.O
-      set: [operatorLicenseNumber, registrationState]
+    [FIRES] QV.V
+      set: [vehicleIdentificationNumber]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
       </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
     [FIRES] L1.N
       set: [nameLast, nameFirst]
@@ -101,6 +88,19 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>L1.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQ.O
+      set: [operatorLicenseNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
         <BirthDate>19900115</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
@@ -126,7 +126,7 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 4
 
     [FIRES] KQ.N
-      set: [nameLast, nameFirst, birthDate, sexCode]
+      set: [nameLastDH, nameFirstDH, birthDateDH, sexCodeDH]
       any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -136,28 +136,12 @@ QUERY SIMULATION
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <SexCode>M</SexCode>
-        <PurposeCode>C</PurposeCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] KQ.O
-      set: [operatorLicenseNumber]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
-        <PurposeCode>C</PurposeCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] B2.N
-      set: [birthDate, nameLast, nameFirst]
-      any: [sexCode] -> matched: [sexCode]
+      set: [birthDateDH, nameLastDH, nameFirstDH]
+      any: [sexCodeDH] -> matched: [sexCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -166,12 +150,25 @@ QUERY SIMULATION
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <SexCode>M</SexCode>
-        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [operatorLicenseNumberDH]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] B2.O
-      set: [operatorLicenseNumber]
+      set: [operatorLicenseNumberDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -180,7 +177,6 @@ QUERY SIMULATION
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <SexCode>M</SexCode>
-        <PurposeCode>C</PurposeCode>
         <State>NJ</State>
       </Transaction>
 

@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: CA_VENTURA_COUNTY_MC
   Source: CA_VENTURA_COUNTY_MC.json
-  Generated: 2026-05-11 09:05
+  Generated: 2026-05-11 10:38
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -27,6 +27,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
     SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -96,5 +98,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 9
+  Form dropdowns: 10
   QRDM code type attrs: 14
