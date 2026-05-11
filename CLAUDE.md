@@ -20,11 +20,11 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.0 | 69P/0F/0W/1LIM LOCKED -- 14/14 PASS full combo coverage -- DEPLOYED Newark NJ foundation 2026-05-11 | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.3 | 70P/0F/0W/5LIM (BASE) 70P/0F/0W/5LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.4 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) NEW | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.5 | 74P/0F/0W/1LIM (BASE) 74P/0F/0W/1LIM (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.2 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.3 | 101P/0F/0W/4LIM (BASE) 101P/0F/0W/5LIM (MC) NEW | DL+DH shared form, 6-card Person, QB routing (FL-8) |
-| TX_TLETS | providers/TX_TLETS/ | v2.4 | 82P/0F/0W/5LIM (BASE) 82P/0F/0W/5LIM (MC) NEW | TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
-| LA_LEMS | providers/LA_LEMS/ | v2.2 | 62P/0F/0W/5LIM (BASE) 62P/0F/0W/5LIM (MC) NEW | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
+| TX_TLETS | providers/TX_TLETS/ | v2.5 | 83P/0F/0W/3LIM (BASE) 83P/0F/0W/3LIM (MC) NEW | DH-suffix+queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
+| LA_LEMS | providers/LA_LEMS/ | v2.3 | 63P/0F/0W/1LIM (BASE) 63P/0F/0W/1LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.6 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) NEW | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.3 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |

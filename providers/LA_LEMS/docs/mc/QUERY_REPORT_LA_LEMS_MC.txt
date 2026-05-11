@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:34
 ================================================================
 QUERY SIMULATION
 ================
@@ -44,40 +44,6 @@ QUERY SIMULATION
 --- QIDM: LA_LEMS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 4
 
-    [FIRES] DP
-      set: [OperatorLicenseNumber, ImageIndicator]
-      any: [RegistrationState] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DP</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] DQ
-      set: [OperatorLicenseNumber]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
     [FIRES] QWDN
       set: [SexCode, BirthDate, NameLast, NameFirst, RaceCode]
       any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
@@ -112,40 +78,44 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
---- QIDM: LA_LEMS_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-
-    [FIRES] KQOperatorLicenseNumber
-      set: [OperatorLicenseNumber, PurposeCode]
+    [FIRES] DP
+      set: [OperatorLicenseNumber, ImageIndicator]
       any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>KQ</MessageKey>
+        <MessageKey>DP</MessageKey>
         <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
+        <RaceCode>W</RaceCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] KQName
-      set: [SexCode, BirthDate, NameLast, NameFirst, PurposeCode]
-      any: [RegistrationState, NameMiddle, NameSuffix] -> matched: [RegistrationState, NameMiddle]
+    [FIRES] DQ
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>KQ</MessageKey>
+        <MessageKey>DQ</MessageKey>
         <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
+        <RaceCode>W</RaceCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
+
+--- QIDM: LA_LEMS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+    [SKIP] KQName -- missing set: PurposeCodeDH
+    [SKIP] KQOperatorLicenseNumber -- missing set: PurposeCodeDH
 
 --- QIDM: LA_LEMS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 4  |  Combos: 1

@@ -1,5 +1,6 @@
-# build_LA_LEMS.ps1  -- LA_LEMS v2.2 BASE
+# build_LA_LEMS.ps1  -- LA_LEMS v2.3 BASE
 # Builds LA_LEMS_BASE.json from source\LA_LEMS.xml + HIDLE.json.
+# v2.3: DH-suffix fieldIds, queriesToDeselect, combo reorder (most set[] first, Name before OLN)
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_LA_LEMS.ps1
 #
@@ -46,7 +47,7 @@
 #   BoatQuery:                BQ, QB (distinct)
 
 param(
-    [string]$Version = "2.2",
+    [string]$Version = "2.3",
     [string]$Phase   = "base"
 )
 
@@ -246,12 +247,13 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. DriverLicenseQuery -- 4 combos
+# 1e. DriverLicenseQuery -- 4 combos, autoSelect + queriesToDeselect
 # XML: 5 combos -- DP, QWDN, QWA, DQ(Name UNREACHABLE), DQ(OLN)
 # DQ Name dropped (identical set[] to QWA, later in order -> unreachable)
 # ImageIndicator in DP set[] = photo routing toggle (no default on form)
 # RaceCode in QWDN set[] = LA-specific (most states have Race in any[])
-# autoSelect=true, NO queriesToDeselect (shared form, LIMITATION #26)
+# autoSelect=true + queriesToDeselect (DH-suffix fields isolate DH, AP #14 compliant)
+# Combo order: most set[] first, Name before OLN
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -277,36 +279,36 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # DP: Photo DL -- fires when OLN + ImageIndicator both present
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','imageIndicator'); any = @('registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DP'
-            state                 = 'In/Out'
-        }
-        # DQ: DL by OLN (no photo) -- fires when only OLN present, ImageIndicator blank
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator','registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ'
-            state                 = 'In/Out'
-        }
-        # QWDN: Name+DOB+Race+Sex -- most specific name path (LA requires Race)
+        # QWDN: Name+DOB+Race+Sex -- most specific name path (5 set[], LA requires Race)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst','raceCode'); any = @('imageIndicator','registrationState','nameMiddle','nameSuffix') }
             primaryFieldReference = 'Name'
             keyReference          = 'QWDN'
             state                 = 'In/Out'
         }
-        # QWA: Name+DOB+Sex (no Race) -- less specific name path
+        # QWA: Name+DOB+Sex (no Race) -- less specific name path (4 set[])
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('imageIndicator','raceCode','registrationState','nameMiddle','nameSuffix') }
             primaryFieldReference = 'Name'
             keyReference          = 'QWA'
             state                 = 'In/Out'
         }
+        # DP: Photo DL -- fires when OLN + ImageIndicator both present (2 set[])
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','imageIndicator'); any = @('registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DP'
+            state                 = 'In/Out'
+        }
+        # DQ: DL by OLN (no photo) -- fires when only OLN present (1 set[])
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator','registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverLicenseQuery -- DP (photo OLN), DQ (OLN), QWDN (Name+Race), QWA (Name). DQ Name UNREACHABLE dropped. 4 combos.'
+    description     = 'DriverLicenseQuery -- QWDN (Name+Race), QWA (Name), DP (photo OLN), DQ (OLN). DQ Name UNREACHABLE dropped. 4 combos. autoSelect + queriesToDeselect.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'LA_LEMS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -316,55 +318,53 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # =====================================================================
-# 1f. DriverHistoryQuery -- 2 combos
+# 1f. DriverHistoryQuery -- 2 combos, DH-suffix fields
 # XML: 2 combos both keyRef=KQ -> invented keyRefs
+# DH-suffix fields isolate from DL field pool (AP #14)
 # PurposeCode in set[] per metadata (routing gate with FormSelect default='C')
-# Attention: handler-populated on all combos
-# autoSelect=false (officer manually selects DH)
-# NO queriesToDeselect (shared form, LIMITATION #26)
+# Attention: handler-only (CommsysGetLastNameFirstNameInitialRuleHandler), NOT in combo requirements
+# Combo order: most set[] first, Name before OLN
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
-            name = 'Attention'
+            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
             rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
-            size = 30; sourceField = @('Attention'); targetField = 'Attention'
         }
         [PSCustomObject]@{
-            name = 'BirthDate'
+            name = 'BirthDate'; size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{
-            name = 'Name'
+            name = 'Name'; size = 30; sourceField = @('nameLastDH','nameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }
-            size = 30; sourceField = @('nameLast','nameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCode');           targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');           targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ OLN: fires when OLN + PurposeCode present (PurposeCode default='C')
+        # KQ Name: Name+DOB+Sex+PurposeCode (5 set[] -- most specific first)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','purposeCode'); any = @('registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQOperatorLicenseNumber'
-            state                 = 'In/Out'
-        }
-        # KQ Name: fires when Name+DOB+Sex+PurposeCode present
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst','purposeCode'); any = @('registrationState','nameMiddle','nameSuffix') }
+            requirements          = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','purposeCodeDH'); any = @('registrationState','nameMiddleDH','nameSuffixDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
+        # KQ OLN: OLN + PurposeCode (2 set[])
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH'); any = @('registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQOperatorLicenseNumber'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverHistoryQuery -- KQ (OLN/Name). PurposeCode in set[] per metadata. Attention handler-populated.'
+    description     = 'DriverHistoryQuery -- KQ (Name/OLN). DH-suffix fields. PurposeCode in set[]. Attention handler-only.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'LA_LEMS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -374,6 +374,7 @@ $dhQuery = [PSCustomObject]@{
     query           = 'DriverHistoryQuery'
     queryLabel      = 'Driver History'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverLicenseQuery')
 }
 
 # =====================================================================
@@ -534,10 +535,10 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # Person -- 1 card
-# Serves DriverLicenseQuery (DP/DQ/QWDN/QWA) and DriverHistoryQuery (KQ)
-# DL/DH share fields (no DH-suffix -- shared field pool, LIMITATION #25)
+# Serves DriverLicenseQuery (QWDN/QWA/DP/DQ) and DriverHistoryQuery (KQ)
+# DH-suffix fields isolate DH from DL field pool (AP #14, LIMITATION #24-25)
 # No ImageIndicator default (routing toggle for DP vs DQ)
-# PurposeCode default='C' (DH routing gate per metadata)
+# PurposeCodeDH default='C' (DH routing gate per metadata)
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER'
@@ -560,13 +561,26 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_4' }
-                @{ id = 'purposeCode_Input';    node = Sel 'purposeCode' 'Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_4' }
+                @{ id = 'purposeCodeDH_Input';  node = Sel 'purposeCodeDH' 'Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_4' }
+            )}
+            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_5' }
+                @{ id = 'birthDateDH_Input';              node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_5' }
+            )}
+            @{ id = 'ROW_PER_6'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_6' }
+                @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_6' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '30' 'ROW_PER_6' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '30' 'ROW_PER_6' }
+            )}
+            @{ id = 'ROW_PER_7'; cols = @('6'); fields = @(
+                @{ id = 'sexCodeDH_Input'; node = Sel 'sexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_7' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (DP/DQ/QWDN/QWA) and DH (KQ) on single card. No ImageIndicator default (DP routing).'
+    description  = 'Person queries -- DL (QWDN/QWA/DP/DQ) and DH (KQ) on single card. DH-suffix fields (AP #14).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_BASE
   Source: LA_LEMS_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:33
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === LA_LEMS_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=3
-  Person | entity=Person | qidm= | cards=1 fields=5
+  Person | entity=Person | qidm= | cards=1 fields=10
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -57,7 +57,17 @@ LAYOUT DETAIL
         raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
       ROW ROW_PER_4 [6 6]
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        purposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
+        purposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
+      ROW ROW_PER_5 [6 6]
+        operatorLicenseNumberDH (Text | maxLen=20)
+        birthDateDH (FormDate)
+      ROW ROW_PER_6 [3 3 3 3]
+        nameFirstDH (Text | maxLen=30)
+        nameLastDH (Text | maxLen=30)
+        nameMiddleDH (Text | maxLen=30)
+        nameSuffixDH (Text | maxLen=30)
+      ROW ROW_PER_7 [6]
+        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

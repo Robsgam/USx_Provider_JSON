@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:34
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 8 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 21 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
@@ -34,13 +34,11 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' -> Vehicle : 6 attrs, 2 combos
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'LA_LEMS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' -> Person : 8 attrs, 4 combos
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'LA_LEMS_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -55,8 +53,7 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
-  [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -77,22 +74,22 @@ VALIDATOR RESULTS
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' combo 'RQSLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' combo 'RQSVehicleIdentificationNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'DP': all set[]/any[] fields resolvable
-  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'QWDN': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'QWA': all set[]/any[] fields resolvable
-  [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'DP': all set[]/any[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_GunQuery' combo 'QG': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'BQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 62 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
+  RESULTS: 63 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  5 known limitation(s) -- documented, no action needed.
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

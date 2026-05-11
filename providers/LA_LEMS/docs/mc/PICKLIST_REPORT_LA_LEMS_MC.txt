@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:34
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -24,13 +24,15 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Person
     ImageIndicator [Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    PurposeCode [Purpose Code] (default=C)
+    PurposeCodeDH [Purpose Code (DH)] (default=C)
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
     RaceCode [Race]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
     RegistrationState [State] (default=LA)
       Config: attributeTypeId=STATE
     SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -105,5 +107,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 11
+  Form dropdowns: 12
   QRDM code type attrs: 15

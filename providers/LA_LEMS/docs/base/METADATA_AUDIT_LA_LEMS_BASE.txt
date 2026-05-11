@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: LA_LEMS_BASE
   Source: LA_LEMS_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:33
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-11 09:59
+ Generated: 2026-05-11 10:33
 ============================================================
 
 ============================================================
@@ -50,12 +50,12 @@ METADATA AUDIT
 --- CHECK 2: KeyReference Validation ---
   [INFO] RQSLicensePlateNumber: invented keyRef (not in XML) -- acceptable
   [INFO] RQSVehicleIdentificationNumber: invented keyRef (not in XML) -- acceptable
-  [PASS] DP: exists in XML DriverLicenseQuery
-  [PASS] DQ: exists in XML DriverLicenseQuery
   [PASS] QWDN: exists in XML DriverLicenseQuery
   [PASS] QWA: exists in XML DriverLicenseQuery
-  [INFO] KQOperatorLicenseNumber: invented keyRef (not in XML) -- acceptable
+  [PASS] DP: exists in XML DriverLicenseQuery
+  [PASS] DQ: exists in XML DriverLicenseQuery
   [INFO] KQName: invented keyRef (not in XML) -- acceptable
+  [INFO] KQOperatorLicenseNumber: invented keyRef (not in XML) -- acceptable
   [PASS] QG: exists in XML GunQuery
   [PASS] QA: exists in XML ArticleSingleQuery
   [PASS] BQ: exists in XML BoatQuery
@@ -118,11 +118,15 @@ METADATA AUDIT
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [INFO]   Attention: in QIDM only (form-only field)
-  [INFO]   nameFirst: in QIDM sourceField but not in XML
-  [INFO]   nameLast: in QIDM sourceField but not in XML
-  [INFO]   nameMiddle: in QIDM sourceField but not in XML
-  [INFO]   nameSuffix: in QIDM sourceField but not in XML
+  [INFO]   birthDateDH: in QIDM sourceField but not in XML
+  [INFO]   nameFirstDH: in QIDM sourceField but not in XML
+  [INFO]   nameLastDH: in QIDM sourceField but not in XML
+  [INFO]   nameMiddleDH: in QIDM sourceField but not in XML
+  [INFO]   nameSuffixDH: in QIDM sourceField but not in XML
+  [INFO]   operatorLicenseNumberDH: in QIDM sourceField but not in XML
+  [INFO]   purposeCodeDH: in QIDM sourceField but not in XML
   [INFO]   registrationState: in QIDM only (form-only field)
+  [INFO]   sexCodeDH: in QIDM sourceField but not in XML
   DriverLicenseQuery:
   [PASS]   Attention: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
@@ -240,11 +244,11 @@ METADATA AUDIT
   [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
   [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
   [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
-  [PASS] nameLast: maxLength 30 matches XML (Name)
-  [PASS] nameFirst: maxLength 30 matches XML (Name)
-  [PASS] nameMiddle: maxLength 30 matches XML (Name)
-  [PASS] nameSuffix: maxLength 30 matches XML (Name)
-  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameLastDH: maxLength 30 matches XML (Name)
+  [PASS] nameFirstDH: maxLength 30 matches XML (Name)
+  [PASS] nameMiddleDH: maxLength 30 matches XML (Name)
+  [PASS] nameSuffixDH: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] nameLast: maxLength 30 matches XML (Name)
   [PASS] nameFirst: maxLength 30 matches XML (Name)
   [PASS] nameMiddle: maxLength 30 matches XML (Name)
@@ -259,6 +263,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 88 PASS / 0 FAIL / 37 WARN / 69 INFO
+Total: 88 PASS / 0 FAIL / 37 WARN / 73 INFO
 ============================================================
 

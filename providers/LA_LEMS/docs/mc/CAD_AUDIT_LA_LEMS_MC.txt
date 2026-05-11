@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:34
 ================================================================
 CAD AUDIT
 =========
@@ -42,7 +42,7 @@ CAD AUDIT
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] PurposeCode: wrong case (expected 'purposeCode' or '')
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -57,6 +57,14 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] PurposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameSuffixDH: in QIF, not in CAD list (provider-specific)
+    [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -141,6 +149,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 35 PASS / 9 FAIL / 0 WARN / 67 INFO
+Total: 35 PASS / 8 FAIL / 0 WARN / 76 INFO
 
 
