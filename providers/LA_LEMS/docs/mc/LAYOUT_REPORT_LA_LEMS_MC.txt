@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-11 10:38
+  Generated: 2026-05-11 11:16
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -31,7 +31,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH_OPT"
       ROW ROW_VEH_O1 [4 4 4]
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
     CARD "CARD_VEH_PLATE"
@@ -46,7 +46,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_PER_OPT"
       ROW ROW_PER_O1 [4 4 4]
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         PurposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
     CARD "CARD_PER_OLN"
@@ -99,7 +99,7 @@ LAYOUT DETAIL
     CARD "CARD_BOA_REG"
       ROW ROW_BOA_R1 [8 4]
         RegistrationNumber (Text | maxLen=8)
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=LA)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
     CARD "CARD_BOA_HULL"
       ROW ROW_BOA_H1 [12]
         BoatHullIdNumber (Text | maxLen=20)

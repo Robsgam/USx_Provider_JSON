@@ -12,7 +12,7 @@
 #   Boat:    REGISTRATION (RegNumber, State) + HULL (HullID)
 
 param(
-    [string]$Version = "2.3",
+    [string]$Version = "2.4",
     [string]$Phase   = "mc"
 )
 
@@ -425,14 +425,14 @@ $provBundle = [PSCustomObject]@{
 # =====================================================================
 
 # Vehicle -- 3 cards: OPTIONS + PLATE SEARCH + VIN SEARCH
-# State in set[] for both combos, initialValue='LA' safe (no separate In/Out keyRefs)
+# State in set[] for both combos, no initialValue (officer selects explicitly)
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_OPT'
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';   node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_VEH_O1' }
+                @{ id = 'RegistrationState_Input';   node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_O1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_O1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_O1' @{ initialValue = $currentYear } }
             )}
@@ -476,7 +476,7 @@ $perLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_PER_O1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_O1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
                 @{ id = 'PurposeCodeDH_Input';     node = Sel 'PurposeCodeDH' 'Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_O1' }
             )}
@@ -600,7 +600,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_R1'; cols = @('8','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_R1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_BOA_R1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_R1' }
             )}
         )
     }

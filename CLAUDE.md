@@ -19,12 +19,12 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.1 | 69P/0F/0W/0LIM LOCKED -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.4 | 72P/0F/0W/1LIM (BASE) 72P/0F/0W/1LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.5 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.5 | 74P/0F/0W/0LIM (BASE) 74P/0F/0W/0LIM (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.4 | 101P/0F/0W/0LIM (BASE) 102P/0F/0W/0LIM (MC) NEW | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.5 | 84P/0F/0W/2LIM (BASE) 84P/0F/0W/2LIM (MC) NEW | DH-suffix+queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
-| LA_LEMS | providers/LA_LEMS/ | v2.3 | 63P/0F/0W/1LIM (BASE) 63P/0F/0W/1LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
+| LA_LEMS | providers/LA_LEMS/ | v2.4 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS/ | v1.7 | 66P/0F/0W/0LIM (BASE) 70P/0F/0W/0LIM (MC) NEW | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |
@@ -32,7 +32,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | CA_eSUN | providers/CA_eSUN/ | v1.5 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
 | CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.3 | 65P/0F/0W (BASE) 65P/0F/0W (MC) NEW | Regional interface, DL+DH DH-suffix+queriesToDeselect, short keyRefs, MC multi-card (15 cards) |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.1 | 61P/0F/0W/0LIM (BASE) 61P/0F/0W/0LIM (MC) NEW | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
-| MD_METERS | providers/MD_METERS/ | v1.2 | 69P/0F/0W/1LIM (BASE) 69P/0F/0W/1LIM (MC) NEW | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (12 cards) |
+| MD_METERS | providers/MD_METERS/ | v1.3 | 69P/0F/0W/0LIM (BASE) 69P/0F/0W/0LIM (MC) NEW | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (12 cards), State no-default |
 | OH_LEADS | providers/OH_LEADS/ | v1.3 | 77P/0F/0W/0LIM (BASE) 77P/0F/0W/0LIM (MC) NEW | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
 | NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.3 | 66P/0F/0W/0LIM (BASE) 66P/0F/0W/0LIM (MC) NEW | 6 basic queries, DH-suffix+queriesToDeselect, GunModel field, MC multi-card (12 cards) |
 | OR_LEDS | providers/OR_LEDS/ | v1.3 | 58P/0F/0W/0LIM (BASE) 58P/0F/0W/0LIM (MC) NEW | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |

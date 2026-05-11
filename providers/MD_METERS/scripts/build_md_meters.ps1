@@ -21,7 +21,7 @@
 #   ImageIndicator present  -- on Vehicle, DL, DH, Boat (in any[]).
 #   No VehicleStolenQuery   -- not in metadata.
 #   No RandomRequest        -- not in metadata.
-#   State initialValue='MD' -- safe: no separate in-state vs OOS keyRefs.
+#   State: no initialValue (clean routing -- add back after live testing if needed).
 #   Date format: MMddyyyy   -- size=8, standard NCIC format.
 #   Name: composite Last,First via FormatStringRuleHandler.
 #   RaceCode in DL          -- use NIBRS_RACE/NIBRS (not attributeTypeId).
@@ -50,7 +50,7 @@
 #   Both have autoSelect=true. Officer can uncheck to disable specific queries.
 
 param(
-    [string]$Version = "1.2",
+    [string]$Version = "1.3",
     [string]$Phase   = "base"
 )
 
@@ -538,14 +538,14 @@ $mdBundle = [PSCustomObject]@{
 # 5 forms: Vehicle, Person, Firearm, Article, Boat
 # Phase 1: single card per entity.
 # No CaRequestPurposeCode (not a CA system).
-# State initialValue='MD' on Vehicle and Person (safe -- no in/out keyRef split).
+# State: no initialValue on Vehicle and Person (officer selects explicitly).
 # ImageIndicator: Vehicle (N default), Person (Y for photos), Boat (N default).
 # =====================================================================
 
 # ------------------------------------------------------------------
 # Vehicle -- 1 card
 # VehicleRegistrationQuery fields. ImageIndicator in metadata.
-# State: initialValue='MD' (safe -- all keyRefs are In/Out, no separate in-state vs OOS)
+# State: no initialValue (officer selects explicitly -- add back after live testing if needed)
 # PlateType: initialValue='PC', PlateYear: initialValue='2026'
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
@@ -555,7 +555,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'MD' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'imageIndicator_Input';       node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
@@ -584,7 +584,7 @@ $vehicleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 # Person -- 1 card
 # Serves 2 QIDMs: DL + DH (co-fire with DH-suffix + queriesToDeselect).
-# State: initialValue='MD' (safe -- ZLDR combos have State in any[], not separate keyRefs)
+# State: no initialValue (ZLDR combos have State in any[], officer selects explicitly)
 # RaceCode: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
 # ImageIndicator: initialValue='Y' (for person photo requests)
 # DH-suffix fields: operatorLicenseNumberDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH
@@ -596,7 +596,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'MD' } 'ROW_PER_1' }
+                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'imageIndicator_Input';        node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(

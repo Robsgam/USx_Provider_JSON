@@ -47,7 +47,7 @@
 #   BoatQuery:                BQ, QB (distinct)
 
 param(
-    [string]$Version = "2.3",
+    [string]$Version = "2.4",
     [string]$Phase   = "base"
 )
 
@@ -206,7 +206,7 @@ $qmf = [PSCustomObject]@{
 # 1d. VehicleRegistrationQuery -- 2 combos
 # XML: 2 combos both keyRef=RQS. State in set[] for both.
 # No VehicleMakeCode/VehicleYear in LA vehicle metadata.
-# State initialValue='LA' is safe (no separate in-state vs OOS keyRefs).
+# State: no initialValue (clean routing -- add back after live testing if needed).
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -505,7 +505,7 @@ $provBundle = [PSCustomObject]@{
 
 # Vehicle -- 1 card
 # Serves VehicleRegistrationQuery (RQS Plate/VIN). State required.
-# PlateType=PC, PlateYear=2026, State='LA' (safe -- no separate In/Out keyRefs)
+# PlateType=PC, PlateYear=2026, State no initialValue (officer selects explicitly)
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
@@ -513,7 +513,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('8','4'); fields = @(
                 @{ id = 'licensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
@@ -546,7 +546,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('8','4'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_PER_1' }
+                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'nameFirst'  'First Name'  '30' 'ROW_PER_2' }
@@ -647,7 +647,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'registrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
-                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'LA' } 'ROW_BOA_1' }
+                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('12'); fields = @(
                 @{ id = 'boatHullIdNumber_Input'; node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }

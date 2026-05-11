@@ -23,7 +23,7 @@
 #   ImageIndicator present  -- on Vehicle, DL, DH, Boat (in any[]).
 #   No VehicleStolenQuery   -- not in metadata.
 #   No RandomRequest        -- not in metadata.
-#   State initialValue='MD' -- safe: no separate in-state vs OOS keyRefs.
+#   State: no initialValue (clean routing -- add back after live testing if needed).
 #   Date format: MMddyyyy   -- size=8, standard NCIC format.
 #   Name: composite Last,First via FormatStringRuleHandler.
 #   RaceCode in DL          -- use NIBRS_RACE/NIBRS (not attributeTypeId).
@@ -39,7 +39,7 @@
 #   Boat:     3 cards (OPTIONS + HULL SEARCH + REG SEARCH)
 
 param(
-    [string]$Version = "1.2",
+    [string]$Version = "1.3",
     [string]$Phase   = "mc"
 )
 
@@ -513,7 +513,7 @@ $vehLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'MD' } 'ROW_VEH_OPT_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT_1' }
             )}
         )
@@ -566,7 +566,7 @@ $perLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'MD' } 'ROW_PER_OPT_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
                 @{ id = 'SexCode_Input';           node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_OPT_1' }
             )}

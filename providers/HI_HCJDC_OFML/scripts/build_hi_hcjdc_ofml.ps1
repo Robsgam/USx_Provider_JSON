@@ -59,7 +59,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators (matching HIDLE)
 
 param(
-    [string]$Version = "1.4",
+    [string]$Version = "1.5",
     [string]$Phase   = "base"
 )
 
@@ -580,7 +580,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'licensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'HI' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'vehicleTypeCode_Input';      node = Inp 'vehicleTypeCode' 'Type Code' '1' 'ROW_VEH_1' @{ initialValue = '1' } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
@@ -618,7 +618,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('8','4'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'HI' } 'ROW_PER_1' }
+                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'nameFirst'  'First Name'  '30' 'ROW_PER_2' }
@@ -718,7 +718,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
                 @{ id = 'registrationNumber_Input';        node = Inp 'registrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
-                @{ id = 'registrationState_Input';         node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'HI' } 'ROW_BOA_1' }
+                @{ id = 'registrationState_Input';         node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
                 @{ id = 'boatHullIdNumber_Input';          node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
