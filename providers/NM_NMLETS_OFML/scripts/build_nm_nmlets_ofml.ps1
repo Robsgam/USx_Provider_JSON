@@ -1,4 +1,4 @@
-# build_nm_nmlets_ofml.ps1  -- NM_NMLETS_OFML v1.x BASE
+# build_nm_nmlets_ofml.ps1  -- NM_NMLETS_OFML v1.2 BASE
 # Builds NM_NMLETS_OFML_BASE.json from source\NM_NMLETS_OFML.xml (metadata v20) + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1 [-Version X.X]
@@ -22,7 +22,7 @@
 #   Date format: MMddyyyy (8-char BirthDate fields)
 #   Composite Name: FormatStringRuleHandler
 #   State initialValue=NM is SAFE (all combos In/Out, no in-state vs OOS split)
-#   ArticleTypeCode: codeTypeSource='NCIC' (not CA_CLETS)
+#   ArticleTypeCode: codeTypeSource='CA_CLETS' (NCIC gives empty dropdown)
 #   GunModel present in NM metadata (size 11)
 #
 # ENTITIES (5 QUERYINPUTFORM):
@@ -33,7 +33,7 @@
 #   Boat     -- Reg#+Hull+State
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
@@ -394,7 +394,7 @@ $gunQuery = [PSCustomObject]@{
 # =====================================================================
 # 1h. ArticleSingleQuery
 # Metadata v3: 1 combo (QA serial+type)
-# ArticleTypeCode: codeTypeSource='NCIC' (NM is not CA_CLETS)
+# ArticleTypeCode: codeTypeSource='CA_CLETS' (NCIC gives empty dropdown)
 # =====================================================================
 $artQuery = [PSCustomObject]@{
     attributes = @(

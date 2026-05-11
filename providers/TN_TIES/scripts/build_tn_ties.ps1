@@ -1,4 +1,4 @@
-# build_tn_ties.ps1  -- TN_TIES v1.2 BASE (6 basic queries)
+# build_tn_ties.ps1  -- TN_TIES v1.3 BASE (6 basic queries)
 # Builds TN_TIES_BASE.json from source\TN_TIES.xml (metadata v31) + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
@@ -60,7 +60,7 @@
 # NAME FORMAT: Composite (FormatStringRuleHandler with ', ' separator -- Last,First)
 
 $ErrorActionPreference = "Stop"
-$Version = '1.2'
+$Version = '1.3'
 $currentYear = [string](Get-Date).Year
 $DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT     = "$DIR\TN_TIES_BASE.json"

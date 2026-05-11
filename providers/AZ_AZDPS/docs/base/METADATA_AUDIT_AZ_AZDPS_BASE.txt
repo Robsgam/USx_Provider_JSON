@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-11 09:04
+  Generated: 2026-05-11 09:58
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-11 09:04
+ Generated: 2026-05-11 09:58
 ============================================================
 
 ============================================================
@@ -67,11 +67,11 @@ METADATA AUDIT
   [PASS]   SocialSecurityNumber: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [INFO]   dexStateUserId: in QIDM only (form-only field)
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   NameMiddle: in QIDM sourceField but not in XML
-  [INFO]   NameSuffix: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   nameMiddle: in QIDM sourceField but not in XML
+  [INFO]   nameSuffix: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
   BoatQuery:
   [PASS]   BadgeNumber: in XML and QIDM
   [PASS]   BoatHullIdNumber: in XML and QIDM
@@ -79,7 +79,7 @@ METADATA AUDIT
   [PASS]   RelatedHitSearchIndicator: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [INFO]   dexStateUserId: in QIDM only (form-only field)
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   registrationState: in QIDM only (form-only field)
   DriverHistoryQuery:
   [PASS]   Attention: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
@@ -88,14 +88,14 @@ METADATA AUDIT
   [PASS]   PurposeCode: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   BirthDateDH: in QIDM sourceField but not in XML
-  [INFO]   NameFirstDH: in QIDM sourceField but not in XML
-  [INFO]   NameLastDH: in QIDM sourceField but not in XML
-  [INFO]   NameMiddleDH: in QIDM sourceField but not in XML
-  [INFO]   NameSuffixDH: in QIDM sourceField but not in XML
-  [INFO]   OperatorLicenseNumberDH: in QIDM sourceField but not in XML
-  [INFO]   SexCodeDH: in QIDM sourceField but not in XML
-  [INFO]   StateDH: in QIDM sourceField but not in XML
+  [INFO]   birthDateDH: in QIDM sourceField but not in XML
+  [INFO]   nameFirstDH: in QIDM sourceField but not in XML
+  [INFO]   nameLastDH: in QIDM sourceField but not in XML
+  [INFO]   nameMiddleDH: in QIDM sourceField but not in XML
+  [INFO]   nameSuffixDH: in QIDM sourceField but not in XML
+  [INFO]   operatorLicenseNumberDH: in QIDM sourceField but not in XML
+  [INFO]   sexCodeDH: in QIDM sourceField but not in XML
+  [INFO]   stateDH: in QIDM sourceField but not in XML
   DriverLicenseQuery: (not built in JSON -- see CHECK 1)
   GunQuery:
   [PASS]   BadgeNumber: in XML and QIDM
@@ -115,7 +115,7 @@ METADATA AUDIT
   [PASS]   VehicleMakeCode: in XML and QIDM
   [PASS]   VehicleYear: in XML and QIDM
   [INFO]   dexStateUserId: in QIDM only (form-only field)
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   registrationState: in QIDM only (form-only field)
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
@@ -183,31 +183,31 @@ METADATA AUDIT
   [PASS]   keyRef ACVR: any field 'State' present
 
 --- CHECK 5: Field maxLength Alignment ---
-  [PASS] ArticleSerialNumber: maxLength 11 matches XML (ArticleSerialNumber)
-  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
-  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] SocialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [INFO] NameFirst: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
-  [INFO] NameMiddle: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
-  [INFO] NameSuffix: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
-  [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
-  [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
-  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
-  [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] PurposeCode: maxLength 1 matches XML (PurposeCode)
-  [PASS] Attention: maxLength 30 matches XML (Attention)
-  [PASS] NameLastDH: maxLength 30 matches XML (Name)
-  [INFO] NameFirstDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
-  [INFO] NameMiddleDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
-  [INFO] NameSuffixDH: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
-  [PASS] GunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
-  [PASS] GunModel: maxLength 11 matches XML (GunModel)
-  [PASS] RelatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
-  [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
-  [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
-  [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
-  [PASS] VehicleYear: maxLength 4 matches XML (VehicleYear)
+  [PASS] articleSerialNumber: maxLength 11 matches XML (ArticleSerialNumber)
+  [PASS] relatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] socialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [INFO] nameFirst: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] nameMiddle: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] nameSuffix: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
+  [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] relatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] purposeCode: maxLength 1 matches XML (PurposeCode)
+  [PASS] attention: maxLength 30 matches XML (Attention)
+  [PASS] nameLastDH: maxLength 30 matches XML (Name)
+  [INFO] nameFirstDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] nameMiddleDH: QIF maxLength 20 < XML maxLength 30 (Name) -- conservative, OK
+  [INFO] nameSuffixDH: QIF maxLength 4 < XML maxLength 30 (Name) -- conservative, OK
+  [PASS] gunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
+  [PASS] gunModel: maxLength 11 matches XML (GunModel)
+  [PASS] relatedHitSearchIndicator: maxLength 1 matches XML (RelatedHitSearchIndicator)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
 
 ============================================================
  METADATA AUDIT SUMMARY

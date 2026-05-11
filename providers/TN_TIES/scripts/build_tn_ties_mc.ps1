@@ -21,7 +21,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version = '1.2'
+$Version = '1.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"

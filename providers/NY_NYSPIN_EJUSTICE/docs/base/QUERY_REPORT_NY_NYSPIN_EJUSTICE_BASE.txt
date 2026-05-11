@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-11 09:05
+  Generated: 2026-05-11 10:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
 
     [FIRES] RVIN
-      set: [VehicleIdentificationNumber, RegistrationState]
-      any: [ImageIndicator, VehicleMakeCode, VehicleYear] -> matched: [ImageIndicator, VehicleMakeCode, VehicleYear]
+      set: [vehicleIdentificationNumber, registrationState]
+      any: [imageIndicator, vehicleMakeCode, vehicleYear] -> matched: [imageIndicator, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -32,8 +32,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RVEH
-      set: [LicensePlateNumber]
-      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      set: [licensePlateNumber]
+      any: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState] -> matched: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -49,8 +49,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RCAR
-      set: [VehicleIdentificationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -69,8 +69,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES] DLIC
-      set: [OperatorLicenseNumber]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      set: [operatorLicenseNumber]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -84,8 +84,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DLICN
-      set: [BirthDate, NameLast, NameFirst, SexCode]
-      any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
+      set: [birthDate, nameLast, nameFirst, sexCode]
+      any: [imageIndicator, registrationState, nameMiddle, nameSuffix] -> matched: [imageIndicator, registrationState, nameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -102,8 +102,8 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES] DALL
-      set: [OperatorLicenseNumber]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      set: [operatorLicenseNumber]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -117,8 +117,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DALH
-      set: [BirthDate, NameLast, NameFirst, SexCode]
-      any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
+      set: [birthDate, nameLast, nameFirst, sexCode]
+      any: [imageIndicator, registrationState, nameMiddle, nameSuffix] -> matched: [imageIndicator, registrationState, nameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -135,8 +135,8 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 4  |  Combos: 1
 
     [FIRES] GINQ
-      set: [GunSerialNumber]
-      any: [GunMake, GunCaliber, ImageIndicator] -> matched: [GunMake, GunCaliber, ImageIndicator]
+      set: [gunSerialNumber]
+      any: [gunMake, gunCaliber, imageIndicator] -> matched: [gunMake, gunCaliber, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -151,8 +151,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
 
     [FIRES] AINQ
-      set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -166,8 +166,8 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 4  |  Combos: 4
 
     [FIRES] BVEH
-      set: [RegistrationNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [registrationNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -179,8 +179,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] BVIN
-      set: [BoatHullIdNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [boatHullIdNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -192,8 +192,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RVEH
-      set: [RegistrationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [registrationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -205,8 +205,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RCAR
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [boatHullIdNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

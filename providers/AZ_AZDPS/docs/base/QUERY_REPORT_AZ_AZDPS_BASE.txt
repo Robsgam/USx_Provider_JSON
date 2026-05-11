@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-11 09:04
+  Generated: 2026-05-11 09:58
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
 
     [FIRES] ACVR
-      set: [dexStateUserId, LicensePlateNumber]
-      any: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+      set: [dexStateUserId, licensePlateNumber]
+      any: [licensePlateYear, licensePlateTypeCode, registrationState, vehicleIdentificationNumber, vehicleMakeCode, vehicleYear] -> matched: [licensePlateYear, licensePlateTypeCode, registrationState, vehicleIdentificationNumber, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -32,8 +32,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ACVRV
-      set: [dexStateUserId, VehicleIdentificationNumber]
-      any: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode, VehicleYear]
+      set: [dexStateUserId, vehicleIdentificationNumber]
+      any: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState, vehicleMakeCode, vehicleYear] -> matched: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -52,8 +52,8 @@ QUERY SIMULATION
     Query: AzAzdpsDriverLicenseQuery  |  Attrs: 7  |  Combos: 4
 
     [FIRES] DQ
-      set: [OperatorLicenseNumber]
-      any: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix, RegistrationState, SexCode, SocialSecurityNumber] -> matched: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, RegistrationState, SexCode, SocialSecurityNumber]
+      set: [operatorLicenseNumber]
+      any: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, nameSuffix, registrationState, sexCode, socialSecurityNumber] -> matched: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, registrationState, sexCode, socialSecurityNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -68,8 +68,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQN
-      set: [NameLast, NameFirst, SexCode, BirthDate]
-      any: [dexStateUserId, NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber] -> matched: [dexStateUserId, NameMiddle, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber]
+      set: [nameLast, nameFirst, sexCode, birthDate]
+      any: [dexStateUserId, nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, socialSecurityNumber] -> matched: [dexStateUserId, nameMiddle, operatorLicenseNumber, registrationState, socialSecurityNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -84,8 +84,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQSS
-      set: [SocialSecurityNumber]
-      any: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SexCode] -> matched: [dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, OperatorLicenseNumber, RegistrationState, SexCode]
+      set: [socialSecurityNumber]
+      any: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, sexCode] -> matched: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, operatorLicenseNumber, registrationState, sexCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -100,8 +100,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ACWL
-      set: [dexStateUserId, BirthDate, NameLast, NameFirst, SexCode]
-      any: [NameMiddle, NameSuffix, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber] -> matched: [NameMiddle, OperatorLicenseNumber, RegistrationState, SocialSecurityNumber]
+      set: [dexStateUserId, birthDate, nameLast, nameFirst, sexCode]
+      any: [nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, socialSecurityNumber] -> matched: [nameMiddle, operatorLicenseNumber, registrationState, socialSecurityNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -119,8 +119,8 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES] KQ
-      set: [StateDH, OperatorLicenseNumberDH]
-      any: [Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH, NameSuffixDH, PurposeCode, SexCodeDH] -> matched: [Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH, PurposeCode, SexCodeDH]
+      set: [stateDH, operatorLicenseNumberDH]
+      any: [attention, birthDateDH, nameFirstDH, nameLastDH, nameMiddleDH, nameSuffixDH, purposeCode, sexCodeDH] -> matched: [attention, birthDateDH, nameFirstDH, nameLastDH, nameMiddleDH, purposeCode, sexCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -135,8 +135,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] KQH
-      set: [StateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
-      any: [Attention, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCode] -> matched: [Attention, NameMiddleDH, OperatorLicenseNumberDH, PurposeCode]
+      set: [stateDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH]
+      any: [attention, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCode] -> matched: [attention, nameMiddleDH, operatorLicenseNumberDH, purposeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -154,8 +154,8 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 6  |  Combos: 1
 
     [FIRES] ACQG
-      set: [dexStateUserId, GunSerialNumber]
-      any: [GunCaliber, GunMake, GunModel, RelatedHitSearchIndicator] -> matched: [GunCaliber, GunMake, GunModel, RelatedHitSearchIndicator]
+      set: [dexStateUserId, gunSerialNumber]
+      any: [gunCaliber, gunMake, gunModel, relatedHitSearchIndicator] -> matched: [gunCaliber, gunMake, gunModel, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -172,8 +172,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
 
     [FIRES] ACQA
-      set: [dexStateUserId, ArticleTypeCode, ArticleSerialNumber]
-      any: [RelatedHitSearchIndicator] -> matched: [RelatedHitSearchIndicator]
+      set: [dexStateUserId, articleTypeCode, articleSerialNumber]
+      any: [relatedHitSearchIndicator] -> matched: [relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -188,8 +188,8 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 5  |  Combos: 4
 
     [FIRES] ACQB
-      set: [dexStateUserId, RegistrationNumber]
-      any: [BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator]
+      set: [dexStateUserId, registrationNumber]
+      any: [boatHullIdNumber, registrationState, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -202,8 +202,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ACQBH
-      set: [dexStateUserId, BoatHullIdNumber]
-      any: [RegistrationNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [RegistrationNumber, RegistrationState, RelatedHitSearchIndicator]
+      set: [dexStateUserId, boatHullIdNumber]
+      any: [registrationNumber, registrationState, relatedHitSearchIndicator] -> matched: [registrationNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -216,8 +216,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] BQ
-      set: [RegistrationNumber]
-      any: [dexStateUserId, BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [dexStateUserId, BoatHullIdNumber, RegistrationState, RelatedHitSearchIndicator]
+      set: [registrationNumber]
+      any: [dexStateUserId, boatHullIdNumber, registrationState, relatedHitSearchIndicator] -> matched: [dexStateUserId, boatHullIdNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -230,8 +230,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] BQH
-      set: [BoatHullIdNumber]
-      any: [dexStateUserId, RegistrationNumber, RegistrationState, RelatedHitSearchIndicator] -> matched: [dexStateUserId, RegistrationNumber, RegistrationState, RelatedHitSearchIndicator]
+      set: [boatHullIdNumber]
+      any: [dexStateUserId, registrationNumber, registrationState, relatedHitSearchIndicator] -> matched: [dexStateUserId, registrationNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -247,8 +247,8 @@ QUERY SIMULATION
     Query: WMPIWantedPersonInquiry  |  Attrs: 8  |  Combos: 2
 
     [FIRES] ACQW
-      set: [NameLast, NameFirst, BirthDate, SexCode, RaceCode]
-      any: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator] -> matched: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameMiddle, NCICNumber, RelatedHitSearchIndicator]
+      set: [nameLast, nameFirst, birthDate, sexCode, raceCode]
+      any: [expandedBirthDateSearchCode, expandedNameSearchCode, nameMiddle, nameSuffix, ncicNumber, relatedHitSearchIndicator] -> matched: [expandedBirthDateSearchCode, expandedNameSearchCode, nameMiddle, ncicNumber, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -264,8 +264,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ACQWN
-      set: [NCICNumber]
-      any: [BirthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameFirst, NameLast, NameMiddle, NameSuffix, RaceCode, RelatedHitSearchIndicator, SexCode] -> matched: [BirthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NameFirst, NameLast, NameMiddle, RaceCode, RelatedHitSearchIndicator, SexCode]
+      set: [ncicNumber]
+      any: [birthDate, expandedBirthDateSearchCode, expandedNameSearchCode, nameFirst, nameLast, nameMiddle, nameSuffix, raceCode, relatedHitSearchIndicator, sexCode] -> matched: [birthDate, expandedBirthDateSearchCode, expandedNameSearchCode, nameFirst, nameLast, nameMiddle, raceCode, relatedHitSearchIndicator, sexCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -284,8 +284,8 @@ QUERY SIMULATION
     Query: WMPIMissingPersonInquiry  |  Attrs: 13  |  Combos: 2
 
     [FIRES] ACQM
-      set: [Age, SexCode, RaceCode, Height, Weight, EyeColorCode, HairColorCode, NameLast, NameFirst]
-      any: [AreaCode, ExpandedNameSearchCode, FormORI, NameMiddle, NameSuffix, NCICNumber, RelatedHitSearchIndicator] -> matched: [AreaCode, ExpandedNameSearchCode, FormORI, NameMiddle, NCICNumber, RelatedHitSearchIndicator]
+      set: [age, sexCode, raceCode, height, weight, eyeColorCode, hairColorCode, nameLast, nameFirst]
+      any: [areaCode, expandedNameSearchCode, formORI, nameMiddle, nameSuffix, ncicNumber, relatedHitSearchIndicator] -> matched: [areaCode, expandedNameSearchCode, formORI, nameMiddle, ncicNumber, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -306,8 +306,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ACQMN
-      set: [NCICNumber]
-      any: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, NameFirst, NameLast, NameMiddle, NameSuffix, RaceCode, RelatedHitSearchIndicator, SexCode, Weight] -> matched: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, NameFirst, NameLast, NameMiddle, RaceCode, RelatedHitSearchIndicator, SexCode, Weight]
+      set: [ncicNumber]
+      any: [age, areaCode, expandedNameSearchCode, eyeColorCode, formORI, hairColorCode, height, nameFirst, nameLast, nameMiddle, nameSuffix, raceCode, relatedHitSearchIndicator, sexCode, weight] -> matched: [age, areaCode, expandedNameSearchCode, eyeColorCode, formORI, hairColorCode, height, nameFirst, nameLast, nameMiddle, raceCode, relatedHitSearchIndicator, sexCode, weight]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

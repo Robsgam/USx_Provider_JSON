@@ -1,4 +1,4 @@
-# build_ca_esun.ps1  -- CA_eSUN v1.3 BASE
+# build_ca_esun.ps1  -- CA_eSUN v1.4 BASE
 # Builds CA_eSUN_BASE.json from source\CA_eSUN.xml metadata + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1 -Version X.X -Phase base
@@ -48,7 +48,7 @@
 #   Both have autoSelect=true + queriesToDeselect.
 
 param(
-    [string]$Version = "1.3",
+    [string]$Version = "1.4",
     [string]$Phase   = "base"
 )
 

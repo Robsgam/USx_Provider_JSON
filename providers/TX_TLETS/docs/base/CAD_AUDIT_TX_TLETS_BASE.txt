@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 08:44
+  Generated: 2026-05-11 10:09
 ================================================================
 CAD AUDIT
 =========
@@ -13,13 +13,13 @@ CAD AUDIT
 
 --- CHECK 1: CAD Field Alignment ---
   Vehicle:
-    [FAIL] LicensePlateNumber: wrong case (expected 'licensePlateNumber')
-    [FAIL] LicensePlateTypeCode: wrong case (expected 'licensePlateTypeCode')
-    [FAIL] LicensePlateYear: wrong case (expected 'licensePlateYear')
-    [FAIL] VehicleIdentificationNumber: wrong case (expected 'vehicleIdentificationNumber')
-    [FAIL] VehicleMakeCode: wrong case (expected 'vehicleMakeCode')
-    [FAIL] VehicleYear: wrong case (expected 'vehicleYear')
-    [FAIL] RegistrationState: wrong case (expected 'registrationState')
+    [PASS] licensePlateNumber: in QIF and CAD list
+    [PASS] licensePlateTypeCode: in QIF and CAD list
+    [PASS] licensePlateYear: in QIF and CAD list
+    [PASS] vehicleIdentificationNumber: in QIF and CAD list
+    [PASS] vehicleMakeCode: in QIF and CAD list
+    [PASS] vehicleYear: in QIF and CAD list
+    [PASS] registrationState: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -30,22 +30,22 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] RegionId: in QIF, not in CAD list (provider-specific)
-    [INFO] StickerNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] FinancialResponsibilityType: in QIF, not in CAD list (provider-specific)
+    [INFO] regionId: in QIF, not in CAD list (provider-specific)
+    [INFO] stickerNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] financialResponsibilityType: in QIF, not in CAD list (provider-specific)
   Person:
-    [FAIL] OperatorLicenseNumber: wrong case (expected 'operatorLicenseNumber')
-    [FAIL] NameFirst: wrong case (expected 'nameFirst')
-    [FAIL] NameLast: wrong case (expected 'nameLast')
-    [FAIL] NameMiddle: wrong case (expected 'nameMiddle')
-    [FAIL] NameSuffix: wrong case (expected 'nameSuffix')
-    [FAIL] BirthDate: wrong case (expected 'birthDate')
-    [FAIL] SexCode: wrong case (expected 'sexCode')
-    [FAIL] RaceCode: wrong case (expected 'raceCode')
-    [FAIL] ImageIndicator: wrong case (expected 'imageIndicator')
-    [FAIL] RegistrationState: wrong case (expected 'registrationState')
+    [PASS] operatorLicenseNumber: in QIF and CAD list
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
+    [PASS] birthDate: in QIF and CAD list
+    [PASS] sexCode: in QIF and CAD list
+    [PASS] raceCode: in QIF and CAD list
+    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] registrationState: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] PurposeCode: wrong case (expected 'purposeCode')
+    [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -60,59 +60,59 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] ReasonCode: in QIF, not in CAD list (provider-specific)
-    [INFO] ExpandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
-    [INFO] RegionId: in QIF, not in CAD list (provider-specific)
+    [INFO] reasonCode: in QIF, not in CAD list (provider-specific)
+    [INFO] expandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
+    [INFO] regionId: in QIF, not in CAD list (provider-specific)
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] GunCaliber: wrong case (expected 'gunCaliber')
+    [PASS] gunCaliber: in QIF and CAD list
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] ImageIndicator: wrong case (expected 'imageIndicator')
+    [PASS] imageIndicator: in QIF and CAD list
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] RelatedHitSearchIndicator: wrong case (expected 'relatedHitSearchIndicator')
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
-    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] gunSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] gunMake: in QIF, not in CAD list (provider-specific)
+    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] ArticleTypeCode: wrong case (expected 'articleTypeCode')
+    [PASS] articleTypeCode: in QIF and CAD list
     [INFO] articleBrand: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] ImageIndicator: wrong case (expected 'imageIndicator')
+    [PASS] imageIndicator: in QIF and CAD list
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] RelatedHitSearchIndicator: wrong case (expected 'relatedHitSearchIndicator')
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] articleSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
   Boat:
-    [FAIL] BoatHullIdNumber: wrong case (expected 'boatHullIdNumber')
-    [FAIL] RegistrationNumber: wrong case (expected 'registrationNumber')
-    [FAIL] RegistrationState: wrong case (expected 'registrationState')
-    [FAIL] ImageIndicator: wrong case (expected 'imageIndicator')
+    [PASS] boatHullIdNumber: in QIF and CAD list
+    [PASS] registrationNumber: in QIF and CAD list
+    [PASS] registrationState: in QIF and CAD list
+    [PASS] imageIndicator: in QIF and CAD list
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] RelatedHitSearchIndicator: wrong case (expected 'relatedHitSearchIndicator')
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
 
 --- CHECK 2: CAD_DISPATCH Layout Variant ---
     [PASS] Vehicle QIF 'ENTITY_Vehicle': CAD_DISPATCH layout exists
@@ -134,43 +134,8 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [FAIL] RMS RMS Person Search query attr sourceField: NameFirst (expected 'nameFirst')
-    [FAIL] RMS RMS Person Search query attr sourceField: NameLast (expected 'nameLast')
-    [FAIL] RMS RMS Person Search query attr sourceField: OperatorLicenseNumber (expected 'operatorLicenseNumber')
-    [FAIL] RMS RMS Person Search query attr sourceField: BirthDate (expected 'birthDate')
-    [FAIL] RMS RMS Person Search query attr sourceField: SexCode (expected 'sexCode')
-    [FAIL] RMS RMS Person Search query attr sourceField: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Person Search query combo ref: OperatorLicenseNumber (expected 'operatorLicenseNumber')
-    [FAIL] RMS RMS Person Search query combo ref: NameFirst (expected 'nameFirst')
-    [FAIL] RMS RMS Person Search query combo ref: NameLast (expected 'nameLast')
-    [FAIL] RMS RMS Person Search query combo ref: SexCode (expected 'sexCode')
-    [FAIL] RMS RMS Person Search query combo ref: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Person Search query combo ref: NameFirst (expected 'nameFirst')
-    [FAIL] RMS RMS Person Search query combo ref: NameLast (expected 'nameLast')
-    [FAIL] RMS RMS Person Search query combo ref: BirthDate (expected 'birthDate')
-    [FAIL] RMS RMS Person Search query combo ref: SexCode (expected 'sexCode')
-    [FAIL] RMS RMS Person Search query combo ref: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Person Search query combo ref: NameFirst (expected 'nameFirst')
-    [FAIL] RMS RMS Person Search query combo ref: NameLast (expected 'nameLast')
-    [FAIL] RMS RMS Person Search query combo ref: SexCode (expected 'sexCode')
-    [FAIL] RMS RMS Person Search query combo ref: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Person Search query combo ref: OperatorLicenseNumber (expected 'operatorLicenseNumber')
-    [FAIL] RMS RMS Person Search query combo ref: SexCode (expected 'sexCode')
-    [FAIL] RMS RMS Person Search query combo ref: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: VehicleYear (expected 'vehicleYear')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: VehicleIdentificationNumber (expected 'vehicleIdentificationNumber')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: VehicleMakeCode (expected 'vehicleMakeCode')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: VehicleModelCode (expected 'vehicleModelCode')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleIdentificationNumber (expected 'vehicleIdentificationNumber')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleYear (expected 'vehicleYear')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleMakeCode (expected 'vehicleMakeCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleModelCode (expected 'vehicleModelCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: RegistrationState (expected 'registrationState')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleYear (expected 'vehicleYear')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleMakeCode (expected 'vehicleMakeCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleModelCode (expected 'vehicleModelCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: RegistrationState (expected 'registrationState')
+    [PASS] RMS RMS Person Search query -- all sourceFields and combo refs are camelCase
+    [PASS] RMS RMS Vehicle search query -- all sourceFields and combo refs are camelCase
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -181,12 +146,12 @@ CAD AUDIT
     [PASS] QIDM 'TX_TLETS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'TX_TLETS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
-    [FAIL] RMS QIDM 'RMS Vehicle search query': attr 'licensePlateNumber' sourceField='licensePlateNumber' (QIF has 'LicensePlateNumber')
+    [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
 ========================================
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 23 PASS / 67 FAIL / 0 WARN / 67 INFO
+Total: 55 PASS / 0 FAIL / 0 WARN / 67 INFO
 
 

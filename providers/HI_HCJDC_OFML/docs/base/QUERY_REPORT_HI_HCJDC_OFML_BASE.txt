@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-11 09:06
+  Generated: 2026-05-11 09:58
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
 
     [FIRES] M55L
-      set: [VehicleTypeCode, LicensePlateNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleTypeCode, licensePlateNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -33,8 +33,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] M55S
-      set: [VehicleTypeCode, VehicleIdentificationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleTypeCode, vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -51,8 +51,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQ
-      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -69,8 +69,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVV
-      set: [VehicleIdentificationNumber, VehicleMakeCode]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleIdentificationNumber, vehicleMakeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -87,8 +87,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVP
-      set: [LicensePlateNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [licensePlateNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -105,8 +105,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQV
-      set: [VehicleIdentificationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -126,8 +126,8 @@ QUERY SIMULATION
     Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
 
     [FIRES] QV.P
-      set: [LicensePlateNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [licensePlateNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -140,8 +140,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QV.V
-      set: [VehicleIdentificationNumber]
-      any: [VehicleMakeCode, ImageIndicator] -> matched: [VehicleMakeCode, ImageIndicator]
+      set: [vehicleIdentificationNumber]
+      any: [vehicleMakeCode, imageIndicator] -> matched: [vehicleMakeCode, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -157,7 +157,7 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
     [FIRES] DQN
-      set: [OperatorLicenseNumber]
+      set: [operatorLicenseNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -170,7 +170,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQ
-      set: [SexCode, BirthDate, NameLast, NameFirst]
+      set: [sexCode, birthDate, nameLast, nameFirst]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -183,7 +183,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QW
-      set: [BirthDate, NameLast, NameFirst]
+      set: [birthDate, nameLast, nameFirst]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -199,7 +199,7 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES] KQN
-      set: [OperatorLicenseNumber]
+      set: [operatorLicenseNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -214,7 +214,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] KQ
-      set: [SexCode, BirthDate, NameLast, NameFirst]
+      set: [sexCode, birthDate, nameLast, nameFirst]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -232,7 +232,7 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
     [FIRES] QG
-      set: [GunSerialNumber]
+      set: [gunSerialNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -247,7 +247,7 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
 
     [FIRES] QA
-      set: [ArticleSerialNumber, ArticleTypeCode]
+      set: [articleSerialNumber, articleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -260,7 +260,7 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 4  |  Combos: 2
 
     [FIRES] BQ
-      set: [RegistrationNumber]
+      set: [registrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -271,7 +271,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QB
-      set: [BoatHullIdNumber]
+      set: [boatHullIdNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

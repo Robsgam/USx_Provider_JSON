@@ -7,7 +7,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.3'
+$Version  = '1.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"

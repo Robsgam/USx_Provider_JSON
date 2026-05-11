@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-11 09:05
+  Generated: 2026-05-11 10:09
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -31,82 +31,82 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [8 4]
-        LicensePlateNumber (Text | maxLen=10)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
+        licensePlateNumber (Text | maxLen=10)
+        registrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_VEH_2 [4 4 4]
-        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
-        LicensePlateYear (Text | maxLen=4 | default=2026)
-        VehicleYear (Text | maxLen=4)
+        licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        licensePlateYear (Text | maxLen=4 | default=2026)
+        vehicleYear (Text | maxLen=4)
       ROW ROW_VEH_3 [8 4]
-        VehicleIdentificationNumber (Text | maxLen=20)
-        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        vehicleIdentificationNumber (Text | maxLen=20)
+        vehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
       ROW ROW_VEH_4 [4]
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER"
       ROW ROW_PER_1 [8 2 2]
-        OperatorLicenseNumber (Text | maxLen=20)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        operatorLicenseNumber (Text | maxLen=20)
+        registrationState (Dropdown | attributeTypeId=STATE)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_PER_2 [6 6]
-        NameLast (Text | maxLen=35)
-        NameFirst (Text | maxLen=35)
+        nameLast (Text | maxLen=35)
+        nameFirst (Text | maxLen=35)
       ROW ROW_PER_3 [6 6]
-        NameMiddle (Text | maxLen=35)
-        NameSuffix (Text | maxLen=10)
+        nameMiddle (Text | maxLen=35)
+        nameSuffix (Text | maxLen=10)
       ROW ROW_PER_4 [6 6]
-        BirthDate (FormDate)
-        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        birthDate (FormDate)
+        sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
     CARD "CARD_GUN"
       ROW ROW_GUN_1 [6 6]
-        GunSerialNumber (Text | maxLen=20)
-        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        gunSerialNumber (Text | maxLen=20)
+        gunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
       ROW ROW_GUN_2 [6 4]
-        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
   [default]
     CARD "CARD_ART"
       ROW ROW_ART_1 [6 6]
-        ArticleSerialNumber (Text | maxLen=20)
-        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        articleSerialNumber (Text | maxLen=20)
+        articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
       ROW ROW_ART_2 [4]
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === Boat ===
   name=ENTITY_Boat | entity=Boat | qidm=
   [default]
     CARD "CARD_BOA"
       ROW ROW_BOA_1 [8 4]
-        RegistrationNumber (Text | maxLen=10)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
+        registrationNumber (Text | maxLen=10)
+        registrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_BOA_2 [8 4]
-        BoatHullIdNumber (Text | maxLen=20)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        boatHullIdNumber (Text | maxLen=20)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === RMS QIDMs ===
   RMS Person Search query
-    NameFirst -> firstName
-    NameLast -> lastName
-    OperatorLicenseNumber -> dlNumber
-    BirthDate -> dateOfBirth
-    RaceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
-    SexCode -> sexAttrId (useAttrId)
-    RegistrationState -> registrationStateAttrId (useAttrId)
+    nameFirst -> firstName
+    nameLast -> lastName
+    operatorLicenseNumber -> dlNumber
+    birthDate -> dateOfBirth
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    sexCode -> sexAttrId (useAttrId)
+    registrationState -> registrationStateAttrId (useAttrId)
   RMS Vehicle search query
-    VehicleYear -> vehicle.yearOfManufacture
-    VehicleIdentificationNumber -> vehicle.vinNumber
-    VehicleMakeCode -> vehicle.makeNcicCode
-    VehicleModelCode -> vehicle.modelNcicCode
+    vehicleYear -> vehicle.yearOfManufacture
+    vehicleIdentificationNumber -> vehicle.vinNumber
+    vehicleMakeCode -> vehicle.makeNcicCode
+    vehicleModelCode -> vehicle.modelNcicCode
     licensePlateNumber -> vehicle.tag
-    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

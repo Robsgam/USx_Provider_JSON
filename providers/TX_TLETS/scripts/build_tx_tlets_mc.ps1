@@ -1,4 +1,4 @@
-# build_tx_tlets_mc.ps1  -- TX_TLETS v2.2 MC
+# build_tx_tlets_mc.ps1  -- TX_TLETS v2.4 MC
 # Multi-card layout. QIDMs identical to BASE. Layout-only changes.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_mc.ps1
@@ -11,7 +11,7 @@
 #   Boat:    OPTIONS (State, Image, RelatedHitSearch) + REGISTRATION (RegNumber) + HULL/NCIC (Hull, NCICNumber)
 
 param(
-    [string]$Version = "2.3",
+    [string]$Version = "2.4",
     [string]$Phase   = "mc"
 )
 

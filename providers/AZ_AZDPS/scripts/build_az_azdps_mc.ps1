@@ -27,7 +27,7 @@
 #           Shared fields (RegistrationState, dexStateUserId) go on shared OPTIONS cards.
 
 $ErrorActionPreference = "Stop"
-$Version = '2.1'
+$Version = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
