@@ -272,7 +272,7 @@ foreach ($prov in $validProviders) {
     } else {
         $personFields = @($fields | Where-Object { $_.Entity -eq 'Person' })
         if ($personFields.Count -gt 0) {
-            Warn "Person ImageIndicator field not found"
+            Info "Person ImageIndicator not present (provider-specific)"
         }
     }
 
@@ -289,7 +289,7 @@ foreach ($prov in $validProviders) {
     } else {
         $vehFields = @($fields | Where-Object { $_.Entity -eq 'Vehicle' })
         if ($vehFields.Count -gt 0) {
-            Warn "Vehicle ImageIndicator field not found"
+            Info "Vehicle ImageIndicator not present (provider-specific)"
         }
     }
 
