@@ -27,3 +27,11 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | (v1.0 BASE) | v1.0 | Superseded | Pre-KB build. 67P/16F/44W. Replaced by v2.0 rebuild. |
+
+## v2.5 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_BASE.json | v2.5 | Current | 84P/0F/0W/2LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| TX_TLETS_MC.json | v2.5 | Current | 84P/0F/0W/2LIM. MC variant. |
+

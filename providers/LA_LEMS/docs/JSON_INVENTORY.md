@@ -23,3 +23,11 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | (v1.0 BASE) | v1.0 | Superseded | Pre-KB build. 39P/7F/53W. Replaced by v2.0 rebuild. |
+
+## v2.4 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| LA_LEMS_BASE.json | v2.4 | Current | 63P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
+| LA_LEMS_MC.json | v2.4 | Current | 63P/0F/0W/0LIM. MC variant. |
+

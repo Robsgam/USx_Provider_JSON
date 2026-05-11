@@ -293,6 +293,29 @@ TOOLS
     limitations). Reports NEW, REMOVED, CONFIRMED per category.
     Usage: .\diff_docs.ps1 -NewDoc <path> [-KbFile <path>] [-OutFile <path>] [-Provider <name>]
 
+  tools/score_all.ps1
+    Provider scorecard. Runs validator on all providers (or parses existing
+    reports in -Quick mode), outputs a sorted table with version, BASE/MC
+    scores, and rebuild flags. The go-to dashboard for project status.
+    Usage: .\score_all.ps1 [-Quick] [-OutFile <path>]
+
+  tools/lint_build_scripts.ps1
+    Static analysis of all build scripts for anti-patterns. Checks: PlateYear
+    dynamic ($currentYear), field type correctness, missing RMS patches,
+    AP #21-23 violations, validator call presence, dual output.
+    Usage: .\lint_build_scripts.ps1 [-Path <dir>] [-OutFile <path>]
+
+  tools/preflight_rebuild.ps1
+    Per-provider rebuild action plan. Combines validator WARNs, linter
+    warnings, and rebuild flags into a prioritized checklist. Use before
+    rebuilding to see exactly what needs to change.
+    Usage: .\preflight_rebuild.ps1 [-Provider <name>] [-All] [-Quick] [-OutFile <path>]
+
+  tools/sync_provider_table.ps1
+    Auto-updates the CLAUDE.md provider table scores from validator report
+    files. Ensures CLAUDE.md always reflects the latest build results.
+    Usage: .\sync_provider_table.ps1 [-DryRun] [-OutFile <path>]
+
 ================================================================================
 PREREQUISITES
 ================================================================================

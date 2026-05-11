@@ -20,3 +20,11 @@ All JSON versions produced for this provider.
 | phases/base/OR_LEDS_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial build (rebuilt 2026-05-07). |
 | phases/mc/OR_LEDS_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial MC build. |
 | phases/base/OR_LEDS_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial build (first run). |
+
+## v1.3 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| OR_LEDS_BASE.json | v1.3 | Current | 58P/0F/0W/0LIM. Combo ordering, Patch 6 cleanup. |
+| OR_LEDS_MC.json | v1.3 | Current | 58P/0F/0W/0LIM. MC variant. |
+

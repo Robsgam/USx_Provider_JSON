@@ -20,3 +20,11 @@ All JSON versions produced for this provider.
 | phases/base/TN_TIES_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial build (rebuilt 2026-05-07). |
 | phases/mc/TN_TIES_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial MC build. |
 | phases/base/TN_TIES_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial build (first run). |
+
+## v1.4 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TN_TIES_BASE.json | v1.4 | Current | 80P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| TN_TIES_MC.json | v1.4 | Current | 80P/0F/0W/0LIM. MC variant. |
+

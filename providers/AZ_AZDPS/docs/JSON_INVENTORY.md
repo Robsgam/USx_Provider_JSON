@@ -42,3 +42,11 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | archive/AZ_AZDPS_BASE.json | pre-v1.0 | Archived | Prior build before from-scratch rebuild (2026-04-21). |
+
+## v2.3 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| AZ_AZDPS_BASE.json | v2.3 | Current | 71P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| AZ_AZDPS_MC.json | v2.3 | Current | 71P/0F/0W/0LIM. MC variant. |
+
