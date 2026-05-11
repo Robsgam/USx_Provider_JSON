@@ -348,6 +348,14 @@ foreach ($pd in $providers) {
         } else {
             Fail "$provName -- BUILD_NOTES.txt missing v${version}"
         }
+        # Check 3f2: BUILD_NOTES entries must not be blank stubs
+        $vEsc = [regex]::Escape($version)
+        if ($notesText -match "(?ms)v${vEsc}.*?CHANGED\s*\r?\n\s*-\s*\r?\n\s*REASON") {
+            Fail "$provName -- BUILD_NOTES.txt v${version} has blank CHANGED/REASON (fill in what changed)"
+        }
+        if ($notesText -match '\[describe change here\]') {
+            Fail "$provName -- BUILD_NOTES.txt has placeholder text '[describe change here]'"
+        }
     } else {
         Fail "$provName -- BUILD_NOTES.txt not found"
     }

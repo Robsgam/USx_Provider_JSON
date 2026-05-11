@@ -30,26 +30,34 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v3.1  2026-05-11  [describe change here]
+v3.1  2026-05-11  DL combo reorder + validator path fix -- UNTESTED
   CHANGED
-    -
+    - DL combos reordered: Name (3 set fields) before OLN (2 set fields) -- most-specific first
+    - Build script updated to use shared tools/validate.ps1 (was referencing non-existent local validator)
+    - MC also rebuilt with same combo reorder
   REASON
-    -
-v3.0  2026-05-08  [describe change here]
+    - Combo ordering rule: most-specific combination must be first (LIMITATION #3)
+    - Previous order had OLN (2 set) before Name (3 set), violating standard
+  RESULT
+    - 69P/0F/0W/0LIM (BASE and MC)
+    - NOT YET TESTED -- needs live DL test before replacing v3.0 at Newark
+v3.0  2026-05-08  Locked for Newark deployment
   CHANGED
-    -
+    - Folder renamed to NJ_NJCJIS_LOCKED
+    - Lock gates added to build scripts and validator (require -Force to rebuild)
+    - Marked as deployed to Newark NJ foundation tenant
   REASON
-    -
-v3.0  2026-05-08  [describe change here]
+    - v2.9 passed 16/16 live tests; v3.0 is the same JSON with lock protection
+  RESULT
+    - DEPLOYED Newark NJ 2026-05-11
+v2.9  2026-05-08  PlateYear dynamic + PlateType default + WARNs eliminated
   CHANGED
-    -
+    - PlateYear: dynamic $currentYear via build script (was hardcoded 2026)
+    - PlateType: initialValue='PC' default added
+    - All validator WARNs eliminated (0F/0W)
+    - Rebuilt with current monorepo toolchain
   REASON
-    -
-v2.9  2026-05-08  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
+    - Cross-provider standardization: PlateYear/PlateType defaults mandatory on all providers
 v2.9  2026-05-08  *** LOCKED -- READY FOR LIVE TEST ***
   CHANGED
     - VehReg: autoSelect=true, NO queriesToDeselect (default query)
