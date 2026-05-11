@@ -1,84 +1,71 @@
 # Rebuild Tracker
-Generated: 2026-05-08
+Generated: 2026-05-08 | Last updated: 2026-05-11
 
-## Providers Flagged for Rebuild
+## Status: COMPLETE
 
-| # | Provider | WARNs (BASE/MC) | PlateYear | PurposeCode DH | Priority |
-|---|---|---|---|---|---|
-| 1 | LA_LEMS | 32W / 32W | YES | -- | HIGH |
-| 2 | TX_TLETS | 13W / 13W | YES | -- | HIGH |
-| 3 | IL_LEADS_OFML | 7W / 3W | YES | -- | HIGH |
-| 4 | MD_METERS | 5W / 2W | YES | -- | MED |
-| 5 | OH_LEADS | 4W / 3W | YES | -- | MED |
-| 6 | TN_TIES | 4W / 1W | YES | -- | MED |
-| 7 | CA_eSUN | 3W / 3W | YES | -- | MED |
-| 8 | OR_LEDS | 2W / 1W | YES | -- | MED |
-| 9 | NM_NMLETS_OFML | 2W / 1W | YES | -- | MED |
-| 10 | FL_FCIC | 1W / 1W | YES | -- | LOW |
-| 11 | HI_HCJDC_OFML | 1W / 1W | YES | -- | LOW |
-| 12 | CA_SAN_LUIS_OBISPO | 0W / 0W | YES | YES | LOW |
-| 13 | NY_NYSPIN_EJUSTICE | 0W / 0W | YES | -- | LOW |
-| 14 | AZ_AZDPS | 0W / 0W | YES | -- | LOW |
-| 15 | CA_VENTURA_COUNTY | 0W / 0W | YES | -- | LOW |
-| 16 | CA_CLETS_OCATS | 0W / 0W | YES | -- | LOW |
+All 18 active providers rebuilt and validated. 0 FAIL / 0 WARN across all 36 JSONs.
 
-## Not Flagged (clean)
+## Final Scorecard (2026-05-11)
 
-| Provider | Status | Notes |
-|---|---|---|
-| NJ_NJCJIS_LOCKED | 0W/1LIM | LOCKED -- PlateYear script fixed, takes effect on next unlock rebuild |
-| CA_CLETS | 0W/5LIM (BASE) 0W/7LIM (MC) | Just rebuilt v1.6 -- PlateYear + PurposeCode already fixed |
-| CA_CONTRA_COSTA | -- | No basic queries per devdoc; needs decision before any build |
+| # | Provider | Version | BASE Score | MC Score | LIM | Notes |
+|---|---|---|---|---|---|---|
+| 1 | NJ_NJCJIS | v3.1 | 69P/0F/0W | 69P/0F/0W | 0 | LOCKED -- v3.0 DEPLOYED Newark NJ |
+| 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
+| 3 | NY_NYSPIN_EJUSTICE | v1.5 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
+| 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
+| 5 | FL_FCIC | v3.4 | 101P/0F/0W | 102P/0F/0W | 0 | |
+| 6 | TX_TLETS | v2.5 | 84P/0F/0W | 84P/0F/0W | 2 | EmailAddress QIDM-only (unfixable) |
+| 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
+| 8 | CA_CLETS | v1.7 | 66P/0F/0W | 70P/0F/0W | 0 | |
+| 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |
+| 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 0 | |
+| 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/0W | 0 | |
+| 12 | CA_SAN_LUIS_OBISPO | v1.3 | 65P/0F/0W | 65P/0F/0W | 0 | |
+| 13 | IL_LEADS_OFML | v1.1 | 61P/0F/0W | 61P/0F/0W | 0 | |
+| 14 | MD_METERS | v1.3 | 69P/0F/0W | 69P/0F/0W | 0 | State no-default |
+| 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/0W | 0 | |
+| 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 0 | |
+| 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | |
+| 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/0W | 0 | |
 
-## Fix Categories
+**Skipped**: CA_CONTRA_COSTA (no basic queries per devdoc; awaiting decision)
 
-### 1. WARN Elimination (11 providers)
-Common WARN patterns identified in lean overview:
-- **ArticleType-source**: Article QIDM sourceField references non-existent QIF field (6 providers)
-- **Attention-in-combo**: Attention field in set[] instead of using handler pattern (3 providers)
-- **State-routing**: State field issues (initialValue in set[], missing codeTypeProvider) (3 providers)
-- **ImageIndicator-default**: Missing or wrong default value (2 providers)
-- **DH-suffix**: Missing DH-suffix fieldIds on shared DL/DH form (2 providers)
+## What Was Fixed (2026-05-08 through 2026-05-11)
 
-Each provider's build script needs targeted fixes per its specific WARN list.
-Run `validate.ps1 -Path <json> -ShowDetail` to see exact WARNs per provider.
+### WARN Elimination (all 18 providers)
+- ArticleType sourceField references (6 providers)
+- Attention field combo placement (3 providers)
+- State routing issues (3 providers)
+- ImageIndicator defaults (2 providers)
+- DH-suffix fieldId consistency (2 providers)
+- Total: ~75 WARNs eliminated down to 0
 
-### 2. Dynamic PlateYear (16 providers)
-Add `$currentYear = [string](Get-Date).Year` to build script top.
-Replace `initialValue = '2026'` with `initialValue = $currentYear`.
-Affects both BASE and MC build scripts.
+### Dynamic PlateYear (all 18 providers)
+- `$currentYear = [string](Get-Date).Year` added to all build scripts
+- `initialValue = $currentYear` replaces hardcoded '2026'
 
-### 3. PurposeCode DH (1 provider)
-CA_SAN_LUIS_OBISPO: Add PurposeCode attribute to DriverHistoryQuery QIDM.
-Pattern: `name='PurposeCode', size=1, sourceField=['caRequestPurposeCode'], targetField='PurposeCode'`
+### DH-suffix fieldIds (9 DL+DH providers)
+- All 9 providers with DL+DH now use DH-suffix pattern
+- queriesToDeselect configured on all 9
 
-## Rebuild Order
+### Combo Ordering (all 18 providers)
+- Most-specific combinations first in every QIDM
 
-Rebuild by priority (highest WARN count first = most improvement per rebuild):
-1. LA_LEMS (32W) -- biggest bang
-2. TX_TLETS (13W)
-3. IL_LEADS_OFML (7W)
-4. MD_METERS (5W)
-5. OH_LEADS (4W)
-6. TN_TIES (4W)
-7. CA_eSUN (3W)
-8. OR_LEDS (2W)
-9. NM_NMLETS_OFML (2W)
-10. FL_FCIC (1W)
-11. HI_HCJDC_OFML (1W)
-12. CA_SAN_LUIS_OBISPO (PurposeCode only)
-13-16. NY/AZ/VENTURA/OCATS (PlateYear only)
+### State initialValue Removal (HI, LA, MD)
+- Removed per "start clean" principle — LIM #30 eliminated
+- Officers must explicitly select state
 
-## Completion Checklist
+### purposeCodeDH Field Type Fix (HI, LA)
+- Changed from FormSelect (attributeTypeId=DEX_INQUIRY_PURPOSE_CODE) to FormInput (maxLength=1, initialValue=C)
+- Matches FL/NM/OH/TN/TX majority pattern
 
-Per provider rebuild:
-- [ ] Fix WARNs in build script
-- [ ] Add dynamic $currentYear
-- [ ] Add PurposeCode DH (if applicable)
-- [ ] Run build script (BASE + MC)
-- [ ] Run build_report.ps1 (both variants)
-- [ ] Verify 0 FAIL / 0 WARN
-- [ ] Commit JSON + reports
-- [ ] Push to GitHub
-- [ ] Update CLAUDE.md provider table
-- [ ] Update STATUS.txt
+## Cross-Provider Audit (2026-05-11)
+- 323 PASS / 0 FAIL / 2 WARN / 192 INFO
+- 2 WARNs: CA_SAN_LUIS_OBISPO CaRequestPurposeCode (documented in metadata as intentional)
+
+## Remaining Limitations (2 total)
+- TX_TLETS: 2 LIM — EmailAddress is QIDM-only on DL+DH (no form field, handler-filled)
+- These are genuinely unfixable without platform form field additions
+
+## Next Actions
+- Live testing per provider work order: CA_CLETS, FL_FCIC, TX_TLETS, NY, AZ

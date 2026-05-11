@@ -11,7 +11,7 @@
 #   Boat:    3 cards (OPTIONS, REGISTRATION, HULL)
 
 param(
-    [string]$Version = "1.5",
+    [string]$Version = "1.6",
     [string]$Phase   = "mc"
 )
 

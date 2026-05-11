@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_BASE
   Source: LA_LEMS_BASE.json
-  Generated: 2026-05-11 11:16
+  Generated: 2026-05-11 11:33
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === LA_LEMS_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=3
-  Person | entity=Person | qidm= | cards=1 fields=10
+  Person | entity=Person | qidm= | cards=1 fields=11
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -57,7 +57,7 @@ LAYOUT DETAIL
         raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
       ROW ROW_PER_4 [6 6]
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        purposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
+        purposeCodeDH (Text | maxLen=1 | default=C)
       ROW ROW_PER_5 [6 6]
         operatorLicenseNumberDH (Text | maxLen=20)
         birthDateDH (FormDate)

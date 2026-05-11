@@ -28,6 +28,13 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LEMS_BASE.json | v2.4 | Current | 63P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
-| LA_LEMS_MC.json | v2.4 | Current | 63P/0F/0W/0LIM. MC variant. |
+| LA_LEMS_BASE.json | v2.4 | Superseded | 63P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
+| LA_LEMS_MC.json | v2.4 | Superseded | 63P/0F/0W/0LIM. MC variant. |
+
+## v2.5 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| LA_LEMS_BASE.json | v2.5 | Current | 63P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
+| LA_LEMS_MC.json | v2.5 | Current | 63P/0F/0W/0LIM. MC variant (version sync). |
 

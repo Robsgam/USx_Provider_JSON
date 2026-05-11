@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-11 11:16
+  Generated: 2026-05-11 11:33
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === HI_HCJDC_OFML_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
-  Person | entity=Person | qidm= | cards=1 fields=10
+  Person | entity=Person | qidm= | cards=1 fields=11
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -62,7 +62,7 @@ LAYOUT DETAIL
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_PER_4 [6 6]
         operatorLicenseNumberDH (Text | maxLen=20)
-        purposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
+        purposeCodeDH (Text | maxLen=1 | default=C)
       ROW ROW_PER_5 [3 3 3 3]
         nameFirstDH (Text | maxLen=30)
         nameLastDH (Text | maxLen=30)

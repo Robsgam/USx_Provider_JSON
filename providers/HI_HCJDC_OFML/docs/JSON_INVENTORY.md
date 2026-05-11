@@ -22,6 +22,13 @@ Every iteration saved. Never overwrite.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| HI_HCJDC_OFML_BASE.json | v1.5 | Current | 72P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
-| HI_HCJDC_OFML_MC.json | v1.5 | Current | 72P/0F/0W/0LIM. MC variant. |
+| HI_HCJDC_OFML_BASE.json | v1.5 | Superseded | 72P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
+| HI_HCJDC_OFML_MC.json | v1.5 | Superseded | 72P/0F/0W/0LIM. MC variant. |
+
+## v1.6 (2026-05-11)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML_BASE.json | v1.6 | Current | 72P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
+| HI_HCJDC_OFML_MC.json | v1.6 | Current | 72P/0F/0W/0LIM. MC variant (version sync). |
 

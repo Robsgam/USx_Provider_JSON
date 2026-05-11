@@ -47,7 +47,7 @@
 #   BoatQuery:                BQ, QB (distinct)
 
 param(
-    [string]$Version = "2.4",
+    [string]$Version = "2.5",
     [string]$Phase   = "base"
 )
 
@@ -561,7 +561,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_4' }
-                @{ id = 'purposeCodeDH_Input';  node = Sel 'purposeCodeDH' 'Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_4' }
+                @{ id = 'purposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_5' }

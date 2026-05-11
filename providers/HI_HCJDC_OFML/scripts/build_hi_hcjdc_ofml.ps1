@@ -59,7 +59,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators (matching HIDLE)
 
 param(
-    [string]$Version = "1.5",
+    [string]$Version = "1.6",
     [string]$Phase   = "base"
 )
 
@@ -632,7 +632,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (Driver History)' '20' 'ROW_PER_4' }
-                @{ id = 'purposeCodeDH_Input';           node = Sel 'purposeCodeDH' 'Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_PER_4' }
+                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_5'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_5' }

@@ -12,7 +12,7 @@
 #   Boat:    REGISTRATION (RegNumber, State) + HULL (HullID)
 
 param(
-    [string]$Version = "2.4",
+    [string]$Version = "2.5",
     [string]$Phase   = "mc"
 )
 
