@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-08 15:56
+  Generated: 2026-05-11 11:04
 ================================================================
 QUERY SIMULATION
 ================
@@ -129,9 +129,9 @@ QUERY SIMULATION
 --- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-    [FIRES] DQN
-      set: [operatorLicenseNumber, registrationState]
-      any: [imageIndicator] -> matched: [imageIndicator]
+    [FIRES] DQ
+      set: [birthDate, nameLast, nameFirst]
+      any: [imageIndicator, sexCode, registrationState] -> matched: [imageIndicator, sexCode, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -144,9 +144,9 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQ
-      set: [birthDate, nameLast, nameFirst]
-      any: [imageIndicator, sexCode, registrationState] -> matched: [imageIndicator, sexCode, registrationState]
+    [FIRES] DQN
+      set: [operatorLicenseNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

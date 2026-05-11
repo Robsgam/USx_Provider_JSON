@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-08 13:55
+  Generated: 2026-05-11 11:04
 ================================================================
 QUERY SIMULATION
 ================
@@ -129,9 +129,9 @@ QUERY SIMULATION
 --- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-    [FIRES] DQN
-      set: [OperatorLicenseNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+    [FIRES] DQ
+      set: [BirthDate, NameLast, NameFirst]
+      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -144,9 +144,9 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQ
-      set: [BirthDate, NameLast, NameFirst]
-      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
+    [FIRES] DQN
+      set: [OperatorLicenseNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -221,6 +221,7 @@ QUERY SIMULATION
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>
   Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
 ================================================================
 
 

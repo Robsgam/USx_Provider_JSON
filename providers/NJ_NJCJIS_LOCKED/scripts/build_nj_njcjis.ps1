@@ -48,7 +48,7 @@
 #   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
-    [string]$Version = "3.0",
+    [string]$Version = "3.1",
     [string]$Phase   = "base",
     [switch]$Unlock
 )
@@ -365,19 +365,19 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQN'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('imageIndicator','sexCode','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQN'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverLicenseQuery -- DQN (OLN), DQ (Name+DOB). autoSelect routes by field presence.'
+    description     = 'DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). Most-specific first.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NJ_NJCJIS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -816,7 +816,7 @@ Write-Host "  -> $VEROUT"
 # =====================================================================
 Write-Host ""
 Write-Host "Running structural validation..." -ForegroundColor Cyan
-powershell.exe -ExecutionPolicy Bypass -File "$DIR\scripts\validate_nj_njcjis.ps1" -JsonFile $OUT
+powershell.exe -ExecutionPolicy Bypass -File "$DIR\..\..\tools\validate.ps1" -Path $OUT -Force
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
     Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red

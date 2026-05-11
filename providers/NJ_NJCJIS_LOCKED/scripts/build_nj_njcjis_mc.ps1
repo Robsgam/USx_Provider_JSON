@@ -14,7 +14,7 @@
 # RMS: identical to BASE (HIDLE + Patch 1+3+6)
 
 param(
-    [string]$Version = "3.0",
+    [string]$Version = "3.1",
     [string]$Phase   = "mc",
     [switch]$Unlock
 )
@@ -319,19 +319,19 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQN'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','SexCode','RegistrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQN'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverLicenseQuery -- DQN (OLN), DQ (Name+DOB). autoSelect routes by field presence.'
+    description     = 'DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). Most-specific first.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NJ_NJCJIS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'

@@ -5810,20 +5810,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "operatorLicenseNumber",
-                                                                                                             "registrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "imageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQN",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "birthDate",
                                                                                                              "nameLast",
                                                                                                              "nameFirst"
@@ -5837,9 +5823,23 @@
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQ",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "operatorLicenseNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "imageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQN",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- DQN (OLN), DQ (Name+DOB). autoSelect routes by field presence.",
+                                                   "description":  "DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). Most-specific first.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "NJ_NJCJIS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6040,7 +6040,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NJ_NJCJIS v3.0",
+                        "description":  "Provider configuration for NJ_NJCJIS v3.1",
                         "name":  "NJ_NJCJIS",
                         "type":  "BUNDLE",
                         "provider":  "NJ_NJCJIS"
