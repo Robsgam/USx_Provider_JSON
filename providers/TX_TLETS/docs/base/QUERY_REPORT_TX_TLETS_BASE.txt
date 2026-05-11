@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ================================================================
 QUERY SIMULATION
 ================
@@ -85,23 +85,6 @@ QUERY SIMULATION
 --- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 3
 
-    [FIRES] DQOperatorLicenseNumber
-      set: [operatorLicenseNumber]
-      any: [imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
     [FIRES] DQName
       set: [sexCode, birthDate, nameLast, nameFirst]
       any: [imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
@@ -136,29 +119,29 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
---- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
-
-    [FIRES] KQOperatorLicenseNumber
+    [FIRES] DQOperatorLicenseNumber
       set: [operatorLicenseNumber]
-      any: [imageIndicator, purposeCode, reasonCode, registrationState] -> matched: [imageIndicator, purposeCode, registrationState]
+      any: [imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
+        <MessageKey>DQ</MessageKey>
         <BirthDate>01151990</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
+        <RaceCode>W</RaceCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
+--- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
+
     [FIRES] KQName
-      set: [sexCode, birthDate, nameLast, nameFirst]
-      any: [imageIndicator, nameMiddle, nameSuffix, purposeCode, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, purposeCode, registrationState]
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -168,7 +151,22 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQOperatorLicenseNumber
+      set: [operatorLicenseNumberDH]
+      any: [imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>DISPATCHER JONES</Attention>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

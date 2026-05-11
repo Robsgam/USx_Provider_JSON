@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-11 09:58
+  Generated: 2026-05-11 10:35
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === HI_HCJDC_OFML_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
-  Person | entity=Person | qidm= | cards=1 fields=6
+  Person | entity=Person | qidm= | cards=1 fields=10
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -17,7 +17,7 @@ QIDMs: 7
   HI_HCJDC_OFML_VehicleRegistrationQuery | attrs=9 combos=6 autoSelect=True
   HI_HCJDC_OFML_VehicleStolenQuery | attrs=5 combos=2 autoSelect=False
   HI_HCJDC_OFML_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
-  HI_HCJDC_OFML_DriverHistoryQuery | attrs=7 combos=2 autoSelect=False
+  HI_HCJDC_OFML_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   HI_HCJDC_OFML_GunQuery | attrs=5 combos=1 autoSelect=
   HI_HCJDC_OFML_ArticleSingleQuery | attrs=3 combos=1 autoSelect=
   HI_HCJDC_OFML_BoatQuery | attrs=4 combos=2 autoSelect=
@@ -61,8 +61,16 @@ LAYOUT DETAIL
         birthDate (FormDate)
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_PER_4 [6 6]
-        attention (Text | maxLen=30)
-        purposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
+        operatorLicenseNumberDH (Text | maxLen=20)
+        purposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
+      ROW ROW_PER_5 [3 3 3 3]
+        nameFirstDH (Text | maxLen=30)
+        nameLastDH (Text | maxLen=30)
+        nameMiddleDH (Text | maxLen=30)
+        nameSuffixDH (Text | maxLen=30)
+      ROW ROW_PER_6 [6 6]
+        birthDateDH (FormDate)
+        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

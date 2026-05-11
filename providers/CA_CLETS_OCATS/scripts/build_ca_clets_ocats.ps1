@@ -39,7 +39,7 @@
 #   Boat     -- Reg# + Hull + OAN + State + CaPurpose(hidden)
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
@@ -249,6 +249,12 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @() }
+            primaryFieldReference = 'Name'
+            keyReference          = 'VP'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber'); any = @('vehicleMakeCode','registrationState') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = '4V'
@@ -258,12 +264,6 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber'); any = @('registrationState','licensePlateTypeCode','licensePlateYear','vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = '4'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @() }
-            primaryFieldReference = 'Name'
-            keyReference          = 'VP'
             state                 = 'In/Out'
         }
     )
@@ -320,15 +320,15 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'L1.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'L1.O'
             state                 = 'In/Out'
         }
     )

@@ -43,12 +43,14 @@
 #   Article    -- Serial + ArticleType (ArticleSingleQuery only)
 #   Boat       -- Hull + Reg + ImageIndicator
 #
-# PERSON (2 QIDMs co-fire by design):
+# PERSON (2 QIDMs with DH-suffix + queriesToDeselect):
 #   DL + DH share Person entity/form.
+#   DH-suffix fieldIds isolate DH from DL field pool (AP #14).
+#   queriesToDeselect on each QIDM for mutual deselect.
 #   Both have autoSelect=true. Officer can uncheck to disable specific queries.
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
@@ -324,36 +326,36 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'YearsPastViolationsWanted';     size = 2;  sourceField = @('yearsPastViolationsWanted');     targetField = 'YearsPastViolationsWanted' }
     )
     combinations = @(
-        # ZWAR.N: Warrant name search -- Name+Sex+Race+DOB+[State,ImageIndicator]
+        # ZWAR.N: Warrant name search -- Name+Sex+Race+DOB+[State,ImageIndicator] (5 set, most specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','raceCode','sexCode'); any = @('registrationState','imageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'ZWAR.N'
             state                 = 'In/Out'
         }
-        # ZWAR.O: Warrant OLN search -- Name+Sex+Race+OLN+[ExpYear,State,ImageIndicator]
+        # ZWAR.O: Warrant OLN search -- Name+Sex+Race+OLN+[ExpYear,State,ImageIndicator] (5 set)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst','operatorLicenseNumber','raceCode','sexCode'); any = @('operatorLicenseExpirationYear','registrationState','imageIndicator') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ZWAR.O'
             state                 = 'In/Out'
         }
-        # ZLDR.O: DL by OLN+[State,ImageIndicator,YearsPastViolationsWanted]
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('registrationState','imageIndicator','yearsPastViolationsWanted') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'ZLDR.O'
-            state                 = 'In/Out'
-        }
-        # ZLDR.N: DL by Name+DOB+Sex+[State,ImageIndicator]
+        # ZLDR.N: DL by Name+DOB+Sex+[State,ImageIndicator] (4 set, Name before OLN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('registrationState','imageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'ZLDR.N'
             state                 = 'In/Out'
         }
+        # ZLDR.O: DL by OLN+[State,ImageIndicator,YearsPastViolationsWanted] (1 set, least specific)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('registrationState','imageIndicator','yearsPastViolationsWanted') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'ZLDR.O'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverLicenseQuery -- ZWAR (warrant name/OLN), ZLDR (DL by OLN/name). MD license query.'
+    description     = 'DriverLicenseQuery -- ZWAR (warrant name/OLN), ZLDR (Name/OLN). MD license query.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'MD_METERS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -363,6 +365,7 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # =====================================================================
@@ -370,42 +373,44 @@ $dlQuery = [PSCustomObject]@{
 # XML v6: 2 combos (ZDRV x2) -- duplicate keyRef
 # Invented distinct keyRefs: ZDRV.O (OLN), ZDRV.N (Name+DOB+Sex)
 # Devdoc: (In) only -- no OOS combos for DH
-# DL+DH co-fire on OLN is intentional (standard police workflow)
+# DH-suffix fieldIds isolate from DL field pool (AP #14)
+# queriesToDeselect + DH-suffix = mutual deselect without deadlock
 # SexCode required for Name combo (in set[] per metadata)
+# Combo ordering: Name before OLN (operational priority)
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
+            size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('imageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
+            size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
     )
     combinations = @(
-        # ZDRV.O: DH by OLN+[ImageIndicator]
+        # ZDRV.N: DH by Name+DOB+Sex+[ImageIndicator] -- Name before OLN (operational priority)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'ZDRV.O'
-            state                 = 'In'
-        }
-        # ZDRV.N: DH by Name+DOB+Sex+[ImageIndicator]
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'ZDRV.N'
             state                 = 'In'
         }
+        # ZDRV.O: DH by OLN+[ImageIndicator]
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'ZDRV.O'
+            state                 = 'In'
+        }
     )
-    description     = 'DriverHistoryQuery -- ZDRV (OLN, Name+DOB+Sex). In-state only. Co-fires with DL.'
+    description     = 'DriverHistoryQuery -- ZDRV (Name+DOB+Sex, OLN). DH-suffix fields. In-state only.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'MD_METERS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -415,6 +420,7 @@ $dhQuery = [PSCustomObject]@{
     query           = 'DriverHistoryQuery'
     queryLabel      = 'Driver History'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverLicenseQuery')
 }
 
 # =====================================================================
@@ -577,10 +583,11 @@ $vehicleForm = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Person -- 1 card
-# Serves 2 QIDMs: DL + DH (co-fire).
+# Serves 2 QIDMs: DL + DH (co-fire with DH-suffix + queriesToDeselect).
 # State: initialValue='MD' (safe -- ZLDR combos have State in any[], not separate keyRefs)
 # RaceCode: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
 # ImageIndicator: initialValue='Y' (for person photo requests)
+# DH-suffix fields: operatorLicenseNumberDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
@@ -604,6 +611,18 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseExpirationYear_Input'; node = Inp 'operatorLicenseExpirationYear' 'License Expiration Year' '4' 'ROW_PER_4' }
                 @{ id = 'yearsPastViolationsWanted_Input';     node = Inp 'yearsPastViolationsWanted'     'Years Past Violations'  '2' 'ROW_PER_4' }
+            )}
+            # DH-suffix fields (Driver History -- isolated from DL field pool per AP #14)
+            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_5' }
+                @{ id = 'sexCodeDH_Input';               node = Sel 'sexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_5' }
+            )}
+            @{ id = 'ROW_PER_6'; cols = @('6','6'); fields = @(
+                @{ id = 'nameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_6' }
+                @{ id = 'nameFirstDH_Input'; node = Inp 'nameFirstDH' 'First Name (DH)' '30' 'ROW_PER_6' }
+            )}
+            @{ id = 'ROW_PER_7'; cols = @('6'); fields = @(
+                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_7' }
             )}
         )
     }

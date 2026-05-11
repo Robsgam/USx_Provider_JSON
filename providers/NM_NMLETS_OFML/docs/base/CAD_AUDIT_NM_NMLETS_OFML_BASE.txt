@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_BASE
   Source: NM_NMLETS_OFML_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:39
 ================================================================
 CAD AUDIT
 =========
@@ -41,8 +41,8 @@ CAD AUDIT
     [PASS] raceCode: in QIF and CAD list
     [PASS] imageIndicator: in QIF and CAD list
     [PASS] registrationState: in QIF and CAD list
-    [PASS] attention: in QIF and CAD list
-    [PASS] purposeCode: in QIF and CAD list
+    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] socialSecurityNumber: in QIF and CAD list
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -57,6 +57,14 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] operatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] birthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] sexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] raceCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] attentionDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [PASS] firearmMake: in QIF and CAD list
@@ -139,6 +147,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 52 PASS / 0 FAIL / 0 WARN / 57 INFO
+Total: 50 PASS / 0 FAIL / 0 WARN / 67 INFO
 
 

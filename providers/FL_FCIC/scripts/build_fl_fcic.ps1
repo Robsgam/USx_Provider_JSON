@@ -34,7 +34,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.3",
+    [string]$Version = "3.4",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -218,6 +218,12 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('decalNumber','licensePlateYear'); any = @('imageIndicator') }
+            primaryFieldReference = 'DecalNumber'
+            keyReference          = 'FRQDecalNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('licensePlateYear','imageIndicator') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'FRQLicensePlateNumber'
@@ -227,12 +233,6 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'FRQVehicleIdentificationNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('decalNumber','licensePlateYear'); any = @('imageIndicator') }
-            primaryFieldReference = 'DecalNumber'
-            keyReference          = 'FRQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -308,18 +308,6 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQOperatorLicenseNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'FDQOperatorLicenseNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode','registrationState'); any = @('imageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQName'
@@ -329,6 +317,18 @@ $dlQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('imageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'FDQName'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQOperatorLicenseNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'FDQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
     )
@@ -410,15 +410,15 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationState','purposeCodeDH'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQOperatorLicenseNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationState','purposeCodeDH'); any = @() }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationState','purposeCodeDH'); any = @() }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
     )

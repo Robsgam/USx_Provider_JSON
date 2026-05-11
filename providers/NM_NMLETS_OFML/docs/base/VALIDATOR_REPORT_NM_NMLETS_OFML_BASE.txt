@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_BASE
   Source: NM_NMLETS_OFML_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:39
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 20 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
@@ -34,7 +34,6 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -53,11 +52,10 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
-         NM_NMLETS_OFML_DriverLicenseQuery (query=DriverLicenseQuery)
-         NM_NMLETS_OFML_DriverHistoryQuery (query=DriverHistoryQuery)
-  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
-  [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         NM_NMLETS_OFML_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         NM_NMLETS_OFML_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -80,8 +78,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
-  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo 'DL.OLN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo 'DL.NAME': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' combo 'DL.OLN': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' combo 'QG': all set[]/any[] fields resolvable
@@ -92,10 +90,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 64 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+  RESULTS: 66 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  4 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

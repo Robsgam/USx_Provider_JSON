@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: NM_NMLETS_OFML_BASE
   Source: NM_NMLETS_OFML_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:39
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -26,9 +26,13 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
+    raceCodeDH [Race (DH)]
+      Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     registrationState [State] (default=NM)
       Config: attributeTypeId=STATE
     sexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    sexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -108,5 +112,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 10
+  Form dropdowns: 12
   QRDM code type attrs: 16

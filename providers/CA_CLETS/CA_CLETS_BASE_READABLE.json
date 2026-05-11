@@ -1123,7 +1123,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ).",
+                                                   "description":  "Person queries -- DL (IN.L1/NLTS.DQ/ID.L1) + DH (NLTS.KQ). DH-suffix fields.",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -1194,7 +1194,10 @@
                                                                                                    "nodes":  [
                                                                                                                  "ROW_PER_1",
                                                                                                                  "ROW_PER_2",
-                                                                                                                 "ROW_PER_3"
+                                                                                                                 "ROW_PER_3",
+                                                                                                                 "ROW_PER_4",
+                                                                                                                 "ROW_PER_5",
+                                                                                                                 "ROW_PER_6"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -1409,7 +1412,194 @@
 
                                                                                                                         },
                                                                                                         "parent":  "ROW_PER_3"
-                                                                                                    }
+                                                                                                    },
+                                                                                  "ROW_PER_4":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "operatorLicenseNumberDH_Input",
+                                                                                                                  "caRequestPurposeCodeDH_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER"
+                                                                                                },
+                                                                                  "operatorLicenseNumberDH_Input":  {
+                                                                                                                        "type":  {
+                                                                                                                                     "resolvedName":  "FormInput"
+                                                                                                                                 },
+                                                                                                                        "displayName":  "Input",
+                                                                                                                        "props":  {
+                                                                                                                                      "fieldId":  "operatorLicenseNumberDH",
+                                                                                                                                      "label":  "OLN (DH)",
+                                                                                                                                      "maxLength":  "20"
+                                                                                                                                  },
+                                                                                                                        "isCanvas":  false,
+                                                                                                                        "hidden":  false,
+                                                                                                                        "nodes":  [
+
+                                                                                                                                  ],
+                                                                                                                        "linkedNodes":  {
+
+                                                                                                                                        },
+                                                                                                                        "parent":  "ROW_PER_4"
+                                                                                                                    },
+                                                                                  "caRequestPurposeCodeDH_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormInput"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Input",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "caRequestPurposeCodeDH",
+                                                                                                                                     "label":  "Purpose Code (DH)",
+                                                                                                                                     "maxLength":  "1",
+                                                                                                                                     "initialValue":  "C"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_PER_4"
+                                                                                                                   },
+                                                                                  "ROW_PER_5":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "nameLastDH_Input",
+                                                                                                                  "nameFirstDH_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER"
+                                                                                                },
+                                                                                  "nameLastDH_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameLastDH",
+                                                                                                                         "label":  "Last Name (DH)",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_PER_5"
+                                                                                                       },
+                                                                                  "nameFirstDH_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                     },
+                                                                                                            "displayName":  "Input",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "nameFirstDH",
+                                                                                                                          "label":  "First Name (DH)",
+                                                                                                                          "maxLength":  "30"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_PER_5"
+                                                                                                        },
+                                                                                  "ROW_PER_6":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "birthDateDH_Input",
+                                                                                                                  "sexCodeDH_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER"
+                                                                                                },
+                                                                                  "birthDateDH_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormDate"
+                                                                                                                     },
+                                                                                                            "displayName":  "Date",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "birthDateDH",
+                                                                                                                          "label":  "DOB (DH)"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_PER_6"
+                                                                                                        },
+                                                                                  "sexCodeDH_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                   },
+                                                                                                          "displayName":  "Select",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "sexCodeDH",
+                                                                                                                        "label":  "Sex (DH)",
+                                                                                                                        "attributeTypeId":  "SEX",
+                                                                                                                        "codeTypeProvider":  "NIBRS"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_PER_6"
+                                                                                                      }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -1480,7 +1670,10 @@
                                                                                                         "nodes":  [
                                                                                                                       "ROW_PER_1",
                                                                                                                       "ROW_PER_2",
-                                                                                                                      "ROW_PER_3"
+                                                                                                                      "ROW_PER_3",
+                                                                                                                      "ROW_PER_4",
+                                                                                                                      "ROW_PER_5",
+                                                                                                                      "ROW_PER_6"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -1696,6 +1889,193 @@
                                                                                                                              },
                                                                                                              "parent":  "ROW_PER_3"
                                                                                                          },
+                                                                                       "ROW_PER_4":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "operatorLicenseNumberDH_Input",
+                                                                                                                       "caRequestPurposeCodeDH_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER"
+                                                                                                     },
+                                                                                       "operatorLicenseNumberDH_Input":  {
+                                                                                                                             "type":  {
+                                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                                      },
+                                                                                                                             "displayName":  "Input",
+                                                                                                                             "props":  {
+                                                                                                                                           "fieldId":  "operatorLicenseNumberDH",
+                                                                                                                                           "label":  "OLN (DH)",
+                                                                                                                                           "maxLength":  "20"
+                                                                                                                                       },
+                                                                                                                             "isCanvas":  false,
+                                                                                                                             "hidden":  false,
+                                                                                                                             "nodes":  [
+
+                                                                                                                                       ],
+                                                                                                                             "linkedNodes":  {
+
+                                                                                                                                             },
+                                                                                                                             "parent":  "ROW_PER_4"
+                                                                                                                         },
+                                                                                       "caRequestPurposeCodeDH_Input":  {
+                                                                                                                            "type":  {
+                                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                                     },
+                                                                                                                            "displayName":  "Input",
+                                                                                                                            "props":  {
+                                                                                                                                          "fieldId":  "caRequestPurposeCodeDH",
+                                                                                                                                          "label":  "Purpose Code (DH)",
+                                                                                                                                          "maxLength":  "1",
+                                                                                                                                          "initialValue":  "C"
+                                                                                                                                      },
+                                                                                                                            "isCanvas":  false,
+                                                                                                                            "hidden":  false,
+                                                                                                                            "nodes":  [
+
+                                                                                                                                      ],
+                                                                                                                            "linkedNodes":  {
+
+                                                                                                                                            },
+                                                                                                                            "parent":  "ROW_PER_4"
+                                                                                                                        },
+                                                                                       "ROW_PER_5":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "nameLastDH_Input",
+                                                                                                                       "nameFirstDH_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER"
+                                                                                                     },
+                                                                                       "nameLastDH_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameLastDH",
+                                                                                                                              "label":  "Last Name (DH)",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_5"
+                                                                                                            },
+                                                                                       "nameFirstDH_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "nameFirstDH",
+                                                                                                                               "label":  "First Name (DH)",
+                                                                                                                               "maxLength":  "30"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_PER_5"
+                                                                                                             },
+                                                                                       "ROW_PER_6":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "birthDateDH_Input",
+                                                                                                                       "sexCodeDH_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER"
+                                                                                                     },
+                                                                                       "birthDateDH_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormDate"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Date",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "birthDateDH",
+                                                                                                                               "label":  "DOB (DH)"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_PER_6"
+                                                                                                             },
+                                                                                       "sexCodeDH_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                        },
+                                                                                                               "displayName":  "Select",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "sexCodeDH",
+                                                                                                                             "label":  "Sex (DH)",
+                                                                                                                             "attributeTypeId":  "SEX",
+                                                                                                                             "codeTypeProvider":  "NIBRS"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_PER_6"
+                                                                                                           },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -1847,7 +2227,10 @@
                                                                                                            "nodes":  [
                                                                                                                          "ROW_PER_1",
                                                                                                                          "ROW_PER_2",
-                                                                                                                         "ROW_PER_3"
+                                                                                                                         "ROW_PER_3",
+                                                                                                                         "ROW_PER_4",
+                                                                                                                         "ROW_PER_5",
+                                                                                                                         "ROW_PER_6"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -2063,6 +2446,193 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_PER_3"
                                                                                                             },
+                                                                                          "ROW_PER_4":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "operatorLicenseNumberDH_Input",
+                                                                                                                          "caRequestPurposeCodeDH_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER"
+                                                                                                        },
+                                                                                          "operatorLicenseNumberDH_Input":  {
+                                                                                                                                "type":  {
+                                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                                         },
+                                                                                                                                "displayName":  "Input",
+                                                                                                                                "props":  {
+                                                                                                                                              "fieldId":  "operatorLicenseNumberDH",
+                                                                                                                                              "label":  "OLN (DH)",
+                                                                                                                                              "maxLength":  "20"
+                                                                                                                                          },
+                                                                                                                                "isCanvas":  false,
+                                                                                                                                "hidden":  false,
+                                                                                                                                "nodes":  [
+
+                                                                                                                                          ],
+                                                                                                                                "linkedNodes":  {
+
+                                                                                                                                                },
+                                                                                                                                "parent":  "ROW_PER_4"
+                                                                                                                            },
+                                                                                          "caRequestPurposeCodeDH_Input":  {
+                                                                                                                               "type":  {
+                                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                                        },
+                                                                                                                               "displayName":  "Input",
+                                                                                                                               "props":  {
+                                                                                                                                             "fieldId":  "caRequestPurposeCodeDH",
+                                                                                                                                             "label":  "Purpose Code (DH)",
+                                                                                                                                             "maxLength":  "1",
+                                                                                                                                             "initialValue":  "C"
+                                                                                                                                         },
+                                                                                                                               "isCanvas":  false,
+                                                                                                                               "hidden":  false,
+                                                                                                                               "nodes":  [
+
+                                                                                                                                         ],
+                                                                                                                               "linkedNodes":  {
+
+                                                                                                                                               },
+                                                                                                                               "parent":  "ROW_PER_4"
+                                                                                                                           },
+                                                                                          "ROW_PER_5":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "nameLastDH_Input",
+                                                                                                                          "nameFirstDH_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER"
+                                                                                                        },
+                                                                                          "nameLastDH_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameLastDH",
+                                                                                                                                 "label":  "Last Name (DH)",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_5"
+                                                                                                               },
+                                                                                          "nameFirstDH_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormInput"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Input",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "nameFirstDH",
+                                                                                                                                  "label":  "First Name (DH)",
+                                                                                                                                  "maxLength":  "30"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_PER_5"
+                                                                                                                },
+                                                                                          "ROW_PER_6":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "birthDateDH_Input",
+                                                                                                                          "sexCodeDH_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER"
+                                                                                                        },
+                                                                                          "birthDateDH_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormDate"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Date",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "birthDateDH",
+                                                                                                                                  "label":  "DOB (DH)"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_PER_6"
+                                                                                                                },
+                                                                                          "sexCodeDH_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "sexCodeDH",
+                                                                                                                                "label":  "Sex (DH)",
+                                                                                                                                "attributeTypeId":  "SEX",
+                                                                                                                                "codeTypeProvider":  "NIBRS"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_PER_6"
+                                                                                                              },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -5797,6 +6367,22 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
+                                                                                                             "nameLast",
+                                                                                                             "nameFirst"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "birthDate",
+                                                                                                             "registrationState"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IN.L1",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "operatorLicenseNumber",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -5821,25 +6407,9 @@
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "ID.L1",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "nameLast",
-                                                                                                             "nameFirst"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "birthDate",
-                                                                                                             "registrationState"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "IN.L1",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- ID.L1 (OLN), IN.L1 (Name), NLTS.DQ (OOS OLN).",
+                                                   "description":  "DriverLicenseQuery -- IN.L1 (Name), NLTS.DQ (OOS OLN), ID.L1 (OLN). Name-first ordering.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -5848,7 +6418,10 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverLicenseQuery",
                                                    "queryLabel":  "Driver License",
-                                                   "targetEntity":  "Person"
+                                                   "targetEntity":  "Person",
+                                                   "queriesToDeselect":  [
+                                                                             "DriverHistoryQuery"
+                                                                         ]
                                                },
                                                {
                                                    "attributes":  [
@@ -5863,7 +6436,7 @@
                                                                                    },
                                                                           "size":  8,
                                                                           "sourceField":  [
-                                                                                              "birthDate"
+                                                                                              "birthDateDH"
                                                                                           ],
                                                                           "targetField":  "BirthDate"
                                                                       },
@@ -5871,7 +6444,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "caRequestPurposeCode"
+                                                                                              "caRequestPurposeCodeDH"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -5885,8 +6458,8 @@
                                                                                    },
                                                                           "size":  30,
                                                                           "sourceField":  [
-                                                                                              "nameLast",
-                                                                                              "nameFirst"
+                                                                                              "nameLastDH",
+                                                                                              "nameFirstDH"
                                                                                           ],
                                                                           "targetField":  "Name"
                                                                       },
@@ -5894,7 +6467,7 @@
                                                                           "name":  "OperatorLicenseNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "operatorLicenseNumber"
+                                                                                              "operatorLicenseNumberDH"
                                                                                           ],
                                                                           "targetField":  "OperatorLicenseNumber"
                                                                       },
@@ -5902,7 +6475,7 @@
                                                                           "name":  "PurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "caRequestPurposeCode"
+                                                                                              "caRequestPurposeCodeDH"
                                                                                           ],
                                                                           "targetField":  "PurposeCode"
                                                                       },
@@ -5910,7 +6483,7 @@
                                                                           "name":  "SexCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "sexCode"
+                                                                                              "sexCodeDH"
                                                                                           ],
                                                                           "targetField":  "SexCode",
                                                                           "codeTypeProvider":  "NIBRS"
@@ -5929,11 +6502,11 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "birthDate",
-                                                                                                             "nameLast",
-                                                                                                             "nameFirst",
-                                                                                                             "sexCode"
+                                                                                                             "caRequestPurposeCodeDH",
+                                                                                                             "birthDateDH",
+                                                                                                             "nameLastDH",
+                                                                                                             "nameFirstDH",
+                                                                                                             "sexCodeDH"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "registrationState"
@@ -5946,8 +6519,8 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "operatorLicenseNumber"
+                                                                                                             "caRequestPurposeCodeDH",
+                                                                                                             "operatorLicenseNumberDH"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "registrationState"
@@ -5958,7 +6531,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). All via Nlets.",
+                                                   "description":  "DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). DH-suffix fields. All via Nlets.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_DriverHistoryQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -5967,7 +6540,10 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverHistoryQuery",
                                                    "queryLabel":  "Driver History",
-                                                   "targetEntity":  "Person"
+                                                   "targetEntity":  "Person",
+                                                   "queriesToDeselect":  [
+                                                                             "DriverLicenseQuery"
+                                                                         ]
                                                },
                                                {
                                                    "attributes":  [
@@ -6174,6 +6750,36 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
+                                                                                                             "boatHullIdNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "BoatHullIdNumber",
+                                                                            "keyReference":  "NLTS.BQ.H",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "registrationNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "RegistrationNumber",
+                                                                            "keyReference":  "NLTS.BQ.R",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "boatHullIdNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -6211,39 +6817,9 @@
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "IA.QB.R",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "boatHullIdNumber",
-                                                                                                             "registrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "BoatHullIdNumber",
-                                                                            "keyReference":  "NLTS.BQ.H",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "registrationNumber",
-                                                                                                             "registrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "RegistrationNumber",
-                                                                            "keyReference":  "NLTS.BQ.R",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg). CA boat inquiry.",
+                                                   "description":  "BoatQuery -- NLTS.BQ OOS (hull, reg) + IA.QB (hull, OAN, reg). Most-specific first.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6254,7 +6830,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v1.6",
+                        "description":  "Provider configuration for CA_CLETS v1.7",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

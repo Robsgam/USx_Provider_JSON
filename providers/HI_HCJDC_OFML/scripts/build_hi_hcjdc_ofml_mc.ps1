@@ -1,17 +1,17 @@
-# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.2 MC VARIANT
+# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.4 MC VARIANT
 # Multi-card layout. QIDMs identical to BASE. Layout-only changes.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml_mc.ps1
 #
 # MC LAYOUT (5 QIFs, multi-card where applicable):
 #   Vehicle: 3 cards (OPTIONS, PLATE SEARCH, VIN SEARCH)
-#   Person:  3 cards (OPTIONS, LICENSE NUMBER, NAME SEARCH)
+#   Person:  4 cards (OPTIONS, DRIVER LICENSE, NAME SEARCH, DRIVER HISTORY)
 #   Firearm: 1 card
 #   Article: 1 card
 #   Boat:    3 cards (OPTIONS, REGISTRATION, HULL)
 
 param(
-    [string]$Version = "1.3",
+    [string]$Version = "1.4",
     [string]$Phase   = "mc"
 )
 
@@ -177,14 +177,14 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('VehicleYear');                  targetField = 'VehicleYear' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'M55L'; state = 'In' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'M55S'; state = 'In' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQ'; state = 'Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVV'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'M55L'; state = 'In' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVP'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'M55S'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVV'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQV'; state = 'Out' }
     )
-    description        = 'VehicleRegistrationQuery -- M55L/M55S (in-state), RQ (out-state), QV (stolen). 6 combos.'
+    description        = 'VehicleRegistrationQuery -- RQ/M55L/QVP (plate) > M55S/QVV/RQV (VIN). 6 combos, most set[] first.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -233,11 +233,11 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @() }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQN'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @() }; primaryFieldReference = 'Name'; keyReference = 'DQ'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @() }; primaryFieldReference = 'Name'; keyReference = 'QW'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @() }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQN'; state = 'In/Out' }
     )
-    description     = 'DriverLicenseQuery -- DQN (OLN), DQ (Name+Sex+DOB), QW (Wanted Person).'
+    description     = 'DriverLicenseQuery -- DQ (Name+Sex+DOB), QW (Wanted Person), DQN (OLN). Most set[] first.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'HI_HCJDC_OFML_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -250,26 +250,26 @@ $dlQuery = [PSCustomObject]@{
     targetEntity    = 'Person'
 }
 
-# DriverHistoryQuery QIDM (identical to BASE)
+# DriverHistoryQuery QIDM -- DH-suffix fieldIds, Attention handler-only, autoSelect=$true
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention' }
-        [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate' }
-        [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(' ',' ',' ') }; size = 30; sourceField = @('NameFirst','NameLast','NameMiddle','NameSuffix'); targetField = 'Name' }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('PurposeCode'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
+        [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate' }
+        [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(' ',' ',' ') }; size = 30; sourceField = @('NameFirstDH','NameLastDH','NameMiddleDH','NameSuffixDH'); targetField = 'Name' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('PurposeCodeDH'); targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @() }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQN'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @() }; primaryFieldReference = 'Name'; keyReference = 'KQ'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @() }; primaryFieldReference = 'Name'; keyReference = 'KQ'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @() }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQN'; state = 'In/Out' }
     )
-    description     = 'DriverHistoryQuery -- KQN (OLN), KQ (Name+Sex+DOB).'
+    description     = 'DriverHistoryQuery -- KQ (Name), KQN (OLN). DH-suffix fields. Attention handler-only.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'HI_HCJDC_OFML_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $false
+    autoSelect      = $true
     queriesToDeselect = @('DriverLicenseQuery')
     provider        = 'HI_HCJDC_OFML'
     providerType    = 'Commsys'
@@ -347,7 +347,7 @@ $boatQuery = [PSCustomObject]@{
 
 $provBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for HI_HCJDC_OFML v${Version} MC"
+    description    = "Provider configuration for HI_HCJDC_OFML v${Version} MC (DH-suffix)"
     name           = 'HI_HCJDC_OFML'
     type           = 'BUNDLE'
     provider       = 'HI_HCJDC_OFML'
@@ -404,22 +404,20 @@ $vehicleForm = [PSCustomObject]@{
     targetEntity = 'Vehicle'
 }
 
-# Person -- 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
+# Person -- 4 cards: OPTIONS, DRIVER LICENSE, NAME SEARCH, DRIVER HISTORY (DH-suffix)
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_OPT'
         title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_PER_O1'; cols = @('12'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'HI' } 'ROW_PER_O1' }
-                @{ id = 'Attention_Input';         node = Inp 'Attention'    'Attention'    '30' 'ROW_PER_O1' }
-                @{ id = 'PurposeCode_Input';       node = Sel 'PurposeCode' 'Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_PER_O1' }
             )}
         )
     }
     @{
         id    = 'CARD_PER_OLN'
-        title = 'LICENSE NUMBER'
+        title = 'DRIVER LICENSE'
         rows  = @(
             @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_L1' }
@@ -442,9 +440,29 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
+    @{
+        id    = 'CARD_PER_DH'
+        title = 'DRIVER HISTORY'
+        rows  = @(
+            @{ id = 'ROW_DH1'; cols = @('6','6'); fields = @(
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
+                @{ id = 'PurposeCodeDH_Input';           node = Sel 'PurposeCodeDH' 'Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_DH1' }
+            )}
+            @{ id = 'ROW_DH2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH)'  '30' 'ROW_DH2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH)'   '30' 'ROW_DH2' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'Middle Name (DH)' '30' 'ROW_DH2' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix (DH)'      '30' 'ROW_DH2' }
+            )}
+            @{ id = 'ROW_DH3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)' 'ROW_DH3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH3' }
+            )}
+        )
+    }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH cards.'
+    description  = 'Person queries -- MC: OPTIONS + DL + NAME SEARCH + DH cards. DH-suffix fields.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -549,7 +567,7 @@ $entitiesBundle = [PSCustomObject]@{
         $vehicleForm, $personForm,
         $firearmsForm, $articleForm, $boatForm
     )
-    description    = 'Entity form configurations -- MC variant (5 QIFs, multi-card)'
+    description    = 'Entity form configurations -- MC variant (5 QIFs, multi-card, DH-suffix)'
     name           = 'ENTITIES'
     type           = 'BUNDLE'
     order          = [PSCustomObject]@{

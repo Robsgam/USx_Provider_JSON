@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === NY_NYSPIN_EJUSTICE_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=1 fields=5
+  Person | entity=Person | qidm= | cards=1 fields=10
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -60,6 +60,17 @@ LAYOUT DETAIL
       ROW ROW_PER_4 [6 6]
         birthDate (FormDate)
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_5 [6 6]
+        operatorLicenseNumberDH (Text | maxLen=20)
+        nameLastDH (Text | maxLen=35)
+      ROW ROW_PER_6 [6 6]
+        nameFirstDH (Text | maxLen=35)
+        nameMiddleDH (Text | maxLen=35)
+      ROW ROW_PER_7 [6 6]
+        nameSuffixDH (Text | maxLen=10)
+        birthDateDH (FormDate)
+      ROW ROW_PER_8 [6]
+        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

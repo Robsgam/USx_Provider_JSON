@@ -7,7 +7,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.4'
+$Version  = '1.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
@@ -260,15 +260,15 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumber'); any = @('RegistrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLast','NameFirst'); any = @('BirthDate') }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumber'); any = @('RegistrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.O'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -323,15 +323,15 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumberDH'); any = @('RegistrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQ.O'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLastDH','NameFirstDH'); any = @('BirthDateDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N.DH'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumberDH'); any = @('RegistrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -377,15 +377,15 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','SerialNumber'); any = @('GunCaliber','FirearmMake','GunTypeCode','RelatedSearchHitIndicator') }
-            primaryFieldReference = 'GunSerialNumber'
-            keyReference          = 'QGB'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','GunNameLast','GunNameFirst'); any = @('GunBirthDate','GunAge') }
             primaryFieldReference = 'Name'
             keyReference          = 'QGH'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','SerialNumber'); any = @('GunCaliber','FirearmMake','GunTypeCode','RelatedSearchHitIndicator') }
+            primaryFieldReference = 'GunSerialNumber'
+            keyReference          = 'QGB'
             state                 = 'In/Out'
         }
     )
@@ -432,15 +432,15 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','VehicleIdentificationNumber','RegistrationState'); any = @('VehicleMakeCode','VehicleYear') }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQ.V'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','VehNameLast','VehNameFirst','VehBirthDate'); any = @('AddressCity','AddressStreetNumber') }
             primaryFieldReference = 'BirthDate'
             keyReference          = 'VP.D'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','VehicleIdentificationNumber','RegistrationState'); any = @('VehicleMakeCode','VehicleYear') }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQ.V'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{

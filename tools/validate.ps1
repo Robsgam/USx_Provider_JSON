@@ -1669,9 +1669,20 @@ foreach ($entity in $entityQidms.Keys) {
     # Check autoSelect conflicts on single-form entities (wrap in @() to prevent single-element scalar collapse)
     $autoSelectQidms = @($eqidms | Where-Object { $_.autoSelect -eq $true })
     if ($autoSelectQidms.Count -gt 1 -and $entityQifCount -eq 1) {
-        Write-Limitation "${entity}: $($autoSelectQidms.Count) QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)"
+        $hasCoFireDeselect = $false
         foreach ($asq in $autoSelectQidms) {
-            Write-Host "         $($asq.name) (query=$($asq.query))" -ForegroundColor DarkYellow
+            if ($asq.queriesToDeselect -and $asq.queriesToDeselect.Count -gt 0) { $hasCoFireDeselect = $true; break }
+        }
+        if ($hasCoFireDeselect) {
+            Write-Pass "${entity}: $($autoSelectQidms.Count) QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF"; Inc-Pass
+            foreach ($asq in $autoSelectQidms) {
+                Write-Host "         $($asq.name) (query=$($asq.query), deselect=$($asq.queriesToDeselect -join ','))" -ForegroundColor DarkGreen
+            }
+        } else {
+            Write-Limitation "${entity}: $($autoSelectQidms.Count) QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control"
+            foreach ($asq in $autoSelectQidms) {
+                Write-Host "         $($asq.name) (query=$($asq.query))" -ForegroundColor DarkYellow
+            }
         }
     } elseif ($autoSelectQidms.Count -gt 1 -and $entityQifCount -gt 1) {
         Write-Info "${entity}: $($autoSelectQidms.Count) autoSelect QIDMs across $entityQifCount QIFs (ok for multi-form)"
@@ -1792,14 +1803,21 @@ foreach ($entity in $entityQidms.Keys) {
         }
     }
 
-    # LIMITATION #24: queriesToDeselect needed when >1 QIDM on single QIF
+    # LIMITATION #24: queriesToDeselect needed when DL+DH share a single QIF
     if ($entityQifCount -eq 1 -and $eqidms.Count -gt 1) {
-        $hasDeselect = $false
+        $hasDLQuery = $false; $hasDHQuery = $false
         foreach ($q in $eqidms) {
-            if ($q.queriesToDeselect -and $q.queriesToDeselect.Count -gt 0) { $hasDeselect = $true; break }
+            if ($q.query -eq 'DriverLicenseQuery') { $hasDLQuery = $true }
+            if ($q.query -eq 'DriverHistoryQuery') { $hasDHQuery = $true }
         }
-        if (-not $hasDeselect) {
-            Write-Limitation "$entity : $($eqidms.Count) QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)"
+        if ($hasDLQuery -and $hasDHQuery) {
+            $hasDeselect = $false
+            foreach ($q in $eqidms) {
+                if ($q.queriesToDeselect -and $q.queriesToDeselect.Count -gt 0) { $hasDeselect = $true; break }
+            }
+            if (-not $hasDeselect) {
+                Write-Limitation "$entity : DL + DH on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect (LIMITATION #24)"
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-08 15:49
+  Generated: 2026-05-11 10:34
 ================================================================
 QUERY SIMULATION
 ================
@@ -47,6 +47,7 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
+    [SKIP] IN.VP -- missing set: NameLast, NameFirst
 
     [FIRES] IA.QVK
       set: [CaRequestPurposeCode, VehicleIdentificationNumber]
@@ -81,10 +82,23 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] IN.VP -- missing set: NameLast, NameFirst
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+
+    [FIRES] IN.L1
+      set: [CaRequestPurposeCode, NameLast, NameFirst]
+      any: [BirthDate, RegistrationState] -> matched: [BirthDate, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>IN.L1</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
 
     [FIRES] NLTS.DQ
       set: [CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
@@ -113,57 +127,14 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] IN.L1
-      set: [CaRequestPurposeCode, NameLast, NameFirst]
-      any: [BirthDate, RegistrationState] -> matched: [BirthDate, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IN.L1</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <State>NJ</State>
-      </Transaction>
-
 --- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-
-    [FIRES] NLTS.KQ.N
-      set: [CaRequestPurposeCode, BirthDate, NameLast, NameFirst, SexCode]
-      any: [RegistrationState] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.KQ.N</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] NLTS.KQ.O
-      set: [CaRequestPurposeCode, OperatorLicenseNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.KQ.O</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] NLTS.KQ.N -- missing set: CaRequestPurposeCodeDH
+    [SKIP] NLTS.KQ.O -- missing set: CaRequestPurposeCodeDH
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
+    [SKIP] IG.QGH -- missing set: NameLast, NameFirst
 
     [FIRES] IG.QGB
       set: [CaRequestPurposeCode, SerialNumber]
@@ -177,7 +148,6 @@ QUERY SIMULATION
         <GunMake>SMT</GunMake>
         <GunSerialNumber>ABC12345</GunSerialNumber>
       </Transaction>
-    [SKIP] IG.QGH -- missing set: NameLast, NameFirst
 
 --- QIDM: CA_CLETS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
@@ -210,6 +180,7 @@ QUERY SIMULATION
 
 --- QIDM: CA_CLETS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 7  |  Combos: 6
+    [SKIP] NLTS.BQ.N -- missing set: BirthDate
 
     [FIRES] NLTS.BQ.H
       set: [CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
@@ -238,7 +209,6 @@ QUERY SIMULATION
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>
       </Transaction>
-    [SKIP] NLTS.BQ.N -- missing set: BirthDate
 
     [FIRES] IA.QB.H
       set: [CaRequestPurposeCode, BoatHullIdNumber]

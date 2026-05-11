@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '1.2'
+$Version     = '1.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
@@ -216,15 +216,21 @@ $vehRegQuery = [PSCustomObject]@{
     combinations = @(
         # Most-specific first (LIMITATION #3: first matching combo fires)
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('RegistrationState','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RQ.P'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','DealerPlateType'); any = @() }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'ATDP'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationState','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @() }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'RQ.P'
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode','VehicleYear'); any = @('RegistrationState') }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQ.V'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -234,15 +240,15 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RegistrationState') }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QV.P'
+            requirements          = [PSCustomObject]@{ set = @('OwnerLastName','OwnerFirstName'); any = @('AddressCounty') }
+            primaryFieldReference = 'Name'
+            keyReference          = 'RN'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode','VehicleYear'); any = @('RegistrationState') }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQ.V'
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('RegistrationState') }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'QV.P'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -261,12 +267,6 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('OwnerSocialSecurityNumber'); any = @() }
             primaryFieldReference = 'SocialSecurityNumber'
             keyReference          = 'RS'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OwnerLastName','OwnerFirstName'); any = @('AddressCounty') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'RN'
             state                 = 'In/Out'
         }
     )
@@ -305,13 +305,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # Most-specific first: DQ.O requires State + OLN, DQ.N requires State + Name + DOB + Sex
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','RegistrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.O'
-            state                 = 'In/Out'
-        }
+        # Most-specific first (LIMITATION #3): DQ.N (4 set) > DN (2 set) > DQ.O (1 set) > DL (1 set)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('RegistrationState') }
             primaryFieldReference = 'Name'
@@ -319,15 +313,21 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DL'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('BirthDate') }
             primaryFieldReference = 'Name'
             keyReference          = 'DN'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','RegistrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.O'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @() }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DL'
             state                 = 'In/Out'
         }
     )
@@ -376,21 +376,21 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ.O: OLN search (most common)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('NameLastDH','NameFirstDH','PurposeCodeDH','RegistrationStateDH') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQ.O'
-            state                 = 'In/Out'
-        }
-        # KQ.N: Name search
+        # KQ.N: Name search -- most specific first (4 set fields)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('PurposeCodeDH','RegistrationStateDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
-        # BMVIMS: BMV IMS image lookup by OLN
+        # KQ.O: OLN search (1 set field)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('NameLastDH','NameFirstDH','PurposeCodeDH','RegistrationStateDH') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQ.O'
+            state                 = 'In/Out'
+        }
+        # BMVIMS: BMV IMS image lookup by OLN (1 set field)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('NameLastDH','NameFirstDH','ReasonCodeDH') }
             primaryFieldReference = 'OperatorLicenseNumber'

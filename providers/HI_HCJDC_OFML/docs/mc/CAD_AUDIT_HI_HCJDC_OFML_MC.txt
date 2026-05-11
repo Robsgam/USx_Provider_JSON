@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_MC
   Source: HI_HCJDC_OFML_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:36
 ================================================================
 CAD AUDIT
 =========
@@ -42,8 +42,8 @@ CAD AUDIT
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
-    [FAIL] Attention: wrong case (expected 'attention' or '')
-    [FAIL] PurposeCode: wrong case (expected 'purposeCode' or '')
+    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -58,6 +58,14 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] PurposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameSuffixDH: in QIF, not in CAD list (provider-specific)
+    [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -146,6 +154,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 37 PASS / 11 FAIL / 0 WARN / 68 INFO
+Total: 37 PASS / 9 FAIL / 0 WARN / 78 INFO
 
 

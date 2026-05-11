@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS_MC
   Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-05-11 09:05
+  Generated: 2026-05-11 10:51
 ================================================================
 QUERY SIMULATION
 ================
@@ -47,6 +47,7 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
+    [SKIP] VP -- missing set: NameLast, NameFirst
 
     [FIRES] 4V
       set: [CaRequestPurposeCode, VehicleIdentificationNumber]
@@ -81,7 +82,6 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] VP -- missing set: NameLast, NameFirst
 
 --- QIDM: CA_CLETS_OCATS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
@@ -114,13 +114,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] L1.O
-      set: [CaRequestPurposeCode, OperatorLicenseNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+    [FIRES] L1.N
+      set: [CaRequestPurposeCode, NameLast, NameFirst]
+      any: [BirthDate, RegistrationState] -> matched: [BirthDate, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>L1.O</MessageKey>
+        <MessageKey>L1.N</MessageKey>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -129,13 +129,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] L1.N
-      set: [CaRequestPurposeCode, NameLast, NameFirst]
-      any: [BirthDate, RegistrationState] -> matched: [BirthDate, RegistrationState]
+    [FIRES] L1.O
+      set: [CaRequestPurposeCode, OperatorLicenseNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>L1.N</MessageKey>
+        <MessageKey>L1.O</MessageKey>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>

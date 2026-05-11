@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_MC
   Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:40
 ================================================================
 CAD AUDIT
 =========
@@ -41,8 +41,8 @@ CAD AUDIT
     [PASS] raceCode: in QIF as 'RaceCode' (MC PascalCase)
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
-    [FAIL] Attention: wrong case (expected 'attention' or '')
-    [FAIL] PurposeCode: wrong case (expected 'purposeCode' or '')
+    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [FAIL] SocialSecurityNumber: wrong case (expected 'socialSecurityNumber' or '')
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -57,6 +57,14 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] PurposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] RaceCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] AttentionDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [FAIL] SerialNumber: wrong case (expected 'serialNumber' or '')
     [FAIL] FirearmMake: wrong case (expected 'firearmMake' or '')
@@ -138,6 +146,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 36 PASS / 14 FAIL / 0 WARN / 58 INFO
+Total: 36 PASS / 12 FAIL / 0 WARN / 68 INFO
 
 

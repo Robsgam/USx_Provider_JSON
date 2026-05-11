@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-11 10:09
+ Generated: 2026-05-11 10:36
 ============================================================
 
 ============================================================
@@ -39,10 +39,10 @@ METADATA AUDIT
   [PASS] RVIN: exists in XML VehicleRegistrationQuery
   [PASS] RVEH: exists in XML VehicleRegistrationQuery
   [PASS] RCAR: exists in XML VehicleRegistrationQuery
-  [PASS] DLIC: exists in XML DriverLicenseQuery
   [INFO] DLICN: invented keyRef (not in XML) -- acceptable
-  [PASS] DALL: exists in XML DriverHistoryQuery
+  [PASS] DLIC: exists in XML DriverLicenseQuery
   [INFO] DALH: invented keyRef (not in XML) -- acceptable
+  [PASS] DALL: exists in XML DriverHistoryQuery
   [PASS] GINQ: exists in XML GunQuery
   [PASS] AINQ: exists in XML ArticleSingleQuery
   [PASS] BVEH: exists in XML BoatQuery
@@ -80,11 +80,14 @@ METADATA AUDIT
   [INFO]   Requestor: in XML only (form-only pattern -- expected)
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   nameFirst: in QIDM sourceField but not in XML
-  [INFO]   nameLast: in QIDM sourceField but not in XML
-  [INFO]   nameMiddle: in QIDM sourceField but not in XML
-  [INFO]   nameSuffix: in QIDM sourceField but not in XML
+  [INFO]   birthDateDH: in QIDM sourceField but not in XML
+  [INFO]   nameFirstDH: in QIDM sourceField but not in XML
+  [INFO]   nameLastDH: in QIDM sourceField but not in XML
+  [INFO]   nameMiddleDH: in QIDM sourceField but not in XML
+  [INFO]   nameSuffixDH: in QIDM sourceField but not in XML
+  [INFO]   operatorLicenseNumberDH: in QIDM sourceField but not in XML
   [INFO]   registrationState: in QIDM only (form-only field)
+  [INFO]   sexCodeDH: in QIDM sourceField but not in XML
   DriverLicenseQuery:
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   ImageIndicator: in XML and QIDM
@@ -174,11 +177,11 @@ METADATA AUDIT
   [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
   [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
   [PASS] registrationNumber: maxLength 10 matches XML (RegistrationNumber)
-  [PASS] nameLast: maxLength 35 matches XML (Name)
-  [PASS] nameFirst: maxLength 35 matches XML (Name)
-  [PASS] nameMiddle: maxLength 35 matches XML (Name)
-  [INFO] nameSuffix: QIF maxLength 10 < XML maxLength 35 (Name) -- conservative, OK
-  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameLastDH: maxLength 35 matches XML (Name)
+  [PASS] nameFirstDH: maxLength 35 matches XML (Name)
+  [PASS] nameMiddleDH: maxLength 35 matches XML (Name)
+  [INFO] nameSuffixDH: QIF maxLength 10 < XML maxLength 35 (Name) -- conservative, OK
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] nameLast: maxLength 35 matches XML (Name)
   [PASS] nameFirst: maxLength 35 matches XML (Name)
   [PASS] nameMiddle: maxLength 35 matches XML (Name)
@@ -194,6 +197,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 94 PASS / 0 FAIL / 14 WARN / 33 INFO
+Total: 94 PASS / 0 FAIL / 14 WARN / 36 INFO
 ============================================================
 

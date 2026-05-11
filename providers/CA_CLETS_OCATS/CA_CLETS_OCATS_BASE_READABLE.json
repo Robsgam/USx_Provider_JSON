@@ -5897,6 +5897,21 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
+                                                                                                             "nameLast",
+                                                                                                             "nameFirst"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "VP",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "vehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -5924,21 +5939,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "4",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "nameLast",
-                                                                                                             "nameFirst"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "VP",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -6058,20 +6058,6 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
-                                                                                                             "operatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "registrationState"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "L1.O",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
                                                                                                              "nameLast",
                                                                                                              "nameFirst"
                                                                                                          ],
@@ -6082,6 +6068,20 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "L1.N",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "operatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "registrationState"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "L1.O",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -6409,7 +6409,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS_OCATS v1.1",
+                        "description":  "Provider configuration for CA_CLETS_OCATS v1.2",
                         "name":  "CA_CLETS_OCATS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS_OCATS"

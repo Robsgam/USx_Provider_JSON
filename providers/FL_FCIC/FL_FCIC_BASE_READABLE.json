@@ -6113,7 +6113,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Query forms for FL_FCIC v3.3",
+                        "description":  "Query forms for FL_FCIC v3.4",
                         "name":  "ENTITIES",
                         "type":  "BUNDLE",
                         "order":  {
@@ -7311,6 +7311,20 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
+                                                                                                             "decalNumber",
+                                                                                                             "licensePlateYear"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "imageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "DecalNumber",
+                                                                            "keyReference":  "FRQDecalNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
                                                                                                              "licensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -7333,20 +7347,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "FRQVehicleIdentificationNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "decalNumber",
-                                                                                                             "licensePlateYear"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "imageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "DecalNumber",
-                                                                            "keyReference":  "FRQDecalNumber",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7529,33 +7529,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "operatorLicenseNumber",
-                                                                                                             "registrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "imageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQOperatorLicenseNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "operatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "imageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "FDQOperatorLicenseNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "birthDate",
                                                                                                              "nameLast",
                                                                                                              "nameFirst",
@@ -7584,6 +7557,33 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "FDQName",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "operatorLicenseNumber",
+                                                                                                             "registrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "imageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQOperatorLicenseNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "operatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "imageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "FDQOperatorLicenseNumber",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -7775,21 +7775,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "operatorLicenseNumberDH",
-                                                                                                             "registrationState",
-                                                                                                             "purposeCodeDH"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "KQOperatorLicenseNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "birthDateDH",
                                                                                                              "nameLastDH",
                                                                                                              "nameFirstDH",
@@ -7803,6 +7788,21 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "KQName",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "operatorLicenseNumberDH",
+                                                                                                             "registrationState",
+                                                                                                             "purposeCodeDH"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "KQOperatorLicenseNumber",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -8345,7 +8345,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v3.3",
+                        "description":  "Provider configuration for FL_FCIC v3.4",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"

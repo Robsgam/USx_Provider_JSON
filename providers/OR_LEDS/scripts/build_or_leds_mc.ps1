@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds_mc.ps1
 
 param(
-    [string]$Version = '1.2',
+    [string]$Version = '1.3',
     [string]$Phase   = "mc"
 )
 
@@ -276,32 +276,32 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # OOS OLN (most specific OOS path -- OLN + State)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.OO'
-            state                 = 'In/Out'
-        }
-        # OOS Name (Name+DOB+State)
+        # OOS Name (4 set -- most specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst','RegistrationState'); any = @('SexCode','ImageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.NO'
             state                 = 'In/Out'
         }
-        # In-state OLN
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('RegistrationState','ImageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.O'
-            state                 = 'In/Out'
-        }
-        # In-state Name (Name+DOB+[Sex])
+        # In-state Name (3 set)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('SexCode','RegistrationState','ImageIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.N'
+            state                 = 'In/Out'
+        }
+        # OOS OLN (2 set)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.OO'
+            state                 = 'In/Out'
+        }
+        # In-state OLN (1 set)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('RegistrationState','ImageIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.O'
             state                 = 'In/Out'
         }
     )

@@ -40,11 +40,11 @@
 #
 # PERSON (2 QIDMs co-fire by design):
 #   DL + DH share Person entity/form.
-#   Both have autoSelect=true. Officer can uncheck to disable specific queries.
-#   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
+#   Both have autoSelect=true + queriesToDeselect (AP #14 / LIMITATION #24-25).
+#   DH-suffix fieldIds isolate DH from DL field pool.
 
 param(
-    [string]$Version = "1.6",
+    [string]$Version = "1.7",
     [string]$Phase   = "base"
 )
 
@@ -295,6 +295,12 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IN.L1'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber','registrationState'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.DQ'
@@ -306,14 +312,8 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'ID.L1'
             state                 = 'In/Out'
         }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'IN.L1'
-            state                 = 'In/Out'
-        }
     )
-    description     = 'DriverLicenseQuery -- ID.L1 (OLN), IN.L1 (Name), NLTS.DQ (OOS OLN).'
+    description     = 'DriverLicenseQuery -- IN.L1 (Name), NLTS.DQ (OOS OLN), ID.L1 (OLN). Name-first ordering.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -323,48 +323,49 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # =====================================================================
 # 1f. DriverHistoryQuery
 # XML v22: 2 combos (NLTS.KQ Name, NLTS.KQ OLN) -- both Nlets
 # CA has no in-state DH; all DH goes through Nlets
-# DL+DH co-fire on OLN is intentional (standard police workflow)
-# PurposeCode: separate optional DH field per metadata+devdoc, maps from same form field as CaRequestPurposeCode
+# DH-suffix fieldIds isolate from DL field pool (AP #14 / LIMITATION #24-25)
+# PurposeCode: DH attr maps from caRequestPurposeCodeDH (DH-suffix form field)
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
+            size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
         }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCodeDH'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
+            size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCode'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCodeDH'); targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','birthDate','nameLast','nameFirst','sexCode'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCodeDH','birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'NLTS.KQ.N'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCodeDH','operatorLicenseNumberDH'); any = @('registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.KQ.O'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). All via Nlets.'
+    description     = 'DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). DH-suffix fields. All via Nlets.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -374,6 +375,7 @@ $dhQuery = [PSCustomObject]@{
     query           = 'DriverHistoryQuery'
     queryLabel      = 'Driver History'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverLicenseQuery')
 }
 
 # =====================================================================
@@ -464,6 +466,18 @@ $boatQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber','registrationState'); any = @() }
+            primaryFieldReference = 'BoatHullIdNumber'
+            keyReference          = 'NLTS.BQ.H'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber','registrationState'); any = @() }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'NLTS.BQ.R'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber'); any = @('registrationState') }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'IA.QB.H'
@@ -481,20 +495,8 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'IA.QB.R'
             state                 = 'In/Out'
         }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber','registrationState'); any = @() }
-            primaryFieldReference = 'BoatHullIdNumber'
-            keyReference          = 'NLTS.BQ.H'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber','registrationState'); any = @() }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'NLTS.BQ.R'
-            state                 = 'In/Out'
-        }
     )
-    description     = 'BoatQuery -- IA.QB (hull, OAN, reg) + NLTS.BQ OOS (hull, reg). CA boat inquiry.'
+    description     = 'BoatQuery -- NLTS.BQ OOS (hull, reg) + IA.QB (hull, OAN, reg). Most-specific first.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_CLETS_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -562,8 +564,10 @@ $vehicleForm = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Person -- 1 card
-# Serves 2 QIDMs: DL + DH (co-fire).
+# Serves 2 QIDMs: DL + DH (co-fire with queriesToDeselect + DH-suffix).
 # State: NO initialValue (LIMITATION #30 -- ID.L1 vs NLTS.DQ routing)
+# DH-suffix fields: operatorLicenseNumberDH, caRequestPurposeCodeDH,
+#   nameLastDH, nameFirstDH, birthDateDH, sexCodeDH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
@@ -583,11 +587,23 @@ $perLayout = MakeLayouts @(
                 @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                          'ROW_PER_3' }
                 @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_3' }
             )}
+            @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
+                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_4' }
+                @{ id = 'caRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
+            )}
+            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+                @{ id = 'nameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_5' }
+                @{ id = 'nameFirstDH_Input'; node = Inp 'nameFirstDH' 'First Name (DH)' '30' 'ROW_PER_5' }
+            )}
+            @{ id = 'ROW_PER_6'; cols = @('6','6'); fields = @(
+                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)'                                                              'ROW_PER_6' }
+                @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }      'ROW_PER_6' }
+            )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (ID.L1/IN.L1/NLTS.DQ) + DH (NLTS.KQ).'
+    description  = 'Person queries -- DL (IN.L1/NLTS.DQ/ID.L1) + DH (NLTS.KQ). DH-suffix fields.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

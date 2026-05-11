@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_MC
   Source: NY_NYSPIN_EJUSTICE_MC.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ================================================================
 QUERY SIMULATION
 ================
@@ -68,21 +68,6 @@ QUERY SIMULATION
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-    [FIRES] DLIC
-      set: [OperatorLicenseNumber]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DLIC</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe, John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
     [FIRES] DLICN
       set: [BirthDate, NameLast, NameFirst, SexCode]
       any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
@@ -98,16 +83,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
---- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
-
-    [FIRES] DALL
+    [FIRES] DLIC
       set: [OperatorLicenseNumber]
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DALL</MessageKey>
+        <MessageKey>DLIC</MessageKey>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe, John A</Name>
@@ -116,13 +98,31 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
+--- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
+
     [FIRES] DALH
-      set: [BirthDate, NameLast, NameFirst, SexCode]
-      any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
+      set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+      any: [ImageIndicator, RegistrationState, NameMiddleDH, NameSuffixDH] -> matched: [ImageIndicator, RegistrationState, NameMiddleDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DALH</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DALL
+      set: [OperatorLicenseNumberDH]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DALL</MessageKey>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe, John A</Name>

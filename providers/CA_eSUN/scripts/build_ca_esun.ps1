@@ -48,7 +48,7 @@
 #   Both have autoSelect=true + queriesToDeselect.
 
 param(
-    [string]$Version = "1.4",
+    [string]$Version = "1.5",
     [string]$Phase   = "base"
 )
 
@@ -317,28 +317,28 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # DQ.N (OOS Name) -- most specific first (4 set fields)
+        # DQ.N (OOS Name) -- most specific first (5 set fields)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','sexCode','birthDate','nameLast','nameFirst'); any = @('registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.N'
             state                 = 'In/Out'
         }
-        # DQ.O (OOS OLN) -- State in any[] distinguishes from L1.O
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.O'
-            state                 = 'In/Out'
-        }
-        # L1.N (in-state Name)
+        # L1.N (in-state Name) -- 3 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @('birthDate') }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N'
             state                 = 'In/Out'
         }
-        # L1.O (in-state OLN)
+        # DQ.O (OOS OLN) -- 2 set fields, State in any[] distinguishes from L1.O
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.O'
+            state                 = 'In/Out'
+        }
+        # L1.O (in-state OLN) -- 2 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -396,28 +396,28 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ.N (OOS Name) -- most specific first (4 set fields + 3 any)
+        # KQ.N (OOS Name) -- most specific first (5 set fields)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLastDH','nameFirstDH','sexCodeDH','birthDateDH'); any = @('registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
-        # KQ.O (OOS OLN) -- any=[State] distinguishes from L1.O
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumberDH'); any = @('registrationState') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQ.O'
-            state                 = 'In/Out'
-        }
-        # L1.N.DH (in-state Name) -- renamed from L1.N to avoid duplicate keyRef with DL QIDM
+        # L1.N.DH (in-state Name) -- 3 set fields, renamed from L1.N to avoid duplicate keyRef with DL QIDM
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLastDH','nameFirstDH'); any = @('birthDateDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N.DH'
             state                 = 'In/Out'
         }
-        # L1.O.DH (in-state OLN) -- renamed from L1.O to avoid duplicate keyRef with DL QIDM
+        # KQ.O (OOS OLN) -- 2 set fields, any=[State] distinguishes from L1.O
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumberDH'); any = @('registrationState') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQ.O'
+            state                 = 'In/Out'
+        }
+        # L1.O.DH (in-state OLN) -- 2 set fields, renamed from L1.O to avoid duplicate keyRef with DL QIDM
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumberDH'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -469,15 +469,15 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('gunCaliber','firearmMake','gunTypeCode','relatedSearchHitIndicator') }
-            primaryFieldReference = 'GunSerialNumber'
-            keyReference          = 'QGB'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','gunNameLast','gunNameFirst'); any = @('gunBirthDate','gunAge') }
             primaryFieldReference = 'Name'
             keyReference          = 'QGH'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('gunCaliber','firearmMake','gunTypeCode','relatedSearchHitIndicator') }
+            primaryFieldReference = 'GunSerialNumber'
+            keyReference          = 'QGB'
             state                 = 'In/Out'
         }
     )
@@ -528,42 +528,42 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        # RQ.P (OOS Plate) -- most specific first (5 set + State)
+        # RQ.P (OOS Plate) -- most specific first (5 set fields)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
             state                 = 'In/Out'
         }
-        # RQ.V (OOS VIN)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQ.V'
-            state                 = 'In/Out'
-        }
-        # VP.D (Owner DOB) -- 3 set fields
+        # VP.D (Owner DOB) -- 4 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehNameLast','vehNameFirst','vehBirthDate'); any = @('addressCity','addressStreetNumber') }
             primaryFieldReference = 'BirthDate'
             keyReference          = 'VP.D'
             state                 = 'In/Out'
         }
-        # VP.N (Owner Name) -- 2 set + any
+        # RQ.V (OOS VIN) -- 3 set fields
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQ.V'
+            state                 = 'In/Out'
+        }
+        # VP.N (Owner Name) -- 3 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehNameLast','vehNameFirst'); any = @('addressCity','addressStreetNumber') }
             primaryFieldReference = 'Name'
             keyReference          = 'VP.N'
             state                 = 'In/Out'
         }
-        # QV.V (in-state VIN)
+        # QV.V (in-state VIN) -- 2 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber'); any = @('vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QV.V'
             state                 = 'In/Out'
         }
-        # QV.P (in-state Plate) -- least specific
+        # QV.P (in-state Plate) -- 2 set fields
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber'); any = @('licensePlateTypeCode','licensePlateYear','vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'LicensePlateNumber'

@@ -7690,6 +7690,22 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
+                                                                                                             "RegistrationState",
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "LicensePlateTypeCode",
+                                                                                                             "LicensePlateYear"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "RQ.P",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
                                                                                                              "LicensePlateNumber",
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "DealerPlateType"
@@ -7705,17 +7721,16 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "RegistrationState",
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear"
+                                                                                                             "VehicleIdentificationNumber",
+                                                                                                             "VehicleMakeCode",
+                                                                                                             "VehicleYear"
                                                                                                          ],
                                                                                                  "any":  [
-
+                                                                                                             "RegistrationState"
                                                                                                          ]
                                                                                              },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "RQ.P",
+                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
+                                                                            "keyReference":  "RQ.V",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7735,6 +7750,20 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
+                                                                                                             "OwnerLastName",
+                                                                                                             "OwnerFirstName"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "AddressCounty"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "RN",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -7743,21 +7772,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "QV.P",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "RegistrationState"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "RQ.V",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7797,20 +7811,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "SocialSecurityNumber",
                                                                             "keyReference":  "RS",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "OwnerLastName",
-                                                                                                             "OwnerFirstName"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "AddressCounty"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "RN",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -7896,20 +7896,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "RegistrationState"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQ.O",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "SexCode",
                                                                                                              "BirthDate",
                                                                                                              "NameLast",
@@ -7926,19 +7912,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DL",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
@@ -7948,6 +7921,33 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DN",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "RegistrationState"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQ.O",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DL",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -8059,22 +8059,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumberDH"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "NameLastDH",
-                                                                                                             "NameFirstDH",
-                                                                                                             "PurposeCodeDH",
-                                                                                                             "RegistrationStateDH"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "KQ.O",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "SexCodeDH",
                                                                                                              "BirthDateDH",
                                                                                                              "NameLastDH",
@@ -8087,6 +8071,22 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "KQ.N",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumberDH"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "NameLastDH",
+                                                                                                             "NameFirstDH",
+                                                                                                             "PurposeCodeDH",
+                                                                                                             "RegistrationStateDH"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "KQ.O",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -8377,7 +8377,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for OH_LEADS v1.2 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for OH_LEADS v1.3 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "OH_LEADS",
                         "type":  "BUNDLE",
                         "provider":  "OH_LEADS"

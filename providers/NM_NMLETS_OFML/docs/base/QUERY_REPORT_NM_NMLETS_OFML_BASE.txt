@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_BASE
   Source: NM_NMLETS_OFML_BASE.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:39
 ================================================================
 QUERY SIMULATION
 ================
@@ -81,21 +81,6 @@ QUERY SIMULATION
 --- QIDM: NM_NMLETS_OFML_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-    [FIRES] DL.OLN
-      set: [operatorLicenseNumber]
-      any: [registrationState, imageIndicator] -> matched: [registrationState, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DL.OLN</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
     [FIRES] DL.NAME
       set: [nameLast, nameFirst, birthDate, sexCode]
       any: [registrationState, imageIndicator] -> matched: [registrationState, imageIndicator]
@@ -111,39 +96,48 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
+    [FIRES] DL.OLN
+      set: [operatorLicenseNumber]
+      any: [registrationState, imageIndicator] -> matched: [registrationState, imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DL.OLN</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
 --- QIDM: NM_NMLETS_OFML_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 2
 
     [FIRES] KQ.N
-      set: [nameLast, nameFirst, birthDate, sexCode]
-      any: [attention, operatorLicenseNumber, purposeCode, raceCode, registrationState] -> matched: [attention, operatorLicenseNumber, purposeCode, raceCode, registrationState]
+      set: [nameLastDH, nameFirstDH, birthDateDH, sexCodeDH]
+      any: [attentionDH, operatorLicenseNumberDH, purposeCodeDH, raceCodeDH, registrationState] -> matched: [operatorLicenseNumberDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
-        <RaceCode>W</RaceCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] KQ.O
-      set: [operatorLicenseNumber]
-      any: [attention, purposeCode, registrationState] -> matched: [attention, purposeCode, registrationState]
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, purposeCodeDH, registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
-        <RaceCode>W</RaceCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

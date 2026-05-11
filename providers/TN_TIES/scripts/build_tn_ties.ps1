@@ -60,7 +60,7 @@
 # NAME FORMAT: Composite (FormatStringRuleHandler with ', ' separator -- Last,First)
 
 $ErrorActionPreference = "Stop"
-$Version = '1.3'
+$Version = '1.4'
 $currentYear = [string](Get-Date).Year
 $DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT     = "$DIR\TN_TIES_BASE.json"
@@ -374,42 +374,42 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State';                     size = 2;  sourceField = @('registrationState');         targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # OOS Name+DOB+Sex+State (most specific)
+        # OOS Name+DOB+Sex+State (5 set -- most specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst','birthDate','sexCode','registrationState'); any = @('inquiryTypeIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.N'
             state                 = 'In/Out'
         }
-        # OOS OLN+State
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @() }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ.O'
-            state                 = 'In/Out'
-        }
-        # NCIC Name (QWA -- broadest name search with expanded search options)
+        # NCIC Name (QWA -- 4 set, broadest name search with expanded search options)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst','birthDate','sexCode'); any = @('expandedNameSearchCode','imageIndicator','inquiryTypeIndicator','raceCode','relatedHitSearchIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'QWA'
             state                 = 'In/Out'
         }
-        # In-state OLN (no State required)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('expandedNameSearchCode','imageIndicator','inquiryTypeIndicator','relatedHitSearchIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ01'
-            state                 = 'In/Out'
-        }
-        # In-state Name+DOB+Sex
+        # In-state Name+DOB+Sex (4 set)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst','birthDate','sexCode'); any = @('inquiryTypeIndicator') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ02'
             state                 = 'In/Out'
         }
-        # In-state SSN
+        # OOS OLN+State (2 set)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @() }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ.O'
+            state                 = 'In/Out'
+        }
+        # In-state OLN (1 set)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('expandedNameSearchCode','imageIndicator','inquiryTypeIndicator','relatedHitSearchIndicator') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ01'
+            state                 = 'In/Out'
+        }
+        # In-state SSN (1 set)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('socialSecurityNumber'); any = @('expandedNameSearchCode','imageIndicator','inquiryTypeIndicator','relatedHitSearchIndicator') }
             primaryFieldReference = 'SocialSecurityNumber'
@@ -421,7 +421,8 @@ $dlQuery = [PSCustomObject]@{
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'TN_TIES_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
+    autoSelect         = $true
+    queriesToDeselect  = @('DriverHistoryQuery')
     provider        = 'TN_TIES'
     providerType    = 'Commsys'
     query           = 'DriverLicenseQuery'
@@ -487,7 +488,8 @@ $dhQuery = [PSCustomObject]@{
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'TN_TIES_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
+    autoSelect         = $true
+    queriesToDeselect  = @('DriverLicenseQuery')
     provider        = 'TN_TIES'
     providerType    = 'Commsys'
     query           = 'DriverHistoryQuery'

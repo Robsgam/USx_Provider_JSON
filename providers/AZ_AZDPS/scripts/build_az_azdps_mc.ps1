@@ -27,7 +27,7 @@
 #           Shared fields (RegistrationState, dexStateUserId) go on shared OPTIONS cards.
 
 $ErrorActionPreference = "Stop"
-$Version = '2.2'
+$Version = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
@@ -255,11 +255,11 @@ $dlQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('OperatorLicenseNumber')
-                any = @('dexStateUserId','BirthDate','NameFirst','NameLast','NameMiddle','NameSuffix','RegistrationState','SexCode','SocialSecurityNumber')
+                set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
+                any = @('NameMiddle','NameSuffix','OperatorLicenseNumber','RegistrationState','SocialSecurityNumber')
             }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQ'
+            primaryFieldReference = 'Name'
+            keyReference          = 'ACWL'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -273,6 +273,15 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                set = @('OperatorLicenseNumber')
+                any = @('dexStateUserId','BirthDate','NameFirst','NameLast','NameMiddle','NameSuffix','RegistrationState','SexCode','SocialSecurityNumber')
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQ'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
                 set = @('SocialSecurityNumber')
                 any = @('dexStateUserId','BirthDate','NameFirst','NameLast','NameMiddle','NameSuffix','OperatorLicenseNumber','RegistrationState','SexCode')
             }
@@ -280,21 +289,13 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'DQSS'
             state                 = 'In/Out'
         }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
-                any = @('NameMiddle','NameSuffix','OperatorLicenseNumber','RegistrationState','SocialSecurityNumber')
-            }
-            primaryFieldReference = 'Name'
-            keyReference          = 'ACWL'
-            state                 = 'In/Out'
-        }
     )
     description     = 'Mapping for AzAzdpsDriverLicenseQuery (DQ OLN + DQN Name + DQSS SSN + ACWL Badge)'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'AZ_AZDPS_AzAzdpsDriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
+    autoSelect         = $true
+    queriesToDeselect  = @('DriverHistoryQuery')
     provider        = 'AZ_AZDPS'
     providerType    = 'Commsys'
     query           = 'AzAzdpsDriverLicenseQuery'
@@ -327,15 +328,6 @@ $dhistQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('StateDH','OperatorLicenseNumberDH')
-                any = @('Attention','BirthDateDH','NameFirstDH','NameLastDH','NameMiddleDH','NameSuffixDH','PurposeCode','SexCodeDH')
-            }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'KQ'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
                 set = @('StateDH','NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH')
                 any = @('Attention','NameMiddleDH','NameSuffixDH','OperatorLicenseNumberDH','PurposeCode')
             }
@@ -343,12 +335,22 @@ $dhistQuery = [PSCustomObject]@{
             keyReference          = 'KQH'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('StateDH','OperatorLicenseNumberDH')
+                any = @('Attention','BirthDateDH','NameFirstDH','NameLastDH','NameMiddleDH','NameSuffixDH','PurposeCode','SexCodeDH')
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'KQ'
+            state                 = 'In/Out'
+        }
     )
     description     = 'Mapping for DriverHistoryQuery (KQ OLN + KQH Name -- DH-suffix isolation)'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'AZ_AZDPS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
+    autoSelect         = $true
+    queriesToDeselect  = @('AzAzdpsDriverLicenseQuery')
     provider        = 'AZ_AZDPS'
     providerType    = 'Commsys'
     query           = 'DriverHistoryQuery'

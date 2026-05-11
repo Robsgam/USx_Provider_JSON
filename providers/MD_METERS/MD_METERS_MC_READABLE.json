@@ -1225,7 +1225,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- MC: OPTIONS (State + Image + Sex + Race) + OLN (ZLDR.O/ZWAR.O/ZDRV.O) + NAME (ZLDR.N/ZWAR.N/ZDRV.N)",
+                                                   "description":  "Person queries -- MC: OPTIONS + OLN + NAME + DH. DH-suffix fields on separate card.",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -1278,7 +1278,8 @@
                                                                                                     "nodes":  [
                                                                                                                   "CARD_PER_OPT",
                                                                                                                   "CARD_PER_OLN",
-                                                                                                                  "CARD_PER_NAME"
+                                                                                                                  "CARD_PER_NAME",
+                                                                                                                  "CARD_DH"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
@@ -1673,7 +1674,191 @@
 
                                                                                                                           },
                                                                                                           "parent":  "ROW_PER_NAME_2"
-                                                                                                      }
+                                                                                                      },
+                                                                                  "CARD_DH":  {
+                                                                                                  "type":  {
+                                                                                                               "resolvedName":  "Card"
+                                                                                                           },
+                                                                                                  "displayName":  "Card",
+                                                                                                  "props":  {
+                                                                                                                "title":  "Driver History"
+                                                                                                            },
+                                                                                                  "isCanvas":  true,
+                                                                                                  "hidden":  false,
+                                                                                                  "nodes":  [
+                                                                                                                "ROW_DH1",
+                                                                                                                "ROW_DH2",
+                                                                                                                "ROW_DH3"
+                                                                                                            ],
+                                                                                                  "linkedNodes":  {
+
+                                                                                                                  },
+                                                                                                  "parent":  "ROOT_PAGE"
+                                                                                              },
+                                                                                  "ROW_DH1":  {
+                                                                                                  "type":  {
+                                                                                                               "resolvedName":  "Row"
+                                                                                                           },
+                                                                                                  "displayName":  "Row",
+                                                                                                  "props":  {
+                                                                                                                "templateColumns":  [
+                                                                                                                                        "6",
+                                                                                                                                        "6"
+                                                                                                                                    ]
+                                                                                                            },
+                                                                                                  "isCanvas":  true,
+                                                                                                  "hidden":  false,
+                                                                                                  "nodes":  [
+                                                                                                                "OperatorLicenseNumberDH_Input",
+                                                                                                                "SexCodeDH_Input"
+                                                                                                            ],
+                                                                                                  "linkedNodes":  {
+
+                                                                                                                  },
+                                                                                                  "parent":  "CARD_DH"
+                                                                                              },
+                                                                                  "OperatorLicenseNumberDH_Input":  {
+                                                                                                                        "type":  {
+                                                                                                                                     "resolvedName":  "FormInput"
+                                                                                                                                 },
+                                                                                                                        "displayName":  "Input",
+                                                                                                                        "props":  {
+                                                                                                                                      "fieldId":  "OperatorLicenseNumberDH",
+                                                                                                                                      "label":  "OLN (DH)",
+                                                                                                                                      "maxLength":  "20"
+                                                                                                                                  },
+                                                                                                                        "isCanvas":  false,
+                                                                                                                        "hidden":  false,
+                                                                                                                        "nodes":  [
+
+                                                                                                                                  ],
+                                                                                                                        "linkedNodes":  {
+
+                                                                                                                                        },
+                                                                                                                        "parent":  "ROW_DH1"
+                                                                                                                    },
+                                                                                  "SexCodeDH_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                   },
+                                                                                                          "displayName":  "Select",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "SexCodeDH",
+                                                                                                                        "label":  "Sex (DH)",
+                                                                                                                        "attributeTypeId":  "SEX",
+                                                                                                                        "codeTypeProvider":  "NIBRS"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_DH1"
+                                                                                                      },
+                                                                                  "ROW_DH2":  {
+                                                                                                  "type":  {
+                                                                                                               "resolvedName":  "Row"
+                                                                                                           },
+                                                                                                  "displayName":  "Row",
+                                                                                                  "props":  {
+                                                                                                                "templateColumns":  [
+                                                                                                                                        "6",
+                                                                                                                                        "6"
+                                                                                                                                    ]
+                                                                                                            },
+                                                                                                  "isCanvas":  true,
+                                                                                                  "hidden":  false,
+                                                                                                  "nodes":  [
+                                                                                                                "NameLastDH_Input",
+                                                                                                                "NameFirstDH_Input"
+                                                                                                            ],
+                                                                                                  "linkedNodes":  {
+
+                                                                                                                  },
+                                                                                                  "parent":  "CARD_DH"
+                                                                                              },
+                                                                                  "NameLastDH_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "NameLastDH",
+                                                                                                                         "label":  "Last Name (DH)",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_DH2"
+                                                                                                       },
+                                                                                  "NameFirstDH_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                     },
+                                                                                                            "displayName":  "Input",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "NameFirstDH",
+                                                                                                                          "label":  "First Name (DH)",
+                                                                                                                          "maxLength":  "30"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_DH2"
+                                                                                                        },
+                                                                                  "ROW_DH3":  {
+                                                                                                  "type":  {
+                                                                                                               "resolvedName":  "Row"
+                                                                                                           },
+                                                                                                  "displayName":  "Row",
+                                                                                                  "props":  {
+                                                                                                                "templateColumns":  [
+                                                                                                                                        "6"
+                                                                                                                                    ]
+                                                                                                            },
+                                                                                                  "isCanvas":  true,
+                                                                                                  "hidden":  false,
+                                                                                                  "nodes":  [
+                                                                                                                "BirthDateDH_Input"
+                                                                                                            ],
+                                                                                                  "linkedNodes":  {
+
+                                                                                                                  },
+                                                                                                  "parent":  "CARD_DH"
+                                                                                              },
+                                                                                  "BirthDateDH_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormDate"
+                                                                                                                     },
+                                                                                                            "displayName":  "Date",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "BirthDateDH",
+                                                                                                                          "label":  "DOB (DH)"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_DH3"
+                                                                                                        }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -1726,7 +1911,8 @@
                                                                                                                        "CONTEXT_INFO_CARD",
                                                                                                                        "CARD_PER_OPT",
                                                                                                                        "CARD_PER_OLN",
-                                                                                                                       "CARD_PER_NAME"
+                                                                                                                       "CARD_PER_NAME",
+                                                                                                                       "CARD_DH"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -2122,6 +2308,190 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_PER_NAME_2"
                                                                                                            },
+                                                                                       "CARD_DH":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Card"
+                                                                                                                },
+                                                                                                       "displayName":  "Card",
+                                                                                                       "props":  {
+                                                                                                                     "title":  "Driver History"
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "ROW_DH1",
+                                                                                                                     "ROW_DH2",
+                                                                                                                     "ROW_DH3"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "ROOT_PAGE"
+                                                                                                   },
+                                                                                       "ROW_DH1":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Row"
+                                                                                                                },
+                                                                                                       "displayName":  "Row",
+                                                                                                       "props":  {
+                                                                                                                     "templateColumns":  [
+                                                                                                                                             "6",
+                                                                                                                                             "6"
+                                                                                                                                         ]
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "OperatorLicenseNumberDH_Input",
+                                                                                                                     "SexCodeDH_Input"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "CARD_DH"
+                                                                                                   },
+                                                                                       "OperatorLicenseNumberDH_Input":  {
+                                                                                                                             "type":  {
+                                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                                      },
+                                                                                                                             "displayName":  "Input",
+                                                                                                                             "props":  {
+                                                                                                                                           "fieldId":  "OperatorLicenseNumberDH",
+                                                                                                                                           "label":  "OLN (DH)",
+                                                                                                                                           "maxLength":  "20"
+                                                                                                                                       },
+                                                                                                                             "isCanvas":  false,
+                                                                                                                             "hidden":  false,
+                                                                                                                             "nodes":  [
+
+                                                                                                                                       ],
+                                                                                                                             "linkedNodes":  {
+
+                                                                                                                                             },
+                                                                                                                             "parent":  "ROW_DH1"
+                                                                                                                         },
+                                                                                       "SexCodeDH_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                        },
+                                                                                                               "displayName":  "Select",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "SexCodeDH",
+                                                                                                                             "label":  "Sex (DH)",
+                                                                                                                             "attributeTypeId":  "SEX",
+                                                                                                                             "codeTypeProvider":  "NIBRS"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_DH1"
+                                                                                                           },
+                                                                                       "ROW_DH2":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Row"
+                                                                                                                },
+                                                                                                       "displayName":  "Row",
+                                                                                                       "props":  {
+                                                                                                                     "templateColumns":  [
+                                                                                                                                             "6",
+                                                                                                                                             "6"
+                                                                                                                                         ]
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "NameLastDH_Input",
+                                                                                                                     "NameFirstDH_Input"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "CARD_DH"
+                                                                                                   },
+                                                                                       "NameLastDH_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "NameLastDH",
+                                                                                                                              "label":  "Last Name (DH)",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_DH2"
+                                                                                                            },
+                                                                                       "NameFirstDH_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "NameFirstDH",
+                                                                                                                               "label":  "First Name (DH)",
+                                                                                                                               "maxLength":  "30"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_DH2"
+                                                                                                             },
+                                                                                       "ROW_DH3":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Row"
+                                                                                                                },
+                                                                                                       "displayName":  "Row",
+                                                                                                       "props":  {
+                                                                                                                     "templateColumns":  [
+                                                                                                                                             "6"
+                                                                                                                                         ]
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "BirthDateDH_Input"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "CARD_DH"
+                                                                                                   },
+                                                                                       "BirthDateDH_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormDate"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Date",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "BirthDateDH",
+                                                                                                                               "label":  "DOB (DH)"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_DH3"
+                                                                                                             },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -2255,7 +2625,8 @@
                                                                                                                           "CONTEXT_INFO_CARD",
                                                                                                                           "CARD_PER_OPT",
                                                                                                                           "CARD_PER_OLN",
-                                                                                                                          "CARD_PER_NAME"
+                                                                                                                          "CARD_PER_NAME",
+                                                                                                                          "CARD_DH"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -2651,6 +3022,190 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_PER_NAME_2"
                                                                                                               },
+                                                                                          "CARD_DH":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Card"
+                                                                                                                   },
+                                                                                                          "displayName":  "Card",
+                                                                                                          "props":  {
+                                                                                                                        "title":  "Driver History"
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "ROW_DH1",
+                                                                                                                        "ROW_DH2",
+                                                                                                                        "ROW_DH3"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROOT_PAGE"
+                                                                                                      },
+                                                                                          "ROW_DH1":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Row"
+                                                                                                                   },
+                                                                                                          "displayName":  "Row",
+                                                                                                          "props":  {
+                                                                                                                        "templateColumns":  [
+                                                                                                                                                "6",
+                                                                                                                                                "6"
+                                                                                                                                            ]
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "OperatorLicenseNumberDH_Input",
+                                                                                                                        "SexCodeDH_Input"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "CARD_DH"
+                                                                                                      },
+                                                                                          "OperatorLicenseNumberDH_Input":  {
+                                                                                                                                "type":  {
+                                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                                         },
+                                                                                                                                "displayName":  "Input",
+                                                                                                                                "props":  {
+                                                                                                                                              "fieldId":  "OperatorLicenseNumberDH",
+                                                                                                                                              "label":  "OLN (DH)",
+                                                                                                                                              "maxLength":  "20"
+                                                                                                                                          },
+                                                                                                                                "isCanvas":  false,
+                                                                                                                                "hidden":  false,
+                                                                                                                                "nodes":  [
+
+                                                                                                                                          ],
+                                                                                                                                "linkedNodes":  {
+
+                                                                                                                                                },
+                                                                                                                                "parent":  "ROW_DH1"
+                                                                                                                            },
+                                                                                          "SexCodeDH_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "SexCodeDH",
+                                                                                                                                "label":  "Sex (DH)",
+                                                                                                                                "attributeTypeId":  "SEX",
+                                                                                                                                "codeTypeProvider":  "NIBRS"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_DH1"
+                                                                                                              },
+                                                                                          "ROW_DH2":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Row"
+                                                                                                                   },
+                                                                                                          "displayName":  "Row",
+                                                                                                          "props":  {
+                                                                                                                        "templateColumns":  [
+                                                                                                                                                "6",
+                                                                                                                                                "6"
+                                                                                                                                            ]
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "NameLastDH_Input",
+                                                                                                                        "NameFirstDH_Input"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "CARD_DH"
+                                                                                                      },
+                                                                                          "NameLastDH_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "NameLastDH",
+                                                                                                                                 "label":  "Last Name (DH)",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_DH2"
+                                                                                                               },
+                                                                                          "NameFirstDH_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormInput"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Input",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "NameFirstDH",
+                                                                                                                                  "label":  "First Name (DH)",
+                                                                                                                                  "maxLength":  "30"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_DH2"
+                                                                                                                },
+                                                                                          "ROW_DH3":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Row"
+                                                                                                                   },
+                                                                                                          "displayName":  "Row",
+                                                                                                          "props":  {
+                                                                                                                        "templateColumns":  [
+                                                                                                                                                "6"
+                                                                                                                                            ]
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "BirthDateDH_Input"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "CARD_DH"
+                                                                                                      },
+                                                                                          "BirthDateDH_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormDate"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Date",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "BirthDateDH",
+                                                                                                                                  "label":  "DOB (DH)"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_DH3"
+                                                                                                                },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -6019,21 +6574,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "RegistrationState",
-                                                                                                             "ImageIndicator",
-                                                                                                             "YearsPastViolationsWanted"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "ZLDR.O",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "BirthDate",
                                                                                                              "NameLast",
                                                                                                              "NameFirst",
@@ -6047,9 +6587,24 @@
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "ZLDR.N",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "RegistrationState",
+                                                                                                             "ImageIndicator",
+                                                                                                             "YearsPastViolationsWanted"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "ZLDR.O",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- ZWAR (warrant name/OLN), ZLDR (DL by OLN/name). MC PascalCase.",
+                                                   "description":  "DriverLicenseQuery -- ZWAR (warrant name/OLN), ZLDR (Name/OLN). MC PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "MD_METERS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6058,7 +6613,10 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverLicenseQuery",
                                                    "queryLabel":  "Driver License",
-                                                   "targetEntity":  "Person"
+                                                   "targetEntity":  "Person",
+                                                   "queriesToDeselect":  [
+                                                                             "DriverHistoryQuery"
+                                                                         ]
                                                },
                                                {
                                                    "attributes":  [
@@ -6073,7 +6631,7 @@
                                                                                    },
                                                                           "size":  8,
                                                                           "sourceField":  [
-                                                                                              "BirthDate"
+                                                                                              "BirthDateDH"
                                                                                           ],
                                                                           "targetField":  "BirthDate"
                                                                       },
@@ -6095,8 +6653,8 @@
                                                                                    },
                                                                           "size":  30,
                                                                           "sourceField":  [
-                                                                                              "NameLast",
-                                                                                              "NameFirst"
+                                                                                              "NameLastDH",
+                                                                                              "NameFirstDH"
                                                                                           ],
                                                                           "targetField":  "Name"
                                                                       },
@@ -6104,7 +6662,7 @@
                                                                           "name":  "OperatorLicenseNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "OperatorLicenseNumber"
+                                                                                              "OperatorLicenseNumberDH"
                                                                                           ],
                                                                           "targetField":  "OperatorLicenseNumber"
                                                                       },
@@ -6112,7 +6670,7 @@
                                                                           "name":  "SexCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "SexCode"
+                                                                                              "SexCodeDH"
                                                                                           ],
                                                                           "targetField":  "SexCode",
                                                                           "codeTypeProvider":  "NIBRS"
@@ -6122,23 +6680,10 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "ZDRV.O",
-                                                                            "state":  "In"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "BirthDate",
-                                                                                                             "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "SexCode"
+                                                                                                             "BirthDateDH",
+                                                                                                             "NameLastDH",
+                                                                                                             "NameFirstDH",
+                                                                                                             "SexCodeDH"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator"
@@ -6147,9 +6692,22 @@
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "ZDRV.N",
                                                                             "state":  "In"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumberDH"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "ZDRV.O",
+                                                                            "state":  "In"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverHistoryQuery -- ZDRV (OLN, Name+DOB+Sex). In-state only. Co-fires with DL. MC PascalCase.",
+                                                   "description":  "DriverHistoryQuery -- ZDRV (Name+DOB+Sex, OLN). DH-suffix fields. In-state only. MC PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "MD_METERS_DriverHistoryQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6158,7 +6716,10 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverHistoryQuery",
                                                    "queryLabel":  "Driver History",
-                                                   "targetEntity":  "Person"
+                                                   "targetEntity":  "Person",
+                                                   "queriesToDeselect":  [
+                                                                             "DriverLicenseQuery"
+                                                                         ]
                                                },
                                                {
                                                    "attributes":  [
@@ -6327,7 +6888,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for MD_METERS v1.1 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for MD_METERS v1.2 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "MD_METERS",
                         "type":  "BUNDLE",
                         "provider":  "MD_METERS"

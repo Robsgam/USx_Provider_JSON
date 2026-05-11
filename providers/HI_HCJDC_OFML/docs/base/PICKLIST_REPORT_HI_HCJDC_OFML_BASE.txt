@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-11 09:58
+  Generated: 2026-05-11 10:35
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -28,11 +28,13 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    purposeCode [Purpose Code]
+    purposeCodeDH [Purpose Code (DH)]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
     registrationState [State] (default=HI)
       Config: attributeTypeId=STATE
     sexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    sexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -117,5 +119,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 14
+  Form dropdowns: 15
   QRDM code type attrs: 16

@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -41,6 +41,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     registrationState [State]
       Config: attributeTypeId=STATE
     sexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    sexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -123,5 +125,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 17
+  Form dropdowns: 18
   QRDM code type attrs: 16

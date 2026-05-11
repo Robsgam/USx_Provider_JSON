@@ -7294,20 +7294,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQ.O",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "NameLast",
                                                                                                              "NameFirst",
                                                                                                              "BirthDate",
@@ -7328,22 +7314,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ExpandedNameSearchCode",
-                                                                                                             "ImageIndicator",
-                                                                                                             "InquiryTypeIndicator",
-                                                                                                             "RelatedHitSearchIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQ01",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "NameLast",
                                                                                                              "NameFirst",
                                                                                                              "BirthDate",
@@ -7355,6 +7325,36 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQ02",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumber",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQ.O",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ExpandedNameSearchCode",
+                                                                                                             "ImageIndicator",
+                                                                                                             "InquiryTypeIndicator",
+                                                                                                             "RelatedHitSearchIndicator"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQ01",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7379,6 +7379,9 @@
                                                    "name":  "TN_TIES_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "DriverHistoryQuery"
+                                                                         ],
                                                    "provider":  "TN_TIES",
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverLicenseQuery",
@@ -7518,6 +7521,9 @@
                                                    "name":  "TN_TIES_DriverHistoryQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "DriverLicenseQuery"
+                                                                         ],
                                                    "provider":  "TN_TIES",
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverHistoryQuery",
@@ -7726,7 +7732,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TN_TIES v1.3 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for TN_TIES v1.4 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "TN_TIES",
                         "type":  "BUNDLE",
                         "provider":  "TN_TIES"

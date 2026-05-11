@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-08 15:49
+  Generated: 2026-05-11 10:34
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -21,9 +21,9 @@ POST-BUILD VERIFICATION
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 12 [CaRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, GunCaliber, FirearmMake, SerialNumber, GunTypeCode, ArticleBrand, ArticleTypeCode, OwnerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 2
+  [INFO] Shared fieldIds (CommSys+RMS): 9
+  [INFO] CommSys-only: 18 [CaRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, BirthDateDH, CaRequestPurposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, GunCaliber, FirearmMake, SerialNumber, GunTypeCode, ArticleBrand, ArticleTypeCode, OwnerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 3
   [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 2 [RaceCode, VehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
@@ -34,8 +34,11 @@ POST-BUILD VERIFICATION
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
+--- CHECK 7: Cross-Variant Consistency ---
+  [PASS] All shared fields have matching types across MC and BASE
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

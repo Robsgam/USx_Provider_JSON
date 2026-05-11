@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TN_TIES_BASE
   Source: TN_TIES_BASE.json
-  Generated: 2026-05-11 10:00
+  Generated: 2026-05-11 10:50
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -34,7 +34,6 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 13 combos
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'TN_TIES_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' -> Person : 11 attrs, 6 combos
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -53,11 +52,10 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
-         TN_TIES_DriverLicenseQuery (query=DriverLicenseQuery)
-         TN_TIES_DriverHistoryQuery (query=DriverHistoryQuery)
+  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         TN_TIES_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         TN_TIES_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
-  [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -90,10 +88,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.D': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'QWA': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ01': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ02': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ01': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ06': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
@@ -106,10 +104,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 79 PASS / 0 FAIL / 0 WARN / 3 LIMITATION
+  RESULTS: 80 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  3 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

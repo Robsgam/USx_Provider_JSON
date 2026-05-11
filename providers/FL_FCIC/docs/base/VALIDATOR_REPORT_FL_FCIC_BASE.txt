@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC_BASE
   Source: FL_FCIC_BASE.json
-  Generated: 2026-05-11 10:08
+  Generated: 2026-05-11 10:49
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -36,14 +36,12 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 16 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [LIMITATION] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' -> Vehicle : 10 attrs, 6 combos
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' ImageIndicator size=1
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' -> Vehicle : 5 attrs, 2 combos
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' ImageIndicator size=1
-  [LIMITATION] QIDM 'FL_FCIC_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' -> Person : 6 attrs, 4 combos
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -52,7 +50,6 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_WantedPersonQuery' -> Person : 4 attrs, 2 combos
   [PASS] QIDM 'FL_FCIC_WantedPersonQuery' ImageIndicator size=1
   [PASS] QIDM 'FL_FCIC_WantedPersonQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'FL_FCIC_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -72,7 +69,6 @@ VALIDATOR RESULTS
   [PASS] Article : 1 QIDMs, 1 QIF(s)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 3 QIDMs, 1 QIF(s)
-  [LIMITATION] Vehicle : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
   [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
   [PASS] Firearm : 1 QIDMs, 1 QIF(s)
@@ -92,20 +88,20 @@ VALIDATOR RESULTS
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQDecalNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQVehicleIdentificationNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQDecalNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQTitleLienInformation': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_WantedPersonQuery' combo 'QWOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_WantedPersonQuery' combo 'QWName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_GunQuery' combo 'QGProcessControlNumber': all set[]/any[] fields resolvable
@@ -127,10 +123,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBProcessControlNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 101 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+  RESULTS: 101 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  4 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

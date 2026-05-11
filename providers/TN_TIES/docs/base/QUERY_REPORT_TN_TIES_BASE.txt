@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TN_TIES_BASE
   Source: TN_TIES_BASE.json
-  Generated: 2026-05-11 10:00
+  Generated: 2026-05-11 10:50
 ================================================================
 QUERY SIMULATION
 ================
@@ -76,12 +76,13 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 6
     [SKIP] DQ.N -- no any[] match
 
-    [FIRES] DQ.O
-      set: [operatorLicenseNumber, registrationState]
+    [FIRES] QWA
+      set: [nameLast, nameFirst, birthDate, sexCode]
+      any: [expandedNameSearchCode, imageIndicator, inquiryTypeIndicator, raceCode, relatedHitSearchIndicator] -> matched: [expandedNameSearchCode, imageIndicator, raceCode, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DQ</MessageKey>
+        <MessageKey>QW</MessageKey>
         <BirthDate>19900115</BirthDate>
         <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -93,14 +94,14 @@ QUERY SIMULATION
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
         <State>NJ</State>
       </Transaction>
+    [SKIP] DQ02 -- no any[] match
 
-    [FIRES] QWA
-      set: [nameLast, nameFirst, birthDate, sexCode]
-      any: [expandedNameSearchCode, imageIndicator, inquiryTypeIndicator, raceCode, relatedHitSearchIndicator] -> matched: [expandedNameSearchCode, imageIndicator, raceCode, relatedHitSearchIndicator]
+    [FIRES] DQ.O
+      set: [operatorLicenseNumber, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>QW</MessageKey>
+        <MessageKey>DQ</MessageKey>
         <BirthDate>19900115</BirthDate>
         <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -131,7 +132,6 @@ QUERY SIMULATION
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
         <State>NJ</State>
       </Transaction>
-    [SKIP] DQ02 -- no any[] match
 
     [FIRES] DQ06
       set: [socialSecurityNumber]

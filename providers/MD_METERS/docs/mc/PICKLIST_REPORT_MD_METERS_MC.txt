@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: MD_METERS_MC
   Source: MD_METERS_MC.json
-  Generated: 2026-05-11 09:07
+  Generated: 2026-05-11 10:40
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -29,6 +29,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     RegistrationState [State] (default=MD)
       Config: attributeTypeId=STATE
     SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -94,5 +96,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 11
+  Form dropdowns: 12
   QRDM code type attrs: 13

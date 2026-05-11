@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN_BASE
   Source: CA_eSUN_BASE.json
-  Generated: 2026-05-11 09:58
+  Generated: 2026-05-11 10:50
 ================================================================
 QUERY SIMULATION
 ================
@@ -73,13 +73,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQ.O
-      set: [caRequestPurposeCode, operatorLicenseNumber]
-      any: [registrationState] -> matched: [registrationState]
+    [FIRES] L1.N
+      set: [caRequestPurposeCode, nameLast, nameFirst]
+      any: [birthDate] -> matched: [birthDate]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DQ</MessageKey>
+        <MessageKey>L1.N</MessageKey>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -88,13 +88,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] L1.N
-      set: [caRequestPurposeCode, nameLast, nameFirst]
-      any: [birthDate] -> matched: [birthDate]
+    [FIRES] DQ.O
+      set: [caRequestPurposeCode, operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>L1.N</MessageKey>
+        <MessageKey>DQ</MessageKey>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -137,13 +137,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] KQ.O
-      set: [caRequestPurposeCode, operatorLicenseNumberDH]
-      any: [registrationState] -> matched: [registrationState]
+    [FIRES] L1.N.DH
+      set: [caRequestPurposeCode, nameLastDH, nameFirstDH]
+      any: [birthDateDH] -> matched: [birthDateDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>KQ</MessageKey>
+        <MessageKey>L1.N.DH</MessageKey>
         <Attention>Doe</Attention>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
@@ -154,13 +154,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] L1.N.DH
-      set: [caRequestPurposeCode, nameLastDH, nameFirstDH]
-      any: [birthDateDH] -> matched: [birthDateDH]
+    [FIRES] KQ.O
+      set: [caRequestPurposeCode, operatorLicenseNumberDH]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>L1.N.DH</MessageKey>
+        <MessageKey>KQ</MessageKey>
         <Attention>Doe</Attention>
         <BirthDate>19900115</BirthDate>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
@@ -189,6 +189,7 @@ QUERY SIMULATION
 
 --- QIDM: CA_eSUN_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 9  |  Combos: 2
+    [SKIP] QGH -- missing set: gunNameLast, gunNameFirst
 
     [FIRES] QGB
       set: [caRequestPurposeCode, serialNumber]
@@ -202,7 +203,6 @@ QUERY SIMULATION
         <GunMake>SMT</GunMake>
         <GunSerialNumber>ABC12345</GunSerialNumber>
       </Transaction>
-    [SKIP] QGH -- missing set: gunNameLast, gunNameFirst
 
 --- QIDM: CA_eSUN_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 12  |  Combos: 6
@@ -223,6 +223,7 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
+    [SKIP] VP.D -- missing set: vehNameLast, vehNameFirst, vehBirthDate
 
     [FIRES] RQ.V
       set: [caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
@@ -240,7 +241,6 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] VP.D -- missing set: vehNameLast, vehNameFirst, vehBirthDate
     [SKIP] VP.N -- missing set: vehNameLast, vehNameFirst
 
     [FIRES] QV.V

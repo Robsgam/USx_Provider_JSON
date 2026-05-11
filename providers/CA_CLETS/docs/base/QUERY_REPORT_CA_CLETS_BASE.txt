@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-08 15:56
+  Generated: 2026-05-11 10:34
 ================================================================
 QUERY SIMULATION
 ================
@@ -85,6 +85,20 @@ QUERY SIMULATION
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
+    [FIRES] IN.L1
+      set: [caRequestPurposeCode, nameLast, nameFirst]
+      any: [birthDate, registrationState] -> matched: [birthDate, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>IN.L1</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
     [FIRES] NLTS.DQ
       set: [caRequestPurposeCode, operatorLicenseNumber, registrationState]
       -- CommSys XML --
@@ -112,54 +126,10 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] IN.L1
-      set: [caRequestPurposeCode, nameLast, nameFirst]
-      any: [birthDate, registrationState] -> matched: [birthDate, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IN.L1</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <State>NJ</State>
-      </Transaction>
-
 --- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-
-    [FIRES] NLTS.KQ.N
-      set: [caRequestPurposeCode, birthDate, nameLast, nameFirst, sexCode]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.KQ.N</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] NLTS.KQ.O
-      set: [caRequestPurposeCode, operatorLicenseNumber]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.KQ.O</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] NLTS.KQ.N -- missing set: caRequestPurposeCodeDH
+    [SKIP] NLTS.KQ.O -- missing set: caRequestPurposeCodeDH
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
@@ -209,6 +179,32 @@ QUERY SIMULATION
 --- QIDM: CA_CLETS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 5  |  Combos: 5
 
+    [FIRES] NLTS.BQ.H
+      set: [caRequestPurposeCode, boatHullIdNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>NLTS.BQ.H</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] NLTS.BQ.R
+      set: [caRequestPurposeCode, registrationNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>NLTS.BQ.R</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
     [FIRES] IA.QB.H
       set: [caRequestPurposeCode, boatHullIdNumber]
       any: [registrationState] -> matched: [registrationState]
@@ -244,32 +240,6 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.R</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-      </Transaction>
-
-    [FIRES] NLTS.BQ.H
-      set: [caRequestPurposeCode, boatHullIdNumber, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.BQ.H</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-      </Transaction>
-
-    [FIRES] NLTS.BQ.R
-      set: [caRequestPurposeCode, registrationNumber, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.BQ.R</MessageKey>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>

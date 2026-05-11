@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-08 15:49
+  Generated: 2026-05-11 10:34
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -27,6 +27,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
     SexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -98,5 +100,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 10
+  Form dropdowns: 11
   QRDM code type attrs: 14

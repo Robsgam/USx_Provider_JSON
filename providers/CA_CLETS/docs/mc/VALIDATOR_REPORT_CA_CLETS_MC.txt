@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-08 15:49
+  Generated: 2026-05-11 10:34
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,16 +25,14 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
-  [PASS] QIF 'ENTITY_Person' -> Person : 10 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 16 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 10 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 11 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [LIMITATION] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' -> Vehicle : 9 attrs, 5 combos
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'CA_CLETS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' -> Person : 5 attrs, 3 combos
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
@@ -42,10 +40,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'CA_CLETS_GunQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'CA_CLETS_GunQuery' -> Firearm : 6 attrs, 2 combos
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
-  [LIMITATION] QIDM 'CA_CLETS_BoatQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'CA_CLETS_BoatQuery' -> Boat : 7 attrs, 6 combos
   [PASS] QIDM 'CA_CLETS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_BoatQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
@@ -54,11 +50,10 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF -- co-fire by design (DL+DH co-fire is standard police workflow)
-         CA_CLETS_DriverLicenseQuery (query=DriverLicenseQuery)
-         CA_CLETS_DriverHistoryQuery (query=DriverHistoryQuery)
-  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
-  [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
+  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         CA_CLETS_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         CA_CLETS_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -79,30 +74,28 @@ VALIDATOR RESULTS
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'NLTS.RQ.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'NLTS.RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IN.VP': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IA.QVK': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IA.QV': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IN.VP': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'IN.L1': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'NLTS.DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'ID.L1': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'IN.L1': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo 'NLTS.KQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo 'NLTS.KQ.O': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_CLETS_GunQuery' combo 'IG.QGB': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_GunQuery' combo 'IG.QGH': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_GunQuery' combo 'IG.QGB': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo 'IP.QA.S': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo 'IP.QA.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.H': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.R': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'IA.QB.H': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'IA.QB.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'IA.QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 68 PASS / 0 FAIL / 0 WARN / 7 LIMITATION
+  RESULTS: 70 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  7 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

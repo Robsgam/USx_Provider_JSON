@@ -7626,7 +7626,7 @@
                     {
                         "name":  "AZ_AZDPS",
                         "type":  "BUNDLE",
-                        "description":  "Provider configuration for AZ_AZDPS v2.2",
+                        "description":  "Provider configuration for AZ_AZDPS v2.3",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -8877,22 +8877,22 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
                                                                                                              "dexStateUserId",
                                                                                                              "BirthDate",
-                                                                                                             "NameFirst",
                                                                                                              "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "SexCode"
+                                                                                                         ],
+                                                                                                 "any":  [
                                                                                                              "NameMiddle",
                                                                                                              "NameSuffix",
+                                                                                                             "OperatorLicenseNumber",
                                                                                                              "RegistrationState",
-                                                                                                             "SexCode",
                                                                                                              "SocialSecurityNumber"
                                                                                                          ]
                                                                                              },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQ",
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "ACWL",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -8919,6 +8919,27 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "dexStateUserId",
+                                                                                                             "BirthDate",
+                                                                                                             "NameFirst",
+                                                                                                             "NameLast",
+                                                                                                             "NameMiddle",
+                                                                                                             "NameSuffix",
+                                                                                                             "RegistrationState",
+                                                                                                             "SexCode",
+                                                                                                             "SocialSecurityNumber"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQ",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
                                                                                                              "SocialSecurityNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -8936,27 +8957,6 @@
                                                                             "primaryFieldReference":  "SocialSecurityNumber",
                                                                             "keyReference":  "DQSS",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "dexStateUserId",
-                                                                                                             "BirthDate",
-                                                                                                             "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "SexCode"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "NameMiddle",
-                                                                                                             "NameSuffix",
-                                                                                                             "OperatorLicenseNumber",
-                                                                                                             "RegistrationState",
-                                                                                                             "SocialSecurityNumber"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "ACWL",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
                                                    "description":  "Mapping for AzAzdpsDriverLicenseQuery (DQ OLN + DQN Name + DQSS SSN + ACWL Badge)",
@@ -8964,6 +8964,9 @@
                                                    "name":  "AZ_AZDPS_AzAzdpsDriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "DriverHistoryQuery"
+                                                                         ],
                                                    "provider":  "AZ_AZDPS",
                                                    "providerType":  "Commsys",
                                                    "query":  "AzAzdpsDriverLicenseQuery",
@@ -9053,27 +9056,6 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "StateDH",
-                                                                                                             "OperatorLicenseNumberDH"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "Attention",
-                                                                                                             "BirthDateDH",
-                                                                                                             "NameFirstDH",
-                                                                                                             "NameLastDH",
-                                                                                                             "NameMiddleDH",
-                                                                                                             "NameSuffixDH",
-                                                                                                             "PurposeCode",
-                                                                                                             "SexCodeDH"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "KQ",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "StateDH",
                                                                                                              "NameLastDH",
                                                                                                              "NameFirstDH",
                                                                                                              "BirthDateDH",
@@ -9090,6 +9072,27 @@
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "KQH",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "StateDH",
+                                                                                                             "OperatorLicenseNumberDH"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "Attention",
+                                                                                                             "BirthDateDH",
+                                                                                                             "NameFirstDH",
+                                                                                                             "NameLastDH",
+                                                                                                             "NameMiddleDH",
+                                                                                                             "NameSuffixDH",
+                                                                                                             "PurposeCode",
+                                                                                                             "SexCodeDH"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "KQ",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
                                                    "description":  "Mapping for DriverHistoryQuery (KQ OLN + KQH Name -- DH-suffix isolation)",
@@ -9097,6 +9100,9 @@
                                                    "name":  "AZ_AZDPS_DriverHistoryQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
+                                                   "queriesToDeselect":  [
+                                                                             "AzAzdpsDriverLicenseQuery"
+                                                                         ],
                                                    "provider":  "AZ_AZDPS",
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverHistoryQuery",

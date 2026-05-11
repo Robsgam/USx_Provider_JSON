@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: NY_NYSPIN_EJUSTICE_BASE
   Source: NY_NYSPIN_EJUSTICE_BASE.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:36
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -33,6 +33,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     registrationState [State (leave blank for NY)]
       Config: attributeTypeId=STATE
     sexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    sexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
@@ -116,5 +118,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 14
+  Form dropdowns: 15
   QRDM code type attrs: 16

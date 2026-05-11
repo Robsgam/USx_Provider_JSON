@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_MC
   Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-05-11 09:59
+  Generated: 2026-05-11 10:40
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === NM_NMLETS_OFML_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=5
-  Person | entity=Person | qidm= | cards=3 fields=6
+  Person | entity=Person | qidm= | cards=4 fields=9
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=3 fields=2
@@ -52,10 +52,6 @@ LAYOUT DETAIL
       ROW ROW_PER_OPT_1 [6 4]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=NM)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-      ROW ROW_PER_OPT_2 [4]
-        PurposeCode (Text | maxLen=1)
-      ROW ROW_PER_OPT_3 [12]
-        Attention (Text | maxLen=30)
     CARD "CARD_PER_OLN"
       ROW ROW_PER_OLN_1 [12]
         OperatorLicenseNumber (Text | maxLen=20)
@@ -69,6 +65,19 @@ LAYOUT DETAIL
       ROW ROW_PER_NAME_3 [6 6]
         RaceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
         SocialSecurityNumber (Text | maxLen=9)
+    CARD "CARD_DH"
+      ROW ROW_DH1 [6 6]
+        OperatorLicenseNumberDH (Text | maxLen=20)
+        PurposeCodeDH (Text | maxLen=1)
+      ROW ROW_DH2 [6 6]
+        NameLastDH (Text | maxLen=30)
+        NameFirstDH (Text | maxLen=30)
+      ROW ROW_DH3 [4 4 4]
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        RaceCodeDH (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_DH4 [12]
+        AttentionDH (Text | maxLen=30)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

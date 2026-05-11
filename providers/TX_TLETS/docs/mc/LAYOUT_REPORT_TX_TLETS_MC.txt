@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-11 10:09
+  Generated: 2026-05-11 10:37
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === TX_TLETS_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=7
-  Person | entity=Person | qidm= | cards=3 fields=9
+  Person | entity=Person | qidm= | cards=6 fields=16
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=3 fields=3
@@ -17,7 +17,7 @@ QIDMs: 7
   TX_TLETS_VehicleInsuranceRegistrationQuery | attrs=10 combos=7 autoSelect=True
   TX_TLETS_VehicleStolenQuery | attrs=4 combos=2 autoSelect=False
   TX_TLETS_DriverLicenseQuery | attrs=11 combos=3 autoSelect=True
-  TX_TLETS_DriverHistoryQuery | attrs=10 combos=2 autoSelect=False
+  TX_TLETS_DriverHistoryQuery | attrs=10 combos=2 autoSelect=True
   TX_TLETS_GunQuery | attrs=6 combos=2 autoSelect=
   TX_TLETS_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
   TX_TLETS_BoatQuery | attrs=6 combos=5 autoSelect=
@@ -56,24 +56,40 @@ LAYOUT DETAIL
       ROW ROW_PER_O1 [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        PurposeCode (Text | maxLen=1)
+        RaceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
       ROW ROW_PER_O2 [4 4 4]
-        ReasonCode (Text | maxLen=1)
         ExpandedBirthDateSearchCode (Text | maxLen=1)
         RegionId (Text | maxLen=4)
+        PurposeCode (Text | maxLen=1)
     CARD "CARD_PER_OLN"
-      ROW ROW_PER_L1 [12]
+      ROW ROW_PER_L1 [8 4]
         OperatorLicenseNumber (Text | maxLen=20)
+        ReasonCode (Text | maxLen=1)
     CARD "CARD_PER_NAME"
       ROW ROW_PER_N1 [3 3 3 3]
-        NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=30)
         NameMiddle (Text | maxLen=30)
         NameSuffix (Text | maxLen=30)
-      ROW ROW_PER_N2 [4 4 4]
+      ROW ROW_PER_N2 [4 4]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        RaceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
+    CARD "CARD_PER_DH_OLN"
+      ROW ROW_PER_DHL1 [8 4]
+        OperatorLicenseNumberDH (Text | maxLen=20)
+        ReasonCodeDH (Text | maxLen=1)
+    CARD "CARD_PER_DH_NAME"
+      ROW ROW_PER_DHN1 [3 3 3 3]
+        NameLastDH (Text | maxLen=30)
+        NameFirstDH (Text | maxLen=30)
+        NameMiddleDH (Text | maxLen=30)
+        NameSuffixDH (Text | maxLen=30)
+      ROW ROW_PER_DHN2 [4 4]
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+    CARD "CARD_PER_DH_OPT"
+      ROW ROW_PER_DHO1 [6]
+        PurposeCodeDH (Text | maxLen=1)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
