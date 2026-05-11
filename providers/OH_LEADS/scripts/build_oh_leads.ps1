@@ -54,11 +54,12 @@
 #   DH uses DH-suffix fieldIds: operatorLicenseNumberDH, nameFirstDH, nameLastDH, birthDateDH, sexCodeDH
 
 param(
-    [string]$Version = '1.1',
+    [string]$Version = '1.2',
     [string]$Phase   = "base"
 )
 
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\OH_LEADS_BASE.json"
@@ -603,7 +604,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
@@ -730,7 +731,7 @@ $artLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'serialNumber_Input';       node = Inp 'serialNumber'       'Serial Number'  '20' 'ROW_ART_1' }
-                @{ id = 'articleTypeCode_Input';     node = Sel 'articleTypeCode'    'Article Type'   @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_ART_1' }
+                @{ id = 'articleTypeCode_Input';     node = Sel 'articleTypeCode'    'Article Type'   @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'ncicNumber_Input';                       node = Inp 'ncicNumber'                       'NCIC Number'          '9' 'ROW_ART_2' }

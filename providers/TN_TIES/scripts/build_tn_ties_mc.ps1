@@ -1,4 +1,4 @@
-# build_tn_ties_mc.ps1  -- TN_TIES v1.x MC (6 basic queries, multi-card)
+# build_tn_ties_mc.ps1  -- TN_TIES v1.2 MC (6 basic queries, multi-card)
 # MC variant: PascalCase fieldIds, no full Patch 8 (CAD rename).
 # Phase 2 multi-card. No cross-entity combos (no VP/QGH/BQ.N in metadata).
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
@@ -21,7 +21,8 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version = '1.1'
+$Version = '1.2'
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\TN_TIES_MC.json"
@@ -413,21 +414,21 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('PurposeCode');             targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('PurposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('RegistrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # KQ Name+DOB+Sex (OOS via Nlets -- Attention+PurposeCode mandatory)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH','PurposeCode'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH','PurposeCodeDH'); any = @('RegistrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
         # KQ OLN (OOS via Nlets -- Attention+PurposeCode mandatory)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','PurposeCode'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','PurposeCodeDH'); any = @('RegistrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
@@ -586,7 +587,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';   node = Sel 'RegistrationState' 'State (leave blank for TN)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
                 @{ id = 'InquiryTypeIndicator_Input'; node = Inp 'InquiryTypeIndicator' 'Inquiry Type (1/2/3)' '1' 'ROW_VEH_OPT_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_1' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_OPT_2'; cols = @('6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_OPT_2' }
@@ -670,7 +671,7 @@ $perLayout = MakeLayouts @(
             # DH hidden row on OLN card
             @{ id = 'ROW_PER_OLN_DH'; cols = @('6','6'); hidden = $true; fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = InpH 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_OLN_DH' }
-                @{ id = 'PurposeCode_Input';             node = InpH 'PurposeCode'             'Purpose Code (DH)'   '1'  'ROW_PER_OLN_DH' }
+                @{ id = 'PurposeCodeDH_Input';           node = InpH 'PurposeCodeDH'           'Purpose Code (DH)'   '1'  'ROW_PER_OLN_DH' }
             )}
         )
     }

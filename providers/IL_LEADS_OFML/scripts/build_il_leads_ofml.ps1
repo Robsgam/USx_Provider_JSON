@@ -41,11 +41,12 @@
 #   Boat     -- Reg#+Hull+State+ImageIndicator
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.1",
     [string]$Phase   = "base"
 )
 
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\IL_LEADS_OFML_BASE.json"
@@ -458,7 +459,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
@@ -533,7 +534,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'firearmMake_Input';  node = Sel 'firearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
+                @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('12'); fields = @(
                 @{ id = 'gunCaliber_Input'; node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -565,7 +566,7 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'serialNumber_Input';       node = Inp 'serialNumber'       'Serial Number'        '20' 'ROW_ART_1' }
                 @{ id = 'ownerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'articleTypeCode_Input';    node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_ART_1' }
+                @{ id = 'articleTypeCode_Input';    node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
     }
@@ -595,7 +596,7 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'registrationState_Input';   node = Sel 'registrationState'  'State' @{ attributeTypeId = 'STATE'; initialValue = 'IL' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
-                @{ id = 'imageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
+                @{ id = 'imageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
                 @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
             )}
         )

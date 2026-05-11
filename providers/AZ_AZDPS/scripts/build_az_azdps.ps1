@@ -23,7 +23,8 @@
 # Date format: yyyyMMdd (AZ)
 
 $ErrorActionPreference = "Stop"
-$Version = '2.0'
+$Version = '2.1'
+$currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_BASE.json"
 $VEROUT = "$DIR\phases\base\AZ_AZDPS_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
@@ -603,7 +604,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
                 @{ id = 'VIN_Input';       node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(

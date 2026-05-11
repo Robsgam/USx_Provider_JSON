@@ -50,11 +50,12 @@
 #   Name+DOB+Sex -> DL DLICN + DH DALH co-fire.
 
 param(
-    [string]$Version = "1.2",
+    [string]$Version = "1.3",
     [string]$Phase   = "base"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_BASE.json"
@@ -529,7 +530,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
                 @{ id = 'VehicleYear_Input';          node = Inp 'VehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('8','4'); fields = @(

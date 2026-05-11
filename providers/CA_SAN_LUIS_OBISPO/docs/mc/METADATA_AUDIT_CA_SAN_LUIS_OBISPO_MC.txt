@@ -1,14 +1,14 @@
-================================================================
+﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_MC
   Source: CA_SAN_LUIS_OBISPO_MC.json
-  Generated: 2026-05-07 14:35
+  Generated: 2026-05-11 09:06
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-07 14:35
+ Generated: 2026-05-11 09:06
 ============================================================
 
 ============================================================
@@ -68,9 +68,10 @@ METADATA AUDIT
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   Name: in XML and QIDM
   [PASS]   OperatorLicenseNumber: in XML and QIDM
-  [INFO]   PurposeCode: in XML only (form-only pattern -- expected)
+  [PASS]   PurposeCode: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
+  [INFO]   CaRequestPurposeCode: in QIDM only (form-only field)
   [INFO]   NameFirst: in QIDM sourceField but not in XML
   [INFO]   NameLast: in QIDM sourceField but not in XML
   [INFO]   RegistrationState: in QIDM only (form-only field)
@@ -143,6 +144,7 @@ METADATA AUDIT
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (PurposeCode)
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [WARN] OperatorLicenseNumber: QIF maxLength 20 > XML maxLength 17 (OperatorLicenseNumber) -- server may reject
@@ -157,6 +159,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 64 PASS / 0 FAIL / 1 WARN / 49 INFO
+Total: 66 PASS / 0 FAIL / 1 WARN / 49 INFO
 ============================================================
 

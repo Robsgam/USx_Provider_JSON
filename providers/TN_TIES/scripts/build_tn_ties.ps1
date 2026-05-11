@@ -1,4 +1,4 @@
-# build_tn_ties.ps1  -- TN_TIES v1.x BASE (6 basic queries)
+# build_tn_ties.ps1  -- TN_TIES v1.2 BASE (6 basic queries)
 # Builds TN_TIES_BASE.json from source\TN_TIES.xml (metadata v31) + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
@@ -60,7 +60,8 @@
 # NAME FORMAT: Composite (FormatStringRuleHandler with ', ' separator -- Last,First)
 
 $ErrorActionPreference = "Stop"
-$Version = '1.1'
+$Version = '1.2'
+$currentYear = [string](Get-Date).Year
 $DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT     = "$DIR\TN_TIES_BASE.json"
 $OUTREAD = "$DIR\TN_TIES_BASE_READABLE.json"
@@ -455,21 +456,21 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCode');             targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('registrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # KQ Name+DOB+Sex (OOS via Nlets -- Attention+PurposeCode mandatory)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('nameLastDH','nameFirstDH','birthDateDH','sexCodeDH','purposeCode'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('nameLastDH','nameFirstDH','birthDateDH','sexCodeDH','purposeCodeDH'); any = @('registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
         # KQ OLN (OOS via Nlets -- Attention+PurposeCode mandatory)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCode'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH'); any = @('registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
@@ -629,7 +630,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
@@ -693,7 +694,7 @@ $perLayout = MakeLayouts @(
             # DH-specific fields
             @{ id = 'ROW_PER_DH1'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH1' }
-                @{ id = 'purposeCode_Input';             node = Inp 'purposeCode'             'Purpose Code (DH)'   '1' 'ROW_PER_DH1' }
+                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH'           'Purpose Code (DH)'   '1' 'ROW_PER_DH1' }
             )}
             @{ id = 'ROW_PER_DH2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'nameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH2' }
@@ -874,12 +875,11 @@ foreach ($combo in $rmsVehicleQidm.combinations) {
     $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
 }
 
-# Person: remove OOS-suffixed attrs + combos (TN uses DH-suffix, not OOS-suffix)
-# Keep socialSecurityNumber (TN uses SSN on DL)
-$deadPerAttrs = @('firstNameOOS','lastNameOOS','dateOfBirthOOS','licenseNumberOOS','sexOOS')
+# Person: remove OOS-suffixed attrs + SSN attr + combos (TN uses DH-suffix, not OOS-suffix)
+$deadPerAttrs = @('socialSecurityNumber','firstNameOOS','lastNameOOS','dateOfBirthOOS','licenseNumberOOS','sexOOS')
 $rmsPersonQidm.attributes = @($rmsPersonQidm.attributes | Where-Object { $_.name -notin $deadPerAttrs })
 $rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('driversLicenseNumberOOS','firstNameLastNameDriversLicenseNumberOOS',
+    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS','firstNameLastNameDriversLicenseNumberOOS',
         'firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
 })
 

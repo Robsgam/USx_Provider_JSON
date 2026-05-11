@@ -1,4 +1,4 @@
-# build_ca_esun_mc.ps1  -- CA_eSUN v1.x MC
+# build_ca_esun_mc.ps1  -- CA_eSUN v1.3 MC
 # MC variant: PascalCase fieldIds, no Patch 8 (CAD rename).
 # Phase 2 multi-card. Cross-entity combos (VP.N/VP.D, QGH) already in BASE.
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
@@ -7,7 +7,8 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.2'
+$Version  = '1.3'
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_eSUN_MC.json"
@@ -330,17 +331,17 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','NameLastDH','NameFirstDH'); any = @('BirthDateDH') }
             primaryFieldReference = 'Name'
-            keyReference          = 'L1.N'
+            keyReference          = 'L1.N.DH'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('CaRequestPurposeCode','OperatorLicenseNumberDH'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'L1.O'
+            keyReference          = 'L1.O.DH'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- L1.N/L1.O (in-state), KQ.N/KQ.O (OOS). DH-suffix fieldIds for co-fire.'
+    description     = 'DriverHistoryQuery -- L1.N.DH/L1.O.DH (in-state), KQ.N/KQ.O (OOS). DH-suffix fieldIds for co-fire.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_eSUN_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -518,7 +519,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
             )}
         )
     }

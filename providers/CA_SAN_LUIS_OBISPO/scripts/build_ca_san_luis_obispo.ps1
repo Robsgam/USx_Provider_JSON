@@ -1,4 +1,4 @@
-# build_ca_san_luis_obispo.ps1  -- CA_SAN_LUIS_OBISPO v1.x BASE
+# build_ca_san_luis_obispo.ps1  -- CA_SAN_LUIS_OBISPO v1.2 BASE
 # Builds CA_SAN_LUIS_OBISPO_BASE.json from source\CA_SAN_LUIS_OBISPO.xml metadata + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo.ps1 -Version X.X -Phase base
@@ -17,7 +17,7 @@
 #   BoatQuery                 -- 2 combos (BQ hull, QB reg)
 #
 # CA_SAN_LUIS_OBISPO-SPECIFIC:
-#   NO CaRequestPurposeCode  -- field does not exist in any SLO metadata transaction.
+#   CaRequestPurposeCode     -- added to DH QIDM PurposeCode attr. Visible Inp initialValue='C'.
 #   Regional message switch   -- NOT a direct CLETS interface.
 #   No ImageIndicator         -- not in SLO metadata.
 #   No State initialValue     -- LIMITATION #30: separate in-state vs OOS keyRefs.
@@ -46,11 +46,12 @@
 #   No DH-suffix fieldIds needed (DH uses same fields as DL by design).
 
 param(
-    [string]$Version = '1.1',
+    [string]$Version = '1.2',
     [string]$Phase   = "base"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\CA_SAN_LUIS_OBISPO_BASE.json"
@@ -331,7 +332,7 @@ $dlQuery = [PSCustomObject]@{
 #   KQ.N (Name OOS): set=[nameLast, nameFirst, birthDate, sexCode], any=[registrationState]
 #   KQ.O (OLN OOS): set=[operatorLicenseNumber], any=[registrationState]
 # SLO has BOTH in-state (B2) AND OOS (KQ) DH, unlike CLETS (Nlets-only).
-# NO CaRequestPurposeCode.
+# CaRequestPurposeCode added to DH QIDM as PurposeCode attribute.
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
@@ -347,6 +348,7 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCode'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
@@ -521,7 +523,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
@@ -546,16 +548,17 @@ $vehicleForm = [PSCustomObject]@{
 # Person -- 1 card
 # Serves 2 QIDMs: DL + DH (co-fire).
 # State: NO initialValue (LIMITATION #30 -- L1 vs DQ / B2 vs KQ routing)
-# NO CaRequestPurposeCode.
+# CaRequestPurposeCode: visible Inp initialValue='C' (DH PurposeCode attr).
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER'
         title = 'PERSON SEARCH'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('6','6'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+            @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'operatorLicenseNumber_Input';  node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
+                @{ id = 'registrationState_Input';      node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'caRequestPurposeCode_Input';   node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
                 @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }

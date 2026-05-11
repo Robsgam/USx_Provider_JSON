@@ -1,4 +1,4 @@
-# build_ca_esun.ps1  -- CA_eSUN v1.x BASE
+# build_ca_esun.ps1  -- CA_eSUN v1.3 BASE
 # Builds CA_eSUN_BASE.json from source\CA_eSUN.xml metadata + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1 -Version X.X -Phase base
@@ -48,11 +48,12 @@
 #   Both have autoSelect=true + queriesToDeselect.
 
 param(
-    [string]$Version = "1.2",
+    [string]$Version = "1.3",
     [string]$Phase   = "base"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\CA_eSUN_BASE.json"
@@ -409,22 +410,22 @@ $dhQuery = [PSCustomObject]@{
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
-        # L1.N (in-state Name)
+        # L1.N.DH (in-state Name) -- renamed from L1.N to avoid duplicate keyRef with DL QIDM
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLastDH','nameFirstDH'); any = @('birthDateDH') }
             primaryFieldReference = 'Name'
-            keyReference          = 'L1.N'
+            keyReference          = 'L1.N.DH'
             state                 = 'In/Out'
         }
-        # L1.O (in-state OLN)
+        # L1.O.DH (in-state OLN) -- renamed from L1.O to avoid duplicate keyRef with DL QIDM
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumberDH'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'L1.O'
+            keyReference          = 'L1.O.DH'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- L1.N/L1.O (in-state), KQ.N/KQ.O (OOS). DH-suffix fieldIds for co-fire.'
+    description     = 'DriverHistoryQuery -- L1.N.DH/L1.O.DH (in-state), KQ.N/KQ.O (OOS). DH-suffix fieldIds for co-fire.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_eSUN_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -618,7 +619,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '30' 'ROW_VEH_3' }

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TN_TIES_BASE
   Source: TN_TIES_BASE.json
-  Generated: 2026-05-07 14:37
+  Generated: 2026-05-11 09:08
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -70,7 +70,7 @@ LAYOUT DETAIL
         inquiryTypeIndicator (Text | maxLen=1)
       ROW ROW_PER_DH1 [6 6]
         operatorLicenseNumberDH (Text | maxLen=20)
-        purposeCode (Text | maxLen=1)
+        purposeCodeDH (Text | maxLen=1)
       ROW ROW_PER_DH2 [4 4 4]
         nameLastDH (Text | maxLen=30)
         nameFirstDH (Text | maxLen=30)
@@ -111,7 +111,6 @@ LAYOUT DETAIL
   RMS Person Search query
     nameFirst -> firstName
     nameLast -> lastName
-    socialSecurityNumber -> ssn
     operatorLicenseNumber -> dlNumber
     birthDate -> dateOfBirth
     raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)

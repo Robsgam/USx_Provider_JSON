@@ -1,10 +1,10 @@
-# build_ca_san_luis_obispo_mc.ps1  -- CA_SAN_LUIS_OBISPO v1.x MC
+# build_ca_san_luis_obispo_mc.ps1  -- CA_SAN_LUIS_OBISPO v1.2 MC
 # MC variant: PascalCase fieldIds, no Patch 8 cadRenames (full), partial Patch 8 (LicensePlateNumberIn only).
 # Phase 2 multi-card. NO cross-entity combos (SLO has no VP/QGH/BQ.N in metadata).
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
 #
 # KEY DIFFERENCE FROM CA_CLETS MC / CA_VENTURA_COUNTY MC:
-#   NO CaRequestPurposeCode -- field does not exist in any SLO metadata transaction.
+#   CaRequestPurposeCode    -- added to DH QIDM PurposeCode attr. Visible Inp initialValue='C'.
 #   Regional message switch -- NOT a direct CLETS interface.
 #   No ImageIndicator -- not in SLO metadata.
 #   Shorter keyRefs than CLETS (QV not IA.QV, BQ not IA.QB, etc.)
@@ -15,12 +15,13 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '1.1',
+    [string]$Version = '1.2',
     [string]$Phase   = "mc"
 )
 
 $ErrorActionPreference = "Stop"
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\CA_SAN_LUIS_OBISPO_MC.json"
@@ -294,7 +295,7 @@ $dlQuery = [PSCustomObject]@{
 # 1f. DriverHistoryQuery -- PascalCase
 # 4 combos: KQ.N (Name OOS), KQ.O (OLN OOS), B2.N (Name in-state), B2.O (OLN in-state)
 # SLO has BOTH in-state (B2) AND OOS (KQ) DH.
-# NO CaRequestPurposeCode.
+# CaRequestPurposeCode added to DH QIDM as PurposeCode attribute.
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
@@ -309,6 +310,7 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('CaRequestPurposeCode'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
@@ -486,7 +488,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_OPT_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_OPT_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_2' @{ initialValue = $currentYear } }
             )}
         )
     }
@@ -533,9 +535,10 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_OPT'
         title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'SexCode_Input';           node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_OPT_1' }
+            @{ id = 'ROW_PER_OPT_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
+                @{ id = 'SexCode_Input';              node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'CaRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }

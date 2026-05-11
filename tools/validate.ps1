@@ -680,7 +680,15 @@ if ($entitiesBundle) {
         }
 
         # ImageIndicator: only WARN if a QIDM maps it but form doesn't have it
-        if (-not $fids.Contains('ImageIndicator') -and -not $fids.Contains('imageIndicator')) {
+        # Check standard names AND entity-specific variants (imageIndicatorArticle, imageIndicatorBoat, etc.)
+        $hasImageIndicator = $fids.Contains('ImageIndicator') -or $fids.Contains('imageIndicator')
+        if (-not $hasImageIndicator) {
+            $entityLower = $entity.ToLower()
+            foreach ($fid in $fids) {
+                if ($fid -match '^[Ii]mageIndicator') { $hasImageIndicator = $true; break }
+            }
+        }
+        if (-not $hasImageIndicator) {
             if ($entitiesWithImageIndicatorQidm.ContainsKey($entity)) {
                 Write-Warn "$entity missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field"
                 Write-Host "    [FIX] In build script: add hidden FormSelect with fieldId='ImageIndicator', codeTypeCategory='YES_NO_UNKNOWN', initialValue='Y' (Person) or 'N' (other) to $entity QIF" -ForegroundColor Cyan
@@ -1627,8 +1635,7 @@ foreach ($q in $qidms) {
                             $node = $_.Value
                             if ($node.props -and $node.props.fieldId -eq $fid -and $node.props.initialValue) {
                                 if (-not $warnedStateL30.ContainsKey($warnKey)) {
-                                    Write-Warn "QIDM '$($q.name)' has separate In/Out combos but $entity State field '$fid' has initialValue='$($node.props.initialValue)' -- changes combo routing (LIMITATION #30)"
-                                    Write-Host "    [FIX] In build script: remove initialValue from State field '$fid' -- use card title hints instead (e.g. 'Leave blank for in-state queries')" -ForegroundColor Cyan
+                                    Write-Limitation "QIDM '$($q.name)' has separate In/Out combos but $entity State field '$fid' has initialValue='$($node.props.initialValue)' -- combo routing affected (LIMITATION #30)"
                                     $warnedStateL30[$warnKey] = $true
                                 }
                             }

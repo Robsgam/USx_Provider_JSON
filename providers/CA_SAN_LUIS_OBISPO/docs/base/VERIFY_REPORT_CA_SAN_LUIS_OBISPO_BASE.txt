@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_BASE
   Source: CA_SAN_LUIS_OBISPO_BASE.json
-  Generated: 2026-05-07 14:35
+  Generated: 2026-05-11 09:06
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 11 [licensePlateTypeCode, licensePlateYear, gunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 12 [licensePlateTypeCode, licensePlateYear, caRequestPurposeCode, gunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, articleTypeCode, boatHullIdNumber, registrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 2
   [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 2 [raceCode, vehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -34,8 +34,11 @@ POST-BUILD VERIFICATION
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
+--- CHECK 7: Cross-Variant Consistency ---
+  [PASS] All shared fields have matching types across BASE and MC
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

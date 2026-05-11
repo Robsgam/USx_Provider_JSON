@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_MC
   Source: CA_SAN_LUIS_OBISPO_MC.json
-  Generated: 2026-05-07 14:35
+  Generated: 2026-05-11 09:06
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,14 +9,14 @@ LAYOUT SUMMARY
 === CA_SAN_LUIS_OBISPO_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=5
-  Person | entity=Person | qidm= | cards=3 fields=3
+  Person | entity=Person | qidm= | cards=3 fields=4
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=3
   Boat | entity=Boat | qidm= | cards=3 fields=2
 QIDMs: 6
   CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery | attrs=7 combos=4 autoSelect=True
   CA_SAN_LUIS_OBISPO_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
-  CA_SAN_LUIS_OBISPO_DriverHistoryQuery | attrs=5 combos=4 autoSelect=True
+  CA_SAN_LUIS_OBISPO_DriverHistoryQuery | attrs=6 combos=4 autoSelect=True
   CA_SAN_LUIS_OBISPO_GunQuery | attrs=4 combos=1 autoSelect=
   CA_SAN_LUIS_OBISPO_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
   CA_SAN_LUIS_OBISPO_BoatQuery | attrs=3 combos=2 autoSelect=
@@ -49,9 +49,10 @@ LAYOUT DETAIL
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_OPT"
-      ROW ROW_PER_OPT_1 [6 6]
+      ROW ROW_PER_OPT_1 [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        CaRequestPurposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_OLN"
       ROW ROW_PER_OLN_1 [12]
         OperatorLicenseNumber (Text | maxLen=20)

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-05-07 14:36
+  Generated: 2026-05-11 09:07
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -28,11 +28,8 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
-  [WARN] QIF 'ENTITY_Article' field 'ArticleTypeCode' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
-  [WARN] Article missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
-  [WARN] Boat missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
   [LIMITATION] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
@@ -107,8 +104,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'OH_LEADS_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 76 PASS / 0 FAIL / 3 WARN / 4 LIMITATION
+  RESULTS: 76 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  4 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

@@ -24,13 +24,14 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds_mc.ps1
 
 param(
-    [string]$Version = '1.1',
+    [string]$Version = '1.2',
     [string]$Phase   = "mc"
 )
 
 $ErrorActionPreference = "Stop"
 
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\OR_LEDS_MC.json"
@@ -460,7 +461,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
             )}
         )
     }
@@ -581,7 +582,7 @@ $artLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input';   node = Inp 'SerialNumber'   'Serial Number' '23' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
     }

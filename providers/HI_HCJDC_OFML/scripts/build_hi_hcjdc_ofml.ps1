@@ -1,4 +1,4 @@
-# build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML v1.1 BASE
+# build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML v1.2 BASE
 # Builds HI_HCJDC_OFML_BASE.json from source\HI_HCJDC_OFML.xml + HIDLE.json.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml.ps1
@@ -59,11 +59,12 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators (matching HIDLE)
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "base"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\HI_HCJDC_OFML_BASE.json"
@@ -579,7 +580,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }

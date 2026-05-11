@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_eSUN_BASE
   Source: CA_eSUN_BASE.json
-  Generated: 2026-05-07 14:31
+  Generated: 2026-05-11 09:08
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,44 +13,274 @@ QUERY SIMULATION
 
 --- QIDM: CA_eSUN_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 1
-    [SKIP] QA -- missing set: caRequestPurposeCode
+
+    [FIRES] QA
+      set: [caRequestPurposeCode, serialNumber]
+      any: [articleBrand, articleCategory, articleTypeCode] -> matched: [articleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+      </Transaction>
 
 --- QIDM: CA_eSUN_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 4  |  Combos: 2
-    [SKIP] BQ.H -- missing set: caRequestPurposeCode
-    [SKIP] BQ.R -- missing set: caRequestPurposeCode
+
+    [FIRES] BQ.H
+      set: [caRequestPurposeCode, boatHullIdNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQ.R
+      set: [caRequestPurposeCode, registrationNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
 --- QIDM: CA_eSUN_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
-    [SKIP] DQ.N -- missing set: caRequestPurposeCode
-    [SKIP] DQ.O -- missing set: caRequestPurposeCode
-    [SKIP] L1.N -- missing set: caRequestPurposeCode
-    [SKIP] L1.O -- missing set: caRequestPurposeCode
+
+    [FIRES] DQ.N
+      set: [caRequestPurposeCode, sexCode, birthDate, nameLast, nameFirst]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQ.O
+      set: [caRequestPurposeCode, operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.N
+      set: [caRequestPurposeCode, nameLast, nameFirst]
+      any: [birthDate] -> matched: [birthDate]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.O
+      set: [caRequestPurposeCode, operatorLicenseNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
 
 --- QIDM: CA_eSUN_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 4
-    [SKIP] KQ.N -- missing set: caRequestPurposeCode
-    [SKIP] KQ.O -- missing set: caRequestPurposeCode
-    [SKIP] L1.N -- missing set: caRequestPurposeCode
-    [SKIP] L1.O -- missing set: caRequestPurposeCode
+
+    [FIRES] KQ.N
+      set: [caRequestPurposeCode, nameLastDH, nameFirstDH, sexCodeDH, birthDateDH]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [caRequestPurposeCode, operatorLicenseNumberDH]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.N.DH
+      set: [caRequestPurposeCode, nameLastDH, nameFirstDH]
+      any: [birthDateDH] -> matched: [birthDateDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N.DH</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.O.DH
+      set: [caRequestPurposeCode, operatorLicenseNumberDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O.DH</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
 
 --- QIDM: CA_eSUN_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 9  |  Combos: 2
-    [SKIP] QGB -- missing set: caRequestPurposeCode
-    [SKIP] QGH -- missing set: caRequestPurposeCode, gunNameLast, gunNameFirst
+
+    [FIRES] QGB
+      set: [caRequestPurposeCode, serialNumber]
+      any: [gunCaliber, firearmMake, gunTypeCode, relatedSearchHitIndicator] -> matched: [gunCaliber, firearmMake]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+    [SKIP] QGH -- missing set: gunNameLast, gunNameFirst
 
 --- QIDM: CA_eSUN_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 12  |  Combos: 6
-    [SKIP] RQ.P -- missing set: caRequestPurposeCode
-    [SKIP] RQ.V -- missing set: caRequestPurposeCode
-    [SKIP] VP.D -- missing set: caRequestPurposeCode, vehNameLast, vehNameFirst, vehBirthDate
-    [SKIP] VP.N -- missing set: caRequestPurposeCode, vehNameLast, vehNameFirst
-    [SKIP] QV.V -- missing set: caRequestPurposeCode
-    [SKIP] QV.P -- missing set: caRequestPurposeCode
+
+    [FIRES] RQ.P
+      set: [caRequestPurposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RQ.V
+      set: [caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+    [SKIP] VP.D -- missing set: vehNameLast, vehNameFirst, vehBirthDate
+    [SKIP] VP.N -- missing set: vehNameLast, vehNameFirst
+
+    [FIRES] QV.V
+      set: [caRequestPurposeCode, vehicleIdentificationNumber]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] QV.P
+      set: [caRequestPurposeCode, licensePlateNumber]
+      any: [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>
   Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
 ================================================================
 
 

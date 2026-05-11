@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS_BASE
   Source: CA_CLETS_OCATS_BASE.json
-  Generated: 2026-05-07 15:18
+  Generated: 2026-05-11 09:05
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,41 +13,283 @@ QUERY SIMULATION
 
 --- QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 5
-    [SKIP] RQ.P -- missing set: caRequestPurposeCode
-    [SKIP] RQ.V -- missing set: caRequestPurposeCode
-    [SKIP] 4V -- missing set: caRequestPurposeCode
-    [SKIP] 4 -- missing set: caRequestPurposeCode
-    [SKIP] VP -- missing set: caRequestPurposeCode, nameLast, nameFirst
+
+    [FIRES] RQ.P
+      set: [caRequestPurposeCode, licensePlateNumber, registrationState]
+      any: [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RQ.V
+      set: [caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] 4V
+      set: [caRequestPurposeCode, vehicleIdentificationNumber]
+      any: [vehicleMakeCode, registrationState] -> matched: [vehicleMakeCode, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>4V</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] 4
+      set: [caRequestPurposeCode, licensePlateNumber]
+      any: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>4</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+    [SKIP] VP -- missing set: nameLast, nameFirst
 
 --- QIDM: CA_CLETS_OCATS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
-    [SKIP] DQ.N -- missing set: caRequestPurposeCode
-    [SKIP] DQ.O -- missing set: caRequestPurposeCode
-    [SKIP] L1.O -- missing set: caRequestPurposeCode
-    [SKIP] L1.N -- missing set: caRequestPurposeCode
+
+    [FIRES] DQ.N
+      set: [caRequestPurposeCode, nameLast, nameFirst, birthDate, sexCode, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQ.O
+      set: [caRequestPurposeCode, operatorLicenseNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.O
+      set: [caRequestPurposeCode, operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.N
+      set: [caRequestPurposeCode, nameLast, nameFirst]
+      any: [birthDate, registrationState] -> matched: [birthDate, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
 
 --- QIDM: CA_CLETS_OCATS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
-    [SKIP] QGB -- missing set: caRequestPurposeCode
+
+    [FIRES] QGB
+      set: [caRequestPurposeCode, serialNumber]
+      any: [gunCaliber, firearmMake, gunTypeCode] -> matched: [gunCaliber, firearmMake]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
 
 --- QIDM: CA_CLETS_OCATS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
-    [SKIP] QA.S -- missing set: caRequestPurposeCode
-    [SKIP] QA.O -- missing set: caRequestPurposeCode
+
+    [FIRES] QA.S
+      set: [caRequestPurposeCode, serialNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+      </Transaction>
+
+    [FIRES] QA.O
+      set: [caRequestPurposeCode, ownerAppliedNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+      </Transaction>
 
 --- QIDM: CA_CLETS_OCATS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 5  |  Combos: 7
-    [SKIP] BQ.H -- missing set: caRequestPurposeCode
-    [SKIP] BQ.R -- missing set: caRequestPurposeCode
-    [SKIP] 4V.B -- missing set: caRequestPurposeCode
-    [SKIP] QB.O -- missing set: caRequestPurposeCode, ownerAppliedNumber
-    [SKIP] 4B -- missing set: caRequestPurposeCode
-    [SKIP] QB.H -- missing set: caRequestPurposeCode
-    [SKIP] QB.R -- missing set: caRequestPurposeCode
+
+    [FIRES] BQ.H
+      set: [caRequestPurposeCode, boatHullIdNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQ.R
+      set: [caRequestPurposeCode, registrationNumber, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] 4V.B
+      set: [caRequestPurposeCode, boatHullIdNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>4V.B</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QB.O
+      set: [caRequestPurposeCode, ownerAppliedNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] 4B
+      set: [caRequestPurposeCode, registrationNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>4B</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QB.H
+      set: [caRequestPurposeCode, boatHullIdNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QB.R
+      set: [caRequestPurposeCode, registrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>
   Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
 ================================================================
 
 

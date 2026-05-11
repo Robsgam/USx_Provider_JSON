@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TN_TIES_BASE
   Source: TN_TIES_BASE.json
-  Generated: 2026-05-07 14:37
+  Generated: 2026-05-11 09:08
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -30,7 +30,6 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
-  [WARN] Person missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 13 combos
@@ -58,7 +57,6 @@ VALIDATOR RESULTS
          TN_TIES_DriverLicenseQuery (query=DriverLicenseQuery)
          TN_TIES_DriverHistoryQuery (query=DriverHistoryQuery)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
-  [WARN] Person : DH QIDM has 4 non-suffixed sourceField(s): nameLast, nameFirst, purposeCode, registrationState -- all DH user fields need DH suffix
   [LIMITATION] Person : 2 QIDMs on 1 QIF but none have queriesToDeselect -- checkbox toggling may not deselect other queries (LIMITATION #24)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
@@ -76,8 +74,6 @@ VALIDATOR RESULTS
   [PASS] RMS bundle has 2 QIDM(s)
   [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
   [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
-  [WARN] RMS Person QIDM 'RMS Person Search query' has dead HIDLE sourceField 'socialSecurityNumber' -- remove per Patch 6
-  [WARN] RMS Person QIDM 'RMS Person Search query' has dead HIDLE combo 'firstNameLastNameSocialSecurityNumber' -- remove per Patch 6
 
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV': all set[]/any[] fields resolvable
@@ -110,8 +106,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 79 PASS / 0 FAIL / 4 WARN / 3 LIMITATION
+  RESULTS: 79 PASS / 0 FAIL / 0 WARN / 3 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  3 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

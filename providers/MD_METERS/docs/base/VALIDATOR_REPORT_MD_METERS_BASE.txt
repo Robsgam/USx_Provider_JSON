@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: MD_METERS_BASE
   Source: MD_METERS_BASE.json
-  Generated: 2026-05-07 14:35
+  Generated: 2026-05-11 09:07
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -29,13 +29,9 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 13 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
-  [WARN] QIF 'ENTITY_Article' field 'articleTypeCode' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)
   [PASS] QIF 'ENTITY_Article' -> Article : 6 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
-  [WARN] Vehicle missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
-  [WARN] Person missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
-  [WARN] Boat missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
@@ -58,7 +54,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'MD_METERS_BoatQuery' ImageIndicator size=1
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr (Patch 3)
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[] (Patch 1)
-  [WARN] QIDM 'MD_METERS_DriverHistoryQuery' has separate In/Out combos but Person State field 'registrationState' has initialValue='MD' -- changes combo routing (LIMITATION #30)
+  [LIMITATION] QIDM 'MD_METERS_DriverHistoryQuery' has separate In/Out combos but Person State field 'registrationState' has initialValue='MD' -- combo routing affected (LIMITATION #30)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
@@ -101,8 +97,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'MD_METERS_BoatQuery' combo 'ZBOA.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 67 PASS / 0 FAIL / 5 WARN / 5 LIMITATION
+  RESULTS: 67 PASS / 0 FAIL / 0 WARN / 6 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  6 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

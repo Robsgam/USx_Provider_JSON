@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: NM_NMLETS_OFML_BASE
   Source: NM_NMLETS_OFML_BASE.json
-  Generated: 2026-05-07 14:36
+  Generated: 2026-05-11 09:07
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -28,10 +28,8 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
-  [WARN] QIF 'ENTITY_Article' field 'articleTypeCode' NCIC_ARTICLE_TYPE with codeTypeSource='NCIC' -- empty dropdown, use 'CA_CLETS' (AP #7)
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
-  [WARN] Person missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
@@ -94,8 +92,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 64 PASS / 0 FAIL / 2 WARN / 4 LIMITATION
+  RESULTS: 64 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  4 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

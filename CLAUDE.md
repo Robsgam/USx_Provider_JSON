@@ -14,29 +14,29 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 ```
 
-## Provider Status (updated 2026-05-08)
+## Provider Status (updated 2026-05-11)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.0 | 69P/0F/0W/1LIM LOCKED -- 14/14 PASS full combo coverage -- DEPLOYED Newark NJ foundation 2026-05-11 | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, Patch 1+3+6+7+8 |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.1 | 70P/0F/1W/4LIM (BASE) 70P/0F/1W/4LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.2 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) NEW | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
-| AZ_AZDPS | providers/AZ_AZDPS/ | v2.0 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.2 | 70P/0F/0W/5LIM (BASE) 70P/0F/0W/5LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[] |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.3 | 72P/0F/0W/5LIM (BASE) 72P/0F/0W/5LIM (MC) NEW | DL+DH co-fire, DH-suffix, WINQ/MINQ, State no-default (LIMIT #30) |
+| AZ_AZDPS | providers/AZ_AZDPS/ | v2.1 | 70P/0F/0W/4LIM (BASE) 70P/0F/0W/4LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v3.2 | 101P/0F/0W/4LIM (BASE) 101P/0F/0W/5LIM (MC) NEW | DL+DH shared form, 6-card Person, QB routing (FL-8) |
 | TX_TLETS | providers/TX_TLETS/ | v2.3 | 82P/0F/0W/5LIM (BASE) 82P/0F/0W/5LIM (MC) NEW | TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
-| LA_LEMS | providers/LA_LEMS/ | v2.0 | 49P/0F/32W/4LIM (BASE) 49P/0F/32W/4LIM (MC) NEW | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
+| LA_LEMS | providers/LA_LEMS/ | v2.1 | 62P/0F/0W/5LIM (BASE) 62P/0F/0W/5LIM (MC) NEW | Attention handler (AP #27), DP/DQ routing toggle, State in set[] |
 | CA_CLETS | providers/CA_CLETS/ | v1.6 | 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC) NEW | CaRequestPurposeCode, LIMITATION #30, 2-QIDM co-fire (DL+DH), MC multi-card (18 cards), cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
-| CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.2 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
+| CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.3 | 66P/0F/0W/6LIM (BASE) 70P/0F/0W/8LIM (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH co-fire, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | FLAGGED -- no basic queries per devdoc | Only expanded JAWS queries; needs decision |
-| CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v1.0 | 63P/0F/0W/2LIM (BASE) 63P/0F/0W/2LIM (MC) NEW | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, 19 combos, OCATS-specific queries available (warrants, juvenile, LARS) |
-| CA_eSUN | providers/CA_eSUN/ | v1.2 | 70P/0F/3W/5LIM (BASE) 70P/0F/3W/5LIM (MC) NEW | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
-| CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.1 | 63P/0F/0W/4LIM (BASE) 63P/0F/0W/4LIM (MC) NEW | Regional interface, no CaRequestPurposeCode, short keyRefs, MC multi-card (13 cards) |
-| IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.0 | 59P/0F/7W/0LIM (BASE) 59P/0F/3W/0LIM (MC) NEW | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
-| MD_METERS | providers/MD_METERS/ | v1.0 | 67P/0F/5W/5LIM (BASE) 67P/0F/2W/5LIM (MC) NEW | 6 basic queries, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (11 cards) |
-| OH_LEADS | providers/OH_LEADS/ | v1.1 | 76P/0F/4W/4LIM (BASE) 76P/0F/3W/4LIM (MC) NEW | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
-| NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.0 | 64P/0F/2W/4LIM (BASE) 64P/0F/1W/4LIM (MC) NEW | 6 basic queries, GunModel field, MC multi-card (11 cards) |
-| OR_LEDS | providers/OR_LEDS/ | v1.1 | 58P/0F/2W/1LIM (BASE) 58P/0F/1W/1LIM (MC) NEW | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
-| TN_TIES | providers/TN_TIES/ | v1.1 | 79P/0F/4W/3LIM (BASE) 79P/0F/1W/3LIM (MC) NEW | 6 basic queries, 28 combos, no State initialValue, MC multi-card (14 cards), DH-suffix |
+| CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v1.1 | 63P/0F/0W/2LIM (BASE) 63P/0F/0W/2LIM (MC) NEW | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, 19 combos, OCATS-specific queries available (warrants, juvenile, LARS) |
+| CA_eSUN | providers/CA_eSUN/ | v1.3 | 70P/0F/0W/5LIM (BASE) 70P/0F/0W/5LIM (MC) NEW | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
+| CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.2 | 63P/0F/0W/4LIM (BASE) 63P/0F/0W/4LIM (MC) NEW | Regional interface, no CaRequestPurposeCode, short keyRefs, MC multi-card (13 cards) |
+| IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.1 | 61P/0F/0W/0LIM (BASE) 61P/0F/0W/0LIM (MC) NEW | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
+| MD_METERS | providers/MD_METERS/ | v1.1 | 67P/0F/0W/6LIM (BASE) 67P/0F/0W/6LIM (MC) NEW | 6 basic queries, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (11 cards) |
+| OH_LEADS | providers/OH_LEADS/ | v1.2 | 76P/0F/0W/4LIM (BASE) 76P/0F/0W/4LIM (MC) NEW | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
+| NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.1 | 64P/0F/0W/4LIM (BASE) 64P/0F/0W/4LIM (MC) NEW | 6 basic queries, GunModel field, MC multi-card (11 cards) |
+| OR_LEDS | providers/OR_LEDS/ | v1.2 | 58P/0F/0W/1LIM (BASE) 58P/0F/0W/1LIM (MC) NEW | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
+| TN_TIES | providers/TN_TIES/ | v1.2 | 79P/0F/0W/3LIM (BASE) 79P/0F/0W/3LIM (MC) NEW | 6 basic queries, 28 combos, no State initialValue, MC multi-card (14 cards), DH-suffix |
 
 ## Legacy Repos (READ-ONLY)
 

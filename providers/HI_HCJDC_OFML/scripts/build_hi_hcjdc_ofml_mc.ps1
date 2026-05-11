@@ -1,4 +1,4 @@
-# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.1-mc MC VARIANT
+# build_hi_hcjdc_ofml_mc.ps1  -- HI_HCJDC_OFML v1.2 MC VARIANT
 # Multi-card layout. QIDMs identical to BASE. Layout-only changes.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml_mc.ps1
@@ -11,11 +11,12 @@
 #   Boat:    3 cards (OPTIONS, REGISTRATION, HULL)
 
 param(
-    [string]$Version = "1.1",
+    [string]$Version = "1.2",
     [string]$Phase   = "mc"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\HI_HCJDC_OFML_MC.json"
@@ -376,7 +377,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
             )}
         )
     }

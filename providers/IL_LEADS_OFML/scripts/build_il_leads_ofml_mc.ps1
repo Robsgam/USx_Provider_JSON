@@ -15,12 +15,13 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 param(
-    [string]$Version = "1.0",
+    [string]$Version = "1.1",
     [string]$Phase   = "mc"
 )
 
 $ErrorActionPreference = "Stop"
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\IL_LEADS_OFML_MC.json"
@@ -427,7 +428,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'IL' } 'ROW_VEH_OPT_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_OPT_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_1' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_OPT_2'; cols = @('4'); fields = @(
                 @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT_2' }
@@ -539,7 +540,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input';   node = Inp 'SerialNumber'   'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'FirearmMake_Input';     node = Sel 'FirearmMake'    'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('12'); fields = @(
                 @{ id = 'GunCaliber_Input'; node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -572,7 +573,7 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input';       node = Inp 'SerialNumber'       'Serial Number'        '20' 'ROW_ART_1' }
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'OwnerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';    node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';    node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
     }
@@ -599,7 +600,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'IL' } 'ROW_BOA_OPT_1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'RelatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_OPT_1' }
             )}
         )

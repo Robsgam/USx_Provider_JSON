@@ -27,7 +27,8 @@
 #           Shared fields (RegistrationState, dexStateUserId) go on shared OPTIONS cards.
 
 $ErrorActionPreference = "Stop"
-$Version = '2.0'
+$Version = '2.1'
+$currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
 $VEROUT = "$DIR\phases\mc\AZ_AZDPS_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
@@ -614,7 +615,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_PLATE_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
                 @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_1' }
-                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_1' @{ initialValue = '2026' } }
+                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_1' @{ initialValue = $currentYear } }
             )}
         )
     }

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-05-07 14:30
+  Generated: 2026-05-11 09:06
 ================================================================
 QUERY SIMULATION
 ================
@@ -16,7 +16,7 @@ QUERY SIMULATION
 
     [FIRES] RQSLicensePlateNumber
       set: [LicensePlateNumber, RegistrationState]
-      any: [Attention, LicensePlateTypeCode, LicensePlateYear] -> matched: [LicensePlateTypeCode, LicensePlateYear]
+      any: [LicensePlateTypeCode, LicensePlateYear] -> matched: [LicensePlateTypeCode, LicensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -27,14 +27,26 @@ QUERY SIMULATION
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
-    [SKIP] RQSVehicleIdentificationNumber -- no any[] match
+
+    [FIRES] RQSVehicleIdentificationNumber
+      set: [VehicleIdentificationNumber, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
 
 --- QIDM: LA_LEMS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 4
 
     [FIRES] DP
       set: [OperatorLicenseNumber, ImageIndicator]
-      any: [Attention, RegistrationState] -> matched: [Attention, RegistrationState]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -51,7 +63,7 @@ QUERY SIMULATION
 
     [FIRES] DQ
       set: [OperatorLicenseNumber]
-      any: [Attention, ImageIndicator, RegistrationState] -> matched: [Attention, ImageIndicator, RegistrationState]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -68,7 +80,7 @@ QUERY SIMULATION
 
     [FIRES] QWDN
       set: [SexCode, BirthDate, NameLast, NameFirst, RaceCode]
-      any: [Attention, ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [Attention, ImageIndicator, RegistrationState, NameMiddle]
+      any: [ImageIndicator, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RegistrationState, NameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -85,7 +97,7 @@ QUERY SIMULATION
 
     [FIRES] QWA
       set: [SexCode, BirthDate, NameLast, NameFirst]
-      any: [Attention, ImageIndicator, RaceCode, RegistrationState, NameMiddle, NameSuffix] -> matched: [Attention, ImageIndicator, RaceCode, RegistrationState, NameMiddle]
+      any: [ImageIndicator, RaceCode, RegistrationState, NameMiddle, NameSuffix] -> matched: [ImageIndicator, RaceCode, RegistrationState, NameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -105,7 +117,7 @@ QUERY SIMULATION
 
     [FIRES] KQOperatorLicenseNumber
       set: [OperatorLicenseNumber, PurposeCode]
-      any: [Attention, RegistrationState] -> matched: [Attention, RegistrationState]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -121,7 +133,7 @@ QUERY SIMULATION
 
     [FIRES] KQName
       set: [SexCode, BirthDate, NameLast, NameFirst, PurposeCode]
-      any: [Attention, RegistrationState, NameMiddle, NameSuffix] -> matched: [Attention, RegistrationState, NameMiddle]
+      any: [RegistrationState, NameMiddle, NameSuffix] -> matched: [RegistrationState, NameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -140,7 +152,7 @@ QUERY SIMULATION
 
     [FIRES] QG
       set: [GunSerialNumber]
-      any: [Attention, GunMake, GunTypeCode] -> matched: [GunMake]
+      any: [GunMake, GunTypeCode] -> matched: [GunMake]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -154,7 +166,7 @@ QUERY SIMULATION
 
     [FIRES] QA
       set: [ArticleSerialNumber]
-      any: [Attention, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      any: [ArticleTypeCode] -> matched: [ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -165,11 +177,21 @@ QUERY SIMULATION
 
 --- QIDM: LA_LEMS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 4  |  Combos: 2
-    [SKIP] BQ -- no any[] match
+
+    [FIRES] BQ
+      set: [RegistrationNumber, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
     [FIRES] QB
       set: [BoatHullIdNumber]
-      any: [Attention, RegistrationState] -> matched: [RegistrationState]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -182,6 +204,7 @@ QUERY SIMULATION
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>
   Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
 ================================================================
 
 
