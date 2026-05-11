@@ -332,6 +332,27 @@ TOOLS
            .\enforce.ps1 -Rebuild                 # auto-rebuild stale reports
            .\enforce.ps1 -OutFile <path>          # save full report
 
+  tools/pipeline.ps1
+    Complete build-to-verify pipeline for one provider.
+    ONE command. Runs EVERYTHING. No manual steps.
+    Usage:
+      .\pipeline.ps1 -Provider HI_HCJDC_OFML
+      .\pipeline.ps1 -Provider HI_HCJDC_OFML -BaseOnly    # skip MC
+      .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipBuild   # reports + audit only
+      .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipEnforce # stop before enforce
+    Steps (9):
+      1. Build BASE JSON (run build script)
+      2. Build MC JSON (run MC build script)
+      3. Build report on BASE (8 tools via build_report.ps1)
+      4. Build report on MC (8 tools via build_report.ps1)
+      5. Extract metadata reference (METADATA_REFERENCE.txt)
+      6. Sync CLAUDE.md provider table (sync_provider_table.ps1)
+      7. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
+      8. Repo audit (audit_repo.ps1 — full monorepo)
+      9. Enforce (enforce.ps1 — final gate)
+    Stops on first failure with specific error reporting.
+    Replaces manual multi-step workflow with one command.
+
 ================================================================================
 PREREQUISITES
 ================================================================================
