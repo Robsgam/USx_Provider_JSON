@@ -80,101 +80,9 @@ Every provider JSON has exactly 3 bundles in this order:
 
 ---
 
-## Anti-Patterns — CONFIRMED BROKEN, DO NOT ATTEMPT
+## Anti-Patterns and Platform Limitations
 
-### AP #1: attributeTypeId='STATE' in a QIDM sourceField
-Platform serializes the numeric attribute ID (e.g. 69509884952) instead of the 2-letter state code. Use InpH (hidden FormInput) with initialValue='NY' for outbound XML. Keep SelH with attributeTypeId=STATE only for RMS.
-
-### AP #2: attributeTypeId='SEX' WITHOUT codeTypeProvider='NIBRS'
-Form stores numeric attribute ID; QIDM without codeTypeProvider writes raw ID to XML. Must have codeTypeProvider='NIBRS' on BOTH the form field AND the QIDM SexCode attribute.
-
-### AP #3: attributeTypeId='RACE' on outbound XML fields
-Same numeric ID issue. Use codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS'.
-
-### AP #4: IgnoreUserValueRuleHandler for state hardcoding
-Passes raw sourceField value through unchanged. Does NOT substitute argument. DEAD END. Use InpH with initialValue.
-
-### AP #5: Duplicate keyReference in one QIDM
-Import fails: "Duplicate key references found in query input data mapping." Every combination in a QIDM must have a distinct keyReference.
-
-### AP #9: QUERYINPUTFORM in RMS bundle
-Causes each entity form card to render twice. QIF belongs ONLY in ENTITIES bundle.
-
-### AP #11: useAttributeId=True with codeTypeCategory fields in RMS QIDM
-Does NOT convert NIBRS codes to attribute IDs. RMS receives "M" and returns 400.
-
-### AP #12: Split QIDM configs without checking LIMITATION #2
-Platform picks ONE QIDM per (targetEntity, query) pair. The second is silently ignored. Always check before splitting.
-
-### AP #14: queriesToDeselect on shared form without DH-suffix fieldIds
-When both QIDMs reference the same fieldId in set[], mutual deselect deadlocks. Always pair with DH-suffix fieldIds.
-
-### AP #15: FormatStringRuleHandler argument count mismatch
-Arguments count must equal sourceField count minus 1. 2 fields = 1 arg. 4 fields = 3 args.
-
-### AP #16: Assuming separate QIF sub-forms isolate QIDM evaluation
-Platform uses a SHARED field-value pool for ALL Person QIDMs regardless of active sub-form.
-
-### AP #18: Removing RMS sex without also removing SexCodeOOS
-HIDLE has BOTH 'SexCode' and 'SexCodeOOS' sex attrs. Filter by targetField='sexAttrId' to remove both. Also remove both from combination any[]/set[] arrays.
-
-### AP #21-23: Build Script Type Errors
-- **AP #21**: `templateColumns` MUST be array of strings (`["6","6"]`), not integers
-- **AP #22**: `maxLength` MUST be a string (`"20"`), not a number
-- **AP #23**: `autoSelect` MUST be boolean (`true`), not string
-- Use `keyReference` (NOT `keyRef`) on QIDM combinations — wrong property name causes silent null
-- Use `rule: { function: "HandlerName" }` (NOT `ruleHandlers: [{name:...}]`)
-
-### AP #24: Using NCIC_FIREARM_MAKE for Vehicle Make
-NCIC_FIREARM_MAKE contains firearm manufacturers only, NOT vehicle makes. No `NCIC_VEHICLE_MAKE` category exists. HIDLE.json incorrectly maps VehicleMakeName to NCIC_FIREARM_MAKE in result QIDM. Use `attributeTypeId='VEHICLE_MAKE'` for dropdown (works for RMS, does NOT serialize to XML). Confirmed 2026-04-24 on MK43RS.
-
-### AP #25: Wrong queryLabel values
-Do NOT use entity names ("Vehicle", "Person"), system names ("NCIC"), or append "Query". Use the standard labels: Vehicle Registration, Driver License, Driver History, Firearm, Article, Boat, RMS. See FIELD_REFERENCE.txt Section 12.
-
-### AP #26: Card title with non-ASCII characters (em dash, smart quotes)
-Platform renders multi-byte UTF-8 as mojibake in card titles. Em dash "—" becomes "â€"". Use ASCII hyphen-minus (U+002D) only. Confirmed 2026-04-24 on NY MC.
-
-### AP #27: Phantom field reference in RMS QIDM combo set[]/any[]
-RMS QIDM combo references a field name with no matching attribute definition in the same QIDM. Import error: "Missing attributes found in query input data mapping: [fieldname]". Common cause: copying CommSys combo field lists to RMS combos without verifying each has an RMS attribute. LicensePlateYear has no RMS equivalent — remove from RMS combos. Confirmed: LA_LEMS v1.0 (2026-04-29).
-
-### Attention field pattern (not numbered — reference builds only)
-Do NOT add a visible Attention FormInput. Do NOT put Attention in `set[]`. Platform auto-fills implicitly but this is unreliable. Use `CommsysGetLastNameFirstNameInitialRuleHandler` on the Attention QIDM attribute instead (CA_eSUN, LA_LEMS pattern).
-
----
-
-## Platform Limitations — Key Behaviors
-
-### LIMITATION #1: set[]/any[] control combo selection, not field sending
-When a combo fires, ALL populated QIDM attributes are sent. set/any cannot suppress which attributes serialize. Servers are tolerant of extra fields.
-
-### LIMITATION #2: ONE QIDM per (targetEntity, query) pair
-Multiple QIDMs sharing the same targetEntity+query — only one is evaluated. The others are silently ignored regardless of autoSelect setting.
-
-**Merge decision**: Can merge when all keyRefs are distinct. Cannot merge when keyRefs duplicate (use invented distinct keyRef — see QIDM section).
-
-### LIMITATION #3: First matching combination fires
-Put most-specific combination first in the array.
-
-### LIMITATION #4: attributeTypeId='STATE' sends numeric attribute ID
-Only use on hidden SelH for RMS. Never map in QIDM for outbound XML.
-
-### LIMITATION #12: No conditional field visibility
-`hidden` is static true/false only. Cannot show/hide based on user input. Workaround: all fields visible; QIDM set/any handles routing.
-
-### LIMITATION #21: Duplicate keyReference rejected at import
-Each combination within a QIDM must have a distinct keyReference. keyRef is platform-internal only — provider does not validate it. Invented keyRefs work.
-
-### LIMITATION #24-25: DL+DH shared form — autoSelect + DH-suffix fieldIds
-When DL and DH share a form: autoSelect=true + queriesToDeselect + DH-suffix fieldIds (NameFirstDH, OperatorLicenseNumberDH, etc.). Both parts required.
-
-### LIMITATION #26: Shared field pool across Person QIDMs
-Platform evaluates ALL Person QIDMs from one shared field-value pool regardless of active sub-form. queriesToDeselect is ineffective in both directions.
-
-### LIMITATION #27: No AttributeArrayWrapperRuleHandler on RMS sex
-Wraps sexAttrId in array → RMS 400. HIDLE default (useAttributeId=true, no handler) is correct.
-
-### LIMITATION #31: initialValue fields not counted for set[] combo evaluation
-Platform combo evaluator ignores `initialValue` defaults on FormSelect/FormInput when evaluating `set[]` requirements. Only fields the user actively enters or changes are counted as "populated." Fields with `initialValue` (State=NJ, PlateType=PC, RandomRequest=N, ImageIndicator=Y/N) must go in `any[]`, not `set[]`. Confirmed NJ v2.6: VehicleStolenQuery fired but VehicleRegistrationQuery did not until defaulted fields were moved from set[] to any[].
+Full reference: `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs with cross-reference index).
 
 ---
 
@@ -233,60 +141,7 @@ Three requirements (all must be met): QIDM attribute `size=1`, FormSelect `initi
 
 ## Sex Code Configuration
 
-This is the most complex field. Follow exactly.
-
-### Working Pattern (CommSys + RMS simultaneously)
-
-**Form field:**
-```json
-{
-  "type": { "resolvedName": "FormSelect" },
-  "props": {
-    "fieldId": "SexCode",
-    "label": "Sex",
-    "attributeTypeId": "SEX",
-    "codeTypeProvider": "NIBRS"
-  }
-}
-```
-
-**CommSys QIDM SexCode attribute:**
-```json
-{
-  "name": "SexCode",
-  "size": 1,
-  "sourceField": ["SexCode"],
-  "targetField": "SexCode",
-  "codeTypeProvider": "NIBRS"
-}
-```
-
-**RMS QIDM sex attribute (HIDLE default — do NOT modify):**
-```json
-{
-  "name": "sex",
-  "sourceField": ["SexCode"],
-  "targetField": "sexAttrId",
-  "useAttributeId": true
-}
-```
-
-Result: CommSys gets `<SexCode>M</SexCode>`, RMS gets `sexAttrId:"69509891711"` (string).
-
-### Critical Rules
-
-1. **NO AttributeArrayWrapperRuleHandler** on RMS sex attribute — causes array wrapping → RMS 400.
-2. **NO codeTypeCategory=NIBRS_SEX** on form when RMS sex filter is needed — stores string "M", useAttributeId + string → array error.
-3. **NO duplicate targetField** in any QIDM using codeTypeProvider — two attrs mapping to same targetField breaks reverse-lookup. Entity-split designs create duplicates and are INCOMPATIBLE.
-4. Reverse-lookup (codeTypeProvider=NIBRS) works on ALL tested instances (NJ, AZ, FL). Prior "FL doesn't support reverse-lookup" was wrong — the failure was duplicate targetFields.
-
-### Fallback (CommSys-only)
-When duplicate targetFields are unavoidable (entity-split design):
-- Form: `codeTypeCategory='NIBRS_SEX'`, `codeTypeSource='NIBRS'`
-- CommSys QIDM: keep `codeTypeProvider='NIBRS'`
-- RMS: REMOVE sex attribute and SexCode/SexCodeOOS from all combination arrays
-
-Preferred: merge to single-entity design to use full pattern.
+Full reference: `knowledge-base/FIELD_REFERENCE.txt` Section 5 (working pattern, critical rules, fallback).
 
 ---
 
@@ -364,36 +219,9 @@ Apply all patches in every build script after cloning RMS from HIDLE.json.
 
 ---
 
-## Rule Handler Reference (source: HandlerConfiguration.java)
+## Rule Handler Reference
 
-Full reference: `knowledge-base/RULE_HANDLERS.txt` (24 handlers documented).
-
-**Directly configured in provider JSON (6 handlers):**
-
-| Handler | Used in | Signature |
-|---|---|---|
-| CommsysOriAuthenticationHandler | AUTH handlerFunction | — |
-| CommsysTransactionRequestHandler | QIDM handlerFunction (every QIDM) | — |
-| CommsysWsiOutgoingMessageHandler | QMF handlerFunction | — |
-| CommsysGetDexStateUserIdRuleHandler | AUTH UserName attr | arguments=['true'] |
-| CommsysParseDateRuleHandler | QIDM BirthDate attr | arguments=['yyyy-MM-dd','<provider-fmt>'] |
-| FormatStringRuleHandler | QIDM Name attr | arguments=separators (count = fields - 1) |
-
-**Inherited from HIDLE (do NOT manually configure):**
-
-| Handler | Where | Note |
-|---|---|---|
-| CommsysResultsHandler | QRDM | Response parsing |
-| RmsRestResultsHandler | RMS bundle | Response parsing |
-| RmsRestPayloadHandler | RMS bundle | Request building |
-| AttributeArrayWrapperRuleHandler | RMS Vehicle registrationStateAttrIds | Do NOT add to sex attrs |
-
-**Dead ends / not used:**
-
-| Handler | Status |
-|---|---|
-| IgnoreUserValueRuleHandler | DEAD END — does not substitute argument |
-| All Parse*/Format{Array,Name}/Height*/Regex*/Article* handlers | Response-side only (QRDM) |
+Full reference: `knowledge-base/RULE_HANDLERS.txt` (24 handlers — 6 directly configured, rest inherited from HIDLE).
 
 ---
 
@@ -500,15 +328,7 @@ Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL
 
 ## Import Error Quick Reference
 
-| Error | Root Cause | Fix |
-|---|---|---|
-| "Duplicate key references" | Two combos share keyReference in one QIDM | Use distinct keyRefs |
-| Duplicate entity form cards | QIF in wrong bundle | Move QIF to ENTITIES bundle only |
-| State sends numeric ID | attributeTypeId='STATE' in QIDM | Use InpH with initialValue |
-| RMS 400 on sex | sexAttrId with useAttributeId on NIBRS_SEX field | Remove sex from RMS QIDM |
-| Query doesn't fire | LIMITATION #2 — second QIDM ignored | Merge QIDMs |
-| Empty dropdown | Wrong codeTypeSource | Check FIELD_REFERENCE.txt Section 2 |
-| "Missing attributes in query input data mapping" | RMS combo references field with no attribute | Remove orphan field from RMS combo (AP #27) |
+See `knowledge-base/IMPORT_ERRORS.txt` for error-to-fix mapping.
 
 ---
 
@@ -536,7 +356,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 8 tools) | Spot-reading JSON sections |
 | **Is this field consistent across providers?** | `audit_cross_provider.ps1 -Path providers/` | Manual grep across provider folders |
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
-| **What anti-patterns apply?** | CLAUDE.md Anti-Patterns section + `knowledge-base/PLATFORM_CONSTRAINTS.txt` | Memory, training data |
+| **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs) | Memory, training data |
 | **What patches does RMS need?** | CLAUDE.md RMS Bundle section + `knowledge-base/BUILD_RULES.txt` Section 4 | HIDLE.json inspection alone |
 | **Current build state** (scores, warnings) | `docs/base/` and `docs/mc/` report files (generated by `build_report.ps1`) | Re-running validator ad hoc |
 | **Test coverage status** | `audit_test_coverage.ps1 -Path <json>` + `docs/<PROVIDER>_SQVR.txt` | Counting test log files manually |
