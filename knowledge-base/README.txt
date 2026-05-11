@@ -316,6 +316,22 @@ TOOLS
     files. Ensures CLAUDE.md always reflects the latest build results.
     Usage: .\sync_provider_table.ps1 [-DryRun] [-OutFile <path>]
 
+  tools/enforce.ps1
+    *** MANDATORY FINAL GATE -- RUN BEFORE DECLARING ANYTHING DONE ***
+    Single-command verification that runs ALL checks in sequence:
+      Phase 1: Build freshness (reports newer than JSONs, phase archives exist)
+      Phase 2: Validator scores (0 FAIL / 0 WARN on every provider)
+      Phase 3: Doc version sync (build script version matches STATUS, SQVR,
+               BUILD_NOTES, JSON_INVENTORY, CLAUDE.md, REBUILD_TRACKER)
+      Phase 4: Cross-provider consistency (audit_cross_provider.ps1 0 FAIL)
+      Phase 5: Repo integrity (audit_repo.ps1 0 FAIL, git status clean)
+    Exit 0 = ENFORCED (all gates clear). Exit 1 = BLOCKED (fix before done).
+    Usage: .\enforce.ps1                          # all providers
+           .\enforce.ps1 -Provider <name>         # single provider
+           .\enforce.ps1 -SkipGit                 # skip git checks (mid-work)
+           .\enforce.ps1 -Rebuild                 # auto-rebuild stale reports
+           .\enforce.ps1 -OutFile <path>          # save full report
+
 ================================================================================
 PREREQUISITES
 ================================================================================

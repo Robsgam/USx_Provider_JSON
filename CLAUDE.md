@@ -454,6 +454,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 
 | Tool | Purpose | Key flags |
 |---|---|---|
+| `enforce.ps1` | **MANDATORY FINAL GATE** -- runs ALL checks (build freshness, validator scores, doc sync, cross-provider, repo audit, git status) | `-Provider <name>` `-SkipGit` `-Rebuild` `-OutFile` |
 | `audit_repo.ps1` | Full monorepo audit (16 categories: banned patterns, versions, docs, structure, cross-provider) | `-Category <1-16>` |
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
@@ -519,6 +520,15 @@ powershell -ExecutionPolicy Bypass -File tools/preflight_rebuild.ps1 -All -Quick
 
 # Sync CLAUDE.md scores after rebuilds
 powershell -ExecutionPolicy Bypass -File tools/sync_provider_table.ps1
+
+# *** MANDATORY FINAL GATE -- run before declaring ANYTHING done ***
+powershell -ExecutionPolicy Bypass -File tools/enforce.ps1
+
+# Single provider enforcement (after building one provider)
+powershell -ExecutionPolicy Bypass -File tools/enforce.ps1 -Provider <NAME>
+
+# Mid-work check (skip git, just verify build+docs)
+powershell -ExecutionPolicy Bypass -File tools/enforce.ps1 -SkipGit
 ```
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
@@ -612,6 +622,11 @@ These are cause-and-effect rules. When the trigger happens, the actions are MAND
 **TRIGGER: You are about to end your response**
 - Run the END-OF-RESPONSE VERIFICATION below
 
+**TRIGGER: You are about to declare any work "done", "complete", or "ready"**
+- Run `enforce.ps1` FIRST. Do NOT declare completion without it.
+- If enforce.ps1 exits with code 1 (BLOCKED), fix every failure before declaring done.
+- This is not optional. This is not "run it if you remember." This is a blocking gate.
+
 ---
 
 ## END-OF-RESPONSE VERIFICATION
@@ -625,8 +640,10 @@ Before ending ANY response that involved file changes, run this checklist mental
 5. SQVR — does it reflect the current confirmed/pending state?
 6. Did I update anything in the KB? If yes, is the KB pushed? Are affected repos updated?
 7. Is there anything I said I would do but haven't done yet?
+8. Did I run `enforce.ps1`? Does it pass? If not, fix before responding.
 
 If #7 is yes: do it now, or explicitly tell the user it's deferred and why.
+If #8 is no: run it now. Do not skip this step.
 
 ---
 
