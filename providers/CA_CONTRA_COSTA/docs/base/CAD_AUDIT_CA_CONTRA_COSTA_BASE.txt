@@ -1,0 +1,71 @@
+﻿================================================================
+  Build Report: CA_CONTRA_COSTA_BASE
+  Source: CA_CONTRA_COSTA_BASE.json
+  Generated: 2026-05-11 12:32
+================================================================
+CAD AUDIT
+=========
+
+
+========================================
+ CAD AUDIT: CA_CONTRA_COSTA (BASE)
+========================================
+
+--- CHECK 1: CAD Field Alignment ---
+    [INFO] Vehicle -- no QIF found in this provider (expected if entity not supported)
+  Person:
+    [INFO] operatorLicenseNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
+    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] birthDate: in QIF and CAD list
+    [PASS] sexCode: in QIF and CAD list
+    [PASS] raceCode: in QIF and CAD list
+    [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] registrationState: in QIF and CAD list
+    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] address: in QIF and CAD list
+    [PASS] addressCity: in QIF and CAD list
+    [INFO] addressState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] addressStreetName: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] addressStreetNameSecond: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] addressZipCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] addressZone: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] age: in QIF and CAD list
+    [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] requestingAgencyId: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] Firearm -- no QIF found in this provider (expected if entity not supported)
+    [INFO] Article -- no QIF found in this provider (expected if entity not supported)
+    [INFO] Boat -- no QIF found in this provider (expected if entity not supported)
+
+--- CHECK 2: CAD_DISPATCH Layout Variant ---
+    [PASS] Person QIF 'ENTITY_Person': CAD_DISPATCH layout exists
+    [PASS] Person CAD_DISPATCH: CONTEXT_INFO_CARD with unit + event
+
+--- CHECK 3: FIRST_RESPONDER Layout Variant ---
+    [PASS] Person QIF 'ENTITY_Person': FIRST_RESPONDER layout exists
+
+--- CHECK 4: Patch 8 Completeness ---
+    [PASS] RMS RMS Person Search query -- all sourceFields and combo refs are camelCase
+    [PASS] RMS RMS Vehicle search query -- all sourceFields and combo refs are camelCase
+
+--- CHECK 5: QIDM sourceField Case Alignment ---
+    [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery': all sourceFields match QIF fieldIds (case-sensitive)
+    [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery': all sourceFields match QIF fieldIds (case-sensitive)
+    [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
+
+========================================
+ CAD AUDIT SUMMARY
+========================================
+Providers: 1
+Total: 17 PASS / 0 FAIL / 0 WARN / 23 INFO
+
+

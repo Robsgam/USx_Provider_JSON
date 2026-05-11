@@ -1,0 +1,71 @@
+﻿================================================================
+  Build Report: CA_CONTRA_COSTA_BASE
+  Source: CA_CONTRA_COSTA_BASE.json
+  Generated: 2026-05-11 12:32
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 1 configurations
+  [PASS] Bundle 'CA_CONTRA_COSTA': 5 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' -> Person : 10 attrs, 5 combos
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery' -> Person : 3 attrs, 1 combos
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr (Patch 3)
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[] (Patch 1)
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
+         CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery (query=CaContraCostaJawsPersonQuery)
+         CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery (query=CaContraCostaJawsWarrantQuery)
+  [WARN] Person : keyReference 'IW.N' appears in multiple QIDMs: CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery, CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery -- may cause routing confusion
+    [FIX] In build script: rename keyReference 'IW.N' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
+  [PASS] Person : 2 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' combo 'DQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' combo 'DNQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' combo 'INL1': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' combo 'IR.QVC': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery' combo 'IW.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery' combo 'IW.N': all set[]/any[] fields resolvable
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  RESULTS: 37 PASS / 0 FAIL / 1 WARN / 1 LIMITATION
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  Review WARN items -- they may cause runtime issues.
+

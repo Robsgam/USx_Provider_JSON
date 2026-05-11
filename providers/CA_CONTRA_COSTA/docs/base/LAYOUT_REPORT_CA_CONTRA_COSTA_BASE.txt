@@ -1,0 +1,56 @@
+﻿================================================================
+  Build Report: CA_CONTRA_COSTA_BASE
+  Source: CA_CONTRA_COSTA_BASE.json
+  Generated: 2026-05-11 12:32
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== CA_CONTRA_COSTA_BASE.json ===
+QIFs: 1
+  Person | entity=Person | qidm= | cards=1 fields=7
+QIDMs: 2
+  CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery | attrs=10 combos=5 autoSelect=True
+  CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery | attrs=3 combos=1 autoSelect=True
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER"
+      ROW ROW_PER_1 [6 6]
+        nameFirst (Text | maxLen=30)
+        nameLast (Text | maxLen=30)
+      ROW ROW_PER_2 [4 4 4]
+        birthDate (FormDate)
+        sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
+      ROW ROW_PER_3 [4 4 4]
+        age (Text | maxLen=2)
+        registrationState (Dropdown | attributeTypeId=STATE)
+        requestingAgencyId (Text | maxLen=2)
+      ROW ROW_PER_4 [4 4 4]
+        address (Text | maxLen=3)
+        addressCity (Text | maxLen=13)
+        caRequestPurposeCode (Text | maxLen=1 | default=C)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    nameFirst -> firstName
+    nameLast -> lastName
+    operatorLicenseNumber -> dlNumber
+    birthDate -> dateOfBirth
+    sexCode -> sexAttrId (useAttrId)
+    registrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    vehicleYear -> vehicle.yearOfManufacture
+    vehicleIdentificationNumber -> vehicle.vinNumber
+    vehicleMakeCode -> vehicle.makeNcicCode
+    vehicleModelCode -> vehicle.modelNcicCode
+    licensePlateNumber -> vehicle.tag
+    registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+
