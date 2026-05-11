@@ -494,53 +494,6 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `map_cad_fields.ps1` | Maps CAD field names to provider JSON fieldIds (MATCH/CASE_MISMATCH/NO_MATCH) | `-Path <json>` `-CadFields` `-OutFile` `-GeneratePatch` |
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
 
-### Quick Reference
-
-```powershell
-# Full build pipeline (runs all 8 tools, saves reports)
-powershell -ExecutionPolicy Bypass -File tools/build_report.ps1 -Path providers/<PROVIDER>/<PROVIDER>_BASE.json
-
-# Full monorepo audit (16 categories)
-powershell -ExecutionPolicy Bypass -File tools/audit_repo.ps1
-
-# Metadata reference (run after every build)
-powershell -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1 -XmlPath providers/<PROVIDER>/source/<PROVIDER>.xml -Path providers/<PROVIDER>/<PROVIDER>_BASE.json -OutFile providers/<PROVIDER>/docs/<PROVIDER>_METADATA_REFERENCE.txt
-
-# Test log stub (GATE 2, before every test)
-powershell -ExecutionPolicy Bypass -File tools/new_test_log.ps1 -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
-
-# Provider scorecard (all providers at a glance)
-powershell -ExecutionPolicy Bypass -File tools/score_all.ps1 -Quick
-
-# Build script linter (catch anti-patterns before build)
-powershell -ExecutionPolicy Bypass -File tools/lint_build_scripts.ps1
-
-# Preflight rebuild plan (single provider or all)
-powershell -ExecutionPolicy Bypass -File tools/preflight_rebuild.ps1 -Provider <NAME> -Quick
-powershell -ExecutionPolicy Bypass -File tools/preflight_rebuild.ps1 -All -Quick
-
-# Sync CLAUDE.md scores after rebuilds
-powershell -ExecutionPolicy Bypass -File tools/sync_provider_table.ps1
-
-# *** ONE-COMMAND PIPELINE -- build + report + audit + enforce ***
-powershell -ExecutionPolicy Bypass -File tools/pipeline.ps1 -Provider <NAME>
-
-# Pipeline: reports + audit only (JSON already built)
-powershell -ExecutionPolicy Bypass -File tools/pipeline.ps1 -Provider <NAME> -SkipBuild
-
-# Pipeline: skip MC variant
-powershell -ExecutionPolicy Bypass -File tools/pipeline.ps1 -Provider <NAME> -BaseOnly
-
-# *** MANDATORY FINAL GATE -- run before declaring ANYTHING done ***
-powershell -ExecutionPolicy Bypass -File tools/enforce.ps1
-
-# Single provider enforcement (after building one provider)
-powershell -ExecutionPolicy Bypass -File tools/enforce.ps1 -Provider <NAME>
-
-# Mid-work check (skip git, just verify build+docs)
-powershell -ExecutionPolicy Bypass -File tools/enforce.ps1 -SkipGit
-```
-
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 
 ---
@@ -592,180 +545,31 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 
 ---
 
-## SESSION START PROTOCOL
+## Workflow
 
-At the start of every session that touches a provider JSON repo, before doing any work:
+Three commands run everything. No manual checklists.
 
-1. Read this CLAUDE.md fully (or confirm it was loaded in system context)
-2. Read the provider's repo CLAUDE.md
-3. Run `git status` on every repo you will touch — confirm clean and synced
-4. Check `docs/` has: STATUS.txt, SQVR.txt, BUILD_NOTES.txt, base/ reports
-5. Check `tests/` exists
-6. If ANYTHING from steps 3-5 is wrong, fix it FIRST before starting the requested task
+| Action | Command |
+|---|---|
+| **Build + verify one provider** | `pipeline.ps1 -Provider <NAME>` |
+| **Final verification (all providers)** | `enforce.ps1` |
+| **New provider setup** | `new_provider.ps1 -XmlPath <xml>` |
 
-This costs 2 minutes and prevents "I'll come back to it" drift.
+`pipeline.ps1` chains 9 steps: build BASE → build MC → report BASE → report MC → extract metadata → sync CLAUDE.md → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-BaseOnly` (no MC), `-SkipEnforce` (mid-work).
 
----
+`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider consistency, repo integrity + git status. Exit 0 = verified. Exit 1 = blocked.
 
-## TRIGGER RULES — AUTOMATIC CHAINING
+**If enforce.ps1 passes, the work is done. If it doesn't, fix what it flags.**
 
-These are cause-and-effect rules. When the trigger happens, the actions are MANDATORY — not "remember to also do" but "you are not done until these are also done."
+### Design Decisions (applied automatically)
 
-**TRIGGER: You edit or create any `.json` provider file**
-- Run build_report.ps1
-- Commit JSON + all 8 report files
-- Push to GitHub
-- Update docs/STATUS.txt if version changed
-- Update docs/SQVR.txt if query paths changed
-
-**TRIGGER: You complete a live test (user reports PASS or FAIL)**
-- Fill in the test log stub (FORM STATE, XML, FIELD ANALYSIS, RESULT)
-- Commit and push the completed log
-- Update docs/STATUS.txt test matrix row
-- Update docs/SQVR.txt — flip [PENDING] to [CONFIRMED] if PASS
-
-**TRIGGER: You update any KB file (knowledge-base/, CLAUDE.md)**
-- Commit and push the monorepo
-- Check: does this change affect CLAUDE.md or any build script? If yes, update those too
-- Check: does this change affect any build script? If yes, propagate
-
-**TRIGGER: You discover a new limitation, anti-pattern, or import error**
-- Add to the appropriate KB file (PLATFORM_CONSTRAINTS.txt, IMPORT_ERRORS.txt)
-- Fire the KB update trigger above
-
-**TRIGGER: You complete a provider build (BASE or MC JSON created/updated)**
-- Run extract_metadata_reference.ps1 to generate/update METADATA_REFERENCE.txt
-- Commit alongside the JSON and build reports
-
-**TRIGGER: You create a new provider folder**
-- Verify folder name matches XML filename (minus .xml) BEFORE creating
-- Create full canonical structure (docs/, tests/, phases/, scripts/, source/)
-- Copy HIDLE.json from templates/ to source/
-- Add provider to CLAUDE.md provider table
-- Add provider to tools/new_test_log.ps1 knownPaths
-- Update README.txt provider count if needed
-
-**TRIGGER: You rename a provider**
-- git mv the folder
-- Rename all doc files (STATUS.txt, BUILD_NOTES.txt, SQVR.txt)
-- Update content in all doc files
-- Update CLAUDE.md, README.txt, new_test_log.ps1
-- Grep full repo for old name to catch stragglers
-
-**TRIGGER: You are about to end your response**
-- Run the END-OF-RESPONSE VERIFICATION below
-
-**TRIGGER: You are about to declare any work "done", "complete", or "ready"**
-- Run `enforce.ps1` FIRST. Do NOT declare completion without it.
-- If enforce.ps1 exits with code 1 (BLOCKED), fix every failure before declaring done.
-- This is not optional. This is not "run it if you remember." This is a blocking gate.
-
----
-
-## END-OF-RESPONSE VERIFICATION
-
-Before ending ANY response that involved file changes, run this checklist mentally and fix anything that fails. Do not output the checklist to the user — just do the work silently. Only mention it if something was missing and you fixed it.
-
-1. Every file I edited — is it saved, committed, and pushed?
-2. Every JSON I touched — did build_report.ps1 run? Are reports committed?
-3. Every test completed — is there a log file in tests/? Is it committed?
-4. STATUS.txt — does it reflect the current state?
-5. SQVR — does it reflect the current confirmed/pending state?
-6. Did I update anything in the KB? If yes, is the KB pushed? Are affected repos updated?
-7. Is there anything I said I would do but haven't done yet?
-8. Did I run `enforce.ps1`? Does it pass? If not, fix before responding.
-
-If #7 is yes: do it now, or explicitly tell the user it's deferred and why.
-If #8 is no: run it now. Do not skip this step.
-
----
-
-## GAP ANALYSIS — EVERY STEP, NOT JUST THE END
-
-Run an explicit gap check after EVERY action. Do not wait until end of batch, end of testing, or until the user asks "are you sure."
-
-**After presenting a test batch:** Cross-check every QIDM combo against the test list. Count combos, count tests — if they don't match, identify the gap before proceeding.
-
-**After completing each test:** Update SQVR [PENDING] → [CONFIRMED] AND STATUS.txt test matrix immediately. GATE 3 includes doc updates, not just test logs.
-
-**After completing a test phase:** Full cross-check: (a) count all combos from build script, (b) count all test log files, (c) count all [CONFIRMED] markers in SQVR, (d) verify all three numbers agree. Report the gap check result.
-
-**Before declaring "done" or "complete":** Full gap check PLUS verify: negative tests for all entities, all any[] fields tested, all co-fire paths tested, all OOS paths tested.
-
-The user should NEVER have to prompt for gap analysis. It is automatic.
-
----
-
-## MANDATORY GATES — BLOCKING REQUIREMENTS
-
-These are not suggestions. Each gate BLOCKS progression to the next step. Do not skip, defer, or batch any gate. Failure to follow these gates means the work is incomplete regardless of whether the JSON "works."
-
-### GATE 1: After Every JSON Build or Edit
-
-1. Run `build_report.ps1 -Path <json>` (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit)
-2. Verify 0 FAIL in validator output
-3. Commit the JSON + all 8 report files to `docs/base/` or `docs/mc/`
-4. `git push` immediately
-5. **CANNOT proceed to import or testing until reports are committed and pushed**
-
-### GATE 2: Before Each Live Test
-
-1. Run `new_test_log.ps1` to create a stub log file in `tests/`
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File tools\new_test_log.ps1 `
-     -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo> -Description "<desc>"
-   ```
-2. Have the user open browser dev tools (F12 > Network) before submitting the query
-3. **CANNOT execute the test without a stub log file created on disk**
-
-### GATE 3: After Each Live Test
-
-1. Paste raw XML request from browser dev tools into the log file
-2. Fill in FORM STATE, REQUEST SUMMARY, FIELD ANALYSIS, and RESULT sections
-3. `git add` + `git commit` + `git push` the completed log file
-4. **CANNOT proceed to the next test until the current log is committed and pushed**
-
-### GATE 4: After Each Test Session
-
-1. Update `docs/<PROVIDER>_STATUS.txt` test matrix with all results from this session
-2. Commit and push STATUS.txt
-3. **CANNOT report a test session as complete without updated STATUS.txt**
-
-### GATE 5: Before Reporting PASS or DONE on Any Variant
-
-1. Verify `tests/` directory contains one log file per test executed (count must match)
-2. Verify `docs/base/` (and `docs/mc/` if applicable) contains all 8 report files
-3. Verify `docs/<PROVIDER>_STATUS.txt` is current
-4. Verify `docs/<PROVIDER>_SQVR.txt` exists with [CONFIRMED]/[PENDING] per query path
-5. Verify all files are committed and pushed to GitHub
-6. **CANNOT declare PASS or DONE until all 5 checks pass. If any are missing, create them first.**
-
-### GATE 6: After Any KB Update
-
-1. Commit and push the monorepo
-2. Check if the KB change affects CLAUDE.md or build scripts
-3. If yes: update affected files and commit
-4. **CANNOT finish a KB update without checking cross-file impact**
-
----
-
-## Operational Rules
-
-1. **Investigate all solutions before declaring not implementable.** Check: (a) multi-combo QIDM with distinct keyRefs, (b) separate MetaData transaction, (c) DH-suffix fieldIds, (d) reference builds. Only declare blocked after all four fail.
-
-2. **Apply autonomous design decisions without prompting:**
-   - Phase 1 = always single card
-   - 2+ search paths = multi-card automatically (Phase 2)
-   - DH on same form as DL = DH-suffix fieldIds automatically
-   - Duplicate MetaData keyRefs = invented distinct keyRef first
-   - queriesToDeselect on DL QIDMs = NEVER (deadlocks)
-   - Most-specific combination first in array
-
-3. **Validate after every build.** Run `validate.ps1` after every build script execution. Build script serializers (C#/PowerShell) silently produce wrong types.
-
-4. **Test NCIC state pattern on first import** of any new provider. Run ST-1 (in-state plate query). If CommSys `<State>` element is absent, fall back to dual-field pattern.
-
-5. **Pre-deployment validation is a deliverable, not a step.** When you run `validate.ps1`, `test_commsys.ps1`, or `build_report.ps1` — the output files ARE test results. They must be committed to `docs/base/` or `docs/mc/` and pushed. If the validator output is not in the repo, the validation didn't happen as far as the project record is concerned.
+- Phase 1 = single card per entity
+- 2+ search paths = multi-card (Phase 2)
+- DH on same form as DL = DH-suffix fieldIds
+- Duplicate keyRefs = invent distinct keyRef
+- Most-specific combination first in array
+- Investigate all 4 solution paths (multi-combo, separate transaction, DH-suffix, reference builds) before declaring not implementable
+- Test NCIC state pattern (ST-1) on first import of any new provider
 
 ---
 
