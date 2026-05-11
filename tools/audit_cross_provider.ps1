@@ -622,13 +622,16 @@ foreach ($prov in $validProviders) {
     $isCA = $prov.Name -match '^CA_'
     $fields = Get-FormFields -json $prov.Json
 
-    # Find CaRequestPurposeCode across all entities
-    $purposeCodeFields = @($fields | Where-Object { $_.FieldId -eq 'CaRequestPurposeCode' -or $_.FieldId -eq 'caRequestPurposeCode' })
+    # Find CaRequestPurposeCode across all entities (including DH-suffix variants)
+    $purposeCodeFields = @($fields | Where-Object {
+        $_.FieldId -eq 'CaRequestPurposeCode' -or $_.FieldId -eq 'caRequestPurposeCode' -or
+        $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH'
+    })
 
     Out "  $($prov.Tag):"
 
     if ($isCA) {
-        # CA providers: CaRequestPurposeCode should exist in Person QIF
+        # CA providers: CaRequestPurposeCode (or DH-suffix) should exist in Person QIF
         $personPurpose = @($purposeCodeFields | Where-Object { $_.Entity -eq 'Person' })
         if ($personPurpose.Count -eq 0) {
             # Check if Person entity exists at all
@@ -647,7 +650,8 @@ foreach ($prov in $validProviders) {
                 # FormSelect is also acceptable if visible
                 Info "CaRequestPurposeCode type='$($pf.ResolvedName)' (FormInput preferred)"
             } else {
-                Pass "CaRequestPurposeCode present and visible in Person QIF (type=$($pf.ResolvedName))"
+                $fieldName = $pf.FieldId
+                Pass "CaRequestPurposeCode present and visible in Person QIF ($fieldName, type=$($pf.ResolvedName))"
             }
         }
     } else {
