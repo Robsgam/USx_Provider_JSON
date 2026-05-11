@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-07 15:36
+  Generated: 2026-05-11 08:44
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -39,28 +39,21 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' -> Vehicle : 4 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' has 1 sourceField(s) not found in Person QIF:
+  [LIMITATION] QIDM 'TX_TLETS_DriverLicenseQuery' has 1 QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):
          EmailAddress (sourceField='EmailAddress')
-  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber' any[] references 'EmailAddress' not in QIF fieldIds
-  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName' any[] references 'EmailAddress' not in QIF fieldIds
   [LIMITATION] QIDM 'TX_TLETS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 3 combos
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' has 1 sourceField(s) not found in Person QIF:
+  [LIMITATION] QIDM 'TX_TLETS_DriverHistoryQuery' has 1 QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):
          EmailAddress (sourceField='EmailAddress')
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber' any[] references 'Attention' not in QIF fieldIds
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber' any[] references 'EmailAddress' not in QIF fieldIds
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName' any[] references 'Attention' not in QIF fieldIds
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName' any[] references 'EmailAddress' not in QIF fieldIds
   [LIMITATION] QIDM 'TX_TLETS_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' ImageIndicator size=1
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' Attention attr 'Attention' in combo set[]/any[] -- auto-fill handler present, should not be in combos
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'TX_TLETS_GunQuery' -> Firearm : 6 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_GunQuery' ImageIndicator size=1
@@ -102,11 +95,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo 'QV.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo 'QV.V': all set[]/any[] fields resolvable
-  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': unresolvable any[] fields: EmailAddress
-  [WARN] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': unresolvable any[] fields: EmailAddress
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[]/any[] fields resolvable
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': unresolvable any[] fields: Attention, EmailAddress
-  [WARN] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': unresolvable any[] fields: Attention, EmailAddress
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[]/any[] fields resolvable
@@ -118,8 +111,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION
+  RESULTS: 82 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  Review WARN items -- they may cause runtime issues.
+  5 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

@@ -40,12 +40,13 @@
 # DATE FORMAT: MMddyyyy
 
 param(
-    [string]$Version = "2.2",
+    [string]$Version = "2.3",
     [string]$Phase   = "base"
 )
 
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
-$DIR      = (Resolve-Path "$PSScriptRoot\..").Path
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
+$DIR         = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\TX_TLETS_BASE.json"
 $VEROUT   = "$PHASEDIR\TX_TLETS_v${Version}_${DATE}.json"
@@ -335,13 +336,13 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('EmailAddress','ImageIndicator','ReasonCode','RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','ReasonCode','RegistrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('EmailAddress','ImageIndicator','NameMiddle','NameSuffix','ReasonCode','RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','NameMiddle','NameSuffix','ReasonCode','RegistrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQName'
             state                 = 'In/Out'
@@ -398,13 +399,13 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('Attention','EmailAddress','ImageIndicator','PurposeCode','ReasonCode','RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','PurposeCode','ReasonCode','RegistrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('Attention','EmailAddress','ImageIndicator','NameMiddle','NameSuffix','PurposeCode','ReasonCode','RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','NameMiddle','NameSuffix','PurposeCode','ReasonCode','RegistrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
@@ -577,7 +578,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-07 14:21
+  Generated: 2026-05-11 08:44
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 24 [DecalNumber, ImageIndicator, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, TitleLienInformation, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, PurposeCode, SexCodeDH, GunMake, GunSerialNumber, NCICNumber, ProcessControlNumber, ArticleSerialNumber, ArticleTypeCode, OwnerAppliedNumber, BoatHullIdNumber, CoastGuardDocumentNumber, RegistrationNumber, RelatedHitSearchIndicator]
+  [INFO] CommSys-only: 24 [DecalNumber, ImageIndicator, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, TitleLienInformation, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, PurposeCodeDH, SexCodeDH, GunMake, GunSerialNumber, NCICNumber, ProcessControlNumber, ArticleSerialNumber, ArticleTypeCode, OwnerAppliedNumber, BoatHullIdNumber, CoastGuardDocumentNumber, RegistrationNumber, RelatedHitSearchIndicator]
   [INFO] RMS-only (expected for RMS-specific fields): 3
   [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 2 [RaceCode, VehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -34,8 +34,11 @@ POST-BUILD VERIFICATION
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
+--- CHECK 7: Cross-Variant Consistency ---
+  [PASS] All shared fields have matching types across MC and BASE
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

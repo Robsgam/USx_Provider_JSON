@@ -885,9 +885,32 @@ foreach ($bundle in $providerBundles) {
             }
         }
         if ($phantomFields.Count -gt 0) {
-            Write-Warn "QIDM '$($cfg.name)' has $($phantomFields.Count) sourceField(s) not found in $entity QIF:"
-            Write-Host "    [FIX] Add matching form fields to $entity QIF, or add a rule handler to auto-populate these attributes, or remove them from the QIDM" -ForegroundColor Cyan
-            foreach ($pf in $phantomFields) { Write-Host "         $pf" -ForegroundColor Yellow }
+            $comboFields = @()
+            foreach ($combo in $cfg.combinations) {
+                if ($combo.requirements.set) { $comboFields += @($combo.requirements.set) }
+                if ($combo.requirements.any) { $comboFields += @($combo.requirements.any) }
+            }
+            $comboFields = $comboFields | Select-Object -Unique
+            $truePhantoms = @()
+            $qidmOnlyAttrs = @()
+            foreach ($pf in $phantomFields) {
+                $attrName = if ($pf -match "^(\S+)\s") { $Matches[1] } else { $pf }
+                $sfName = if ($pf -match "sourceField='([^']+)'") { $Matches[1] } else { $attrName }
+                if ($comboFields -notcontains $sfName -and $comboFields -notcontains $attrName) {
+                    $qidmOnlyAttrs += $pf
+                } else {
+                    $truePhantoms += $pf
+                }
+            }
+            if ($truePhantoms.Count -gt 0) {
+                Write-Warn "QIDM '$($cfg.name)' has $($truePhantoms.Count) sourceField(s) not found in $entity QIF:"
+                Write-Host "    [FIX] Add matching form fields to $entity QIF, or add a rule handler to auto-populate these attributes, or remove them from the QIDM" -ForegroundColor Cyan
+                foreach ($pf in $truePhantoms) { Write-Host "         $pf" -ForegroundColor Yellow }
+            }
+            if ($qidmOnlyAttrs.Count -gt 0) {
+                Write-Limitation "QIDM '$($cfg.name)' has $($qidmOnlyAttrs.Count) QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):"
+                foreach ($pf in $qidmOnlyAttrs) { Write-Host "         $pf" -ForegroundColor DarkYellow }
+            }
         }
 
         # Check combinations
@@ -1674,12 +1697,22 @@ foreach ($entity in $entityQidms.Keys) {
         if ($dlQidm -and $dhQidm) {
             $hasDhSuffix = $false
             $dhNonSuffixed = @()
+            # Collect DL sourceFields to detect intentionally shared fields
+            $dlSourceFields = @()
+            foreach ($dlA in $dlQidm.attributes) {
+                $dlSfs = @()
+                if ($dlA.sourceField -is [System.Array]) { $dlSfs = $dlA.sourceField }
+                elseif ($dlA.sourceField) { $dlSfs = @($dlA.sourceField) }
+                $dlSourceFields += $dlSfs
+            }
             foreach ($attr in $dhQidm.attributes) {
+                if ($attr.rule -and $attr.rule.function) { continue }
                 $sfs = @()
                 if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
                 elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
                 foreach ($sf in $sfs) {
                     if ($systemSourceFields -contains $sf) { continue }
+                    if ($dlSourceFields -contains $sf) { continue }
                     if ($sf -match 'DH$') { $hasDhSuffix = $true }
                     else { $dhNonSuffixed += $sf }
                 }

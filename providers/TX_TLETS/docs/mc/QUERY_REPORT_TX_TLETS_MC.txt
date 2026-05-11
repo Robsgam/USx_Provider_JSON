@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-07 15:36
+  Generated: 2026-05-11 08:44
 ================================================================
 QUERY SIMULATION
 ================
@@ -87,7 +87,7 @@ QUERY SIMULATION
 
     [FIRES] DQOperatorLicenseNumber
       set: [OperatorLicenseNumber]
-      any: [EmailAddress, ImageIndicator, ReasonCode, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      any: [ImageIndicator, ReasonCode, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -104,7 +104,7 @@ QUERY SIMULATION
 
     [FIRES] DQName
       set: [SexCode, BirthDate, NameLast, NameFirst]
-      any: [EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState] -> matched: [ImageIndicator, NameMiddle, RegistrationState]
+      any: [ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState] -> matched: [ImageIndicator, NameMiddle, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -141,7 +141,7 @@ QUERY SIMULATION
 
     [FIRES] KQOperatorLicenseNumber
       set: [OperatorLicenseNumber]
-      any: [Attention, EmailAddress, ImageIndicator, PurposeCode, ReasonCode, RegistrationState] -> matched: [Attention, ImageIndicator, PurposeCode, RegistrationState]
+      any: [ImageIndicator, PurposeCode, ReasonCode, RegistrationState] -> matched: [ImageIndicator, PurposeCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -158,7 +158,7 @@ QUERY SIMULATION
 
     [FIRES] KQName
       set: [SexCode, BirthDate, NameLast, NameFirst]
-      any: [Attention, EmailAddress, ImageIndicator, NameMiddle, NameSuffix, PurposeCode, ReasonCode, RegistrationState] -> matched: [Attention, ImageIndicator, NameMiddle, PurposeCode, RegistrationState]
+      any: [ImageIndicator, NameMiddle, NameSuffix, PurposeCode, ReasonCode, RegistrationState] -> matched: [ImageIndicator, NameMiddle, PurposeCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -318,6 +318,7 @@ QUERY SIMULATION
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>
   Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
 ================================================================
 
 

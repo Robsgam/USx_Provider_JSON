@@ -34,7 +34,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.1",
+    [string]$Version = "3.2",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -42,6 +42,7 @@ $ErrorActionPreference = 'Stop'
 $provider = 'FL_FCIC'
 $outPath  = "$PSScriptRoot\..\FL_FCIC_BASE.json"
 
+$currentYear = [string](Get-Date).Year
 $hidle = Get-Content $HidlePath -Raw | ConvertFrom-Json
 
 # =====================================================================
@@ -403,19 +404,19 @@ $dhQuery = [PSCustomObject]@{
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('PurposeCode');             targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('PurposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationState','PurposeCode'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationState','PurposeCodeDH'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationState','PurposeCode'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationState','PurposeCodeDH'); any = @() }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
@@ -662,7 +663,7 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
                 @{ id = 'VehicleYear_Input';           node = Inp 'VehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
@@ -708,7 +709,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_4' }
-                @{ id = 'PurposeCode_Input';              node = Inp 'PurposeCode' 'Purpose Code' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCodeDH_Input';            node = Inp 'PurposeCodeDH' 'Purpose Code' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_5' }

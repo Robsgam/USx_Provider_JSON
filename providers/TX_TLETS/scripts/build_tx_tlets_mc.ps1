@@ -11,12 +11,13 @@
 #   Boat:    OPTIONS (State, Image, RelatedHitSearch) + REGISTRATION (RegNumber) + HULL/NCIC (Hull, NCICNumber)
 
 param(
-    [string]$Version = "2.2",
+    [string]$Version = "2.3",
     [string]$Phase   = "mc"
 )
 
-$DATE     = (Get-Date -Format 'yyyy-MM-dd')
-$DIR      = (Resolve-Path "$PSScriptRoot\..").Path
+$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$currentYear = [string](Get-Date).Year
+$DIR         = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\TX_TLETS_MC.json"
 $VEROUT   = "$PHASEDIR\TX_TLETS_v${Version}_${DATE}.json"
@@ -218,8 +219,8 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('EmailAddress','ImageIndicator','ReasonCode','RegistrationState') }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOperatorLicenseNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('EmailAddress','ImageIndicator','NameMiddle','NameSuffix','ReasonCode','RegistrationState') }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','ReasonCode','RegistrationState') }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOperatorLicenseNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','NameMiddle','NameSuffix','ReasonCode','RegistrationState') }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('ExpandedBirthDateSearchCode','NameMiddle','NameSuffix','RaceCode','RegionId','SexCode') }; primaryFieldReference = 'Name'; keyReference = 'QWName'; state = 'In/Out' }
     )
     description = 'DriverLicenseQuery -- 3 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
@@ -239,8 +240,8 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('Attention','EmailAddress','ImageIndicator','PurposeCode','ReasonCode','RegistrationState') }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOperatorLicenseNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('Attention','EmailAddress','ImageIndicator','NameMiddle','NameSuffix','PurposeCode','ReasonCode','RegistrationState') }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('ImageIndicator','PurposeCode','ReasonCode','RegistrationState') }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOperatorLicenseNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','NameMiddle','NameSuffix','PurposeCode','ReasonCode','RegistrationState') }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
     )
     description = 'DriverHistoryQuery -- 2 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $false; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
@@ -330,7 +331,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = '2026' } }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
             )}
         )
     }

@@ -1,19 +1,16 @@
 FL_FCIC Build Status
 ====================
-Current version : v3.1
-Last updated    : 2026-05-07
+Current version : v3.2
+Last updated    : 2026-05-11
 Output file     : FL_FCIC_BASE.json
 Build script    : scripts/build_fl_fcic.ps1
 Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
 
 VALIDATOR RESULTS
 -----------------
-  BASE: 101 PASS / 0 FAIL / 1 WARN / 4 LIMITATION / 34 FIRE / 1 SKIP
-  MC:   101 PASS / 0 FAIL / 1 WARN / 5 LIMITATION / 34 FIRE / 1 SKIP
+  BASE: 101 PASS / 0 FAIL / 0 WARN / 4 LIMITATION
+  MC:   101 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
   (MC +1 LIMITATION: Person DL+DH co-fire autoSelect -- standard police workflow)
-
-  1 WARN: DH QIDM has 3 non-suffixed sourceFields (Attention=handler-only,
-          PurposeCode=DH-only, RegistrationState=shared) -- all justified
   4 LIMITATION:
     - VehicleRegistrationQuery combo priority ordering (RQ before FRQ -- intentional)
     - DriverLicenseQuery combo priority ordering (DQ before FDQ -- intentional)
