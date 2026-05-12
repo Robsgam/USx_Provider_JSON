@@ -4,6 +4,13 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v3.9 (2026-05-12) -- MC Person layout: merge Search Options into DL card (2 cards)
+  CHANGED: Removed CARD_OPTIONS. Moved RegistrationState + ImageIndicator into CARD_DL row 1.
+           Person now has 2 cards: Driver License (State+Image+OLN+Name+DOB+Sex) and Driver History.
+  REASON:  With RegistrationStateDH on the DH card (v3.8), the Search Options card only served DL.
+           Separate card was confusing — officers didn't know which card's fields affected which query.
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 v3.8 (2026-05-12) -- RegistrationStateDH: isolate DH State from DL routing
   CHANGED: Added RegistrationStateDH field (FormSelect, STATE, initialValue=FL) on DH card.
            DH QIDM State attribute sourceField changed from RegistrationState to RegistrationStateDH.

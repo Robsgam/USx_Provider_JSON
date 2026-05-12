@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-12 13:44
+  Generated: 2026-05-12 14:02
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === FL_FCIC_MC.json ===
 QIFs: 5
-  Person | entity=Person | qidm= | cards=3 fields=9
+  Person | entity=Person | qidm= | cards=2 fields=9
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=6
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
@@ -31,13 +31,11 @@ LAYOUT DETAIL
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_OPTIONS"
-      ROW ROW_OPT [6 6]
+    CARD "CARD_DL"
+      ROW ROW_DL1 [6 3 3]
+        OperatorLicenseNumber (Text | maxLen=20)
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-    CARD "CARD_DL"
-      ROW ROW_DL1 [12]
-        OperatorLicenseNumber (Text | maxLen=20)
       ROW ROW_DL2 [4 4 4]
         NameLast (Text | maxLen=30)
         NameFirst (Text | maxLen=30)

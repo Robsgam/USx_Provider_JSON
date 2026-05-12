@@ -22,7 +22,7 @@ templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.5 | 74P/0F/0W/0LIM (BASE) 74P/0F/0W/0LIM (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v3.8 | 102P/0F/0W/0LIM (BASE) 102P/0F/0W/0LIM (MC) NEW | DL+DH shared form, 6-card Person, QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH |
+| FL_FCIC | providers/FL_FCIC/ | v3.9 | 102P/0F/0W/0LIM (BASE) 102P/0F/0W/0LIM (MC) NEW | 2-card Person (DL+DH), QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH |
 | TX_TLETS | providers/TX_TLETS/ | v2.5 | 84P/0F/0W/2LIM (BASE) 84P/0F/0W/2LIM (MC) NEW | DH-suffix+queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS_LOCKED/ | v1.8 | 18/18 PASS LOCKED -- one-directional queriesToDeselect fix | CaRequestPurposeCode, State routing (blank=in-state), DH-suffix fieldIds, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |

@@ -35,7 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.8",
+    [string]$Version = "3.9",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -687,23 +687,16 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # --- Person (DL card + DH card, DH-suffix fields) ---
+# v3.9: Search Options merged into DL card (State+Image only serve DL)
 $perLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_OPTIONS'
-        title = 'Search Options'
-        rows  = @(
-            @{ id = 'ROW_OPT'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_OPT' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_OPT' }
-            )}
-        )
-    }
     @{
         id    = 'CARD_DL'
         title = 'Driver License'
         rows  = @(
-            @{ id = 'ROW_DL1'; cols = @('12'); fields = @(
+            @{ id = 'ROW_DL1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DL1' }
+                @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
             )}
             @{ id = 'ROW_DL2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
