@@ -1,6 +1,6 @@
 ﻿FL_FCIC METADATA REFERENCE
 ===========================
-Generated: 2026-05-08
+Generated: 2026-05-12
 Source: FL_FCIC.xml (metadata) + FL_FCIC_BASE.json
 Metadata: 177 total transactions, 8 queries built in JSON
 
@@ -27,10 +27,10 @@ METADATA COMBINATIONS (4 total):
   QA            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
-  BUILT   QAOwnerAppliedNumber set[ArticleTypeCode, OwnerAppliedNumber]
-  BUILT   QANCICNumber   set[NCICNumber]
-  BUILT   QAProcessControlNumber set[ProcessControlNumber]
+  BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
+  BUILT   QAOwnerAppliedNumber set[articleTypeCode, ownerAppliedNumber]
+  BUILT   QANCICNumber   set[ncicNumber]
+  BUILT   QAProcessControlNumber set[processControlNumber]
   SKIP    QA             ArticleSerialNumber -- MC expansion candidate
   SKIP    QA             OwnerAppliedNumber -- MC expansion candidate
   SKIP    QA             NCICNumber -- MC expansion candidate
@@ -76,18 +76,18 @@ METADATA COMBINATIONS (12 total):
   BQ            RegistrationNumber      RegistrationNumber, State                              BoatHullIdNumber, Requestor...
 
 BUILD COVERAGE (12 of 12 built):
-  BUILT   BQName         set[BirthDate, NameLast, NameFirst, RegistrationState]
-  BUILT   BQBoatHullIdNumber set[BoatHullIdNumber, RegistrationState]
-  BUILT   BQRegistrationNumber set[RegistrationNumber, RegistrationState]
-  BUILT   QBBoatHullIdNumber set[BoatHullIdNumber, RelatedHitSearchIndicator]
-  BUILT   QBRegistrationNumber set[RegistrationNumber, RelatedHitSearchIndicator]
-  BUILT   FBQBoatHullIdNumber set[BoatHullIdNumber]
-  BUILT   FBQRegistrationNumber set[RegistrationNumber]
-  BUILT   FBQDecalNumber set[DecalNumber]
-  BUILT   FBQTitleLienInformation set[TitleLienInformation]
-  BUILT   QBCoastGuardDocumentNumber set[CoastGuardDocumentNumber]
-  BUILT   QBNCICNumber   set[NCICNumber]
-  BUILT   QBProcessControlNumber set[ProcessControlNumber]
+  BUILT   BQName         set[birthDate, nameLast, nameFirst, registrationState]
+  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
+  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
+  BUILT   QBBoatHullIdNumber set[boatHullIdNumber, relatedHitSearchIndicator]
+  BUILT   QBRegistrationNumber set[registrationNumber, relatedHitSearchIndicator]
+  BUILT   FBQBoatHullIdNumber set[boatHullIdNumber]
+  BUILT   FBQRegistrationNumber set[registrationNumber]
+  BUILT   FBQDecalNumber set[decalNumber]
+  BUILT   FBQTitleLienInformation set[titleLienInformation]
+  BUILT   QBCoastGuardDocumentNumber set[coastGuardDocumentNumber]
+  BUILT   QBNCICNumber   set[ncicNumber]
+  BUILT   QBProcessControlNumber set[processControlNumber]
   SKIP    FBQ            BoatHullIdNumber -- MC expansion candidate
   SKIP    FBQ            DecalNumber -- MC expansion candidate
   SKIP    FBQ            RegistrationNumber -- MC expansion candidate
@@ -122,8 +122,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           Attention, PurposeCode, Req...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, RegistrationState, PurposeCode]
-  BUILT   KQName         set[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState, PurposeCode]
+  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationState, purposeCodeDH]
+  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, registrationState, purposeCodeDH]
   SKIP    KQ             Name -- MC expansion candidate
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
 
@@ -157,10 +157,10 @@ METADATA COMBINATIONS (6 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           State2, State3, State4, Sta...
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   DQOperatorLicenseNumber set[OperatorLicenseNumber, RegistrationState]
-  BUILT   FDQOperatorLicenseNumber set[OperatorLicenseNumber]
-  BUILT   DQName         set[BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
-  BUILT   FDQName        set[BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   DQName         set[birthDate, nameLast, nameFirst, sexCode, registrationState]
+  BUILT   FDQName        set[birthDate, nameLast, nameFirst, sexCode]
+  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, registrationState]
+  BUILT   FDQOperatorLicenseNumber set[operatorLicenseNumber]
   SKIP    FDQ            Name -- MC expansion candidate
   SKIP    FDQ            OperatorLicenseNumber -- MC expansion candidate
   SKIP    QW             Name -- MC expansion candidate
@@ -189,9 +189,9 @@ METADATA COMBINATIONS (3 total):
   QG            ProcessControlNumber    ProcessControlNumber                                   GunMake, ImageIndicator, Re...
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   QGGunSerialNumber set[GunSerialNumber]
-  BUILT   QGNCICNumber   set[NCICNumber]
-  BUILT   QGProcessControlNumber set[ProcessControlNumber]
+  BUILT   QGGunSerialNumber set[gunSerialNumber]
+  BUILT   QGNCICNumber   set[ncicNumber]
+  BUILT   QGProcessControlNumber set[processControlNumber]
   SKIP    QG             GunSerialNumber -- MC expansion candidate
   SKIP    QG             NCICNumber -- MC expansion candidate
   SKIP    QG             ProcessControlNumber -- MC expansion candidate
@@ -232,12 +232,12 @@ METADATA COMBINATIONS (8 total):
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Requestor, State2, State3, ...
 
 BUILD COVERAGE (6 of 8 built):
-  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
-  BUILT   FRQLicensePlateNumber set[LicensePlateNumber]
-  BUILT   FRQVehicleIdentificationNumber set[VehicleIdentificationNumber]
-  BUILT   FRQDecalNumber set[DecalNumber, LicensePlateYear]
-  BUILT   FRQTitleLienInformation set[TitleLienInformation]
+  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber, registrationState]
+  BUILT   FRQDecalNumber set[decalNumber, licensePlateYear]
+  BUILT   FRQLicensePlateNumber set[licensePlateNumber]
+  BUILT   FRQVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   FRQTitleLienInformation set[titleLienInformation]
   SKIP    FRQ            DecalNumber -- MC expansion candidate
   SKIP    FRQ            LicensePlateNumber -- MC expansion candidate
   SKIP    FRQ            TitleLienInformation -- MC expansion candidate
@@ -275,8 +275,8 @@ METADATA COMBINATIONS (6 total):
   QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 6 built):
-  BUILT   QVLicensePlateNumber set[LicensePlateNumber]
-  BUILT   QVVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  BUILT   QVLicensePlateNumber set[licensePlateNumber]
+  BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
   SKIP    QV             ProcessControlNumber -- MC expansion candidate
   SKIP    QV             LicensePlateNumber -- MC expansion candidate
   SKIP    QV             NCICNumber -- MC expansion candidate
@@ -332,8 +332,8 @@ METADATA COMBINATIONS (11 total):
   QW            VehicleIdentificationNumber  VehicleIdentificationNumber                            BirthDate, DepartmentCorrec...
 
 BUILD COVERAGE (2 of 11 built):
-  BUILT   QWOperatorLicenseNumber set[NameLast, NameFirst, OperatorLicenseNumber]
-  BUILT   QWName         set[BirthDate, NameLast, NameFirst]
+  BUILT   QWOperatorLicenseNumber set[nameLast, nameFirst, operatorLicenseNumber]
+  BUILT   QWName         set[birthDate, nameLast, nameFirst]
   SKIP    QW             DepartmentCorrectionsNumber -- MC expansion candidate
   SKIP    QW             JuvenileJusticeNumber -- MC expansion candidate
   SKIP    QW             LicensePlateNumber -- MC expansion candidate

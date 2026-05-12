@@ -35,7 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.4",
+    [string]$Version = "3.5",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -343,7 +343,6 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
-    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # --- 4. WantedPersonQuery (QW) -- 2 combos ---

@@ -1,6 +1,18 @@
 CA_CLETS -- Build Notes
 ========================
 
+v1.8 (2026-05-12) -- One-directional queriesToDeselect fix
+  CHANGED: Removed queriesToDeselect from DL QIDM (was bidirectional with DH).
+  REASON:  Bidirectional queriesToDeselect suppresses DH autoSelect. One-directional pattern:
+           DL=default (autoSelect=true, no deselect), DH=opt-in (autoSelect=true, deselects DL).
+  VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM
+  PRODUCTION TEST: 18/18 PASS (2026-05-12)
+
+v1.7 (2026-05-11) -- camelCase fieldIds + DH-suffix + combo ordering
+  CHANGED: Full camelCase conversion, DH-suffix fieldIds, combo priority reorder.
+  REASON:  CAD auto-populate + standard patterns.
+  VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM
+
 v1.6 (2026-05-07/08) -- VehicleMakeCode dropdown + Stats cleanup
   CHANGED: VehicleMakeCode from FormInput (free-text) to FormSelect with attributeTypeId='VEHICLE_MAKE',
            codeTypeProvider='NCIC'. Matches NJ, FL, AZ pattern for vehicle make dropdown.

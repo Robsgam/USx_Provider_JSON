@@ -4,6 +4,14 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v3.5 (2026-05-12) -- One-directional queriesToDeselect fix + DH autoSelect
+  CHANGED: Removed queriesToDeselect from DL QIDM (was bidirectional with DH).
+           Changed DH QIDM autoSelect from false to true (BASE only — MC already had true).
+  REASON:  Bidirectional queriesToDeselect causes platform deadlock/error popup (confirmed NJ v2.3/v2.8,
+           CA_CLETS v1.7). One-directional pattern: DL=default (autoSelect=true, no deselect),
+           DH=opt-in (autoSelect=true, deselects DL). Confirmed working on CA_CLETS v1.8 (18/18 PASS).
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 These notes capture every decision, problem, and fix made during the build of
 FL_FCIC_BASE.json. For version history only, see VERSIONS.txt. For platform
 limitations, see FL_FCIC_LIMITATIONS.txt.
