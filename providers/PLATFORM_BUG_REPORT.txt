@@ -1,0 +1,284 @@
+===============================================================================
+CONNECTCIC PLATFORM — ENGINEERING BUG REPORT
+Date: 2026-05-12
+Submitted by: Rob Sgambellone (rob.sgambellone@mark43.com)
+===============================================================================
+
+This report documents five confirmed platform defects discovered during
+production testing of ConnectCIC provider JSON configurations. Each defect
+has been reproduced with specific test steps and verified across multiple
+provider configurations. These are platform-level issues that cannot be
+resolved through JSON configuration changes.
+
+===============================================================================
+BUG 1: CLEAR FORM BUTTON DOES NOT RESET QUERY SELECTION STATE
+===============================================================================
+
+Severity: HIGH — Affects officer workflow in production
+
+Description:
+  The "Clear Form" button on the ConnectCIC query interface clears form field
+  values and visually greys out query checkboxes, but does not reset the
+  internal query selection state. When the officer enters new data after
+  clearing the form, the platform re-activates the previously selected query
+  instead of performing a fresh autoSelect evaluation.
+
+Reproduction Steps:
+  1. Open any entity form that has multiple query types (e.g., Vehicle with
+     both a registration query and a stolen vehicle query).
+  2. Enter a value into a field (e.g., a license plate number). The default
+     query checkbox auto-selects as expected.
+  3. Manually select a different query checkbox (e.g., switch from the
+     registration query to the stolen vehicle query). The first query
+     deselects as expected.
+  4. Click the "Clear Form" button. All field values clear and all checkboxes
+     appear greyed out.
+  5. Enter a value into the same field again (e.g., type a license plate
+     number).
+
+Expected Result:
+  The platform should perform a fresh autoSelect evaluation. The default
+  query (registration) should auto-select because it has autoSelect enabled
+  and its combination requirements are met.
+
+Actual Result:
+  The platform re-activates the previously selected query (stolen vehicle)
+  instead of the default query. The officer unknowingly submits a stolen
+  vehicle query when they intended a routine registration query.
+
+Operational Impact:
+  Officers routinely use the Clear Form button between searches. When
+  switching between query types (e.g., running a stolen check, then clearing
+  and running a routine registration), the officer receives the wrong query
+  type without visual indication. This can result in incorrect query
+  submissions to state and federal systems.
+
+  Full page reload correctly resets all state, but this is slow, disrupts
+  workflow, and is not part of standard officer training.
+
+Root Cause (Suspected):
+  The Clear Form function resets two state layers (form field values and
+  checkbox visual state) but does not reset a third layer (internal query
+  selection state). The platform stores which query was last active in a
+  separate state object from the field and checkbox states. When new data is
+  entered after clearing, the platform checks for an existing active query
+  in this state object, finds the stale selection, and re-activates it
+  instead of running the autoSelect logic from scratch.
+
+Suggested Fix:
+  The Clear Form function should reset all three state layers: field values,
+  checkbox visual state, and internal query selection state. After clearing,
+  the next field entry should trigger a fresh autoSelect evaluation as if
+  the form had just loaded.
+
+===============================================================================
+BUG 2: BIDIRECTIONAL queriesToDeselect CAUSES ERROR POPUP
+===============================================================================
+
+Severity: MEDIUM — Configuration-level workaround exists
+
+Description:
+  When two query input data mappings (QIDMs) on the same entity each have a
+  queriesToDeselect property pointing at the other (mutual/bidirectional
+  deselection), the platform throws an error popup on form interaction. The
+  exact error message varies but has been observed as a modal dialog that
+  blocks further interaction.
+
+Reproduction Steps:
+  1. Create a provider JSON with two QIDMs targeting the same entity
+     (e.g., two Vehicle query types).
+  2. On the first QIDM, set queriesToDeselect to reference the second
+     query type.
+  3. On the second QIDM, set queriesToDeselect to reference the first
+     query type.
+  4. Import the JSON and open the entity form.
+  5. Enter data that satisfies one QIDM's combination requirements.
+
+Expected Result:
+  The platform should either handle mutual deselection gracefully (one query
+  wins based on evaluation order) or reject the configuration at import time
+  with a clear validation error.
+
+Actual Result:
+  The platform throws an error popup dialog during form interaction. The
+  error occurs when the autoSelect/deselect logic enters a circular
+  evaluation: QIDM A tries to deselect QIDM B, which tries to deselect
+  QIDM A, creating an infinite loop or unhandled state.
+
+  This has been reproduced independently on two separate occasions with
+  different provider configurations and different query type pairings.
+
+Workaround:
+  Use one-directional queriesToDeselect only. The default query (the one
+  officers use most frequently) should have autoSelect enabled with NO
+  queriesToDeselect. The secondary query should have queriesToDeselect
+  pointing at the default query. This allows the secondary query to
+  deselect the default when manually chosen, without creating a circular
+  reference.
+
+Suggested Fix:
+  Option A: Add import-time validation that rejects bidirectional
+  queriesToDeselect configurations with a descriptive error message.
+  Option B: Handle the circular reference gracefully at runtime by
+  detecting the cycle and breaking it (e.g., the first QIDM evaluated wins).
+
+===============================================================================
+BUG 3: ENTITY-SPLIT BREAKS codeTypeProvider REVERSE-LOOKUP
+===============================================================================
+
+Severity: MEDIUM — Architectural constraint, workaround exists
+
+Description:
+  When multiple query input forms (QIFs) target the same entity, the
+  codeTypeProvider reverse-lookup on QIDM attributes fails. The QIDM sends
+  the raw internal attribute ID instead of the resolved code value in the
+  outbound XML.
+
+Reproduction Steps:
+  1. Create a provider JSON with two separate QIFs for the same entity
+     (e.g., two separate Person forms — one for driver license queries,
+     one for driver history queries).
+  2. On the QIDM, configure an attribute with codeTypeProvider (e.g.,
+     a State field using codeTypeProvider to convert an internal attribute
+     ID to a two-letter state code).
+  3. Import the JSON and submit a query from one of the forms.
+
+Expected Result:
+  The codeTypeProvider reverse-lookup should resolve the internal attribute
+  ID to the human-readable code value (e.g., "NJ" instead of "69509884952")
+  in the outbound XML.
+
+Actual Result:
+  The outbound XML contains the raw internal attribute ID instead of the
+  resolved code. The state system receiving the query gets a numeric ID
+  instead of a state code, causing the query to fail or return incorrect
+  results.
+
+  This has been tested three times with the same result. A control test
+  using a single QIF for the same entity on the same instance works
+  correctly.
+
+Root Cause (Suspected):
+  The platform uses a shared field-value pool for all QIDMs targeting the
+  same entity, regardless of which QIF is active. When multiple QIFs exist,
+  the inactive QIF's empty field values interfere with the reverse-lookup
+  process on the active QIF's populated values.
+
+Workaround:
+  Each entity must have exactly one QIF. Multi-card layouts within a single
+  QIF are unaffected and achieve the same visual separation without
+  triggering this bug. Use card titles and field grouping within a single
+  QIF instead of multiple QIFs per entity.
+
+Suggested Fix:
+  The codeTypeProvider reverse-lookup should scope its evaluation to the
+  active QIF's field values only, ignoring empty values from inactive QIFs.
+
+===============================================================================
+BUG 4: QUERY DISPLAY SUMMARY SHOWS INTERNAL ATTRIBUTE ID
+===============================================================================
+
+Severity: LOW — Cosmetic only, no functional impact
+
+Description:
+  The query summary widget on the left side of the ConnectCIC interface
+  displays the raw internal attribute ID for any form field configured with
+  an attributeTypeId property. This affects fields such as state dropdowns
+  where the officer selects a readable value (e.g., "New Jersey") but the
+  summary shows the platform's internal numeric identifier.
+
+Reproduction Steps:
+  1. Open any entity form with a state dropdown field configured using
+     attributeTypeId.
+  2. Select a state from the dropdown.
+  3. Submit the query.
+  4. Observe the query summary on the left side of the interface.
+
+Expected Result:
+  The summary should display the human-readable value the officer selected
+  (e.g., "NJ" or "New Jersey").
+
+Actual Result:
+  The summary displays the raw internal attribute ID (e.g., "69509884952").
+
+Functional Impact:
+  None. The outbound XML and RMS queries contain the correct resolved values.
+  This is a display-only issue. However, it can confuse officers and make it
+  difficult to verify at a glance which state was queried.
+
+Suggested Fix:
+  The query summary widget should apply the same code resolution that the
+  QIDM serialization uses, displaying the human-readable code value instead
+  of the raw attribute ID.
+
+===============================================================================
+BUG 5: ATTENTION FIELD VALUE OVERRIDDEN BY PLATFORM SESSION DATA
+===============================================================================
+
+Severity: MEDIUM — Functional impact on Attention field content
+
+Description:
+  When an Attention field is included on a query form as a visible text
+  input, the value the officer types is discarded. The platform substitutes
+  the logged-in user's name (formatted as LASTNAME FIRSTINITIAL) in the
+  outbound XML Attention element. This override occurs after form submission
+  and before XML generation, so the officer has no indication that their
+  entered value was replaced.
+
+Reproduction Steps:
+  1. Create a provider JSON with a visible FormInput field mapped to a QIDM
+     attribute with targetField "Attention".
+  2. Import the JSON and open the query form.
+  3. Type a custom value into the Attention field (e.g., "DISPATCH REF 1234").
+  4. Submit the query.
+  5. Inspect the outbound XML.
+
+Expected Result:
+  The outbound XML Attention element should contain the value the officer
+  typed ("DISPATCH REF 1234").
+
+Actual Result:
+  The outbound XML Attention element contains the logged-in user's name
+  (e.g., "SGAMBELLONE R") regardless of what was typed in the field.
+
+Open Questions:
+  It has not been confirmed whether this behavior applies to all providers
+  or is specific to certain provider configurations. It also has not been
+  confirmed whether this applies to all query types or only to driver
+  history queries.
+
+Workaround:
+  Do not add a visible Attention form field. Instead, use an Attention
+  attribute on the QIDM without a corresponding form field, and apply
+  a rule handler that generates the Attention value from the user's
+  session data. This aligns with the platform's apparent intended behavior
+  of auto-populating Attention from the logged-in user's identity, but it
+  means officers cannot customize the Attention value per query.
+
+===============================================================================
+REQUESTED PLATFORM ENHANCEMENT
+===============================================================================
+
+Handler: ClearFormResetHandler (or equivalent)
+
+Description:
+  A platform-level handler or enhancement to the existing Clear Form
+  functionality that performs a complete state reset when the officer clicks
+  the Clear Form button. The reset should include:
+
+    1. Clear all form field values (current behavior — working)
+    2. Reset all query checkbox visual states (current behavior — working)
+    3. Reset internal query selection state to null/empty (NOT currently
+       implemented — this is the gap)
+    4. Re-enable autoSelect evaluation for the next field entry, so the
+       platform evaluates which query to auto-select based on the newly
+       entered data rather than restoring the previously active query
+
+  This handler should produce the same end state as a full page reload,
+  without requiring the officer to leave and return to the page. The Clear
+  Form button is the standard officer workflow for starting a new search
+  on the same entity, and it must provide a clean starting state every time.
+
+===============================================================================
+END OF REPORT
+===============================================================================

@@ -1,14 +1,41 @@
 NJ_NJCJIS STATUS
 =================
-Last updated: 2026-05-11
-Current: v3.1 | BASE 69P/0F/0W/0LIM | MC 69P/0F/0W/0LIM | Updated 2026-05-11
-  BASE  v3.0  -- 69P/0F/0W/1LIM -- LOCKED -- 14/14 PASS (2026-05-08) -- full combo coverage
-  MC    v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- LIVE TEST: 57/57 PASS (2026-04-29)
+Last updated: 2026-05-12
+Current: v3.1 | BASE 69P/0F/0W/0LIM | MC 69P/0F/0W/0LIM | Updated 2026-05-12
+  BASE  v3.1  -- 69P/0F/0W/0LIM -- LOCKED -- 14/14 PASS (2026-05-12) -- full combo coverage
+  BASE  v3.0  -- 69P/0F/0W/1LIM -- LOCKED -- 14/14 PASS (2026-05-08) -- full combo coverage -- DEPLOYED Newark NJ 2026-05-11
+  MC    v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- PRODUCTION TEST: 57/57 PASS (2026-04-29)
 
 DEPLOYMENT:
   v3.0 BASE  -- DEPLOYED 2026-05-11 -- Newark, NJ foundation tenant
 
-  BASE v3.0 LIVE TEST MATRIX (2026-05-08):
+  BASE v3.1 PRODUCTION TEST MATRIX (2026-05-12):
+    T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)
+    T2   Vehicle  RQ     VehReg plate FULL       PASS  (plate+state+plateType+year+random=N+image)
+    T3   Vehicle  RQ_RAND VehReg plate RAND      PASS  (plate+state+plateType+year+random=Y+image, conditions routing)
+    T4   Vehicle  RQN    VehReg VIN FULL         PASS  (VIN+state+random=N+image)
+    T5   Vehicle  RQN_RAND VehReg VIN RAND       PASS  (VIN+state+random=Y+image, conditions routing)
+    T6   Vehicle  QVP    VehStolen plate         PASS  (plate+state+image, queriesToDeselect confirmed)
+    T7   Vehicle  QVN    VehStolen NCIC#         PASS  (NCICNumber+image, no State; auto-selected Stolen for exclusive field)
+    T8   Vehicle  QVV    VehStolen VIN           PASS  (VIN+image, no State; RMS co-fire vinNumber)
+    T9   Person   DQN    DL OLN                  PASS  (OLN+state+image=Y, RMS dlNumber+registrationStateAttrId)
+    T10  Person   DQ     DL Name+DOB             PASS  (Name=DOE,JOHN+DOB=01151985+state+image=Y, FormatString+ParseDate)
+    T11  Firearm  QG     Firearm serial          PASS  (serial+image)
+    T12  Article  QA     Article serial+type      PASS  (serial+typeCode+image, both set[] required)
+    T13  Boat     QB     Boat reg                PASS  (regNumber+image)
+    T14  Boat     QBN    Boat hull ID            PASS  (hullId+image)
+    OOS  Vehicle  RQ     VehReg OOS (State=MS)   PASS  (registrationStateAttrIds changed NJ→MS, NCIC reverse-lookup confirmed)
+
+  KEY FINDINGS (v3.1 testing):
+    - v3.1 DL combo reorder (Name before OLN) has NO functional impact -- both combos fire correctly
+    - conditions routing WORKS: RAND combos (EQUALS Y) fire first, FULL combos fall back
+    - autoSelect=false WORKS: Stolen requires manual check (except ncicNumber exclusive field auto-selects)
+    - queriesToDeselect WORKS: checking Stolen auto-unchecks Registration
+    - Checkbox state persists between searches when form is not reloaded
+    - POSSIBLE BUG (not reported): bidirectional queriesToDeselect causes deadlock error (v2.3, v2.8)
+    - All 13 CommSys combos + OOS confirmed across 5 entities
+
+  BASE v3.0 PRODUCTION TEST MATRIX (2026-05-08):
     T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)
     T2   Vehicle  RQ     VehReg plate FULL       PASS  (plate+state+plateType+year+random=N+image)
     T3   Vehicle  RQ_RAND VehReg plate RAND      PASS  (plate+state+plateType+year+random=Y+image, conditions routing)

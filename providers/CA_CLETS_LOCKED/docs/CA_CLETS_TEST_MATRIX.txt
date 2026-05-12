@@ -1,0 +1,386 @@
+CA_CLETS BASE v1.8 — 18-Test Matrix
+Generated: 2026-05-12 | Tested: 2026-05-12 | Result: 18/18 PASS
+JSON: CA_CLETS_BASE.json
+========================================================================
+
+IMPORTANT NOTES:
+  - CaRequestPurposeCode: initialValue='C' on every form, in set[] of every combo
+  - State routing: State BLANK = in-state (IA.*/ID.*/IN.*), State FILLED = OOS (NLTS.*)
+  - No ImageIndicator on any CA_CLETS query
+  - DL+DH use DH-suffix fieldIds (separate field pools)
+  - Date format: yyyyMMdd (CA-specific, NOT MMddyyyy like NJ)
+  - PlateType/PlateYear defaults: PC/2026 (pre-filled)
+  - v1.8 fix: One-directional queriesToDeselect (DH deselects DL, DL has none)
+
+FORM FIELDS BY ENTITY:
+  Vehicle: licensePlateNumber, registrationState (dropdown), vehicleIdentificationNumber,
+           licensePlateTypeCode (dropdown, default=PC), licensePlateYear (default=2026),
+           caRequestPurposeCode (hidden, default=C)
+  Person:  operatorLicenseNumber, nameFirst, nameLast, registrationState (dropdown),
+           caRequestPurposeCode (hidden, default=C),
+           operatorLicenseNumberDH, nameFirstDH, nameLastDH, birthDateDH, sexCodeDH (dropdown),
+           caRequestPurposeCodeDH (hidden, default=C)
+  Firearm: serialNumber, caRequestPurposeCode (hidden, default=C)
+  Article: serialNumber, ownerAppliedNumber, caRequestPurposeCode (hidden, default=C)
+  Boat:    registrationNumber, registrationState (dropdown), boatHullIdNumber,
+           ownerAppliedNumber, caRequestPurposeCode (hidden, default=C)
+
+Phase 0: Dropdowns render correctly — TO BE CONFIRMED
+
+------------------------------------------------------------------------
+T1  | Vehicle | UI CHECK | autoSelect + State routing behavior
+------------------------------------------------------------------------
+GOAL: Verify Registration auto-checks, confirm no State default
+FORM: Vehicle entity
+DO:
+  1. Verify State dropdown is BLANK (no default)
+  2. Type any plate into licensePlateNumber (e.g., ABC1234)
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden), PlateType=PC, PlateYear=2026
+VERIFY:
+  - Registration checkbox auto-checks on field entry
+  - State dropdown is blank (no initialValue)
+  - Submit button enables
+  - CaRequestPurposeCode field is NOT visible on the form
+NO XML CAPTURE NEEDED — UI behavior test only
+
+------------------------------------------------------------------------
+T2  | Vehicle | IA.QV | In-state plate (State blank)
+------------------------------------------------------------------------
+GOAL: In-state vehicle plate registration (CA DMV query)
+FORM: Vehicle entity
+DO:
+  1. Type plate: ABC1234
+  2. Leave State BLANK (triggers in-state combo)
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden), PlateType=PC, PlateYear=2026
+EXPECTED COMBO: IA.QV (set=[CaRequestPurposeCode, LicensePlateNumber])
+EXPECTED XML:
+  <MessageType>VehicleRegistrationQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+VERIFY: No <State> element in XML (blank = in-state). CaRequestPurposeCode=C present.
+
+------------------------------------------------------------------------
+T3  | Vehicle | NLTS.RQ.P | OOS plate (State filled)
+------------------------------------------------------------------------
+GOAL: Out-of-state vehicle plate registration (Nlets query)
+FORM: Vehicle entity
+DO:
+  1. Type plate: ABC1234
+  2. Select State: any non-CA state (e.g., NJ)
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden), PlateType=PC, PlateYear=2026
+EXPECTED COMBO: NLTS.RQ.P (set=[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState])
+EXPECTED XML:
+  <MessageType>VehicleRegistrationQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2026</LicensePlateYear>
+  <State>NJ</State>
+VERIFY: State present in XML. PlateType + PlateYear included (OOS combo requires them in set[])
+
+------------------------------------------------------------------------
+T4  | Vehicle | IA.QVK | In-state VIN (State blank)
+------------------------------------------------------------------------
+GOAL: In-state vehicle VIN registration
+FORM: Vehicle entity
+DO:
+  1. Clear plate field
+  2. Type VIN: 1HGCM82633A123456
+  3. Leave State BLANK
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IA.QVK (set=[CaRequestPurposeCode, VehicleIdentificationNumber])
+EXPECTED XML:
+  <MessageType>VehicleRegistrationQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+VERIFY: No State, no plate fields in XML
+
+------------------------------------------------------------------------
+T5  | Vehicle | NLTS.RQ.V | OOS VIN (State filled)
+------------------------------------------------------------------------
+GOAL: Out-of-state vehicle VIN registration (Nlets query)
+FORM: Vehicle entity
+DO:
+  1. Clear plate field
+  2. Type VIN: 1HGCM82633A123456
+  3. Select State: NJ (or any non-CA)
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: NLTS.RQ.V (set=[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState])
+EXPECTED XML:
+  <MessageType>VehicleRegistrationQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <State>NJ</State>
+VERIFY: State present, no plate fields
+
+------------------------------------------------------------------------
+T6  | Person | ID.L1 | In-state DL by OLN (State blank)
+------------------------------------------------------------------------
+GOAL: In-state driver license lookup by OLN
+FORM: Person entity
+DO:
+  1. Switch to Person entity
+  2. Type OLN: D1234567
+  3. Leave State BLANK
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: ID.L1 (set=[CaRequestPurposeCode, OperatorLicenseNumber])
+EXPECTED XML:
+  <MessageType>DriverLicenseQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <OperatorLicenseNumber>D1234567</OperatorLicenseNumber>
+VERIFY: No State in XML. DL checkbox auto-checked. Check if DH also auto-checks.
+
+------------------------------------------------------------------------
+T7  | Person | NLTS.DQ | OOS DL by OLN (State filled)
+------------------------------------------------------------------------
+GOAL: Out-of-state driver license lookup by OLN (Nlets)
+FORM: Person entity
+DO:
+  1. Type OLN: D1234567
+  2. Select State: NJ (or any non-CA)
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: NLTS.DQ (set=[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState])
+EXPECTED XML:
+  <MessageType>DriverLicenseQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <OperatorLicenseNumber>D1234567</OperatorLicenseNumber>
+  <State>NJ</State>
+VERIFY: State present in XML
+
+------------------------------------------------------------------------
+T8  | Person | IN.L1 | In-state DL by Name (State blank)
+------------------------------------------------------------------------
+GOAL: In-state driver license lookup by name
+FORM: Person entity
+DO:
+  1. Clear OLN field
+  2. Type nameFirst: JOHN
+  3. Type nameLast: DOE
+  4. Leave State BLANK
+  5. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IN.L1 (set=[CaRequestPurposeCode, NameLast, NameFirst])
+EXPECTED XML:
+  <MessageType>DriverLicenseQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <Name>DOE, JOHN</Name>  (FormatStringRuleHandler)
+VERIFY: No State, no OLN. Name formatted as Last, First
+
+------------------------------------------------------------------------
+T9  | Person | NLTS.KQ.O | DH by OLN (Nlets)
+------------------------------------------------------------------------
+GOAL: Driver History lookup by OLN via DH-suffix fields
+FORM: Person entity — DH section
+DO:
+  1. Clear all DL fields (nameFirst, nameLast, OLN)
+  2. Type operatorLicenseNumberDH: D1234567
+  3. DH checkbox should auto-check (autoSelect=true)
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCodeDH=C (hidden)
+EXPECTED COMBO: NLTS.KQ.O (set=[CaRequestPurposeCodeDH, OperatorLicenseNumberDH])
+EXPECTED XML:
+  <MessageType>DriverHistoryQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <OperatorLicenseNumber>D1234567</OperatorLicenseNumber>
+VERIFY: MessageType=DriverHistoryQuery (not DriverLicenseQuery). DH checkbox checked.
+  Check if DL checkbox was deselected by queriesToDeselect.
+
+------------------------------------------------------------------------
+T10 | Person | NLTS.KQ.N | DH by Name+DOB+Sex (Nlets)
+------------------------------------------------------------------------
+GOAL: Driver History lookup by name, DOB, and sex
+FORM: Person entity — DH section
+DO:
+  1. Clear all DL fields and DH OLN
+  2. Type nameLastDH: DOE
+  3. Type nameFirstDH: JOHN
+  4. Pick birthDateDH: 01/15/1990
+  5. Select sexCodeDH: Male
+  6. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCodeDH=C (hidden)
+EXPECTED COMBO: NLTS.KQ.N (set=[CaRequestPurposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH])
+EXPECTED XML:
+  <MessageType>DriverHistoryQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <BirthDate>19900115</BirthDate>  (yyyyMMdd format — CA-specific)
+  <Name>DOE, JOHN</Name>
+  <SexCode>M</SexCode>
+VERIFY: Date format is yyyyMMdd (NOT MMddyyyy). Name formatted. SexCode present.
+
+------------------------------------------------------------------------
+T11 | Firearm | IG.QGB | Gun by serial number
+------------------------------------------------------------------------
+GOAL: Firearm lookup by serial number
+FORM: Firearm entity
+DO:
+  1. Switch to Firearm entity
+  2. Type serialNumber: ABC12345
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IG.QGB (set=[CaRequestPurposeCode, SerialNumber])
+EXPECTED XML:
+  <MessageType>GunQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <GunSerialNumber>ABC12345</GunSerialNumber>
+VERIFY: Minimal XML — purpose code + serial only
+
+------------------------------------------------------------------------
+T12 | Article | IP.QA.S | Article by serial number
+------------------------------------------------------------------------
+GOAL: Article lookup by serial number
+FORM: Article entity
+DO:
+  1. Switch to Article entity
+  2. Type serialNumber: SN12345678
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IP.QA.S (set=[CaRequestPurposeCode, SerialNumber])
+EXPECTED XML:
+  <MessageType>ArticleSingleQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+VERIFY: Serial number present, no OAN
+
+------------------------------------------------------------------------
+T13 | Article | IP.QA.O | Article by OAN
+------------------------------------------------------------------------
+GOAL: Article lookup by Owner Applied Number
+FORM: Article entity
+DO:
+  1. Clear serialNumber
+  2. Type ownerAppliedNumber: OAN123456
+  3. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IP.QA.O (set=[CaRequestPurposeCode, OwnerAppliedNumber])
+EXPECTED XML:
+  <MessageType>ArticleSingleQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <OwnerAppliedNumber>OAN123456</OwnerAppliedNumber>
+VERIFY: OAN present, no serial number
+
+------------------------------------------------------------------------
+T14 | Boat | IA.QB.R | Boat by registration (in-state)
+------------------------------------------------------------------------
+GOAL: In-state boat lookup by registration number
+FORM: Boat entity
+DO:
+  1. Switch to Boat entity
+  2. Type registrationNumber: CF1234AB
+  3. Leave State BLANK
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IA.QB.R (set=[CaRequestPurposeCode, RegistrationNumber])
+EXPECTED XML:
+  <MessageType>BoatQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <RegistrationNumber>CF1234AB</RegistrationNumber>
+VERIFY: No State in XML
+
+------------------------------------------------------------------------
+T15 | Boat | IA.QB.H | Boat by hull ID (in-state)
+------------------------------------------------------------------------
+GOAL: In-state boat lookup by hull identification number
+FORM: Boat entity
+DO:
+  1. Clear registrationNumber
+  2. Type boatHullIdNumber: CA1234AB56H7
+  3. Leave State BLANK
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IA.QB.H (set=[CaRequestPurposeCode, BoatHullIdNumber])
+EXPECTED XML:
+  <MessageType>BoatQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <BoatHullIdNumber>CA1234AB56H7</BoatHullIdNumber>
+VERIFY: No State, no registration number
+
+------------------------------------------------------------------------
+T16 | Boat | IA.QB.O | Boat by OAN (in-state)
+------------------------------------------------------------------------
+GOAL: In-state boat lookup by Owner Applied Number
+FORM: Boat entity
+DO:
+  1. Clear hull ID
+  2. Type ownerAppliedNumber: OAN123456
+  3. Leave State BLANK
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: IA.QB.O (set=[CaRequestPurposeCode, OwnerAppliedNumber])
+EXPECTED XML:
+  <MessageType>BoatQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <OwnerAppliedNumber>OAN123456</OwnerAppliedNumber>
+VERIFY: No State, no registration, no hull ID
+
+------------------------------------------------------------------------
+T17 | Boat | NLTS.BQ.R | OOS Boat by registration (State filled)
+------------------------------------------------------------------------
+GOAL: Out-of-state boat by registration (Nlets)
+FORM: Boat entity
+DO:
+  1. Clear OAN
+  2. Type registrationNumber: FL1234AB
+  3. Select State: FL (or any non-CA)
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: NLTS.BQ.R (set=[CaRequestPurposeCode, RegistrationNumber, RegistrationState])
+EXPECTED XML:
+  <MessageType>BoatQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <RegistrationNumber>FL1234AB</RegistrationNumber>
+  <State>FL</State>
+VERIFY: State present in XML (OOS route)
+
+------------------------------------------------------------------------
+T18 | Boat | NLTS.BQ.H | OOS Boat by hull ID (State filled)
+------------------------------------------------------------------------
+GOAL: Out-of-state boat by hull ID (Nlets)
+FORM: Boat entity
+DO:
+  1. Clear registrationNumber
+  2. Type boatHullIdNumber: FL1234AB56H7
+  3. Select State: FL (or any non-CA)
+  4. Submit
+DEFAULTS PRE-FILLED: CaRequestPurposeCode=C (hidden)
+EXPECTED COMBO: NLTS.BQ.H (set=[CaRequestPurposeCode, BoatHullIdNumber, RegistrationState])
+EXPECTED XML:
+  <MessageType>BoatQuery</MessageType>
+  <CaRequestPurposeCode>C</CaRequestPurposeCode>
+  <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+  <State>FL</State>
+VERIFY: State present, no registration number
+
+========================================================================
+SUMMARY: 18 tests covering all 17 BASE CommSys combos + 1 UI check
+  Vehicle:  5 tests (T1-T5)     — 4 combos (2 in-state + 2 OOS)
+  Person:   5 tests (T6-T10)    — 5 combos (3 DL + 2 DH)
+  Firearm:  1 test  (T11)       — 1 combo
+  Article:  2 tests (T12-T13)   — 2 combos (serial + OAN)
+  Boat:     5 tests (T14-T18)   — 5 combos (3 in-state + 2 OOS)
+
+RESULTS (v1.8 — 2026-05-12):
+  T1  PASS   UI check — Registration auto-checks, State blank, PurposeCode present
+  T2  PASS   IA.QV — VehicleRegistrationQuery, Plate in-state
+  T3  PASS   NLTS.RQ.P — VehicleRegistrationQuery, Plate+State+PlateType+PlateYear OOS
+  T4  PASS   IA.QVK — VehicleRegistrationQuery, VIN in-state
+  T5  PASS   NLTS.RQ.V — VehicleRegistrationQuery, VIN+State OOS
+  T6  PASS   ID.L1 — DriverLicenseQuery by OLN, DL auto-checks, DH greyed (v1.8 fix)
+  T7  PASS   NLTS.DQ — DriverLicenseQuery by OLN+State OOS
+  T8  PASS   IN.L1 — DriverLicenseQuery by Name, FormatString=DOE,JOHN
+  T9  PASS   NLTS.KQ.O — DriverHistoryQuery by OLN, DH auto-checks (v1.8 fix confirmed)
+  T10 PASS   NLTS.KQ.N — DriverHistoryQuery by Name+DOB+Sex, date=yyyyMMdd
+  T11 PASS   IG.QGB — GunQuery by serial
+  T12 PASS   IP.QA.S — ArticleSingleQuery by serial
+  T13 PASS   IP.QA.O — ArticleSingleQuery by OAN
+  T14 PASS   IA.QB.R — BoatQuery by Registration in-state
+  T15 PASS   IA.QB.H — BoatQuery by HullId in-state
+  T16 PASS   IA.QB.O — BoatQuery by OAN in-state
+  T17 PASS   NLTS.BQ.R — BoatQuery by Registration+State OOS
+  T18 PASS   NLTS.BQ.H — BoatQuery by HullId+State OOS
+========================================================================

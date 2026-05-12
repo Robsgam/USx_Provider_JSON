@@ -40,11 +40,12 @@
 #
 # PERSON (2 QIDMs co-fire by design):
 #   DL + DH share Person entity/form.
-#   Both have autoSelect=true + queriesToDeselect (AP #14 / LIMITATION #24-25).
+#   DL: autoSelect=true, NO queriesToDeselect (default query).
+#   DH: autoSelect=true, queriesToDeselect=DL (one-directional, same as NJ VehReg/Stolen pattern).
 #   DH-suffix fieldIds isolate DH from DL field pool.
 
 param(
-    [string]$Version = "1.7",
+    [string]$Version = "1.8",
     [string]$Phase   = "base"
 )
 
@@ -323,7 +324,6 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
-    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # =====================================================================

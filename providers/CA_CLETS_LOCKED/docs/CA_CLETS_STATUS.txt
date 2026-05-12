@@ -1,8 +1,10 @@
 CA_CLETS -- Build Status
 =========================
-Last updated: 2026-05-07
-Current: v1.7 | BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM | Updated 2026-05-11
-Current version: v1.6 (VehicleMakeCode dropdown, Stats cleanup)
+Last updated: 2026-05-12
+
+  *** JSON LOCKED -- CA_CLETS is frozen. Do not modify unless explicitly instructed. ***
+Current: v1.8 | BASE 18/18 PASS | MC pending | Updated 2026-05-12
+Current version: v1.8 (one-directional queriesToDeselect fix, 18/18 BASE PASS)
 Provider: CA_CLETS
 
 ARCHITECTURE
@@ -67,12 +69,40 @@ VALIDATOR RESULTS
     no queriesToDeselect, MC cross-entity combo ordering (Gun, Vehicle, Boat)
     -> All by design
 
-LIVE TESTS
+PRODUCTION TESTS
 ----------
-Import: IMPORTED 2026-05-06
+Import: v1.8 BASE IMPORTED 2026-05-12
+
+v1.8 BASE Test Matrix (18/18 PASS — 2026-05-12)
+  T1  | Vehicle | UI CHECK        | PASS — Registration auto-checks, State blank, PurposeCode hidden
+  T2  | Vehicle | IA.QV           | PASS — VehicleRegistrationQuery, LicensePlateNumber=ABC1234, CaRequestPurposeCode=C
+  T3  | Vehicle | NLTS.RQ.P       | PASS — VehicleRegistrationQuery, Plate+State+PlateType+PlateYear, OOS
+  T4  | Vehicle | IA.QVK          | PASS — VehicleRegistrationQuery, VIN in-state
+  T5  | Vehicle | NLTS.RQ.V       | PASS — VehicleRegistrationQuery, VIN+State OOS
+  T6  | Person  | ID.L1           | PASS — DriverLicenseQuery by OLN, DL auto-checks, DH greyed out (v1.8 fix confirmed)
+  T7  | Person  | NLTS.DQ         | PASS — DriverLicenseQuery by OLN+State OOS
+  T8  | Person  | IN.L1           | PASS — DriverLicenseQuery by Name, FormatStringRuleHandler=DOE,JOHN
+  T9  | Person  | NLTS.KQ.O       | PASS — DriverHistoryQuery by OLN, DH auto-checks! (v1.8 fix confirmed)
+  T10 | Person  | NLTS.KQ.N       | PASS — DriverHistoryQuery by Name+DOB+Sex, BirthDate=19850101 yyyyMMdd
+  T11 | Firearm | IG.QGB          | PASS — GunQuery, GunSerialNumber=ABC12345
+  T12 | Article | IP.QA.S         | PASS — ArticleSingleQuery by serial
+  T13 | Article | IP.QA.O         | PASS — ArticleSingleQuery by OAN
+  T14 | Boat    | IA.QB.R         | PASS — BoatQuery by RegistrationNumber in-state
+  T15 | Boat    | IA.QB.H         | PASS — BoatQuery by BoatHullIdNumber in-state
+  T16 | Boat    | IA.QB.O         | PASS — BoatQuery by OwnerAppliedNumber in-state
+  T17 | Boat    | NLTS.BQ.R       | PASS — BoatQuery by Registration+State OOS
+  T18 | Boat    | NLTS.BQ.H       | PASS — BoatQuery by HullId+State OOS
+
+KEY FINDINGS:
+  - v1.7→v1.8: Removed bidirectional queriesToDeselect from DL QIDM (one-directional pattern)
+  - v1.8 T6: DL auto-checks correctly, DH stays greyed out (fix confirmed)
+  - v1.8 T9: DH auto-checks correctly when DH fields entered (fix confirmed)
+  - CaRequestPurposeCode=C present in all 17 XML requests
+  - All date formats yyyyMMdd (CA-specific)
+  - FormatStringRuleHandler confirmed: Name="Last, First"
+  - Clear form platform bug: use full page reload between tests
 
 NEXT STEPS
 ----------
-1. Import BASE to test instance
-2. Phase 1 live test (8-phase protocol per TESTING_REQUIREMENTS.txt)
-3. If PASS: import MC for cross-entity testing
+1. Import MC for cross-entity testing (IN.VP, IG.QGH, NLTS.BQ.N)
+2. Continue provider work order: FL_FCIC next

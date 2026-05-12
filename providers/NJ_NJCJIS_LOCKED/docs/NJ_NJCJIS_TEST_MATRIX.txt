@@ -1,0 +1,271 @@
+NJ_NJCJIS BASE v3.1 — 14-Test Matrix
+Generated: 2026-05-12
+JSON: NJ_NJCJIS_BASE.json
+========================================================================
+
+Phase 0: Dropdowns render correctly — CONFIRMED by user
+
+------------------------------------------------------------------------
+T1  | Vehicle | UI CHECK | autoSelect behavior
+------------------------------------------------------------------------
+GOAL: Verify Registration auto-checks, Stolen stays unchecked
+FORM: Vehicle entity
+DO:
+  1. Type any plate into licensePlateNumber (e.g., ABC1234)
+DEFAULTS PRE-FILLED: State=NJ, RandomRequest=N, PlateType=PC, PlateYear=2026, Image=N
+VERIFY:
+  - Registration checkbox auto-checks on field entry
+  - Stolen checkbox stays unchecked (autoSelect=false)
+  - Submit button enables
+NO XML CAPTURE NEEDED — UI behavior test only
+
+------------------------------------------------------------------------
+T2  | Vehicle | RQ | VehReg plate FULL (RandomRequest=N)
+------------------------------------------------------------------------
+GOAL: Plate registration lookup, FULL data (default path)
+FORM: Vehicle entity
+DO:
+  1. Type plate: ABC1234
+  2. Leave all defaults as-is (RandomRequest=N)
+  3. Submit
+DEFAULTS PRE-FILLED: State=NJ, RandomRequest=N, PlateType=PC, PlateYear=2026, Image=N
+EXPECTED COMBO: RQ (FULL — RQ_RAND skipped because RandomRequest != Y)
+EXPECTED XML:
+  <MessageKey>RQ</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <State>NJ</State>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2026</LicensePlateYear>
+  <RandomRequest>N</RandomRequest>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: RMS co-fire with tag + registrationStateAttrIds
+
+------------------------------------------------------------------------
+T3  | Vehicle | RQ_RAND | VehReg plate RAND (RandomRequest=Y)
+------------------------------------------------------------------------
+GOAL: Plate registration RAND (stolen-only data)
+FORM: Vehicle entity
+DO:
+  1. Type plate: ABC1234
+  2. Change RandomRequest dropdown to Y
+  3. Submit
+DEFAULTS PRE-FILLED: State=NJ, PlateType=PC, PlateYear=2026, Image=N
+EXPECTED COMBO: RQ_RAND (conditions: randomRequest EQUALS Y)
+EXPECTED XML:
+  <MessageKey>RQ</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <State>NJ</State>
+  <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+  <LicensePlateYear>2026</LicensePlateYear>
+  <RandomRequest>Y</RandomRequest>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Same fields as T2 but RandomRequest=Y
+
+------------------------------------------------------------------------
+T4  | Vehicle | RQN | VehReg VIN FULL (RandomRequest=N)
+------------------------------------------------------------------------
+GOAL: VIN registration lookup, FULL data
+FORM: Vehicle entity
+DO:
+  1. Clear plate field (leave blank)
+  2. Type VIN: 1HGCM82633A123456
+  3. Leave RandomRequest=N
+  4. Submit
+DEFAULTS PRE-FILLED: State=NJ, RandomRequest=N, Image=N
+EXPECTED COMBO: RQN (VIN FULL — RQN_RAND skipped because RandomRequest != Y)
+EXPECTED XML:
+  <MessageKey>RQ</MessageKey>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <State>NJ</State>
+  <RandomRequest>N</RandomRequest>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: No plate fields in XML. RMS co-fire with vinNumber
+
+------------------------------------------------------------------------
+T5  | Vehicle | QVP | VehStolen by plate
+------------------------------------------------------------------------
+GOAL: Stolen vehicle lookup by plate (manual checkbox)
+FORM: Vehicle entity
+DO:
+  1. Type plate: ABC1234
+  2. Manually CHECK the Stolen checkbox
+  3. Verify Registration unchecks (queriesToDeselect)
+  4. Submit
+DEFAULTS PRE-FILLED: State=NJ, Image=N
+EXPECTED COMBO: QVP (set=[licensePlateNumber])
+EXPECTED XML:
+  <MessageKey>QV</MessageKey>
+  <LicensePlateNumber>ABC1234</LicensePlateNumber>
+  <State>NJ</State>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Registration unchecked after checking Stolen
+
+------------------------------------------------------------------------
+T6  | Person | DQN | DL by OLN
+------------------------------------------------------------------------
+GOAL: Driver license lookup by operator license number
+FORM: Person entity
+DO:
+  1. Type OLN: D123456789
+  2. Leave State=NJ (default)
+  3. Submit
+DEFAULTS PRE-FILLED: State=NJ, Image=Y
+EXPECTED COMBO: DQN (set=[operatorLicenseNumber, registrationState])
+EXPECTED XML:
+  <MessageKey>DQ</MessageKey>
+  <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+  <State>NJ</State>
+  <ImageIndicator>Y</ImageIndicator>
+VERIFY: RMS co-fire with dlNumber + registrationStateAttrId
+
+------------------------------------------------------------------------
+T7  | Person | DQ | DL by Name+DOB
+------------------------------------------------------------------------
+GOAL: Driver license lookup by name and date of birth
+FORM: Person entity
+DO:
+  1. Leave OLN blank
+  2. Type nameFirst: JOHN
+  3. Type nameLast: DOE
+  4. Pick birthDate: 01/15/1990
+  5. Submit
+DEFAULTS PRE-FILLED: State=NJ, Image=Y
+EXPECTED COMBO: DQ (set=[birthDate, nameLast, nameFirst])
+EXPECTED XML:
+  <MessageKey>DQ</MessageKey>
+  <Name>DOE, JOHN</Name>  (FormatStringRuleHandler)
+  <BirthDate>01151990</BirthDate>  (CommsysParseDateRuleHandler yyyy-MM-dd → MMddyyyy)
+  <State>NJ</State>
+  <ImageIndicator>Y</ImageIndicator>
+VERIFY: Name formatted as "Last, First". Date reformatted. RMS co-fire with firstName+lastName+dateOfBirth
+
+------------------------------------------------------------------------
+T8  | Firearm | QG | Firearm by serial number
+------------------------------------------------------------------------
+GOAL: Firearm lookup by serial number
+FORM: Firearm entity
+DO:
+  1. Type serialNumber: ABC12345
+  2. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QG (set=[serialNumber])
+EXPECTED XML:
+  <MessageKey>QG</MessageKey>
+  <GunSerialNumber>ABC12345</GunSerialNumber>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Minimal XML — only serial + image indicator
+
+------------------------------------------------------------------------
+T9  | Article | QA | Article by serial + type
+------------------------------------------------------------------------
+GOAL: Article lookup by serial number and article type
+FORM: Article entity
+DO:
+  1. Type serialNumber: SN12345678
+  2. Select articleTypeCode from dropdown (e.g., COMP)
+  3. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QA (set=[serialNumber, articleTypeCode])
+EXPECTED XML:
+  <MessageKey>QA</MessageKey>
+  <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+  <ArticleTypeCode>COMP</ArticleTypeCode>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Both set[] fields present in XML
+
+------------------------------------------------------------------------
+T10 | Boat | QB | Boat by registration number
+------------------------------------------------------------------------
+GOAL: Boat lookup by registration number
+FORM: Boat entity
+DO:
+  1. Type registrationNumber: NJ1234AB
+  2. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QB (set=[registrationNumber])
+EXPECTED XML:
+  <MessageKey>QB</MessageKey>
+  <RegistrationNumber>NJ1234AB</RegistrationNumber>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Minimal XML
+
+------------------------------------------------------------------------
+T11 | Vehicle | RQN_RAND | VehReg VIN RAND (RandomRequest=Y)
+------------------------------------------------------------------------
+GOAL: VIN registration RAND (stolen-only data)
+FORM: Vehicle entity
+DO:
+  1. Clear plate field (leave blank)
+  2. Type VIN: 1HGCM82633A123456
+  3. Change RandomRequest dropdown to Y
+  4. Submit
+DEFAULTS PRE-FILLED: State=NJ, Image=N
+EXPECTED COMBO: RQN_RAND (conditions: randomRequest EQUALS Y)
+EXPECTED XML:
+  <MessageKey>RQ</MessageKey>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <State>NJ</State>
+  <RandomRequest>Y</RandomRequest>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: No plate fields. RandomRequest=Y
+
+------------------------------------------------------------------------
+T12 | Vehicle | QVN | VehStolen by NCIC number
+------------------------------------------------------------------------
+GOAL: Stolen vehicle lookup by NCIC number
+FORM: Vehicle entity
+DO:
+  1. Type ncicNumber: V123456789
+  2. Leave plate and VIN blank
+  3. Manually CHECK the Stolen checkbox
+  4. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QVN (set=[ncicNumber])
+EXPECTED XML:
+  <MessageKey>QV</MessageKey>
+  <NCICNumber>V123456789</NCICNumber>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: No State, no plate, no VIN in XML
+
+------------------------------------------------------------------------
+T13 | Vehicle | QVV | VehStolen by VIN
+------------------------------------------------------------------------
+GOAL: Stolen vehicle lookup by VIN
+FORM: Vehicle entity
+DO:
+  1. Type VIN: 1HGCM82633A123456
+  2. Leave plate and NCIC blank
+  3. Manually CHECK the Stolen checkbox
+  4. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QVV (set=[vehicleIdentificationNumber])
+EXPECTED XML:
+  <MessageKey>QV</MessageKey>
+  <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: No State in XML. RMS co-fire with vinNumber
+
+------------------------------------------------------------------------
+T14 | Boat | QBN | Boat by hull ID
+------------------------------------------------------------------------
+GOAL: Boat lookup by hull identification number
+FORM: Boat entity
+DO:
+  1. Type boatHullIdNumber: NJ1234AB56H7
+  2. Submit
+DEFAULTS PRE-FILLED: Image=N
+EXPECTED COMBO: QBN (set=[boatHullIdNumber])
+EXPECTED XML:
+  <MessageKey>QB</MessageKey>
+  <BoatHullIdNumber>NJ1234AB56H7</BoatHullIdNumber>
+  <ImageIndicator>N</ImageIndicator>
+VERIFY: Minimal XML
+
+========================================================================
+SUMMARY: 14 tests covering all 13 CommSys combos + 1 UI check
+  Vehicle:  7 tests (T1-T5, T11-T13)
+  Person:   2 tests (T6-T7)
+  Firearm:  1 test  (T8)
+  Article:  1 test  (T9)
+  Boat:     2 tests (T10, T14)
+========================================================================
