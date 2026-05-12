@@ -1,0 +1,365 @@
+FL_FCIC v3.6 BASE -- Production Test Matrix
+=============================================
+Generated: 2026-05-12
+Source: test_commsys.ps1 simulator + build script field audit
+Combos: 35 CommSys (8 QIDMs) + 2 RMS = 37 total
+
+FORM FIELDS BY ENTITY
+=====================
+
+Vehicle (10 fields, single card "VEHICLE SEARCH"):
+  licensePlateNumber       FormInput   maxLen=10
+  registrationState        FormSelect  STATE (no default -- LIMITATION #30)
+  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  licensePlateTypeCode     FormSelect  NCIC_LICENSE_PLATE_TYPE  default=PC
+  licensePlateYear         FormInput   maxLen=4  default=2026
+  vehicleYear              FormInput   maxLen=4
+  vehicleIdentificationNumber  FormInput   maxLen=20
+  vehicleMakeCode          FormSelect  VEHICLE_MAKE/NCIC
+  decalNumber              FormInput   maxLen=10
+  titleLienInformation     FormInput   maxLen=8
+
+Person (15 fields, single card "PERSON SEARCH"):
+  operatorLicenseNumber    FormInput   maxLen=20
+  registrationState        FormSelect  STATE (no default)
+  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=Y
+  nameLast                 FormInput   maxLen=30
+  nameFirst                FormInput   maxLen=30
+  nameMiddle               FormInput   maxLen=30
+  birthDate                FormDate
+  sexCode                  FormSelect  SEX/NIBRS
+  nameSuffix               FormInput   maxLen=10
+  operatorLicenseNumberDH  FormInput   maxLen=20
+  purposeCodeDH            FormInput   maxLen=1  (NO DEFAULT)
+  nameLastDH               FormInput   maxLen=30
+  nameFirstDH              FormInput   maxLen=30
+  birthDateDH              FormDate
+  sexCodeDH                FormSelect  SEX/NIBRS
+
+Firearm (5 fields, single card "FIREARM QUERY"):
+  gunSerialNumber          FormInput   maxLen=11
+  gunMake                  FormSelect  NCIC_FIREARM_MAKE/NCIC
+  ncicNumber               FormInput   maxLen=10
+  processControlNumber     FormInput   maxLen=10
+  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+
+Article (6 fields, single card "ARTICLE QUERY"):
+  articleSerialNumber      FormInput   maxLen=20
+  articleTypeCode           FormSelect  NCIC_ARTICLE_TYPE/CA_CLETS
+  ownerAppliedNumber       FormInput   maxLen=20
+  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  ncicNumber               FormInput   maxLen=10
+  processControlNumber     FormInput   maxLen=10
+
+Boat (13 fields, single card "BOAT SEARCH"):
+  registrationNumber       FormInput   maxLen=8
+  boatHullIdNumber         FormInput   maxLen=62
+  registrationState        FormSelect  STATE (no default)
+  decalNumber              FormInput   maxLen=20
+  titleLienInformation     FormInput   maxLen=10
+  coastGuardDocumentNumber FormInput   maxLen=8
+  ncicNumber               FormInput   maxLen=10
+  processControlNumber     FormInput   maxLen=10
+  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  relatedHitSearchIndicator FormInput  maxLen=1  (Stolen Search Y)
+  nameLast                 FormInput   maxLen=30  (Last Name BQ)
+  nameFirst                FormInput   maxLen=30  (First Name BQ)
+  birthDate                FormDate    (DOB BQ)
+
+autoSelect / queriesToDeselect:
+  DriverLicenseQuery:  autoSelect=true, NO queriesToDeselect
+  DriverHistoryQuery:  autoSelect=true, queriesToDeselect=[DriverLicenseQuery]
+  VehicleRegistrationQuery: no autoSelect
+  VehicleStolenQuery: no autoSelect
+  (Both Vehicle QIDMs co-fire together -- no mutual exclusion)
+
+================================================================================
+TEST MATRIX -- 35 CommSys combos
+================================================================================
+
+--- T1: UI CHECK (autoSelect + defaults) ---
+GOAL: Verify autoSelect behavior and form defaults render correctly.
+DO:
+  1. Open Vehicle tab. Verify: State blank, PlateType=PC, PlateYear=2026, Image=N.
+  2. Open Person tab. Verify: State blank, Image=Y, PurposeCode blank (no default).
+  3. Verify DL checkbox auto-checks when OLN entered (autoSelect=true).
+  4. Verify DH checkbox auto-checks when DH OLN entered.
+  5. Verify DH checking deselects DL (queriesToDeselect).
+  6. Open Firearm tab. Verify Image=N.
+  7. Open Article tab. Verify Image=N.
+  8. Open Boat tab. Verify State blank, Image=N.
+EXPECTED: All defaults render. DL/DH mutual exclusion works one-directionally.
+
+--- T2: Vehicle FRQ+Plate (FL in-state registration) ---
+GOAL: Plate-only fires FRQ (FL DHSMV) + QV co-fire.
+FORM: licensePlateNumber=ABC1234
+DEFAULTS PRE-FILLED: PlateType=PC, PlateYear=2026, Image=N
+EXPECTED COMBO: FRQLicensePlateNumber (set=[licensePlateNumber])
+EXPECTED CO-FIRE: QVLicensePlateNumber (QV by plate)
+EXPECTED XML: MessageKey=FRQ, LicensePlateNumber=ABC1234
+VERIFY: No State in XML (FRQ is FL-only). QV co-fires on same plate.
+
+--- T3: Vehicle RQ+Plate+State (OOS registration) ---
+GOAL: Plate+State fires RQ (Nlets OOS) + QV co-fire.
+FORM: licensePlateNumber=XYZ5678, registrationState=GA
+DEFAULTS PRE-FILLED: PlateType=PC, PlateYear=2026, Image=N
+EXPECTED COMBO: RQLicensePlateNumber (set=[plate,plateType,plateYear,state])
+EXPECTED CO-FIRE: QVLicensePlateNumber
+EXPECTED XML: MessageKey=RQ, State=GA, LicensePlateNumber=XYZ5678, LicensePlateTypeCode=PC, LicensePlateYear=2026
+
+--- T4: Vehicle FRQ+VIN (FL in-state VIN) ---
+GOAL: VIN-only fires FRQ (FL DHSMV).
+FORM: vehicleIdentificationNumber=1HGCM82633A123456
+EXPECTED COMBO: FRQVehicleIdentificationNumber (set=[VIN])
+EXPECTED CO-FIRE: QVVehicleIdentificationNumber (QV by VIN)
+EXPECTED XML: MessageKey=FRQ, VehicleIdentificationNumber=1HGCM82633A123456
+VERIFY: v3.6 change: VehicleMakeCode, VehicleYear now in any[] (send if filled).
+
+--- T5: Vehicle RQ+VIN+State (OOS VIN) ---
+GOAL: VIN+State fires RQ (Nlets OOS).
+FORM: vehicleIdentificationNumber=1HGCM82633A123456, registrationState=TX
+EXPECTED COMBO: RQVehicleIdentificationNumber (set=[VIN,state])
+EXPECTED XML: MessageKey=RQ, State=TX, VehicleIdentificationNumber=1HGCM82633A123456
+
+--- T6: Vehicle FRQ+Decal ---
+GOAL: Decal+PlateYear fires FRQ Decal.
+FORM: decalNumber=FL12345678
+DEFAULTS PRE-FILLED: PlateYear=2026
+EXPECTED COMBO: FRQDecalNumber (set=[decalNumber,licensePlateYear])
+EXPECTED XML: MessageKey=FRQ, DecalNumber=FL12345678, LicensePlateYear=2026
+
+--- T7: Vehicle FRQ+TitleLien ---
+GOAL: TitleLien-only fires FRQ Title.
+FORM: titleLienInformation=ABCD1234
+EXPECTED COMBO: FRQTitleLienInformation (set=[titleLienInformation])
+EXPECTED XML: MessageKey=FRQ, TitleLienInformation=ABCD1234
+
+--- T8: Person FDQ+OLN (FL in-state DL by OLN) ---
+GOAL: OLN-only fires FDQ (FL DHSMV DL).
+FORM: operatorLicenseNumber=S123456789012
+DEFAULTS PRE-FILLED: Image=Y
+EXPECTED COMBO: FDQOperatorLicenseNumber (set=[OLN])
+EXPECTED CO-FIRE: none (QW requires Name+OLN)
+EXPECTED XML: MessageKey=FDQ, OperatorLicenseNumber=S123456789012
+VERIFY: DL checkbox auto-checks. DH stays unchecked.
+
+--- T9: Person DQ+OLN+State (OOS DL by OLN) ---
+GOAL: OLN+State fires DQ (Nlets OOS DL).
+FORM: operatorLicenseNumber=D123456789, registrationState=AL
+EXPECTED COMBO: DQOperatorLicenseNumber (set=[OLN,state])
+EXPECTED XML: MessageKey=DQ, State=AL, OperatorLicenseNumber=D123456789
+
+--- T10: Person FDQ+Name (FL in-state DL by Name) ---
+GOAL: Name+DOB+Sex fires FDQ Name.
+FORM: nameLast=DOE, nameFirst=JOHN, birthDate=1990-01-15, sexCode=Male
+EXPECTED COMBO: FDQName (set=[birthDate,nameLast,nameFirst,sexCode])
+EXPECTED CO-FIRE: QWName (QW fires with Name+DOB)
+EXPECTED XML: MessageKey=FDQ, Name=DOE,JOHN, BirthDate=19900115, SexCode=M
+
+--- T11: Person DQ+Name+State (OOS DL by Name) ---
+GOAL: Name+DOB+Sex+State fires DQ Name (Nlets OOS).
+FORM: nameLast=SMITH, nameFirst=JANE, birthDate=1985-06-20, sexCode=Female, registrationState=GA
+EXPECTED COMBO: DQName (set=[birthDate,nameLast,nameFirst,sexCode,state])
+EXPECTED CO-FIRE: QWName (Name+DOB)
+EXPECTED XML: MessageKey=DQ, State=GA, Name=SMITH,JANE, BirthDate=19850620, SexCode=F
+
+--- T12: Person QW+OLN (Wanted Person by OLN+Name) ---
+GOAL: OLN+Name fires QW OLN combo.
+FORM: operatorLicenseNumber=W999888777, nameLast=JONES, nameFirst=BOB
+EXPECTED COMBO: QWOperatorLicenseNumber (set=[nameLast,nameFirst,OLN])
+EXPECTED CO-FIRE: FDQOperatorLicenseNumber (DL OLN)
+EXPECTED XML: MessageKey=QW, Name=JONES,BOB, OperatorLicenseNumber=W999888777
+
+--- T13: Person KQ+OLN (DH by OLN -- v3.6 KEY TEST) ---
+GOAL: DH OLN+State fires KQ. PurposeCode now any[] (optional).
+FORM: operatorLicenseNumberDH=S123456789012, registrationState=FL
+      purposeCodeDH=C (optional -- enter to verify it sends)
+EXPECTED COMBO: KQOperatorLicenseNumber (set=[OLN_DH,state])
+EXPECTED XML: MessageKey=KQ, OperatorLicenseNumber=S123456789012, State=FL, PurposeCode=C
+VERIFY:
+  - DH checkbox auto-checks (autoSelect=true).
+  - DL checkbox deselects (queriesToDeselect).
+  - v3.6: PurposeCode in any[] -- combo fires even without PurposeCode entered.
+  - Attention auto-filled by handler (not on form).
+
+--- T14: Person KQ+OLN without PurposeCode (v3.6 CRITICAL TEST) ---
+GOAL: Verify DH fires WITHOUT PurposeCode (moved from set[] to any[]).
+FORM: operatorLicenseNumberDH=S123456789012, registrationState=FL
+      purposeCodeDH=(LEAVE BLANK)
+EXPECTED COMBO: KQOperatorLicenseNumber -- should still fire
+EXPECTED XML: MessageKey=KQ, OperatorLicenseNumber=S123456789012, State=FL (no PurposeCode)
+VERIFY: Combo fires without PurposeCode. This is the v3.6 metadata alignment fix.
+
+--- T15: Person KQ+Name (DH by Name) ---
+GOAL: DH Name+DOB+Sex+State fires KQ Name.
+FORM: nameLastDH=DOE, nameFirstDH=JOHN, birthDateDH=1990-01-15, sexCodeDH=Male,
+      registrationState=FL, purposeCodeDH=C
+EXPECTED COMBO: KQName (set=[birthDateDH,nameLastDH,nameFirstDH,sexCodeDH,state])
+EXPECTED XML: MessageKey=KQ, Name=DOE,JOHN, BirthDate=19900115, SexCode=M, State=FL, PurposeCode=C
+
+--- T16: Firearm QG+Serial ---
+GOAL: Serial fires QG Serial.
+FORM: gunSerialNumber=ABC12345
+EXPECTED COMBO: QGGunSerialNumber (set=[gunSerialNumber])
+EXPECTED XML: MessageKey=QG, GunSerialNumber=ABC12345
+
+--- T17: Firearm QG+NCIC ---
+GOAL: NCIC# fires QG NCIC.
+FORM: ncicNumber=G123456789
+EXPECTED COMBO: QGNCICNumber (set=[ncicNumber])
+EXPECTED XML: MessageKey=QG, NCICNumber=G123456789
+
+--- T18: Firearm QG+PCN ---
+GOAL: PCN fires QG PCN.
+FORM: processControlNumber=0000012345
+EXPECTED COMBO: QGProcessControlNumber (set=[processControlNumber])
+EXPECTED XML: MessageKey=QG, ProcessControlNumber=0000012345
+
+--- T19: Article QA+Serial ---
+GOAL: Serial+Type fires QA Serial.
+FORM: articleSerialNumber=SN12345678, articleTypeCode=(select any type)
+EXPECTED COMBO: QAArticleSerialNumber (set=[articleSerialNumber,articleTypeCode])
+EXPECTED XML: MessageKey=QA, ArticleSerialNumber=SN12345678, ArticleTypeCode=<selected>
+
+--- T20: Article QA+OAN ---
+GOAL: OAN+Type fires QA OAN.
+FORM: ownerAppliedNumber=OAN12345, articleTypeCode=(select any type)
+EXPECTED COMBO: QAOwnerAppliedNumber (set=[articleTypeCode,ownerAppliedNumber])
+EXPECTED XML: MessageKey=QA, OwnerAppliedNumber=OAN12345, ArticleTypeCode=<selected>
+
+--- T21: Article QA+NCIC ---
+GOAL: NCIC# fires QA NCIC.
+FORM: ncicNumber=A123456789
+EXPECTED COMBO: QANCICNumber (set=[ncicNumber])
+EXPECTED XML: MessageKey=QA, NCICNumber=A123456789
+
+--- T22: Article QA+PCN ---
+GOAL: PCN fires QA PCN.
+FORM: processControlNumber=0000012345
+EXPECTED COMBO: QAProcessControlNumber (set=[processControlNumber])
+EXPECTED XML: MessageKey=QA, ProcessControlNumber=0000012345
+
+--- T23: Boat FBQ+Hull (FL in-state registration) ---
+GOAL: Hull-only fires FBQ (FL FCIC registration).
+FORM: boatHullIdNumber=FL1234AB56H7
+EXPECTED COMBO: FBQBoatHullIdNumber (set=[boatHullIdNumber])
+EXPECTED XML: MessageKey=FBQ, BoatHullIdNumber=FL1234AB56H7
+VERIFY: No State needed. StolenSearch blank = FBQ path (not QB).
+
+--- T24: Boat QB+Hull+Stolen (NCIC stolen) ---
+GOAL: Hull+StolenSearch=Y fires QB (NCIC stolen).
+FORM: boatHullIdNumber=FL1234AB56H7, relatedHitSearchIndicator=Y
+EXPECTED COMBO: QBBoatHullIdNumber (set=[boatHullIdNumber,relatedHitSearchIndicator])
+EXPECTED XML: MessageKey=QB, BoatHullIdNumber=FL1234AB56H7, RelatedHitSearchIndicator=Y
+
+--- T25: Boat BQ+Hull+State (Nlets OOS) ---
+GOAL: Hull+State fires BQ (Nlets OOS).
+FORM: boatHullIdNumber=FL1234AB56H7, registrationState=GA
+EXPECTED COMBO: BQBoatHullIdNumber (set=[boatHullIdNumber,state])
+EXPECTED XML: MessageKey=BQ, BoatHullIdNumber=FL1234AB56H7, State=GA
+
+--- T26: Boat FBQ+Reg ---
+GOAL: Reg-only fires FBQ Registration.
+FORM: registrationNumber=FL1234AB
+EXPECTED COMBO: FBQRegistrationNumber (set=[registrationNumber])
+EXPECTED XML: MessageKey=FBQ, RegistrationNumber=FL1234AB
+
+--- T27: Boat BQ+Reg+State (Nlets OOS) ---
+GOAL: Reg+State fires BQ Registration.
+FORM: registrationNumber=FL1234AB, registrationState=TX
+EXPECTED COMBO: BQRegistrationNumber (set=[registrationNumber,state])
+EXPECTED XML: MessageKey=BQ, RegistrationNumber=FL1234AB, State=TX
+
+--- T28: Boat FBQ+Decal ---
+GOAL: Decal-only fires FBQ Decal.
+FORM: decalNumber=FL12345678
+EXPECTED COMBO: FBQDecalNumber (set=[decalNumber])
+EXPECTED XML: MessageKey=FBQ, DecalNumber=FL12345678
+
+--- T29: Boat FBQ+TitleLien ---
+GOAL: TitleLien-only fires FBQ Title.
+FORM: titleLienInformation=ABCD1234
+EXPECTED COMBO: FBQTitleLienInformation (set=[titleLienInformation])
+EXPECTED XML: MessageKey=FBQ, TitleLienInformation=ABCD1234
+
+--- T30: Boat QB+CG ---
+GOAL: CG#-only fires QB CoastGuard.
+FORM: coastGuardDocumentNumber=CG123456
+EXPECTED COMBO: QBCoastGuardDocumentNumber (set=[coastGuardDocumentNumber])
+EXPECTED XML: MessageKey=QB, CoastGuardDocumentNumber=CG123456
+
+--- T31: Boat QB+NCIC ---
+GOAL: NCIC#-only fires QB NCIC.
+FORM: ncicNumber=B123456789
+EXPECTED COMBO: QBNCICNumber (set=[ncicNumber])
+EXPECTED XML: MessageKey=QB, NCICNumber=B123456789
+
+--- T32: Boat QB+PCN ---
+GOAL: PCN-only fires QB PCN.
+FORM: processControlNumber=0000012345
+EXPECTED COMBO: QBProcessControlNumber (set=[processControlNumber])
+EXPECTED XML: MessageKey=QB, ProcessControlNumber=0000012345
+
+--- T33: Boat BQ+Name (Nlets by Name+DOB+State) ---
+GOAL: Name+DOB+State fires BQ Name.
+FORM: nameLast=DOE, nameFirst=JOHN, birthDate=1990-01-15, registrationState=FL
+EXPECTED COMBO: BQName (set=[birthDate,nameLast,nameFirst,state])
+EXPECTED XML: MessageKey=BQ, Name=DOE,JOHN, BirthDate=19900115, State=FL
+
+--- T34: Boat QB+Reg+Stolen (NCIC stolen by Reg) ---
+GOAL: Reg+StolenSearch=Y fires QB Registration.
+FORM: registrationNumber=FL1234AB, relatedHitSearchIndicator=Y
+EXPECTED COMBO: QBRegistrationNumber (set=[registrationNumber,relatedHitSearchIndicator])
+EXPECTED XML: MessageKey=QB, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y
+
+--- T35: Negative tests (all 5 entities) ---
+GOAL: Empty forms show no send button.
+DO:
+  1. Vehicle: clear all fields. Verify no send button.
+  2. Person: clear all fields. Verify no send button.
+  3. Firearm: clear all fields. Verify no send button.
+  4. Article: clear all fields. Verify no send button.
+  5. Boat: clear all fields. Verify no send button.
+NOTE: Use full page reload between entities (clear form bug).
+
+================================================================================
+RESULTS
+================================================================================
+
+| # | Entity | Combo | Result | Notes |
+|---|--------|-------|--------|-------|
+| T1 | ALL | UI CHECK | | |
+| T2 | Vehicle | FRQ+Plate | | |
+| T3 | Vehicle | RQ+Plate+State | | |
+| T4 | Vehicle | FRQ+VIN | | |
+| T5 | Vehicle | RQ+VIN+State | | |
+| T6 | Vehicle | FRQ+Decal | | |
+| T7 | Vehicle | FRQ+TitleLien | | |
+| T8 | Person | FDQ+OLN | | |
+| T9 | Person | DQ+OLN+State | | |
+| T10 | Person | FDQ+Name | | |
+| T11 | Person | DQ+Name+State | | |
+| T12 | Person | QW+OLN+Name | | |
+| T13 | Person | KQ+OLN+Purpose | | |
+| T14 | Person | KQ+OLN (no Purpose) | | |
+| T15 | Person | KQ+Name | | |
+| T16 | Firearm | QG+Serial | | |
+| T17 | Firearm | QG+NCIC | | |
+| T18 | Firearm | QG+PCN | | |
+| T19 | Article | QA+Serial | | |
+| T20 | Article | QA+OAN | | |
+| T21 | Article | QA+NCIC | | |
+| T22 | Article | QA+PCN | | |
+| T23 | Boat | FBQ+Hull | | |
+| T24 | Boat | QB+Hull+Stolen | | |
+| T25 | Boat | BQ+Hull+State | | |
+| T26 | Boat | FBQ+Reg | | |
+| T27 | Boat | BQ+Reg+State | | |
+| T28 | Boat | FBQ+Decal | | |
+| T29 | Boat | FBQ+TitleLien | | |
+| T30 | Boat | QB+CG | | |
+| T31 | Boat | QB+NCIC | | |
+| T32 | Boat | QB+PCN | | |
+| T33 | Boat | BQ+Name | | |
+| T34 | Boat | QB+Reg+Stolen | | |
+| T35 | ALL | NEGATIVE | | |
