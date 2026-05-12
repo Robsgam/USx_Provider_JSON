@@ -35,7 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.5",
+    [string]$Version = "3.6",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -225,13 +225,13 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateYear','ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateYear','VehicleMakeCode','VehicleYear','ImageIndicator') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'FRQLicensePlateNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('VehicleMakeCode','VehicleYear','ImageIndicator') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'FRQVehicleIdentificationNumber'
             state                 = 'In/Out'
@@ -272,7 +272,7 @@ $vehStolenQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator','VehicleMakeCode') }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState','VehicleMakeCode') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVVehicleIdentificationNumber'
             state                 = 'In/Out'
@@ -410,13 +410,13 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationState','PurposeCodeDH'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationState'); any = @('PurposeCodeDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationState','PurposeCodeDH'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationState'); any = @('PurposeCodeDH') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -723,7 +723,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
-                @{ id = 'PurposeCodeDH_Input';            node = Inp 'PurposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCodeDH_Input';            node = Inp 'PurposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }

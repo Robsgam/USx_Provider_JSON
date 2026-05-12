@@ -46,12 +46,19 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
 | archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |
 
+## v3.6 (2026-05-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_BASE.json | v3.6 | Current | 102P/0F/0W/0LIM. Metadata audit: PurposeCode any[], FRQ/QV field alignment, no PurposeCode default. |
+| FL_FCIC_MC.json | v3.6 | Current | 102P/0F/0W/0LIM. MC variant. |
+
 ## v3.5 (2026-05-12)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v3.5 | Current | 102P/0F/0W/0LIM. One-directional queriesToDeselect fix + DH autoSelect=true. |
-| FL_FCIC_MC.json | v3.5 | Current | 102P/0F/0W/0LIM. MC variant. |
+| FL_FCIC_BASE.json | v3.5 | Archived | 102P/0F/0W/0LIM. One-directional queriesToDeselect fix + DH autoSelect=true. |
+| FL_FCIC_MC.json | v3.5 | Archived | 102P/0F/0W/0LIM. MC variant. |
 
 ## v3.4 (2026-05-11)
 

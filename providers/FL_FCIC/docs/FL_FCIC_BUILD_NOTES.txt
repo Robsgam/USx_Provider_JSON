@@ -4,6 +4,15 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v3.6 (2026-05-12) -- Metadata audit: PurposeCode any[], FRQ/QV field alignment, no PurposeCode default
+  CHANGED: DH combos: PurposeCode moved from set[] to any[] (metadata says optional).
+           FRQ Plate/VIN: added VehicleMakeCode, VehicleYear to any[].
+           QV VIN: added RegistrationState to any[].
+           Removed PurposeCode initialValue='C' from Person form (both BASE and MC).
+  REASON:  Full metadata audit against FL_FCIC_METADATA_REFERENCE.txt. Combos were
+           stricter than metadata requires. PurposeCode default removed per user request.
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 v3.5 (2026-05-12) -- One-directional queriesToDeselect fix + DH autoSelect
   CHANGED: Removed queriesToDeselect from DL QIDM (was bidirectional with DH).
            Changed DH QIDM autoSelect from false to true (BASE only — MC already had true).

@@ -1,8 +1,8 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 Last updated: 2026-05-12
-JSON version: v3.5 BASE + v3.5 MC
-Validator: 101 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (BASE) | 101 PASS / 0 FAIL / 1 WARN / 5 LIMITATION (MC)
+JSON version: v3.6 BASE + v3.6 MC
+Validator: 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (BASE) | 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (MC)
 Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL / 0 LIMITATION (2026-05-05)
 QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8)
 
@@ -33,12 +33,12 @@ LIMITATION #2 (one QIDM per entity+query pair).
   FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
     keyReference: FRQLicensePlateNumber
     set: [LicensePlateNumber]
-    any: [LicensePlateYear, ImageIndicator]
+    any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
 
   FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
     keyReference: FRQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber]
-    any: [ImageIndicator]
+    any: [VehicleMakeCode, VehicleYear, ImageIndicator]
 
   FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
     keyReference: FRQDecalNumber
@@ -68,7 +68,7 @@ LIMITATION #2 (one QIDM per entity+query pair).
   QV+VIN -- NCIC Stolen Vehicle (VIN) [CONFIRMED]
     keyReference: QVVehicleIdentificationNumber
     set: [VehicleIdentificationNumber]
-    any: [ImageIndicator, VehicleMakeCode]
+    any: [ImageIndicator, RegistrationState, VehicleMakeCode]
 
   Co-fire: Always co-fires with VehicleRegistrationQuery on shared fields.
   No queriesToDeselect (LIMITATION #24 -- both fire together).
@@ -130,26 +130,26 @@ LIMITATION #2 (one QIDM per entity+query pair).
 5. DriverHistoryQuery -- Person Entity
 ================================================================================
 
-  QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=false BASE / true MC)
+  QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=true)
   QIF:  Person (shared, DH card with DH-suffix fields)
   DH fields: OperatorLicenseNumberDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
-  Shared fields: RegistrationState, PurposeCode(C)
+  Shared fields: RegistrationState, PurposeCode (no default)
   Handler-only: Attention (CommsysGetLastNameFirstNameInitialRuleHandler)
   queriesToDeselect: [DriverLicenseQuery]
 
   KQ+OLN -- FL Driver History (OLN) [CONFIRMED]
     keyReference: KQOperatorLicenseNumber
-    set: [OperatorLicenseNumberDH, RegistrationState, PurposeCode]
-    any: []
+    set: [OperatorLicenseNumberDH, RegistrationState]
+    any: [PurposeCodeDH]
 
   KQ+Name -- FL Driver History (Name) [CONFIRMED]
     keyReference: KQName
-    set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState, PurposeCode]
-    any: []
+    set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState]
+    any: [PurposeCodeDH]
 
-  KQ is FL-specific (not NCIC/Nlets). Requires State + PurposeCode.
+  KQ is FL-specific (not NCIC/Nlets). Requires State. PurposeCode optional (any[]).
   Attention auto-filled by CommsysGetLastNameFirstNameInitialRuleHandler (not in combos).
-  Manual selection required in BASE (autoSelect=false). MC uses autoSelect=true (separate card).
+  autoSelect=true on both BASE and MC. queriesToDeselect deselects DL when DH selected.
 
 ================================================================================
 6. GunQuery -- Firearm Entity

@@ -388,8 +388,7 @@
                                                                                                               "props":  {
                                                                                                                             "fieldId":  "purposeCodeDH",
                                                                                                                             "label":  "Purpose Code",
-                                                                                                                            "maxLength":  "1",
-                                                                                                                            "initialValue":  "C"
+                                                                                                                            "maxLength":  "1"
                                                                                                                         },
                                                                                                               "isCanvas":  false,
                                                                                                               "hidden":  false,
@@ -909,8 +908,7 @@
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "purposeCodeDH",
                                                                                                                                  "label":  "Purpose Code",
-                                                                                                                                 "maxLength":  "1",
-                                                                                                                                 "initialValue":  "C"
+                                                                                                                                 "maxLength":  "1"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
                                                                                                                    "hidden":  false,
@@ -1511,8 +1509,7 @@
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "purposeCodeDH",
                                                                                                                                     "label":  "Purpose Code",
-                                                                                                                                    "maxLength":  "1",
-                                                                                                                                    "initialValue":  "C"
+                                                                                                                                    "maxLength":  "1"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
                                                                                                                       "hidden":  false,
@@ -6113,7 +6110,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Query forms for FL_FCIC v3.5",
+                        "description":  "Query forms for FL_FCIC v3.6",
                         "name":  "ENTITIES",
                         "type":  "BUNDLE",
                         "order":  {
@@ -7329,6 +7326,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "licensePlateYear",
+                                                                                                             "vehicleMakeCode",
+                                                                                                             "vehicleYear",
                                                                                                              "imageIndicator"
                                                                                                          ]
                                                                                              },
@@ -7342,6 +7341,8 @@
                                                                                                              "vehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "vehicleMakeCode",
+                                                                                                             "vehicleYear",
                                                                                                              "imageIndicator"
                                                                                                          ]
                                                                                              },
@@ -7440,6 +7441,7 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "imageIndicator",
+                                                                                                             "registrationState",
                                                                                                              "vehicleMakeCode"
                                                                                                          ]
                                                                                              },
@@ -7776,11 +7778,10 @@
                                                                                                              "nameLastDH",
                                                                                                              "nameFirstDH",
                                                                                                              "sexCodeDH",
-                                                                                                             "registrationState",
-                                                                                                             "purposeCodeDH"
+                                                                                                             "registrationState"
                                                                                                          ],
                                                                                                  "any":  [
-
+                                                                                                             "purposeCodeDH"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
@@ -7791,11 +7792,10 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "operatorLicenseNumberDH",
-                                                                                                             "registrationState",
-                                                                                                             "purposeCodeDH"
+                                                                                                             "registrationState"
                                                                                                          ],
                                                                                                  "any":  [
-
+                                                                                                             "purposeCodeDH"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
@@ -8342,7 +8342,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v3.5",
+                        "description":  "Provider configuration for FL_FCIC v3.6",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"
