@@ -1,6 +1,6 @@
 ﻿CA_CLETS METADATA REFERENCE
 ============================
-Generated: 2026-05-08
+Generated: 2026-05-12
 Source: CA_CLETS.xml (metadata) + CA_CLETS_BASE.json
 Metadata: 179 total transactions, 6 queries built in JSON
 
@@ -55,11 +55,11 @@ METADATA COMBINATIONS (7 total):
   NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
 BUILD COVERAGE (5 of 7 built):
+  BUILT   NLTS.BQ.H      set[caRequestPurposeCode, boatHullIdNumber, registrationState]
+  BUILT   NLTS.BQ.R      set[caRequestPurposeCode, registrationNumber, registrationState]
   BUILT   IA.QB.H        set[caRequestPurposeCode, boatHullIdNumber]
   BUILT   IA.QB.O        set[caRequestPurposeCode, ownerAppliedNumber]
   BUILT   IA.QB.R        set[caRequestPurposeCode, registrationNumber]
-  BUILT   NLTS.BQ.H      set[caRequestPurposeCode, boatHullIdNumber, registrationState]
-  BUILT   NLTS.BQ.R      set[caRequestPurposeCode, registrationNumber, registrationState]
   SKIP    IV.4B          RegistrationNumber -- MC expansion candidate
 
 ================================================================================
@@ -83,8 +83,8 @@ METADATA COMBINATIONS (2 total):
   NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   NLTS.KQ.N      set[caRequestPurposeCode, birthDate, nameLast, nameFirst, sexCode]
-  BUILT   NLTS.KQ.O      set[caRequestPurposeCode, operatorLicenseNumber]
+  BUILT   NLTS.KQ.N      set[caRequestPurposeCodeDH, birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+  BUILT   NLTS.KQ.O      set[caRequestPurposeCodeDH, operatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 36)
@@ -117,9 +117,9 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
 BUILD COVERAGE (3 of 8 built):
+  BUILT   IN.L1          set[caRequestPurposeCode, nameLast, nameFirst]
   BUILT   NLTS.DQ        set[caRequestPurposeCode, operatorLicenseNumber, registrationState]
   BUILT   ID.L1          set[caRequestPurposeCode, operatorLicenseNumber]
-  BUILT   IN.L1          set[caRequestPurposeCode, nameLast, nameFirst]
   SKIP    IR.QVC         Name -- MC expansion candidate
   SKIP    IR.QVC         OperatorLicenseNumber -- MC expansion candidate
   SKIP    IR.QVC         CriminalIdNumber -- MC expansion candidate

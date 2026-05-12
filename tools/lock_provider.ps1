@@ -3,9 +3,16 @@
   Renames folder to/from _LOCKED suffix, updates STATUS.txt lock line,
   and updates all references in CLAUDE.md, KB, and tools.
 
+  Pre-lock validation (hard gates):
+    1. BASE and MC JSON files must both exist
+    2. BASE and MC versions must match
+    3. Both must validate clean (0 FAIL in reports)
+  Use -Force to override (prints warning but proceeds).
+
   Usage:
     .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Lock
     .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Unlock
+    .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Lock -Force
 #>
 
 param(
@@ -13,7 +20,8 @@ param(
     [string]$Provider,
     [Parameter(Mandatory=$true)]
     [ValidateSet('Lock','Unlock')]
-    [string]$Action
+    [string]$Action,
+    [switch]$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,6 +46,76 @@ if ($Action -eq 'Lock') {
         Write-Host "  [ERROR] Provider folder not found: $srcFolder" -ForegroundColor Red
         exit 1
     }
+
+    # --- PRE-LOCK VALIDATION ---
+    $preLockFail = $false
+    Write-Host "  --- Pre-lock validation ---" -ForegroundColor Cyan
+
+    # Gate 1: BASE and MC JSON files must exist
+    $baseJson = Get-ChildItem $srcFolder -Filter "*_BASE.json" -File | Where-Object { $_.Name -notmatch 'READABLE' } | Select-Object -First 1
+    $mcJson   = Get-ChildItem $srcFolder -Filter "*_MC.json"   -File | Where-Object { $_.Name -notmatch 'READABLE' } | Select-Object -First 1
+
+    if (-not $baseJson) {
+        Write-Host "  [FAIL] No BASE JSON found in $srcFolder" -ForegroundColor Red
+        $preLockFail = $true
+    }
+    if (-not $mcJson) {
+        Write-Host "  [FAIL] No MC JSON found in $srcFolder" -ForegroundColor Red
+        $preLockFail = $true
+    }
+
+    # Gate 2: Version parity (extract from provider bundle description)
+    if ($baseJson -and $mcJson) {
+        $baseData = Get-Content $baseJson.FullName -Raw | ConvertFrom-Json
+        $mcData   = Get-Content $mcJson.FullName   -Raw | ConvertFrom-Json
+
+        $baseBundleDesc = ($baseData.bundles | Where-Object { $_.provider -notin @('MARK43','RMS') } | Select-Object -First 1).description
+        $mcBundleDesc   = ($mcData.bundles   | Where-Object { $_.provider -notin @('MARK43','RMS') } | Select-Object -First 1).description
+
+        $baseVer = if ($baseBundleDesc -match 'v([\d.]+)') { $Matches[1] } else { 'unknown' }
+        $mcVer   = if ($mcBundleDesc   -match 'v([\d.]+)') { $Matches[1] } else { 'unknown' }
+
+        if ($baseVer -ne $mcVer) {
+            Write-Host "  [FAIL] Version mismatch: BASE v$baseVer != MC v$mcVer" -ForegroundColor Red
+            $preLockFail = $true
+        } else {
+            Write-Host "  [PASS] Version parity: v$baseVer" -ForegroundColor Green
+        }
+    }
+
+    # Gate 3: Validator reports exist and show 0 FAIL
+    $docsDir = Join-Path $srcFolder "docs"
+    foreach ($variant in @('base','mc')) {
+        $reportDir = Join-Path $docsDir $variant
+        $valReport = Join-Path $reportDir "VALIDATOR_REPORT_${unlockedName}_$($variant.ToUpper()).txt"
+        if (Test-Path $valReport) {
+            $valContent = Get-Content $valReport -Raw
+            if ($valContent -match '(\d+)\s*FAIL' -and [int]$Matches[1] -gt 0) {
+                Write-Host "  [FAIL] $($variant.ToUpper()) validator has $($Matches[1]) FAIL(s)" -ForegroundColor Red
+                $preLockFail = $true
+            } else {
+                Write-Host "  [PASS] $($variant.ToUpper()) validator: 0 FAIL" -ForegroundColor Green
+            }
+        } else {
+            Write-Host "  [FAIL] $($variant.ToUpper()) validator report not found: $valReport" -ForegroundColor Red
+            $preLockFail = $true
+        }
+    }
+
+    if ($preLockFail) {
+        if ($Force) {
+            Write-Host ""
+            Write-Host "  [OVERRIDE] -Force specified. Locking despite failures." -ForegroundColor Yellow
+            Write-Host ""
+        } else {
+            Write-Host ""
+            Write-Host "  [BLOCKED] Pre-lock validation failed. Fix issues or use -Force to override." -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        Write-Host "  [PASS] All pre-lock checks passed" -ForegroundColor Green
+    }
+    Write-Host ""
 
     $statusFile = Get-ChildItem (Join-Path $srcFolder "docs") -Filter "*STATUS*" -File -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($statusFile) {
@@ -73,8 +151,9 @@ else {
     if ($statusFile) {
         $content = Get-Content $statusFile.FullName -Raw
         $content = $content -replace '(?m)^\s*\*{3}.*LOCKED.*\*{3}\s*\r?\n', ''
+        $content = $content -replace '\s*LOCKED', ''
         [System.IO.File]::WriteAllText($statusFile.FullName, $content)
-        Write-Host "  [UPDATE] Removed LOCKED line from $($statusFile.Name)" -ForegroundColor Cyan
+        Write-Host "  [UPDATE] Removed all LOCKED references from $($statusFile.Name)" -ForegroundColor Cyan
     }
 
     Write-Host "  [RENAME] $lockedName -> $unlockedName" -ForegroundColor Green
