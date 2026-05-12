@@ -13,10 +13,10 @@ All 18 active providers rebuilt and validated. 0 FAIL / 0 WARN across all 36 JSO
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.5 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
-| 5 | FL_FCIC | v3.4 | 101P/0F/0W | 102P/0F/0W | 0 | |
+| 5 | FL_FCIC | v3.8 | 102P/0F/0W | 102P/0F/0W | 0 | RegistrationStateDH, metadata audit, one-directional deselect |
 | 6 | TX_TLETS | v2.5 | 84P/0F/0W | 84P/0F/0W | 2 | EmailAddress QIDM-only (unfixable) |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v1.7 | 66P/0F/0W | 70P/0F/0W | 0 | |
+| 8 | CA_CLETS | v1.8 | 66P/0F/0W | 70P/0F/0W | 0 | LOCKED -- MC rebuilt, one-directional deselect |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 0 | |
 | 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/0W | 0 | |
