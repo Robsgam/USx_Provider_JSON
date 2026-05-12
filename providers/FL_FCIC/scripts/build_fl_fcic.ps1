@@ -34,7 +34,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.7",
+    [string]$Version = "3.8",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -405,17 +405,17 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationState'); any = @('purposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH'); any = @('purposeCodeDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationState'); any = @('purposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationStateDH'); any = @('purposeCodeDH') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -706,8 +706,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'sexCode_Input';   node = Sel 'sexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '10' 'ROW_PER_3' }
             )}
-            @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_4'; cols = @('6','3','3'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_4' }
+                @{ id = 'registrationStateDH_Input';     node = Sel 'registrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'FL' } 'ROW_PER_4' }
                 @{ id = 'purposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_4' }
             )}
             @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(

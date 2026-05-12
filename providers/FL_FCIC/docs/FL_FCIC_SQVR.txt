@@ -1,7 +1,7 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 Last updated: 2026-05-12
-JSON version: v3.7 BASE + v3.7 MC
+JSON version: v3.8 BASE + v3.8 MC
 Validator: 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (BASE) | 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (MC)
 Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL / 0 LIMITATION (2026-05-05)
 QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8)
@@ -132,22 +132,23 @@ LIMITATION #2 (one QIDM per entity+query pair).
 
   QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=true)
   QIF:  Person (shared, DH card with DH-suffix fields)
-  DH fields: OperatorLicenseNumberDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
-  Shared fields: RegistrationState, PurposeCode (no default)
+  DH fields: OperatorLicenseNumberDH, RegistrationStateDH (default=FL), NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
+  DH-only: PurposeCode (no default)
   Handler-only: Attention (CommsysGetLastNameFirstNameInitialRuleHandler)
   queriesToDeselect: [DriverLicenseQuery]
 
   KQ+OLN -- FL Driver History (OLN) [CONFIRMED]
     keyReference: KQOperatorLicenseNumber
-    set: [OperatorLicenseNumberDH, RegistrationState]
+    set: [OperatorLicenseNumberDH, RegistrationStateDH]
     any: [PurposeCodeDH]
 
   KQ+Name -- FL Driver History (Name) [CONFIRMED]
     keyReference: KQName
-    set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationState]
+    set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH]
     any: [PurposeCodeDH]
 
   KQ is FL-specific (not NCIC/Nlets). Requires State. PurposeCode optional (any[]).
+  v3.8: RegistrationStateDH (initialValue=FL) on DH card isolates from DL State routing.
   Attention auto-filled by CommsysGetLastNameFirstNameInitialRuleHandler (not in combos).
   autoSelect=true on both BASE and MC. queriesToDeselect deselects DL when DH selected.
 

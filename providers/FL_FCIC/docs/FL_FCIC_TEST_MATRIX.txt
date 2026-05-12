@@ -1,70 +1,85 @@
-FL_FCIC v3.6 BASE -- Production Test Matrix
-=============================================
+FL_FCIC v3.8 MC -- Production Test Matrix
+==========================================
 Generated: 2026-05-12
 Source: test_commsys.ps1 simulator + build script field audit
 Combos: 35 CommSys (8 QIDMs) + 2 RMS = 37 total
+Variant: MC (multi-card Person layout)
+
+MC LAYOUT NOTES
+===============
+Person has 3 cards: Search Options | Driver License | Driver History
+  - Search Options card: State dropdown (DL routing) + ImageIndicator
+  - Driver License card: OLN, Name, DOB, Sex, Suffix
+  - Driver History card: OLN_DH, State_DH (default=FL), PurposeCode, Name_DH, DOB_DH, Sex_DH
+  v3.8: RegistrationStateDH on DH card (default=FL) isolates DH State from DL routing
+All other entities: single card (same as BASE)
+FieldIds use PascalCase (LicensePlateNumber not licensePlateNumber)
 
 FORM FIELDS BY ENTITY
 =====================
 
-Vehicle (10 fields, single card "VEHICLE SEARCH"):
-  licensePlateNumber       FormInput   maxLen=10
-  registrationState        FormSelect  STATE (no default -- LIMITATION #30)
-  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
-  licensePlateTypeCode     FormSelect  NCIC_LICENSE_PLATE_TYPE  default=PC
-  licensePlateYear         FormInput   maxLen=4  default=2026
-  vehicleYear              FormInput   maxLen=4
-  vehicleIdentificationNumber  FormInput   maxLen=20
-  vehicleMakeCode          FormSelect  VEHICLE_MAKE/NCIC
-  decalNumber              FormInput   maxLen=10
-  titleLienInformation     FormInput   maxLen=8
+Vehicle (10 fields, 1 card):
+  LicensePlateNumber       FormInput   maxLen=10
+  RegistrationState        FormSelect  STATE (no default -- LIMITATION #30)
+  ImageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  LicensePlateTypeCode     FormSelect  NCIC_LICENSE_PLATE_TYPE  default=PC
+  LicensePlateYear         FormInput   maxLen=4  default=2026
+  VehicleYear              FormInput   maxLen=4
+  VehicleIdentificationNumber  FormInput   maxLen=20
+  VehicleMakeCode          FormSelect  VEHICLE_MAKE/NCIC
+  DecalNumber              FormInput   maxLen=10
+  TitleLienInformation     FormInput   maxLen=8
 
-Person (15 fields, single card "PERSON SEARCH"):
-  operatorLicenseNumber    FormInput   maxLen=20
-  registrationState        FormSelect  STATE (no default)
-  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=Y
-  nameLast                 FormInput   maxLen=30
-  nameFirst                FormInput   maxLen=30
-  nameMiddle               FormInput   maxLen=30
-  birthDate                FormDate
-  sexCode                  FormSelect  SEX/NIBRS
-  nameSuffix               FormInput   maxLen=10
-  operatorLicenseNumberDH  FormInput   maxLen=20
-  purposeCodeDH            FormInput   maxLen=1  (NO DEFAULT)
-  nameLastDH               FormInput   maxLen=30
-  nameFirstDH              FormInput   maxLen=30
-  birthDateDH              FormDate
-  sexCodeDH                FormSelect  SEX/NIBRS
+Person (16 fields, 3 cards):
+  Card: SEARCH OPTIONS
+    RegistrationState        FormSelect  STATE (no default) -- DL routing only
+    ImageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=Y
+  Card: DRIVER LICENSE
+    OperatorLicenseNumber    FormInput   maxLen=20
+    NameLast                 FormInput   maxLen=30
+    NameFirst                FormInput   maxLen=30
+    NameMiddle               FormInput   maxLen=30
+    BirthDate                FormDate
+    SexCode                  FormSelect  SEX/NIBRS
+    NameSuffix               FormInput   maxLen=10
+  Card: DRIVER HISTORY
+    OperatorLicenseNumberDH  FormInput   maxLen=20
+    RegistrationStateDH      FormSelect  STATE  default=FL  -- DH routing (v3.8)
+    PurposeCodeDH            FormInput   maxLen=1  (NO DEFAULT)
+    NameLastDH               FormInput   maxLen=30
+    NameFirstDH              FormInput   maxLen=30
+    BirthDateDH              FormDate
+    SexCodeDH                FormSelect  SEX/NIBRS
 
-Firearm (5 fields, single card "FIREARM QUERY"):
-  gunSerialNumber          FormInput   maxLen=11
-  gunMake                  FormSelect  NCIC_FIREARM_MAKE/NCIC
-  ncicNumber               FormInput   maxLen=10
-  processControlNumber     FormInput   maxLen=10
-  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+Firearm (5 fields, 1 card):
+  GunSerialNumber          FormInput   maxLen=11
+  GunMake                  FormSelect  NCIC_FIREARM_MAKE/NCIC
+  NCICNumber               FormInput   maxLen=10
+  ProcessControlNumber     FormInput   maxLen=10
+  ImageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
 
-Article (6 fields, single card "ARTICLE QUERY"):
-  articleSerialNumber      FormInput   maxLen=20
-  articleTypeCode           FormSelect  NCIC_ARTICLE_TYPE/CA_CLETS
-  ownerAppliedNumber       FormInput   maxLen=20
-  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
-  ncicNumber               FormInput   maxLen=10
-  processControlNumber     FormInput   maxLen=10
+Article (6 fields, 1 card):
+  ArticleSerialNumber      FormInput   maxLen=20
+  ArticleTypeCode          FormSelect  NCIC_ARTICLE_TYPE/CA_CLETS
+  OwnerAppliedNumber       FormInput   maxLen=20
+  ImageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  NCICNumber               FormInput   maxLen=10
+  ProcessControlNumber     FormInput   maxLen=10
 
-Boat (13 fields, single card "BOAT SEARCH"):
-  registrationNumber       FormInput   maxLen=8
-  boatHullIdNumber         FormInput   maxLen=62
-  registrationState        FormSelect  STATE (no default)
-  decalNumber              FormInput   maxLen=20
-  titleLienInformation     FormInput   maxLen=10
-  coastGuardDocumentNumber FormInput   maxLen=8
-  ncicNumber               FormInput   maxLen=10
-  processControlNumber     FormInput   maxLen=10
-  imageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
-  relatedHitSearchIndicator FormInput  maxLen=1  (Stolen Search Y)
-  nameLast                 FormInput   maxLen=30  (Last Name BQ)
-  nameFirst                FormInput   maxLen=30  (First Name BQ)
-  birthDate                FormDate    (DOB BQ)
+Boat (13 fields, 1 card):
+  RegistrationNumber       FormInput   maxLen=8
+  BoatHullIdNumber         FormInput   maxLen=62
+  RegistrationState        FormSelect  STATE (no default)
+  DecalNumber              FormInput   maxLen=20
+  TitleLienInformation     FormInput   maxLen=10
+  CoastGuardDocumentNumber FormInput   maxLen=8
+  NCICNumber               FormInput   maxLen=10
+  ProcessControlNumber     FormInput   maxLen=10
+  ImageIndicator           FormSelect  YES_NO_UNKNOWN/NCIC  default=N
+  RelatedHitSearchIndicator FormInput  maxLen=1  (Stolen Search Y)
+  NameLast                 FormInput   maxLen=30  (Last Name BQ)
+  NameFirst                FormInput   maxLen=30  (First Name BQ)
+  BirthDate                FormDate    (DOB BQ)
 
 autoSelect / queriesToDeselect:
   DriverLicenseQuery:  autoSelect=true, NO queriesToDeselect

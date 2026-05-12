@@ -46,12 +46,19 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
 | archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |
 
+## v3.8 (2026-05-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_BASE.json | v3.8 | Current | 102P/0F/0W/0LIM. RegistrationStateDH isolates DH State from DL routing. |
+| FL_FCIC_MC.json | v3.8 | Current | 102P/0F/0W/0LIM. MC variant. |
+
 ## v3.7 (2026-05-12)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v3.7 | Current | 102P/0F/0W/0LIM. Person State label fix for DH reachability. |
-| FL_FCIC_MC.json | v3.7 | Current | 102P/0F/0W/0LIM. MC variant. |
+| FL_FCIC_BASE.json | v3.7 | Archived | 102P/0F/0W/0LIM. Person State label fix for DH reachability. |
+| FL_FCIC_MC.json | v3.7 | Archived | 102P/0F/0W/0LIM. MC variant. |
 
 ## v3.6 (2026-05-12)
 

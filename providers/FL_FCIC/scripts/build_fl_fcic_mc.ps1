@@ -35,7 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.7",
+    [string]$Version = "3.8",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -406,17 +406,17 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('PurposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationState'); any = @('PurposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH'); any = @('PurposeCodeDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationState'); any = @('PurposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','RegistrationStateDH'); any = @('PurposeCodeDH') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -721,8 +721,9 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_DH'
         title = 'Driver History'
         rows  = @(
-            @{ id = 'ROW_DH1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'FL' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'PurposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('6','6'); fields = @(

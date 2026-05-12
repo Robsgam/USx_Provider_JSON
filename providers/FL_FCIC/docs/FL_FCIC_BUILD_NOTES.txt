@@ -4,6 +4,16 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v3.8 (2026-05-12) -- RegistrationStateDH: isolate DH State from DL routing
+  CHANGED: Added RegistrationStateDH field (FormSelect, STATE, initialValue=FL) on DH card.
+           DH QIDM State attribute sourceField changed from RegistrationState to RegistrationStateDH.
+           KQ combo set[] changed from RegistrationState to RegistrationStateDH.
+           DL State (RegistrationState on Search Options card) remains blank — no cross-contamination.
+  REASON:  Shared State field confused officers: blank=correct for DL (FDQ), but DH requires State.
+           Filling State for DH caused DL to route OOS (DQ) instead of in-state (FDQ).
+           DH-suffix pattern extended to State — consistent with all other DH fields.
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 v3.7 (2026-05-12) -- Person State label fix for DH reachability
   CHANGED: Person State label from "State (leave blank for FL)" to "State" (BASE + MC).
   REASON:  DH KQ combos require State in set[] — label told officers to leave it blank,
