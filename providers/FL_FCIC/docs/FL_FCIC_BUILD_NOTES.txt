@@ -4,6 +4,12 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v3.7 (2026-05-12) -- Person State label fix for DH reachability
+  CHANGED: Person State label from "State (leave blank for FL)" to "State" (BASE + MC).
+  REASON:  DH KQ combos require State in set[] — label told officers to leave it blank,
+           making DH unreachable. Neutral label allows DL (blank=FDQ) and DH (filled=KQ).
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 v3.6 (2026-05-12) -- Metadata audit: PurposeCode any[], FRQ/QV field alignment, no PurposeCode default
   CHANGED: DH combos: PurposeCode moved from set[] to any[] (metadata says optional).
            FRQ Plate/VIN: added VehicleMakeCode, VehicleYear to any[].
