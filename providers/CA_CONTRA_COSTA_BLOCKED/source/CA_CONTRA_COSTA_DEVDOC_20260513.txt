@@ -1,0 +1,232 @@
+Contra Costa County, CA (CA_CONTRA_COSTA)
+Transport:
+TCP/IP (Level II)
+
+Disclaimer Statement
+
+Routing and Configuration Information:
+Save Bytes (Primary) Mnemonic (Secondary)
+ The Contra Costa County assigned ORI for a device (or for the site) should be placed in the <Authentication>/<ORI> field in the ConnectCIC header.
+ The Contra Costa County assigned Mnemonic for a device should be placed in the <Authentication>/<Mnemonic> field in the ConnectCIC header.
+ The agency assigned User ID should be placed in the <Authentication>/<UserName> field in the ConnectCIC header.
+ The agency assigned Terminal Identifier should be placed in the <Authentication>/<DeviceId> field in the ConnectCIC header.
+
+Security Requirements:
+Agency must adhere to all requirements set forth by Contra Costa County for operation of a direct connection.
+
+Logon Requirements:
+None
+
+Certification Requirements:
+None
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 1
+
+Transaction Requirements:
+Beginning July 21, 2021 CLETS requires a "Purpose Code" field to be supplied with every CLETS transaction. The information regarding this purpose code was published by CLETS in Information Bulletin 20-03-CJIS and covers the "Purpose Code" field added to satisfy Assembly Bill (AB) 1747.
+
+Any transaction which does not supply a valid Purpose Code value will be rejected by CLETS. ConnectCIC does not default the value of field; it must be provided by the partner implementation as a user selectable field.
+
+The CLETS "Purpose Code" value must be supplied to ConnectCIC via the <CaRequestPurposeCode> element as a sibling to the transaction-specific elements covered in this document. The <CaRequestPurposeCode> element is mandatory for all transactions.
+
+The element is a single character value which may be one of the following:
+
+ C ­ Criminal Justice  I ­ Immigration Enforcement  U ­ Investigate Violations of Title 8, section 1325 of the United States Code
+
+Basic Queries Supported:
+None
+
+Transactions Supported:
+None
+
+Expanded Queries Supported:
+
+CaContraCostaJawsWarrantQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+BirthDate
+
+BirthDate
+
+M
+
+8
+
+Name
+
+Name
+
+M
+
+30
+
+RequestingAgencyId
+
+RequestingAgencyId
+
+M
+
+2 See JAWS Inquiry and Update Documentation
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 2
+
+Possible Combinations 1. 1. (In/Out) BirthDate, Name, RequestingAgencyId
+
+CaContraCostaJawsPersonQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Address
+
+Address
+
+O
+
+3
+
+AddressCity
+
+AddressCity
+
+O
+
+13
+
+Age
+
+Age
+
+C
+
+2
+
+BirthDate
+
+BirthDate
+
+C
+
+8
+
+Name
+
+Name
+
+M
+
+30
+
+RaceCode
+
+RaceCode
+
+O
+
+1
+
+RequestingAgencyId
+
+RequestingAgencyId
+
+M
+
+2 See JAWS Inquiry and Update Documentation
+
+SexCode
+
+SexCode
+
+C
+
+1
+
+State
+
+State
+
+C
+
+2
+
+Possible Combinations
+1. (In) BirthDate, Name, RequestingAgencyId, [Address, AddressCity] 2. (In) Age, Name, RequestingAgencyId, [Address, AddressCity] 3. (In/Out) Name, RequestingAgencyId, [Age, BirthDate, RaceCode, SexCode] 4. (Out) BirthDate, Name, SexCode, State, RequestingAgencyId 5. (Out) Age, Name, State, RequestingAgencyId, [AddressCity, SexCode]
+
+CLETSPersonSuperQuery
+
+Field Name
+
+XML Tag Name
+
+M/C/O Size Possible Values
+
+Age
+
+Age
+
+C
+
+2
+
+BirthDate
+
+BirthDate
+
+C
+
+10
+
+Name
+
+Name
+
+C
+
+30
+
+OperatorLicenseNumber OperatorLicenseNumber
+
+C
+
+20
+
+SexCode
+
+SexCode
+
+C
+
+1
+
+State
+
+State
+
+O
+
+Possible Combinations 1. (In/Out) OperatorLicenseNumber
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 3
+
+2. (In/Out) Name, SexCode, Age 3. (In/Out) Name, SexCode, BirthDate, [State]
+Hardware/Software Requirements:
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+
+© 2025 CommSys, Inc. Confidential. NDA Required.
+
+Page 4
+
+

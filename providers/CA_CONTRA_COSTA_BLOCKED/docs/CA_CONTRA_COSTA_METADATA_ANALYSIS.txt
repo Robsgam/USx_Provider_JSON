@@ -1,0 +1,196 @@
+CA_CONTRA_COSTA — METADATA QUERY ANALYSIS
+==========================================
+Date: 2026-05-13
+Source: CA_CONTRA_COSTA.xml (System CONTRA_COSTA v6)
+Reference: CA_CLETS (CLETS v58) for CA-pattern comparison
+Devdoc: CA_CONTRA_COSTA.5.13.2026.pdf (Basic Queries Supported: None)
+Authority: METADATA (overrides devdoc per user directive)
+
+
+METADATA OVERVIEW
+-----------------
+Transactions:  2
+Total combos:  6
+Entities:      Person ONLY (no Vehicle, Boat, Gun, Article)
+MessageKeys:   DQ, DNQ, INL1, IR.QVC, IW.N
+
+ValueLists:
+  CaRequestPurposeCode  C/I/U (same as CA_CLETS)
+  SexCode               M/F/U
+
+
+TRANSACTION 1: CaContraCostaJawsPersonQuery (v9)
+=================================================
+ConnectCIC mapping: DriverLicenseQuery → Person entity
+5 combinations, all by Name (no OLN queries exist)
+
+FIELDS (10):
+  Name                  Name       maxLen=30  (First, Middle, Last, Suffix)
+  BirthDate             Date       maxLen=8   (Day, Month, Year)
+  Age                   Alphanum   maxLen=2
+  SexCode               Alphanum   maxLen=1
+  RaceCode              Alphanum   maxLen=1
+  Address               Alphanum   maxLen=3
+  AddressCity           Alphanum   maxLen=13
+  State                 Alphanum   maxLen=2
+  CaRequestPurposeCode  Alpha      maxLen=1   (valueList: C/I/U)
+  RequestingAgencyId    Alpha      maxLen=2
+
+COMBINATIONS (ordered by metadata priority):
+
+  #  keyRef   Description                  set[]                                             any[]
+  -  -------  ---------------------------  ------------------------------------------------  -----------------------
+  1  IR.QVC   CLETS Multipurpose Inquiry   CaPurpose, Name, ReqAgId, Choice(DOB|Age)         SexCode, RaceCode
+  2  IW.N     JAWS Person by Name          Name, ReqAgId                                     BirthDate
+  3  INL1     DMV Driver by Name           CaPurpose, Name, ReqAgId                           Address, AddressCity,
+                                                                                               BirthDate, Age
+  4  DQ       Nlets Driver (Name+DOB)      CaPurpose, Name, DOB, SexCode, State, ReqAgId     (none)
+  5  DNQ      Nlets Driver (Name Only)     CaPurpose, Name, State, ReqAgId                    Age, AddressCity, SexCode
+
+NOTES:
+  - IR.QVC uses <Choice> construct: BirthDate OR Age satisfies set[]. This is
+    unique — no other CA provider uses Choice in our portfolio.
+  - DQ and DNQ require State in set[] — these are OOS Nlets queries.
+  - IW.N requires only Name + ReqAgId (lightest combo).
+  - INL1 requires only CaPurpose + Name + ReqAgId (in-state DMV lookup).
+  - RequestingAgencyId is MANDATORY on every combo. This is unique to
+    Contra Costa — no other provider requires it.
+
+
+TRANSACTION 2: CaContraCostaJawsWarrantQuery (v4)
+==================================================
+ConnectCIC mapping: WantedPersonQuery → Person entity
+1 combination
+
+FIELDS (3):
+  Name                  Name       maxLen=30  (First, Middle, Last, Suffix)
+  BirthDate             Date       maxLen=8   (Day, Month, Year)
+  RequestingAgencyId    Alpha      maxLen=2
+
+COMBINATIONS:
+
+  #  keyRef   Description                  set[]                          any[]
+  -  -------  ---------------------------  -----------------------------  -----
+  1  IW.N     JAWS Warrant by Name         Name, BirthDate, ReqAgId       (none)
+
+NOTE: Same keyRef (IW.N) as combo 2 in PersonQuery but DIFFERENT transaction.
+  ConnectCIC routes by (targetEntity, query) so these are separate QIDMs.
+  WarrantQuery's IW.N requires BirthDate in set[]; PersonQuery's IW.N has
+  BirthDate in any[]. Different requirements = different combos.
+
+
+CROSS-REFERENCE: CA_CLETS PATTERNS
+===================================
+
+CA_CLETS DriverLicenseQuery built combos:
+  IN.L1     DMV by Name       set[CaPurpose, Name]                any[DOB]
+  NLTS.DQ   Nlets by OLN      set[CaPurpose, OLN, State]          (none)
+  ID.L1     DMV by OLN         set[CaPurpose, OLN]                 (none)
+
+Contra Costa equivalents:
+  INL1  ≈ CA_CLETS IN.L1   (DMV by Name)     — MATCH (same pattern, different keyRef name)
+  DQ    ≈ CA_CLETS NLTS.DQ (Nlets by Name)   — PARTIAL (Contra Costa requires Name+DOB+Sex,
+                                                 CA_CLETS uses OLN. Both require State.)
+  DNQ   — NO CA_CLETS equivalent             — NEW (Nlets Name-only, no DOB required)
+  IR.QVC — CA_CLETS has this but SKIPPED      — Contra Costa builds what CA_CLETS deferred
+  IW.N   — CA_CLETS has no JAWS queries       — Contra Costa-specific
+
+KEY DIFFERENCES FROM CA_CLETS:
+  1. NO OperatorLicenseNumber — not in any transaction. All queries are by Name.
+  2. NO Vehicle queries — no VehicleRegistrationQuery, no VehicleStolenQuery
+  3. NO Boat/Gun/Article queries — Person entity only
+  4. NO DriverHistoryQuery — no KQ/DH transaction
+  5. RequestingAgencyId required on ALL combos — unique to Contra Costa
+  6. Age field present — alternative to BirthDate in IR.QVC and INL1
+  7. Address/AddressCity fields — not in CA_CLETS basic DL queries
+  8. Choice construct in IR.QVC — BirthDate OR Age, not seen elsewhere
+
+
+DEVDOC vs METADATA DISCREPANCY
+===============================
+The devdoc (5.13.2026) lists under "Expanded Queries Supported":
+  1. CaContraCostaJawsWarrantQuery  — IN METADATA ✓
+  2. CaContraCostaJawsPersonQuery   — IN METADATA ✓
+  3. CLETSPersonSuperQuery          — NOT IN METADATA ✗
+
+CLETSPersonSuperQuery devdoc combos (3):
+  1. (In/Out) OperatorLicenseNumber
+  2. (In/Out) Name, SexCode, Age
+  3. (In/Out) Name, SexCode, BirthDate, [State]
+
+This is the ONLY transaction with OLN queries. It exists in CA_CLETS
+metadata (as a separate transaction) but is ABSENT from the Contra
+Costa metadata XML. Since metadata is bible, this transaction is NOT
+buildable until the XML is updated to include it.
+
+If/when CLETSPersonSuperQuery is added to metadata, it would add:
+  - OLN-based driver queries (the missing query path)
+  - An additional 3 combos bringing total to 9
+
+
+COMBO PRIORITY ANALYSIS (for build ordering)
+=============================================
+Combo ordering must be most-specific first. Analyzing field overlap:
+
+  Combo    Required fields (set[])                  Specificity
+  -------  ---------------------------------------- -----------
+  DQ       CaPurpose+Name+DOB+Sex+State+ReqAgId     6 fields (MOST)
+  DNQ      CaPurpose+Name+State+ReqAgId             4 fields + any[]
+  IR.QVC   CaPurpose+Name+ReqAgId+Choice(DOB|Age)   4 fields + any[]
+  INL1     CaPurpose+Name+ReqAgId                   3 fields + any[]
+  IW.N     Name+ReqAgId                             2 fields + any[]
+
+Recommended combo order in QIDM:
+  1. DQ       (most specific — 6 set[] fields, no any[])
+  2. DNQ      (4 set[] + State — OOS only)
+  3. IR.QVC   (4 set[] with Choice — in-state multipurpose)
+  4. INL1     (3 set[] — in-state DMV)
+  5. IW.N     (2 set[] — lightest, catches everything else)
+
+STATE ROUTING:
+  - DQ and DNQ require State → OOS queries (Nlets)
+  - IR.QVC, INL1, IW.N do NOT require State → in-state queries
+  - Same DQ/FDQ pattern as FL_FCIC: State presence differentiates
+    OOS (DQ/DNQ) from in-state (IR.QVC/INL1/IW.N)
+  - MC layout will be needed to isolate State-required vs
+    State-absent combos for full path coverage (same finding as FL)
+
+
+BUILD PLAN SUMMARY
+==================
+Entity: Person (only entity)
+QIDMs: 2
+
+  QIDM 1: DriverLicenseQuery (CaContraCostaJawsPersonQuery)
+    5 combos: DQ, DNQ, IR.QVC, INL1, IW.N
+    Fields needed on form:
+      - CaRequestPurposeCode (FormSelect, valueList C/I/U, initialValue=C)
+      - NameFirst, NameLast, NameMiddle, NameSuffix (FormInput)
+      - BirthDate (FormDate)
+      - Age (FormInput, maxLen=2)
+      - SexCode (FormSelect, NIBRS_SEX per KB)
+      - RaceCode (FormSelect, NIBRS_RACE per KB)
+      - Address (FormInput, maxLen=3)
+      - AddressCity (FormInput, maxLen=13)
+      - State (FormSelect, attributeTypeId=STATE, NO initialValue)
+      - RequestingAgencyId (FormInput, maxLen=2) — HIDDEN? Check with CA_CLETS pattern.
+
+  QIDM 2: WantedPersonQuery (CaContraCostaJawsWarrantQuery)
+    1 combo: IW.N
+    Fields needed on form:
+      - NameFirst, NameLast, NameMiddle, NameSuffix (FormInput)
+      - BirthDate (FormDate)
+      - RequestingAgencyId (FormInput, maxLen=2)
+
+  RMS: Standard HIDLE clone (Person + Vehicle)
+
+OPEN QUESTIONS:
+  1. RequestingAgencyId — visible or hidden? If the agency has a fixed
+     value, it could be InpH with initialValue. If officers must enter it,
+     it must be visible Inp. Check with customer/Cringer.
+  2. Age field — unique to this provider. FormInput maxLen=2. How does
+     it interact with BirthDate in the Choice construct? Platform may
+     not support Choice natively — may need to split into separate combos
+     (one with DOB in set[], one with Age in set[]).
+  3. CLETSPersonSuperQuery — request updated metadata from CommSys if
+     OLN queries are desired. Currently not buildable.

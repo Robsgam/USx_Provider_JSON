@@ -1,0 +1,40 @@
+CA_CONTRA_COSTA STATUS
+======================
+Last Updated: 2026-05-13
+
+STATUS: BLOCKED
+REASON: Metadata contains only JAWS person queries (2 transactions,
+        6 combos, Person entity only). No Vehicle/Boat/Gun/Article.
+        No OperatorLicenseNumber field. Devdoc lists CLETSPersonSuperQuery
+        (which HAS OLN) under "Expanded Queries" but it is NOT in
+        the metadata XML. Waiting for updated metadata/docs from CommSys
+        that includes CLETSPersonSuperQuery or additional transactions.
+BLOCKED SINCE: 2026-05-13
+
+METADATA SUMMARY (CA_CONTRA_COSTA.xml, System v6)
+==================================================
+  Transaction 1: CaContraCostaJawsPersonQuery (v9) — 5 combos
+    IR.QVC  CLETS Multipurpose   set[CaPurpose, Name, ReqAgId, Choice(DOB|Age)]  any[Sex, Race]
+    IW.N    JAWS Person          set[Name, ReqAgId]                               any[DOB]
+    INL1    DMV Driver by Name   set[CaPurpose, Name, ReqAgId]                    any[Addr, City, DOB, Age]
+    DQ      Nlets Driver+DOB     set[CaPurpose, Name, DOB, Sex, State, ReqAgId]   (none)
+    DNQ     Nlets Driver Name    set[CaPurpose, Name, State, ReqAgId]             any[Age, City, Sex]
+
+  Transaction 2: CaContraCostaJawsWarrantQuery (v4) — 1 combo
+    IW.N    JAWS Warrant         set[Name, DOB, ReqAgId]                          (none)
+
+  MISSING from metadata (in devdoc only):
+    CLETSPersonSuperQuery — OLN queries, Name+Sex+Age, Name+Sex+DOB
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, CA_CONTRA_COSTA second, RMS third)
+  Entities: Person only (no Vehicle, Boat, Firearm, Article)
+
+BUILD LOG (newest first)
+========================
+  (no builds — BLOCKED)
+
+TEST MATRIX
+===========
+  (no tests — BLOCKED)
