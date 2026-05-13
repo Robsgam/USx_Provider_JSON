@@ -30,12 +30,12 @@
 # FL-SPECIFIC PATTERNS:
 #   Date format: yyyyMMdd (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','yyyyMMdd'])
 #   Name format: FormatStringRuleHandler arguments=[','] (Last,First -- no space)
-#   Attention:   CommsysGetLastNameFirstNameInitialRuleHandler (handler-only, no form field)
+#   Attention:   Visible FormInput (AttentionDH) on DH card
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "3.9",
+    [string]$Version = "4.0",
     [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
 )
 
@@ -388,13 +388,10 @@ $wpQuery = [PSCustomObject]@{
 # --- 5. DriverHistoryQuery (KQ) -- 2 combos, DH-suffix fields ---
 # XML: KQ by OLN+State+Purpose, KQ by Name+DOB+Sex+State+Purpose
 # DH-suffix fields isolate from DL field pool (AP #14)
-# Attention: handler-only (CommsysGetLastNameFirstNameInitialRuleHandler), NOT in combo requirements
+# Attention: visible FormInput (AttentionDH), NOT in combo requirements
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{
-            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
-            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
-        }
+        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('AttentionDH'); targetField = 'Attention' }
         [PSCustomObject]@{
             name = 'BirthDate'; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
@@ -422,7 +419,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- KQ by OLN, KQ by Name. DH-suffix fields. Attention handler-only.'
+    description     = 'DriverHistoryQuery -- KQ by OLN, KQ by Name. DH-suffix fields. Attention visible.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverHistoryQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -726,6 +723,9 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_DH3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)' 'ROW_DH3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH3' }
+            )}
+            @{ id = 'ROW_DH4'; cols = @('12'); fields = @(
+                @{ id = 'AttentionDH_Input'; node = Inp 'AttentionDH' 'Attention (DH)' '30' 'ROW_DH4' }
             )}
         )
     }

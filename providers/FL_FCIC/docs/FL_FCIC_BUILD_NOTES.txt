@@ -4,6 +4,16 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.0 (2026-05-13) -- Attention field: handler-only → visible FormInput (attentionDH)
+  CHANGED: Removed CommsysGetLastNameFirstNameInitialRuleHandler from DH Attention attribute.
+           Changed sourceField from 'Attention'/'AttentionDH' to 'attentionDH'/'AttentionDH' (DH-suffix).
+           Added attentionDH/AttentionDH FormInput (maxLen=30) to Person DH card/section (BASE+MC).
+           Attention is now a user-editable field, not a server-side automation.
+  REASON:  Field was automated without user approval. User directive: expose all fields as visible
+           and only automate after live testing reveals need. Handler was filling with logged-in
+           user's name ("LASTNAME F") server-side — correct output but wrong design philosophy.
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
 v3.9 (2026-05-12) -- MC Person layout: merge Search Options into DL card (2 cards)
   CHANGED: Removed CARD_OPTIONS. Moved RegistrationState + ImageIndicator into CARD_DL row 1.
            Person now has 2 cards: Driver License (State+Image+OLN+Name+DOB+Sex) and Driver History.

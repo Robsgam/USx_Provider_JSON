@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC_BASE
   Source: FL_FCIC_BASE.json
-  Generated: 2026-05-12 14:02
+  Generated: 2026-05-13 14:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -253,8 +253,36 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-    [SKIP] KQName -- missing set: registrationStateDH
-    [SKIP] KQOperatorLicenseNumber -- missing set: registrationStateDH
+
+    [FIRES] KQName
+      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationStateDH]
+      any: [purposeCodeDH] -> matched: [purposeCodeDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] KQOperatorLicenseNumber
+      set: [operatorLicenseNumberDH, registrationStateDH]
+      any: [purposeCodeDH] -> matched: [purposeCodeDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe,John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>FL</State>
+      </Transaction>
 
 --- QIDM: FL_FCIC_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 3
@@ -366,7 +394,27 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 12  |  Combos: 12
-    [SKIP] BQName -- missing set: birthDate
+
+    [FIRES] BQName
+      set: [birthDate, nameLast, nameFirst, registrationState]
+      any: [boatHullIdNumber, registrationNumber, imageIndicator] -> matched: [boatHullIdNumber, registrationNumber, imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+        <DecalNumber>FL12345678</DecalNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John</Name>
+        <NCICNumber>B123456789</NCICNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <TitleLienInformation>ABCD1234</TitleLienInformation>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
 
     [FIRES] BQBoatHullIdNumber
       set: [boatHullIdNumber, registrationState]
@@ -375,6 +423,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -395,6 +444,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -415,6 +465,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -435,6 +486,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -455,6 +507,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -475,6 +528,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -495,6 +549,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -515,6 +570,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -535,6 +591,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -555,6 +612,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
@@ -575,6 +633,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>

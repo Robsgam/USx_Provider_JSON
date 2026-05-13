@@ -1,0 +1,214 @@
+FL_FCIC — WHY MC VARIANT IS REQUIRED FOR FULL QUERY PATH COVERAGE
+===================================================================
+Date: 2026-05-13
+Provider: FL_FCIC v3.9
+Author: Rob Sgambellone / Claude Code
+
+SUMMARY
+-------
+The FL_FCIC BASE (single-card) layout cannot reliably reach all 49
+query combinations on the live ConnectCIC platform. The MC (multi-card)
+layout is REQUIRED to independently test and satisfy every query path.
+
+The CommSys simulator (test_commsys.ps1) shows all combos firing in
+both BASE and MC because it evaluates combo-matching logic in isolation.
+It does NOT simulate the actual form renderer. On the live platform,
+form field presence/visibility affects combo evaluation in ways the
+simulator cannot replicate.
+
+
+THE CORE PROBLEM
+----------------
+FL_FCIC has three query families where a prefix pair (DQ/FDQ, RQ/FRQ,
+BQ/FBQ) is differentiated SOLELY by whether registrationState is in
+set[] or not:
+
+  - DQ  = Driver Query         (State REQUIRED in set[])
+  - FDQ = Full Driver Query    (State NOT in set[])
+  - RQ  = Registration Query   (State REQUIRED in set[])
+  - FRQ = Full Registration Query (State NOT in set[])
+  - BQ  = Boat Query           (State REQUIRED in set[])
+  - FBQ = Full Boat Query      (State NOT in set[])
+
+The "Full" variant (FDQ/FRQ/FBQ) is designed to fire when the officer
+does NOT provide a state — typically for queries where state is unknown
+or irrelevant. The non-Full variant (DQ/RQ/BQ) fires when state IS
+provided, routing to state-specific endpoints.
+
+On a single BASE card, the State dropdown is always visible alongside
+every other field. The platform may treat a visible-but-empty dropdown
+differently than a field that is absent from the card entirely. This
+means FDQ/FRQ/FBQ paths may be unreachable when State is present on
+the same card — even if the officer leaves it blank.
+
+
+AFFECTED COMBOS — PERSON ENTITY (Driver License Query)
+-------------------------------------------------------
+BASE layout: Single CARD_PER with ALL DL + DH fields.
+MC layout:   Separate CARD_DL (DL fields) and CARD_DH (DH fields).
+
+Combo #  keyReference              set[]                                    Reachable in BASE?
+------   ----------------------    ---------------------------------------  ------------------
+1        DQName                    birthDate, nameLast, nameFirst,          YES
+                                   sexCode, registrationState
+2        FDQName                   birthDate, nameLast, nameFirst,          UNRELIABLE
+                                   sexCode                                  (State visible on card)
+3        DQOperatorLicenseNumber   operatorLicenseNumber,                   YES
+                                   registrationState
+4        FDQOperatorLicenseNumber  operatorLicenseNumber                    UNRELIABLE
+                                                                            (State visible on card)
+
+In MC: CARD_DL has the State field. The officer either fills it (DQ
+fires) or leaves it blank (FDQ fires). The field is on the same card
+but the MC layout isolates DL from DH, reducing cross-query confusion.
+
+The critical point: the simulator says "leave State blank and FDQ
+fires." But on the live form, the State field is a FormSelect dropdown
+with attributeTypeId=STATE. It has NO initialValue in the DL context.
+However, the platform's combo evaluator may see the PRESENCE of the
+field (even empty) as satisfying set[] — this is the unconfirmed
+behavior that makes FDQ unreliable in BASE.
+
+
+AFFECTED COMBOS — VEHICLE ENTITY (Vehicle Registration Query)
+--------------------------------------------------------------
+BASE layout: Single CARD_VEH with ALL VehReg + VehStolen fields.
+MC layout:   Separate cards per query type.
+
+Combo #  keyReference                 set[]                                 Reachable in BASE?
+------   -------------------------    ------------------------------------  ------------------
+1        RQLicensePlateNumber         licensePlateNumber,                   YES
+                                      licensePlateTypeCode,
+                                      licensePlateYear,
+                                      registrationState
+2        RQVehicleIdentificationNumber  vehicleIdentificationNumber,        YES
+                                        registrationState
+3        FRQDecalNumber               decalNumber, licensePlateYear         YES (unique field)
+4        FRQLicensePlateNumber        licensePlateNumber                    UNRELIABLE
+                                                                            (State + PlateType +
+                                                                             PlateYear on card)
+5        FRQVehicleIdentificationNumber  vehicleIdentificationNumber        UNRELIABLE
+                                                                            (State on card)
+6        FRQTitleLienInformation      titleLienInformation                  YES (unique field)
+
+Additional complication: licensePlateTypeCode has initialValue=PC and
+licensePlateYear has initialValue=2026. Per known platform behavior,
+initialValue is NOT counted for set[] evaluation (only user-entered
+values count). But the combo evaluator may behave differently on the
+live form when defaults are pre-populated in visible fields.
+
+RQ combos require State in set[]. FRQ combos do not. On a single card,
+State is always visible. FRQLicensePlateNumber and
+FRQVehicleIdentificationNumber become unreliable for the same reason
+as FDQ on the Person card.
+
+
+AFFECTED COMBOS — BOAT ENTITY (Boat Query)
+--------------------------------------------
+BASE layout: Single CARD_BOAT with ALL Boat fields.
+MC layout:   Separate cards per query type.
+
+Combo #  keyReference              set[]                                    Reachable in BASE?
+------   ----------------------    ---------------------------------------  ------------------
+1        BQName                    birthDate, nameLast, nameFirst,          YES
+                                   registrationState
+2        BQBoatHullIdNumber        boatHullIdNumber, registrationState      YES
+3        BQRegistrationNumber      registrationNumber, registrationState    YES
+4        QBBoatHullIdNumber        boatHullIdNumber,                        YES (unique routing
+                                   relatedHitSearchIndicator                 field)
+5        QBRegistrationNumber      registrationNumber,                      YES (unique routing
+                                   relatedHitSearchIndicator                 field)
+6        FBQBoatHullIdNumber       boatHullIdNumber                         UNRELIABLE
+                                                                            (State on card)
+7        FBQRegistrationNumber     registrationNumber                       UNRELIABLE
+                                                                            (State on card)
+8        FBQDecalNumber            decalNumber                              YES (unique field)
+9        FBQTitleLienInformation   titleLienInformation                     YES (unique field)
+10       QBCoastGuardDocumentNumber coastGuardDocumentNumber                 YES (unique field)
+11       QBNCICNumber              ncicNumber                               YES (unique field)
+12       QBProcessControlNumber    processControlNumber                     YES (unique field)
+
+BQ combos require registrationState in set[]. FBQ combos for
+HullIdNumber and RegistrationNumber do not. Same State-presence
+problem as Person and Vehicle.
+
+
+UNAFFECTED QUERIES
+------------------
+The following queries have NO DQ/FDQ-style split and work identically
+in both BASE and MC:
+
+  - Driver History (KQ) — uses DH-suffix fields on its own card/section
+  - Wanted Person (QW) — no State-differentiated pairs
+  - Vehicle Stolen (QV) — State in any[], not set[]
+  - Firearm (QG) — no State field
+  - Article (QA) — no State field
+  - RMS queries — separate evaluation path
+
+
+TOTAL IMPACT
+------------
+                          Total     Reliable    Unreliable
+                          Combos    in BASE     in BASE
+  Person (DL):            4         2           2  (FDQName, FDQOperatorLicenseNumber)
+  Vehicle (VehReg):       6         4           2  (FRQLicensePlateNumber, FRQVehicleIdentificationNumber)
+  Boat:                   12        10          2  (FBQBoatHullIdNumber, FBQRegistrationNumber)
+  -----------------------------------------------------------------
+  TOTAL:                  22        16          6
+
+  Other queries:          27        27          0
+  -----------------------------------------------------------------
+  GRAND TOTAL:            49        43          6
+
+6 out of 49 combos (12%) are unreliable in the BASE single-card layout.
+
+
+WHY MC SOLVES THIS
+------------------
+MC separates each query type onto its own card. When FDQ fields are on
+a card that does NOT contain the State dropdown, the platform cannot
+see State as "present" during combo evaluation. The field is genuinely
+absent from the card context, so the FDQ combo evaluates cleanly.
+
+MC layout for Person:
+  CARD_DL  → OLN, State, Image, Name, DOB, Sex    (DQ and FDQ both here,
+              but State presence is intentional — officer chooses)
+  CARD_DH  → OLN_DH, State_DH, PurposeCode_DH,   (KQ combos — fully
+              Name_DH, DOB_DH, Sex_DH               isolated)
+
+MC layout for Vehicle:
+  Separate cards for VehReg (RQ/FRQ), VehStolen (QV).
+  State field only where needed.
+
+MC layout for Boat:
+  Separate cards for BQ (state-required), FBQ (no state), QB (NCIC).
+
+
+CONTRIBUTING FACTORS
+--------------------
+1. CLEAR FORM BUG (reported to Cringer 2026-05-12): The Clear Form
+   button remembers the last active query. State selection persists
+   across query switches unless the officer does a full page reload.
+   This makes it even harder to get a clean "no State" form state
+   in BASE.
+
+2. PLATFORM COMBO EVALUATION: The combo evaluator's treatment of
+   visible-but-empty fields vs absent fields is not documented.
+   The simulator assumes empty = absent. The live platform may not.
+
+3. DEFAULT VALUES: PlateType=PC and PlateYear=2026 are pre-populated.
+   While initialValue should not count for set[], the interaction
+   between defaults and visible fields on combo evaluation is
+   unconfirmed.
+
+
+CONCLUSION
+----------
+BASE is valid for proving basic combo structure and QIDM correctness.
+MC is REQUIRED for:
+  - Full query path coverage testing (all 49 combos independently)
+  - Production deployment (officers need isolated cards for clean queries)
+  - Satisfying the 6 FDQ/FRQ/FBQ paths that are unreliable in BASE
+
+Both BASE and MC must be built, validated, and maintained. BASE is the
+Phase 1 proof of concept. MC is the production variant.
