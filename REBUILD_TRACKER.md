@@ -1,9 +1,11 @@
 # Rebuild Tracker
 Generated: 2026-05-08 | Last updated: 2026-05-11
 
-## Status: COMPLETE
+## Status: 7 PROVIDERS FLAGGED — Attention field hidden automation
 
-All 18 active providers rebuilt and validated. 0 FAIL / 0 WARN across all 36 JSONs.
+All 18 active providers rebuilt and validated (0 FAIL / 0 WARN). But audit found
+7 providers with CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute
+and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 ## Final Scorecard (2026-05-11)
 
@@ -13,7 +15,7 @@ All 18 active providers rebuilt and validated. 0 FAIL / 0 WARN across all 36 JSO
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.5 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
-| 5 | FL_FCIC | v3.9 | 102P/0F/0W | 102P/0F/0W | 0 | 2-card Person, RegistrationStateDH, metadata audit, one-directional deselect |
+| 5 | FL_FCIC | v4.0 | 102P/0F/0W | 102P/0F/0W | 0 | **FIXED** — Attention visible FormInput (attentionDH) |
 | 6 | TX_TLETS | v2.5 | 84P/0F/0W | 84P/0F/0W | 2 | EmailAddress QIDM-only (unfixable) |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v1.8 | 66P/0F/0W | 70P/0F/0W | 0 | LOCKED -- MC rebuilt, one-directional deselect |
@@ -67,5 +69,26 @@ All 18 active providers rebuilt and validated. 0 FAIL / 0 WARN across all 36 JSO
 - TX_TLETS: 2 LIM — EmailAddress is QIDM-only on DL+DH (no form field, handler-filled)
 - These are genuinely unfixable without platform form field additions
 
+## Attention Field Hidden Automation — Flagged 2026-05-13
+
+Fix pattern (same as FL_FCIC v4.0): remove CommsysGetLastNameFirstNameInitialRuleHandler,
+add visible FormInput for Attention (DH-suffix where applicable), update sourceField.
+
+| # | Provider | QIDMs affected | Scope | Fix |
+|---|---|---|---|---|
+| 1 | LA_LEMS | VehReg, VehStolen, DL, DH, Gun, Article, Boat (ALL 7) | All entities | Add Attention FormInput per entity; remove handler from all 7 QIDMs |
+| 2 | HI_HCJDC_OFML | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+| 3 | TX_TLETS | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+| 4 | CA_eSUN | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+| 5 | CA_VENTURA_COUNTY | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+| 6 | OH_LEADS | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+| 7 | TN_TIES | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
+
+**Already clean:** NJ, CA_CLETS, CA_OCATS, CA_SLO, IL, MD, NY, OR (no Attention attr),
+AZ (Attention visible, no handler), NM (Attention InpH, no handler), FL (FIXED v4.0)
+
+**Also noted:** TX_TLETS EmailAddress on DL+DH — no form field AND no handler (orphan, sends empty).
+
 ## Next Actions
 - Live testing per provider work order: CA_CLETS, FL_FCIC, TX_TLETS, NY, AZ
+- Fix Attention hidden automation on next rebuild of each flagged provider
