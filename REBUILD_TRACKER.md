@@ -91,17 +91,23 @@ AZ (Attention visible, no handler), NM (Attention InpH, no handler), FL (FIXED v
 
 ## KB-Based RMS — 2026-05-14
 
-All 19 MC build scripts (18 active + CA_CONTRA_COSTA) now use `tools/_build_rms_bundle.ps1`
+All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_rms_bundle.ps1`
 to construct the RMS bundle and CommSys QRDM from inline KB specifications. No external
-template dependency — HIDLE_MC.json deleted.
+template dependency — HIDLE_MC.json and HIDLE.json load paths both eliminated.
 
 **Methodology**: Build from KB knowledge + metadata/devdocs only. `_build_rms_bundle.ps1`
 defines all RMS and CommSys result-mapping data in code. No HIDLE.json, no patches, no
 cleanup. Build scripts call `Build-RmsBundle` and `Build-CommsysQrdm` directly.
 
+**BASE migration (2026-05-14)**: All 19 BASE scripts previously loaded `source/HIDLE.json`,
+cloned CommSys QRDM, and applied 5 inline patches (Patch 1/3/6/7/8). Replaced with
+`Build-CommsysQrdm` + `Build-RmsBundle` — same 2-line pattern as MC scripts. ~87 lines of
+HIDLE load + QRDM clone + patch code eliminated per script (~1,650 lines total).
+Migration script `_migrate_base_rms.ps1` deleted after successful run.
+
 ## Shared Layout Helpers — 2026-05-14
 
-All 19 MC build scripts now use `tools/_build_layout_helpers.ps1` for QIF layout construction.
+All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_layout_helpers.ps1` for QIF layout construction.
 Previously each script duplicated ~95 lines of identical helper functions (N, Inp, InpH, Sel,
 SelH, Dt, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts). Now consolidated into
 a single 103-line shared module. InpH signature standardized to include maxLen parameter

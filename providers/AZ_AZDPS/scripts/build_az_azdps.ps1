@@ -1,5 +1,5 @@
 # build_az_azdps.ps1
-# Builds AZ_AZDPS_BASE.json from source\AZ_AZDPS.xml + HIDLE.json (RMS template).
+# Builds AZ_AZDPS_BASE.json from source\AZ_AZDPS.xml + KB specs.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_az_azdps.ps1
 #
@@ -28,10 +28,8 @@ $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_BASE.json"
 $VEROUT = "$DIR\phases\base\AZ_AZDPS_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
-$hidle  = Get-Content "$DIR\source\HIDLE.json" -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
-# =====================================================================
-# HELPERS
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
@@ -70,9 +68,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+# 1b. QUERYRESULTDATAMAPPING 
+$results = Build-CommsysQrdm -ProviderName 'AZ_AZDPS'
 $results.name        = 'AZ_AZDPS_Results'
 $results.description = 'Results mapping for AZ AZDPS'
 $results.provider    = 'AZ_AZDPS'
@@ -712,13 +709,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE, with AZ patches)
+# BUNDLE 3: RMS (from KB specs)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' } | Select-Object -First 1
-if (-not $rmsBundle) {
-    $rmsBundle = $hidle.bundles | Where-Object { $_.name -notin @('AZ_AZDPS','ENTITIES') } | Select-Object -First 1
-}
-
+$rmsBundle = Build-RmsBundle
 $providerConfigs = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dhistQuery, $gunQuery, $artQuery, $boatQuery, $wantedQuery, $missingQuery)
 $entityConfigs   = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
@@ -746,135 +739,12 @@ $final = [PSCustomObject]@{
     )
 }
 
-# RMS PATCHES
-
-# PATCH 1: Remove LicensePlateYear from RMS Vehicle combination any[] (no elastic mapping)
-$rmsVehicleQidm = $final.bundles | Where-Object { $_.name -eq 'RMS' } |
-    ForEach-Object { $_.configurations } |
-    Where-Object { $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.targetEntity -eq 'Vehicle' } |
-    Select-Object -First 1
-if ($rmsVehicleQidm) {
-    foreach ($combo in $rmsVehicleQidm.combinations) {
-        if ($combo.requirements.any) {
-            $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'licensePlateYear' })
-        }
-    }
-}
-
-# PATCH 2: autoSelect=true on all RMS QIDMs
-$rmsBundleRef = $final.bundles | Where-Object { $_.name -eq 'RMS' } | Select-Object -First 1
-foreach ($cfg in $rmsBundleRef.configurations) {
-    if ($cfg.type -eq 'QUERYINPUTDATAMAPPING') {
-        $cfg | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
-    }
-}
-
-# PATCH 3: add registrationState attr to RMS Person QIDM + RegistrationState to all person combo any[]
-$rmsPersonQidm = $rmsBundleRef.configurations | Where-Object { $_.query -eq 'Person' }
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes) + [PSCustomObject]@{
-    name           = 'registrationState'
-    sourceField    = @('registrationState')
-    targetField    = 'registrationStateAttrId'
-    useAttributeId = $true
-}
-foreach ($combo in $rmsPersonQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any) + 'registrationState'
-}
-
-# =====================================================================
-# PATCH 6: RMS CLEANUP -- remove unused HIDLE fields
-# Vehicle: OOS dual-field plate, Owner search
-# Person: OOS-suffixed attrs + combos (no OOS fieldIds on AZ form)
-# NOTE: socialSecurityNumber removed from RMS (CommSys DQSS handles SSN directly)
-# =====================================================================
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehicleQidm.attributes = @($rmsVehicleQidm.attributes | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehicleQidm.combinations = @($rmsVehicleQidm.combinations | Where-Object {
-    $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName')
-})
-foreach ($combo in $rmsVehicleQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('firstNameOOS','lastNameOOS','dateOfBirthOOS','licenseNumberOOS','sexOOS','socialSecurityNumber')
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('driversLicenseNumberOOS','firstNameLastNameDriversLicenseNumberOOS',
-        'firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS','firstNameLastNameSocialSecurityNumber')
-})
-foreach ($combo in $rmsPersonQidm.combinations) {
-    if ($combo.requirements.set) {
-        $combo.requirements.set = @($combo.requirements.set | Where-Object { $_ -ne 'socialSecurityNumber' })
-    }
-    if ($combo.requirements.any) {
-        $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'socialSecurityNumber' })
-    }
-}
-
-# =====================================================================
-# PATCH 9: RMS sourceField camelCase alignment
-# HIDLE RMS attrs use PascalCase sourceFields that must match our camelCase form fieldIds.
-# Renames sourceField refs in RMS Vehicle + Person QIDMs + combo set[]/any[] arrays.
-# =====================================================================
-$rmsFieldMap = @{
-    'LicensePlateNumber'          = 'licensePlateNumber'
-    'LicensePlateTypeCode'        = 'licensePlateTypeCode'
-    'LicensePlateYear'            = 'licensePlateYear'
-    'RegistrationState'           = 'registrationState'
-    'VehicleIdentificationNumber' = 'vehicleIdentificationNumber'
-    'VehicleMakeCode'             = 'vehicleMakeCode'
-    'VehicleYear'                 = 'vehicleYear'
-    'OperatorLicenseNumber'       = 'operatorLicenseNumber'
-    'SocialSecurityNumber'        = 'socialSecurityNumber'
-    'NameLast'                    = 'nameLast'
-    'NameFirst'                   = 'nameFirst'
-    'NameMiddle'                  = 'nameMiddle'
-    'NameSuffix'                  = 'nameSuffix'
-    'BirthDate'                   = 'birthDate'
-    'SexCode'                     = 'sexCode'
-}
-foreach ($cfg in $rmsBundleRef.configurations) {
-    if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-    foreach ($attr in $cfg.attributes) {
-        if ($attr.sourceField) {
-            $attr.sourceField = @($attr.sourceField | ForEach-Object {
-                if ($rmsFieldMap.ContainsKey($_)) { $rmsFieldMap[$_] } else { $_ }
-            })
-        }
-    }
-    foreach ($combo in $cfg.combinations) {
-        if ($combo.requirements.set) {
-            $combo.requirements.set = @($combo.requirements.set | ForEach-Object {
-                if ($rmsFieldMap.ContainsKey($_)) { $rmsFieldMap[$_] } else { $_ }
-            })
-        }
-        if ($combo.requirements.any) {
-            $combo.requirements.any = @($combo.requirements.any | ForEach-Object {
-                if ($rmsFieldMap.ContainsKey($_)) { $rmsFieldMap[$_] } else { $_ }
-            })
-        }
-    }
-}
 
 # =====================================================================
 # OUTPUT
 # =====================================================================
 $json = $final | ConvertTo-Json -Depth 100 -Compress
 $jsonReadable = $final | ConvertTo-Json -Depth 100
-
-# Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
-$json = $json -replace 'LicensePlateNumberIn', 'licensePlateNumber'
-$jsonReadable = $jsonReadable -replace 'LicensePlateNumberIn', 'licensePlateNumber'
-
-$OUTREADABLE = "$DIR\AZ_AZDPS_BASE_READABLE.json"
-[System.IO.File]::WriteAllText($OUT,         $json,         (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($VEROUT,      $json,         (New-Object System.Text.UTF8Encoding $false))
-
-Write-Host "Built AZ_AZDPS_BASE.json v${Version}" -ForegroundColor Green
-Write-Host "  -> $OUT"
-Write-Host "  -> $OUTREADABLE"
-Write-Host "  -> $VEROUT"
 
 # =====================================================================
 # VALIDATE

@@ -1,5 +1,5 @@
 # build_fl_fcic.ps1 -- FL_FCIC BASE
-# Builds FL_FCIC_BASE.json from source\FL_FCIC.xml metadata + HIDLE.json.
+# Builds FL_FCIC_BASE.json from source\FL_FCIC.xml metadata + KB specs.
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 #      & .\scripts\build_fl_fcic.ps1 -Version 3.0
@@ -7,7 +7,7 @@
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]
 #   source\FL_FCIC.pdf   -- CommSys devdoc (6 basic queries) [CROSS-CHECK]
-#   source\HIDLE.json    -- RMS structural template
+#   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
 #
 # QUERYINPUTDATAMAPPING (CommSys -- 8 QIDMs, 33 combos):
 #   VehicleRegistrationQuery   FRQ (plate/VIN/Decal/Title) + RQ (plate+state/VIN+state) = 6 combos
@@ -34,8 +34,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.0",
-    [string]$HidlePath = "$PSScriptRoot\..\source\HIDLE.json"
+    [string]$Version = "4.0"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -43,11 +42,8 @@ $provider = 'FL_FCIC'
 $outPath  = "$PSScriptRoot\..\FL_FCIC_BASE.json"
 
 $currentYear = [string](Get-Date).Year
-$hidle = Get-Content $HidlePath -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
-# =====================================================================
-# HELPERS (NJ pattern: PSCustomObject + @() arrays + deep-copy layouts)
-# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
@@ -86,9 +82,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# --- QUERYRESULTDATAMAPPING (clone from HIDLE) ---
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+# --- QUERYRESULTDATAMAPPING ---
+$results = Build-CommsysQrdm -ProviderName 'FL_FCIC'
 $results.name        = "${provider}_Results"
 $results.description = "Results mapping for $provider"
 $results.provider    = $provider
@@ -761,99 +756,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE + Patches 1, 3, 6, 7)
+# BUNDLE 3: RMS (from KB specs)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm    = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-
-# Patch 1: add RegistrationState to licensePlateIn combination any[]
-$plateInCombo = $rmsVehQidm.combinations | Where-Object { $_.keyReference -eq 'licensePlateIn' }
-$plateInCombo.requirements.any = @($plateInCombo.requirements.any) + 'RegistrationState'
-
-# Patch 3: add registrationState attr to RMS Person QIDM
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes) + [PSCustomObject]@{
-    name           = 'registrationState'
-    sourceField    = @('RegistrationState')
-    targetField    = 'registrationStateAttrId'
-    useAttributeId = $true
-}
-foreach ($combo in $rmsPersonQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any) + 'RegistrationState'
-}
-
-# Patch 6: remove dead HIDLE fields (OOS + Owner + SSN)
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes   = @($rmsVehQidm.attributes   | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object { $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName') })
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS')
-$rmsPersonQidm.attributes   = @($rmsPersonQidm.attributes   | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
-        'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
-
-# Patch 7: RMS Vehicle autoSelect=true
-$rmsVehQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
-# RMS Person already has autoSelect from HIDLE
-$rmsPersonQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
-
-# Patch 8: CAD field name alignment -- rename HIDLE RMS sourceField + combo refs to camelCase
-$cadRenames = @{
-    'LicensePlateNumberIn'        = 'licensePlateNumber'
-    'LicensePlateNumberOut'       = 'licensePlateNumberOut'
-    'VehicleIdentificationNumber' = 'vehicleIdentificationNumber'
-    'VehicleMakeCode'             = 'vehicleMakeCode'
-    'VehicleModelCode'            = 'vehicleModelCode'
-    'VehicleYear'                 = 'vehicleYear'
-    'RegistrationState'           = 'registrationState'
-    'RegistrationStateOut'        = 'registrationStateOut'
-    'OwnerFirstName'              = 'ownerFirstName'
-    'OwnerLastName'               = 'ownerLastName'
-    'OperatorLicenseNumber'       = 'operatorLicenseNumber'
-    'NameFirst'                   = 'nameFirst'
-    'NameLast'                    = 'nameLast'
-    'BirthDate'                   = 'birthDate'
-    'SexCode'                     = 'sexCode'
-    'RaceCode'                    = 'raceCode'
-}
-foreach ($cfg in $rmsBundle.configurations) {
-    if (-not $cfg.attributes) { continue }
-    foreach ($attr in $cfg.attributes) {
-        if ($attr.name -and $cadRenames.ContainsKey($attr.name)) {
-            $attr.name = $cadRenames[$attr.name]
-        }
-        if ($attr.sourceField) {
-            $attr.sourceField = @($attr.sourceField | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-    }
-    if (-not $cfg.combinations) { continue }
-    foreach ($combo in $cfg.combinations) {
-        if ($combo.primaryFieldReference -and $cadRenames.ContainsKey($combo.primaryFieldReference)) {
-            $combo.primaryFieldReference = $cadRenames[$combo.primaryFieldReference]
-        }
-        if ($combo.requirements.set) {
-            $combo.requirements.set = @($combo.requirements.set | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-        if ($combo.requirements.any) {
-            $combo.requirements.any = @($combo.requirements.any | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-    }
-}
-
-# =====================================================================
-# FINAL ASSEMBLY + WRITE
-# =====================================================================
+$rmsBundle = Build-RmsBundle
 $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
@@ -870,7 +775,7 @@ Write-Host "  -> $outPath"
 Write-Host "  -> $outPathReadable"
 Write-Host "  ENTITIES: 5 QIFs (Person, Vehicle, Firearm, Article, Boat)"
 Write-Host "  ${provider}: AUTH + QRDM + QMF + 8 CommSys QIDMs (33 combos)"
-Write-Host "  RMS: Patched (1+3+6+7+8)"
+Write-Host "  RMS: Built from KB specs (no HIDLE dependency)"
 
 # =====================================================================
 # VALIDATE

@@ -1,12 +1,12 @@
 # build_ca_contra_costa.ps1  -- CA_CONTRA_COSTA v1.x BASE
-# Builds CA_CONTRA_COSTA_BASE.json from source\CA_CONTRA_COSTA.xml (metadata v5) + HIDLE.json.
+# Builds CA_CONTRA_COSTA_BASE.json from source\CA_CONTRA_COSTA.xml (metadata v5) + KB specs.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_contra_costa.ps1 -Version X.X -Phase base
 #
 # INPUTS:
 #   source\CA_CONTRA_COSTA.xml   -- XML metadata (v5) [AUTHORITATIVE]
 #   source\CA_CONTRA_COSTA.pdf   -- CommSys devdoc [CROSS-CHECK]
-#   source\HIDLE.json            -- RMS structural template
+#   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
 #
 # METADATA SUMMARY (CA_CONTRA_COSTA v4/v3):
 #   CaContraCostaJawsPersonQuery v4   -- 5 combos: IR.QVC, IW.N, INL1, DQ, DNQ
@@ -57,11 +57,8 @@ $VEROUT   = "$PHASEDIR\CA_CONTRA_COSTA_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
-$hidle = Get-Content "$DIR\source\HIDLE.json" -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
-# =====================================================================
-# HELPERS
-# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
@@ -101,9 +98,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+# 1b. QUERYRESULTDATAMAPPING 
+$results = Build-CommsysQrdm -ProviderName 'CA_CONTRA_COSTA'
 $results.name        = 'CA_CONTRA_COSTA_Results'
 $results.description = 'Results mapping for CA Contra Costa County JAWS'
 $results.provider    = 'CA_CONTRA_COSTA'
@@ -322,119 +318,11 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE, with CA_CONTRA_COSTA patches)
+# BUNDLE 3: RMS (from KB specs)
 # Person-only provider: Vehicle RMS QIDM kept with autoSelect=true
 # (won't fire without Vehicle form fields) but extensively cleaned.
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-
-# Patch 3: add registrationState to RMS Person QIDM
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes) + [PSCustomObject]@{
-    name           = 'registrationState'
-    sourceField    = @('registrationState')
-    targetField    = 'registrationStateAttrId'
-    useAttributeId = $true
-}
-foreach ($combo in $rmsPersonQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any) + 'registrationState'
-}
-
-# =====================================================================
-# Patch 6: RMS CLEANUP -- remove unused HIDLE fields
-# Person-only provider -- no Vehicle/Firearm/Article/Boat form fields.
-# Vehicle RMS QIDM: clean but keep (autoSelect=true, won't fire).
-# Person RMS QIDM: remove SSN + OOS attrs + dead combos.
-# =====================================================================
-
-# Vehicle: remove dead attrs + combos + clean any[]
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes = @($rmsVehQidm.attributes | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object {
-    $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName')
-})
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-# Person: remove dead attrs (SSN + OOS + race) + dead combos (SSN + OOS)
-# Race removed from RMS: form uses codeTypeCategory='NIBRS_RACE' (stores code string),
-# but RMS race attr has useAttributeId=true (expects attribute ID). AP #11 conflict.
-# Also remove race from combo any[]/set[] refs.
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS','race')
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
-        'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
-# Clean race refs from surviving combo any[]/set[] arrays
-foreach ($combo in $rmsPersonQidm.combinations) {
-    if ($combo.requirements.any) {
-        $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'RaceCode' })
-    }
-    if ($combo.requirements.set) {
-        $combo.requirements.set = @($combo.requirements.set | Where-Object { $_ -ne 'RaceCode' })
-    }
-}
-
-# Patch 7: RMS autoSelect=true
-$rmsVehQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
-$rmsPersonQidm | Add-Member -NotePropertyName 'autoSelect' -NotePropertyValue $true -Force
-
-# Patch 8: CAD field name alignment -- rename HIDLE RMS sourceField + combo refs to camelCase
-$cadRenames = @{
-    'LicensePlateNumberIn'        = 'licensePlateNumber'
-    'LicensePlateNumberOut'       = 'licensePlateNumberOut'
-    'VehicleIdentificationNumber' = 'vehicleIdentificationNumber'
-    'VehicleMakeCode'             = 'vehicleMakeCode'
-    'VehicleModelCode'            = 'vehicleModelCode'
-    'VehicleYear'                 = 'vehicleYear'
-    'RegistrationState'           = 'registrationState'
-    'RegistrationStateOut'        = 'registrationStateOut'
-    'OwnerFirstName'              = 'ownerFirstName'
-    'OwnerLastName'               = 'ownerLastName'
-    'OperatorLicenseNumber'       = 'operatorLicenseNumber'
-    'NameFirst'                   = 'nameFirst'
-    'NameLast'                    = 'nameLast'
-    'NameMiddle'                  = 'nameMiddle'
-    'NameSuffix'                  = 'nameSuffix'
-    'BirthDate'                   = 'birthDate'
-    'SexCode'                     = 'sexCode'
-    'RaceCode'                    = 'raceCode'
-    'ImageIndicator'              = 'imageIndicator'
-}
-foreach ($cfg in $rmsBundle.configurations) {
-    if (-not $cfg.attributes) { continue }
-    foreach ($attr in $cfg.attributes) {
-        if ($attr.name -and $cadRenames.ContainsKey($attr.name)) {
-            $attr.name = $cadRenames[$attr.name]
-        }
-        if ($attr.sourceField) {
-            $attr.sourceField = @($attr.sourceField | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-    }
-    if (-not $cfg.combinations) { continue }
-    foreach ($combo in $cfg.combinations) {
-        if ($combo.primaryFieldReference -and $cadRenames.ContainsKey($combo.primaryFieldReference)) {
-            $combo.primaryFieldReference = $cadRenames[$combo.primaryFieldReference]
-        }
-        if ($combo.requirements.set) {
-            $combo.requirements.set = @($combo.requirements.set | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-        if ($combo.requirements.any) {
-            $combo.requirements.any = @($combo.requirements.any | ForEach-Object {
-                if ($cadRenames.ContainsKey($_)) { $cadRenames[$_] } else { $_ }
-            })
-        }
-    }
-}
-
-# =====================================================================
+$rmsBundle = Build-RmsBundle -SkipRace
 # WRITE OUTPUT
 # =====================================================================
 $output = [PSCustomObject]@{
