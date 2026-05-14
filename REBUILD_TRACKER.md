@@ -30,7 +30,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/0W | 0 | |
 
-**Skipped**: CA_CONTRA_COSTA (no basic queries per devdoc; awaiting decision)
+**CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). BLOCKED — awaiting updated devdoc/metadata decision.
 
 ## What Was Fixed (2026-05-08 through 2026-05-11)
 
