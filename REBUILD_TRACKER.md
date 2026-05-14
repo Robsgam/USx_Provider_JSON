@@ -99,6 +99,14 @@ template dependency — HIDLE_MC.json deleted.
 defines all RMS and CommSys result-mapping data in code. No HIDLE.json, no patches, no
 cleanup. Build scripts call `Build-RmsBundle` and `Build-CommsysQrdm` directly.
 
+## Shared Layout Helpers — 2026-05-14
+
+All 19 MC build scripts now use `tools/_build_layout_helpers.ps1` for QIF layout construction.
+Previously each script duplicated ~95 lines of identical helper functions (N, Inp, InpH, Sel,
+SelH, Dt, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts). Now consolidated into
+a single 103-line shared module. InpH signature standardized to include maxLen parameter
+(AZ_AZDPS 6 call sites updated). ~1,800 lines of duplication eliminated.
+
 ### Already Built and Verified (3)
 
 | Provider | MC Version | Score | Status |
