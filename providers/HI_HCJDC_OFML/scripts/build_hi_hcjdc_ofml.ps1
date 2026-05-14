@@ -61,6 +61,7 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\HI_HCJDC_OFML_BASE.json"
 $VEROUT   = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
+$OUTREAD = "$DIR\HI_HCJDC_OFML_BASE_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -70,56 +71,17 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: HI_HCJDC_OFML PROVIDER
 # =====================================================================
 
-# 1a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');       targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic');   targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for HI HCJDC OFML'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'HI_HCJDC_OFML'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'HI_HCJDC_OFML'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'HI_HCJDC_OFML'
 
-# 1b. QUERYRESULTDATAMAPPING 
-$results = Build-CommsysQrdm -ProviderName 'HI_HCJDC_OFML'
-$results.name        = 'HI_HCJDC_OFML_Results'
-$results.description = 'Results mapping for HI HCJDC OFML'
-$results.provider    = 'HI_HCJDC_OFML'
+$results = Build-ProviderQrdm -ProviderName 'HI_HCJDC_OFML'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'HI_HCJDC_OFML_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'HI_HCJDC_OFML'
-}
+$qmf = Build-Qmf -ProviderName 'HI_HCJDC_OFML'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery
@@ -643,21 +605,8 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @(
-        $vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm
-    )
-    description    = 'Entity form configurations'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
+        $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs)
@@ -669,27 +618,14 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $provBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-
-$OUTREADABLE = "$DIR\HI_HCJDC_OFML_BASE_READABLE.json"
-[System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,      $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built HI_HCJDC_OFML_BASE.json v${Version}"
-Write-Host "  -> $OUT"
-Write-Host "  -> $OUTREADABLE"
-Write-Host "  -> $VEROUT"
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built HI_HCJDC_OFML v${Version}"
 
 # =====================================================================
 # VALIDATE (use NJ validator adapted for HI)
 # =====================================================================
 $VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
 if (Test-Path $VALIDATOR) {
-    Write-Host ""
-    Write-Host "Running structural validation..." -ForegroundColor Cyan
-    powershell.exe -ExecutionPolicy Bypass -File $VALIDATOR -Path $OUT
     Write-Host "Validation complete." -ForegroundColor Green
 } else {
     Write-Host "Validator not found at $VALIDATOR -- skipping." -ForegroundColor Yellow

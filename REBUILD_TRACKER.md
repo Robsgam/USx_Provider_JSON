@@ -113,6 +113,17 @@ SelH, Dt, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts). Now conso
 a single 103-line shared module. InpH signature standardized to include maxLen parameter
 (AZ_AZDPS 6 call sites updated). ~1,800 lines of duplication eliminated.
 
+### Provider Helpers — `tools/_build_provider_helpers.ps1`
+
+All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_provider_helpers.ps1` for provider
+boilerplate: AUTH config, QMF, QRDM, ENTITIES bundle, and output+validation. Previously each
+script duplicated ~60 lines of identical AUTH/QMF/QRDM blocks plus ~20 lines of output/validation
+code. Now consolidated into 5 shared functions (Build-Auth, Build-Qmf, Build-ProviderQrdm,
+Build-EntitiesBundle, Write-ProviderJson). Write-ProviderJson standardizes dual output (minified +
+readable), phase archiving, and validator-with-exit-on-fail across all scripts. ~2,400 lines
+of duplication eliminated. Migration completed 2026-05-14 with 5 verification builds (CA_CLETS_OCATS
+63P, IL_LEADS_OFML 61P, AZ_AZDPS 71P, FL_FCIC 102P, TN_TIES 80P — all 0F/0W).
+
 ### Already Built and Verified (3)
 
 | Provider | MC Version | Score | Status |

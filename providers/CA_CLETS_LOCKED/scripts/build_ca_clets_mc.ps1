@@ -19,56 +19,21 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
-# HELPERS
-# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: CA_CLETS PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');     targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for CA CLETS'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'CA_CLETS'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'CA_CLETS'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'CA_CLETS'
 
-$results = Build-CommsysQrdm -ProviderName 'CA_CLETS'
+$results = Build-ProviderQrdm -ProviderName 'CA_CLETS'
 
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'CA_CLETS_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'CA_CLETS'
-}
+$qmf = Build-Qmf -ProviderName 'CA_CLETS'
 
 # VehicleRegistrationQuery -- PascalCase + cross-entity (Name for IN.VP combo)
 $vehRegQuery = [PSCustomObject]@{
@@ -699,18 +664,7 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
-    description    = 'Entity form configurations for CA_CLETS MC'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -723,16 +677,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $caBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-[System.IO.File]::WriteAllText($OUT,     $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,  $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built CA_CLETS_MC.json v${Version}"
-Write-Host "  -> $OUT (minified)"
-Write-Host "  -> $OUTREAD (readable)"
-Write-Host "  -> $VEROUT (phase archive)"
-
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built CA_CLETS v${Version}"

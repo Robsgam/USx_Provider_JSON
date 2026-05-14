@@ -34,59 +34,22 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
-# HELPERS
-# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: NM_NMLETS_OFML PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-# 1a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');      targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for NM NMLETS OFML'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'NM_NMLETS_OFML'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'NM_NMLETS_OFML'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'NM_NMLETS_OFML'
 
 # QUERYRESULTDATAMAPPING (from KB specs)
-$results = Build-CommsysQrdm -ProviderName 'NM_NMLETS_OFML'
+$results = Build-ProviderQrdm -ProviderName 'NM_NMLETS_OFML'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'NM_NMLETS_OFML_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'NM_NMLETS_OFML'
-}
+$qmf = Build-Qmf -ProviderName 'NM_NMLETS_OFML'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery -- PascalCase
@@ -615,18 +578,7 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
-    description    = 'Entity form configurations for NM_NMLETS_OFML MC'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -639,17 +591,6 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $nmBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-[System.IO.File]::WriteAllText($OUT,     $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,  $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built NM_NMLETS_OFML_MC.json v${Version}"
-Write-Host "  -> $OUT (minified)"
-Write-Host "  -> $OUTREAD (readable)"
-Write-Host "  -> $VEROUT (phase archive)"
-
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built NM_NMLETS_OFML v${Version}"
 # Run validator
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT

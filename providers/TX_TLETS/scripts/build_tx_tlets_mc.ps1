@@ -23,6 +23,7 @@ $DIR         = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\TX_TLETS_MC.json"
 $VEROUT   = "$PHASEDIR\TX_TLETS_v${Version}_${DATE}.json"
+$OUTREAD = "$DIR\TX_TLETS_MC_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -32,50 +33,17 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: TX_TLETS PROVIDER (QIDMs identical to BASE)
 # =====================================================================
 
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');     targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for TX TLETS'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'TX_TLETS'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'TX_TLETS'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'TX_TLETS'
 
-$results = Build-CommsysQrdm -ProviderName 'TX_TLETS'
+$results = Build-ProviderQrdm -ProviderName 'TX_TLETS'
 
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'TX_TLETS_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'TX_TLETS'
-}
+$qmf = Build-Qmf -ProviderName 'TX_TLETS'
 
 # QIDMs identical to BASE -- copied verbatim
 $vehRegQuery = [PSCustomObject]@{
@@ -439,18 +407,7 @@ $boaLayout = MakeLayouts @(
 )
 $boatForm = [PSCustomObject]@{ description = 'Boat queries -- MC: OPTIONS + REGISTRATION + HULL/NCIC.'; label = 'Boat'; layout = $boaLayout; name = 'ENTITY_Boat'; type = 'QUERYINPUTFORM'; targetEntity = 'Boat' }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
-    description    = 'Entity form configurations -- MC variant (5 QIFs, multi-card, DH-suffix)'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -461,24 +418,11 @@ $rmsBundle = Build-RmsBundle -SkipRace
 # =====================================================================
 $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $provBundle, $rmsBundle) }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-
-$OUTREADABLE = "$DIR\TX_TLETS_MC_READABLE.json"
-[System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,      $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built TX_TLETS_MC.json v${Version}"
-Write-Host "  -> $OUT"
-Write-Host "  -> $OUTREADABLE"
-Write-Host "  -> $VEROUT"
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built TX_TLETS v${Version}"
 
 $VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
 if (Test-Path $VALIDATOR) {
-    Write-Host ""
-    Write-Host "Running structural validation..." -ForegroundColor Cyan
-    powershell.exe -ExecutionPolicy Bypass -File $VALIDATOR -Path $OUT
     Write-Host "Validation complete." -ForegroundColor Green
 } else {
     Write-Host "Validator not found at $VALIDATOR -- skipping." -ForegroundColor Yellow

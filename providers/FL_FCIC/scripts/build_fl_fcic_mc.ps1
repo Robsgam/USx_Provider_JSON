@@ -49,53 +49,15 @@ $currentYear = [string](Get-Date).Year
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: FL_FCIC PROVIDER
 # =====================================================================
 
-# --- AUTHENTICATION ---
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');      targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = "Authentication configuration for $provider"
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = $provider
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = $provider
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
-
-# --- QUERYRESULTDATAMAPPING (from KB specs) ---
-$results = Build-CommsysQrdm -ProviderName $provider
-
-# --- QUERYMESSAGEFORMAT ---
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = "${provider}_QueryMessageFormat"
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = $provider
-}
+$auth = Build-Auth -ProviderName 'FL_FCIC'
+$results = Build-ProviderQrdm -ProviderName 'FL_FCIC'
+$qmf = Build-Qmf -ProviderName 'FL_FCIC'
 
 # =====================================================================
 # 8 COMMSYS QIDMs
@@ -747,18 +709,8 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($personForm, $vehicleForm, $firearmsForm, $articleForm, $boatForm)
-    description    = "Query forms for $provider v$Version"
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Person','Vehicle','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($personForm, $vehicleForm, $firearmsForm, $articleForm, $boatForm) `
+    -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat')
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -772,30 +724,6 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-
 $outPathReadable = "$PSScriptRoot\..\FL_FCIC_MC_READABLE.json"
-[System.IO.File]::WriteAllText($outPath,         $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($outPathReadable, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built $outPath (v$Version) -- no BOM"
-Write-Host "  -> $outPath"
-Write-Host "  -> $outPathReadable"
-Write-Host "  ENTITIES: 5 QIFs (Person, Vehicle, Firearm, Article, Boat)"
-Write-Host "  ${provider}: AUTH + QRDM + QMF + 8 CommSys QIDMs (33 combos)"
-Write-Host "  RMS: Built from KB specs (no HIDLE dependency)"
-
-# =====================================================================
-# VALIDATE
-# =====================================================================
-Write-Host ""
-Write-Host "Running structural validation..." -ForegroundColor Cyan
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $outPath
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red
-    exit 1
-}
-Write-Host "Validation passed." -ForegroundColor Green
+Write-ProviderJson -BundleObject $output -OutPath $outPath -ReadablePath $outPathReadable `
+    -Label "Built FL_FCIC v${Version}"

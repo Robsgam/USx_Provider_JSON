@@ -74,6 +74,7 @@ New-Item -ItemType Directory -Force -Path (Split-Path $VEROUT) | Out-Null
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1 (in output order = ENTITIES): Built after provider QIDMs
@@ -81,50 +82,12 @@ New-Item -ItemType Directory -Force -Path (Split-Path $VEROUT) | Out-Null
 # =====================================================================
 
 # 2a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');      targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for TN TIES'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'TN_TIES'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'TN_TIES'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'TN_TIES'
 
 # 2b. QUERYRESULTDATAMAPPING 
-$results = Build-CommsysQrdm -ProviderName 'TN_TIES'
-$results.name        = 'TN_TIES_Results'
-$results.description = 'Results mapping for TN TIES'
-$results.provider    = 'TN_TIES'
+$results = Build-ProviderQrdm -ProviderName 'TN_TIES'
 
-# 2c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'TN_TIES_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'TN_TIES'
-}
+$qmf = Build-Qmf -ProviderName 'TN_TIES'
 
 # =====================================================================
 # 2d. VehicleRegistrationQuery
@@ -709,64 +672,24 @@ $boatForm = [PSCustomObject]@{
 # ASSEMBLE BUNDLES
 # =====================================================================
 
-$entityConfigs = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
-$providerConfigs = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
+
+$providerBundle = [PSCustomObject]@{
+    name           = 'TN_TIES'
+    type           = 'BUNDLE'
+    description    = "Provider configuration for TN_TIES v${Version}"
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    provider       = 'TN_TIES'
+}
 
 $rmsBundle = Build-RmsBundle
 $final = [PSCustomObject]@{
-    bundles = @(
-        [PSCustomObject]@{
-            name           = 'ENTITIES'
-            type           = 'BUNDLE'
-            description    = 'Entity form configurations for TN_TIES'
-            order          = [PSCustomObject]@{
-                default         = @('Vehicle','Person','Firearm','Article','Boat')
-                CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-                FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-            }
-            configurations = $entityConfigs
-            provider       = 'MARK43'
-        }
-        [PSCustomObject]@{
-            name           = 'TN_TIES'
-            type           = 'BUNDLE'
-            description    = "Provider configuration for TN_TIES v${Version}"
-            configurations = $providerConfigs
-            provider       = 'TN_TIES'
-        }
-        $rmsBundle
-    )
+    bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
-
-# =====================================================================
-# =====================================================================
 
 
 # =====================================================================
 # OUTPUT
 # =====================================================================
-$json = $final | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $final | ConvertTo-Json -Depth 100
-
-[System.IO.File]::WriteAllText($OUT,     $json,         (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($VEROUT,  $json,         (New-Object System.Text.UTF8Encoding $false))
-
-Write-Host "Built TN_TIES_BASE.json v${Version}" -ForegroundColor Green
-Write-Host "  -> $OUT (minified)"
-Write-Host "  -> $OUTREAD (readable)"
-Write-Host "  -> $VEROUT (phase archive)"
-
-# =====================================================================
-# VALIDATE
-# =====================================================================
-Write-Host ""
-Write-Host "Running structural validation..." -ForegroundColor Cyan
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red
-    exit 1
-}
-Write-Host "Validation passed." -ForegroundColor Green
+Write-ProviderJson -BundleObject $final -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built TN_TIES v${Version}"

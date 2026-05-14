@@ -33,60 +33,24 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
-# HELPERS
-# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: IL_LEADS_OFML PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-# 1a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');      targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-        [PSCustomObject]@{ name = 'CDCName'; size = 10; sourceField = @('CDCName'); targetField = 'CDCName' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','mnemonic'); any = @('dexStateUserId','CDCName') }
-        }
-    )
-    description                = 'Authentication configuration for IL LEADS OFML'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'IL_LEADS_OFML'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'IL_LEADS_OFML'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'IL_LEADS_OFML' `
+    -ExtraAttributes @([PSCustomObject]@{ name='CDCName'; size=10; sourceField=@('CDCName'); targetField='CDCName' }) `
+    -ExtraAny @('CDCName')
 
 # QUERYRESULTDATAMAPPING (from KB specs)
-$results = Build-CommsysQrdm -ProviderName 'IL_LEADS_OFML'
+$results = Build-ProviderQrdm -ProviderName 'IL_LEADS_OFML'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'IL_LEADS_OFML_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'IL_LEADS_OFML'
-}
+$qmf = Build-Qmf -ProviderName 'IL_LEADS_OFML'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery -- PascalCase
@@ -535,21 +499,8 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @(
-        $vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm
-    )
-    description    = 'Entity form configurations for IL_LEADS_OFML MC'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
+        $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -562,16 +513,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $ilBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-[System.IO.File]::WriteAllText($OUT,     $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,  $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built IL_LEADS_OFML_MC.json v${Version} (5 basic queries)"
-Write-Host "  -> $OUT (minified)"
-Write-Host "  -> $OUTREAD (readable)"
-Write-Host "  -> $VEROUT (phase archive)"
-
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built IL_LEADS_OFML v${Version}"

@@ -32,61 +32,25 @@ $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
 $VEROUT = "$DIR\phases\mc\AZ_AZDPS_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
+$OUTREAD = "$DIR\AZ_AZDPS_MC_READABLE.json"
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
-# =====================================================================
-# HELPERS
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: AZ_AZDPS PROVIDER
 # =====================================================================
 
-# 1a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');       targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic');   targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for AZ AZDPS'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'AZ_AZDPS'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'AZ_AZDPS'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'AZ_AZDPS'
 
 # QUERYRESULTDATAMAPPING (from KB specs)
-$results = Build-CommsysQrdm -ProviderName 'AZ_AZDPS'
+$results = Build-ProviderQrdm -ProviderName 'AZ_AZDPS'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'AZ_AZDPS_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'AZ_AZDPS'
-}
+$qmf = Build-Qmf -ProviderName 'AZ_AZDPS'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery -- ACVR (Plate) + ACVRV (VIN, invented)
@@ -763,18 +727,7 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
-    description    = 'Entity form configurations -- MC variant (5 QIFs, multi-card)'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
@@ -798,29 +751,7 @@ $final = [PSCustomObject]@{
 # =====================================================================
 # OUTPUT
 # =====================================================================
-$json = $final | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $final | ConvertTo-Json -Depth 100
-
-$OUTREADABLE = "$DIR\AZ_AZDPS_MC_READABLE.json"
-[System.IO.File]::WriteAllText($OUT,         $json,         (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, (New-Object System.Text.UTF8Encoding $false))
-[System.IO.File]::WriteAllText($VEROUT,      $json,         (New-Object System.Text.UTF8Encoding $false))
-
-Write-Host "Built AZ_AZDPS_MC.json v${Version}" -ForegroundColor Green
-Write-Host "  -> $OUT"
-Write-Host "  -> $OUTREADABLE"
-Write-Host "  -> $VEROUT"
+Write-ProviderJson -BundleObject $final -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built AZ_AZDPS v${Version}"
 
 # =====================================================================
-# VALIDATE
-# =====================================================================
-Write-Host ""
-Write-Host "Running structural validation..." -ForegroundColor Cyan
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "BUILD ABORTED -- validator found errors." -ForegroundColor Red
-    exit 1
-}
-Write-Host "Validation passed." -ForegroundColor Green

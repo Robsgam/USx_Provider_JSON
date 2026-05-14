@@ -227,6 +227,19 @@ Most-specific (most set[] fields) first. Less-specific last.
 
 ---
 
+## Provider Helpers — Shared Module
+
+**All builds** (BASE and MC): Provider boilerplate (AUTH, QMF, QRDM, ENTITIES bundle, output+validation) is defined in `tools/_build_provider_helpers.ps1`. Build scripts dot-source it alongside the layout and RMS modules.
+
+**Exports**:
+- `Build-Auth -ProviderName <name> [-ExtraAttributes <array>] [-ExtraAny <array>]` — standard 3-attr AUTH config (ORI, Mnemonic, UserName/dexStateUserId). IL_LEADS_OFML uses `-ExtraAttributes` for CDCName.
+- `Build-Qmf -ProviderName <name>` — QUERYMESSAGEFORMAT with CommsysWsiOutgoingMessageHandler.
+- `Build-ProviderQrdm -ProviderName <name>` — wraps Build-CommsysQrdm, sets name/description/provider.
+- `Build-EntitiesBundle -Configurations <array> [-DefaultOrder <array>] [-CadOrder <array>] [-FrOrder <array>]` — ENTITIES bundle with configurable display order. Defaults to Vehicle-first standard.
+- `Write-ProviderJson -BundleObject <obj> -OutPath <path> -ReadablePath <path> [-PhasePath <path>] [-Label <string>]` — ConvertTo-Json (compressed+readable), WriteAllText (UTF-8 no BOM), runs validator with exit-on-fail.
+
+---
+
 ## Rule Handler Reference
 
 Full reference: `knowledge-base/RULE_HANDLERS.txt` (24 handlers — 6 directly configured, rest platform-defined in RMS).

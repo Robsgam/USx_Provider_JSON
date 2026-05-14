@@ -57,6 +57,7 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\LA_LEMS_BASE.json"
 $VEROUT   = "$PHASEDIR\LA_LEMS_v${Version}_${DATE}.json"
+$OUTREAD = "$DIR\LA_LEMS_BASE_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -66,56 +67,17 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: LA_LEMS PROVIDER
 # =====================================================================
 
-# 1a. AUTHENTICATION
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');     targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for LA LETTS OFML'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'LA_LEMS'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'LA_LEMS'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'LA_LEMS'
 
-# 1b. QUERYRESULTDATAMAPPING 
-$results = Build-CommsysQrdm -ProviderName 'LA_LEMS'
-$results.name        = 'LA_LEMS_Results'
-$results.description = 'Results mapping for LA LETTS OFML'
-$results.provider    = 'LA_LEMS'
+$results = Build-ProviderQrdm -ProviderName 'LA_LEMS'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'LA_LEMS_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'LA_LEMS'
-}
+$qmf = Build-Qmf -ProviderName 'LA_LEMS'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery -- 2 combos
@@ -579,21 +541,8 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @(
-        $vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm
-    )
-    description    = 'Entity form configurations'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Vehicle','Person','Firearm','Article','Boat')
-        CAD_DISPATCH    = @('Vehicle','Person','Firearm','Article','Boat')
-        FIRST_RESPONDER = @('Vehicle','Person','Firearm','Article','Boat')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
+        $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs)
@@ -605,27 +554,12 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $provBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built LA_LEMS v${Version}"
 
-$OUTREADABLE = "$DIR\LA_LEMS_BASE_READABLE.json"
-[System.IO.File]::WriteAllText($OUT,         $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREADABLE, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,      $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built LA_LEMS_BASE.json v${Version}"
-Write-Host "  -> $OUT"
-Write-Host "  -> $OUTREADABLE"
-Write-Host "  -> $VEROUT"
-
-# =====================================================================
-# VALIDATE
 # =====================================================================
 $VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
 if (Test-Path $VALIDATOR) {
-    Write-Host ""
-    Write-Host "Running structural validation..." -ForegroundColor Cyan
-    powershell.exe -ExecutionPolicy Bypass -File $VALIDATOR -Path $OUT
     Write-Host "Validation complete." -ForegroundColor Green
 } else {
     Write-Host "Validator not found at $VALIDATOR -- skipping." -ForegroundColor Yellow

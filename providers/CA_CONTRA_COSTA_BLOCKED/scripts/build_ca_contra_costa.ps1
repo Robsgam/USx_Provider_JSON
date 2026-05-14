@@ -63,57 +63,17 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
 # =====================================================================
 # BUNDLE 1: CA_CONTRA_COSTA PROVIDER
 # =====================================================================
 
-# 1a. AUTHENTICATION
-# Devdoc: ORI + Mnemonic + UserName (dexStateUserId) + DeviceId
-$auth = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');     targetField = 'ORI' }
-        [PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' }
-        [PSCustomObject]@{
-            description = 'dexUserStateid from RMS profile'
-            name        = 'UserName'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }
-            sourceField = @('dexStateUserId')
-            targetField = 'UserName'
-        }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            keyReference = 'AUTH'
-            requirements = [PSCustomObject]@{ set = @('ORI','Mnemonic'); any = @('dexStateUserId') }
-        }
-    )
-    description                = 'Authentication configuration for CA Contra Costa County JAWS'
-    handlerFunction            = 'CommsysOriAuthenticationHandler'
-    name                       = 'CA_CONTRA_COSTA'
-    type                       = 'AUTHENTICATION'
-    deviceRegistrationOptional = $false
-    provider                   = 'CA_CONTRA_COSTA'
-    providerType               = 'Commsys'
-    signInRequired             = $false
-}
+$auth = Build-Auth -ProviderName 'CA_CONTRA_COSTA'
 
-# 1b. QUERYRESULTDATAMAPPING 
-$results = Build-CommsysQrdm -ProviderName 'CA_CONTRA_COSTA'
-$results.name        = 'CA_CONTRA_COSTA_Results'
-$results.description = 'Results mapping for CA Contra Costa County JAWS'
-$results.provider    = 'CA_CONTRA_COSTA'
+$results = Build-ProviderQrdm -ProviderName 'CA_CONTRA_COSTA'
 
-# 1c. QUERYMESSAGEFORMAT
-$qmf = [PSCustomObject]@{
-    description          = 'Configuration for Query format'
-    handlerFunction      = 'CommsysWsiOutgoingMessageHandler'
-    name                 = 'CA_CONTRA_COSTA_QueryMessageFormat'
-    type                 = 'QUERYMESSAGEFORMAT'
-    authenticationParent = 'LawEnforcementTransaction'
-    payloadParent        = 'LawEnforcementTransaction'
-    provider             = 'CA_CONTRA_COSTA'
-}
+$qmf = Build-Qmf -ProviderName 'CA_CONTRA_COSTA'
 
 # =====================================================================
 # 1d. CaContraCostaJawsPersonQuery
@@ -304,18 +264,7 @@ $personForm = [PSCustomObject]@{
     targetEntity = 'Person'
 }
 
-$entitiesBundle = [PSCustomObject]@{
-    configurations = @($personForm)
-    description    = 'Entity form configurations for CA_CONTRA_COSTA'
-    name           = 'ENTITIES'
-    type           = 'BUNDLE'
-    order          = [PSCustomObject]@{
-        default         = @('Person')
-        CAD_DISPATCH    = @('Person')
-        FIRST_RESPONDER = @('Person')
-    }
-    provider       = 'MARK43'
-}
+$entitiesBundle = Build-EntitiesBundle -Configurations @($personForm) -DefaultOrder @('Person') -CadOrder @('Person') -FrOrder @('Person')
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs)
@@ -329,16 +278,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $ccBundle, $rmsBundle)
 }
 
-$json = $output | ConvertTo-Json -Depth 100 -Compress
-$jsonReadable = $output | ConvertTo-Json -Depth 100
-[System.IO.File]::WriteAllText($OUT,     $json,         [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($OUTREAD, $jsonReadable,  [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($VEROUT,  $json,         [System.Text.UTF8Encoding]::new($false))
-
-Write-Host "Built CA_CONTRA_COSTA_BASE.json v${Version}"
-Write-Host "  -> $OUT (minified)"
-Write-Host "  -> $OUTREAD (readable)"
-Write-Host "  -> $VEROUT (phase archive)"
-
-$validatorPath = Join-Path (Resolve-Path "$PSScriptRoot\..\..\..\tools").Path "validate.ps1"
-powershell.exe -ExecutionPolicy Bypass -File $validatorPath -Path $OUT
+Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+    -Label "Built CA_CONTRA_COSTA v${Version}"
