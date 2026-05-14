@@ -1,5 +1,5 @@
 # build_ca_contra_costa_mc.ps1  -- CA_CONTRA_COSTA MC (multi-card)
-# MC variant: camelCase fieldIds for CAD auto-populate. HIDLE_MC.json (no patches).
+# MC variant: camelCase fieldIds for CAD auto-populate. KB specs (no external template).
 # Person-only provider. Both QIDMs co-fire (PersonQuery + WarrantQuery).
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_contra_costa_mc.ps1
@@ -7,7 +7,7 @@
 # INPUTS:
 #   source\CA_CONTRA_COSTA.xml            -- XML metadata (v5/v4) [AUTHORITATIVE]
 #   source\CA_CONTRA_COSTA.pdf            -- CommSys devdoc [CROSS-CHECK]
-#   templates\HIDLE_MC.json               -- RMS template (camelCase, registrationState, autoSelect)
+#   tools\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs, no external template)
 #
 # QUERYINPUTDATAMAPPING (CommSys -- 2 configs, 6 combos):
 #   CaContraCostaJawsPersonQuery   DQ (OOS Name+DOB+Sex+State), DNQ (OOS Name+State),
@@ -41,7 +41,7 @@ $VEROUT   = "$PHASEDIR\CA_CONTRA_COSTA_MC_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
-$hidle = Get-Content "$DIR\..\..\templates\HIDLE_MC.json" -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
 # HELPERS
@@ -172,12 +172,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE_MC
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
-$results.name        = 'CA_CONTRA_COSTA_Results'
-$results.description = 'Results mapping for CA Contra Costa County JAWS'
-$results.provider    = 'CA_CONTRA_COSTA'
+# 1b. QUERYRESULTDATAMAPPING (from KB specs)
+$results = Build-CommsysQrdm -ProviderName 'CA_CONTRA_COSTA'
 
 # 1c. QUERYMESSAGEFORMAT
 $qmf = [PSCustomObject]@{
@@ -369,30 +365,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE_MC -- camelCase, registrationState, autoSelect pre-configured)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm    = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-
-# RMS cleanup: remove unused HIDLE fields
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes   = @($rmsVehQidm.attributes   | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object { $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName') })
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS','race')
-$rmsPersonQidm.attributes   = @($rmsPersonQidm.attributes   | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
-        'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
-foreach ($combo in $rmsPersonQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'RaceCode' })
-}
-
+$rmsBundle = Build-RmsBundle -SkipRace
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================

@@ -1,6 +1,6 @@
 # build_md_meters_mc.ps1  -- MD_METERS v1.x MC
 # MC variant: PascalCase fieldIds, multi-card layout, no Patch 8 (CAD rename).
-# Builds MD_METERS_MC.json from source\MD_METERS.xml (2026-05-06 metadata) + HIDLE.json.
+# Builds MD_METERS_MC.json from source\MD_METERS.xml (2026-05-06 metadata) + KB specs.
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_md_meters_mc.ps1 -Version X.X -Phase mc
@@ -8,7 +8,7 @@
 # INPUTS:
 #   source\MD_METERS.xml       -- XML metadata (2026-05-06) [AUTHORITATIVE]
 #   source\MD_METERS_DEVDOC.txt -- CommSys devdoc [CROSS-CHECK]
-#   ..\..\templates\HIDLE_MC.json          -- RMS structural template
+#   tools\_build_rms_bundle.ps1            -- RMS bundle + CommSys QRDM (KB specs)
 #
 # METADATA SUMMARY (MD_METERS v6/v7/v6/v3/v3/v4):
 #   VehicleRegistrationQuery v6  -- 4 combos (ZVEH x2, ZLRG x2), collapsed to 4 w/ invented keyRefs
@@ -53,7 +53,7 @@ $VEROUT   = "$PHASEDIR\MD_METERS_MC_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
-$hidle = Get-Content "$DIR\..\..\templates\HIDLE_MC.json" -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
 # HELPERS
@@ -190,12 +190,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
-$results.name        = 'MD_METERS_Results'
-$results.description = 'Results mapping for MD METERS'
-$results.provider    = 'MD_METERS'
+# QUERYRESULTDATAMAPPING (from KB specs)
+$results = Build-CommsysQrdm -ProviderName 'MD_METERS'
 
 # 1c. QUERYMESSAGEFORMAT
 $qmf = [PSCustomObject]@{
@@ -738,29 +734,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE_MC -- camelCase, registrationState, autoSelect pre-configured)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm    = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-
-# RMS cleanup: remove unused HIDLE fields
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes   = @($rmsVehQidm.attributes   | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object { $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName') })
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS','race')
-$rmsPersonQidm.attributes   = @($rmsPersonQidm.attributes   | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS','firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
-foreach ($combo in $rmsPersonQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -ne 'RaceCode' })
-}
-
+$rmsBundle = Build-RmsBundle -SkipRace
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================

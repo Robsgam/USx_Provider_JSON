@@ -11,7 +11,7 @@
 #   Boat:    1 card (same as BASE -- only 3 fields, no State in v2)
 #
 # QIDMs: identical to BASE (6 QIDMs, 12 combos)
-# RMS: identical to BASE (HIDLE + Patch 1+3+6)
+# RMS: from KB specs (no HIDLE dependency)
 
 param(
     [string]$Version = "3.1",
@@ -44,7 +44,7 @@ $VEROUT   = "$PHASEDIR\NJ_NJCJIS_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
-$hidle = Get-Content "$DIR\..\..\templates\HIDLE_MC.json" -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
 # HELPERS (identical to BASE)
@@ -168,12 +168,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# 1b. QUERYRESULTDATAMAPPING -- cloned from HIDLE
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
-$results.name        = 'NJ_NJCJIS_Results'
-$results.description = 'Results mapping for NJ NJCJIS'
-$results.provider    = 'NJ_NJCJIS'
+# QUERYRESULTDATAMAPPING (from KB specs)
+$results = Build-CommsysQrdm -ProviderName 'NJ_NJCJIS'
 
 # 1c. QUERYMESSAGEFORMAT
 $qmf = [PSCustomObject]@{
@@ -650,29 +646,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE_MC — camelCase, registrationState, autoSelect pre-configured)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm    = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-
-# RMS cleanup: remove unused HIDLE fields
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes = @($rmsVehQidm.attributes | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object {
-    $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName')
-})
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS')
-$rmsPersonQidm.attributes = @($rmsPersonQidm.attributes | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
-        'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
-
+$rmsBundle = Build-RmsBundle
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================

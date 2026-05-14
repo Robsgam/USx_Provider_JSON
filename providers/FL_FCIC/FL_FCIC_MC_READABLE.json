@@ -6468,7 +6468,10 @@
                                                                       {
                                                                           "name":  "AddressStateCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "AddressStateCode"
@@ -6544,8 +6547,7 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:DOB\\s(\\d{8})",
-                                                                                                                 "trim"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "BirthDate",
@@ -6614,14 +6616,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:EYE/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "EyeColorCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "EyeColorCode"
@@ -6675,7 +6678,10 @@
                                                                       {
                                                                           "name":  "HairColorCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "HairColorCode"
@@ -6688,19 +6694,14 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:HGT/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "HeightDisplay",
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "Height"
-                                                                                                         ],
-                                                                                                         "height"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6713,10 +6714,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "Height"
-                                                                                                         ],
-                                                                                                         "feet"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6729,10 +6727,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "Height"
-                                                                                                         ],
-                                                                                                         "inches"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6744,19 +6739,14 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:HGT/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "Height",
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "Height"
-                                                                                                         ],
-                                                                                                         "total"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6810,9 +6800,7 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:LIC/\\s*([^\\s]+)",
-                                                                                                                 "regex:LIC/([^\\s]+)",
-                                                                                                                 "trim"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "LicensePlateNumber",
@@ -6833,22 +6821,7 @@
                                                                           "rule":  {
                                                                                        "function":  "ParseCommsysNameRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "NormalizedNameLast",
-                                                                                                             "NormalizedNameFirst",
-                                                                                                             "NormalizedNameMiddle"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "NormalizedName"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "Name"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             ", ",
-                                                                                                             " ",
-                                                                                                             " "
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6861,22 +6834,7 @@
                                                                           "rule":  {
                                                                                        "function":  "ParseCommsysNameRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "NormalizedNameLast",
-                                                                                                             "NormalizedNameFirst",
-                                                                                                             "NormalizedNameMiddle"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "NormalizedName"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "Name"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             ", ",
-                                                                                                             " ",
-                                                                                                             " "
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6889,22 +6847,7 @@
                                                                           "rule":  {
                                                                                        "function":  "ParseCommsysNameRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "NormalizedNameLast",
-                                                                                                             "NormalizedNameFirst",
-                                                                                                             "NormalizedNameMiddle"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "NormalizedName"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "Name"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             ", ",
-                                                                                                             " ",
-                                                                                                             " "
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6917,22 +6860,7 @@
                                                                           "rule":  {
                                                                                        "function":  "ParseCommsysNameRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "NormalizedNameLast",
-                                                                                                             "NormalizedNameFirst",
-                                                                                                             "NormalizedNameMiddle"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "NormalizedName"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "Name"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             ", ",
-                                                                                                             " ",
-                                                                                                             " "
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -6944,9 +6872,7 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:OLN/\\s*([^\\s]+)",
-                                                                                                                 "regex:OLN/([^\\s]+)",
-                                                                                                                 "trim"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "OperatorLicenseNumber",
@@ -6987,14 +6913,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:RAC/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "RaceCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "RaceCode"
@@ -7021,14 +6948,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:SEX/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "SexCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "SexCode"
@@ -7041,15 +6969,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:SSN/([^\\s]+)",
-                                                                                                                 "regex:SSN ([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "SocialSecurityNumber",
                                                                           "rule":  {
-                                                                                       "function":  "truncate"
+                                                                                       "function":  "truncate",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "size":  11,
                                                                           "sourceField":  [
@@ -7061,14 +6989,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VCO/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleColorCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "VehicleColorCode"
@@ -7081,8 +7010,7 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VIN/([^\\s]+)",
-                                                                                                                 "trim"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleIdentificationNumber",
@@ -7095,14 +7023,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VMA/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleMakeName",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "VehicleMakeCode"
@@ -7129,14 +7058,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VST/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleStyleCode",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "VehicleStyleCode"
@@ -7149,14 +7079,15 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VMO/([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleModelName",
                                                                           "rule":  {
-                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "VehicleModelCode"
@@ -7176,17 +7107,14 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:VYR/([^\\s]+)",
-                                                                                                                 "regex:YRMD:([^\\s]+)",
-                                                                                                                 "trim",
-                                                                                                                 "rule"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "VehicleYear",
                                                                           "rule":  {
                                                                                        "function":  "ParseCommsysVehicleYearRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         "50"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -7205,8 +7133,7 @@
                                                                           "fallbackRule":  {
                                                                                                "function":  "CommysResultFallbackRegexRuleHandler",
                                                                                                "arguments":  [
-                                                                                                                 "regex:WGT/([^\\s]+)",
-                                                                                                                 "trim"
+
                                                                                                              ]
                                                                                            },
                                                                           "name":  "Weight",
@@ -8593,6 +8520,10 @@
                         "provider":  "FL_FCIC"
                     },
                     {
+                        "name":  "RMS",
+                        "type":  "BUNDLE",
+                        "description":  "Provider configuration for RMS",
+                        "provider":  "RMS",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -8698,10 +8629,13 @@
                                                                       {
                                                                           "name":  "race",
                                                                           "rule":  {
-                                                                                       "function":  "AttributeArrayWrapperRuleHandler"
+                                                                                       "function":  "AttributeArrayWrapperRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
-                                                                                              "RaceCode"
+                                                                                              "raceCode"
                                                                                           ],
                                                                           "targetField":  "raceAttrIds",
                                                                           "useAttributeId":  true
@@ -8732,7 +8666,7 @@
                                                                                                              "nameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "sexCode",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -8749,7 +8683,7 @@
                                                                                                              "birthDate"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "sexCode",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -8765,7 +8699,7 @@
                                                                                                              "nameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "sexCode",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -8780,7 +8714,7 @@
                                                                                                              "operatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "sexCode",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -8790,7 +8724,7 @@
                                                                             "keyReference":  "driversLicenseNumber"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Person Search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8827,7 +8761,7 @@
                                                                       {
                                                                           "name":  "modelNcicCode",
                                                                           "sourceField":  [
-                                                                                              "VehicleModelCode"
+                                                                                              "vehicleModelCode"
                                                                                           ],
                                                                           "targetField":  "vehicle.modelNcicCode"
                                                                       },
@@ -8841,7 +8775,10 @@
                                                                       {
                                                                           "name":  "registrationState",
                                                                           "rule":  {
-                                                                                       "function":  "AttributeArrayWrapperRuleHandler"
+                                                                                       "function":  "AttributeArrayWrapperRuleHandler",
+                                                                                       "arguments":  [
+
+                                                                                                     ]
                                                                                    },
                                                                           "sourceField":  [
                                                                                               "registrationState"
@@ -8859,7 +8796,7 @@
                                                                                                  "any":  [
                                                                                                              "vehicleYear",
                                                                                                              "vehicleMakeCode",
-                                                                                                             "VehicleModelCode",
+                                                                                                             "vehicleModelCode",
                                                                                                              "licensePlateNumber",
                                                                                                              "registrationState"
                                                                                                          ],
@@ -8876,7 +8813,7 @@
                                                                                                  "any":  [
                                                                                                              "vehicleYear",
                                                                                                              "vehicleMakeCode",
-                                                                                                             "VehicleModelCode",
+                                                                                                             "vehicleModelCode",
                                                                                                              "registrationState"
                                                                                                          ],
                                                                                                  "conditions":  null,
@@ -8885,7 +8822,7 @@
                                                                             "keyReference":  "licensePlateIn"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Vehicle search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -9119,20 +9056,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatArrayRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "entityType",
-                                                                                                             "nameId",
-                                                                                                             "nameAttrDetail.id",
-                                                                                                             "nameAttrDetail.displayValue",
-                                                                                                             "nameAttrDetail.type"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "entityType",
-                                                                                                             "id",
-                                                                                                             "attributeId",
-                                                                                                             "displayValue",
-                                                                                                             "type"
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9152,22 +9076,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatArrayRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "warrantId",
-                                                                                                             "warrantNumber",
-                                                                                                             "warrantTypeAttrDetail.displayValue",
-                                                                                                             "warrantStatusAttrDetail.displayValue",
-                                                                                                             "warrantIssuedDateUtc",
-                                                                                                             "warrantCharges[chargeName,chargeCount,offenseClassificationAttrDetail.displayValue,offenseDateUtc]"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "Id",
-                                                                                                             "Number",
-                                                                                                             "Type",
-                                                                                                             "Status",
-                                                                                                             "IssuedDateUtc",
-                                                                                                             "Charges[Name,Count,OffenseClassification,OffenseDateUtc]"
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9222,20 +9131,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatArrayRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "entityType",
-                                                                                                             "itemProfileId",
-                                                                                                             "itemAttrDetail.id",
-                                                                                                             "itemAttrDetail.displayValue",
-                                                                                                             "itemAttrDetail.type"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "entityType",
-                                                                                                             "id",
-                                                                                                             "attributeId",
-                                                                                                             "displayValue",
-                                                                                                             "type"
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9248,24 +9144,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatArrayRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "type",
-                                                                                                             "id",
-                                                                                                             "locationAddress.streetAddress",
-                                                                                                             "locationAddress.streetNumber",
-                                                                                                             "locationAddress.locality",
-                                                                                                             "locationAddress.country",
-                                                                                                             "locationAddress.postalCode"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "type",
-                                                                                                             "attributeId",
-                                                                                                             "streetAddress",
-                                                                                                             "streetNumber",
-                                                                                                             "locality",
-                                                                                                             "country",
-                                                                                                             "postalCode"
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9278,18 +9157,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatArrayRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "id",
-                                                                                                             "description",
-                                                                                                             "bodyPartAttrDetail.displayValue",
-                                                                                                             "identifyingMarkTypeAttrDetail.displayValue"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             "attributeId",
-                                                                                                             "description",
-                                                                                                             "bodyPart",
-                                                                                                             "identifyingMarkType"
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9414,11 +9282,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
-                                                                                                         ],
-                                                                                                         "height"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9431,11 +9295,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
-                                                                                                         ],
-                                                                                                         "feet"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9448,11 +9308,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
-                                                                                                         ],
-                                                                                                         "inches"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9465,11 +9321,7 @@
                                                                           "rule":  {
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
-                                                                                                         ],
-                                                                                                         "total"
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9538,16 +9390,7 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatNameRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         [
-                                                                                                             "firstName",
-                                                                                                             "lastName",
-                                                                                                             "middleNameAnalyzed"
-                                                                                                         ],
-                                                                                                         [
-                                                                                                             ", ",
-                                                                                                             " ",
-                                                                                                             " "
-                                                                                                         ]
+
                                                                                                      ]
                                                                                    },
                                                                           "sourceField":  [
@@ -9678,11 +9521,7 @@
                                                    "provider":  "RMS",
                                                    "providerType":  "RMS"
                                                }
-                                           ],
-                        "description":  "Provider configuration for RMS",
-                        "name":  "RMS",
-                        "type":  "BUNDLE",
-                        "provider":  "RMS"
+                                           ]
                     }
                 ]
 }

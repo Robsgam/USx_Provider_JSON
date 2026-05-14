@@ -1,5 +1,5 @@
 # build_fl_fcic_mc.ps1 -- FL_FCIC MC (multi-card)
-# Builds FL_FCIC_MC.json from source\FL_FCIC.xml metadata + HIDLE_MC.json.
+# Builds FL_FCIC_MC.json from source\FL_FCIC.xml metadata + KB specs.
 # QIDMs identical to BASE. Layout-only changes: Person has 3 cards (Options, DL, DH).
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
@@ -8,7 +8,7 @@
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]
 #   source\FL_FCIC.pdf   -- CommSys devdoc (6 basic queries) [CROSS-CHECK]
-#   templates\HIDLE_MC.json -- RMS template (camelCase, registrationState, autoSelect)
+#   tools\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs, no external template)
 #
 # QUERYINPUTDATAMAPPING (CommSys -- 8 QIDMs, 33 combos):
 #   VehicleRegistrationQuery   FRQ (plate/VIN/Decal/Title) + RQ (plate+state/VIN+state) = 6 combos
@@ -35,8 +35,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.0",
-    [string]$HidlePath = "$PSScriptRoot\..\..\..\templates\HIDLE_MC.json"
+    [string]$Version = "4.0"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -44,7 +43,7 @@ $provider = 'FL_FCIC'
 $outPath  = "$PSScriptRoot\..\FL_FCIC_MC.json"
 
 $currentYear = [string](Get-Date).Year
-$hidle = Get-Content $HidlePath -Raw | ConvertFrom-Json
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
 # HELPERS (NJ pattern: PSCustomObject + @() arrays + deep-copy layouts)
@@ -167,12 +166,8 @@ $auth = [PSCustomObject]@{
     signInRequired             = $false
 }
 
-# --- QUERYRESULTDATAMAPPING (clone from HIDLE) ---
-$hiResults = $hidle.bundles[0].configurations | Where-Object { $_.type -eq 'QUERYRESULTDATAMAPPING' }
-$results = $hiResults | ConvertTo-Json -Depth 30 | ConvertFrom-Json
-$results.name        = "${provider}_Results"
-$results.description = "Results mapping for $provider"
-$results.provider    = $provider
+# --- QUERYRESULTDATAMAPPING (from KB specs) ---
+$results = Build-CommsysQrdm -ProviderName $provider
 
 # --- QUERYMESSAGEFORMAT ---
 $qmf = [PSCustomObject]@{
@@ -849,26 +844,9 @@ $entitiesBundle = [PSCustomObject]@{
 }
 
 # =====================================================================
-# BUNDLE 3: RMS (from HIDLE_MC — camelCase, registrationState, autoSelect pre-configured)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = $hidle.bundles | Where-Object { $_.name -eq 'RMS' }
-$rmsVehQidm    = $rmsBundle.configurations | Where-Object { $_.name -eq 'RMS Vehicle search query' }
-$rmsPersonQidm = $rmsBundle.configurations | Where-Object { $_.query -eq 'Person' }
-
-# RMS cleanup: remove unused HIDLE fields
-$deadVehAttrs = @('LicensePlateNumberOut','RegistrationStateOut','OwnerFirstName','OwnerLastName')
-$rmsVehQidm.attributes   = @($rmsVehQidm.attributes   | Where-Object { $_.name -notin $deadVehAttrs })
-$rmsVehQidm.combinations = @($rmsVehQidm.combinations | Where-Object { $_.keyReference -notin @('licensePlateOutAndState','OwnerFirstAndLastName') })
-foreach ($combo in $rmsVehQidm.combinations) {
-    $combo.requirements.any = @($combo.requirements.any | Where-Object { $_ -notin $deadVehAttrs })
-}
-
-$deadPerAttrs = @('socialSecurityNumber','licenseNumberOOS','firstNameOOS','lastNameOOS','dateOfBirthOOS','sexOOS')
-$rmsPersonQidm.attributes   = @($rmsPersonQidm.attributes   | Where-Object { $_.name -notin $deadPerAttrs })
-$rmsPersonQidm.combinations = @($rmsPersonQidm.combinations | Where-Object {
-    $_.keyReference -notin @('firstNameLastNameSocialSecurityNumber','driversLicenseNumberOOS',
-        'firstNameLastNameDriversLicenseNumberOOS','firstNameLastNameDateOfBirthOOS','firstNameLastNameOOS')
-})
+$rmsBundle = Build-RmsBundle
 
 # =====================================================================
 # FINAL ASSEMBLY + WRITE
@@ -889,7 +867,7 @@ Write-Host "  -> $outPath"
 Write-Host "  -> $outPathReadable"
 Write-Host "  ENTITIES: 5 QIFs (Person, Vehicle, Firearm, Article, Boat)"
 Write-Host "  ${provider}: AUTH + QRDM + QMF + 8 CommSys QIDMs (33 combos)"
-Write-Host "  RMS: Patched (1+3+6+7)"
+Write-Host "  RMS: Built from KB specs (no HIDLE dependency)"
 
 # =====================================================================
 # VALIDATE

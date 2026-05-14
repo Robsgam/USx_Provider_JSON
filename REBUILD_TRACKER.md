@@ -89,15 +89,15 @@ AZ (Attention visible, no handler), NM (Attention InpH, no handler), FL (FIXED v
 
 **Also noted:** TX_TLETS EmailAddress on DL+DH — no form field AND no handler (orphan, sends empty).
 
-## HIDLE_MC Migration — 2026-05-14
+## KB-Based RMS — 2026-05-14
 
-All 18 MC build scripts migrated to HIDLE_MC.json (camelCase, registrationState, autoSelect
-pre-configured). Eliminates Patches 1, 3, 7, 8 from all MC builds. Only Patch 6 (dead field
-cleanup) remains as provider-specific code.
+All 19 MC build scripts (18 active + CA_CONTRA_COSTA) now use `tools/_build_rms_bundle.ps1`
+to construct the RMS bundle and CommSys QRDM from inline KB specifications. No external
+template dependency — HIDLE_MC.json deleted.
 
-**Methodology**: Clean build only. No post-build patches. Build scripts produce correct output
-from HIDLE_MC.json + provider-specific QIDM code. `_convert_mc_camelcase.ps1` applied to all
-15 remaining scripts for CommSys QIDM sourceField/combo/layout camelCase.
+**Methodology**: Build from KB knowledge + metadata/devdocs only. `_build_rms_bundle.ps1`
+defines all RMS and CommSys result-mapping data in code. No HIDLE.json, no patches, no
+cleanup. Build scripts call `Build-RmsBundle` and `Build-CommsysQrdm` directly.
 
 ### Already Built and Verified (3)
 
