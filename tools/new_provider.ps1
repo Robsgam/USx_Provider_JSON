@@ -85,13 +85,7 @@ if ($PdfPath -and (Test-Path $PdfPath)) {
     Write-Host "  [INFO] No PDF provided (add manually to source/ later)" -ForegroundColor Gray
 }
 
-$hidleSrc = Join-Path $repoRoot "templates\HIDLE.json"
-if (Test-Path $hidleSrc) {
-    Copy-Item $hidleSrc "$providerDir\source\HIDLE.json" -Force
-    Write-Host "  [PASS] Copied HIDLE.json template to source/" -ForegroundColor Green
-} else {
-    Write-Host "  [WARN] HIDLE.json not found at templates/HIDLE.json" -ForegroundColor Yellow
-}
+Write-Host "  [INFO] RMS bundle built from KB specs via _build_rms_bundle.ps1 (no HIDLE.json needed)" -ForegroundColor Cyan
 
 # --- STEP 4: Create .gitkeep in tests/ ---
 "" | Set-Content "$providerDir\tests\.gitkeep" -NoNewline
@@ -223,7 +217,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 
 # TODO: Build ENTITIES bundle (QIFs with single-card layout)
 # TODO: Build PROVIDER bundle (AUTH, QMF, QRDM, QIDMs)
-# TODO: Build RMS bundle (clone HIDLE, apply Patches 1,3,6,7,8)
+# TODO: Build RMS bundle (Build-RmsBundle from _build_rms_bundle.ps1)
 
 # --- Output ---
 `$outMin  = Join-Path `$providerDir "`${providerName}_BASE.json"
@@ -313,7 +307,7 @@ Write-Host "      docs/ (STATUS, BUILD_NOTES, SQVR, JSON_INVENTORY)"
 Write-Host "      docs/base/ docs/mc/"
 Write-Host "      scripts/build_$providerLower.ps1 (BASE stub)"
 Write-Host "      scripts/build_${providerLower}_mc.ps1 (MC stub)"
-Write-Host "      source/ ($($xmlFile.Name), HIDLE.json$(if($PdfPath){', PDF'}))"
+Write-Host "      source/ ($($xmlFile.Name)$(if($PdfPath){', PDF'}))"
 Write-Host "      tests/ phases/base/ phases/mc/ release/"
 Write-Host ""
 Write-Host "  Next steps:" -ForegroundColor White

@@ -27,13 +27,13 @@
 # STATE: NCIC pattern (UNCONFIRMED on NY -- test ST-1 on first import)
 #   Visible Sel 'RegistrationState' (attributeTypeId=STATE, NO initialValue)
 #   CommSys attr: codeTypeProvider=NCIC (reverse-lookup attr ID -> 2-letter code)
-#   RMS: HIDLE default (useAttributeId=true + AttributeArrayWrapperRuleHandler on Vehicle)
+#   RMS: KB standard (useAttributeId=true + AttributeArrayWrapperRuleHandler on Vehicle)
 #   Fallback: dual-field (SelH for RMS + InpH for XML) if NCIC fails
 #
 # SEX: Full 3-layer pattern
 #   Form: attributeTypeId=SEX + codeTypeProvider=NIBRS
 #   QIDM: codeTypeProvider=NIBRS (reverse-lookup)
-#   RMS: HIDLE default (useAttributeId=true, NO ArrayWrapper)
+#   RMS: KB standard (useAttributeId=true, NO ArrayWrapper)
 #
 # NAME: 4-field (Last, First, Middle, Suffix)
 #   FormatStringRuleHandler args=[', ',' ',' '] -> "LAST, FIRST MIDDLE SUFFIX"

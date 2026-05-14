@@ -40,12 +40,12 @@
 # STATE HANDLING (NCIC pattern, confirmed NJ v1.0):
 #   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=NJ)
 #   CommSys State attr: sourceField=RegistrationState, codeTypeProvider=NCIC
-#   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (HIDLE default)
+#   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (KB standard)
 #
 # SEX HANDLING (confirmed NJ v1.0):
 #   Form: Sel 'SexCode' attributeTypeId=SEX + codeTypeProvider=NIBRS
 #   CommSys: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
-#   RMS: HIDLE default useAttributeId=true, NO AttributeArrayWrapperRuleHandler
+#   RMS: KB standard useAttributeId=true, NO AttributeArrayWrapperRuleHandler
 
 param(
     [string]$Version = "3.1",

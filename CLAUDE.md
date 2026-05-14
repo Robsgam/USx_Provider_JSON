@@ -11,7 +11,7 @@ Consolidated: 2026-05-04
 providers/{PROVIDER}/     -- 19 providers (8 active + 11 new)
 knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
-templates/                 -- HIDLE.json, CA_ESUN.json, CODETYPE_TEST.json
+templates/                 -- CA_ESUN.json, CODETYPE_TEST.json
 ```
 
 ## Provider Status (updated 2026-05-12)
@@ -72,7 +72,7 @@ Every provider JSON has exactly 3 bundles in this order:
 
 1. **ENTITIES** (`provider='MARK43'`): All QIFs (entity input forms) + display order
 2. **PROVIDER** (`provider=[PROVIDER_NAME]`): AUTH, QMF, QRDM, all QIDMs
-3. **RMS** (`provider='RMS'`): From HIDLE_MC.json (MC builds) or HIDLE.json (BASE builds), cleanup only
+3. **RMS** (`provider='RMS'`): Built from KB specs via `_build_rms_bundle.ps1`
 
 **ENTITIES must be first.** Confirmed AZ v2.0: forms do not render when ENTITIES is not first.
 
@@ -107,7 +107,7 @@ Full reference: `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIO
 
 Single visible Sel 'RegistrationState': `attributeTypeId='STATE'`, `initialValue='<state>'`.
 CommSys QIDM State attr: `sourceField=['RegistrationState']`, `targetField='State'`, `codeTypeProvider='NCIC'`.
-RMS: HIDLE default (`useAttributeId=true` + `AttributeArrayWrapperRuleHandler`).
+RMS: KB standard (`useAttributeId=true` + `AttributeArrayWrapperRuleHandler`).
 
 One field handles both CommSys (2-letter code via reverse-lookup) and RMS (dynamic attr ID).
 
@@ -431,7 +431,6 @@ providers/<PROVIDER>/
 ├── source/                                # Input materials
 │   ├── <provider>.xml                     # Metadata XML
 │   └── <provider>.pdf                     # Devdoc PDF
-    └── HIDLE.json                         # RMS template
 ```
 
 When a repo does not match this structure, fix it before doing any other work.
@@ -451,7 +450,7 @@ When a repo does not match this structure, fix it before doing any other work.
 1. Read `knowledge-base/README.txt` then this file
 2. Create provider folder with canonical structure (see above)
 3. Copy metadata XML and devdoc PDF to `source/`
-4. Copy `templates/HIDLE.json` to `source/HIDLE.json`
+4. RMS bundle built automatically from KB specs (no template copy needed)
 5. Convert PDF to text: `pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt`
 6. Run `extract_queries.ps1 -XmlPath source/<PROVIDER>.xml` to populate SQVR
 7. Read devdoc "Basic Queries Supported" — this is the ONLY authority for WHICH queries to build

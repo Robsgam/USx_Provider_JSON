@@ -36,27 +36,19 @@
 #   State2-5:    PDF says "submit up to 5 states" on DL/VehicleReg -- not implementable, excluded
 #   DH:          XML has State in any[], PDF does not mention State -- metadata wins (include State)
 #
-# HIDLE.json COMPARISON (hand-built reference):
-#   HIDLE uses old split-entity In/Out model (OOS fieldIds). We use Phase 1 NCIC state pattern.
-#   HIDLE drops QV stolen combos and QW wanted person combo. We include them per metadata.
-#   HIDLE GunMake size=10 matches XML. VehicleMakeCode size=4 is wrong (XML=20). We use 20.
-#   HIDLE Name format: "First Last Middle Suffix" (4 components, space separators). We follow same format.
-#   HIDLE queryLabels: "NCIC", "DMV", "Driver License", "Driver History". We use standard labels.
-#   HIDLE DL/DH: queriesToDeselect bidirectional. We replicate + add DH-suffix fieldIds (AP #14).
-#
 # STATE HANDLING (Phase 1 NCIC pattern):
 #   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=HI)
 #   CommSys State attr: sourceField=RegistrationState, codeTypeProvider=NCIC
-#   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (HIDLE default)
+#   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (KB standard)
 #   Note: NCIC pattern unconfirmed for HI -- test ST-1 on first import.
 #
 # SEX HANDLING (NIBRS reverse-lookup):
 #   Form: Sel 'SexCode' attributeTypeId=SEX + codeTypeProvider=NIBRS
 #   CommSys: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
-#   RMS: HIDLE default (useAttributeId=true, NO AttributeArrayWrapperRuleHandler)
+#   RMS: useAttributeId=true (KB standard)
 #
-# DATE FORMAT: MMddyyyy (matching HIDLE)
-# NAME FORMAT: "First Last Middle Suffix" with space separators (matching HIDLE)
+# DATE FORMAT: MMddyyyy
+# NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
     [string]$Version = "1.6",
