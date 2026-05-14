@@ -414,9 +414,9 @@ AP #24: NCIC_FIREARM_MAKE is firearms only -- not vehicles
     FormSelect dropdown expecting vehicle manufacturers.
   Why it fails: NCIC_FIREARM_MAKE contains FIREARM manufacturers only (Beretta,
     Colt, etc.), NOT vehicle manufacturers (Ford, Chevy, etc.). No
-    NCIC_VEHICLE_MAKE category exists on the platform. HIDLE.json incorrectly
-    uses NCIC_FIREARM_MAKE on VehicleMakeName in the result QIDM
-    (CommsysResultAttributeMappingRuleHandler) -- this is a HIDLE bug.
+    NCIC_VEHICLE_MAKE category exists on the platform. The legacy HIDLE
+    template incorrectly used NCIC_FIREARM_MAKE on VehicleMakeName in
+    the result QRDM -- _build_rms_bundle.ps1 corrects this.
   Correct approach: Use attributeTypeId='VEHICLE_MAKE' + codeTypeProvider='NCIC'
     on the form for a dropdown of vehicle makes. Accept that this stores an
     attribute ID (works for RMS makeNcicCode) but does NOT serialize to CommSys
@@ -447,7 +447,7 @@ AP #18: Removing RMS sex without also removing SexCodeOOS from combinations
   CONFIRMED working: NY_NYSPIN_EJUSTICE v1.1 (2026-04-20)
   What: When removing sex from the RMS Person QIDM, only filtering 'SexCode'
     from combination any[] while leaving 'SexCodeOOS' in OOS combinations.
-  Why it fails: HIDLE's RMS Person QIDM has TWO sex attributes:
+  Why it fails: The RMS Person QIDM has TWO sex attributes:
     'sex'    -> sourceField=SexCode,    targetField=sexAttrId  (in-state)
     'sexOOS' -> sourceField=SexCodeOOS, targetField=sexAttrId  (OOS)
     The OOS combinations reference 'SexCodeOOS' in their any[] arrays. Removing
@@ -482,9 +482,9 @@ AP #27: Phantom field reference in RMS QIDM combination set[]/any[]
     matching attribute with sourceField:[fieldname] exists in the same QIDM.
     If no valid RMS targetField exists for that data, do not include it in the
     combo.
-  Also check: OwnerFirstName, OwnerLastName (from HIDLE) -- remove if no Owner
-    fields on the provider's Vehicle form (Patch 6). socialSecurityNumber on
-    Person -- remove if no SSN field (Patch 6).
+  Also check: OwnerFirstName, OwnerLastName -- remove if no Owner fields on
+    the provider's Vehicle form (Decision 6). socialSecurityNumber on Person
+    -- remove if no SSN field (Decision 6).
 
 ================================================================================
 SECTION 8 -- BUILD SCRIPT TYPE SAFETY

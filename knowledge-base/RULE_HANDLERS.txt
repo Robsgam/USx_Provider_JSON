@@ -1,7 +1,7 @@
 CONNECTCIC RULE HANDLERS -- Complete Reference
 ===================================================
 Last updated: 2026-05-08
-Source: HIDLE.json + CA_ESUN.json + all built provider JSONs
+Source: All built provider JSONs + _build_rms_bundle.ps1
         + Engineering doc (Crinnger Fagundes de Oliveira, 2026-05-08)
 
 24 unique handlers across the ConnectCIC provider JSON ecosystem.
@@ -65,15 +65,15 @@ Found at 4 property paths in the JSON structure.
      Config type:  AUTHENTICATION
      Bundle:       Auth (provider-named, e.g. HI_HCJDC, NJ_NJCJIS)
      Purpose:      ORI-based authentication for CommSys queries
-     Source:       HIDLE.json (cloned by build scripts, name overridden)
+     Source:       _build_provider_helpers.ps1 (Build-Auth)
      All builds:   YES -- every provider has this
 
   2. RestAuthenticationHandler
      Config type:  AUTHENTICATION
      Bundle:       RMS
      Purpose:      REST API authentication for RMS queries
-     Source:       HIDLE.json (RMS bundle, unchanged)
-     All builds:   YES -- inherited from HIDLE
+     Source:       _build_rms_bundle.ps1 (Build-RmsBundle)
+     All builds:   YES -- standard RMS component
 
   3. CommsysTransactionRequestHandler
      Config type:  QUERYINPUTDATAMAPPING (QIDM)
@@ -86,42 +86,42 @@ Found at 4 property paths in the JSON structure.
      Config type:  QUERYMESSAGEFORMAT (QMF)
      Bundle:       Provider
      Purpose:      Formats WSI outgoing message envelope for CommSys
-     Source:       HIDLE.json (cloned, name overridden)
+     Source:       _build_provider_helpers.ps1 (Build-Qmf)
      All builds:   YES -- exactly one per provider
 
   5. CommsysResultsHandler
      Config type:  QUERYRESULTDATAMAPPING (QRDM)
      Bundle:       Provider
      Purpose:      Parses CommSys result set into field values
-     Source:       HIDLE.json (cloned, name overridden)
+     Source:       _build_provider_helpers.ps1 (Build-ProviderQrdm)
      All builds:   YES -- exactly one per provider
 
   6. RmsRestPayloadHandler
      Config type:  QUERYINPUTDATAMAPPING (QIDM)
      Bundle:       RMS
      Purpose:      Builds JSON/REST payload for RMS search queries
-     Source:       HIDLE.json (RMS bundle, unchanged)
+     Source:       _build_rms_bundle.ps1 (Build-RmsBundle)
      All builds:   YES -- one per RMS QIDM (Person + Vehicle)
 
   7. RmsRestResultsHandler
      Config type:  QUERYRESULTDATAMAPPING (QRDM)
      Bundle:       RMS
      Purpose:      Parses JSON response from RMS REST API
-     Source:       HIDLE.json (RMS bundle, unchanged)
+     Source:       _build_rms_bundle.ps1 (Build-RmsBundle)
      All builds:   YES -- exactly one
 
   8. RestRequestHandler
      Config type:  QUERYMESSAGEFORMAT (QMF)
      Bundle:       RMS
      Purpose:      Builds HTTP request for RMS REST queries
-     Source:       HIDLE.json (RMS bundle, unchanged)
+     Source:       _build_rms_bundle.ps1 (Build-RmsBundle)
      All builds:   YES -- exactly one
 
   9. QueryResultsLayoutHandler
      Config type:  QUERYRESULTSLAYOUT
      Bundle:       RMS
      Purpose:      Controls result display layout in UI
-     Source:       HIDLE.json (RMS bundle, unchanged)
+     Source:       _build_rms_bundle.ps1 (Build-RmsBundle)
      All builds:   YES -- exactly one
 
 ================================================================================
@@ -137,7 +137,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  AUTHENTICATION attribute (UserName)
       Arguments:    ['true'] = required, ['false'] = optional
       Purpose:      Retrieves DEX State user ID from logged-in user profile
-      Source:       HIDLE.json (Auth config)
+      Source:       _build_provider_helpers.ps1 (Build-Auth)
       All builds:   YES
 
       Resolution logic:
@@ -271,8 +271,8 @@ Found at 4 property paths in the JSON structure.
                     mode: "FIRST_CHAR" (default) or "REMAINDER"
                     alt-key: alternative key in userArguments (overrides sourceField)
       Purpose:      Extracts first character or remainder of an article code
-      Source:       CA_ESUN template, HIDLE QRDM
-      All builds:   YES (in QRDM via HIDLE)
+      Source:       _build_rms_bundle.ps1 (QRDM) + _build_provider_helpers.ps1 (CommSys QRDM)
+      All builds:   YES (in QRDM via shared modules)
 
       Examples (input "JE123"):
         FIRST_CHAR -> "J"
@@ -294,7 +294,7 @@ Found at 4 property paths in the JSON structure.
 ================================================================================
 
   These are attribute-level handlers on QRDM attributes. They transform
-  CommSys response data into display values. All inherited from HIDLE.json.
+  CommSys response data into display values. All built by shared modules.
 
   --------------------------------------------------------------------------
   16. CommsysResultAttributeMappingRuleHandler
@@ -302,7 +302,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  QRDM attribute (primary rule)
       Arguments:    none (uses additionalFields on the attribute)
       Purpose:      Maps a raw code to a display value using system attribute tables
-      Source:       HIDLE.json (QRDM config)
+      Source:       Shared modules (QRDM config)
       All builds:   YES -- used on State, Sex, Race, Eye, Hair, Color, Make, Style
 
       Required additional fields on attribute:
@@ -334,7 +334,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  QRDM attribute (fallbackRule only)
       Arguments:    chained directives (processed in order)
       Purpose:      Extracts values from free-text (messageData) via regex
-      Source:       HIDLE.json (QRDM config)
+      Source:       Shared modules (QRDM config)
       All builds:   YES -- paired with primary rules as fallback
       Note:         Typo in name (Commys not Commsys) is correct -- do not fix
 
@@ -375,7 +375,7 @@ Found at 4 property paths in the JSON structure.
                     field-list: ["Height"] for Commsys, ["HeightFeet","HeightInches"] for RMS
                     output-type: "height" (default), "feet", "inches", "total"
       Purpose:      Normalizes height values from Commsys (3-digit) or RMS formats
-      Source:       HIDLE.json (QRDM + RMS Results)
+      Source:       Shared modules (QRDM + RMS Results)
       All builds:   YES
 
       Output types:
@@ -397,7 +397,7 @@ Found at 4 property paths in the JSON structure.
                     [2]: common name keys
                     [3]: separators for building full Name field
       Purpose:      Parses and resolves name fields with 3-level fallback
-      Source:       HIDLE.json (QRDM config)
+      Source:       Shared modules (QRDM config)
       All builds:   YES
       Note:         Returns different fields based on attribute.name value
                     (NameFirst, NameLast, NameMiddle, or Name)
@@ -421,7 +421,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  QRDM attribute (VehicleYear)
       Arguments:    [threshold] (integer, e.g. 50)
       Purpose:      Normalizes 2-digit vehicle years to 4-digit using threshold
-      Source:       HIDLE.json (QRDM config)
+      Source:       Shared modules (QRDM config)
       All builds:   YES
 
       Expansion logic (4-digit years returned unchanged):
@@ -434,7 +434,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  QRDM attribute (SocialSecurityNumber)
       Arguments:    none (uses size property on attribute)
       Purpose:      Truncates field value to attribute size
-      Source:       HIDLE.json (QRDM config)
+      Source:       Shared modules (QRDM config)
       All builds:   YES
       Note:         Lowercase name -- not a typo
 
@@ -445,7 +445,7 @@ Found at 4 property paths in the JSON structure.
       Arguments:    [source-field-paths, target-field-names]
                     Supports dot notation and brackets for nested arrays
       Purpose:      Transforms nested JSON arrays using declarative field mapping
-      Source:       HIDLE.json (RMS Results)
+      Source:       _build_rms_bundle.ps1 (RMS Results)
       All builds:   YES
 
       Nested field syntax:
@@ -461,8 +461,8 @@ Found at 4 property paths in the JSON structure.
       Config type:  RMS QRDM attribute (Name)
       Arguments:    format arrays
       Purpose:      Formats name fields from RMS response
-      Source:       HIDLE.json (RMS Results)
-      All builds:   YES (still in HIDLE, but superseded by ParseCommsysNameRuleHandler)
+      Source:       _build_rms_bundle.ps1 (RMS Results)
+      All builds:   YES (still in RMS bundle, but superseded by ParseCommsysNameRuleHandler)
       Status:       DEPRECATED -- do not use in new configurations
 
 ================================================================================
@@ -475,7 +475,7 @@ Found at 4 property paths in the JSON structure.
       Config type:  RMS QIDM attribute (registrationStateAttrIds, raceAttrIds)
       Arguments:    none
       Purpose:      Wraps a single value in list string format: value -> [value]
-      Source:       HIDLE.json (RMS QIDMs)
+      Source:       _build_rms_bundle.ps1 (RMS QIDMs)
       All builds:   YES
       LIMITATION #27: Do NOT use on sexAttrId -- causes RMS 400
 
@@ -487,7 +487,7 @@ Found at 4 property paths in the JSON structure.
 
   These handlers map Commsys response codes to Federated Search internal codes
   using static configuration lists. All are response-side (QRDM) only.
-  All inherited from HIDLE.json -- no build script action needed.
+  All built by shared modules -- no build script action needed.
 
   Handler                              | Maps           | Static Config
   -------------------------------------|----------------|------------------
@@ -509,7 +509,7 @@ Found at 4 property paths in the JSON structure.
   CommsysImageIdRuleHandler     Extracts ImageId from image source object
 
   Both require Configuration object (throw ConfigurationNotProvidedException
-  if absent). Inherited from HIDLE.json.
+  if absent). Built by _build_rms_bundle.ps1.
 
 ================================================================================
   SPECIAL HANDLER
@@ -518,15 +518,14 @@ Found at 4 property paths in the JSON structure.
   parallelQueryHandler
       Property:     ParallelQuery.function (top-level on RMS bundle)
       Purpose:      Fires Person + Vehicle RMS queries simultaneously
-      Source:       HIDLE.json (RMS bundle)
+      Source:       _build_rms_bundle.ps1 (RMS bundle)
       All builds:   YES
 
 ================================================================================
   HANDLER ORIGIN MAP
 ================================================================================
 
-  HIDLE.json provides:     21 handlers (all builds inherit these)
-  CA_ESUN.json adds:       3 handlers (IgnoreUserValue, CommsysArticle, GetLastNameFirstName)
+  _build_rms_bundle.ps1:   21 handlers (RMS + CommSys QRDM)
   Build scripts configure: CommsysTransactionRequestHandler on each QIDM
                            CommsysParseDateRuleHandler on BirthDate attrs
                            FormatStringRuleHandler on Name attrs
@@ -582,5 +581,5 @@ Found at 4 property paths in the JSON structure.
   QMF config:               handlerFunction = 'CommsysWsiOutgoingMessageHandler'
   QRDM config:              handlerFunction = 'CommsysResultsHandler'
 
-  All RMS/Auth/QMF/QRDM handlers are inherited from HIDLE.json.
+  All RMS/Auth/QMF/QRDM handlers are set by the shared modules.
   Build scripts only need to explicitly set handlers on QIDM attrs they create.

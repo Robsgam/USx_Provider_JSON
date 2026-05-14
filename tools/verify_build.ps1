@@ -191,7 +191,7 @@ if ($providerBundle -and $rmsBundle) {
         }
     }
     if ($orphans.Count -gt 0) {
-        Info "RMS-only sourceFields (HIDLE defaults, no form match): $($orphans.Count) [$($orphans -join ', ')]"
+        Info "RMS-only sourceFields (RMS defaults, no form match): $($orphans.Count) [$($orphans -join ', ')]"
     }
     Pass "Cross-bundle fieldId consistency checked"
 }

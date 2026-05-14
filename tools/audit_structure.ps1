@@ -433,14 +433,6 @@ foreach ($provFolder in $providerFolders) {
         Write-Fail "source/${provName}.xml missing (metadata XML)"
     }
 
-    # HIDLE.json
-    $hidleJson = Join-Path $sourceDir 'HIDLE.json'
-    if (Test-Path $hidleJson) {
-        Write-Pass "source/HIDLE.json exists"
-    } else {
-        Write-Fail "source/HIDLE.json missing (RMS template)"
-    }
-
     # Devdoc PDF (either <PROVIDER>.pdf or <PROVIDER>_OFML.pdf)
     $pdfExists = $false
     if (Test-Path $sourceDir) {

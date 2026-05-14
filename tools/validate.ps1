@@ -121,12 +121,12 @@ foreach ($b in $json.bundles) {
 
 if (-not $entitiesBundle) { Write-Fail "No ENTITIES bundle found" }
 if ($providerBundles.Count -eq 0) { Write-Fail "No provider bundle found" }
-if (-not $rmsBundle) { Write-Warn "No RMS bundle (optional but expected)"; Write-Host "    [FIX] Add a third bundle named 'RMS' with provider='RMS' -- clone from templates/HIDLE.json and apply standard patches" -ForegroundColor Cyan }
+if (-not $rmsBundle) { Write-Warn "No RMS bundle (optional but expected)"; Write-Host "    [FIX] Add a third bundle named 'RMS' with provider='RMS' -- use Build-RmsBundle from tools/_build_rms_bundle.ps1" -ForegroundColor Cyan }
 
 # Bundle count (exactly 3: ENTITIES + Provider + RMS)
 if ($json.bundles.Count -lt 3) {
     Write-Warn "Only $($json.bundles.Count) bundles -- expected 3 (ENTITIES + Provider + RMS)"
-    Write-Host "    [FIX] Add the missing bundle(s) -- every provider JSON requires exactly 3: ENTITIES (QIFs), Provider (AUTH+QMF+QRDM+QIDMs), RMS (from HIDLE.json)" -ForegroundColor Cyan
+    Write-Host "    [FIX] Add the missing bundle(s) -- every provider JSON requires exactly 3: ENTITIES (QIFs), Provider (AUTH+QMF+QRDM+QIDMs), RMS (from _build_rms_bundle.ps1)" -ForegroundColor Cyan
 } elseif ($json.bundles.Count -gt 3) {
     Write-Warn "$($json.bundles.Count) bundles -- expected exactly 3 (ENTITIES + Provider + RMS)"
     Write-Host "    [FIX] Remove extra bundles -- merge provider configs into a single provider bundle or remove duplicates" -ForegroundColor Cyan
@@ -1421,7 +1421,7 @@ if ($rmsBundle) {
         if ($cfg.type -ne "QUERYINPUTDATAMAPPING") { continue }
         if (-not $cfg.combinations -or $cfg.combinations.Count -eq 0) {
             Write-Warn "RMS QIDM '$($cfg.name)' has no combinations -- RMS query will never fire"
-            Write-Host "    [FIX] In build script: add combinations from HIDLE.json template for this entity type, then apply standard patches" -ForegroundColor Cyan
+            Write-Host "    [FIX] In build script: Build-RmsBundle in _build_rms_bundle.ps1 provides standard combinations" -ForegroundColor Cyan
         }
     }
 

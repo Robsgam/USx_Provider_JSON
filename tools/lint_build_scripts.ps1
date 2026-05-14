@@ -220,7 +220,7 @@ foreach ($scriptFile in ($scripts | Sort-Object FullName)) {
         $hasPatch3 = $raw -match "(?i)registrationState.*Person.*QIDM|RMS\s+Person.*registrationState"
     }
     if (-not $hasPatch6) {
-        $hasPatch6 = $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*HIDLE|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut"
+        $hasPatch6 = $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*(HIDLE|RMS)|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut|Build-RmsBundle"
     }
 
     if (-not $hasPatch1) {
@@ -232,7 +232,7 @@ foreach ($scriptFile in ($scripts | Sort-Object FullName)) {
         $issueCount++
     }
     if (-not $hasPatch6) {
-        Out-Finding 'WARN' '--' "Missing Patch 6: RMS cleanup (remove unused HIDLE fields)"
+        Out-Finding 'WARN' '--' "Missing Patch 6: RMS cleanup (remove unused RMS fields)"
         $issueCount++
     }
 

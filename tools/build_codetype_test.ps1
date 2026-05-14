@@ -7,7 +7,7 @@
 
 param(
     [string]$Provider = "CODETYPE_TEST",
-    [string]$OutputPath = "$PSScriptRoot\..\templates\CODETYPE_TEST.json"
+    [string]$OutputPath = "$PSScriptRoot\CODETYPE_TEST.json"
 )
 
 $ErrorActionPreference = 'Stop'

@@ -61,10 +61,10 @@ SECTION 2 -- CODE TYPE PAIRINGS TABLE
   NCIC_FIREARM_MAKE         NCIC               Tested: NCIC confirmed working.
                                                 FormInput also valid (no confirmed list
                                                 for NY).
-                                                WARNING: HIDLE.json incorrectly uses this
-                                                for VehicleMakeName result mapping. This
-                                                category contains FIREARM makes only, NOT
-                                                vehicle makes. (AP #24)
+                                                WARNING: Legacy template incorrectly used
+                                                this for VehicleMakeName result mapping.
+                                                This category contains FIREARM makes only,
+                                                NOT vehicle makes. (AP #24)
                                                 Tested 2026-04-24 on MK43RS.
 
   NCIC_FIREARM_CALIBER      NCIC               Tested: NCIC confirmed working.
@@ -195,8 +195,8 @@ SECTION 4 -- SEX CODE CONFIGURATION
   useAttributeId=true with NO rule handler.
 
   LIMITATION #27: AttributeArrayWrapperRuleHandler on RMS sex = 400 error.
-  HIDLE default (useAttributeId=true, no handler) produces correct string
-  output. Adding the handler wraps sexAttrId in array -> RMS rejects with 400.
+  Standard RMS default (useAttributeId=true, no handler) produces correct
+  string output. Adding the handler wraps sexAttrId in array -> RMS rejects with 400.
 
   CRITICAL: codeTypeProvider=NIBRS reverse-lookup works on ALL tested instances
   (NJ, AZ, FL). The prior "FL instance doesn't support reverse-lookup"
@@ -245,7 +245,7 @@ SECTION 4 -- SEX CODE CONFIGURATION
     attr ID (69509891711) -> NIBRS code (M).
     CommSys receives <SexCode>M</SexCode>.
 
-  LAYER 3 -- RMS QIDM sex attribute (use HIDLE default -- do NOT modify):
+  LAYER 3 -- RMS QIDM sex attribute (standard RMS default -- do NOT modify):
 
     {
       "name": "sex",
@@ -259,7 +259,7 @@ SECTION 4 -- SEX CODE CONFIGURATION
 
     CRITICAL: NO AttributeArrayWrapperRuleHandler on this attribute.
     Adding the handler wraps the result: sexAttrId:[69509891711] (array)
-    -> RMS 400 error. HIDLE default has no ArrayWrapper. Do NOT add it.
+    -> RMS 400 error. Standard RMS default has no ArrayWrapper. Do NOT add it.
     (LIMITATION #27)
 
   ---- COMBINATION REQUIREMENTS ----
@@ -271,7 +271,7 @@ SECTION 4 -- SEX CODE CONFIGURATION
       "any": ["SexCode", "ImageIndicator", ...]
     }
 
-  RMS QIDM: SexCode also in any[] (as sourced from HIDLE). No changes needed.
+  RMS QIDM: SexCode also in any[] (standard from _build_rms_bundle.ps1). No changes needed.
 
   ---- DUPLICATE TARGETFIELD FAILURE MODE ----
 
@@ -371,10 +371,10 @@ SECTION 4 -- SEX CODE CONFIGURATION
     [ ] SexCode in any[] of the Name+DOB combination (not set[])
     [ ] NO duplicate targetField="SexCode" in the same QIDM
 
-  RMS QIDM (use HIDLE default -- do not modify):
+  RMS QIDM (standard from _build_rms_bundle.ps1 -- do not modify):
     [ ] sex attribute present: useAttributeId=true
     [ ] NO AttributeArrayWrapperRuleHandler on sex attribute
-    [ ] SexCode in RMS combination any[] (HIDLE default)
+    [ ] SexCode in RMS combination any[] (standard default)
 
   Import test:
     [ ] Fresh import (do not test against stale import)
@@ -412,7 +412,7 @@ SECTION 5 -- STATE FIELD CONFIGURATION
           codeTypeProvider='NCIC'
           -> Sends 2-letter code to XML via reverse-lookup.
 
-    RMS (HIDLE default):
+    RMS (standard from _build_rms_bundle.ps1):
           useAttributeId=true + AttributeArrayWrapperRuleHandler (Vehicle)
           useAttributeId=true, NO ArrayWrapper (Person)
           -> Passes numeric attr ID for RMS state filtering.
@@ -477,7 +477,7 @@ SECTION 5 -- STATE FIELD CONFIGURATION
 
   ---- RMS WIRING (both patterns) ----
 
-  Requires explicit patches (not in HIDLE by default):
+  Built by _build_rms_bundle.ps1 (verify in output):
     Vehicle QIDM: add RegistrationState to licensePlateIn combination any[]
     Person QIDM:  add registrationState attribute
                   (targetField=registrationStateAttrId, useAttributeId=true)
@@ -717,7 +717,7 @@ SECTION 12 -- QUERYLABEL STANDARD
   DO NOT use backend system names (e.g., "NCIC" for GunQuery). (AP #25)
   DO NOT append "Query" to labels (e.g., "Firearm Query").
 
-  Source: HIDLE.json template. Apply consistently to all provider builds.
+  Source: Standard from shared modules. Apply consistently to all provider builds.
   Confirmed: NJ v1.0 BASE + MC (2026-04-23), NY v1.0 BASE + MC (2026-04-24).
 
 ================================================================================

@@ -63,7 +63,7 @@ SECTION 2 -- PRE-BUILD CHECKLIST
       See BUILD_RULES.txt Section 0 -- mismatches cause costly renames
   [ ] Verify source/<PROVIDER>.xml exists (metadata XML)
   [ ] Verify source/<PROVIDER>.pdf exists (devdoc PDF)
-  [ ] Copy templates/HIDLE.json to source/HIDLE.json if not already there
+  [ ] RMS bundle built automatically by _build_rms_bundle.ps1 (no template copy needed)
   [ ] Convert PDF to text: pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt
   [ ] Run extract_queries.ps1 to populate SQVR with query landscape:
       powershell.exe -ExecutionPolicy Bypass -File tools/extract_queries.ps1
@@ -191,8 +191,8 @@ SECTION 2 -- PRE-BUILD CHECKLIST
       QIDM (v1.19 pattern).
       autoSelect=true on all person QIDMs that should fire automatically?
   [ ] Check RMS Person QIDM: does it include registrationStateAttrId?
-      (HIDLE does NOT have it)
-      ALWAYS add Patch 3 manually. See Section 5 below.
+      _build_rms_bundle.ps1 includes it by default (Decision 4).
+      Verify it's present in the built output.
   [ ] Check every queryLabel value against the standard
       (FIELD_REFERENCE.txt):
       VehicleRegistrationQuery -> "Vehicle Registration"
@@ -210,9 +210,8 @@ SECTION 2 -- PRE-BUILD CHECKLIST
       for dropdown. Accept that this field does NOT serialize to CommSys
       XML (platform limitation). Keep codeTypeProvider='NCIC' on QIDM
       attribute for graceful omission. Do NOT use NCIC_FIREARM_MAKE.
-  [ ] Verify Patch 6 (RMS cleanup) is applied after all other patches.
-      Dead HIDLE attrs with no form fieldId = bloat + false RMS search
-      hits.
+  [ ] Verify RMS cleanup is applied (Decision 6 in BUILD_RULES.txt).
+      Dead attrs with no form fieldId = bloat + false RMS search hits.
   [ ] Verify every RMS QIDM combo set[]/any[] field has a matching
       attribute. No orphan field references allowed. CommSys fields
       with no RMS equivalent (e.g., LicensePlateYear) must NOT appear
@@ -283,48 +282,47 @@ SECTION 3 -- AUTONOMOUS DESIGN DECISIONS (apply without prompting)
      rejects empty elements, split QIDM is needed.
 
 ================================================================================
-SECTION 4 -- STANDARD RMS PATCHES (checklist)
+SECTION 4 -- RMS DESIGN DECISIONS (verification checklist)
 ================================================================================
 
-  These patches are NOT present in HIDLE.json. They must be applied
-  manually in every build script. All are confirmed working in NJ_NJCJIS
-  v1.2 (2026-04-20).
+  The RMS bundle is built from KB specs by tools/_build_rms_bundle.ps1.
+  All design decisions are encoded in the module. This checklist verifies
+  the built output matches expectations.
 
-  Full details and implementation patterns: BUILD_RULES.txt Section 5.
+  Full details: BUILD_RULES.txt Section 4.
 
-  [ ] PATCH 1 -- Vehicle plate + state (RMS Vehicle QIDM)
-      Add RegistrationState to RMS Vehicle licensePlateIn combination
-      any[]. Without this: plate search fires but state filter absent.
+  [ ] DECISION 1/2 -- Vehicle plate + state (RMS Vehicle QIDM)
+      Verify RegistrationState is in RMS Vehicle licensePlateIn any[].
+      Without this: plate search fires but state filter absent.
       Target field: vehicle.registrationStateAttrIds (array,
       AttributeArrayWrapperRuleHandler), useAttributeId=true.
 
-  [ ] PATCH 2 -- Vehicle OOS state cleanup (RMS Vehicle QIDM)
-      Drop RegistrationStateOut from RMS Vehicle
-      licensePlateOutAndState set[]. HIDLE includes
-      RegistrationStateOut as required -- this breaks OOS plate search.
+  [ ] DECISION 3 -- Vehicle OOS combo (RMS Vehicle QIDM)
+      Verify licensePlateOutAndState combo is removed for providers
+      using single-field plate pattern (most providers).
+      Keep only for NJ (uses LicensePlateNumberOut on OOS forms).
 
-  [ ] PATCH 3 -- Person state (RMS Person QIDM)
-      Add registrationState attribute to RMS Person QIDM:
+  [ ] DECISION 4 -- Person state (RMS Person QIDM)
+      Verify registrationState attribute in RMS Person QIDM:
         name='registrationState',
         sourceField=['RegistrationState'],
         targetField='registrationStateAttrId',
         useAttributeId=true
-      Add 'RegistrationState' to ALL person combination any[] arrays.
+      Verify 'RegistrationState' in ALL person combination any[] arrays.
       Note: Person = singular registrationStateAttrId (string, NO
       ArrayWrapper). Vehicle = plural registrationStateAttrIds (array,
       WITH ArrayWrapper).
       CONFIRMED NJ v1.2 2026-04-20.
 
-  [ ] PATCH 6 -- RMS cleanup (ALWAYS apply AFTER all other patches)
-      Remove unused HIDLE attrs/combos that have no matching form
-      fieldId.
-      Vehicle: remove LicensePlateNumberOut, RegistrationStateOut,
-        OwnerFirstName, OwnerLastName; remove combos:
-        licensePlateOutAndState, OwnerFirstAndLastName; clean any[] refs.
-      Person: remove socialSecurityNumber, licenseNumberOOS,
-        firstNameOOS, lastNameOOS, dateOfBirthOOS, sexOOS; remove
+  [ ] DECISION 6 -- RMS cleanup (verify after build)
+      Verify unused attrs/combos removed for this provider.
+      Vehicle: no LicensePlateNumberOut, RegistrationStateOut,
+        OwnerFirstName, OwnerLastName; no combos:
+        licensePlateOutAndState, OwnerFirstAndLastName.
+      Person: no socialSecurityNumber, licenseNumberOOS,
+        firstNameOOS, lastNameOOS, dateOfBirthOOS, sexOOS; no
         combos: firstNameLastNameSocialSecurityNumber,
-        driversLicenseNumberOOS, and all OOS combos.
+        driversLicenseNumberOOS, or OOS combos.
       Exception: keep OOS attrs if provider uses DH-suffix fieldIds
         (e.g., FL_FCIC).
       CONFIRMED 2026-04-24.
@@ -773,12 +771,9 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
          phases/base/
          phases/mc/
          scripts/
-         source/  (XML, PDF, HIDLE.json)
+         source/  (XML, PDF)
 
-    3. COPY HIDLE.JSON: Copy templates/HIDLE.json to each provider's
-       source/ folder. Without HIDLE.json, the RMS bundle cannot be built.
-
-    4. EXTRACT QUERIES: Run extract_queries.ps1 on every metadata XML:
+    3. EXTRACT QUERIES: Run extract_queries.ps1 on every metadata XML:
        foreach ($provider in $providers) {
          .\tools\extract_queries.ps1 `
            -XmlPath "providers\$provider\source\$provider.xml" `
@@ -824,10 +819,6 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
       NM_NMLETS) had folder names that did not match their XML filenames.
       Renaming after folder creation touched 10+ files per provider.
       Always verify before creating the folder.
-
-    - HIDLE.JSON IS EASY TO FORGET: Source material (XML, PDF) is obvious
-      to copy. HIDLE.json is not -- it comes from templates/, not from the
-      provider. Add it to source/ before any build attempts.
 
     - EXTRACT BEFORE BUILD: Running extract_queries.ps1 BEFORE writing
       build scripts saves significant rework. The SQVR output shows every

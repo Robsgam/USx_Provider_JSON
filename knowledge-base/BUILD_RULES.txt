@@ -47,7 +47,6 @@ See also:
   SOURCE FOLDER SETUP (before any build):
     [ ] Copy metadata XML to source/<PROVIDER>.xml
     [ ] Copy devdoc PDF to source/<PROVIDER>.pdf
-    [ ] Copy templates/HIDLE.json to source/HIDLE.json
     [ ] Run extract_queries.ps1 on the XML to map query landscape:
         powershell.exe -ExecutionPolicy Bypass -File tools/extract_queries.ps1
           -XmlPath source/<PROVIDER>.xml -OutFile docs/<PROVIDER>_SQVR.txt
@@ -82,10 +81,10 @@ See also:
        - QUERYMESSAGEFORMAT (1)
        - QUERYINPUTDATAMAPPING (1 per query/path -- most of the work)
 
-  3. RMS BUNDLE          name='RMS', provider='RMS' (or inherited from HIDLE)
+  3. RMS BUNDLE          name='RMS', provider='RMS'
      Contains RMS-specific QIDMs for local record matching.
-     Cloned from HIDLE.json and patched for the target provider.
-     See Section 5 for standard RMS patches.
+     Built from KB specs by tools/_build_rms_bundle.ps1.
+     See Section 4 for RMS design decisions and per-provider flags.
 
   Top-level JSON structure:
     {
@@ -220,17 +219,12 @@ See also:
   One per provider bundle. Defines how provider XML responses are mapped to
   the ConnectCIC result display.
 
-  Standard approach: CLONE from HIDLE.json, change name and provider only.
-  Do NOT modify the field mappings at build time. The HIDLE template mappings
-  are generic.
-
-  Required changes from HIDLE:
-    name        '[PROVIDER_NAME]_Results'
-    description 'Results mapping for [PROVIDER]'
-    provider    [PROVIDER_NAME]
+  Standard approach: built by Build-ProviderQrdm in _build_provider_helpers.ps1.
+  The CommSys QRDM uses generic field mappings. Name and provider are set
+  automatically from the -ProviderName parameter.
 
   When to validate: after first successful query returns data (not "No
-  Returns"). Compare HIDLE mapping field names against actual XML element
+  Returns"). Compare QRDM mapping field names against actual XML element
   names in the response. Update any mismatched field names. This is
   provider-specific work.
 
@@ -242,63 +236,47 @@ See also:
   are documented in QIDM_REFERENCE.txt.
 
 ================================================================================
-4. RMS BUNDLE -- STANDARD PATCHES
+4. RMS BUNDLE -- DESIGN DECISIONS
 ================================================================================
 
-  The RMS bundle is cloned from HIDLE.json for every build.
-  Required patches depend on the provider instance. See each patch for when
-  to apply. HIDLE.json must be present in the provider's source/ folder before
-  running the build script.
+  The RMS bundle is built from KB specs by tools/_build_rms_bundle.ps1.
+  No external template. The module encodes all design decisions below as
+  code. Per-provider variations are controlled by flags (-KeepSsn, -SkipRace).
 
-  HIDLE VERSION NOTES:
-    2026-04-28 update: New HIDLE adds "conditions": null and "defaults": null
-    to RMS combination requirements objects. These are no-op properties --
-    all attributes, set/any arrays, keyReferences, Auth, QMF, and QRDM are
-    unchanged from previous version. Rebuilds with new HIDLE produce
-    semantically identical output. No re-import or re-testing required
-    solely for this HIDLE update.
-
-  PATCH 1 -- Vehicle: LicensePlateYear removed from licensePlateIn any[]
+  DECISION 1 -- Vehicle: LicensePlateYear in licensePlateIn any[]
   -----------------------------------------------------------------------
-    Problem: HIDLE RMS Vehicle QIDM includes LicensePlateYear in the
+    The standard RMS Vehicle QIDM includes LicensePlateYear in the
       licensePlateIn any[] combination. On instances without elastic mapping
       for this field, the combination may reject or misbehave.
-    Fix: Remove LicensePlateYear from the licensePlateIn combination any[].
-    Applies to: AZ_AZDPS (confirmed -- LicensePlateYear has no elastic
-      mapping).
-    Does NOT apply to: NJ, NY (LicensePlateYear not removed in those builds).
+    _build_rms_bundle.ps1 includes it by default.
+    AZ_AZDPS: confirmed no elastic mapping — build script removes it.
+    NJ, NY: LicensePlateYear kept (elastic mapping exists).
 
-  PATCH 2 -- Vehicle: Add RegistrationState to licensePlateIn any[]
+  DECISION 2 -- Vehicle: RegistrationState in licensePlateIn any[]
   ------------------------------------------------------------------
-    Problem: HIDLE RMS Vehicle QIDM licensePlateIn combination does not
-      include RegistrationState in any[]. The hidden SelH 'RegistrationState'
-      is populated but the RMS combination doesn't recognize it for state
-      filtering.
-    Fix: Add 'RegistrationState' to the any[] of the licensePlateIn
-      combination.
-    Applies to: NJ, NY, AZ (always apply).
+    The RMS Vehicle QIDM licensePlateIn combination includes
+      RegistrationState in any[]. The hidden SelH 'RegistrationState'
+      is populated and the RMS combination uses it for state filtering.
+    _build_rms_bundle.ps1 includes it by default.
     Confirmed: NY v1.4, NJ v1.2, AZ v1.0.
 
-  PATCH 3 -- Vehicle: Drop RegistrationStateOut from
-               licensePlateOutAndState set[]
+  DECISION 3 -- Vehicle: licensePlateOutAndState combination
   ------------------------------------------------------------------
-    Problem: HIDLE RMS Vehicle QIDM has a licensePlateOutAndState combination
+    The RMS Vehicle QIDM has a licensePlateOutAndState combination
       with set=['LicensePlateNumberOut','RegistrationStateOut']. When OOS
       plate uses licensePlateNumber instead of LicensePlateNumberOut, this
       combination can never fire.
-    Fix: Remove RegistrationStateOut from set[] or remove the combination
-      entirely.
-    Applies to: NY, AZ (where licensePlateNumber is used for all plates).
-    Does NOT apply to: NJ (NJ uses LicensePlateNumberOut on OOS forms --
-      leave as-is).
+    _build_rms_bundle.ps1 includes it by default. Providers that use
+      single-field plate pattern remove it in their build scripts.
+    Does NOT apply to: NJ (NJ uses LicensePlateNumberOut on OOS forms).
     Confirmed: NY v1.4.
 
-  PATCH 4 -- Person: registrationStateAttrId (ALWAYS required)
-  -------------------------------------------------------------
-    Problem: HIDLE RMS Person QIDM does NOT include a registrationState
-      attribute. Without this, person searches (OLN, Name) fire without a
-      state filter in the RMS elastic query.
-    Fix: Add registrationState attribute to RMS Person QIDM:
+  DECISION 4 -- Person: registrationStateAttrId (ALWAYS included)
+  ----------------------------------------------------------------
+    The RMS Person QIDM includes a registrationState attribute. Without
+      this, person searches (OLN, Name) fire without a state filter in
+      the RMS elastic query.
+    _build_rms_bundle.ps1 always includes:
       name='registrationState', sourceField=['RegistrationState'],
       targetField='registrationStateAttrId', useAttributeId=true
       Add 'RegistrationState' to ALL person combination any[] arrays.
@@ -311,10 +289,10 @@ See also:
     autoSelect=true: add to all RMS QIDMs so they fire automatically.
     Confirmed: AZ_AZDPS v1.0, NJ_NJCJIS v1.7, NY_NYSPIN_EJUSTICE v1.1.
 
-  PATCH 5 -- Person: Sex attribute handling (INSTANCE-SPECIFIC)
-  -------------------------------------------------------------
-    The HIDLE RMS Person QIDM includes sex (sexAttrId) and sexOOS attributes
-    with useAttributeId=true. Whether to keep or remove these depends on the
+  DECISION 5 -- Person: Sex attribute handling (INSTANCE-SPECIFIC)
+  -----------------------------------------------------------------
+    The RMS Person QIDM includes sex (sexAttrId) and sexOOS attributes
+    with useAttributeId=true. Whether to keep or remove depends on the
     instance.
 
     KEEP (NIBRS reverse-lookup confirmed -- instance supports attr ID ->
@@ -344,12 +322,12 @@ See also:
       UNCONFIRMED: any new instance -- test before assuming keep or remove.
       See PLATFORM_CONSTRAINTS.txt AP #18 for both-attr removal detail.
 
-  PATCH 6 -- RMS CLEANUP: Remove unused HIDLE fields (ALWAYS apply)
-  -------------------------------------------------------------------
-    HIDLE.json is a universal template containing fields for all possible
-    providers. Most providers only use a subset. Dead fields (no matching
-    form fieldId) add JSON bloat and their combos never fire. Apply AFTER
-    all other patches.
+  DECISION 6 -- RMS CLEANUP: Remove unused fields (per-provider)
+  ----------------------------------------------------------------
+    The base RMS template in _build_rms_bundle.ps1 contains fields for all
+    possible providers. Most providers only use a subset. Dead fields (no
+    matching form fieldId) add JSON bloat and their combos never fire.
+    Build scripts remove unused attrs/combos after calling Build-RmsBundle.
 
     Vehicle -- remove these attrs:
       LicensePlateNumberOut     (OOS dual-field plate pattern -- not used
@@ -534,7 +512,7 @@ See also:
   CommSys combination any[]:
     'RegistrationState'  (form fieldId, not attribute name 'State')
 
-  RMS QIDM (HIDLE default -- no changes needed):
+  RMS QIDM (standard from _build_rms_bundle.ps1 -- no changes needed):
     useAttributeId=true + AttributeArrayWrapperRuleHandler
     Sends registrationStateAttrIds:[<dynamic attr id>] for any selected
       state.

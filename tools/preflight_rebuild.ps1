@@ -262,7 +262,7 @@ function Lint-BuildScripts([string]$providerDir) {
         # CHECK 4: Missing mandatory RMS patches
         $hasPatch1 = $raw -match '(?i)Patch\s*1\b' -or $raw -match "(?i)licensePlateIn.*any.*[Rr]egistrationState|[Rr]egistrationState.*licensePlateIn"
         $hasPatch3 = $raw -match '(?i)Patch\s*3\b' -or $raw -match "(?i)registrationState.*Person.*QIDM|RMS\s+Person.*registrationState"
-        $hasPatch6 = $raw -match '(?i)Patch\s*6\b' -or $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*HIDLE|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut"
+        $hasPatch6 = $raw -match '(?i)Patch\s*6\b' -or $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*(HIDLE|RMS)|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut|Build-RmsBundle"
 
         if (-not $hasPatch1) {
             $findings.Add(@{
@@ -281,7 +281,7 @@ function Lint-BuildScripts([string]$providerDir) {
         if (-not $hasPatch6) {
             $findings.Add(@{
                 Script = $relName; Line = '--'; Level = 'WARN'
-                Msg    = "Missing Patch 6: RMS cleanup (remove unused HIDLE fields)"
+                Msg    = "Missing Patch 6: RMS cleanup (remove unused RMS fields)"
                 Fix    = "Add Patch 6 to build script (see CLAUDE.md RMS Patches)"
             })
         }

@@ -911,7 +911,7 @@ foreach ($pd in $providerDirs) {
                 elseif ($wl -match 'non-suffixed sourceField') { 'DH-suffix' }
                 elseif ($wl -match 'initialValue.*changes combo') { 'State-routing' }
                 elseif ($wl -match 'keyReference.*appears in multiple') { 'KeyRef-collision' }
-                elseif ($wl -match 'dead HIDLE') { 'RMS-Patch6' }
+                elseif ($wl -match 'dead HIDLE|unused RMS') { 'RMS-Cleanup' }
                 elseif ($wl -match 'not found in.*QIF') { 'QIDM-field-mismatch' }
                 elseif ($wl -match 'EmailAddress') { 'EmailAddress-QIDM-only' }
                 else { 'other' }

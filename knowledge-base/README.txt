@@ -168,11 +168,6 @@ TOOLS
     an HTML form preview for visual inspection.
     Usage: -Path <json>
 
-  tools/compare_hidle.ps1
-    Compares a provider's RMS bundle against the current HIDLE.json template.
-    Reports structural differences (added/removed/changed attributes and combos).
-    Usage: -Path <json>
-
   tools/build_codetype_test.ps1
     Generates CODETYPE_TEST.json for dropdown validation. Tests which
     codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
@@ -370,12 +365,14 @@ PREREQUISITES
 AUTHORITATIVE SOURCE FILES (read-only)
 ================================================================================
 
-  templates/HIDLE.json
-    Structural template for all builds. Provides RMS bundle, rule handler names,
-    QUERYRESULTDATAMAPPING, and AUTHENTICATION pattern.
+  tools/_build_rms_bundle.ps1
+    RMS bundle + CommSys QRDM built from KB specs. No external template dependency.
 
-  templates/CA_ESUN.json
-    Reference for single-card QUERYINPUTFORM layouts.
+  tools/_build_layout_helpers.ps1
+    QIF layout construction helpers (N, Inp, Sel, Dt, MakeLayouts, etc.).
+
+  tools/_build_provider_helpers.ps1
+    Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
 
   providers/FL_FCIC/FL_FCIC.json
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
