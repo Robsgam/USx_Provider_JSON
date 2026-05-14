@@ -280,5 +280,32 @@ Description:
   on the same entity, and it must provide a clean starting state every time.
 
 ===============================================================================
+NOTE 1: RULE HANDLER PERFORMANCE — RENDER-TIME EXECUTION
+===============================================================================
+
+Severity: LOW — Performance observation, not a defect
+
+Description:
+  Rule handlers (e.g., CommsysGetLastNameFirstNameInitialRuleHandler) appear
+  to execute on form render, not just on submit. This causes noticeable
+  slowdown in form load and submission times when handlers are configured
+  on QIDM attributes.
+
+Observed:
+  FL_FCIC v4.0 removed CommsysGetLastNameFirstNameInitialRuleHandler from
+  the Attention field (replaced with visible FormInput). Form load and
+  submit speed improved significantly compared to prior versions with the
+  handler active.
+
+Suggestion:
+  1. Gate handler execution to submit-time only (not render), OR
+  2. Cache handler lookups per session (e.g., logged-in user's name does
+     not change mid-session — no need to re-lookup on every render)
+
+  Either approach would allow handlers to be used without the render-time
+  performance penalty, giving providers the option to automate fields
+  without degrading officer experience.
+
+===============================================================================
 END OF REPORT
 ===============================================================================

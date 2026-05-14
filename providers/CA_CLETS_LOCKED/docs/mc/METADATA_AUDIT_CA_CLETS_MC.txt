@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-12 13:48
+  Generated: 2026-05-14 13:21
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-12 13:48
+ Generated: 2026-05-14 13:22
 ============================================================
 
 ============================================================
@@ -200,7 +200,7 @@ METADATA AUDIT
   [PASS]   ArticleTypeCode: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   OwnerAppliedNumber: in XML and QIDM
-  [INFO]   SerialNumber: in QIDM sourceField but not in XML
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
   BoatQuery:
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   BoatHullIdNumber: in XML and QIDM
@@ -209,9 +209,9 @@ METADATA AUDIT
   [PASS]   OwnerAppliedNumber: in XML and QIDM
   [PASS]   RegistrationNumber: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
   CaCletsArmedProhibitedPersonQuery: (not built in JSON -- see CHECK 1)
   CaCletsLapdPersonQuery: (not built in JSON -- see CHECK 1)
   CaCletsLapdVehicleQuery: (not built in JSON -- see CHECK 1)
@@ -267,13 +267,13 @@ METADATA AUDIT
   [PASS]   PurposeCode: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   BirthDateDH: in QIDM sourceField but not in XML
-  [INFO]   CaRequestPurposeCodeDH: in QIDM sourceField but not in XML
-  [INFO]   NameFirstDH: in QIDM sourceField but not in XML
-  [INFO]   NameLastDH: in QIDM sourceField but not in XML
-  [INFO]   OperatorLicenseNumberDH: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
-  [INFO]   SexCodeDH: in QIDM sourceField but not in XML
+  [INFO]   birthDateDH: in QIDM sourceField but not in XML
+  [INFO]   caRequestPurposeCodeDH: in QIDM sourceField but not in XML
+  [INFO]   nameFirstDH: in QIDM sourceField but not in XML
+  [INFO]   nameLastDH: in QIDM sourceField but not in XML
+  [INFO]   operatorLicenseNumberDH: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
+  [INFO]   sexCodeDH: in QIDM sourceField but not in XML
   DriverLicenseQuery:
   [WARN]   AddressCounty: in XML but not in QIDM
   [WARN]   Age: in XML but not in QIDM
@@ -287,9 +287,9 @@ METADATA AUDIT
   [WARN]   SexCode: in XML but not in QIDM
   [WARN]   SocialSecurityNumber: in XML but not in QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
   EISDriverQuery: (not built in JSON -- see CHECK 1)
   GunQuery:
   [WARN]   Age: in XML but not in QIDM
@@ -300,10 +300,10 @@ METADATA AUDIT
   [PASS]   GunSerialNumber: in XML and QIDM
   [PASS]   GunTypeCode: in XML and QIDM
   [PASS]   Name: in XML and QIDM
-  [INFO]   FirearmMake: in QIDM sourceField but not in XML
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   SerialNumber: in QIDM sourceField but not in XML
+  [INFO]   firearmMake: in QIDM sourceField but not in XML
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   serialNumber: in QIDM sourceField but not in XML
   HazardousMaterialQuery: (not built in JSON -- see CHECK 1)
   VehicleRegistrationQuery:
   [WARN]   AddressCity: in XML but not in QIDM
@@ -317,9 +317,9 @@ METADATA AUDIT
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
   [PASS]   VehicleMakeCode: in XML and QIDM
   [PASS]   VehicleYear: in XML and QIDM
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
   WMPIMissingPersonQuery: (not built in JSON -- see CHECK 1)
   WMPIProtectionOrderQuery: (not built in JSON -- see CHECK 1)
   WMPISexOffenderQuery: (not built in JSON -- see CHECK 1)
@@ -393,36 +393,36 @@ METADATA AUDIT
   [INFO]   keyRef IN.VP: XML any field 'AddressStreetNumber' not in JSON any[] or set[]
 
 --- CHECK 5: Field maxLength Alignment ---
-  [PASS] ArticleBrand: maxLength 6 matches XML (ArticleBrand)
-  [PASS] SerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
-  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] OwnerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
-  [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
-  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [PASS] NameFirst: maxLength 30 matches XML (Name)
-  [PASS] OwnerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
-  [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
-  [PASS] CaRequestPurposeCodeDH: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] NameLastDH: maxLength 30 matches XML (Name)
-  [PASS] NameFirstDH: maxLength 30 matches XML (Name)
-  [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] CaRequestPurposeCodeDH: maxLength 1 matches XML (PurposeCode)
-  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [PASS] NameFirst: maxLength 30 matches XML (Name)
-  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] SerialNumber: maxLength 20 matches XML (GunSerialNumber)
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [PASS] NameFirst: maxLength 30 matches XML (Name)
-  [PASS] CaRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
-  [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
-  [INFO] NameLast: QIF maxLength 30 < XML maxLength 35 (Name) -- conservative, OK
-  [INFO] NameFirst: QIF maxLength 30 < XML maxLength 35 (Name) -- conservative, OK
-  [PASS] VehicleIdentificationNumber: maxLength 30 matches XML (VehicleIdentificationNumber)
-  [PASS] VehicleYear: maxLength 4 matches XML (VehicleYear)
+  [PASS] articleBrand: maxLength 6 matches XML (ArticleBrand)
+  [PASS] serialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] ownerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] ownerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
+  [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] caRequestPurposeCodeDH: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] nameLastDH: maxLength 30 matches XML (Name)
+  [PASS] nameFirstDH: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] caRequestPurposeCodeDH: maxLength 1 matches XML (PurposeCode)
+  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [INFO] nameLast: QIF maxLength 30 < XML maxLength 35 (Name) -- conservative, OK
+  [INFO] nameFirst: QIF maxLength 30 < XML maxLength 35 (Name) -- conservative, OK
+  [PASS] vehicleIdentificationNumber: maxLength 30 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
 
 ============================================================
  METADATA AUDIT SUMMARY

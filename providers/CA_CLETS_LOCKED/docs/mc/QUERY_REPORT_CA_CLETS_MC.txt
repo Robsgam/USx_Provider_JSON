@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-12 13:48
+  Generated: 2026-05-14 13:21
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 5
 
     [FIRES] NLTS.RQ.P
-      set: [CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      any: [VehicleMakeCode, VehicleYear] -> matched: [VehicleMakeCode, VehicleYear]
+      set: [caRequestPurposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -32,8 +32,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] NLTS.RQ.V
-      set: [CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
-      any: [VehicleMakeCode, VehicleYear] -> matched: [VehicleMakeCode, VehicleYear]
+      set: [caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -47,11 +47,11 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] IN.VP -- missing set: NameLast, NameFirst
+    [SKIP] IN.VP -- missing set: nameLast, nameFirst
 
     [FIRES] IA.QVK
-      set: [CaRequestPurposeCode, VehicleIdentificationNumber]
-      any: [VehicleMakeCode, RegistrationState] -> matched: [VehicleMakeCode, RegistrationState]
+      set: [caRequestPurposeCode, vehicleIdentificationNumber]
+      any: [vehicleMakeCode, registrationState] -> matched: [vehicleMakeCode, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -67,8 +67,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] IA.QV
-      set: [CaRequestPurposeCode, LicensePlateNumber]
-      any: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear]
+      set: [caRequestPurposeCode, licensePlateNumber]
+      any: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -87,8 +87,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
     [FIRES] IN.L1
-      set: [CaRequestPurposeCode, NameLast, NameFirst]
-      any: [BirthDate, RegistrationState] -> matched: [BirthDate, RegistrationState]
+      set: [caRequestPurposeCode, nameLast, nameFirst]
+      any: [birthDate, registrationState] -> matched: [birthDate, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -101,7 +101,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] NLTS.DQ
-      set: [CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
+      set: [caRequestPurposeCode, operatorLicenseNumber, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -114,8 +114,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] ID.L1
-      set: [CaRequestPurposeCode, OperatorLicenseNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [caRequestPurposeCode, operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -129,16 +129,16 @@ QUERY SIMULATION
 
 --- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-    [SKIP] NLTS.KQ.N -- missing set: CaRequestPurposeCodeDH
-    [SKIP] NLTS.KQ.O -- missing set: CaRequestPurposeCodeDH
+    [SKIP] NLTS.KQ.N -- missing set: caRequestPurposeCodeDH
+    [SKIP] NLTS.KQ.O -- missing set: caRequestPurposeCodeDH
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
-    [SKIP] IG.QGH -- missing set: NameLast, NameFirst
+    [SKIP] IG.QGH -- missing set: nameLast, nameFirst
 
     [FIRES] IG.QGB
-      set: [CaRequestPurposeCode, SerialNumber]
-      any: [GunCaliber, FirearmMake, GunTypeCode] -> matched: [GunCaliber, FirearmMake]
+      set: [caRequestPurposeCode, serialNumber]
+      any: [gunCaliber, firearmMake, gunTypeCode] -> matched: [gunCaliber, firearmMake]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -153,8 +153,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
 
     [FIRES] IP.QA.S
-      set: [CaRequestPurposeCode, SerialNumber]
-      any: [ArticleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      set: [caRequestPurposeCode, serialNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -166,8 +166,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] IP.QA.O
-      set: [CaRequestPurposeCode, OwnerAppliedNumber]
-      any: [ArticleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      set: [caRequestPurposeCode, ownerAppliedNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -180,14 +180,29 @@ QUERY SIMULATION
 
 --- QIDM: CA_CLETS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 7  |  Combos: 6
-    [SKIP] NLTS.BQ.N -- missing set: BirthDate
+
+    [FIRES] NLTS.BQ.N
+      set: [caRequestPurposeCode, nameLast, nameFirst, birthDate, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>NLTS.BQ.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
     [FIRES] NLTS.BQ.H
-      set: [CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
+      set: [caRequestPurposeCode, boatHullIdNumber, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -197,11 +212,12 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] NLTS.BQ.R
-      set: [CaRequestPurposeCode, RegistrationNumber, RegistrationState]
+      set: [caRequestPurposeCode, registrationNumber, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -211,12 +227,13 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] IA.QB.H
-      set: [CaRequestPurposeCode, BoatHullIdNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [caRequestPurposeCode, boatHullIdNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -226,12 +243,13 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] IA.QB.O
-      set: [CaRequestPurposeCode, OwnerAppliedNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [caRequestPurposeCode, ownerAppliedNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.O</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -241,12 +259,13 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] IA.QB.R
-      set: [CaRequestPurposeCode, RegistrationNumber]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [caRequestPurposeCode, registrationNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>

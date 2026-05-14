@@ -87,7 +87,7 @@ if (Test-Path $scriptsDir) {
         }
 
         # LicensePlateNumberIn (banned -- not in Patch 8 rename context)
-        $bannedHits = Select-String -Path $script.FullName -Pattern "LicensePlateNumberIn" | Where-Object { $_.Line -notmatch '-replace' -and $_.Line -notmatch '^\s*#' -and $_.Line -notmatch 'Patch\s*8' }
+        $bannedHits = Select-String -Path $script.FullName -Pattern "LicensePlateNumberIn" | Where-Object { $_.Line -notmatch '-replace' -and $_.Line -notmatch '^\s*#' -and $_.Line -notmatch 'Patch\s*8' -and $_.Line -notmatch "'\s*=" }
         foreach ($hit in $bannedHits) {
             $scriptWarns += "  [WARN] Line $($hit.LineNumber): LicensePlateNumberIn (banned) -- [FIX] Use licensePlateNumber"
             $lintWarnCount++

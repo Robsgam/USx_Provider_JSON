@@ -1,7 +1,7 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-05-11
+Generated: 2026-05-08 | Last updated: 2026-05-14
 
-## Status: 7 PROVIDERS FLAGGED — Attention field hidden automation
+## Status: 15 PROVIDERS FLAGGED FOR FULL MC REBUILD — HIDLE_MC migration
 
 All 18 active providers rebuilt and validated (0 FAIL / 0 WARN). But audit found
 7 providers with CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute
@@ -89,6 +89,48 @@ AZ (Attention visible, no handler), NM (Attention InpH, no handler), FL (FIXED v
 
 **Also noted:** TX_TLETS EmailAddress on DL+DH — no form field AND no handler (orphan, sends empty).
 
+## HIDLE_MC Migration — 2026-05-14
+
+All 18 MC build scripts migrated to HIDLE_MC.json (camelCase, registrationState, autoSelect
+pre-configured). Eliminates Patches 1, 3, 7, 8 from all MC builds. Only Patch 6 (dead field
+cleanup) remains as provider-specific code.
+
+**Methodology**: Clean build only. No post-build patches. Build scripts produce correct output
+from HIDLE_MC.json + provider-specific QIDM code. `_convert_mc_camelcase.ps1` applied to all
+15 remaining scripts for CommSys QIDM sourceField/combo/layout camelCase.
+
+### Already Built and Verified (3)
+
+| Provider | MC Version | Score | Status |
+|---|---|---|---|
+| NJ_NJCJIS | v3.1 | 69P/0F/0W | LOCKED — CAD audit CLEAN |
+| CA_CLETS | v1.8 | 70P/0F/0W | LOCKED — CAD audit CLEAN |
+| FL_FCIC | v4.0 | 102P/0F/0W | CAD audit CLEAN, 35 FIRE/0 SKIP |
+
+### Flagged for Full Rebuild on Next Test (15)
+
+Scripts updated, NOT yet built. On first test of each provider: run build script, then
+build_report.ps1, verify 0 FAIL on all 8 checks including CAD audit.
+
+| # | Provider | MC Script Updated | Attention Fix Needed | Notes |
+|---|---|---|---|---|
+| 1 | TX_TLETS | YES | YES (DH only) | +race dead field, camelCase applied |
+| 2 | HI_HCJDC_OFML | YES | YES (DH only) | Standard cleanup |
+| 3 | LA_LEMS | YES | YES (ALL 7 QIDMs) | +race dead field |
+| 4 | AZ_AZDPS | YES | NO | Keep SSN, remove PlateYear, unique $final assembly |
+| 5 | NY_NYSPIN_EJUSTICE | YES | NO | Standard cleanup |
+| 6 | CA_VENTURA_COUNTY | YES | YES (DH only) | Standard cleanup |
+| 7 | CA_eSUN | YES | YES (DH only) | Standard cleanup |
+| 8 | CA_SAN_LUIS_OBISPO | YES | NO | Standard cleanup |
+| 9 | CA_CLETS_OCATS | YES | NO | Standard cleanup |
+| 10 | IL_LEADS_OFML | YES | NO | Standard cleanup |
+| 11 | MD_METERS | YES | NO | +race dead field |
+| 12 | OH_LEADS | YES | YES (DH only) | Standard cleanup |
+| 13 | NM_NMLETS_OFML | YES | NO | Standard cleanup |
+| 14 | OR_LEDS | YES | NO | Standard cleanup |
+| 15 | TN_TIES | YES | YES (DH only) | Keep SSN |
+
 ## Next Actions
-- Live testing per provider work order: CA_CLETS, FL_FCIC, TX_TLETS, NY, AZ
+- Live testing per provider work order: FL_FCIC (resume T20), TX_TLETS, NY, AZ
 - Fix Attention hidden automation on next rebuild of each flagged provider
+- Each provider's first test triggers: build MC → build_report → verify CAD audit CLEAN

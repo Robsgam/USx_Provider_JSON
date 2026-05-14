@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-12 13:48
+  Generated: 2026-05-14 13:21
 ================================================================
 CAD AUDIT
 =========
@@ -13,16 +13,16 @@ CAD AUDIT
 
 --- CHECK 1: CAD Field Alignment ---
   Vehicle:
-    [FAIL] LicensePlateNumber: wrong case (expected 'licensePlateNumber' or 'LicensePlateNumberIn')
-    [FAIL] LicensePlateTypeCode: wrong case (expected 'licensePlateTypeCode' or '')
-    [FAIL] LicensePlateYear: wrong case (expected 'licensePlateYear' or '')
-    [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (MC PascalCase)
-    [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (MC PascalCase)
-    [PASS] vehicleYear: in QIF as 'VehicleYear' (MC PascalCase)
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] licensePlateNumber: in QIF and CAD list
+    [PASS] licensePlateTypeCode: in QIF and CAD list
+    [PASS] licensePlateYear: in QIF and CAD list
+    [PASS] vehicleIdentificationNumber: in QIF and CAD list
+    [PASS] vehicleMakeCode: in QIF and CAD list
+    [PASS] vehicleYear: in QIF and CAD list
+    [PASS] registrationState: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -30,18 +30,18 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Person:
-    [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (MC PascalCase)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] operatorLicenseNumber: in QIF and CAD list
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] birthDate: in QIF as 'BirthDate' (MC PascalCase)
-    [PASS] sexCode: in QIF as 'SexCode' (MC PascalCase)
+    [PASS] birthDate: in QIF and CAD list
+    [PASS] sexCode: in QIF and CAD list
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] registrationState: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -58,22 +58,22 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
-    [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
-    [INFO] CaRequestPurposeCodeDH: in QIF, not in CAD list (provider-specific)
-    [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
-    [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
-    [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
-    [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] operatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] birthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] sexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
-    [FAIL] SerialNumber: wrong case (expected 'serialNumber' or '')
-    [FAIL] FirearmMake: wrong case (expected 'firearmMake' or '')
-    [FAIL] GunCaliber: wrong case (expected 'gunCaliber' or '')
+    [PASS] serialNumber: in QIF and CAD list
+    [PASS] firearmMake: in QIF and CAD list
+    [PASS] gunCaliber: in QIF and CAD list
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] GunTypeCode: wrong case (expected 'gunTypeCode' or '')
+    [PASS] gunTypeCode: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -82,11 +82,11 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Article:
-    [FAIL] SerialNumber: wrong case (expected 'serialNumber' or '')
-    [FAIL] ArticleTypeCode: wrong case (expected 'articleTypeCode' or '')
-    [FAIL] ArticleBrand: wrong case (expected 'articleBrand' or '')
+    [PASS] serialNumber: in QIF and CAD list
+    [PASS] articleTypeCode: in QIF and CAD list
+    [PASS] articleBrand: in QIF and CAD list
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -97,23 +97,23 @@ CAD AUDIT
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
-    [INFO] OwnerAppliedNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
   Boat:
-    [FAIL] BoatHullIdNumber: wrong case (expected 'boatHullIdNumber' or '')
-    [FAIL] RegistrationNumber: wrong case (expected 'registrationNumber' or '')
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] boatHullIdNumber: in QIF and CAD list
+    [PASS] registrationNumber: in QIF and CAD list
+    [PASS] registrationState: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] birthDate: in QIF as 'BirthDate' (MC PascalCase)
+    [PASS] birthDate: in QIF and CAD list
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
-    [INFO] OwnerAppliedNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
 
 --- CHECK 2: CAD_DISPATCH Layout Variant ---
     [PASS] Vehicle QIF 'ENTITY_Vehicle': CAD_DISPATCH layout exists
@@ -151,6 +151,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 41 PASS / 12 FAIL / 0 WARN / 68 INFO
+Total: 53 PASS / 0 FAIL / 0 WARN / 68 INFO
 
 

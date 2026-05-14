@@ -387,7 +387,7 @@ $wpQuery = [PSCustomObject]@{
 # --- 5. DriverHistoryQuery (KQ) -- 2 combos, DH-suffix fields ---
 # XML: KQ by OLN+State+Purpose, KQ by Name+DOB+Sex+State+Purpose
 # DH-suffix fields isolate from DL field pool (AP #14)
-# Attention: visible FormInput (attentionDH), NOT in combo requirements
+# Attention: visible FormInput (attentionDH), in any[] on both combos
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention' }
@@ -406,13 +406,13 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH'); any = @('purposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationStateDH'); any = @('purposeCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'

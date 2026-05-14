@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-11 11:04
+  Generated: 2026-05-14 13:21
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-11 11:04
+ Generated: 2026-05-14 13:22
 ============================================================
 
 ============================================================
@@ -45,12 +45,12 @@ METADATA AUDIT
   ArticleSingleQuery:
   [PASS]   ArticleSerialNumber: in XML and QIDM
   [PASS]   ArticleTypeCode: in XML and QIDM
-  [INFO]   ImageIndicator: in QIDM only (form-only field)
+  [INFO]   imageIndicator: in QIDM only (form-only field)
   BoatQuery:
   [PASS]   BoatHullIdNumber: in XML and QIDM
   [PASS]   RegistrationNumber: in XML and QIDM
   [INFO]   State: in XML only (form-only pattern -- expected)
-  [INFO]   ImageIndicator: in QIDM only (form-only field)
+  [INFO]   imageIndicator: in QIDM only (form-only field)
   DriverLicenseQuery:
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   ImageIndicator: in XML and QIDM
@@ -58,24 +58,24 @@ METADATA AUDIT
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   NameFirst: in QIDM sourceField but not in XML
-  [INFO]   NameLast: in QIDM sourceField but not in XML
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   nameFirst: in QIDM sourceField but not in XML
+  [INFO]   nameLast: in QIDM sourceField but not in XML
+  [INFO]   registrationState: in QIDM only (form-only field)
   GunQuery:
   [PASS]   GunCaliber: in XML and QIDM
   [PASS]   GunMake: in XML and QIDM
   [PASS]   GunSerialNumber: in XML and QIDM
-  [INFO]   GunModel: in QIDM sourceField but not in XML
-  [INFO]   ImageIndicator: in QIDM only (form-only field)
+  [INFO]   gunModel: in QIDM sourceField but not in XML
+  [INFO]   imageIndicator: in QIDM only (form-only field)
   VehicleRegistrationQuery:
   [PASS]   LicensePlateNumber: in XML and QIDM
   [PASS]   LicensePlateTypeCode: in XML and QIDM
   [PASS]   LicensePlateYear: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
-  [INFO]   ImageIndicator: in QIDM only (form-only field)
-  [INFO]   RandomRequest: in QIDM only (form-only field)
-  [INFO]   RegistrationState: in QIDM only (form-only field)
+  [INFO]   imageIndicator: in QIDM only (form-only field)
+  [INFO]   randomRequest: in QIDM only (form-only field)
+  [INFO]   registrationState: in QIDM only (form-only field)
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
@@ -106,16 +106,16 @@ METADATA AUDIT
   [PASS]   keyRef RQ: any field 'State' present
 
 --- CHECK 5: Field maxLength Alignment ---
-  [PASS] ArticleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
-  [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
-  [WARN] RegistrationNumber: QIF maxLength 20 > XML maxLength 8 (RegistrationNumber) -- server may reject
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [PASS] NameFirst: maxLength 30 matches XML (Name)
-  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] GunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
-  [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
-  [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
-  [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [WARN] registrationNumber: QIF maxLength 20 > XML maxLength 8 (RegistrationNumber) -- server may reject
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] gunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
 
 ============================================================
  METADATA AUDIT SUMMARY

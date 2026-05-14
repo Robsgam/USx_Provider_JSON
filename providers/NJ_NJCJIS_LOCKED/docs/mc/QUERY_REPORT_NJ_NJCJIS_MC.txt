@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_MC
   Source: NJ_NJCJIS_MC.json
-  Generated: 2026-05-11 11:04
+  Generated: 2026-05-14 13:21
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
 
     [FIRES] QVN
-      set: [NCICNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [ncicNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -30,8 +30,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVP
-      set: [LicensePlateNumber]
-      any: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode] -> matched: [ImageIndicator, RegistrationState, VehicleIdentificationNumber, VehicleMakeCode]
+      set: [licensePlateNumber]
+      any: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode] -> matched: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -45,8 +45,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QVV
-      set: [VehicleIdentificationNumber]
-      any: [ImageIndicator, VehicleMakeCode] -> matched: [ImageIndicator, VehicleMakeCode]
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator, vehicleMakeCode] -> matched: [imageIndicator, vehicleMakeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -63,8 +63,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
 
     [FIRES] RQ_RAND
-      set: [LicensePlateNumber]
-      any: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear] -> matched: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear]
+      set: [licensePlateNumber]
+      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -79,8 +79,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQ
-      set: [LicensePlateNumber]
-      any: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear] -> matched: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear]
+      set: [licensePlateNumber]
+      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -95,8 +95,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQN_RAND
-      set: [VehicleIdentificationNumber]
-      any: [RandomRequest, RegistrationState, ImageIndicator] -> matched: [RandomRequest, RegistrationState, ImageIndicator]
+      set: [vehicleIdentificationNumber]
+      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -111,8 +111,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQN
-      set: [VehicleIdentificationNumber]
-      any: [RandomRequest, RegistrationState, ImageIndicator] -> matched: [RandomRequest, RegistrationState, ImageIndicator]
+      set: [vehicleIdentificationNumber]
+      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -130,8 +130,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES] DQ
-      set: [BirthDate, NameLast, NameFirst]
-      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
+      set: [birthDate, nameLast, nameFirst]
+      any: [imageIndicator, sexCode, registrationState] -> matched: [imageIndicator, sexCode, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -145,8 +145,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQN
-      set: [OperatorLicenseNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [operatorLicenseNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -163,8 +163,8 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
     [FIRES] QG
-      set: [GunSerialNumber]
-      any: [GunCaliber, GunMake, GunModel, ImageIndicator] -> matched: [GunCaliber, GunMake, GunModel, ImageIndicator]
+      set: [gunSerialNumber]
+      any: [gunCaliber, gunMake, gunModel, imageIndicator] -> matched: [gunCaliber, gunMake, gunModel, imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -180,8 +180,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
 
     [FIRES] QA
-      set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -195,8 +195,8 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 3  |  Combos: 2
 
     [FIRES] QB
-      set: [RegistrationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [registrationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -207,8 +207,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QBN
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [boatHullIdNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
