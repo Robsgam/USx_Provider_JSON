@@ -1,7 +1,7 @@
 PROVIDER STATUS SUMMARY
 =======================
 Generated: 2026-05-15
-Source: REBUILD_TRACKER.md + folder inspection + build reports
+Source: CLAUDE.md provider table + enforce.ps1 (218P/0F/0W)
 
 PORTFOLIO OVERVIEW
 ------------------
@@ -11,30 +11,31 @@ Locked:            2 (NJ_NJCJIS, CA_CLETS)
 Blocked:           1 (CA_CONTRA_COSTA)
 JSON completeness: 18/19 have both BASE + MC (CA_CONTRA_COSTA BASE-only)
 Validation:        All 18 complete providers at 0 FAIL, 0 WARN
+Enforce gate:      218 PASS / 0 FAIL / 0 WARN (2026-05-15)
 
 PROVIDER TABLE
 --------------
  #  Provider               Version  Validation       Status    JSON Files  Notes
 --- ---------------------- -------- ---------------- --------- ----------- --------------------------------------------------
- 1  AZ_AZDPS               v2.0    71P/0F/0W        ACTIVE    BASE+MC     NJ cross-reference rebuild + MC variant
- 2  CA_CLETS               v1.8    70P/0F/0W        LOCKED    BASE+MC     CAD audit CLEAN; one-directional deselect fix
- 3  CA_CLETS_OCATS         v1.0    63P/0F/0W        ACTIVE    BASE+MC     Initial build; CLETS_OCATS v21, 5 queries
- 4  CA_CONTRA_COSTA        ---     INCOMPLETE       BLOCKED   BASE only   Awaiting updated devdoc/metadata decision; Person-only
- 5  CA_eSUN                v1.2    71P/0F/0W        ACTIVE    BASE+MC     MC multi-card; VP owner search + gun-by-name
- 6  CA_SAN_LUIS_OBISPO     v1.1    65P/0F/0W        ACTIVE    BASE+MC     Regional interface; DL+DH DH-suffix pattern
- 7  CA_VENTURA_COUNTY      v1.2    72P/0F/0W        ACTIVE    BASE+MC     6 basic queries; MC multi-card (14 cards)
- 8  FL_FCIC                v4.0    102P/0F/0W       ACTIVE    BASE+MC     Attention field now visible FormInput (model fix)
+ 1  AZ_AZDPS               v2.3    71P/0F/0W        ACTIVE    BASE+MC     dexStateUserId, DH-suffix, WMPI queries
+ 2  CA_CLETS               v1.8    66P/0F/0W (BASE) LOCKED    BASE+MC     one-directional deselect fix; 18/18 BASE PASS
+ 3  CA_CLETS_OCATS         v1.2    63P/0F/0W        ACTIVE    BASE+MC     CLETS_OCATS v21, 5 queries, 19 combos
+ 4  CA_CONTRA_COSTA        ---     INCOMPLETE       BLOCKED   BASE only   Awaiting updated devdoc/metadata; Person-only
+ 5  CA_eSUN                v1.5    71P/0F/0W        ACTIVE    BASE+MC     MC multi-card; VP owner search + gun-by-name
+ 6  CA_SAN_LUIS_OBISPO     v1.3    65P/0F/0W        ACTIVE    BASE+MC     Regional interface; DL+DH DH-suffix pattern
+ 7  CA_VENTURA_COUNTY      v1.4    72P/0F/0W (MC)   ACTIVE    BASE+MC     6 basic queries; MC multi-card (14 cards)
+ 8  FL_FCIC                v4.0    102P/0F/0W       ACTIVE    BASE+MC     Attention visible FormInput; 35 combos
  9  HI_HCJDC_OFML          v1.6    72P/0F/0W        ACTIVE    BASE+MC     7-transaction build; State no-default
-10  IL_LEADS_OFML          v1.0    61P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
+10  IL_LEADS_OFML          v1.1    61P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
 11  LA_LEMS                v2.5    63P/0F/0W        ACTIVE    BASE+MC     7 QIDMs; DH-suffix + queriesToDeselect
-12  MD_METERS              v1.0    69P/0F/0W        ACTIVE    BASE+MC     6 basic queries; State no-default; MC (12 cards)
-13  NJ_NJCJIS              v3.1    69P/0F/0W        LOCKED    BASE+MC     CAD audit CLEAN; DEPLOYED Newark NJ 2026-05-11
-14  NM_NMLETS_OFML         v1.0    66P/0F/0W        ACTIVE    BASE+MC     6 basic queries, 14 combos; GunModel field
-15  NY_NYSPIN_EJUSTICE     v1.5    74P/0F/0W        ACTIVE    BASE+MC     Phase 1 reboot 2026-04-20; State no-default
-16  OH_LEADS               v1.1    77P/0F/0W        ACTIVE    BASE+MC     6 queries, 9 VehReg combos; MC (14 cards)
-17  OR_LEDS                v1.1    58P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
-18  TN_TIES                v1.1    80P/0F/0W        ACTIVE    BASE+MC     6 queries, 28 combos; MC (14 cards)
-19  TX_TLETS               v2.2    84P/0F/0W/2LIM  ACTIVE    BASE+MC     VehicleStolenQuery; EmailAddress 2 LIMs
+12  MD_METERS              v1.3    69P/0F/0W        ACTIVE    BASE+MC     6 basic queries; State no-default; MC (12 cards)
+13  NJ_NJCJIS              v3.1    69P/0F/0W        LOCKED    BASE+MC     14/14 PASS; v3.0 DEPLOYED Newark NJ 2026-05-11
+14  NM_NMLETS_OFML         v1.3    66P/0F/0W        ACTIVE    BASE+MC     6 basic queries; GunModel field
+15  NY_NYSPIN_EJUSTICE     v1.5    74P/0F/0W        ACTIVE    BASE+MC     DL+DH DH-suffix; State no-default (LIMIT #30)
+16  OH_LEADS               v1.3    77P/0F/0W        ACTIVE    BASE+MC     6 queries, 9 VehReg combos; MC (14 cards)
+17  OR_LEDS                v1.3    58P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
+18  TN_TIES                v1.4    80P/0F/0W        ACTIVE    BASE+MC     6 queries, 28 combos; MC (14 cards)
+19  TX_TLETS               v2.5    84P/0F/0W/2LIM  ACTIVE    BASE+MC     VehicleStolenQuery; EmailAddress 2 LIMs
 
 FLAGGED FOR NEXT REBUILD
 ------------------------
@@ -61,6 +62,7 @@ WORK ORDER (user-specified)
 
 NEXT ACTIONS
 ------------
-  1. Live testing per work order: FL_FCIC (resume T20), TX_TLETS, NY_NYSPIN, AZ_AZDPS
-  2. Attention field fix on next rebuild of 7 flagged providers
-  3. Each provider first test: build MC -> build_report.ps1 -> CAD audit -> pipeline.ps1
+  1. Live testing per work order: FL_FCIC BASE v4.0, then TX_TLETS, NY_NYSPIN, AZ_AZDPS
+  2. NJ v3.1 deploy to Newark foundation tenant (v3.0 currently live)
+  3. Attention field fix on next rebuild of 7 flagged providers
+  4. Each provider first test: build MC -> build_report.ps1 -> CAD audit -> pipeline.ps1

@@ -51,7 +51,7 @@ function Pass($msg)  { OutColor "    [PASS] $msg" Green;      $script:passCount+
 function Info($msg)  { OutColor "    [INFO] $msg" Gray;       $script:infoCount++ }
 
 # ── Skip list ─────────────────────────────────────────────────────────────────
-$skipProviders = @('CA_CONTRA_COSTA')
+$skipProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 
 # ── Discover providers ────────────────────────────────────────────────────────
 $providerDirs = @(Get-ChildItem $Path -Directory | Where-Object { $_.Name -notin $skipProviders })

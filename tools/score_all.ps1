@@ -74,8 +74,8 @@ $results = @()
 
 foreach ($dir in $providerDirs) {
     $folderName = $dir.Name
-    $isLocked = $folderName -match '_LOCKED$'
-    $providerName = if ($isLocked) { $folderName -replace '_LOCKED$', '' } else { $folderName }
+    $isLocked = $folderName -match '_(LOCKED|BLOCKED)$'
+    $providerName = if ($isLocked) { $folderName -replace '_(LOCKED|BLOCKED)$', '' } else { $folderName }
 
     # Find BASE JSON: look for *_BASE.json (not READABLE)
     $baseJson = Get-ChildItem $dir.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue |

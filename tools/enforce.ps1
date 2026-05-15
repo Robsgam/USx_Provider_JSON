@@ -5,7 +5,7 @@
   5 phases:
     1. Build freshness    -- reports exist and are newer than JSONs
     2. Validator scores   -- 0 FAIL / 0 WARN on every provider
-    3. Doc version sync   -- build script version matches all 5 doc locations
+    3. Doc version sync   -- build script version matches all 7 doc locations
     4. Cross-provider     -- field types, defaults, code types consistent
     5. Repo integrity     -- audit_repo.ps1 passes, git status clean
 
@@ -88,6 +88,7 @@ function SectionHeader($title) {
 function Get-ProviderList {
     $dirs = Get-ChildItem $provDir -Directory | Where-Object {
         $_.Name -ne 'CA_CONTRA_COSTA' -and
+        $_.Name -ne 'CA_CONTRA_COSTA_BLOCKED' -and
         (Test-Path (Join-Path $_.FullName "scripts"))
     }
     if ($Provider) {
@@ -121,7 +122,7 @@ function Get-McScriptVersion($provPath) {
     return $null
 }
 
-function Get-DocPrefix($name) { $name -replace '_LOCKED$', '' }
+function Get-DocPrefix($name) { $name -replace '_(LOCKED|BLOCKED)$', '' }
 
 # ── Parse validator report ────────────────────────────────────────────────────
 function Parse-Report($path) {
@@ -217,10 +218,11 @@ foreach ($pd in $providers) {
     # Check phase archive exists for current version
     $version = Get-ScriptVersion $pd.FullName
     if ($version) {
-        $today = Get-Date -Format "yyyy-MM-dd"
         $phaseBase = Join-Path $pd.FullName "phases\base"
-        $phasePattern = "${docPrefix}_v${version}_*.json"
-        $phaseFile = Get-ChildItem $phaseBase -Filter $phasePattern -File -ErrorAction SilentlyContinue
+        $phaseFile = Get-ChildItem $phaseBase -Filter "${docPrefix}_v${version}_*.json" -File -ErrorAction SilentlyContinue
+        if (-not $phaseFile) {
+            $phaseFile = Get-ChildItem $phaseBase -Filter "${docPrefix}_BASE_v${version}_*.json" -File -ErrorAction SilentlyContinue
+        }
         if ($phaseFile) {
             Pass "$provName -- phase archive exists for v${version}"
         } else {
@@ -462,8 +464,6 @@ if (-not $SkipGit) {
 # ══════════════════════════════════════════════════════════════════════════════
 Out ""
 Out ("=" * 60)
-
-$totalChecks = $script:passCount + $script:failCount + $script:warnCount + $script:infoCount
 
 if ($script:failCount -eq 0 -and $script:warnCount -eq 0) {
     Out "  ENFORCED: $($script:passCount) PASS / 0 FAIL / 0 WARN"

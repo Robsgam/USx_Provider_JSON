@@ -181,7 +181,7 @@ foreach ($f in $filesToUpdate) {
     }
 }
 
-$targetFolder = if ($Action -eq 'Lock') { $dstFolder } else { $dstFolder }
+$targetFolder = $dstFolder
 $statusInTarget = Get-ChildItem (Join-Path $targetFolder "docs") -Filter "*STATUS*" -File -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($statusInTarget) {
     $text = [System.IO.File]::ReadAllText($statusInTarget.FullName)

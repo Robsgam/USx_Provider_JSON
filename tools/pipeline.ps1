@@ -40,7 +40,7 @@ if (-not (Test-Path $provDir)) {
     exit 1
 }
 
-$docPrefix = $Provider -replace '_LOCKED$', ''
+$docPrefix = $Provider -replace '_(LOCKED|BLOCKED)$', ''
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 $script:stepNum = 0

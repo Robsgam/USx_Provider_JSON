@@ -19,7 +19,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent)
+$repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 
 # --- STEP 0: Derive provider name from XML filename ---
 if (-not (Test-Path $XmlPath)) {

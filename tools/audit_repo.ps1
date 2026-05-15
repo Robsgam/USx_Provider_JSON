@@ -25,7 +25,7 @@ $infoCount = 0
 function Fail($msg) { Write-Host "  [FAIL] $msg" -ForegroundColor Red; $script:failCount++ }
 function Pass($msg) { Write-Host "  [PASS] $msg" -ForegroundColor Green; $script:passCount++ }
 function Info($msg) { Write-Host "  [INFO] $msg" -ForegroundColor Gray; $script:infoCount++ }
-function DocPrefix($name) { $name -replace '_LOCKED$', '' }
+function DocPrefix($name) { $name -replace '_(LOCKED|BLOCKED)$', '' }
 
 # ── Active file filter ────────────────────────────────────────────────────────
 $excludePattern = '(\\|/)(?:archive|v1|source|templates|phases)(\\|/|$)'
@@ -201,7 +201,7 @@ if ($validLabels.Count -gt 0) {
     }
 
     # Check build scripts for non-standard queryLabels
-    $flaggedProviders = @('CA_CONTRA_COSTA')
+    $flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
     $buildScripts = Get-ChildItem "$repoRoot\providers" -Recurse -File -Include 'build_*.ps1' |
         Where-Object { $_.FullName -notmatch $excludePattern }
     foreach ($bs in $buildScripts) {
@@ -296,10 +296,13 @@ foreach ($bs in $buildScripts) {
         continue
     }
 
-    # Check dual output
+    # Check dual output (direct ConvertTo-Json OR shared Write-ProviderJson helper)
+    $usesSharedHelper = $text -match 'Write-ProviderJson'
     $hasCompress = $text -match 'ConvertTo-Json\s+-Depth\s+\d+\s+-Compress'
     $hasReadable = $text -match 'ConvertTo-Json\s+-Depth\s+\d+[^-]' -or $text -match 'READABLE'
-    if (-not $hasCompress) {
+    if ($usesSharedHelper) {
+        Pass "${shortName} -- dual output via Write-ProviderJson"
+    } elseif (-not $hasCompress) {
         Fail "${shortName} -- missing minified output (ConvertTo-Json -Compress)"
     } elseif (-not $hasReadable) {
         Fail "${shortName} -- missing readable output (_READABLE.json)"
@@ -307,12 +310,12 @@ foreach ($bs in $buildScripts) {
         Pass "${shortName} -- dual output (minified + readable)"
     }
 
-    # Check validator execution
+    # Check validator execution (direct call OR shared Write-ProviderJson helper)
     $hasValidator = $text -match 'validate.*\.ps1' -or $text -match 'validator'
-    if (-not $hasValidator) {
-        Fail "${shortName} -- no post-build validator execution"
-    } else {
+    if ($usesSharedHelper -or $hasValidator) {
         Pass "${shortName} -- runs validator after build"
+    } else {
+        Fail "${shortName} -- no post-build validator execution"
     }
 }
 }
@@ -437,6 +440,7 @@ $requiredDocs = @('STATUS.txt','SQVR.txt','BUILD_NOTES.txt','JSON_INVENTORY.md')
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
+    if ($provName -match '_BLOCKED$') { Info "${provName} -- BLOCKED provider, skipping structure check"; continue }
     $docPrefix = DocPrefix $provName
 
     # Required subdirectories
@@ -473,7 +477,7 @@ Write-Host "--- CATEGORY 10: Report File Completeness ---" -ForegroundColor Yell
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 $reportPrefixes = @('VALIDATOR_REPORT','LAYOUT_REPORT','QUERY_REPORT','PICKLIST_REPORT','VERIFY_REPORT','METADATA_AUDIT','CAD_AUDIT')
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -538,7 +542,7 @@ Write-Host "--- CATEGORY 11: Cross-Provider JSON Consistency ---" -ForegroundCol
 
 # Providers flagged or known-exception get INFO instead of FAIL
 $needsRebuild = @('TX_TLETS','LA_LEMS')
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $validLabels = Get-ValidLabels
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
@@ -620,7 +624,7 @@ Write-Host ""
 Write-Host "--- CATEGORY 12: Version Consistency ---" -ForegroundColor Yellow
 
 $claudeMdLines = Get-Content "$repoRoot\CLAUDE.md"
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
@@ -706,7 +710,7 @@ if ($Category -eq 0 -or $Category -eq 13) {
 Write-Host ""
 Write-Host "--- CATEGORY 13: BUILD_NOTES Version Coverage ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -747,7 +751,7 @@ if ($Category -eq 0 -or $Category -eq 14) {
 Write-Host ""
 Write-Host "--- CATEGORY 14: JSON_INVENTORY Version Coverage ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -787,7 +791,7 @@ if ($Category -eq 0 -or $Category -eq 15) {
 Write-Host ""
 Write-Host "--- CATEGORY 15: STATUS.txt Score Accuracy ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -827,7 +831,8 @@ foreach ($pd in $providerDirs) {
     if ($hasCorrectScore) {
         Pass "${provName} -- STATUS.txt contains correct BASE score (${reportPass}P)"
     } else {
-        Fail "${provName} -- STATUS.txt missing correct BASE score (expected ${reportPass}P from validator report)"
+        if ($isFlagged) { Info "FLAGGED: ${provName} -- STATUS.txt score mismatch (expected ${reportPass}P)" }
+        else { Fail "${provName} -- STATUS.txt missing correct BASE score (expected ${reportPass}P from validator report)" }
     }
 }
 }
@@ -839,7 +844,7 @@ if ($Category -eq 0 -or $Category -eq 16) {
 Write-Host ""
 Write-Host "--- CATEGORY 16: Phase Archive Completeness ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -879,7 +884,7 @@ if ($Category -eq 0 -or $Category -eq 17) {
 Write-Host ""
 Write-Host "--- CATEGORY 17: Validator WARN Audit ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -938,7 +943,7 @@ if ($Category -eq 0 -or $Category -eq 18) {
 Write-Host ""
 Write-Host "--- CATEGORY 18: camelCase FieldId Consistency ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
+$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
 $knownPascalFields = @(
     'RegistrationState','SexCode','RaceCode','ImageIndicator',
     'OperatorLicenseNumber','NameFirst','NameLast','NameMiddle','NameSuffix',

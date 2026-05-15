@@ -335,11 +335,11 @@ foreach ($bundle in $data.bundles) {
                                 } else { $argParts += "$arg" }
                             }
                         }
-                        $args = $argParts -join ', '
+                        $argStr = $argParts -join ', '
                         $entry = [PSCustomObject]@{
                             Bundle = $bName; Config = $cName; ConfigType = $cType; TargetField = $target
                             RuleType = if ($ruleProp -eq 'fallbackRule') { 'fallback' } else { 'rule' }
-                            Arguments = $args
+                            Arguments = $argStr
                         }
                         if (-not $allHandlers.ContainsKey($fn)) { $allHandlers[$fn] = @() }
                         $allHandlers[$fn] += $entry

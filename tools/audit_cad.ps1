@@ -71,7 +71,7 @@ if ($Path) {
     if (-not (Test-Path $providersDir)) { Write-Error "Providers dir not found: $providersDir"; return }
     $suffix = if ($Variant -eq 'MC') { '*_MC.json' } else { '*_BASE.json' }
     $jsonFiles = @(Get-ChildItem -Path $providersDir -Filter $suffix -Recurse |
-        Where-Object { $_.DirectoryName -notmatch '(archive|phases|release|v1[\\\/])' -and $_.DirectoryName -notmatch 'CA_CONTRA_COSTA' } |
+        Where-Object { $_.DirectoryName -notmatch '(archive|phases|release|v1[\\\/])' -and $_.DirectoryName -notmatch 'CA_CONTRA_COSTA(_BLOCKED)?' } |
         Sort-Object Name)
 }
 

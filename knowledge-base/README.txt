@@ -198,7 +198,7 @@ TOOLS
     Full monorepo consistency audit. Checks KB docs, build scripts, tools,
     provider JSONs, and CLAUDE.md for drift, stale references, missing
     documentation, banned patterns, report completeness, and cross-provider
-    JSON consistency. 16 categories:
+    JSON consistency. 18 categories:
       1. Banned patterns repo-wide
       2. Report step count consistency
       3. QueryLabel standard
@@ -215,8 +215,10 @@ TOOLS
       14. JSON_INVENTORY version coverage (current version has an entry)
       15. STATUS.txt score accuracy (PASS count matches validator report)
       16. Phase archive completeness (base/ has snapshot for current version)
+      17. Validator WARN audit (0 WARN target on all providers)
+      18. camelCase fieldId consistency (cross-provider fieldId casing)
     Sources of truth extracted at runtime. FAILS (exit 1) on any issue.
-    Usage: .\audit_repo.ps1 [-Category <1-16>]
+    Usage: .\audit_repo.ps1 [-Category <1-18>]
 
   tools/audit_cad.ps1
     CAD dispatch field alignment auditor. Validates camelCase fieldIds for
@@ -281,6 +283,13 @@ TOOLS
     CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects BASE vs MC variant.
     Generates Patch 8 rename map code snippet.
     Usage: .\map_cad_fields.ps1 -Path <json> -CadFields <comma-separated|file> [-OutFile <path>] [-GeneratePatch]
+
+  tools/Apply-CadFieldAlignment.ps1
+    CAD field alignment function for MC build scripts. Renames PascalCase
+    fieldIds to camelCase for CAD auto-populate compatibility. Renames
+    sourceField, combo set[]/any[], and QIF fieldIds. Does NOT touch
+    targetField, primaryFieldReference, or keyReference (XML-facing).
+    Usage: dot-source then call Apply-CadFieldAlignment -QidmList <array> -FormList <array> -RmsBundle <obj> [-ProviderRenames <hashtable>]
 
   tools/diff_docs.ps1
     Diffs updated engineering docs against KB files. Extracts 7 element

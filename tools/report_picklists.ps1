@@ -126,9 +126,6 @@ foreach ($bundle in $data.bundles) {
     foreach ($config in $bundle.configurations) {
         $isQrdm = $false
         try { $isQrdm = ($config.type -eq "QUERYRESULTDATAMAPPING") } catch { }
-        if (-not $isQrdm -and $config.attributes) {
-            try { $isQrdm = ($config.type -eq "QUERYRESULTDATAMAPPING") } catch { }
-        }
         # Also check provider bundle configs that have codeType on attributes
         if (-not $config.attributes) { continue }
 

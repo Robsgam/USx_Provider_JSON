@@ -259,30 +259,13 @@ function Lint-BuildScripts([string]$providerDir) {
             }
         }
 
-        # CHECK 4: Missing mandatory RMS patches
-        $hasPatch1 = $raw -match '(?i)Patch\s*1\b' -or $raw -match "(?i)licensePlateIn.*any.*[Rr]egistrationState|[Rr]egistrationState.*licensePlateIn"
-        $hasPatch3 = $raw -match '(?i)Patch\s*3\b' -or $raw -match "(?i)registrationState.*Person.*QIDM|RMS\s+Person.*registrationState"
-        $hasPatch6 = $raw -match '(?i)Patch\s*6\b' -or $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*(HIDLE|RMS)|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut|Build-RmsBundle"
-
-        if (-not $hasPatch1) {
+        # CHECK 4: RMS shared module usage
+        $usesRmsModule = $raw -match "Build-RmsBundle|_build_rms_bundle"
+        if (-not $usesRmsModule) {
             $findings.Add(@{
                 Script = $relName; Line = '--'; Level = 'WARN'
-                Msg    = "Missing Patch 1: RegistrationState in RMS Vehicle licensePlateIn any[]"
-                Fix    = "Add Patch 1 to build script (see CLAUDE.md RMS Patches)"
-            })
-        }
-        if (-not $hasPatch3) {
-            $findings.Add(@{
-                Script = $relName; Line = '--'; Level = 'WARN'
-                Msg    = "Missing Patch 3: registrationState attr in RMS Person QIDM"
-                Fix    = "Add Patch 3 to build script (see CLAUDE.md RMS Patches)"
-            })
-        }
-        if (-not $hasPatch6) {
-            $findings.Add(@{
-                Script = $relName; Line = '--'; Level = 'WARN'
-                Msg    = "Missing Patch 6: RMS cleanup (remove unused RMS fields)"
-                Fix    = "Add Patch 6 to build script (see CLAUDE.md RMS Patches)"
+                Msg    = "Does not use Build-RmsBundle -- RMS bundle must come from shared module"
+                Fix    = "Dot-source _build_rms_bundle.ps1 and call Build-RmsBundle"
             })
         }
 
@@ -482,7 +465,7 @@ function Build-ActionChecklist {
 # PREFLIGHT ONE PROVIDER -- main workhorse
 # ══════════════════════════════════════════════════════════════════════════════
 function Run-PreflightSingle([string]$provName) {
-    # Resolve folder (handle _LOCKED suffix)
+    # Resolve folder (handle _LOCKED/_BLOCKED suffix)
     $folderName = $provName
     $provDir = Join-Path $providersDir $folderName
     if (-not (Test-Path $provDir)) {
@@ -490,12 +473,16 @@ function Run-PreflightSingle([string]$provName) {
         $provDir = Join-Path $providersDir $folderName
     }
     if (-not (Test-Path $provDir)) {
-        Out-Line "  [ERROR] Provider not found: $provName (checked $provName and ${provName}_LOCKED)" 'Red'
+        $folderName = "${provName}_BLOCKED"
+        $provDir = Join-Path $providersDir $folderName
+    }
+    if (-not (Test-Path $provDir)) {
+        Out-Line "  [ERROR] Provider not found: $provName (checked $provName, ${provName}_LOCKED, ${provName}_BLOCKED)" 'Red'
         return $null
     }
 
-    $isLocked = $folderName -match '_LOCKED$'
-    $cleanProvName = $folderName -replace '_LOCKED$', ''
+    $isLocked = $folderName -match '_(LOCKED|BLOCKED)$'
+    $cleanProvName = $folderName -replace '_(LOCKED|BLOCKED)$', ''
 
     # ── Get validator results ────────────────────────────────────────────────
     $baseReport = $null
@@ -698,7 +685,7 @@ if ($Provider) {
 
     foreach ($dir in $providerDirs) {
         $folderName = $dir.Name
-        $cleanName  = $folderName -replace '_LOCKED$', ''
+        $cleanName  = $folderName -replace '_(LOCKED|BLOCKED)$', ''
 
         # Quick check: does this provider have WARNs?
         $needsRebuild = $false

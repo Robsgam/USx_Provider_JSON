@@ -1514,8 +1514,8 @@ if ($rmsBundle) {
         }
     }
 
-    # Check RMS Patch 3: Person QIDM should have registrationState attribute AND in combo any[]
-    # Patch 4: Person uses singular 'registrationStateAttrId' (no ArrayWrapper), Vehicle uses plural 'registrationStateAttrIds' (WITH ArrayWrapper)
+    # RMS Person QIDM must have registrationState attribute AND in combo any[]
+    # Person uses singular 'registrationStateAttrId' (no ArrayWrapper), Vehicle uses plural 'registrationStateAttrIds' (WITH ArrayWrapper)
     foreach ($cfg in $rmsBundle.configurations) {
         if ($cfg.type -ne "QUERYINPUTDATAMAPPING") { continue }
         if ($cfg.targetEntity -ne 'Person') { continue }
@@ -1532,10 +1532,10 @@ if ($rmsBundle) {
             }
         }
         if (-not $hasRegState) {
-            Write-Warn "RMS Person QIDM '$($cfg.name)' missing registrationState attribute (Patch 3)"
+            Write-Warn "RMS Person QIDM '$($cfg.name)' missing registrationState attribute"
             Write-Host "    [FIX] In build script: add registrationState attr with sourceField=['RegistrationState'], targetField='registrationStateAttrId', useAttributeId=true to RMS Person QIDM" -ForegroundColor Cyan
         } else {
-            Write-Pass "RMS Person QIDM '$($cfg.name)' has registrationState attr (Patch 3)"; Inc-Pass
+            Write-Pass "RMS Person QIDM '$($cfg.name)' has registrationState attr"; Inc-Pass
             # G-8: RegistrationState must also be in every Person combo any[]
             foreach ($combo in $cfg.combinations) {
                 if (-not $combo.requirements) { continue }
@@ -1547,7 +1547,7 @@ if ($rmsBundle) {
                 }
                 if (-not $hasInAny) {
                     $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
-                    Write-Warn "RMS Person QIDM '$($cfg.name)' combo '$comboId' missing 'RegistrationState' in any[] -- person search ignores state filter (Patch 3)"
+                    Write-Warn "RMS Person QIDM '$($cfg.name)' combo '$comboId' missing 'RegistrationState' in any[] -- person search ignores state filter"
                     Write-Host "    [FIX] In build script: add 'RegistrationState' to the any[] array of RMS Person combo '$comboId'" -ForegroundColor Cyan
                 }
             }
@@ -1576,8 +1576,8 @@ if ($rmsBundle) {
         }
     }
 
-    # Patch 1: RMS Vehicle QIDM should have RegistrationState in combo any[]
-    # Patch 4/5: Vehicle uses plural 'registrationStateAttrIds' WITH AttributeArrayWrapperRuleHandler
+    # RMS Vehicle QIDM must have RegistrationState in combo any[]
+    # Vehicle uses plural 'registrationStateAttrIds' WITH AttributeArrayWrapperRuleHandler
     foreach ($cfg in $rmsBundle.configurations) {
         if ($cfg.type -ne "QUERYINPUTDATAMAPPING") { continue }
         if ($cfg.targetEntity -ne 'Vehicle') { continue }
@@ -1605,10 +1605,10 @@ if ($rmsBundle) {
             if ($vehicleHasRegStateInAny) { break }
         }
         if (-not $vehicleHasRegStateInAny) {
-            Write-Warn "RMS Vehicle QIDM '$($cfg.name)' no combo has 'RegistrationState' in any[] (Patch 1 -- plate search ignores state)"
+            Write-Warn "RMS Vehicle QIDM '$($cfg.name)' no combo has 'RegistrationState' in any[] -- plate search ignores state"
             Write-Host "    [FIX] In build script: add 'RegistrationState' to the any[] array of the RMS Vehicle licensePlateIn combo" -ForegroundColor Cyan
         } else {
-            Write-Pass "RMS Vehicle QIDM '$($cfg.name)' has RegistrationState in combo any[] (Patch 1)"; Inc-Pass
+            Write-Pass "RMS Vehicle QIDM '$($cfg.name)' has RegistrationState in combo any[]"; Inc-Pass
         }
     }
 }
@@ -2043,7 +2043,7 @@ if ($rmsBundle) {
         }
     }
 
-    # Patch 6: Known dead HIDLE attrs that must be removed
+    # Dead HIDLE attrs that must not be in RMS bundle
     # Skip attrs/combos that are actively used by the provider's form fields
     $formHasSSN = $false
     if ($allFieldIds -and $allFieldIds.ContainsKey('Person')) {
@@ -2070,7 +2070,7 @@ if ($rmsBundle) {
                 elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
                 foreach ($sf in $sfs) {
                     if ($deadList -contains $sf) {
-                        Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE sourceField '$sf' -- remove per Patch 6"
+                        Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE sourceField '$sf' -- must be removed"
                         Write-Host "    [FIX] In build script: remove attribute with sourceField='$sf' from RMS $($cfg.targetEntity) QIDM and remove '$sf' from all combo set[]/any[] arrays" -ForegroundColor Cyan
                     }
                 }
@@ -2079,7 +2079,7 @@ if ($rmsBundle) {
         if ($deadCombos) {
             foreach ($combo in $cfg.combinations) {
                 if ($combo.keyReference -and $deadCombos -contains $combo.keyReference) {
-                    Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE combo '$($combo.keyReference)' -- remove per Patch 6"
+                    Write-Warn "RMS $($cfg.targetEntity) QIDM '$($cfg.name)' has dead HIDLE combo '$($combo.keyReference)' -- must be removed"
                     Write-Host "    [FIX] In build script: remove combo '$($combo.keyReference)' from RMS $($cfg.targetEntity) QIDM '$($cfg.name)'" -ForegroundColor Cyan
                 }
             }

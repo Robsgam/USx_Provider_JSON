@@ -4,7 +4,7 @@
     1. Hardcoded PlateYear (should use $currentYear)
     2. Banned LicensePlateNumberIn (except Patch 8 rename map)
     3. Known field type mismatches (Inp where Sel required)
-    4. Missing mandatory RMS patches (1, 3, 6)
+    4. RMS shared module usage (Build-RmsBundle required)
     5. Type safety violations (AP #21-23)
     6. $currentYear defined but hardcoded year still present
 
@@ -206,33 +206,12 @@ foreach ($scriptFile in ($scripts | Sort-Object FullName)) {
     }
 
     # ------------------------------------------------------------------
-    # CHECK 4: Missing mandatory RMS patches
-    # Scan for Patch 1, Patch 3, Patch 6 markers in comments or code
+    # CHECK 4: RMS shared module usage
+    # All builds must use Build-RmsBundle from _build_rms_bundle.ps1
     # ------------------------------------------------------------------
-    $hasPatch1 = $raw -match '(?i)Patch\s*1\b'
-    $hasPatch3 = $raw -match '(?i)Patch\s*3\b'
-    $hasPatch6 = $raw -match '(?i)Patch\s*6\b'
-    # Also detect functional equivalents without comment markers
-    if (-not $hasPatch1) {
-        $hasPatch1 = $raw -match "(?i)licensePlateIn.*any.*[Rr]egistrationState|[Rr]egistrationState.*licensePlateIn"
-    }
-    if (-not $hasPatch3) {
-        $hasPatch3 = $raw -match "(?i)registrationState.*Person.*QIDM|RMS\s+Person.*registrationState"
-    }
-    if (-not $hasPatch6) {
-        $hasPatch6 = $raw -match "(?i)RMS\s+(CLEANUP|cleanup)|Remove.*unused.*(HIDLE|RMS)|LicensePlateNumberOut.*remove|remove.*LicensePlateNumberOut|Build-RmsBundle"
-    }
-
-    if (-not $hasPatch1) {
-        Out-Finding 'WARN' '--' "Missing Patch 1: RegistrationState in RMS Vehicle licensePlateIn any[]"
-        $issueCount++
-    }
-    if (-not $hasPatch3) {
-        Out-Finding 'WARN' '--' "Missing Patch 3: registrationState attr in RMS Person QIDM"
-        $issueCount++
-    }
-    if (-not $hasPatch6) {
-        Out-Finding 'WARN' '--' "Missing Patch 6: RMS cleanup (remove unused RMS fields)"
+    $usesRmsModule = $raw -match "Build-RmsBundle|_build_rms_bundle"
+    if (-not $usesRmsModule) {
+        Out-Finding 'WARN' '--' "Does not use Build-RmsBundle -- RMS bundle must come from shared module"
         $issueCount++
     }
 
