@@ -46,12 +46,19 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
 | archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |
 
+## v4.0 (2026-05-13)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_BASE.json | v4.0 | Current | 102P/0F/0W/0LIM. Attention field now visible FormInput (was hidden handler-only). |
+| FL_FCIC_MC.json | v4.0 | Current | 102P/0F/0W/0LIM. MC variant. |
+
 ## v3.9 (2026-05-12)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v3.9 | Current | 102P/0F/0W/0LIM. MC Person 2-card layout (Search Options merged into DL). |
-| FL_FCIC_MC.json | v3.9 | Current | 102P/0F/0W/0LIM. MC variant. |
+| FL_FCIC_BASE.json | v3.9 | Archived | 102P/0F/0W/0LIM. MC Person 2-card layout (Search Options merged into DL). |
+| FL_FCIC_MC.json | v3.9 | Archived | 102P/0F/0W/0LIM. MC variant. |
 
 ## v3.8 (2026-05-12)
 
