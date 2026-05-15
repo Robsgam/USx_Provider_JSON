@@ -1,0 +1,36 @@
+LOCKED PROVIDER RETEST ANALYSIS
+================================
+Generated: 2026-05-15
+
+NJ_NJCJIS (v3.1, locked after v3.0 deploy)
+-------------------------------------------
+Last tested: v3.0 — 14/14 combos PASS, deployed Newark NJ 2026-05-11
+
+Changes AFTER v3.0 test cycle:
+  1. v3.1 (828cdca, 29db914) — DL combo ordering fix + validator path
+     >> CHANGED THE ACTUAL JSON <<
+  2. Build script refactors (shared helpers, HIDLE.json elimination)
+     >> Scripts only, same JSON output if rebuilt <<
+  3. Phase archive cleanup (c162374)
+     >> No JSON content change <<
+
+VERDICT: RETEST NEEDED
+  v3.1 combo ordering fix changes which DL combo fires first.
+  Tested v3.0 but v3.1 is on disk. Needs rebuild + quick retest.
+
+CA_CLETS (v1.8, locked)
+------------------------
+Last tested: v1.8 — 18/18 BASE production tests PASS, locked same commit
+
+Changes AFTER lock:
+  1. Build script refactors only (shared helpers, HIDLE.json elimination)
+     >> Scripts changed, BASE JSON untouched <<
+  2. HIDLE_MC migration (f63d7be) rebuilt MC JSON from new shared module
+     >> MC JSON was rebuilt <<
+  3. Archive cleanup (c162374)
+     >> No JSON content change <<
+
+VERDICT: BASE = NO RETEST. MC = VERIFY ONLY.
+  BASE JSON is the exact bytes that were tested.
+  MC was rebuilt during HIDLE_MC migration — diff against tested version.
+  If byte-identical, no retest. If different, retest MC only.
