@@ -174,17 +174,25 @@ PHASE 7: ALTERNATE COMBOS (coverage of remaining paths)
 25  Firearm   QG+NCIC         NCIC#=G123456789                    [    ]
 26  Boat      BQ+Name         Last=DOE, First=JOHN, DOB=          [    ]
                               01/15/1990, State=FL
+27  Boat      FBQ+RegNum      RegNum=FL1234AB (no State,          [    ]
+                              no Stolen)
+28  Boat      FBQ+Decal       Decal=FL12345678                    [    ]
+29  Boat      FBQ+TitleLien   TitleLien=ABCD1234                  [    ]
+30  Boat      BQ+RegNum+State RegNum=FL1234AB, State=GA           [    ]
+31  Boat      QB+RegNum+Stolen RegNum=FL1234AB, Stolen=Y          [    ]
+32  Boat      QB+CG#          CG#=CG123456                        [    ]
+33  Boat      QB+PCN          PCN=0000012345                      [    ]
 
 PHASE 8: NEGATIVES (empty forms = no send)
 --------------------------------------------
 #   Entity    Action                                              Result
 --  --------  --------------------------------------------------  ------
-27  Vehicle   Empty form, verify no Send button / no request      [    ]
-28  Person    Empty form, verify no Send button / no request      [    ]
+34  Vehicle   Empty form, verify no Send button / no request      [    ]
+35  Person    Empty form, verify no Send button / no request      [    ]
 
 ================================================================================
-TOTAL: 28 tests (5 render + 6 basic + 3 OOS + 2 co-fire + 3 priority +
-       3 any[] + 4 alternate + 2 negative)
+TOTAL: 35 tests (5 render + 6 basic + 3 OOS + 2 co-fire + 3 priority +
+       3 any[] + 11 alternate + 2 negative)
 
 DELTA TESTS (v4.0 changes specifically):
   #2  -- attentionDH visible on Person form (was hidden handler-only)
