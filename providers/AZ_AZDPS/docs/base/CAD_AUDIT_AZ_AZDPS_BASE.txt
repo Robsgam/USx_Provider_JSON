@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: AZ_AZDPS_BASE
   Source: AZ_AZDPS_BASE.json
-  Generated: 2026-05-11 10:49
+  Generated: 2026-05-15 09:41
 ================================================================
 CAD AUDIT
 =========
@@ -146,14 +146,8 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [FAIL] RMS RMS Person Search query attr sourceField: RaceCode (expected 'raceCode')
-    [FAIL] RMS RMS Person Search query combo ref: RaceCode (expected 'raceCode')
-    [FAIL] RMS RMS Person Search query combo ref: RaceCode (expected 'raceCode')
-    [FAIL] RMS RMS Person Search query combo ref: RaceCode (expected 'raceCode')
-    [FAIL] RMS RMS Person Search query combo ref: RaceCode (expected 'raceCode')
-    [FAIL] RMS RMS Vehicle search query attr sourceField: VehicleModelCode (expected 'vehicleModelCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleModelCode (expected 'vehicleModelCode')
-    [FAIL] RMS RMS Vehicle search query combo ref: VehicleModelCode (expected 'vehicleModelCode')
+    [PASS] RMS RMS Person Search query -- all sourceFields and combo refs are camelCase
+    [PASS] RMS RMS Vehicle search query -- all sourceFields and combo refs are camelCase
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -164,13 +158,13 @@ CAD AUDIT
     [PASS] QIDM 'AZ_AZDPS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
-    [FAIL] RMS QIDM 'RMS Person Search query': attr 'race' sourceField='RaceCode' (QIF has 'raceCode')
+    [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
 ========================================
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 55 PASS / 9 FAIL / 0 WARN / 77 INFO
+Total: 58 PASS / 0 FAIL / 0 WARN / 77 INFO
 
 
