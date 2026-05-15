@@ -1524,10 +1524,10 @@ if ($rmsBundle) {
             if ($attr.targetField -eq 'registrationStateAttrId' -or $attr.targetField -eq 'registrationStateAttrIds') {
                 $hasRegState = $true
                 if ($attr.targetField -eq 'registrationStateAttrIds') {
-                    Write-Fail "RMS Person QIDM '$($cfg.name)' attr '$($attr.name)' targetField='registrationStateAttrIds' (plural) -- Person must use singular 'registrationStateAttrId' (Patch 4)"
+                    Write-Fail "RMS Person QIDM '$($cfg.name)' attr '$($attr.name)' targetField='registrationStateAttrIds' (plural) -- Person must use singular 'registrationStateAttrId'"
                 }
                 if ($attr.rule -and $attr.rule.function -eq 'AttributeArrayWrapperRuleHandler') {
-                    Write-Fail "RMS Person QIDM '$($cfg.name)' attr '$($attr.name)' has AttributeArrayWrapperRuleHandler on registrationState -- Person uses singular, no ArrayWrapper needed (Patch 4)"
+                    Write-Fail "RMS Person QIDM '$($cfg.name)' attr '$($attr.name)' has AttributeArrayWrapperRuleHandler on registrationState -- Person uses singular, no ArrayWrapper needed"
                 }
             }
         }
@@ -1584,12 +1584,12 @@ if ($rmsBundle) {
 
         foreach ($attr in $cfg.attributes) {
             if ($attr.targetField -eq 'registrationStateAttrId') {
-                Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' targetField='registrationStateAttrId' (singular) -- Vehicle must use plural 'registrationStateAttrIds' (Patch 4)"
+                Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' targetField='registrationStateAttrId' (singular) -- Vehicle must use plural 'registrationStateAttrIds'"
                 Write-Host "    [FIX] In build script: change targetField from 'registrationStateAttrId' to 'registrationStateAttrIds' (plural) on RMS Vehicle attr '$($attr.name)'" -ForegroundColor Cyan
             }
             if ($attr.targetField -eq 'registrationStateAttrIds') {
                 if (-not $attr.rule -or $attr.rule.function -ne 'AttributeArrayWrapperRuleHandler') {
-                    Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' registrationStateAttrIds missing AttributeArrayWrapperRuleHandler (Patch 5)"
+                    Write-Warn "RMS Vehicle QIDM '$($cfg.name)' attr '$($attr.name)' registrationStateAttrIds missing AttributeArrayWrapperRuleHandler"
                     Write-Host "    [FIX] In build script: add rule={function:'AttributeArrayWrapperRuleHandler'} to RMS Vehicle registrationStateAttrIds attr" -ForegroundColor Cyan
                 }
             }
