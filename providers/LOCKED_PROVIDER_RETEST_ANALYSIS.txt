@@ -29,10 +29,10 @@ Changes AFTER lock:
   3. Archive cleanup (c162374)
      >> No JSON content change <<
 
-VERDICT: BASE = NO RETEST. MC = RETEST DL/DH DESELECT ONLY.
+VERDICT: BASE = NO RETEST. MC = NOT TESTING.
   BASE JSON is the exact bytes that were tested — confirmed identical.
   MC diff (2026-05-15): HIDLE migration removed queriesToDeselect from
   DriverLicenseQuery QIDM (was bidirectional, now one-directional per
   the deselect fix). ENTITIES and RMS bundles identical. Only change is
   DL QIDM no longer deselects DH — correct behavior.
-  Retest: import MC, verify DH deselects DL but DL does NOT deselect DH.
+  MC will not be retested. Diff saved here for reference if reverting.
