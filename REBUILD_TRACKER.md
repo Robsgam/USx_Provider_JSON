@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.5 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
-| 5 | FL_FCIC | v4.0 | 102P/0F/0W | 102P/0F/0W | 0 | **FIXED** — Attention visible FormInput (attentionDH) |
+| 5 | FL_FCIC | v4.1 | 102P/0F/0W | 102P/0F/0W | 0 | **FIXED** — Attention visible FormInput (attentionDH), MC 2-card (Options+Search) |
 | 6 | TX_TLETS | v2.5 | 84P/0F/0W | 84P/0F/0W | 2 | EmailAddress QIDM-only (unfixable) |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v1.8 | 66P/0F/0W | 70P/0F/0W | 0 | LOCKED -- MC rebuilt, one-directional deselect |
@@ -130,7 +130,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v3.1 | 69P/0F/0W | LOCKED — CAD audit CLEAN |
 | CA_CLETS | v1.8 | 70P/0F/0W | LOCKED — CAD audit CLEAN |
-| FL_FCIC | v4.0 | 102P/0F/0W | CAD audit CLEAN, 35 FIRE/0 SKIP |
+| FL_FCIC | v4.1 | 102P/0F/0W | CAD audit CLEAN, 35 FIRE/0 SKIP |
 
 ### Flagged for Full Rebuild on Next Test (15)
 
@@ -156,6 +156,6 @@ build_report.ps1, verify 0 FAIL on all 8 checks including CAD audit.
 | 15 | TN_TIES | YES | YES (DH only) | Keep SSN |
 
 ## Next Actions
-- Live testing per provider work order: FL_FCIC (resume T20), TX_TLETS, NY, AZ
+- Live testing per provider work order: FL_FCIC v4.1 MC (44 tests, Veh+Boat first), TX_TLETS, NY, AZ
 - Fix Attention hidden automation on next rebuild of each flagged provider
 - Each provider's first test triggers: build MC → build_report → verify CAD audit CLEAN

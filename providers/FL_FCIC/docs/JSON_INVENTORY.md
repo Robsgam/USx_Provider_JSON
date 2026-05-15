@@ -1,4 +1,4 @@
-# JSON Inventory — FL_FCIC
+# JSON Inventory -- FL_FCIC
 
 All JSON versions produced for this provider.
 
@@ -30,7 +30,7 @@ All JSON versions produced for this provider.
 | File | Version | Date | Notes |
 |------|---------|------|-------|
 | FL_FCIC_BASE_2026-05-01_backup.json | v2.6 | 2026-05-01 | Pre-v3.0 backup |
-| 01_standup/FL_FCIC_v2.1_CLEAN_noBOM.json | v2.1 | — | Phase 1 standup artifact |
+| 01_standup/FL_FCIC_v2.1_CLEAN_noBOM.json | v2.1 | -- | Phase 1 standup artifact |
 
 ## archive/
 
@@ -46,12 +46,19 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
 | archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |
 
+## v4.1 (2026-05-15)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_BASE.json | v4.1 | Current | 102P/0F/0W/0LIM. State label fix (Vehicle+Boat). |
+| FL_FCIC_MC.json | v4.1 | Current | 102P/0F/0W/0LIM. MC 2-card: Vehicle(Options+Search), Boat(Options+Search). State+Stolen isolated. |
+
 ## v4.0 (2026-05-13)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v4.0 | Current | 102P/0F/0W/0LIM. Attention field now visible FormInput (was hidden handler-only). |
-| FL_FCIC_MC.json | v4.0 | Current | 102P/0F/0W/0LIM. MC variant. |
+| FL_FCIC_BASE.json | v4.0 | Archived | 102P/0F/0W/0LIM. Attention field now visible FormInput (was hidden handler-only). |
+| FL_FCIC_MC.json | v4.0 | Archived | 102P/0F/0W/0LIM. MC variant. |
 
 ## v3.9 (2026-05-12)
 
@@ -94,4 +101,3 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | FL_FCIC_BASE.json | v3.4 | Archived | 101P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, camelCase conversion. |
 | FL_FCIC_MC.json | v3.4 | Archived | 102P/0F/0W/0LIM. MC variant. |
-

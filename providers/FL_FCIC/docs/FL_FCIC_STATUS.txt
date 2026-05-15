@@ -1,7 +1,7 @@
 ﻿FL_FCIC Build Status
 ====================
-Current: v4.0 | BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM | Updated 2026-05-13
-Current version : v4.0
+Current: v4.1 | BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM | Updated 2026-05-15
+Current version : v4.1
 Last updated    : 2026-05-15
 Output file     : FL_FCIC_BASE.json
 Build script    : scripts/build_fl_fcic.ps1
@@ -228,6 +228,66 @@ FIXES APPLIED 2026-05-05
   - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
 
 IMPORT: IMPORTED 2026-05-06
+
+LIVE TEST STATUS -- MC v4.1
+-------------------------------
+  Date: 2026-05-15
+  Result: 44 PASS / 0 FAIL
+  Combo coverage: 35/35
+
+  Test Matrix (9 phases):
+  #   Phase       Entity    Combo                Result  Notes
+  --  ----------  --------  -------------------  ------  -----
+   1  Render      Vehicle   RENDER               PASS    2 cards: Options+Search, State on Options only
+   2  Render      Boat      RENDER               PASS    2 cards: Options+Search, State+Stolen on Options
+   3  Render      Person    RENDER               PASS    2 cards: DL+DH, attentionDH visible
+   4  Render      Firearm   RENDER               PASS    1 card, GunMake dropdown
+   5  Render      Article   RENDER               PASS    1 card, ArticleType dropdown
+   6  Vehicle     Vehicle   FRQ+Plate            PASS    FRQ+QV co-fire, no State on Search card
+   7  Vehicle     Vehicle   FRQ+VIN              PASS    FRQ+QV co-fire
+   8  Vehicle     Vehicle   FRQ+Decal            PASS    FRQ only, no QV (Decal not in QV set[])
+   9  Vehicle     Vehicle   FRQ+TitleLien        PASS    FRQ only
+  10  Vehicle     Vehicle   RQ+Plate+State       PASS    RQ+QV co-fire, State=OH (OOS)
+  11  Vehicle     Vehicle   RQ+VIN+State         PASS    RQ+QV co-fire, State=NH (OOS)
+  12  Boat        Boat      FBQ+Hull             PASS    FBQ, no State/Stolen on Search card
+  13  Boat        Boat      FBQ+Reg              PASS    FBQ
+  14  Boat        Boat      FBQ+Decal            PASS    FBQ
+  15  Boat        Boat      FBQ+TitleLien        PASS    FBQ
+  16  Boat        Boat      BQ+Hull+State        PASS    BQ, State=NH (OOS)
+  17  Boat        Boat      BQ+Reg+State         PASS    BQ, State=ID (OOS)
+  18  Boat        Boat      BQ+Name+State        PASS    BQ, State=FL (name requires State even in-state)
+  19  Boat        Boat      QB+Hull+Stolen       PASS    QB, Stolen=Y
+  20  Boat        Boat      QB+Reg+Stolen        PASS    QB, Stolen=Y
+  21  Boat        Boat      QB+CG                PASS    QB, CG doc# only
+  22  Boat        Boat      QB+NCIC              PASS    QB, NCIC# only
+  23  Boat        Boat      QB+PCN               PASS    QB, PCN only
+  24  Person      Person    FDQ+OLN              PASS    FDQ, no QW co-fire (no Name)
+  25  Person      Person    DQ+OLN+State         PASS    DQ, State=MT (OOS)
+  26  Person      Person    FDQ+Name+QW          PASS    FDQ+QW co-fire, Name+DOB+Sex
+  27  Person      Person    DQ+Name+State        PASS    DQ+QW co-fire, State=MO (OOS)
+  28  Person      Person    QW+OLN co-fire       PASS    FDQ+QW, OLN+Name (no DOB)
+  29  Person      Person    KQ+OLN               PASS    KQ, DH-suffix, DL deselected
+  30  Person      Person    KQ+Name              PASS    KQ, Name+DOB+Sex+State=FL
+  31  Firearm     Firearm   QG+Serial            PASS    QG
+  32  Firearm     Firearm   QG+NCIC              PASS    QG
+  33  Firearm     Firearm   QG+PCN               PASS    QG
+  34  Article     Article   QA+Serial            PASS    QA, Serial+Type=BBICYCL
+  35  Article     Article   QA+OAN               PASS    QA, OAN+Type
+  36  Article     Article   QA+NCIC              PASS    QA
+  37  Article     Article   QA+PCN               PASS    QA
+  38  any[]       Vehicle   FRQ+Plate+Make       PASS    VehicleMakeCode in FRQ+QV XML
+  39  any[]       Firearm   QG+Serial+Make       PASS    GunMake=AAC in QG XML
+  40  any[]       Person    KQ+OLN+Purpose+Attn  PASS    PurposeCode+Attention in KQ XML
+  41  Co-fire     Person    DH deselects DL      PASS    One-directional: DH check->DL deselect
+  42  Priority    Vehicle   RQ wins over FRQ     PASS    Plate+State=ID, RQ fires (more specific)
+  43  Negative    Vehicle   EMPTY                PASS    No send button
+  44  Negative    Person    EMPTY                PASS    No send button
+
+  Notes:
+  - MC 2-card proof: Vehicle/Boat Search cards have NO State field, preventing FRQ/FBQ-to-RQ/BQ misroute
+  - Boat State label updated: "leave blank for FL, required for name/DOB" (T18 insight)
+  - DH one-directional deselect: DH check->DL off, DH uncheck->both off (officer re-clicks DL)
+  - All date formats yyyyMMdd, all name formats Last,First (no space)
 
 PENDING
 -------

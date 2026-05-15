@@ -693,3 +693,96 @@ See also:
 
   C# and PowerShell JSON serializers silently produce wrong types.
   Always run validator after build script execution.
+
+================================================================================
+11. MC MULTI-CARD DESIGN RULES
+================================================================================
+
+  MC (multi-card) is the production variant. BASE is proof-of-concept only.
+  MC isolates routing fields onto a separate OPTIONS card so officers cannot
+  accidentally trigger the wrong query type.
+
+  CORE PRINCIPLE:
+    Routing fields (State, Stolen Search, etc.) go on an OPTIONS card.
+    All search fields go on a single SEARCH card.
+    The OPTIONS card is a SEPARATE card the officer must deliberately visit.
+
+  DUPLICATE FIELDID ACROSS CARDS = INTERNAL SERVER ERROR (ISE):
+    The same fieldId CANNOT appear on multiple cards within one entity.
+    If two combos share a field, that field goes on ONE card only.
+    Use the shared OPTIONS card pattern for fields in any[] of multiple combos.
+
+  CARD STRUCTURE PER ENTITY (standard pattern):
+    2-card layout: OPTIONS card + SEARCH card
+    - OPTIONS: routing toggles (State, Stolen Search) + shared any[] (Image)
+    - SEARCH: all primary search fields (Plate, VIN, Hull, Name, etc.)
+    This is the tightest layout that still isolates routing.
+
+    More cards only if the entity has fundamentally different search paths
+    that would confuse officers when visible together. Most entities work
+    with 2 cards.
+
+  "LEAVE BLANK FOR [STATE]" LABEL RULE:
+    On MC, "State (leave blank for [STATE])" is the standard label for
+    ALL State fields that serve in-state vs OOS routing. This includes:
+
+    - Vehicle Options card State: blank = FRQ (in-state), filled = RQ (OOS)
+    - Boat Options card State: blank = FBQ (in-state), filled = BQ (OOS)
+    - Person DL card State: blank = FDQ (in-state), filled = DQ (OOS)
+
+    BOAT NAME/DOB EXCEPTION: Boat BQ name/DOB combos have State in set[],
+    meaning State is REQUIRED even for in-state name searches (State=FL).
+    Unlike Vehicle/Person, there is no in-state boat name query without State.
+    Boat State label must add this exception: "leave blank for FL, required
+    for name/DOB". FL_FCIC v4.1 confirmed during T18 testing.
+    Check each provider's boat combos — if name/DOB requires State, add
+    the exception to the label. Vehicle/Person do NOT need this because
+    FRQ/FDQ name combos exist without State.
+
+    This is safe on MC because DH uses its own registrationStateDH field
+    (DH-suffix pattern). DL State does NOT affect DH queries.
+
+    On BASE (single-card): DO NOT use the label on Person.
+    Before DH-suffix existed, "leave blank" prevented officers from filling
+    State for DH KQ combos that NEED State in set[]. On BASE, Person State
+    label stays neutral ("State") because DL and DH share the same form.
+
+    CONSISTENCY RULE: If one entity has the hint, ALL entities with
+    in-state vs OOS routing must have it. Officers expect uniform labeling.
+    FL_FCIC v4.1 confirmed: inconsistent labels confused the workflow.
+
+  OPTIONS CARD TITLE:
+    Use "Options" as the card title. Keep it simple and generic.
+    The "leave blank for [STATE]" hint belongs on the FIELD LABEL, not the card title.
+    Card titles describe the card's purpose; field-level instructions stay on field labels.
+    ASCII only (LIMITATION #11). FL_FCIC v4.1 confirmed: verbose card titles cluttered the UI.
+
+  WHICH FIELDS GO ON OPTIONS VS SEARCH:
+    OPTIONS card fields:
+    - registrationState (State) -- routes in-state vs OOS combos
+    - relatedHitSearchIndicator (Stolen Search) -- routes FBQ vs QB (Boat)
+    - imageIndicator (Image) -- shared any[] across all combos
+    - Any field that appears in any[] of MULTIPLE combo types
+
+    SEARCH card fields:
+    - All primary identifiers (Plate, VIN, Hull, RegNum, Decal, etc.)
+    - All secondary fields (PlateType, PlateYear, Make, Year, etc.)
+    - Name fields (Last, First, DOB) for name-based combos
+    - NCIC lookup fields (CG#, NCIC#, PCN)
+
+  PERSON IS DIFFERENT:
+    Person uses DH-suffix fieldIds instead of an OPTIONS card.
+    DL card: OLN, State, Image, Name, DOB, Sex, Suffix
+    DH card: OLN_DH, StateDH, PurposeCode, Name_DH, DOB_DH, Sex_DH, Attention
+    queriesToDeselect isolates DL from DH (one-directional: DH deselects DL).
+
+  QIDMS DO NOT CHANGE BETWEEN BASE AND MC:
+    MC is layout-only. All QIDM combinations, attributes, and keyReferences
+    are identical between BASE and MC. Only the QIF card structure differs.
+
+  CONFIRMED PROVIDERS USING THIS PATTERN:
+    FL_FCIC v4.1: Vehicle(2 cards), Person(2 cards), Boat(2 cards)
+    CA_eSUN v1.5: Vehicle(4 cards), Person(2 cards)
+    OH_LEADS v1.3: Vehicle(6 cards), Person(2 cards)
+    TX_TLETS v2.5: Vehicle(3 cards), Person(2 cards)
+    HI_HCJDC_OFML v1.6: Vehicle(3 cards), Person(2 cards)

@@ -4,7 +4,19 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
-v4.0 (2026-05-13) -- Attention field: handler-only → visible FormInput (attentionDH)
+v4.1 (2026-05-15) -- MC multi-card: Vehicle (2 cards) + Boat (2 cards) + State label fix
+  CHANGED: MC Vehicle split into 2 cards: Options(State,Image) + Vehicle Search(all search fields).
+           MC Boat split into 2 cards: Options(State,Stolen,Image) + Boat Search(all search fields).
+           MC Options cards titled "Options". State field labeled "State (leave blank for FL)".
+           BASE: removed "State (leave blank for FL)" label on Vehicle and Boat, now just "State".
+           QIDMs unchanged (35 combos, 8 QIDMs).
+  REASON:  BASE single-card allows officers to accidentally route in-state queries (FRQ/FBQ)
+           through OOS paths (RQ/BQ) by filling State. MC physically isolates State on a separate
+           Options card, preventing accidental routing. MC is mandatory for production deployment.
+           Person was already 2-card (DL+DH) since v3.8. Vehicle and Boat were never split.
+  VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
+
+v4.0 (2026-05-13) -- Attention field: handler-only to visible FormInput (attentionDH)
   CHANGED: Removed CommsysGetLastNameFirstNameInitialRuleHandler from DH Attention attribute.
            Changed sourceField from 'Attention'/'AttentionDH' to 'attentionDH'/'AttentionDH' (DH-suffix).
            Added attentionDH/AttentionDH FormInput (maxLen=30) to Person DH card/section (BASE+MC).

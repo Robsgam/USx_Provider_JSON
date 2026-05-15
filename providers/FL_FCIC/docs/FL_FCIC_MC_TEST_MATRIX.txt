@@ -1,0 +1,291 @@
+FL_FCIC MC v4.1 -- TEST MATRIX
+==================================
+Generated: 2026-05-15
+Variant: MC (multi-card per entity)
+Validator: 102P/0F/0W/0LIM
+Live test: 44/44 PASS -- 35/35 combos -- 2026-05-15
+Prior: v4.0 BASE 26/35 PASS (2026-05-15), v3.1 MC 60 PASS (2026-05-05)
+Delta: v4.1 changes: Vehicle 2-card split, Boat 2-card split, Options card,
+       State "leave blank for FL" label on Options cards (Vehicle+Boat+Person DL)
+
+FORM FIELDS (MC multi-card layout)
+------------------------------------
+Vehicle (2 cards, 10 fields):
+  CARD_VEH_OPT (Options):
+    registrationState [Sel STATE, no default], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_VEH_SEARCH (Vehicle Search):
+    ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC],
+           licensePlateYear [Inp 4, 2026]
+    ROW 2: vehicleIdentificationNumber [Inp 20], vehicleMakeCode [Sel VEHICLE_MAKE/NCIC],
+           vehicleYear [Inp 4]
+    ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
+
+Person (2 cards, 16 fields):
+  CARD_DL (Driver License):
+    ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE, no default,
+           label="State (leave blank for FL)"], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30]
+    ROW 3: birthDate [Dt], sexCode [Sel SEX/NIBRS], nameSuffix [Inp 10]
+  CARD_DH (Driver History):
+    ROW 1: operatorLicenseNumberDH [Inp 20], registrationStateDH [Sel STATE, FL],
+           purposeCodeDH [Inp 1]
+    ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30]
+    ROW 3: birthDateDH [Dt], sexCodeDH [Sel SEX/NIBRS]
+    ROW 4: attentionDH [Inp 30]
+
+Firearm (1 card, 5 fields):
+  CARD_GUN (Firearm Query):
+    ROW 1: gunSerialNumber [Inp 11], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: ncicNumber [Inp 10], processControlNumber [Inp 10],
+           imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+
+Article (1 card, 6 fields):
+  CARD_ART (Article Query):
+    ROW 1: articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+    ROW 2: ownerAppliedNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 3: ncicNumber [Inp 10], processControlNumber [Inp 10]
+
+Boat (2 cards, 13 fields):
+  CARD_BOA_OPT (Options):
+    registrationState [Sel STATE, no default, label="leave blank for FL, required for name/DOB"],
+    relatedHitSearchIndicator [Inp 1],
+    imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_BOA_SEARCH (Boat Search):
+    ROW 1: boatHullIdNumber [Inp 62], registrationNumber [Inp 8]
+    ROW 2: decalNumber [Inp 20], titleLienInformation [Inp 10],
+           coastGuardDocumentNumber [Inp 8]
+    ROW 3: ncicNumber [Inp 10], processControlNumber [Inp 10]
+    ROW 4: nameLast [Inp 30], nameFirst [Inp 30], birthDate [Dt]
+
+QIDM SUMMARY (8 QIDMs, 35 combos)
+-----------------------------------
+  VehicleRegistrationQuery: 6 combos (RQ x2, FRQ x4)
+  VehicleStolenQuery:       2 combos (QV x2) -- co-fires with VehReg
+  DriverLicenseQuery:       4 combos (DQ x2, FDQ x2) -- autoSelect=true, deselects: none
+  WantedPersonQuery:        2 combos (QW x2) -- co-fires with DL
+  DriverHistoryQuery:       2 combos (KQ x2) -- autoSelect=true, deselects: [DL]
+  GunQuery:                 3 combos (QG x3)
+  ArticleSingleQuery:       4 combos (QA x4)
+  BoatQuery:               12 combos (BQ x3, FBQ x4, QB x5)
+
+================================================================================
+9-PHASE TEST MATRIX (Vehicle + Boat first)
+================================================================================
+
+PHASE 1: RENDER (verify MC card structure, fields, picklists, defaults)
+------------------------------------------------------------------------
+#   Entity    Action                                              Result
+--  --------  --------------------------------------------------  ------
+ 1  Vehicle   Render form. Verify 2 cards:                        [PASS]
+              CARD_VEH_OPT: titled "Options".
+              State dropdown (no default, label "leave blank for FL"), Image=N.
+              CARD_VEH_SEARCH: Plate, PlateType=PC, PlateYear=2026,
+              VIN, VehicleMake dropdown, VehicleYear, Decal, TitleLien.
+              State is ONLY on Options card.
+ 2  Boat      Render form. Verify 2 cards:                        [PASS]
+              CARD_BOA_OPT: titled "Options".
+              State dropdown (no default, label "leave blank for FL,
+              required for name/DOB"), Stolen Search text field, Image=N.
+              CARD_BOA_SEARCH: Hull, RegNum, Decal, TitleLien,
+              CG Doc#, NCIC#, PCN, Last, First, DOB.
+              State+Stolen are ONLY on Options card.
+ 3  Person    Render form. Verify 2 cards:                        [PASS]
+              CARD_DL: OLN, State "leave blank for FL" (no default),
+              Image=Y, Last, First, Middle, DOB, Sex, Suffix.
+              CARD_DH: OLN_DH, StateDH=FL, PurposeCode,
+              Last_DH, First_DH, DOB_DH, Sex_DH,
+              attentionDH visible text field.
+ 4  Firearm   Render form. Verify 1 card:                         [PASS]
+              Serial, GunMake dropdown, NCIC#, PCN, Image=N.
+ 5  Article   Render form. Verify 1 card:                         [PASS]
+              Serial, ArticleType dropdown, OAN, Image=N,
+              NCIC#, PCN.
+
+PHASE 2: VEHICLE COMBOS (6 tests, 8 combos -- QV co-fires with VehReg)
+------------------------------------------------------------------------
+#   Entity    Combo           Fields to fill                      Result
+--  --------  --------------  ----------------------------------  ------
+ 6  Vehicle   FRQ+Plate       SEARCH card: Plate=TEST123          [PASS]
+              Expected: FRQ fires (no State filled).
+              QV co-fires (Plate in QV set[]).
+              Verify MessageKey=FRQ + QV in XML.
+              MC PROOF: Search card has no State field.
+ 7  Vehicle   FRQ+VIN         SEARCH card: VIN=1HGCM82633A123456 [PASS]
+              Expected: FRQ fires. QV co-fires.
+              Verify MessageKey=FRQ + QV in XML.
+ 8  Vehicle   FRQ+Decal       SEARCH card: Decal=FL12345678,      [PASS]
+              PlateYear=2026 (default)
+              Expected: FRQ fires. Verify MessageKey=FRQ.
+ 9  Vehicle   FRQ+TitleLien   SEARCH card: TitleLien=ABCD1234    [PASS]
+              Expected: FRQ fires. Verify MessageKey=FRQ.
+10  Vehicle   RQ+Plate+State  SEARCH card: Plate=XYZ789,          [PASS]
+              + OPTIONS card: State=NJ
+              Expected: RQ fires (State in set[]). QV co-fires.
+              PlateType+PlateYear defaults included.
+              Verify MessageKey=RQ.
+11  Vehicle   RQ+VIN+State    SEARCH card: VIN=2HGFG12633A999999,[PASS]
+              + OPTIONS card: State=GA
+              Expected: RQ fires (VIN+State in set[]).
+              Verify MessageKey=RQ.
+
+PHASE 3: BOAT COMBOS (12 tests, 12 combos)
+---------------------------------------------
+#   Entity    Combo              Fields to fill                   Result
+--  --------  -----------------  -------------------------------- ------
+12  Boat      FBQ+Hull           SEARCH card: Hull=FL1234AB56H7  [PASS]
+              Expected: FBQ fires (no State, no Stolen).
+              MC PROOF: Search card has no State/Stolen.
+13  Boat      FBQ+Reg            SEARCH card: RegNum=FL1234AB    [PASS]
+              Expected: FBQ fires. Verify MessageKey=FBQ.
+14  Boat      FBQ+Decal          SEARCH card: Decal=FL12345678   [PASS]
+              Expected: FBQ fires. Verify MessageKey=FBQ.
+15  Boat      FBQ+TitleLien      SEARCH card: TitleLien=ABCD1234 [PASS]
+              Expected: FBQ fires. Verify MessageKey=FBQ.
+16  Boat      BQ+Hull+State      SEARCH card: Hull=FL999,         [PASS]
+              + OPTIONS card: State=GA
+              Expected: BQ fires (Hull+State in set[]).
+              Verify MessageKey=BQ.
+17  Boat      BQ+Reg+State       SEARCH card: RegNum=FL1234AB,    [PASS]
+              + OPTIONS card: State=GA
+              Expected: BQ fires (Reg+State in set[]).
+              Verify MessageKey=BQ.
+18  Boat      BQ+Name+State      SEARCH card: Last=DOE,           [PASS]
+              First=JOHN, DOB=01/15/1990,
+              + OPTIONS card: State=FL
+              Expected: BQ fires (Name+DOB+State in set[]).
+              Verify MessageKey=BQ.
+19  Boat      QB+Hull+Stolen     SEARCH card: Hull=FL1234AB56H7,  [PASS]
+              + OPTIONS card: Stolen=Y
+              Expected: QB fires (Hull+Stolen in set[]).
+              QB+Hull fires before FBQ+Hull (more specific).
+              Verify MessageKey=QB.
+20  Boat      QB+Reg+Stolen      SEARCH card: RegNum=FL1234AB,    [PASS]
+              + OPTIONS card: Stolen=Y
+              Expected: QB fires (Reg+Stolen in set[]).
+              Verify MessageKey=QB.
+21  Boat      QB+CG              SEARCH card: CG#=CG123456       [PASS]
+              Expected: QB fires. Verify MessageKey=QB.
+22  Boat      QB+NCIC            SEARCH card: NCIC#=B123456789   [PASS]
+              Expected: QB fires. Verify MessageKey=QB.
+23  Boat      QB+PCN             SEARCH card: PCN=0000012345     [PASS]
+              Expected: QB fires. Verify MessageKey=QB.
+
+PHASE 4: PERSON COMBOS (7 tests, 8 combos -- QW co-fires with DL)
+--------------------------------------------------------------------
+#   Entity    Combo              Fields to fill                   Result
+--  --------  -----------------  -------------------------------- ------
+24  Person    FDQ+OLN            DL card: OLN=D999888777          [PASS]
+              Expected: FDQ fires (OLN only, no State).
+              No QW (no Name fields). Verify MessageKey=FDQ.
+25  Person    DQ+OLN+State       DL card: OLN=N123456,            [PASS]
+              State=AL
+              Expected: DQ fires (OLN+State in set[]).
+              Verify MessageKey=DQ.
+26  Person    FDQ+Name + QW      DL card: Last=DOE, First=JOHN,   [PASS]
+              co-fire            DOB=01/15/1990, Sex=M
+              Expected: FDQ fires (Name+DOB+Sex in set[]).
+              QW co-fires (DOB+Last+First in QW set[]).
+              Verify both FDQ and QW XML messages.
+27  Person    DQ+Name+State      DL card: Last=DOE, First=JOHN,   [PASS]
+              DOB=01/15/1990, Sex=M, State=AL
+              Expected: DQ fires (Name+DOB+Sex+State).
+              Verify MessageKey=DQ.
+28  Person    QW+OLN co-fire     DL card: OLN=D999888777,         [PASS]
+              Last=DOE, First=JOHN (no DOB)
+              Expected: FDQ+OLN fires (OLN in set[]).
+              QW+OLN co-fires (OLN+Last+First in QW set[]).
+              Verify QW XML alongside FDQ.
+29  Person    KQ+OLN             DH card: OLN_DH=D999888777,      [PASS]
+              StateDH=FL
+              Expected: KQ fires. DH checkbox auto-lights.
+              DL deselected by DH (one-directional).
+              Verify MessageKey=KQ.
+30  Person    KQ+Name            DH card: Last_DH=DOE,            [PASS]
+              First_DH=JOHN, DOB_DH=01/15/1990,
+              Sex_DH=M, StateDH=FL
+              Expected: KQ fires (Name+DOB+Sex+State).
+              Verify MessageKey=KQ.
+
+PHASE 5: FIREARM COMBOS (3 tests, 3 combos)
+----------------------------------------------
+#   Entity    Combo           Fields to fill                      Result
+--  --------  --------------  ----------------------------------  ------
+31  Firearm   QG+Serial       Serial=GUN12345                     [PASS]
+              Expected: QG fires. Verify MessageKey=QG.
+32  Firearm   QG+NCIC         NCIC#=G123456789                    [PASS]
+              Expected: QG fires. Verify MessageKey=QG.
+33  Firearm   QG+PCN          PCN=0000012345                      [PASS]
+              Expected: QG fires. Verify MessageKey=QG.
+
+PHASE 6: ARTICLE COMBOS (4 tests, 4 combos)
+----------------------------------------------
+#   Entity    Combo           Fields to fill                      Result
+--  --------  --------------  ----------------------------------  ------
+34  Article   QA+Serial       Serial=ART99999, Type=BBICYCL       [PASS]
+              Expected: QA fires. Verify both in XML.
+35  Article   QA+OAN          OAN=OAN999, Type=BSHOCKS            [PASS]
+              Expected: QA fires. Verify OAN+Type in XML.
+36  Article   QA+NCIC         NCIC#=A123456789                    [PASS]
+              Expected: QA fires. Verify MessageKey=QA.
+37  Article   QA+PCN          PCN=0000054321                      [PASS]
+              Expected: QA fires. Verify MessageKey=QA.
+
+PHASE 7: ANY[] FIELD TESTS (3 tests)
+---------------------------------------
+#   Entity    Combo              any[] field tested               Result
+--  --------  -----------------  -------------------------------- ------
+38  Vehicle   FRQ+Plate          + SEARCH VehicleMake=FORD        [PASS]
+              Expected: VehicleMake in FRQ XML.
+39  Firearm   QG+Serial          + GunMake=ABA                    [PASS]
+              Expected: GunMake in QG XML.
+40  Person    KQ+OLN             + PurposeCode=C, Attention=      [PASS]
+              SMITH J
+              Expected: both in KQ XML. Combo fires
+              without them (tested in #29).
+
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
+-----------------------------------------------------
+#   Entity    Action                                              Result
+--  --------  --------------------------------------------------  ------
+41  Person    DH deselects DL (one-directional):                  [PASS]
+              Fill DL OLN + DH OLN_DH+StateDH.
+              Check DH checkbox lights AND DL deselects.
+              Then clear DH fields: DL should re-select.
+42  Vehicle   Priority routing: SEARCH Plate + OPTIONS State=TX   [PASS]
+              Expected: RQ fires (more specific: State in set[]).
+              FRQ also matches but RQ wins priority.
+
+PHASE 9: NEGATIVES (empty forms = no send)
+--------------------------------------------
+#   Entity    Action                                              Result
+--  --------  --------------------------------------------------  ------
+43  Vehicle   Empty form, verify no Send button / no request      [PASS]
+44  Person    Empty form, verify no Send button / no request      [PASS]
+
+================================================================================
+TOTAL: 44 tests (5 render + 6 vehicle + 12 boat + 7 person + 3 firearm +
+       4 article + 3 any[] + 2 co-fire/deselect + 2 negative)
+
+COMBO COVERAGE (35/35):
+  VehicleRegistrationQuery: 6/6 -- T6(FRQ+Plate), T7(FRQ+VIN), T8(FRQ+Decal),
+                                   T9(FRQ+TitleLien), T10(RQ+Plate), T11(RQ+VIN)
+  VehicleStolenQuery:       2/2 -- T6(QV+Plate co-fire), T7(QV+VIN co-fire)
+  DriverLicenseQuery:       4/4 -- T24(FDQ+OLN), T25(DQ+OLN), T26(FDQ+Name), T27(DQ+Name)
+  WantedPersonQuery:        2/2 -- T26(QW+Name co-fire), T28(QW+OLN co-fire)
+  DriverHistoryQuery:       2/2 -- T29(KQ+OLN), T30(KQ+Name)
+  GunQuery:                 3/3 -- T31(Serial), T32(NCIC), T33(PCN)
+  ArticleSingleQuery:       4/4 -- T34(Serial), T35(OAN), T36(NCIC), T37(PCN)
+  BoatQuery:               12/12 -- T12(FBQ+Hull), T13(FBQ+Reg), T14(FBQ+Decal),
+                                    T15(FBQ+TitleLien), T16(BQ+Hull), T17(BQ+Reg),
+                                    T18(BQ+Name), T19(QB+Hull), T20(QB+Reg),
+                                    T21(QB+CG), T22(QB+NCIC), T23(QB+PCN)
+
+DELTA TESTS (v4.1 MC changes specifically):
+  #1  -- Vehicle 2-card layout renders (Options + Vehicle Search)
+  #2  -- Boat 2-card layout renders (Options + Boat Search)
+  #6  -- MC PROOF: FRQ fires from Search card with no State field present
+  #12 -- MC PROOF: FBQ fires from Search card with no State/Stolen present
+  #19 -- QB routing: Stolen on Options card, Hull on Search card
+  #42 -- Priority: RQ wins over FRQ when State filled on Options card
+
+IMPORT FILE: FL_FCIC_MC.json

@@ -1,16 +1,21 @@
 # build_fl_fcic_mc.ps1 -- FL_FCIC MC (multi-card)
 # Builds FL_FCIC_MC.json from source\FL_FCIC.xml metadata + KB specs.
-# QIDMs identical to BASE. Layout-only changes: Person has 3 cards (Options, DL, DH).
+# QIDMs identical to BASE. Layout changes:
+#   Vehicle: 2 cards (Options, Vehicle Search) -- State isolated on Options
+#   Person:  2 cards (DL, DH) -- DH-suffix fields isolate DH from DL pool
+#   Boat:    2 cards (Options, Boat Search) -- State+Stolen isolated on Options
+#   Firearm: 1 card (no State routing issue)
+#   Article: 1 card (no State routing issue)
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-#      & .\scripts\build_fl_fcic_mc.ps1 -Version 3.0-mc
+#      & .\scripts\build_fl_fcic_mc.ps1 -Version 4.1
 #
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]
 #   source\FL_FCIC.pdf   -- CommSys devdoc (6 basic queries) [CROSS-CHECK]
 #   tools\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs, no external template)
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 8 QIDMs, 33 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 8 QIDMs, 35 combos):
 #   VehicleRegistrationQuery   FRQ (plate/VIN/Decal/Title) + RQ (plate+state/VIN+state) = 6 combos
 #   VehicleStolenQuery         QV (plate/VIN) = 2 combos
 #   DriverLicenseQuery         FDQ (OLN/Name) + DQ (OLN+state/Name+state) = 4 combos, autoSelect=true
@@ -21,11 +26,11 @@
 #   BoatQuery                  FBQ (hull/reg/decal/title) + QB (CG/NCIC/PCN/hull/reg) + BQ (name/hull/reg) = 12 combos
 #
 # ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- plate + VIN + make + year + decal + title
-#   Person   -- DL card (OLN/Name/DOB/Sex) + DH card (OLN/Name/DOB/Sex, DH-suffix)
-#   Firearm  -- serial + make + NCIC# + PCN
-#   Article  -- serial + type + OAN + NCIC# + PCN
-#   Boat     -- reg + hull + state + decal + title + CG# + NCIC# + PCN + name + DOB
+#   Vehicle  -- 2 cards: Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,Make,Year)
+#   Person   -- 2 cards: DL(OLN/Name/DOB/Sex/State/Image) + DH(OLN/Name/DOB/Sex, DH-suffix)
+#   Firearm  -- 1 card: serial + make + NCIC# + PCN
+#   Article  -- 1 card: serial + type + OAN + NCIC# + PCN
+#   Boat     -- 2 cards: Options(State,Stolen,Image) + Boat Search(Hull,Reg,Decal,Title,CG,NCIC,PCN,Name,DOB)
 #
 # FL-SPECIFIC PATTERNS:
 #   Date format: yyyyMMdd (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','yyyyMMdd'])
@@ -35,7 +40,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.0"
+    [string]$Version = "4.1"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -521,35 +526,42 @@ $providerBundle = [PSCustomObject]@{
 # BUNDLE 2: ENTITIES (5 QUERYINPUTFORM)
 # =====================================================================
 
-# --- Vehicle (serves VehicleRegistrationQuery + VehicleStolenQuery) ---
+# --- Vehicle (2 cards MC: Options + Vehicle Search) ---
+# State on OPTIONS card prevents accidental RQ routing when officer wants FRQ
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'Options'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'registrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'ImageIndicator_Input';        node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_1' }
+            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT_1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
-                @{ id = 'VehicleYear_Input';           node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_SEARCH'
+        title = 'Vehicle Search'
+        rows  = @(
+            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+            )}
+            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';              node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
-                @{ id = 'VehicleMakeCode_Input';              node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
-            )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'DecalNumber_Input';          node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_4' }
-                @{ id = 'TitleLienInformation_Input'; node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_4' }
+                @{ id = 'DecalNumber_Input';          node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
+                @{ id = 'TitleLienInformation_Input'; node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_3' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleReg (RQ/FRQ) + VehicleStolen (QV) on single card.'
+    description  = 'Vehicle queries -- 2 cards MC. Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title). State isolated on Options card.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -670,38 +682,47 @@ $articleForm = [PSCustomObject]@{
     targetEntity = 'Article'
 }
 
-# --- Boat (includes Name/DOB fields for BQ combos) ---
+# --- Boat (2 cards MC: Options + Boat Search) ---
+# State + Stolen Search on OPTIONS card prevents accidental BQ/QB routing when officer wants FBQ
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        id    = 'CARD_BOA_OPT'
+        title = 'Options'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'registrationState' 'State (leave blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_BOA_SEARCH'
+        title = 'Boat Search'
+        rows  = @(
+            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'registrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '20' 'ROW_BOA_2' }
                 @{ id = 'TitleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '10' 'ROW_BOA_2' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_2' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NCICNumber_Input';               node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
-                @{ id = 'ProcessControlNumber_Input';      node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_3' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_3' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_3' }
+            @{ id = 'ROW_BOA_3'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';           node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
+                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_3' }
             )}
             @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name (BQ)' '30' 'ROW_BOA_4' }
-                @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name (BQ)' '30' 'ROW_BOA_4' }
-                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'DOB (BQ)' 'ROW_BOA_4' }
+                @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name' '30' 'ROW_BOA_4' }
+                @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_BOA_4' }
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'DOB' 'ROW_BOA_4' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- BQ (name/hull/reg+state), FBQ (hull/reg/decal/title), QB (CG/NCIC/PCN/hull/reg). Stolen Search=Y routes hull/reg to QB.'
+    description  = 'Boat queries -- 2 cards MC. Options(State,Stolen,Image) + Boat Search(Hull,Reg,Decal,Title,CG,NCIC,PCN,Name,DOB). State+Stolen isolated on Options card.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
