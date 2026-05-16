@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-05-11 10:50
+  Generated: 2026-05-16 15:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -173,11 +173,10 @@ QUERY SIMULATION
 
 --- QIDM: OH_LEADS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 3
-    [SKIP] KQ.N -- no any[] match
 
-    [FIRES] KQ.O
-      set: [OperatorLicenseNumberDH]
-      any: [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH] -> matched: [NameLastDH, NameFirstDH]
+    [FIRES] KQ.N
+      set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+      any: [PurposeCodeDH, RegistrationStateDH] -> matched: [PurposeCodeDH, RegistrationStateDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -186,7 +185,25 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [OperatorLicenseNumberDH]
+      any: [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH] -> matched: [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>FL</State>
       </Transaction>
 
     [FIRES] BMVIMS
@@ -200,7 +217,9 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
+        <State>FL</State>
       </Transaction>
 
 --- QIDM: OH_LEADS_GunQuery [Firearm] ---

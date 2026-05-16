@@ -1,0 +1,223 @@
+CA_eSUN MC v1.5 -- TEST MATRIX
+==================================================
+Generated: 2026-05-16
+Variant: MC (multi-card per entity)
+Validator: 71 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+
+FORM FIELDS (MC layout)
+----------------------------------------
+Vehicle (4 cards, 13 fields):
+  CARD_VEH_OPT (OPTIONS - Leave blank for CA queries):
+    RegistrationState [Sel STATE], CaRequestPurposeCode [Inp C, 1]
+  CARD_VEH_OWNER (OWNER SEARCH):
+    ROW 1: VehNameFirst [Inp 30], VehNameLast [Inp 30]
+    ROW 2: VehBirthDate [FormDate], AddressCity [Inp 13], AddressStreetNumber [Inp 3]
+  CARD_VEH_PLATE (PLATE SEARCH):
+    LicensePlateNumber [Inp 10]
+    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+  CARD_VEH_VIN (VIN SEARCH):
+    VehicleIdentificationNumber [Inp 30]
+    VehicleMakeCode [Inp 4], VehicleYear [Inp 4]
+
+Person (3 cards, 12 fields):
+  CARD_PER_NAME (NAME SEARCH):
+    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 2: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 3: NameFirstDH [Inp 30], NameLastDH [Inp 30]
+    ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+  CARD_PER_OLN (OLN SEARCH):
+    OperatorLicenseNumber [Inp 20]
+    OperatorLicenseNumberDH [Inp 20]
+  CARD_PER_OPT (OPTIONS - Leave blank for CA queries):
+    RegistrationState [Sel STATE], CaRequestPurposeCode [Inp C, 1]
+
+Firearm (3 cards, 10 fields):
+  CARD_GUN_NAME (NAME SEARCH (Gun by Person)):
+    ROW 1: GunNameFirst [Inp 30], GunNameLast [Inp 30]
+    ROW 2: GunBirthDate [FormDate], GunAge [Inp 2]
+  CARD_GUN_OPT (OPTIONS):
+    CaRequestPurposeCode [Inp C, 1]
+  CARD_GUN_SERIAL (SERIAL SEARCH):
+    ROW 1: SerialNumber [Inp 14], FirearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], GunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+    ROW 3: RelatedSearchHitIndicator [Inp 1]
+
+Article (1 card, 5 fields):
+  CARD_ART (ARTICLE SEARCH):
+    ROW 1: SerialNumber [Inp 20], CaRequestPurposeCode [Inp C, 1]
+    ROW 2: ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleBrand [Inp 6], ArticleCategory [Inp 1]
+
+Boat (3 cards, 4 fields):
+  CARD_BOA_HULL (HULL SEARCH):
+    BoatHullIdNumber [Inp 20]
+  CARD_BOA_OPT (OPTIONS - Leave blank for CA queries):
+    RegistrationState [Sel STATE], CaRequestPurposeCode [Inp C, 1]
+  CARD_BOA_REG (REGISTRATION SEARCH):
+    RegistrationNumber [Inp 8]
+
+QIDM SUMMARY (6 QIDMs, 19 combos)
+----------------------------------------
+  ArticleSingleQuery: 1 combos (QA x1)
+  BoatQuery: 2 combos (BQ x2)
+  DriverLicenseQuery: 4 combos (DQ x2, L1.O x1, L1.N x1), autoSelect=true, deselects: [DH]
+  DriverHistoryQuery: 4 combos (KQ x2, L1.O.D x1, L1.N.D x1), autoSelect=true, deselects: [DL]
+  GunQuery: 2 combos (QG x2)
+  VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, VP.D x1, VP.N x1), autoSelect=true
+
+================================================================================
+TEST MATRIX
+================================================================================
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+ 1  Vehicle     Render form. Verify 4 cards:                        [    ]
+              CARD_VEH_OPT: titled "OPTIONS - Leave blank for CA queries".
+              State (leave blank for CA) dropdown (no default), Purpose Code=C.
+              CARD_VEH_OWNER: titled "OWNER SEARCH".
+              Owner First Name, Owner Last Name.
+              Owner DOB, City, Street Number.
+              CARD_VEH_PLATE: titled "PLATE SEARCH".
+              Plate Number.
+              Plate Type dropdown=PC, Plate Year=2026.
+              CARD_VEH_VIN: titled "VIN SEARCH".
+              VIN.
+              Vehicle Make, Vehicle Year.
+ 2  Boat        Render form. Verify 3 cards:                        [    ]
+              CARD_BOA_HULL: titled "HULL SEARCH".
+              Hull ID Number.
+              CARD_BOA_OPT: titled "OPTIONS - Leave blank for CA queries".
+              State (leave blank for CA) dropdown (no default), Purpose Code=C.
+              CARD_BOA_REG: titled "REGISTRATION SEARCH".
+              Registration Number.
+ 3  Person      Render form. Verify 3 cards:                        [    ]
+              CARD_PER_NAME: titled "NAME SEARCH".
+              First Name, Last Name.
+              Date of Birth, Sex dropdown (no default).
+              First Name (DH), Last Name (DH).
+              Date of Birth (DH), Sex (DH) dropdown (no default).
+              CARD_PER_OLN: titled "OLN SEARCH".
+              License Number.
+              License Number (DH).
+              CARD_PER_OPT: titled "OPTIONS - Leave blank for CA queries".
+              State (leave blank for CA) dropdown (no default), Purpose Code=C.
+ 4  Firearm     Render form. Verify 3 cards:                        [    ]
+              CARD_GUN_NAME: titled "NAME SEARCH (Gun by Person)".
+              First Name, Last Name.
+              Date of Birth, Age.
+              CARD_GUN_OPT: titled "OPTIONS".
+              Purpose Code=C.
+              CARD_GUN_SERIAL: titled "SERIAL SEARCH".
+              Serial Number, Make dropdown (no default).
+              Caliber dropdown (no default), Type dropdown (no default).
+              Related Search Hit.
+ 5  Article     Render form. Verify 1 card:                        [    ]
+              CARD_ART: titled "ARTICLE SEARCH".
+              Serial Number, Purpose Code=C.
+              Article Type dropdown (no default), Brand, Category.
+
+PHASE 2: VEHICLE COMBOS (6 tests, 6 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 6  Vehicle     RQ+.V+State        CaRequestPurposeCode=C, VehicleIdenti... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+ 7  Vehicle     RQ+.P+State        CaRequestPurposeCode=C, LicensePlateN... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+ 8  Vehicle     QV+.V              CaRequestPurposeCode=C, VehicleIdenti... [    ]
+              Expected: VehicleRegistrationQuery fires (QV)
+ 9  Vehicle     QV+.P              CaRequestPurposeCode=C, LicensePlateN... [    ]
+              Expected: VehicleRegistrationQuery fires (QV)
+10  Vehicle     VP.D+VP.D          CaRequestPurposeCode=C, VehNameLast=T... [    ]
+              Expected: VehicleRegistrationQuery fires (VP.D)
+11  Vehicle     VP.N+VP.N          CaRequestPurposeCode=C, VehNameLast=T... [    ]
+              Expected: VehicleRegistrationQuery fires (VP.N)
+
+PHASE 3: BOAT COMBOS (2 tests, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+12  Boat        BQ+.R              CaRequestPurposeCode=C, RegistrationN... [    ]
+              Expected: BoatQuery fires (BQ)
+13  Boat        BQ+.H              CaRequestPurposeCode=C, BoatHullIdNum... [    ]
+              Expected: BoatQuery fires (BQ)
+
+PHASE 4: PERSON COMBOS (8 tests, 8 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+14  Person      DQ+.O              CaRequestPurposeCode=C, OperatorLicen... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+15  Person      DQ+.N              CaRequestPurposeCode=C, SexCode=M, Bi... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+16  Person      L1.O+L1.O          CaRequestPurposeCode=C, OperatorLicen... [    ]
+              Expected: DriverLicenseQuery fires (L1.O)
+17  Person      L1.N+L1.N          CaRequestPurposeCode=C, NameLast=DOE,... [    ]
+              Expected: DriverLicenseQuery fires (L1.N)
+18  Person      KQ+.O              CaRequestPurposeCode=C, OperatorLicen... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+19  Person      KQ+.N              CaRequestPurposeCode=C, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+20  Person      L1.O.D+L1.O.DH     CaRequestPurposeCode=C, OperatorLicen... [    ]
+              Expected: DriverHistoryQuery fires (L1.O.D)
+21  Person      L1.N.D+L1.N.DH     CaRequestPurposeCode=C, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (L1.N.D)
+
+PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+22  Firearm     QG+B               CaRequestPurposeCode=C, SerialNumber=... [    ]
+              Expected: GunQuery fires (QG)
+23  Firearm     QG+H               CaRequestPurposeCode=C, GunNameLast=T... [    ]
+              Expected: GunQuery fires (QG)
+
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+24  Article     QA+CaRequestPurposeCode  CaRequestPurposeCode=C, SerialNumber=... [    ]
+              Expected: ArticleSingleQuery fires (QA)
+
+PHASE 7: ANY[] FIELD TESTS (5 tests)
+------------------------------------------------------------------------
+#   Entity      Combo              any[] field tested               Result
+--  ----------  -----------------  -------------------------------- ------
+25  Vehicle     QV+.V              + VehicleMakeCode, VehicleYear  [    ]
+              Expected: any[] fields present in XML output.
+26  Person      DQ+.O              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+27  Firearm     QG+B               + GunCaliber, FirearmMake, GunTypeCode [    ]
+              Expected: any[] fields present in XML output.
+28  Boat        BQ+.H              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+29  Article     QA+CaRequestPurposeCode  + ArticleBrand, ArticleCategory, ArticleTypeCode [    ]
+              Expected: any[] fields present in XML output.
+
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+30  Person      Deselect: DH deselects DL.     [    ]
+              Fill both query fields. Check deselect behavior.
+
+PHASE 9: NEGATIVES (empty forms = no send)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+31  Vehicle     Empty form, verify no Send button / no request.    [    ]
+32  Person      Empty form, verify no Send button / no request.    [    ]
+
+================================================================================
+TOTAL: 32 tests
+
+COMBO COVERAGE (19/19):
+  ArticleSingleQuery: 1/1 -- T24(CaRequestPurposeCode)
+  BoatQuery: 2/2 -- T12(.R), T13(.H)
+  DriverLicenseQuery: 4/4 -- T14(DQ+.O), T15(DQ+.N), T16(L1.O+L1.O), T17(L1.N+L1.N)
+  DriverHistoryQuery: 4/4 -- T18(KQ+.O), T19(KQ+.N), T20(L1.O.D+L1.O.DH), T21(L1.N.D+L1.N.DH)
+  GunQuery: 2/2 -- T22(B), T23(H)
+  VehicleRegistrationQuery: 6/6 -- T6(RQ+.V), T7(RQ+.P), T8(QV+.V), T9(QV+.P), T10(VP.D+VP.D), T11(VP.N+VP.N)
+
+IMPORT FILE: CA_eSUN_MC.json

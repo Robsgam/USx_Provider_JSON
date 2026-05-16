@@ -1,0 +1,71 @@
+================================================================
+  Build Report: FL_FCIC_MC
+  Source: FL_FCIC_MC.json
+  Generated: 2026-05-16 13:22
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX VALIDATION -- FL_FCIC_MC
+============================================================
+Source: FL_FCIC_MC.json
+Matrix: FL_FCIC_MC_TEST_MATRIX.txt
+Generated: 2026-05-16
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+  T1  Vehicle    [PASS] 2 cards, 10 fields, defaults verified
+  T2  Boat       [PASS] 2 cards, 13 fields, defaults verified
+  T3  Person     [PASS] 2 cards, 17 fields, defaults verified
+  T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T5  Article    [PASS] 1 cards, 6 fields, defaults verified
+PHASE 2: VEHICLE COMBOS (6 tests, 8 combos -- VehStolen co-fires with VehReg)
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T10  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T11  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+PHASE 3: BOAT COMBOS (12 tests, 12 combos)
+  T12  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T13  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T14  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T15  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T16  Boat       [PASS] BoatQuery fires (BQName)
+  T17  Boat       [PASS] BoatQuery fires (BQName)
+  T18  Boat       [PASS] BoatQuery fires (BQName)
+  T19  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T20  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T21  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T22  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T23  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+PHASE 4: PERSON COMBOS (7 tests, 8 combos -- Wanted co-fires with DL)
+  T24  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T25  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T26  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T27  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T28  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T29  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T30  Person     [PASS] DriverHistoryQuery fires (KQName)
+PHASE 5: FIREARM COMBOS (3 tests, 3 combos)
+  T31  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T32  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T33  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+PHASE 6: ARTICLE COMBOS (4 tests, 4 combos)
+  T34  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T35  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T36  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T37  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+PHASE 7: ANY[] FIELD TESTS (3 tests)
+  T38  Vehicle    [PASS] any[] fields verified: vehicleMakeCode, vehicleYear
+  T39  Firearm    [PASS] any[] fields verified: gunMake
+  T40  Person     [PASS] any[] fields verified: purposeCodeDH, attentionDH
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
+  T41  Person     [PASS] queriesToDeselect verified
+  T42  Vehicle    [PASS] priority routing: multiple combos present
+PHASE 9: NEGATIVES (empty forms = no send)
+  T43  Vehicle    [PASS] empty form: no combos fire
+  T44  Person     [PASS] empty form: no combos fire
+
+SUMMARY: 44/44 PASS, 0 FAIL
+
+

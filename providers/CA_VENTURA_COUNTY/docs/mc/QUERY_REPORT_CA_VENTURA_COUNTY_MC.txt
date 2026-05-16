@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_VENTURA_COUNTY_MC
   Source: CA_VENTURA_COUNTY_MC.json
-  Generated: 2026-05-11 10:51
+  Generated: 2026-05-16 15:08
 ================================================================
 QUERY SIMULATION
 ================
@@ -182,7 +182,21 @@ QUERY SIMULATION
 
 --- QIDM: CA_VENTURA_COUNTY_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 7  |  Combos: 6
-    [SKIP] NLTS.BQ.N -- missing set: BirthDate
+
+    [FIRES] NLTS.BQ.N
+      set: [CaRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>NLTS.BQ.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
     [FIRES] NLTS.BQ.H
       set: [CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
@@ -190,6 +204,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -204,6 +219,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -219,6 +235,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -234,6 +251,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.O</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
@@ -249,6 +267,7 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>

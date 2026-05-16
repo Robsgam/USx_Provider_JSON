@@ -1,0 +1,156 @@
+IL_LEADS_OFML MC v1.1 -- TEST MATRIX
+==================================================
+Generated: 2026-05-16
+Variant: MC (multi-card per entity)
+Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+
+FORM FIELDS (MC layout)
+----------------------------------------
+Vehicle (1 card, 9 fields):
+  CARD_VEH (VEHICLE SEARCH):
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE, IL], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
+    ROW 3: vehicleIdentificationNumber [Inp 20]
+    ROW 4: vehicleMakeCode [Inp 4], vehicleYear [Inp 4]
+    ROW 5: relatedHitSearchIndicator [Inp 1]
+
+Person (1 card, 9 fields):
+  CARD_PER (PERSON SEARCH):
+    ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE, IL], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: nameFirst [Inp 30], nameLast [Inp 30]
+    ROW 3: birthDate [FormDate], sexCode [Sel SEX], raceCode [Sel RACE]
+    ROW 4: relatedHitSearchIndicator [Inp 1]
+
+Firearm (1 card, 5 fields):
+  CARD_GUN (FIREARM SEARCH):
+    ROW 1: serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+    ROW 3: relatedHitSearchIndicator [Inp 1]
+
+Article (1 card, 3 fields):
+  CARD_ART (ARTICLE SEARCH):
+    serialNumber [Inp 20], ownerAppliedNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+
+Boat (1 card, 5 fields):
+  CARD_BOA (BOAT SEARCH):
+    ROW 1: registrationNumber [Inp 20], boatHullIdNumber [Inp 20], registrationState [Sel STATE, IL]
+    ROW 2: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+
+QIDM SUMMARY (5 QIDMs, 9 combos)
+----------------------------------------
+  VehicleRegistrationQuery: 3 combos (Z2 x2, Z5 x1), autoSelect=true
+  DriverLicenseQuery: 2 combos (Z2 x2), autoSelect=true
+  GunQuery: 1 combos (QG x1)
+  ArticleSingleQuery: 1 combos (QA x1)
+  BoatQuery: 2 combos (BQ x2)
+
+================================================================================
+TEST MATRIX
+================================================================================
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+ 1  Vehicle     Render form. Verify 1 card:                        [    ]
+              CARD_VEH: titled "VEHICLE SEARCH".
+              Plate Number, State dropdown=IL, Image dropdown=N.
+              Plate Type dropdown=PC, Plate Year=2026.
+              VIN.
+              Vehicle Make, Vehicle Year.
+              Related Hit Search.
+ 2  Boat        Render form. Verify 1 card:                        [    ]
+              CARD_BOA: titled "BOAT SEARCH".
+              Registration Number, Hull ID Number, State dropdown=IL.
+              Image dropdown=N, Related Hit Search dropdown (no default).
+ 3  Person      Render form. Verify 1 card:                        [    ]
+              CARD_PER: titled "PERSON SEARCH".
+              License Number, State dropdown=IL, Image dropdown=Y.
+              First Name, Last Name.
+              Date of Birth, Sex dropdown (no default), Race dropdown (no default).
+              Related Hit Search.
+ 4  Firearm     Render form. Verify 1 card:                        [    ]
+              CARD_GUN: titled "FIREARM SEARCH".
+              Serial Number, Make dropdown (no default), Image dropdown=N.
+              Caliber dropdown (no default).
+              Related Hit Search.
+ 5  Article     Render form. Verify 1 card:                        [    ]
+              CARD_ART: titled "ARTICLE SEARCH".
+              Serial Number, Owner Applied Number, Article Type dropdown (no default).
+
+PHASE 2: VEHICLE COMBOS (3 tests, 3 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 6  Vehicle     Z2+.P              licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (Z2)
+ 7  Vehicle     Z2+.V              vehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (Z2)
+ 8  Vehicle     Z5+Plate           licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (Z5)
+
+PHASE 3: BOAT COMBOS (2 tests, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 9  Boat        BQ+.H              boatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (BQ)
+10  Boat        BQ+.R              registrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (BQ)
+
+PHASE 4: PERSON COMBOS (2 tests, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+11  Person      Z2+.N              birthDate=01/15/1990, nameLast=DOE, n... [    ]
+              Expected: DriverLicenseQuery fires (Z2)
+12  Person      Z2+.O              operatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (Z2)
+
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+13  Firearm     QG+serialNumber    serialNumber=TEST                [    ]
+              Expected: GunQuery fires (QG)
+
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+14  Article     QA+serialNumber    serialNumber=TEST, articleTypeCode=BB... [    ]
+              Expected: ArticleSingleQuery fires (QA)
+
+PHASE 7: ANY[] FIELD TESTS (5 tests)
+------------------------------------------------------------------------
+#   Entity      Combo              any[] field tested               Result
+--  ----------  -----------------  -------------------------------- ------
+15  Vehicle     Z2+.P              + licensePlateTypeCode, licensePlateYear, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+16  Person      Z2+.O              + relatedHitSearchIndicator, registrationState [    ]
+              Expected: any[] fields present in XML output.
+17  Boat        BQ+.H              + relatedHitSearchIndicator, registrationState [    ]
+              Expected: any[] fields present in XML output.
+18  Firearm     QG+serialNumber    + gunCaliber, firearmMake, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+19  Article     QA+serialNumber    + ownerAppliedNumber            [    ]
+              Expected: any[] fields present in XML output.
+
+PHASE 8: NEGATIVES (empty forms = no send)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+20  Vehicle     Empty form, verify no Send button / no request.    [    ]
+21  Person      Empty form, verify no Send button / no request.    [    ]
+
+================================================================================
+TOTAL: 21 tests
+
+COMBO COVERAGE (9/9):
+  VehicleRegistrationQuery: 3/3 -- T6(Z2+.P), T7(Z2+.V), T8(Z5+Plate)
+  DriverLicenseQuery: 2/2 -- T11(.N), T12(.O)
+  GunQuery: 1/1 -- T13(serialNumber)
+  ArticleSingleQuery: 1/1 -- T14(serialNumber)
+  BoatQuery: 2/2 -- T9(.H), T10(.R)
+
+IMPORT FILE: IL_LEADS_OFML_BASE.json

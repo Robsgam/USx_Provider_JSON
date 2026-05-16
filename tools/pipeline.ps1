@@ -5,8 +5,8 @@
   Steps:
     1. Build BASE JSON (run build script)
     2. Build MC JSON (run MC build script)
-    3. Build report on BASE (8 tools)
-    4. Build report on MC (8 tools)
+    3. Build report on BASE (10 tools + test matrix + test conductor)
+    4. Build report on MC (10 tools + test matrix + test conductor)
     5. Extract metadata reference
     6. Sync CLAUDE.md provider table
     7. Cross-provider audit (ALL providers, not just this one)

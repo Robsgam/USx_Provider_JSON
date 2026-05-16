@@ -1,0 +1,213 @@
+AZ_AZDPS MC v2.3 -- TEST MATRIX
+==================================================
+Generated: 2026-05-16
+Variant: MC (multi-card per entity)
+Validator: 71 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+
+FORM FIELDS (MC layout)
+----------------------------------------
+Vehicle (1 card, 8 fields):
+  CARD_VEH (VEHICLE SEARCH):
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE, AZ]
+    ROW 2: dexStateUserId [Inp]
+    ROW 3: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4], vehicleIdentificationNumber [Inp 20]
+    ROW 4: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+
+Person (1 card, 32 fields):
+  CARD_PER (PERSON SEARCH):
+    ROW 1: operatorLicenseNumber [Inp 20], socialSecurityNumber [Inp 9]
+    ROW 2: dexStateUserId [Inp]
+    ROW 3: registrationState [Sel STATE, AZ]
+    ROW 4: nameLast [Inp 30], nameFirst [Inp 20]
+    ROW 5: nameMiddle [Inp 20], nameSuffix [Inp 4], birthDate [FormDate], sexCode [Sel SEX]
+    ROW 6: operatorLicenseNumberDH [Inp 20], purposeCode [Inp 1]
+    ROW 7: attention [Inp 30]
+    ROW 8: nameLastDH [Inp 30], nameFirstDH [Inp 20]
+    ROW 9: nameMiddleDH [Inp 20], nameSuffixDH [Inp 4], birthDateDH [FormDate], sexCodeDH [Sel SEX]
+    ROW 10: ncicNumber [Inp 10], raceCode [Sel RACE], relatedHitSearchIndicator [Inp 1]
+    ROW 11: age [Inp 2], height [Inp 3], weight [Inp 3], eyeColorCode [Sel NCIC_EYE_COLOR/NCIC], hairColorCode [Sel NCIC_HAIR_COLOR/NCIC]
+    ROW 12: expandedNameSearchCode [Inp 1], expandedBirthDateSearchCode [Inp 1], areaCode [Inp 3]
+    ROW 13: formORI [Inp 9]
+    ROW 14: stateDH [Inp AZ]
+
+Firearm (1 card, 6 fields):
+  CARD_FA (FIREARM SEARCH):
+    ROW 1: gunSerialNumber [Inp 11]
+    ROW 2: dexStateUserId [Inp]
+    ROW 3: gunMake [Sel NCIC_FIREARM_MAKE/NCIC], gunModel [Inp 11], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+    ROW 4: relatedHitSearchIndicator [Inp 1]
+
+Article (1 card, 4 fields):
+  CARD_ART (ARTICLE SEARCH):
+    ROW 1: articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], articleSerialNumber [Inp 11]
+    ROW 2: dexStateUserId [Inp]
+    ROW 3: relatedHitSearchIndicator [Inp 1]
+
+Boat (1 card, 5 fields):
+  CARD_BOA (BOAT SEARCH):
+    ROW 1: registrationNumber [Inp 8], registrationState [Sel STATE, AZ]
+    ROW 2: dexStateUserId [Inp]
+    ROW 3: boatHullIdNumber [Inp 20], relatedHitSearchIndicator [Inp 1]
+
+QIDM SUMMARY (8 QIDMs, 18 combos)
+----------------------------------------
+  VehicleRegistrationQuery: 2 combos (ACVR x1, ACVRV x1)
+  AzAzdpsDriverLicenseQuery: 4 combos (DQ x3, ACWL x1), autoSelect=true, deselects: [DH]
+  DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [AzAzdpsDriverLicense]
+  GunQuery: 1 combos (ACQG x1)
+  ArticleSingleQuery: 1 combos (ACQA x1)
+  BoatQuery: 4 combos (BQ x2, ACQBH x1, ACQB x1)
+  WMPIWantedPersonInquiry: 2 combos (ACQW x1, ACQWN x1)
+  WMPIMissingPersonInquiry: 2 combos (ACQM x1, ACQMN x1) -- co-fires with WMPIWantedPersonInquiry
+
+================================================================================
+TEST MATRIX
+================================================================================
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+ 1  Vehicle     Render form. Verify 1 card:                        [    ]
+              CARD_VEH: titled "VEHICLE SEARCH".
+              Plate Number, State dropdown=AZ.
+              Badge (auto).
+              Plate Type dropdown=PC, Plate Year=2026, VIN.
+              Make dropdown (no default), Year.
+ 2  Boat        Render form. Verify 1 card:                        [    ]
+              CARD_BOA: titled "BOAT SEARCH".
+              Registration Number, State dropdown=AZ.
+              Badge (auto).
+              Hull ID Number, Related Hit (Y).
+ 3  Person      Render form. Verify 1 card:                        [    ]
+              CARD_PER: titled "PERSON SEARCH".
+              License Number (DL), SSN.
+              Badge (auto).
+              State (DL) dropdown=AZ.
+              Last Name, First Name.
+              M.I., Suffix, Date of Birth, Sex dropdown (no default).
+              License Number (DH), Purpose Code.
+              Attention (DH).
+              Last Name (DH), First Name (DH).
+              M.I. (DH), Suffix (DH), DOB (DH), Sex (DH) dropdown (no default).
+              NCIC Number, Race dropdown (no default), Related Hit.
+              Age, Height, Weight, Eye Color dropdown (no default), Hair Color dropdown (no default).
+              Exp Name Search, Exp DOB Search, Area Code.
+              Form ORI.
+              State (DH)=AZ.
+ 4  Firearm     Render form. Verify 1 card:                        [    ]
+              CARD_FA: titled "FIREARM SEARCH".
+              Serial Number.
+              Badge (auto).
+              Make dropdown (no default), Model, Caliber dropdown (no default).
+              Related Hit (Y).
+ 5  Article     Render form. Verify 1 card:                        [    ]
+              CARD_ART: titled "ARTICLE SEARCH".
+              Article Type dropdown (no default), Serial Number.
+              Badge (auto).
+              Related Hit (Y).
+
+PHASE 2: VEHICLE COMBOS (2 tests, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 6  Vehicle     ACVR+ACVR          dexStateUserId=BADGE, licensePlateNum... [    ]
+              Expected: VehicleRegistrationQuery fires (ACVR)
+ 7  Vehicle     ACVRV+ACVRV        dexStateUserId=BADGE, vehicleIdentifi... [    ]
+              Expected: VehicleRegistrationQuery fires (ACVRV)
+
+PHASE 3: BOAT COMBOS (4 tests, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 8  Boat        BQ+Reg             registrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (BQ)
+ 9  Boat        BQ+H               boatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (BQ)
+10  Boat        ACQB+ACQB          dexStateUserId=BADGE, registrationNum... [    ]
+              Expected: BoatQuery fires (ACQB)
+11  Boat        ACQBH+ACQBH        dexStateUserId=BADGE, boatHullIdNumbe... [    ]
+              Expected: BoatQuery fires (ACQBH)
+
+PHASE 4: PERSON COMBOS (9 tests, 10 combos -- WMPIMissingPersonInquiry co-fires with WMPIWantedPersonInquiry)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+12  Person      ACQW+ACQW          nameLast=DOE, nameFirst=JOHN, birthDa... [    ]
+              Expected: WMPIWantedPersonInquiry fires (ACQW)
+13  Person      ACQWN+ACQWN        ncicNumber=X123456789            [    ]
+              Expected: WMPIWantedPersonInquiry fires (ACQWN). Check for WMPIMissingPersonInquiry co-fire
+14  Person      ACQM+ACQM          age=TEST, sexCode=M, raceCode=TEST, h... [    ]
+              Expected: WMPIMissingPersonInquiry co-fires (ACQM)
+15  Person      DQ+N               nameLast=DOE, nameFirst=JOHN, sexCode... [    ]
+              Expected: AzAzdpsDriverLicenseQuery fires (DQ)
+16  Person      DQ+OLN             operatorLicenseNumber=D999888777 [    ]
+              Expected: AzAzdpsDriverLicenseQuery fires (DQ)
+17  Person      DQ+SS              socialSecurityNumber=TEST        [    ]
+              Expected: AzAzdpsDriverLicenseQuery fires (DQ)
+18  Person      ACWL+ACWL          dexStateUserId=BADGE, birthDate=01/15... [    ]
+              Expected: AzAzdpsDriverLicenseQuery fires (ACWL)
+19  Person      KQ+H               stateDH=TEST, nameLastDH=DOE, nameFir... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+20  Person      KQ+stateDH         stateDH=TEST, operatorLicenseNumberDH... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+21  Firearm     ACQG+ACQG          dexStateUserId=BADGE, gunSerialNumber... [    ]
+              Expected: GunQuery fires (ACQG)
+
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+22  Article     ACQA+ACQA          dexStateUserId=BADGE, articleTypeCode... [    ]
+              Expected: ArticleSingleQuery fires (ACQA)
+
+PHASE 7: ANY[] FIELD TESTS (5 tests)
+------------------------------------------------------------------------
+#   Entity      Combo              any[] field tested               Result
+--  ----------  -----------------  -------------------------------- ------
+23  Boat        BQ+Reg             + registrationState, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+24  Person      ACQMN+ACQMN        + areaCode, expandedNameSearchCode, formORI [    ]
+              Expected: any[] fields present in XML output.
+25  Vehicle     ACVR+ACVR          + licensePlateYear, licensePlateTypeCode, registrationState [    ]
+              Expected: any[] fields present in XML output.
+26  Article     ACQA+ACQA          + relatedHitSearchIndicator     [    ]
+              Expected: any[] fields present in XML output.
+27  Firearm     ACQG+ACQG          + gunCaliber, gunMake, gunModel [    ]
+              Expected: any[] fields present in XML output.
+
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+28  Person      Deselect: AzAzdpsDriverLicense deselects DH.     [    ]
+              Fill both query fields. Check deselect behavior.
+29  Person      Priority routing: verify more-specific combo wins.  [    ]
+              Fill fields that match multiple combos, verify correct one fires.
+
+PHASE 9: NEGATIVES (empty forms = no send)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+30  Vehicle     Empty form, verify no Send button / no request.    [    ]
+31  Person      Empty form, verify no Send button / no request.    [    ]
+
+================================================================================
+TOTAL: 31 tests
+
+COMBO COVERAGE (18/18):
+  VehicleRegistrationQuery: 2/2 -- T6(ACVR+ACVR), T7(ACVRV+ACVRV)
+  AzAzdpsDriverLicenseQuery: 4/4 -- T15(DQ+N), T16(DQ+OLN), T17(DQ+SS), T18(ACWL+ACWL)
+  DriverHistoryQuery: 2/2 -- T19(KQ+H), T20(KQ+stateDH)
+  GunQuery: 1/1 -- T21(ACQG)
+  ArticleSingleQuery: 1/1 -- T22(ACQA)
+  BoatQuery: 4/4 -- T8(BQ+Reg), T9(BQ+H), T10(ACQB+ACQB), T11(ACQBH+ACQBH)
+  WMPIWantedPersonInquiry: 2/2 -- T12(ACQW+ACQW), T13(ACQWN+ACQWN)
+  WMPIMissingPersonInquiry: 2/2 -- T13(ACQMN+ACQMN co-fire), T14(ACQM+ACQM co-fire)
+
+IMPORT FILE: AZ_AZDPS_BASE.json

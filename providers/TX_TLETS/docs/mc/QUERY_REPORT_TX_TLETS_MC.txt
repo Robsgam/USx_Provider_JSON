@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-11 10:37
+  Generated: 2026-05-16 15:10
 ================================================================
 QUERY SIMULATION
 ================
@@ -141,7 +141,7 @@ QUERY SIMULATION
 
     [FIRES] KQName
       set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
-      any: [ImageIndicator, NameMiddleDH, NameSuffixDH, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, NameMiddleDH, RegistrationState]
+      any: [ImageIndicator, NameMiddleDH, NameSuffixDH, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, NameMiddleDH, PurposeCodeDH, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -151,13 +151,14 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] KQOperatorLicenseNumber
       set: [OperatorLicenseNumberDH]
-      any: [ImageIndicator, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      any: [ImageIndicator, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, PurposeCodeDH, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -167,6 +168,7 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

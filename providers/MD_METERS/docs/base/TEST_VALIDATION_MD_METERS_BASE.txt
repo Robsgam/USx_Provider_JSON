@@ -1,0 +1,41 @@
+TEST MATRIX VALIDATION -- MD_METERS_BASE
+============================================================
+Source: MD_METERS_BASE.json
+Matrix: MD_METERS_BASE_TEST_MATRIX.txt
+Generated: 2026-05-16
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+  T1  Vehicle    [PASS] 1 cards, 8 fields, defaults verified
+  T2  Boat       [PASS] 1 cards, 3 fields, defaults verified
+  T3  Person     [PASS] 1 cards, 15 fields, defaults verified
+  T4  Firearm    [PASS] 1 cards, 3 fields, defaults verified
+  T5  Article    [PASS] 1 cards, 3 fields, defaults verified
+PHASE 2: VEHICLE COMBOS (4 tests, 4 combos)
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (ZLRG.P)
+  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (ZLRG.P)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (ZVEH.V)
+  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (ZVEH.V)
+PHASE 3: BOAT COMBOS (2 tests, 2 combos)
+  T10  Boat       [PASS] (structural check)
+  T11  Boat       [PASS] (structural check)
+PHASE 4: PERSON COMBOS (6 tests, 6 combos)
+  T12  Person     [PASS] (structural check)
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] (structural check)
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] DriverHistoryQuery fires (ZDRV.N)
+  T17  Person     [PASS] DriverHistoryQuery fires (ZDRV.N)
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+  T18  Firearm    [PASS] GunQuery fires (ZGUN)
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+  T19  Article    [PASS] ArticleSingleQuery fires (ZART)
+PHASE 7: ANY[] FIELD TESTS (2 tests)
+  T20  Vehicle    [PASS] any[] fields verified: registrationState
+  T21  Person     [PASS] any[] fields verified: registrationState, yearsPastViolationsWanted
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
+  T22  Person     [PASS] queriesToDeselect verified
+PHASE 9: NEGATIVES (empty forms = no send)
+  T23  Vehicle    [PASS] empty form: no combos fire
+  T24  Person     [PASS] empty form: no combos fire
+
+SUMMARY: 24/24 PASS, 0 FAIL

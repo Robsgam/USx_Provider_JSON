@@ -296,7 +296,9 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | 6 | `verify_build.ps1` | Post-build verification (banned patterns, fieldId consistency, reference patterns) | `-Path <json>` `-CamelCase` |
 | 7 | `audit_metadata.ps1` | Validates QIDM configs against authoritative XML metadata | `-Path <json>` `-OutFile` |
 | 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — runs all 8 above + saves reports to docs/ | `-Path <json>` `-Release` (bundles to release/) |
+| 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
+| 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
+| -- | `build_report.ps1` | **Master orchestrator** — runs all 10 above + saves reports to docs/ | `-Path <json>` `-Release` (bundles to release/) |
 
 ### Auditors (repo-wide checks)
 
@@ -341,6 +343,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `map_cad_fields.ps1` | Maps CAD field names to provider JSON fieldIds (MATCH/CASE_MISMATCH/NO_MATCH) | `-Path <json>` `-CadFields` `-OutFile` `-GeneratePatch` |
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
 | `Apply-CadFieldAlignment.ps1` | CAD field alignment function for MC builds (PascalCase → camelCase rename) | dot-source; `-QidmList` `-FormList` `-RmsBundle` `-ProviderRenames` |
+| `generate_build_script.ps1` | Generates BASE + MC build scripts from metadata XML (field mapping, QIDM generation, layout) | `-XmlPath <xml>` `-DevdocPath` `-OutDir` |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 

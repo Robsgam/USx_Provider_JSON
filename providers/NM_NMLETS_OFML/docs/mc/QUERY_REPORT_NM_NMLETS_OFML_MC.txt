@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: NM_NMLETS_OFML_MC
   Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-05-11 10:40
+  Generated: 2026-05-16 15:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -116,7 +116,7 @@ QUERY SIMULATION
 
     [FIRES] KQ.N
       set: [NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
-      any: [AttentionDH, OperatorLicenseNumberDH, PurposeCodeDH, RaceCodeDH, RegistrationState] -> matched: [OperatorLicenseNumberDH, RegistrationState]
+      any: [AttentionDH, OperatorLicenseNumberDH, PurposeCodeDH, RaceCodeDH, RegistrationState] -> matched: [OperatorLicenseNumberDH, PurposeCodeDH, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -124,13 +124,14 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] KQ.O
       set: [OperatorLicenseNumberDH]
-      any: [AttentionDH, PurposeCodeDH, RegistrationState] -> matched: [RegistrationState]
+      any: [AttentionDH, PurposeCodeDH, RegistrationState] -> matched: [PurposeCodeDH, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -138,6 +139,7 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

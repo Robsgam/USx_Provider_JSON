@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TN_TIES_MC
   Source: TN_TIES_MC.json
-  Generated: 2026-05-11 10:50
+  Generated: 2026-05-16 15:10
 ================================================================
 QUERY SIMULATION
 ================
@@ -154,8 +154,38 @@ QUERY SIMULATION
 
 --- QIDM: TN_TIES_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 3
-    [SKIP] KQ.N -- missing set: PurposeCodeDH
-    [SKIP] KQ.O -- missing set: PurposeCodeDH
+
+    [FIRES] KQ.N
+      set: [NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH, PurposeCodeDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [OperatorLicenseNumberDH, PurposeCodeDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
 
     [FIRES] DQ05
       set: [OperatorLicenseNumberDH]
@@ -167,6 +197,7 @@ QUERY SIMULATION
         <BirthDate>19900115</BirthDate>
         <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

@@ -44,7 +44,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = if ($Release) { 9 } else { 8 }
+$stepCount = if ($Release) { 11 } else { 10 }
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -216,10 +216,52 @@ if (Test-Path $cadPath) {
     Write-Host "  [8/$stepCount] SKIPPED (audit_cad.ps1 not found)" -ForegroundColor Gray
 }
 
-# --- 9. Release Bundle (optional) ---
+# --- 9. Test Matrix ---
+Write-Host ""
+Write-Host "  [9/$stepCount] Generating test matrix..." -ForegroundColor Yellow
+$testMatrixPath = Join-Path $toolDir "generate_test_matrix.ps1"
+if (Test-Path $testMatrixPath) {
+    $providerBase = $jsonName -replace '_(BASE|MC)(_READABLE)?$', ''
+    $variant = if ($jsonName -match '_MC') { 'MC' } else { 'BASE' }
+    $matrixFileName = "${providerBase}_${variant}_TEST_MATRIX.txt"
+    $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
+    $matrixOut = & powershell -ExecutionPolicy Bypass -File $testMatrixPath -Path $resolved -OutFile $matrixFile 2>&1 | Out-String
+    if ($matrixOut -match '(\d+)/(\d+) combos') {
+        $matCov = $Matches[0]
+        Write-Host "  [9/$stepCount] Saved: $matrixFile ($matCov)" -ForegroundColor Green
+    } else {
+        Write-Host "  [9/$stepCount] Saved: $matrixFile" -ForegroundColor Green
+    }
+} else {
+    Write-Host "  [9/$stepCount] SKIPPED (generate_test_matrix.ps1 not found)" -ForegroundColor Gray
+}
+
+# --- 10. Test Conductor (automated test validation) ---
+Write-Host ""
+Write-Host "  [10/$stepCount] Running test conductor..." -ForegroundColor Yellow
+$testConductorPath = Join-Path $toolDir "run_test_matrix.ps1"
+if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
+    $conductorOut = & powershell -ExecutionPolicy Bypass -File $testConductorPath -Path $resolved -Matrix $matrixFile 2>&1 | Out-String
+    $conductorFile = Join-Path $DocsDir "TEST_VALIDATION_$jsonName.txt"
+    ($header + "TEST CONDUCTOR RESULTS`n=====================`n`n" + $conductorOut) | Out-File -FilePath $conductorFile -Encoding utf8
+    if ($conductorOut -match '(\d+)/(\d+) PASS, (\d+) FAIL') {
+        $tcPass = $Matches[1]; $tcTotal = $Matches[2]; $tcFail = $Matches[3]
+        if ([int]$tcFail -gt 0) {
+            Write-Host "  [10/$stepCount] TEST CONDUCTOR: $tcPass/$tcTotal PASS, $tcFail FAIL -- see $conductorFile" -ForegroundColor Red
+        } else {
+            Write-Host "  [10/$stepCount] Saved: $conductorFile ($tcPass/$tcTotal PASS)" -ForegroundColor Green
+        }
+    } else {
+        Write-Host "  [10/$stepCount] Saved: $conductorFile" -ForegroundColor Green
+    }
+} else {
+    Write-Host "  [10/$stepCount] SKIPPED (run_test_matrix.ps1 or matrix not found)" -ForegroundColor Gray
+}
+
+# --- 11. Release Bundle (optional) ---
 if ($Release) {
     Write-Host ""
-    Write-Host "  [9/$stepCount] Building release bundle..." -ForegroundColor Yellow
+    Write-Host "  [11/$stepCount] Building release bundle..." -ForegroundColor Yellow
 
     $releaseDir = Join-Path $jsonDir "release"
     if (-not (Test-Path $releaseDir)) {
@@ -243,8 +285,16 @@ if ($Release) {
         Copy-Item $lintFile (Join-Path $releaseDir "LINT_REPORT_$jsonName.txt") -Force
     }
 
+    if (Test-Path $matrixFile) {
+        Copy-Item $matrixFile (Join-Path $releaseDir $matrixFileName) -Force
+    }
+
+    if (Test-Path $conductorFile) {
+        Copy-Item $conductorFile (Join-Path $releaseDir "TEST_VALIDATION_$jsonName.txt") -Force
+    }
+
     $releaseCount = (Get-ChildItem $releaseDir -File).Count
-    Write-Host "  [9/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
+    Write-Host "  [11/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
 }
 
 # --- Summary ---

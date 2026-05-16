@@ -1,0 +1,207 @@
+TN_TIES MC v1.4 -- TEST MATRIX
+==================================================
+Generated: 2026-05-16
+Variant: MC (multi-card per entity)
+Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+
+FORM FIELDS (MC layout)
+----------------------------------------
+Vehicle (1 card, 11 fields):
+  CARD_VEH (VEHICLE SEARCH):
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], inquiryTypeIndicator [Inp 1]
+    ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
+    ROW 3: vehicleIdentificationNumber [Inp 20]
+    ROW 4: vehicleMakeCode [Inp 4], vehicleYear [Inp 4]
+    ROW 5: dealerLicensePlateNumber [Inp 10], handicapPlacardNumber [Inp 10], temporaryLicensePlateNumber [Inp 10]
+
+Person (1 card, 18 fields):
+  CARD_PER (PERSON SEARCH):
+    ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE], socialSecurityNumber [Inp 20]
+    ROW 2: nameLast [Inp 30], nameFirst [Inp 30]
+    ROW 3: birthDate [FormDate], sexCode [Sel SEX], raceCode [Sel RACE]
+    ROW 4: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], expandedNameSearchCode [Inp 1], relatedHitSearchIndicator [Inp 1]
+    ROW 5: inquiryTypeIndicator [Inp 1]
+    ROW 6: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
+    ROW 7: nameLastDH [Inp 30], nameFirstDH [Inp 30], birthDateDH [FormDate]
+    ROW 8: sexCodeDH [Sel SEX]
+
+Firearm (1 card, 3 fields):
+  CARD_GUN (FIREARM SEARCH):
+    ROW 1: serialNumber [Inp 20]
+    ROW 2: firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+
+Article (1 card, 2 fields):
+  CARD_ART (ARTICLE SEARCH):
+    serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+
+Boat (1 card, 4 fields):
+  CARD_BOA (BOAT SEARCH):
+    ROW 1: registrationNumber [Inp 8], boatHullIdNumber [Inp 20], registrationState [Sel STATE]
+    ROW 2: inquiryTypeIndicator [Inp 1]
+
+QIDM SUMMARY (6 QIDMs, 28 combos)
+----------------------------------------
+  VehicleRegistrationQuery: 13 combos (RQ x7, QV x3, RV x1, RV01 x1, RV03 x1), autoSelect=true
+  DriverLicenseQuery: 6 combos (DQ x5, QW x1), autoSelect=true, deselects: [DH]
+  DriverHistoryQuery: 3 combos (DQ x1, KQ x2), autoSelect=true, deselects: [DL]
+  GunQuery: 1 combos (QG x1)
+  ArticleSingleQuery: 1 combos (QA x1)
+  BoatQuery: 4 combos (QB x2, BB.R x1, BB.H x1), autoSelect=true
+
+================================================================================
+TEST MATRIX
+================================================================================
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+ 1  Vehicle     Render form. Verify 1 card:                        [    ]
+              CARD_VEH: titled "VEHICLE SEARCH".
+              Plate Number, State (leave blank for TN) dropdown (no default), Inquiry Type (1/2/3).
+              Plate Type dropdown=PC, Plate Year=2026.
+              VIN.
+              Vehicle Make, Vehicle Year.
+              Dealer Plate, Handicap Placard, Temp Plate.
+ 2  Boat        Render form. Verify 1 card:                        [    ]
+              CARD_BOA: titled "BOAT SEARCH".
+              Registration Number, Hull ID Number, State (leave blank for TN) dropdown (no default).
+              Inquiry Type (1/2/3).
+ 3  Person      Render form. Verify 1 card:                        [    ]
+              CARD_PER: titled "PERSON SEARCH".
+              License Number, State (leave blank for TN) dropdown (no default), SSN.
+              Last Name, First Name.
+              Date of Birth, Sex dropdown (no default), Race dropdown (no default).
+              Image (Y/N) dropdown=Y, Exp Name Search, Related Hit.
+              Inquiry Type (1/2/3).
+              License Number (DH), Purpose Code (DH).
+              Last Name (DH), First Name (DH), DOB (DH).
+              Sex (DH) dropdown (no default).
+ 4  Firearm     Render form. Verify 1 card:                        [    ]
+              CARD_GUN: titled "FIREARM SEARCH".
+              Serial Number.
+              Make dropdown (no default), Caliber dropdown (no default).
+ 5  Article     Render form. Verify 1 card:                        [    ]
+              CARD_ART: titled "ARTICLE SEARCH".
+              Serial Number, Article Type dropdown (no default).
+
+PHASE 2: VEHICLE COMBOS (13 tests, 13 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+ 6  Vehicle     RQ+.P+State        licensePlateNumber=TEST123, licensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+ 7  Vehicle     RQ+.V+State        registrationState=GA, vehicleIdentifi... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+ 8  Vehicle     RQ+01              licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+ 9  Vehicle     RQ+03              vehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+10  Vehicle     RQ+06              handicapPlacardNumber=TEST       [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+11  Vehicle     RQ+05              dealerLicensePlateNumber=TEST    [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+12  Vehicle     RQ+07              temporaryLicensePlateNumber=TEST [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+13  Vehicle     QV+.V              vehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (QV)
+14  Vehicle     QV+.P              licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (QV)
+15  Vehicle     QV+.D              dealerLicensePlateNumber=TEST    [    ]
+              Expected: VehicleRegistrationQuery fires (QV)
+16  Vehicle     RV+RV+State        licensePlateNumber=TEST123, licensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (RV)
+17  Vehicle     RV01+RV01          licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (RV01)
+18  Vehicle     RV03+RV03          vehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RV03)
+
+PHASE 3: BOAT COMBOS (4 tests, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+19  Boat        QB+.H              boatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (QB)
+20  Boat        QB+.R              registrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (QB)
+21  Boat        BB.H+BB.H          boatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (BB.H)
+22  Boat        BB.R+BB.R          registrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (BB.R)
+
+PHASE 4: PERSON COMBOS (9 tests, 9 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+23  Person      DQ+.N+State        nameLast=DOE, nameFirst=JOHN, birthDa... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+24  Person      DQ+02              nameLast=DOE, nameFirst=JOHN, birthDa... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+25  Person      DQ+.O+State        operatorLicenseNumber=D999888777, reg... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+26  Person      DQ+01              operatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+27  Person      DQ+06              socialSecurityNumber=TEST        [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+28  Person      QW+A               nameLast=DOE, nameFirst=JOHN, birthDa... [    ]
+              Expected: DriverLicenseQuery fires (QW)
+29  Person      DQ+05              operatorLicenseNumberDH=D999888777 [    ]
+              Expected: DriverHistoryQuery fires (DQ)
+30  Person      KQ+.O              operatorLicenseNumberDH=D999888777, p... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+31  Person      KQ+.N              nameLastDH=DOE, nameFirstDH=JOHN, bir... [    ]
+              Expected: DriverHistoryQuery fires (KQ)
+
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+32  Firearm     QG+serialNumber    serialNumber=TEST                [    ]
+              Expected: GunQuery fires (QG)
+
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+------------------------------------------------------------------------
+#   Entity      Combo              Fields to fill                   Result
+--  ----------  -----------------  -------------------------------- ------
+33  Article     QA+serialNumber    serialNumber=TEST, articleTypeCode=BB... [    ]
+              Expected: ArticleSingleQuery fires (QA)
+
+PHASE 7: ANY[] FIELD TESTS (4 tests)
+------------------------------------------------------------------------
+#   Entity      Combo              any[] field tested               Result
+--  ----------  -----------------  -------------------------------- ------
+34  Vehicle     QV+.V              + inquiryTypeIndicator, vehicleMakeCode, vehicleYear [    ]
+              Expected: any[] fields present in XML output.
+35  Person      QW+A               + expandedNameSearchCode, inquiryTypeIndicator, raceCode [    ]
+              Expected: any[] fields present in XML output.
+36  Boat        BB.H+BB.H          + inquiryTypeIndicator, registrationState [    ]
+              Expected: any[] fields present in XML output.
+37  Firearm     QG+serialNumber    + gunCaliber, firearmMake       [    ]
+              Expected: any[] fields present in XML output.
+
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+38  Person      Deselect: DL deselects DH.     [    ]
+              Fill both query fields. Check deselect behavior.
+
+PHASE 9: NEGATIVES (empty forms = no send)
+------------------------------------------------------------------------
+#   Entity      Action                                              Result
+--  ----------  --------------------------------------------------  ------
+39  Vehicle     Empty form, verify no Send button / no request.    [    ]
+40  Person      Empty form, verify no Send button / no request.    [    ]
+
+================================================================================
+TOTAL: 40 tests
+
+COMBO COVERAGE (28/28):
+  VehicleRegistrationQuery: 13/13 -- T6(RQ+.P), T7(RQ+.V), T8(RQ+01), T9(RQ+03), T10(RQ+06), T11(RQ+05), T12(RQ+07), T13(QV+.V), T14(QV+.P), T15(QV+.D), T16(RV+RV), T17(RV01+RV01), T18(RV03+RV03)
+  DriverLicenseQuery: 6/6 -- T23(DQ+.N), T24(DQ+02), T25(DQ+.O), T26(DQ+01), T27(DQ+06), T28(QW+A)
+  DriverHistoryQuery: 3/3 -- T29(DQ+05), T30(KQ+.O), T31(KQ+.N)
+  GunQuery: 1/1 -- T32(serialNumber)
+  ArticleSingleQuery: 1/1 -- T33(serialNumber)
+  BoatQuery: 4/4 -- T19(QB+.H), T20(QB+.R), T21(BB.H+BB.H), T22(BB.R+BB.R)
+
+IMPORT FILE: TN_TIES_BASE.json

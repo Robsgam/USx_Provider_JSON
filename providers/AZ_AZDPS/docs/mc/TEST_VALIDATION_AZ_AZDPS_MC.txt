@@ -1,0 +1,58 @@
+================================================================
+  Build Report: AZ_AZDPS_MC
+  Source: AZ_AZDPS_MC.json
+  Generated: 2026-05-16 15:07
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX VALIDATION -- AZ_AZDPS_MC
+============================================================
+Source: AZ_AZDPS_MC.json
+Matrix: AZ_AZDPS_MC_TEST_MATRIX.txt
+Generated: 2026-05-16
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+  T1  Person     [PASS] 7 cards, 32 fields, defaults verified
+  T2  Vehicle    [PASS] 3 cards, 8 fields, defaults verified
+  T3  Boat       [PASS] 3 cards, 5 fields, defaults verified
+  T4  Firearm    [PASS] 1 cards, 6 fields, defaults verified
+  T5  Article    [PASS] 1 cards, 4 fields, defaults verified
+PHASE 2: PERSON COMBOS (9 tests, 10 combos -- WMPIWantedPersonInquiry co-fires with WMPIMissingPersonInquiry)
+  T6  Person     [PASS] (structural check)
+  T7  Person     [PASS] (structural check)
+  T8  Person     [PASS] (structural check)
+  T9  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
+  T10  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
+  T11  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
+  T12  Person     [PASS] AzAzdpsDriverLicenseQuery fires (ACWL)
+  T13  Person     [PASS] DriverHistoryQuery fires (KQH)
+  T14  Person     [PASS] DriverHistoryQuery fires (KQH)
+PHASE 3: VEHICLE COMBOS (2 tests, 2 combos)
+  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
+  T16  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
+PHASE 4: BOAT COMBOS (4 tests, 4 combos)
+  T17  Boat       [PASS] BoatQuery fires (BQ)
+  T18  Boat       [PASS] BoatQuery fires (BQ)
+  T19  Boat       [PASS] BoatQuery fires (ACQB)
+  T20  Boat       [PASS] BoatQuery fires (ACQBH)
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+  T21  Firearm    [PASS] GunQuery fires (ACQG)
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+  T22  Article    [PASS] ArticleSingleQuery fires (ACQA)
+PHASE 7: ANY[] FIELD TESTS (5 tests)
+  T23  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
+  T24  Vehicle    [PASS] any[] fields verified: licensePlateYear, licensePlateTypeCode, registrationState
+  T25  Person     [PASS] any[] fields verified: AreaCode, ExpandedNameSearchCode, FormORI
+  T26  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, gunModel
+  T27  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
+PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
+  T28  Person     [PASS] queriesToDeselect verified
+  T29  Person     [PASS] priority routing: multiple combos present
+PHASE 9: NEGATIVES (empty forms = no send)
+  T30  Person     [PASS] empty form: no combos fire
+  T31  Boat       [PASS] empty form: no combos fire
+
+SUMMARY: 31/31 PASS, 0 FAIL
+
+
