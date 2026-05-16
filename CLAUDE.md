@@ -376,7 +376,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **What field type** (FormInput/FormSelect/FormDate) should a field use? | `METADATA_REFERENCE.txt` field definitions + `audit_cross_provider.ps1` for consistency | Manual XML inspection, guessing from field name |
 | **What combos fire** for a given entity/field set? | `test_commsys.ps1 -Path <json> -Entity <entity>` | Manual build script reading, mental combo matching |
 | **What does the layout look like?** | `render_layout.ps1 -Path <json> -Summary` | Reading raw Craft.js node tree in JSON |
-| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 8 tools) | Spot-reading JSON sections |
+| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 10 tools) | Spot-reading JSON sections |
 | **Is this field consistent across providers?** | `audit_cross_provider.ps1 -Path providers/` | Manual grep across provider folders |
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
 | **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs) | Memory, training data |
@@ -434,7 +434,7 @@ providers/<PROVIDER>/
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
-│   ├── base/                              # BASE variant reports (8 files)
+│   ├── base/                              # BASE variant reports (10 files)
 │   └── mc/                                # MC variant reports (if applicable)
 ├── tests/                                 # Per-test log files (one per test executed)
 ├── phases/                                # Version snapshots

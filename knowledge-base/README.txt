@@ -123,7 +123,7 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 8 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit).
+    Master build report. Runs all 10 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor).
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
 
@@ -208,7 +208,7 @@ TOOLS
       7. Render tool correctness
       8. CLAUDE.md consistency
       9. Provider canonical structure (dirs, docs)
-      10. Report file completeness (all 8 reports per variant)
+      10. Report file completeness (all 10 reports per variant)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
       12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md, BASE vs MC)
       13. BUILD_NOTES version coverage (current version has an entry)
@@ -347,8 +347,8 @@ TOOLS
     Steps (9):
       1. Build BASE JSON (run build script)
       2. Build MC JSON (run MC build script)
-      3. Build report on BASE (8 tools via build_report.ps1)
-      4. Build report on MC (8 tools via build_report.ps1)
+      3. Build report on BASE (10 tools via build_report.ps1)
+      4. Build report on MC (10 tools via build_report.ps1)
       5. Extract metadata reference (METADATA_REFERENCE.txt)
       6. Sync CLAUDE.md provider table (sync_provider_table.ps1)
       7. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
@@ -356,6 +356,27 @@ TOOLS
       9. Enforce (enforce.ps1 — final gate)
     Stops on first failure with specific error reporting.
     Replaces manual multi-step workflow with one command.
+
+  tools/generate_build_script.ps1
+    Build script generator. Reads metadata XML and produces both BASE and MC
+    build scripts with QIDM generation, field mapping (30+ patterns), combo
+    requirements, and layout construction. Generates TODO markers for manual
+    review items (combo ordering, date format, State initialValue, etc.).
+    Usage: .\generate_build_script.ps1 -XmlPath <metadata.xml> [-DevdocPath <txt>] [-OutDir <path>]
+
+  tools/generate_test_matrix.ps1
+    Test matrix generator. Reads provider JSON and auto-generates a 9-phase
+    test matrix: render verification, combo tests, any[] field tests, OOS
+    routing, co-fire/deselect, negatives. Achieves 100% combo coverage.
+    Called automatically by build_report.ps1 as step 9.
+    Usage: .\generate_test_matrix.ps1 -Path <json> [-OutFile <path>]
+
+  tools/run_test_matrix.ps1
+    Automated test conductor. Reads a test matrix file and validates every
+    test case against the provider JSON via combo simulation. Includes
+    synthetic test data fallback for provider-specific fields.
+    Called automatically by build_report.ps1 as step 10.
+    Usage: .\run_test_matrix.ps1 -Path <json> [-Matrix <file>] [-OutFile <path>]
 
 ================================================================================
 PREREQUISITES
