@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | LA_LEMS_BASE.json | v2.0 | Current BASE | Full rebuild. 48P/0F/32W/4LIM. 2026-05-05. |
-| LA_LEMS_BASE_READABLE.json | v2.0 | Pretty-print | Human-readable BASE variant. |
 | LA_LEMS_MC.json | v2.0-mc | Current MC | Multi-card layout. 48P/0F/32W/4LIM. 2026-05-05. |
-| LA_LEMS_MC_READABLE.json | v2.0-mc | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

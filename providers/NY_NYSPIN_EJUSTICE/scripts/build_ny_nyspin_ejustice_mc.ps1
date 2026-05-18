@@ -34,7 +34,7 @@
 # Combo order: most set[] fields first per LIMITATION #3
 
 param(
-    [string]$Version = "1.5",
+    [string]$Version = "1.6",
     [string]$Phase   = "mc"
 )
 
@@ -44,7 +44,6 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_MC.json"
 $VEROUT   = "$PHASEDIR\NY_NYSPIN_EJUSTICE_MC_v${Version}_${DATE}.json"
-$OUTREAD = "$DIR\NY_NYSPIN_EJUSTICE_MC_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -633,7 +632,7 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $nyBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built NY_NYSPIN_EJUSTICE v${Version}"
 
 # =====================================================================

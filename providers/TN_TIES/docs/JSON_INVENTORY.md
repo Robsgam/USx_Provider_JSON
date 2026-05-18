@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | TN_TIES_BASE.json | v1.1 | Current BASE | 6 queries, 28 combos. 79P/0F/4W/3LIM. 2026-05-07. |
-| TN_TIES_BASE_READABLE.json | v1.1 | Pretty-print | Human-readable BASE variant. |
 | TN_TIES_MC.json | v1.1 | Current MC | Multi-card layout (14 cards). 79P/0F/1W/3LIM. 2026-05-07. |
-| TN_TIES_MC_READABLE.json | v1.1 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

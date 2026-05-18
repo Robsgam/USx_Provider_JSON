@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | OH_LEADS_BASE.json | v1.1 | Current BASE | 6 queries, 23 combos. 76P/0F/4W/4LIM. 2026-05-07. |
-| OH_LEADS_BASE_READABLE.json | v1.1 | Pretty-print | Human-readable BASE variant. |
 | OH_LEADS_MC.json | v1.1 | Current MC | Multi-card layout (14 cards). 76P/0F/3W/4LIM. 2026-05-07. |
-| OH_LEADS_MC_READABLE.json | v1.1 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

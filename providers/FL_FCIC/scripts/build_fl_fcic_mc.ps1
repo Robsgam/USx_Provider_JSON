@@ -745,6 +745,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-$outPathReadable = "$PSScriptRoot\..\FL_FCIC_MC_READABLE.json"
-Write-ProviderJson -BundleObject $output -OutPath $outPath -ReadablePath $outPathReadable `
+Write-ProviderJson -BundleObject $output -OutPath $outPath `
     -Label "Built FL_FCIC v${Version}"

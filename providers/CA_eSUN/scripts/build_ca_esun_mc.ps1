@@ -12,7 +12,6 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_eSUN_MC.json"
-$OUTREAD  = "$DIR\CA_eSUN_MC_READABLE.json"
 $VEROUT   = "$PHASEDIR\CA_eSUN_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -629,5 +628,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $esunBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built CA_eSUN v${Version}"

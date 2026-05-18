@@ -1,0 +1,241 @@
+NJ_NJCJIS -- EXHAUSTIVE TEST BACKFILL MATRIX
+=============================================
+Generated: 2026-05-18
+JSON: NJ_NJCJIS_BASE.json (deployed v3.0, locked v3.1)
+Purpose: Complete test coverage with XML evidence for every test
+
+QIDMs: 6 (VehicleRegistrationQuery, VehicleStolenQuery, DriverLicenseQuery, GunQuery, ArticleSingleQuery, BoatQuery)
+Combos: 13 total
+Visible form fields: 28 across 5 entities (ZERO hidden fields)
+
+================================================================================
+LEGEND
+================================================================================
+  [XML]     = has real XML in v2.9/v3.0 logs (valid reference)
+  [BACKFILL] = needs live test with XML capture
+  [N/A]     = not applicable to this entity/combo
+
+================================================================================
+VEHICLE -- 9 visible fields, 2 QIDMs, 7 combos
+================================================================================
+  Form fields:
+    licensePlateNumber      Text     maxLen=10
+    registrationState       Select   attributeTypeId=STATE  default=NJ
+    randomRequest           Select   YES_NO_UNKNOWN/NCIC    default=N
+    licensePlateTypeCode    Select   NCIC_LICENSE_PLATE_TYPE/NCIC  default=PC
+    licensePlateYear        Text     maxLen=4  default=2026
+    vehicleIdentificationNumber  Text  maxLen=20
+    ncicNumber              Text     maxLen=10
+    vehicleMakeCode         Select   attributeTypeId=VEHICLE_MAKE/NCIC
+    imageIndicator          Select   YES_NO_UNKNOWN/NCIC    default=N
+
+  --- VehicleRegistrationQuery (4 combos: RQ, RQ_RAND, RQN, RQN_RAND) ---
+
+  T1  [XML]      RENDER - Vehicle form renders all 9 fields, correct types, defaults
+                  Log: Vehicle_UI_CHECK_autoSelect v3.0 (autoSelect confirmed)
+  T2  [XML]      RQ basic - plate only + defaults
+                  Log: Vehicle_RQ_VehReg_plate_search_-_basic_combo_vv2.9
+                  Fields: plate=ABC123, State=NJ, PlateType=PC, Year=2026, Random=N, Image=N
+                  RMS: tag+registrationStateAttrIds confirmed
+  T3  [XML]      RQ FULL - plate + all any[] with defaults (RandomRequest=N)
+                  Log: Vehicle_RQ_Plate_search_RandomRequest=N v3.0
+                  Fields: all VehReg fields, RandomRequest=N routes to FULL data
+  T4  [XML]      RQ_RAND - plate + RandomRequest=Y (conditions routing)
+                  Log: Vehicle_RQ_RAND_Plate_search_RandomRequest=Y v3.0
+                  Fields: plate + RandomRequest=Y, conditions block routes to stolen-only
+  T5  [XML]      RQ OOS - plate + State=MA (out of state)
+                  Log: Vehicle_RQ_VehReg_OOS_plate_search_v2.9
+                  Fields: plate=TEST9736, State=MA, RMS registrationStateAttrIds=MA attr ID
+  T6  [XML]      RQN basic - VIN only + defaults
+                  Log: Vehicle_RQN_VehReg_VIN_search_-_basic_combo_vv2.9
+                  Fields: VIN, State=NJ, Random=N, Image=N
+                  RMS: vinNumber+registrationStateAttrIds confirmed
+  T7  [XML]      RQN FULL - VIN + RandomRequest=N
+                  Log: Vehicle_RQN_VIN_search_RandomRequest=N v3.0
+  T8  [XML]      RQN_RAND - VIN + RandomRequest=Y (conditions routing)
+                  Log: Vehicle_RQN_RAND_VIN_search_RandomRequest=Y v3.0
+  T9  [BACKFILL] RQ any[] isolation - plate + VehicleMakeCode (clear defaults to see Make in XML)
+                  Fill: plate + vehicleMakeCode only. Verify Make appears in XML as any[] field.
+                  NOTE: VehicleMakeCode is any[] on QVP not RQ. On RQ it's not in combo.
+                  SKIP -- VehicleMakeCode is NOT on VehicleRegistrationQuery combos.
+  T10 [BACKFILL] PRIORITY - plate + VIN both filled. Which fires first?
+                  Fill: plate + VIN + defaults. Expect: RQ fires (plate combo, higher priority).
+                  Verify: RQ keyRef in XML, not RQN.
+  T11 [BACKFILL] v3.1 DESELECT - VehReg auto-selects, VehStolen unchecked. Enter plate.
+                  Verify: VehReg fires, VehStolen does NOT fire, NO error popup.
+                  This tests one-directional queriesToDeselect (v3.1 change).
+
+  --- VehicleStolenQuery (3 combos: QVP, QVV, QVN) ---
+
+  T12 [XML]      QVP basic - plate + Stolen checkbox checked
+                  Log: Vehicle_QVP_VehStolen_plate_search_-_basic_combo_vv2.9
+                  Fields: plate=ZXY234, State=NJ, Image=N, Stolen=checked
+                  RMS: licensePlateIn confirmed
+  T13 [XML]      QVP + Make any[] - plate + VehicleMakeCode
+                  Log: Vehicle_QVP_VehStolen_plate_with_Make_-_any_field_v2.9
+                  Fields: plate + Make=FORD, Make appears in XML
+  T14 [XML]      QVV basic - VIN + Stolen checkbox checked
+                  Log: Vehicle_QVV_VehStolen_VIN_search_-_basic_combo_vv2.9
+                  Fields: VIN, Image=N, Stolen=checked
+                  RMS: vinNumber confirmed
+  T15 [XML]      QVN basic - NCIC number + Stolen checkbox checked
+                  Log: Vehicle_QVN_VehStolen_NCIC_number_search_-_basic_combo_vv2.9
+                  Fields: ncicNumber, Image=N, Stolen=checked
+                  RMS: none (NCIC# has no RMS equivalent)
+  T16 [XML]      QVP v3.0 - manual Stolen checkbox check (v3.0 regression)
+                  Log: Vehicle_QVP_VehicleStolenQuery_plate_manually_check v3.0
+  T17 [BACKFILL] QVP + VIN any[] - plate + VIN + Stolen checked
+                  Fill: plate + VIN + Stolen. VIN is any[] on QVP.
+                  Verify: VIN appears in QVP XML alongside plate.
+  T18 [BACKFILL] CROSS-QIDM CO-FIRE - plate + Stolen checked + VehReg selected
+                  Fill: plate + State + defaults, check Stolen checkbox, keep VehReg selected.
+                  Verify: BOTH VehReg RQ AND VehStolen QVP fire in same request.
+                  v3.1: VehStolen deselects VehReg. Confirm behavior.
+
+================================================================================
+PERSON -- 7 visible fields, 1 QIDM, 2 combos
+================================================================================
+  Form fields:
+    operatorLicenseNumber   Text     maxLen=20
+    registrationState       Select   attributeTypeId=STATE  default=NJ
+    imageIndicator          Select   YES_NO_UNKNOWN/NCIC    default=Y
+    nameFirst               Text     maxLen=30
+    nameLast                Text     maxLen=30
+    birthDate               FormDate
+    sexCode                 Select   attributeTypeId=SEX/NIBRS
+
+  --- DriverLicenseQuery (2 combos: DQ, DQN) ---
+
+  T19 [BACKFILL] RENDER - Person form renders all 7 fields, correct types, defaults
+                  Verify: State=NJ, ImageIndicator=Y, SexCode dropdown has M/F/U
+  T20 [XML]      DQ basic - Name + DOB + State (set[] = birthDate, nameLast, nameFirst)
+                  Log: Person_DQ_DL_Name_search_-_basic_combo_v2.9
+                  Fields: Last=SMITH, First=JOHN, DOB=1985-01-01, State=NJ, Image=Y
+                  RMS: firstName+lastName+dateOfBirth confirmed
+  T21 [XML]      DQ + SexCode any[] - Name + DOB + Sex
+                  Log: Person_DQ_DL_Name_with_Sex_-_any_field_v2.9
+                  Fields: Last=DOE, First=JANE, DOB, Sex=F. Sex appears in XML.
+                  RMS: sexAttrId confirmed
+  T22 [XML]      DQN basic - OLN + State (set[] = operatorLicenseNumber, registrationState)
+                  Log: Person_DQN_DL_OLN_search_-_basic_combo_v2.9
+                  Fields: OLN, State=NJ, Image=Y
+                  RMS: dlNumber+registrationStateAttrId confirmed
+  T23 [BACKFILL] DQ OOS - Name + DOB + State=NY (out of state)
+                  Fill: Last, First, DOB, State=NY. Verify State=NY in XML.
+                  RMS: registrationStateAttrId should be NY attr ID.
+  T24 [BACKFILL] DQN OOS - OLN + State=NY
+                  Fill: OLN, State=NY. Verify State=NY in XML.
+                  RMS: registrationStateAttrId should be NY attr ID.
+  T25 [BACKFILL] PRIORITY - OLN + Name + DOB all filled. Which fires?
+                  Fill: OLN + Last + First + DOB + State=NJ.
+                  Expect: DQN fires first (OLN combo has priority).
+                  Verify: both DQ and DQN may fire (check XML transaction count).
+  T26 [BACKFILL] DQ + ImageIndicator any[] - Name+DOB, change ImageIndicator to N
+                  Fill: Name+DOB+State, change Image from Y to N.
+                  Verify: ImageIndicator=N appears in XML (not default Y).
+
+================================================================================
+FIREARM -- 5 visible fields, 1 QIDM, 1 combo
+================================================================================
+  Form fields:
+    serialNumber            Text     maxLen=11
+    firearmMake             Select   NCIC_FIREARM_MAKE/NJ_NIBRS
+    gunCaliber              Select   NCIC_FIREARM_CALIBER/NJ_NIBRS
+    gunModel                Text     maxLen=20
+    imageIndicator          Select   YES_NO_UNKNOWN/NCIC    default=N
+
+  --- GunQuery (1 combo: QG) ---
+
+  T27 [XML]      QG basic - serial only (set[] = serialNumber)
+                  Log: Firearm_QG_Firearm_serial_search_-_basic_combo_v2.9
+                  Fields: serial=SN123456789, Image=N
+  T28 [XML]      QG all any[] - serial + Make + Caliber + Model + Image
+                  Log: Firearm_QG_Firearm_all_any_fields_v2.9
+                  Fields: serial=FULLGUN1, Make=32, Caliber=9, Model=M7P SHIELD, Image=N
+  T29 [BACKFILL] QG any[] isolation - serial + firearmMake only
+                  Fill: serial + Make dropdown. Verify Make in XML, Caliber/Model absent.
+  T30 [BACKFILL] QG any[] isolation - serial + gunModel only
+                  Fill: serial + Model text. Verify Model in XML, Make/Caliber absent.
+
+================================================================================
+ARTICLE -- 3 visible fields, 1 QIDM, 1 combo
+================================================================================
+  Form fields:
+    serialNumber            Text     maxLen=20
+    articleTypeCode         Select   NCIC_ARTICLE_TYPE/CA_CLETS
+    imageIndicator          Select   YES_NO_UNKNOWN/NCIC    default=N
+
+  --- ArticleSingleQuery (1 combo: QA) ---
+
+  T31 [XML]      QA basic - serial + type (set[] = serialNumber, articleTypeCode)
+                  Log: Article_QA_Article_search_-_basic_combo_v2.9
+                  Fields: serial=ART12345, type=BBICYCL, Image=N
+  T32 [BACKFILL] QA + ImageIndicator change - serial + type + Image=Y
+                  Fill: serial + type + change Image to Y. Verify Image=Y in XML.
+
+================================================================================
+BOAT -- 3 visible fields, 1 QIDM, 2 combos
+================================================================================
+  Form fields:
+    registrationNumber      Text     maxLen=20
+    imageIndicator          Select   YES_NO_UNKNOWN/NCIC    default=N
+    boatHullIdNumber        Text     maxLen=20
+
+  --- BoatQuery (2 combos: QB, QBN) ---
+
+  T33 [XML]      QB basic - registration number (set[] = registrationNumber)
+                  Log: Boat_QB_Boat_reg_search_-_basic_combo_v2.9
+                  Fields: reg=43234234, Image=N
+  T34 [XML]      QBN basic - hull ID (set[] = boatHullIdNumber)
+                  Log: Boat_QBN_Boat_hull_search_-_basic_combo_v2.9
+                  Fields: hull=5TY5Y6T, Image=N
+  T35 [BACKFILL] QB + ImageIndicator change - reg + Image=Y
+                  Fill: reg + change Image to Y. Verify Image=Y in XML.
+  T36 [BACKFILL] PRIORITY - reg + hull both filled. Which fires?
+                  Fill: reg + hull + Image=N. Expect: QB fires (reg combo first).
+
+================================================================================
+NEGATIVE TESTS
+================================================================================
+
+  T37 [XML]      ALL entities - empty form, Send button disabled
+                  Log: 2026-05-08_ALL_Negative_empty_form_submission_v2.9
+                  NOTE: This log didn't match real XML (expected -- no request sent)
+  T38 [BACKFILL] Vehicle - VIN only, Stolen unchecked, VehReg selected
+                  Fill: VIN only (no plate). Expect: RQN fires, not RQ.
+  T39 [BACKFILL] Person - Name only (no DOB). Expect: DQ does NOT fire (missing set[] field)
+                  Fill: Last+First only. Verify: Send button disabled or no DQ fires.
+
+================================================================================
+SUMMARY
+================================================================================
+
+  Total tests:     39
+  Already [XML]:   21 (v2.9/v3.0 logs with real captured XML)
+  Need [BACKFILL]: 18
+
+  BACKFILL LIST (ordered by priority):
+    T10  Vehicle PRIORITY - plate+VIN both filled
+    T11  Vehicle v3.1 DESELECT - one-directional queriesToDeselect
+    T18  Vehicle CROSS-QIDM - VehReg+VehStolen co-fire
+    T17  Vehicle QVP+VIN any[]
+    T23  Person DQ OOS - State=NY
+    T24  Person DQN OOS - State=NY
+    T25  Person PRIORITY - OLN+Name+DOB all filled
+    T26  Person DQ ImageIndicator change
+    T19  Person RENDER
+    T29  Firearm QG Make isolation
+    T30  Firearm QG Model isolation
+    T32  Article QA ImageIndicator change
+    T35  Boat QB ImageIndicator change
+    T36  Boat PRIORITY - reg+hull both filled
+    T38  Vehicle NEGATIVE - VIN only, RQN fires
+    T39  Person NEGATIVE - Name only, no fire
+    T9   SKIPPED (VehicleMakeCode not on VehReg combos)
+
+  NOTES:
+  - v2.9/v3.0 XML is valid reference because v3.1 changed queriesToDeselect only
+  - T11 and T18 specifically test the v3.1 deselect behavior
+  - No hidden fields on NJ BASE -- all 28 fields are visible
+  - RMS co-fire covered for Vehicle (tag+stateAttrIds) and Person (dlNumber+stateAttrId)
+  - Firearm/Article/Boat have no RMS QIDM match (no RMS co-fire)

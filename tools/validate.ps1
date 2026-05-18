@@ -20,7 +20,7 @@ if (Test-Path $docsDir) {
     $statusFiles = Get-ChildItem $docsDir -Filter "*STATUS*" -File -ErrorAction SilentlyContinue
     foreach ($sf in $statusFiles) {
         $sfContent = Get-Content $sf.FullName -Raw
-        if ($sfContent -match 'LOCKED' -and -not $Force) {
+        if ($sfContent -cmatch '\bLOCKED\b' -and -not $Force) {
             Write-Host ""
             Write-Host "  ██  JSON LOCKED  ██" -ForegroundColor Red
             Write-Host "  $($sf.Name) says this provider is frozen." -ForegroundColor Red
@@ -28,7 +28,7 @@ if (Test-Path $docsDir) {
             Write-Host ""
             exit 1
         }
-        if ($sfContent -match 'LOCKED' -and $Force) {
+        if ($sfContent -cmatch '\bLOCKED\b' -and $Force) {
             Write-Host "  [FORCE] Lock override accepted. Proceeding with validation." -ForegroundColor Yellow
         }
     }

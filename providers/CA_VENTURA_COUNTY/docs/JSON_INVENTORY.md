@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | CA_VENTURA_COUNTY_BASE.json | v1.2 | Current BASE | 6 QIDMs, 19 combos. 66P/0F/0W/6LIM. 2026-05-07. |
-| CA_VENTURA_COUNTY_BASE_READABLE.json | v1.2 | Pretty-print | Human-readable BASE variant. |
 | CA_VENTURA_COUNTY_MC.json | v1.2 | Current MC | MC multi-card + cross-entity. 70P/0F/0W/8LIM. 2026-05-07. |
-| CA_VENTURA_COUNTY_MC_READABLE.json | v1.2 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

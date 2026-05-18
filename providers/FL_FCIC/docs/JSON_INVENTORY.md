@@ -7,23 +7,19 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | FL_FCIC_BASE.json | v3.1 | Current | 8-QIDM merged architecture. 101P/0F/1W/4LIM. Patch 8 + VehicleMakeCode fix. |
-| FL_FCIC_BASE_READABLE.json | v3.1 | Current | Pretty-printed BASE. |
 | FL_FCIC_MC.json | v3.1 | Current | MC multi-card layout. 101P/0F/1W/5LIM. |
-| FL_FCIC_MC_READABLE.json | v3.1 | Current | Pretty-printed MC. |
 
 ## phases/base/
 
 | File | Version | Date | Notes |
 |------|---------|------|-------|
 | FL_FCIC_BASE.json | v3.1 | 2026-05-07 | Current phase snapshot |
-| FL_FCIC_BASE_READABLE.json | v3.1 | 2026-05-07 | Current phase snapshot (readable) |
 
 ## phases/mc/
 
 | File | Version | Date | Notes |
 |------|---------|------|-------|
 | FL_FCIC_MC.json | v3.1 | 2026-05-07 | Current phase snapshot |
-| FL_FCIC_MC_READABLE.json | v3.1 | 2026-05-07 | Current phase snapshot (readable) |
 
 ## phases/ (other)
 

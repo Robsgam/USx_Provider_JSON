@@ -26,7 +26,6 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\TN_TIES_MC.json"
-$OUTREAD  = "$DIR\TN_TIES_MC_READABLE.json"
 $VEROUT   = "$PHASEDIR\TN_TIES_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -696,5 +695,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $tnBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $final -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $final -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built TN_TIES v${Version}"

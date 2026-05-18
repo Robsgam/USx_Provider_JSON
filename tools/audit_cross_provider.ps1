@@ -64,7 +64,7 @@ foreach ($pd in $providerDirs) {
     $provName = $pd.Name
     # Find BASE and MC JSONs at the top level of the provider directory
     $jsonFiles = @(Get-ChildItem $pd.FullName -File -Filter '*.json' |
-        Where-Object { $_.Name -match '_BASE\.json$|_MC\.json$' -and $_.Name -notmatch '_READABLE' })
+        Where-Object { $_.Name -match '_BASE\.json$|_MC\.json$' })
 
     foreach ($jf in $jsonFiles) {
         $variant = if ($jf.Name -match '_MC\.json$') { 'MC' } else { 'BASE' }

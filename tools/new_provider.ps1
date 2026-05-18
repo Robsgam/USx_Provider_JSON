@@ -188,7 +188,7 @@ $baseScriptContent = @"
 .SYNOPSIS
   Build $providerName BASE JSON (Phase 1 single-card layout).
 .DESCRIPTION
-  Generates ${providerName}_BASE.json and ${providerName}_BASE_READABLE.json.
+  Generates ${providerName}_BASE.json.
   Run build_report.ps1 after this script.
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File providers/$providerName/scripts/build_$providerLower.ps1
@@ -221,7 +221,6 @@ Write-Host "========================================" -ForegroundColor Cyan
 
 # --- Output ---
 `$outMin  = Join-Path `$providerDir "`${providerName}_BASE.json"
-`$outRead = Join-Path `$providerDir "`${providerName}_BASE_READABLE.json"
 
 # `$json | Set-Content `$outMin -Encoding UTF8
 # `$json | ConvertTo-Json -Depth 100 | Set-Content `$outRead -Encoding UTF8
@@ -243,7 +242,7 @@ $mcScriptContent = @"
 .SYNOPSIS
   Build $providerName MC JSON (Phase 2 multi-card layout).
 .DESCRIPTION
-  Generates ${providerName}_MC.json and ${providerName}_MC_READABLE.json.
+  Generates ${providerName}_MC.json.
   MC uses PascalCase fieldIds, multi-card layout, CAD_DISPATCH/FIRST_RESPONDER context cards.
   Run build_report.ps1 after this script.
 .EXAMPLE
@@ -275,7 +274,6 @@ Write-Host "========================================" -ForegroundColor Cyan
 
 # --- Output ---
 `$outMin  = Join-Path `$providerDir "`${providerName}_MC.json"
-`$outRead = Join-Path `$providerDir "`${providerName}_MC_READABLE.json"
 
 Write-Host ""
 Write-Host "  [TODO] MC build script is a stub -- implement multi-card layout" -ForegroundColor Yellow

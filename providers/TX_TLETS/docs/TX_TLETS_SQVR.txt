@@ -1,18 +1,17 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-05-07
-JSON version: v2.5 BASE + v2.5 MC
-Live test: NOT YET TESTED -- re-import needed for v2.2
-Validator: 78 PASS / 0 FAIL / 13 WARN / 3 LIMITATION (v2.2)
-Verify: 2 FAIL (EmailAddress pending handler -- expected)
+Last updated: 2026-05-18
+JSON version: v2.7 BASE + v2.7 MC
+Live test: NOT YET TESTED -- re-import needed
+Validator: 84 PASS / 0 FAIL / 0 WARN (v2.7)
+Verify: CLEAN (0 FAIL)
 
 NOTE: All combos [PENDING] until exhaustive testing with per-test log captures (GATE 2/3).
 
-EMAILADDRESS NOTE:
-  Engineering developing a handler to auto-populate EmailAddress from user profile
-  (similar to CommsysGetDexStateUserIdRuleHandler for dexStateUserId).
-  EmailAddress is QIDM-only -- no form field until handler deployed.
-  Verify FAILs for EmailAddress are expected and acknowledged.
+v2.7 CHANGES:
+  One-directional queriesToDeselect: default queries (VehReg, DL) have NO deselect.
+  Opt-in queries (VehStolen, DH) deselect their default counterparts.
+  EmailAddress now user-fillable (v2.6+). Attention visible FormInput (v2.6+).
 
 ================================================================================
 1. VehicleInsuranceRegistrationQuery -- Vehicle Entity
@@ -78,7 +77,7 @@ EMAILADDRESS NOTE:
   QIF:  Vehicle (shared with VehicleInsuranceRegistrationQuery)
   queryLabel: Vehicle Stolen
   autoSelect: false (officer must manually check)
-  queriesToDeselect: VehicleInsuranceRegistrationQuery (mutual exclusion)
+  queriesToDeselect: VehicleInsuranceRegistrationQuery (one-directional: VehStolen deselects VehReg)
 
   QV.P -- Stolen Vehicle by Plate [PENDING]
     set: LicensePlateNumber
@@ -93,8 +92,9 @@ EMAILADDRESS NOTE:
   Priority order: QV.P > QV.V [PENDING]
     Plate before VIN.
 
-  VehInsReg/VehStolen mutual exclusion [PENDING]
-    Checking VehicleStolenQuery unchecks VehicleInsuranceRegistrationQuery and vice versa.
+  VehInsReg/VehStolen deselect behavior (one-directional) [PENDING]
+    Checking VehicleStolenQuery unchecks VehicleInsuranceRegistrationQuery.
+    VehicleInsuranceRegistrationQuery does NOT deselect VehicleStolenQuery.
     VehicleInsuranceRegistrationQuery is autoSelect=true (default checked).
     VehicleStolenQuery is autoSelect=false (officer must opt in).
 
@@ -108,7 +108,7 @@ EMAILADDRESS NOTE:
   autoSelect: true
   Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
           BirthDate, SexCode, RaceCode, RegistrationState, ImageIndicator,
-          EmailAddress (QIDM-only), ExpandedBirthDateSearchCode, ReasonCode, RegionId
+          EmailAddress (user-fillable), ExpandedBirthDateSearchCode, ReasonCode, RegionId
 
   DQ OLN -- Nlets Driver License (OLN) [PENDING]
     keyReference: DQOperatorLicenseNumber
@@ -141,11 +141,11 @@ EMAILADDRESS NOTE:
   QIDM: TX_TLETS_DriverHistoryQuery
   QIF:  Person (shared with DriverLicenseQuery)
   queryLabel: Driver History
-  autoSelect: false (manual selection required)
-  queriesToDeselect: DriverLicenseQuery
-  Fields: OperatorLicenseNumber, NameFirst, NameLast, NameMiddle, NameSuffix,
-          BirthDate, SexCode, RegistrationState, Attention (handler), PurposeCode,
-          ReasonCode, EmailAddress (QIDM-only), ImageIndicator
+  autoSelect: true
+  queriesToDeselect: DriverLicenseQuery (one-directional: DH deselects DL)
+  Fields: OperatorLicenseNumberDH, NameFirstDH, NameLastDH, NameMiddleDH, NameSuffixDH,
+          BirthDateDH, SexCodeDH, RegistrationState, AttentionDH (visible), PurposeCodeDH,
+          ReasonCodeDH, EmailAddressDH (user-fillable), ImageIndicator
 
   KQ OLN -- Driver History (OLN) [PENDING]
     keyReference: KQOperatorLicenseNumber
@@ -160,7 +160,7 @@ EMAILADDRESS NOTE:
          PurposeCode, ReasonCode, RegistrationState
     state: In/Out
 
-  Attention: CommsysGetLastNameFirstNameInitialRuleHandler (DH only in TX).
+  Attention: visible FormInput (attentionDH), no handler.
 
 ================================================================================
 4. GunQuery -- Firearm Entity
@@ -265,4 +265,4 @@ SUMMARY
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
   [CONFIRMED]: NONE
   [PENDING]: ALL
-  MC variant: v2.2 (same QIDMs, multi-card layout)
+  MC variant: v2.7 (same QIDMs, multi-card layout)

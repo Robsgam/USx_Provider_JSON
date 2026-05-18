@@ -203,7 +203,7 @@ TOOLS
       2. Report step count consistency
       3. QueryLabel standard
       4. Stale archive references
-      5. Build script completeness (dual output, validator)
+      5. Build script completeness (validator)
       6. Tool documentation
       7. Render tool correctness
       8. CLAUDE.md consistency
@@ -272,6 +272,12 @@ TOOLS
     XML capture and form state documentation.
     Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
 
+  tools/stage_provider.ps1
+    Retroactive staging for already-locked providers. Moves foundation-testing
+    variant to deployed/, archives the other to phases/. lock_provider.ps1 now
+    handles this automatically; this script is for providers locked before that change.
+    Usage: .\stage_provider.ps1 [-Provider <name>] [-Undo]
+
   tools/lock_provider.ps1
     One-command lock/unlock for provider folders. Renames folder to/from
     _LOCKED suffix, updates STATUS.txt, cascades reference updates across
@@ -306,7 +312,7 @@ TOOLS
   tools/lint_build_scripts.ps1
     Static analysis of all build scripts for anti-patterns. Checks: PlateYear
     dynamic ($currentYear), field type correctness, missing RMS patches,
-    AP #21-23 violations, validator call presence, dual output.
+    AP #21-23 violations, validator call presence.
     Usage: .\lint_build_scripts.ps1 [-Path <dir>] [-OutFile <path>]
 
   tools/preflight_rebuild.ps1

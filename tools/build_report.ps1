@@ -221,7 +221,7 @@ Write-Host ""
 Write-Host "  [9/$stepCount] Generating test matrix..." -ForegroundColor Yellow
 $testMatrixPath = Join-Path $toolDir "generate_test_matrix.ps1"
 if (Test-Path $testMatrixPath) {
-    $providerBase = $jsonName -replace '_(BASE|MC)(_READABLE)?$', ''
+    $providerBase = $jsonName -replace '_(BASE|MC)$', ''
     $variant = if ($jsonName -match '_MC') { 'MC' } else { 'BASE' }
     $matrixFileName = "${providerBase}_${variant}_TEST_MATRIX.txt"
     $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName

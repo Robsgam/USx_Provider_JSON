@@ -29,6 +29,26 @@ Sex NIBRS_SEX CommSys-only: NIBRS reverse-lookup unconfirmed on NY instance.
   Sex removed from RMS person QIDM entirely. Same pattern as FL_FCIC.
 
 VERSION HISTORY  (newest first)
+v1.6  2026-05-18  Single JSON output + shared tooling rebuild
+  CHANGED
+    - Single pretty-printed JSON output (READABLE files eliminated)
+    - Rebuilt with current shared tooling improvements
+    - No functional QIDM or layout changes
+  REASON
+    - Repo-wide elimination of dual JSON output (minified + readable)
+    - Shared module updates (_build_provider_helpers.ps1, _build_rms_bundle.ps1)
+  VALIDATOR
+    - BASE: 74 PASS / 0 FAIL / 0 WARN
+    - MC:   74 PASS / 0 FAIL / 0 WARN
+
+v1.5  2026-05-11  LIMITATION elimination pass
+  CHANGED
+    - DH-suffix fieldIds, queriesToDeselect, combo ordering
+    - DGRP removed, DLICN restored in DL QIDM for single checkbox
+  VALIDATOR
+    - BASE: 74 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+    - MC:   74 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+
 v1.2  2026-05-07  Monorepo rebuild + Patch 8
   CHANGED
     - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)

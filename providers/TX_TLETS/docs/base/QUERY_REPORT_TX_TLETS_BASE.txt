@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 10:36
+  Generated: 2026-05-18 10:48
 ================================================================
 QUERY SIMULATION
 ================
@@ -87,7 +87,7 @@ QUERY SIMULATION
 
     [FIRES] DQName
       set: [sexCode, birthDate, nameLast, nameFirst]
-      any: [imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -104,7 +104,7 @@ QUERY SIMULATION
 
     [FIRES] QWName
       set: [birthDate, nameLast, nameFirst]
-      any: [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
+      any: [emailAddress, expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -121,7 +121,7 @@ QUERY SIMULATION
 
     [FIRES] DQOperatorLicenseNumber
       set: [operatorLicenseNumber]
-      any: [imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
+      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -141,32 +141,32 @@ QUERY SIMULATION
 
     [FIRES] KQName
       set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, registrationState]
+      any: [attentionDH, emailAddressDH, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
     [FIRES] KQOperatorLicenseNumber
       set: [operatorLicenseNumberDH]
-      any: [imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, registrationState]
+      any: [attentionDH, emailAddressDH, imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

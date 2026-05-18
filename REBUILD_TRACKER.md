@@ -13,10 +13,10 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v3.1 | 69P/0F/0W | 69P/0F/0W | 0 | LOCKED -- v3.0 DEPLOYED Newark NJ |
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
-| 3 | NY_NYSPIN_EJUSTICE | v1.5 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
+| 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
 | 5 | FL_FCIC | v4.1 | 102P/0F/0W | 102P/0F/0W | 0 | **FIXED** — Attention visible FormInput (attentionDH), MC 2-card (Options+Search) |
-| 6 | TX_TLETS | v2.5 | 84P/0F/0W | 84P/0F/0W | 2 | EmailAddress QIDM-only (unfixable) |
+| 6 | TX_TLETS | v2.7 | 84P/0F/0W | 84P/0F/0W | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v1.8 | 66P/0F/0W | 70P/0F/0W | 0 | LOCKED -- MC rebuilt, one-directional deselect |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |
@@ -119,8 +119,8 @@ All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_provider_helpers.ps
 boilerplate: AUTH config, QMF, QRDM, ENTITIES bundle, and output+validation. Previously each
 script duplicated ~60 lines of identical AUTH/QMF/QRDM blocks plus ~20 lines of output/validation
 code. Now consolidated into 5 shared functions (Build-Auth, Build-Qmf, Build-ProviderQrdm,
-Build-EntitiesBundle, Write-ProviderJson). Write-ProviderJson standardizes dual output (minified +
-readable), phase archiving, and validator-with-exit-on-fail across all scripts. ~2,400 lines
+Build-EntitiesBundle, Write-ProviderJson). Write-ProviderJson standardizes pretty-printed output,
+phase archiving, and validator-with-exit-on-fail across all scripts. ~2,400 lines
 of duplication eliminated. Migration completed 2026-05-14 with 5 verification builds (CA_CLETS_OCATS
 63P, IL_LEADS_OFML 61P, AZ_AZDPS 71P, FL_FCIC 102P, TN_TIES 80P — all 0F/0W).
 

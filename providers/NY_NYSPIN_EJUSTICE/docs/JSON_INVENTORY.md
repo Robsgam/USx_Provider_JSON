@@ -6,8 +6,8 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NY_NYSPIN_EJUSTICE_BASE.json | v1.1 | Current | BASE single-card layout. 0 errors, 0 warnings. Updated 2026-04-28. |
-| NY_NYSPIN_EJUSTICE_MC.json | v1.1-mc | Current | MC multi-card layout. Updated 2026-04-28. |
+| NY_NYSPIN_EJUSTICE_BASE.json | v1.6 | Current | 74P/0F/0W. Single pretty-printed output. |
+| NY_NYSPIN_EJUSTICE_MC.json | v1.6 | Current | 74P/0F/0W. MC variant. |
 
 ## release/
 
@@ -22,10 +22,17 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | archive/NY_NYSPIN_EJUSTICE_BASE.json | pre-v1.0 | Archived | Prior build history (v1.0-v1.21) before Phase 1 reboot (2026-04-21). |
 
+## v1.6 (2026-05-18)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NY_NYSPIN_EJUSTICE_BASE.json | v1.6 | Current | 74P/0F/0W. Single JSON output, shared tooling rebuild. |
+| NY_NYSPIN_EJUSTICE_MC.json | v1.6 | Current | 74P/0F/0W. MC variant. |
+
 ## v1.5 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NY_NYSPIN_EJUSTICE_BASE.json | v1.5 | Current | 74P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
-| NY_NYSPIN_EJUSTICE_MC.json | v1.5 | Current | 74P/0F/0W/0LIM. MC variant. |
+| NY_NYSPIN_EJUSTICE_BASE.json | v1.5 | Archived | 74P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| NY_NYSPIN_EJUSTICE_MC.json | v1.5 | Archived | 74P/0F/0W/0LIM. MC variant. |
 

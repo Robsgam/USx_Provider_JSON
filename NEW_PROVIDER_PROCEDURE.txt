@@ -89,7 +89,7 @@ Prerequisites:
 
      --- OUTPUT ---
      $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $providerBundle, $rmsBundle) }
-     Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD `
+     Write-ProviderJson -BundleObject $output -OutPath $OUT `
          -PhasePath $VEROUT -Label "Built <PROVIDER> v${Version}"
 
 1.2  QIDM CONSTRUCTION RULES
@@ -251,7 +251,7 @@ The following are handled by shared modules. Do NOT duplicate inline.
     Build-Qmf -ProviderName
     Build-ProviderQrdm -ProviderName
     Build-EntitiesBundle -Configurations [-DefaultOrder] [-CadOrder] [-FrOrder]
-    Write-ProviderJson -BundleObject -OutPath -ReadablePath [-PhasePath] [-Label]
+    Write-ProviderJson -BundleObject -OutPath [-PhasePath] [-Label]
 
   What each provider script IS responsible for:
     - QIDM definitions (attributes, combinations, query routing)

@@ -64,7 +64,6 @@ $Version = '1.4'
 $currentYear = [string](Get-Date).Year
 $DIR     = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT     = "$DIR\TN_TIES_BASE.json"
-$OUTREAD = "$DIR\TN_TIES_BASE_READABLE.json"
 $VEROUT  = "$DIR\phases\base\TN_TIES_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -691,5 +690,5 @@ $final = [PSCustomObject]@{
 # =====================================================================
 # OUTPUT
 # =====================================================================
-Write-ProviderJson -BundleObject $final -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $final -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built TN_TIES v${Version}"

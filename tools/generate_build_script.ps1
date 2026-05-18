@@ -772,9 +772,7 @@ function Build-Script($variant) {
     [void]$sb.AppendLine("}")
     [void]$sb.AppendLine("")
 
-    $readSuffix = "${providerName}_${jsonSuffix}_READABLE.json"
-    [void]$sb.AppendLine("`$outPathReadable = `"`$PSScriptRoot\..\$readSuffix`"")
-    [void]$sb.AppendLine("Write-ProviderJson -BundleObject `$output -OutPath `$outPath -ReadablePath `$outPathReadable ``")
+    [void]$sb.AppendLine("Write-ProviderJson -BundleObject `$output -OutPath `$outPath ``")
     [void]$sb.AppendLine("    -Label `"Built $providerName v`${Version}`"")
 
     return $sb.ToString()

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 10:36
+  Generated: 2026-05-18 10:48
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === TX_TLETS_BASE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
-  Person | entity=Person | qidm= | cards=1 fields=16
+  Person | entity=Person | qidm= | cards=1 fields=19
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=3
@@ -33,7 +33,7 @@ LAYOUT DETAIL
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [6 3 3]
         licensePlateNumber (Text | maxLen=10)
-        registrationState (Dropdown | attributeTypeId=STATE)
+        registrationState (Dropdown | attributeTypeId=STATE | default=TX)
         regionId (Text | maxLen=4)
       ROW ROW_VEH_2 [6 6]
         licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
@@ -67,9 +67,10 @@ LAYOUT DETAIL
         birthDate (FormDate)
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         expandedBirthDateSearchCode (Text | maxLen=1)
-      ROW ROW_PER_5 [6 6]
+      ROW ROW_PER_5 [4 4 4]
         regionId (Text | maxLen=4)
         purposeCode (Text | maxLen=1)
+        emailAddress (Text | maxLen=80)
       ROW ROW_PER_6 [6 6]
         operatorLicenseNumberDH (Text | maxLen=20)
         purposeCodeDH (Text | maxLen=1)
@@ -82,6 +83,9 @@ LAYOUT DETAIL
         birthDateDH (FormDate)
         sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         reasonCodeDH (Text | maxLen=1)
+      ROW ROW_PER_9 [6 6]
+        attentionDH (Text | maxLen=30)
+        emailAddressDH (Text | maxLen=80)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

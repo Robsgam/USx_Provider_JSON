@@ -802,8 +802,8 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
 
     1. For each provider, create build script in scripts/:
        build_<provider>.ps1 (BASE) and build_<provider>_mc.ps1 (MC)
-    2. Build scripts MUST include: post-build validator call, dual output
-       (minified + readable), RMS patches (1, 2, 3, 6)
+    2. Build scripts MUST include: post-build validator call, RMS patches
+       (1, 2, 3, 6)
     3. Run build_report.ps1 after each build
     4. Commit JSON + 8 reports per variant
     5. Update STATUS.txt, SQVR.txt, JSON_INVENTORY.md

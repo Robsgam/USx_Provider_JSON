@@ -1,4 +1,4 @@
-# build_tx_tlets.ps1  -- TX_TLETS v2.5 BASE
+# build_tx_tlets.ps1  -- TX_TLETS v2.7 BASE
 # Builds TX_TLETS_BASE.json from source\TX_TLETS.xml + KB specs.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
@@ -23,14 +23,14 @@
 #     TX-specific fields: StickerNumber, FinancialResponsibilityType, RegionId
 #     No ImageIndicator on this transaction (metadata-authoritative)
 #   DriverLicenseQuery: 3 combos (DQ Name, QW Name, DQ OLN)
-#     TX-specific fields: EmailAddress (pending handler), ReasonCode,
+#     TX-specific fields: EmailAddress (user-fillable), ReasonCode,
 #     ExpandedBirthDateSearchCode, RegionId
-#     autoSelect=true, queriesToDeselect=DriverHistoryQuery
+#     autoSelect=true (default query, NO queriesToDeselect)
 #   DriverHistoryQuery: 2 combos (KQ Name, KQ OLN) -- DH-suffix fields
 #     Attention: CommsysGetLastNameFirstNameInitialRuleHandler (handler-only)
 #     DH-suffix: operatorLicenseNumberDH, nameLastDH, nameFirstDH,
 #       nameMiddleDH, nameSuffixDH, birthDateDH, sexCodeDH, purposeCodeDH, reasonCodeDH
-#     autoSelect=true, queriesToDeselect=DriverLicenseQuery
+#     autoSelect=true, queriesToDeselect=DriverLicenseQuery (one-directional: DH deselects DL)
 #   GunQuery: 1 metadata combo split to 2 (Serial / NCIC). GunMake maxLen=23.
 #   ArticleSingleQuery: 1 metadata combo split to 2 (Serial+Type / NCIC)
 #   BoatQuery: 3 metadata QB combos + 2 BQ combos added for Nlets State routing
@@ -44,7 +44,7 @@
 # DATE FORMAT: MMddyyyy
 
 param(
-    [string]$Version = "2.5",
+    [string]$Version = "2.7",
     [string]$Phase   = "base"
 )
 
@@ -54,7 +54,6 @@ $DIR         = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\TX_TLETS_BASE.json"
 $VEROUT   = "$PHASEDIR\TX_TLETS_v${Version}_${DATE}.json"
-$OUTREAD = "$DIR\TX_TLETS_BASE_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -143,7 +142,6 @@ $vehRegQuery = [PSCustomObject]@{
     name               = 'TX_TLETS_VehicleInsuranceRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
     autoSelect         = $true
-    queriesToDeselect  = @('VehicleStolenQuery')
     provider           = 'TX_TLETS'
     providerType       = 'Commsys'
     query              = 'VehicleInsuranceRegistrationQuery'
@@ -154,7 +152,7 @@ $vehRegQuery = [PSCustomObject]@{
 # =====================================================================
 # VehicleStolenQuery -- 2 combos (QV plate, QV VIN)
 # Metadata keyRef QV for both -> invented QV.P / QV.V (LIMITATION #21)
-# Mutual exclusion with VehicleInsuranceRegistrationQuery via queriesToDeselect
+# One-directional: VehStolen deselects VehReg (VehReg does NOT deselect VehStolen)
 # autoSelect=false -- officer manually checks to run stolen query
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
@@ -221,30 +219,29 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'DQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('expandedBirthDateSearchCode','nameMiddle','nameSuffix','raceCode','regionId','sexCode') }
+            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('emailAddress','expandedBirthDateSearchCode','nameMiddle','nameSuffix','raceCode','regionId','sexCode') }
             primaryFieldReference = 'Name'
             keyReference          = 'QWName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator','reasonCode','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('emailAddress','imageIndicator','reasonCode','registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- DQ (Name/OLN), QW (Wanted Person). autoSelect+queriesToDeselect. EmailAddress pending handler.'
+    description     = 'DriverLicenseQuery -- DQ (Name/OLN), QW (Wanted Person). EmailAddress user-fillable.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'TX_TLETS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
     autoSelect      = $true
-    queriesToDeselect = @('DriverHistoryQuery')
     provider        = 'TX_TLETS'
     providerType    = 'Commsys'
     query           = 'DriverLicenseQuery'
@@ -263,17 +260,13 @@ $dlQuery = [PSCustomObject]@{
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{
-            name = 'Attention'
-            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
-            size = 30; sourceField = @('Attention'); targetField = 'Attention'
-        }
+        [PSCustomObject]@{ name = 'Attention';       size = 30; sourceField = @('attentionDH');      targetField = 'Attention' }
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
             size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
         }
-        [PSCustomObject]@{ name = 'EmailAddress';   size = 80; sourceField = @('emailAddress');   targetField = 'EmailAddress' }
+        [PSCustomObject]@{ name = 'EmailAddress';   size = 80; sourceField = @('emailAddressDH'); targetField = 'EmailAddress' }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1;  sourceField = @('imageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
@@ -288,19 +281,19 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','emailAddressDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','purposeCodeDH','reasonCodeDH','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','emailAddressDH','imageIndicator','purposeCodeDH','reasonCodeDH','registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- KQ (Name/OLN). DH-suffix fields. Attention handler-only.'
+    description     = 'DriverHistoryQuery -- KQ (Name/OLN). DH-suffix fields. Attention+EmailAddress visible.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'TX_TLETS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -462,7 +455,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'licensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
                 @{ id = 'regionId_Input';           node = Inp 'regionId' 'Region ID' '4' 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
@@ -517,9 +510,10 @@ $perLayout = MakeLayouts @(
                 @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_4' }
                 @{ id = 'expandedBirthDateSearchCode_Input'; node = Inp 'expandedBirthDateSearchCode' 'Expanded DOB Search' '1' 'ROW_PER_4' }
             )}
-            @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_5'; cols = @('4','4','4'); fields = @(
                 @{ id = 'regionId_Input'; node = Inp 'regionId' 'Region ID' '4' 'ROW_PER_5' }
                 @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code (DL)' '1' 'ROW_PER_5' }
+                @{ id = 'emailAddress_Input'; node = Inp 'emailAddress' 'Email Address (DL)' '80' 'ROW_PER_5' }
             )}
             @{ id = 'ROW_PER_6'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_6' }
@@ -535,6 +529,10 @@ $perLayout = MakeLayouts @(
                 @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_8' }
                 @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_8' }
                 @{ id = 'reasonCodeDH_Input'; node = Inp 'reasonCodeDH' 'Reason Code (DH)' '1' 'ROW_PER_8' }
+            )}
+            @{ id = 'ROW_PER_9'; cols = @('6','6'); fields = @(
+                @{ id = 'attentionDH_Input';    node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_PER_9' }
+                @{ id = 'emailAddressDH_Input'; node = Inp 'emailAddressDH' 'Email Address (DH)' '80' 'ROW_PER_9' }
             )}
         )
     }
@@ -645,7 +643,7 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $provBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built TX_TLETS v${Version}"
 
 $VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path

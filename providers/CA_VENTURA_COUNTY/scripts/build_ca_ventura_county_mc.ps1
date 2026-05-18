@@ -16,7 +16,6 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
 $OUT      = "$DIR\CA_VENTURA_COUNTY_MC.json"
-$OUTREAD  = "$DIR\CA_VENTURA_COUNTY_MC_READABLE.json"
 $VEROUT   = "$PHASEDIR\CA_VENTURA_COUNTY_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -722,5 +721,5 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $caBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built CA_VENTURA_COUNTY v${Version}"

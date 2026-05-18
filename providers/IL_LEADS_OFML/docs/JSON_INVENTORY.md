@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | IL_LEADS_OFML_BASE.json | v1.0 | Current BASE | 5 QIDMs, 9 combos. 59P/0F/7W/0LIM. 2026-05-07. |
-| IL_LEADS_OFML_BASE_READABLE.json | v1.0 | Pretty-print | Human-readable BASE variant. |
 | IL_LEADS_OFML_MC.json | v1.0 | Current MC | MC multi-card. 59P/0F/3W/0LIM. 2026-05-07. |
-| IL_LEADS_OFML_MC_READABLE.json | v1.0 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

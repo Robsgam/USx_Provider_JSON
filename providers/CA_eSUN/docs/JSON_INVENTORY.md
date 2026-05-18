@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | CA_eSUN_BASE.json | v1.2 | Current BASE | 6 QIDMs, 17 combos. 70P/0F/3W/5LIM. 2026-05-07. |
-| CA_eSUN_BASE_READABLE.json | v1.2 | Pretty-print | Human-readable BASE variant. |
 | CA_eSUN_MC.json | v1.2 | Current MC | MC multi-card + DH-suffix. 70P/0F/3W/5LIM. 2026-05-07. |
-| CA_eSUN_MC_READABLE.json | v1.2 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

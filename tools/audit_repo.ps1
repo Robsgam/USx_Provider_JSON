@@ -296,18 +296,15 @@ foreach ($bs in $buildScripts) {
         continue
     }
 
-    # Check dual output (direct ConvertTo-Json OR shared Write-ProviderJson helper)
+    # Check JSON output (shared Write-ProviderJson helper or direct ConvertTo-Json)
     $usesSharedHelper = $text -match 'Write-ProviderJson'
-    $hasCompress = $text -match 'ConvertTo-Json\s+-Depth\s+\d+\s+-Compress'
-    $hasReadable = $text -match 'ConvertTo-Json\s+-Depth\s+\d+[^-]' -or $text -match 'READABLE'
+    $hasConvert = $text -match 'ConvertTo-Json'
     if ($usesSharedHelper) {
-        Pass "${shortName} -- dual output via Write-ProviderJson"
-    } elseif (-not $hasCompress) {
-        Fail "${shortName} -- missing minified output (ConvertTo-Json -Compress)"
-    } elseif (-not $hasReadable) {
-        Fail "${shortName} -- missing readable output (_READABLE.json)"
+        Pass "${shortName} -- JSON output via Write-ProviderJson"
+    } elseif ($hasConvert) {
+        Pass "${shortName} -- JSON output via ConvertTo-Json"
     } else {
-        Pass "${shortName} -- dual output (minified + readable)"
+        Fail "${shortName} -- no JSON output found (expected Write-ProviderJson or ConvertTo-Json)"
     }
 
     # Check validator execution (direct call OR shared Write-ProviderJson helper)
@@ -391,35 +388,21 @@ Write-Host "--- CATEGORY 8: CLAUDE.md Consistency ---" -ForegroundColor Yellow
 
 $claudeMd = [System.IO.File]::ReadAllText("$repoRoot\CLAUDE.md")
 
-# 8a: Check _READABLE.json in canonical structure
-if ($claudeMd -match 'READABLE') {
-    Pass "CLAUDE.md canonical structure includes _READABLE.json"
+# 8a: Check _BASE.json in canonical structure
+if ($claudeMd -match '_BASE\.json') {
+    Pass "CLAUDE.md canonical structure includes _BASE.json"
 } else {
-    Fail "CLAUDE.md canonical structure missing _READABLE.json reference"
+    Fail "CLAUDE.md canonical structure missing _BASE.json reference"
 }
 
-# 8b: Check provider status table versions vs actual JSON files
-$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
-foreach ($pd in $providerDirs) {
-    $baseJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE.json' | Select-Object -First 1
-    $readableJson = Get-ChildItem $pd.FullName -File -Filter '*_READABLE.json' | Select-Object -First 1
-    $provName = $pd.Name
-
-    if ($baseJson) {
-        if (-not $readableJson) {
-            Info "${provName} -- BASE JSON exists but no _READABLE.json"
-        }
-    }
-}
-
-# 8c: Check verify_build.ps1 is referenced in tools section
+# 8b: Check verify_build.ps1 is referenced in tools section
 if ($claudeMd -match 'verify_build\.ps1') {
     Pass "CLAUDE.md references verify_build.ps1"
 } else {
     Fail "CLAUDE.md does not reference verify_build.ps1"
 }
 
-# 8d: Check banned_patterns.txt is referenced
+# 8c: Check banned_patterns.txt is referenced
 if ($claudeMd -match 'banned_patterns') {
     Pass "CLAUDE.md references banned_patterns.txt"
 } else {
@@ -551,10 +534,7 @@ foreach ($pd in $providerDirs) {
     $baseJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE.json' | Select-Object -First 1
     if (-not $baseJson) { Info "${provName} -- no BASE JSON, skipping"; continue }
 
-    # Prefer READABLE JSON for reliable parsing; fall back to minified
-    $readableJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE_READABLE.json' | Select-Object -First 1
-    $jsonFile = if ($readableJson) { $readableJson } else { $baseJson }
-    $text = [System.IO.File]::ReadAllText($jsonFile.FullName)
+    $text = [System.IO.File]::ReadAllText($baseJson.FullName)
     $parsed = $text | ConvertFrom-Json
     $isRebuild = $provName -in $needsRebuild
     $isFlagged = $provName -in $flaggedProviders
@@ -960,10 +940,10 @@ foreach ($pd in $providerDirs) {
     $provName = $pd.Name
     $isFlagged = $provName -in $flaggedProviders
 
-    $readableJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE_READABLE.json' | Select-Object -First 1
-    if (-not $readableJson) { continue }
+    $baseJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE.json' | Select-Object -First 1
+    if (-not $baseJson) { continue }
 
-    $text = [System.IO.File]::ReadAllText($readableJson.FullName)
+    $text = [System.IO.File]::ReadAllText($baseJson.FullName)
 
     # Find all fieldId values in form fields
     $fieldIds = @([regex]::Matches($text, '"fieldId"\s*:\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)

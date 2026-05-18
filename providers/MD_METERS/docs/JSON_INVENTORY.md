@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | MD_METERS_BASE.json | v1.0 | Current BASE | 6 QIDMs, 14 combos. 67P/0F/5W/5LIM. 2026-05-07. |
-| MD_METERS_BASE_READABLE.json | v1.0 | Pretty-print | Human-readable BASE variant. |
 | MD_METERS_MC.json | v1.0 | Current MC | MC multi-card. 67P/0F/2W/5LIM. 2026-05-07. |
-| MD_METERS_MC_READABLE.json | v1.0 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

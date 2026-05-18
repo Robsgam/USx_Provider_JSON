@@ -26,7 +26,6 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\NM_NMLETS_OFML_MC.json"
-$OUTREAD  = "$DIR\NM_NMLETS_OFML_MC_READABLE.json"
 $VEROUT   = "$PHASEDIR\NM_NMLETS_OFML_MC_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -591,6 +590,6 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $nmBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built NM_NMLETS_OFML v${Version}"
 # Run validator

@@ -19,10 +19,10 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.1 | 69P/0F/0W/0LIM LOCKED -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, CAD field alignment |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.5 | 74P/0F/0W/0LIM (BASE) 74P/0F/0W/0LIM (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.6 | 74P/0F/0W (BASE) 74P/0F/0W (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v4.1 | 102P/0F/0W/0LIM (BASE) 102P/0F/0W/0LIM (MC) NEW | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible |
-| TX_TLETS | providers/TX_TLETS/ | v2.5 | 84P/0F/0W/2LIM (BASE) 84P/0F/0W/2LIM (MC) NEW | DH-suffix+queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress QIDM-only pattern |
+| FL_FCIC | providers/FL_FCIC/ | v4.1 | 102P/0F/0W/0LIM LOCKED -- 44/44 MC PASS full combo coverage | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible |
+| TX_TLETS | providers/TX_TLETS/ | v2.7 | 84P/0F/0W (BASE) 84P/0F/0W (MC) ACTIVE | DH-suffix+one-directional queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress user-fillable, Attention visible |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS_LOCKED/ | v1.8 | 18/18 PASS LOCKED -- one-directional queriesToDeselect fix | CaRequestPurposeCode, State routing (blank=in-state), DH-suffix fieldIds, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
@@ -235,7 +235,7 @@ Most-specific (most set[] fields) first. Less-specific last.
 - `Build-Qmf -ProviderName <name>` — QUERYMESSAGEFORMAT with CommsysWsiOutgoingMessageHandler.
 - `Build-ProviderQrdm -ProviderName <name>` — wraps Build-CommsysQrdm, sets name/description/provider.
 - `Build-EntitiesBundle -Configurations <array> [-DefaultOrder <array>] [-CadOrder <array>] [-FrOrder <array>]` — ENTITIES bundle with configurable display order. Defaults to Vehicle-first standard.
-- `Write-ProviderJson -BundleObject <obj> -OutPath <path> -ReadablePath <path> [-PhasePath <path>] [-Label <string>]` — ConvertTo-Json (compressed+readable), WriteAllText (UTF-8 no BOM), runs validator with exit-on-fail.
+- `Write-ProviderJson -BundleObject <obj> -OutPath <path> [-PhasePath <path>] [-Label <string>]` — ConvertTo-Json readable output, UTF-8 no BOM, runs validator with exit-on-fail.
 
 ---
 
@@ -426,8 +426,6 @@ Every provider under `providers/` MUST have this structure. All new providers fo
 providers/<PROVIDER>/
 ├── <PROVIDER>_BASE.json                   # Current BASE JSON
 ├── <PROVIDER>_MC.json                     # Current MC JSON (if applicable)
-├── <PROVIDER>_BASE_READABLE.json          # Pretty-printed BASE (for engineers)
-├── <PROVIDER>_MC_READABLE.json            # Pretty-printed MC (if applicable)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
@@ -471,7 +469,7 @@ When a repo does not match this structure, fix it before doing any other work.
 7. Read devdoc "Basic Queries Supported" — this is the ONLY authority for WHICH queries to build
 
 ### Step 2: Build
-8. Create build script in `scripts/` (must include validator call + dual output)
+8. Create build script in `scripts/` (must include validator call)
 9. Phase 1: single card, all entities, confirm all query paths
 10. GATE 1 after every build (report + commit + push)
 11. Update SQVR with [PENDING] markers for every query path

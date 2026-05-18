@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-16 15:10
+  Generated: 2026-05-18 10:31
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,11 +13,11 @@ QUERY SIMULATION
 
 --- QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery [Vehicle] ---
     Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
-    [SKIP] REGLicensePlateNumber -- missing set: FinancialResponsibilityType
+    [SKIP] REGLicensePlateNumber -- missing set: financialResponsibilityType
 
     [FIRES] RQLicensePlateNumber
-      set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      set: [licensePlateNumber, licensePlateYear, licensePlateTypeCode]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -30,12 +30,12 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] VINVehicleIdentificationNumber -- missing set: FinancialResponsibilityType
-    [SKIP] DPSIStickerNumber -- missing set: StickerNumber
+    [SKIP] VINVehicleIdentificationNumber -- missing set: financialResponsibilityType
+    [SKIP] DPSIStickerNumber -- missing set: stickerNumber
 
     [FIRES] QVLicensePlateNumber
-      set: [LicensePlateNumber]
-      any: [RegionId, RegistrationState] -> matched: [RegistrationState]
+      set: [licensePlateNumber]
+      any: [regionId, registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -50,8 +50,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] RQVehicleIdentificationNumber
-      set: [VehicleIdentificationNumber]
-      any: [RegistrationState, VehicleMakeCode, VehicleYear] -> matched: [RegistrationState, VehicleMakeCode, VehicleYear]
+      set: [vehicleIdentificationNumber]
+      any: [registrationState, vehicleMakeCode, vehicleYear] -> matched: [registrationState, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -70,8 +70,8 @@ QUERY SIMULATION
     Query: VehicleStolenQuery  |  Attrs: 4  |  Combos: 2
 
     [FIRES] QV.P
-      set: [LicensePlateNumber]
-      any: [RegionId, RegistrationState] -> matched: [RegistrationState]
+      set: [licensePlateNumber]
+      any: [regionId, registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -86,8 +86,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 3
 
     [FIRES] DQName
-      set: [SexCode, BirthDate, NameLast, NameFirst]
-      any: [ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState] -> matched: [ImageIndicator, NameMiddle, RegistrationState]
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -103,8 +103,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QWName
-      set: [BirthDate, NameLast, NameFirst]
-      any: [ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode] -> matched: [ExpandedBirthDateSearchCode, NameMiddle, RaceCode, SexCode]
+      set: [birthDate, nameLast, nameFirst]
+      any: [emailAddress, expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -120,8 +120,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] DQOperatorLicenseNumber
-      set: [OperatorLicenseNumber]
-      any: [ImageIndicator, ReasonCode, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      set: [operatorLicenseNumber]
+      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -140,13 +140,12 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
 
     [FIRES] KQName
-      set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
-      any: [ImageIndicator, NameMiddleDH, NameSuffixDH, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, NameMiddleDH, PurposeCodeDH, RegistrationState]
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, emailAddressDH, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
@@ -157,13 +156,12 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] KQOperatorLicenseNumber
-      set: [OperatorLicenseNumberDH]
-      any: [ImageIndicator, PurposeCodeDH, ReasonCodeDH, RegistrationState] -> matched: [ImageIndicator, PurposeCodeDH, RegistrationState]
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, emailAddressDH, imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
-        <Attention>DISPATCHER JONES</Attention>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe,John A</Name>
@@ -177,8 +175,8 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES] QGGunSerialNumber
-      set: [GunSerialNumber]
-      any: [GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator] -> matched: [GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator]
+      set: [gunSerialNumber]
+      any: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator] -> matched: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -192,8 +190,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QGNCICNumber
-      set: [NCICNumber]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -210,8 +208,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
 
     [FIRES] QAArticleSerialNumber
-      set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -224,8 +222,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QANCICNumber
-      set: [NCICNumber]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -241,8 +239,8 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 6  |  Combos: 5
 
     [FIRES] BQRegistrationNumber
-      set: [RegistrationNumber, RegistrationState]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [registrationNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -256,8 +254,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] BQBoatHullIdNumber
-      set: [BoatHullIdNumber, RegistrationState]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [boatHullIdNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -271,8 +269,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QBRegistrationNumber
-      set: [RegistrationNumber]
-      any: [BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator] -> matched: [BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator]
+      set: [registrationNumber]
+      any: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -286,8 +284,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QBBoatHullIdNumber
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [boatHullIdNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -301,8 +299,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] QBNCICNumber
-      set: [NCICNumber]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

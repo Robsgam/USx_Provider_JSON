@@ -5,6 +5,32 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v2.7  2026-05-18  One-directional queriesToDeselect fix
+--------------------------------------------------------------------------------
+CHANGED : Removed queriesToDeselect from default queries (VehicleInsuranceRegistrationQuery,
+          DriverLicenseQuery). Kept queriesToDeselect on opt-in queries only
+          (VehicleStolenQuery deselects VehReg, DriverHistoryQuery deselects DL).
+          Folder renamed: TX_TLETS_BLK -> TX_TLETS.
+REASON  : Bidirectional queriesToDeselect causes error popup on live platform.
+          Standard rule: default query has NO deselect, opt-in query deselects default.
+SCRIPT  : scripts/build_tx_tlets.ps1 + scripts/build_tx_tlets_mc.ps1
+OUTPUT  : TX_TLETS_BASE.json + TX_TLETS_MC.json (+ readable variants)
+RESULTS : 84 PASS / 0 FAIL / 0 WARN | Verify: CLEAN | 36/36 test PASS
+
+--------------------------------------------------------------------------------
+v2.6  2026-05-18  EmailAddress user-fillable + Attention fix + DH-suffix
+--------------------------------------------------------------------------------
+CHANGED : EmailAddress user-fillable on DL (any[] + form field).
+          Attention fix on DH (removed handler, sourceField=attentionDH, visible FormInput).
+          EmailAddress DH-suffix (sourceField=emailAddressDH, form field, DH combo any[]).
+          MC casing fix (aligned all fieldIds/sourceFields to camelCase matching BASE).
+REASON  : v2.5 had 2 LIMITATIONs (EmailAddress QIDM-only, Attention handler-only).
+          Resolved by making both user-fillable with form fields.
+SCRIPT  : scripts/build_tx_tlets.ps1 + scripts/build_tx_tlets_mc.ps1
+OUTPUT  : TX_TLETS_BASE.json + TX_TLETS_MC.json (+ readable variants)
+RESULTS : 84 PASS / 0 FAIL / 0 WARN | Verify: CLEAN | 36/36 test PASS
+
+--------------------------------------------------------------------------------
 v2.2  2026-05-07  Add VehicleStolenQuery (metadata gap fix)
 --------------------------------------------------------------------------------
 CHANGED : Added VehicleStolenQuery QIDM with 2 combos: QV.P (plate), QV.V (VIN).
@@ -41,7 +67,7 @@ CHANGED : Multi-card layout for Vehicle (3 cards), Person (3 cards), Boat (3 car
           QIDMs identical to v2.0 BASE (MC is layout-only change).
 REASON  : Phase 2 standard -- split entity forms into one card per search path.
 SCRIPT  : scripts/build_tx_tlets_mc.ps1
-OUTPUT  : TX_TLETS_MC.json + TX_TLETS_MC_READABLE.json
+OUTPUT  : TX_TLETS_MC.json
 REPORTS : docs/mc/ (6 files)
 RESULTS : 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION | Verify: 2 FAIL (EmailAddress)
 
@@ -58,7 +84,7 @@ CHANGED : Full rebuild from TX_TLETS XML metadata using new build script.
           - CAD_DISPATCH CONTEXT_INFO_CARD parent fix
           - EmailAddress QIDM-only field (pending engineering handler)
           - CommsysGetLastNameFirstNameInitialRuleHandler on DH Attention
-          - Dual JSON output (minified + readable)
+          - Single pretty-printed JSON output
           - VehicleInsuranceRegistrationQuery: 7 combos (REG, RQ, VIN+FRT, DPSI, QV, RQ VIN, QV VIN)
           - DriverLicenseQuery: 3 combos (DQ OLN, DQ Name, QW Name)
           - DriverHistoryQuery: 2 combos (KQ OLN, KQ Name) with queriesToDeselect
@@ -68,7 +94,7 @@ CHANGED : Full rebuild from TX_TLETS XML metadata using new build script.
 REASON  : v1.0 had 16 FAIL / 44 WARN -- pre-KB build, fundamentally broken.
           Complete rewrite required to meet current standards.
 SCRIPT  : scripts/build_tx_tlets.ps1
-OUTPUT  : TX_TLETS_BASE.json + TX_TLETS_BASE_READABLE.json
+OUTPUT  : TX_TLETS_BASE.json
 REPORTS : docs/base/ (6 files)
 RESULTS : 73 PASS / 0 FAIL / 14 WARN / 3 LIMITATION | Verify: 2 FAIL (EmailAddress)
 

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-16 15:10
+  Generated: 2026-05-18 10:31
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 26 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 29 fieldIds
   [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='N' for Firearm
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
@@ -39,15 +39,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' -> Vehicle : 4 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'TX_TLETS_DriverLicenseQuery' has 1 QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):
-         EmailAddress (sourceField='EmailAddress')
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 3 combos
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'TX_TLETS_DriverHistoryQuery' has 1 QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):
-         EmailAddress (sourceField='EmailAddress')
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -66,7 +62,7 @@ VALIDATOR RESULTS
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
   [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
-         TX_TLETS_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         TX_TLETS_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
          TX_TLETS_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
@@ -112,10 +108,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 84 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
+  RESULTS: 84 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  2 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

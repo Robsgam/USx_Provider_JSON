@@ -16,7 +16,7 @@ CHANGED : Multi-card layout for Vehicle (3 cards), Person (3 cards), Boat (2 car
           QIDMs identical to v2.0 BASE (MC is layout-only change).
 REASON  : Phase 2 standard -- split entity forms into one card per search path.
 SCRIPT  : scripts/build_LA_LEMS_mc.ps1
-OUTPUT  : LA_LEMS_MC.json + LA_LEMS_MC_READABLE.json
+OUTPUT  : LA_LEMS_MC.json
 REPORTS : docs/mc/ (6 files)
 RESULTS : 48 PASS / 0 FAIL / 32 WARN / 4 LIMITATION | Verify: CLEAN
 
@@ -32,7 +32,7 @@ CHANGED : Full rebuild from LA_LEMS XML metadata using new build script.
           - RMS patches 1/3/6/7/8 applied (including AP #11 race fix in Patch 6)
           - CAD_DISPATCH CONTEXT_INFO_CARD parent fix
           - Attention handler on ALL 6 QIDMs (LA pattern, AP #27)
-          - Dual JSON output (minified + readable)
+          - Single pretty-printed JSON output
           - VehicleRegistrationQuery: 2 combos (RQS Plate, RQS VIN) -- State in set[]
           - DriverLicenseQuery: 4 combos (DP, DQ, QWDN, QWA) -- DQ Name UNREACHABLE dropped
           - DriverHistoryQuery: 2 combos (KQ OLN, KQ Name) -- PurposeCode in set[]
@@ -44,7 +44,7 @@ REASON  : v1.0 had 7 FAIL / 53 WARN -- pre-KB build, fundamentally broken.
           ENTITIES not first, State/Sex/Race all sending numeric IDs.
           Complete rewrite required.
 SCRIPT  : scripts/build_LA_LEMS.ps1
-OUTPUT  : LA_LEMS_BASE.json + LA_LEMS_BASE_READABLE.json
+OUTPUT  : LA_LEMS_BASE.json
 REPORTS : docs/base/ (6 files)
 RESULTS : 48 PASS / 0 FAIL / 32 WARN / 4 LIMITATION | Verify: CLEAN
 

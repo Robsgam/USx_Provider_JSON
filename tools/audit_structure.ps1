@@ -173,9 +173,7 @@ foreach ($provFolder in $providerFolders) {
     Out-Line "--- CHECK 3: Required Files -- JSON ---" 'Yellow'
 
     $baseJson = Join-Path $provRoot "${provName}_BASE.json"
-    $baseReadable = Join-Path $provRoot "${provName}_BASE_READABLE.json"
     $mcJson = Join-Path $provRoot "${provName}_MC.json"
-    $mcReadable = Join-Path $provRoot "${provName}_MC_READABLE.json"
 
     if (Test-Path $baseJson) {
         Write-Pass "${provName}_BASE.json exists"
@@ -183,22 +181,10 @@ foreach ($provFolder in $providerFolders) {
         Write-Fail "${provName}_BASE.json missing"
     }
 
-    if (Test-Path $baseReadable) {
-        Write-Pass "${provName}_BASE_READABLE.json exists"
-    } else {
-        Write-Fail "${provName}_BASE_READABLE.json missing"
-    }
-
     if (Test-Path $mcJson) {
         Write-Pass "${provName}_MC.json exists"
     } else {
         Write-Warn "${provName}_MC.json missing (MC not yet built)"
-    }
-
-    if (Test-Path $mcReadable) {
-        Write-Pass "${provName}_MC_READABLE.json exists"
-    } else {
-        Write-Warn "${provName}_MC_READABLE.json missing (MC not yet built)"
     }
 
     # Check for mis-named JSON files (JSON files in root that don't match folder name)

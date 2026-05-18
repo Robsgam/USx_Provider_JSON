@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-16 15:10
+  Generated: 2026-05-18 10:31
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -15,18 +15,16 @@ POST-BUILD VERIFICATION
   [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'EmailAddress' sourceField='EmailAddress' not in Person QIF fieldIds
-  [FAIL] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'EmailAddress' sourceField='EmailAddress' not in Person QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 32 [FinancialResponsibilityType, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegionId, StickerNumber, EmailAddress, ExpandedBirthDateSearchCode, ImageIndicator, NameMiddle, NameSuffix, RaceCode, ReasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCodeDH, ReasonCodeDH, SexCodeDH, GunCaliber, GunMake, GunSerialNumber, NCICNumber, RelatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 2
-  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [VehicleModelCode]
+  [INFO] Shared fieldIds (CommSys+RMS): 10
+  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, emailAddressDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
+  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [vehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -40,7 +38,7 @@ POST-BUILD VERIFICATION
   [PASS] All shared fields have matching types across MC and BASE
 
 ========================================
- VERIFICATION FAILED: 2 FAIL / 7 PASS
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

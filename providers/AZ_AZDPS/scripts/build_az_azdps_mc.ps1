@@ -32,7 +32,6 @@ $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_MC.json"
 $VEROUT = "$DIR\phases\mc\AZ_AZDPS_MC_v${Version}_$(Get-Date -Format 'yyyy-MM-dd').json"
-$OUTREAD = "$DIR\AZ_AZDPS_MC_READABLE.json"
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
 # =====================================================================
@@ -751,7 +750,7 @@ $final = [PSCustomObject]@{
 # =====================================================================
 # OUTPUT
 # =====================================================================
-Write-ProviderJson -BundleObject $final -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $final -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built AZ_AZDPS v${Version}"
 
 # =====================================================================

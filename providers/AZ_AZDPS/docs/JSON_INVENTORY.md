@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | AZ_AZDPS_BASE.json | v2.0 | Current | NJ cross-reference rebuild. 70P/0F/0W/4LIM. 8 CommSys QIDMs, 18 combos. |
-| AZ_AZDPS_BASE_READABLE.json | v2.0 | Current | Pretty-printed BASE. |
 | AZ_AZDPS_MC.json | v2.0 | Current | MC multi-card layout. 70P/0F/0W/4LIM. |
-| AZ_AZDPS_MC_READABLE.json | v2.0 | Current | Pretty-printed MC. |
 
 ## phases/base/
 

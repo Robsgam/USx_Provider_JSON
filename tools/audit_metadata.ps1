@@ -71,8 +71,7 @@ if ($Path) {
     foreach ($folder in $folders) {
         $baseName = $folder.Name
         # Find _BASE.json (case-insensitive)
-        $jsonCandidates = Get-ChildItem $folder.FullName -Filter '*_BASE.json' -File |
-            Where-Object { $_.Name -notmatch '_READABLE' }
+        $jsonCandidates = Get-ChildItem $folder.FullName -Filter '*_BASE.json' -File
         if ($jsonCandidates) {
             $targets += [PSCustomObject]@{ JsonPath = $jsonCandidates[0].FullName }
         }
@@ -146,7 +145,7 @@ function Audit-Provider {
 
     $jsonFile = [System.IO.Path]::GetFileNameWithoutExtension($JsonPath)
     # Derive provider name: strip _BASE, _MC suffixes
-    $providerName = $jsonFile -replace '(?i)_(BASE|MC)(_READABLE)?$', ''
+    $providerName = $jsonFile -replace '(?i)_(BASE|MC)$', ''
 
     Out-Line ""
     Out-Line ("=" * 60)

@@ -22,7 +22,6 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\LA_LEMS_MC.json"
 $VEROUT   = "$PHASEDIR\LA_LEMS_v${Version}_${DATE}.json"
-$OUTREAD = "$DIR\LA_LEMS_MC_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -514,7 +513,7 @@ $rmsBundle = Build-RmsBundle -SkipRace
 # =====================================================================
 $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $provBundle, $rmsBundle) }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built LA_LEMS v${Version}"
 
 # =====================================================================

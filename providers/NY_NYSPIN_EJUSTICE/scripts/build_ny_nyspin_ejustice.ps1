@@ -51,7 +51,7 @@
 #   Person QIF has both regular DL fields AND separate DH-suffix fields.
 
 param(
-    [string]$Version = "1.5",
+    [string]$Version = "1.6",
     [string]$Phase   = "base"
 )
 
@@ -61,7 +61,6 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\$Phase"
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_BASE.json"
 $VEROUT   = "$PHASEDIR\NY_NYSPIN_EJUSTICE_v${Version}_${DATE}.json"
-$OUTREAD = "$DIR\NY_NYSPIN_EJUSTICE_BASE_READABLE.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -586,7 +585,7 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $nyBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -ReadablePath $OUTREAD -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built NY_NYSPIN_EJUSTICE v${Version}"
 
 # =====================================================================

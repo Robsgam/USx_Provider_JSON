@@ -1,29 +1,30 @@
-TX_TLETS MC v2.5 -- TEST MATRIX
+TX_TLETS MC v2.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-16
+Generated: 2026-05-18
 Variant: MC (multi-card per entity)
-Validator: 84 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
+Validator: 84 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 
 FORM FIELDS (MC layout)
 ----------------------------------------
 Vehicle (1 card, 10 fields):
   CARD_VEH (VEHICLE SEARCH):
-    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], regionId [Inp 4]
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE, TX], regionId [Inp 4]
     ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 3: vehicleIdentificationNumber [Inp 20]
     ROW 4: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 5: stickerNumber [Inp 10], financialResponsibilityType [Inp 1]
 
-Person (1 card, 23 fields):
+Person (1 card, 26 fields):
   CARD_PER (PERSON SEARCH):
     ROW 1: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel NIBRS_RACE/NIBRS]
     ROW 2: operatorLicenseNumber [Inp 20], reasonCode [Inp 1]
     ROW 3: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 4: birthDate [FormDate], sexCode [Sel SEX], expandedBirthDateSearchCode [Inp 1]
-    ROW 5: regionId [Inp 4], purposeCode [Inp 1]
+    ROW 5: regionId [Inp 4], purposeCode [Inp 1], emailAddress [Inp 80]
     ROW 6: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
     ROW 7: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 8: birthDateDH [FormDate], sexCodeDH [Sel SEX], reasonCodeDH [Inp 1]
+    ROW 9: attentionDH [Inp 30], emailAddressDH [Inp 80]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (NCIC FIREARM QUERY):
@@ -44,9 +45,9 @@ Boat (1 card, 6 fields):
 
 QIDM SUMMARY (7 QIDMs, 23 combos)
 ----------------------------------------
-  VehicleInsuranceRegistrationQuery: 7 combos (RQ x2, QV x2, REG x1, VIN x1, DPSI x1), autoSelect=true, deselects: [VehStolen]
+  VehicleInsuranceRegistrationQuery: 7 combos (RQ x2, QV x2, REG x1, DPSI x1, VIN x1), autoSelect=true
   VehicleStolenQuery: 2 combos (QV x2), deselects: [VehicleInsuranceRegistration]
-  DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true, deselects: [DH]
+  DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 2 combos (QG x2)
   ArticleSingleQuery: 2 combos (QA x2)
@@ -62,7 +63,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     Render form. Verify 1 card:                        [    ]
               CARD_VEH: titled "VEHICLE SEARCH".
-              Plate Number, State dropdown (no default), Region ID.
+              Plate Number, State dropdown=TX, Region ID.
               Plate Type dropdown=PC, Plate Year=2026.
               VIN.
               Vehicle Make dropdown (no default), Vehicle Year.
@@ -78,10 +79,11 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               License Number (DL), Reason Code.
               Last Name, First Name, Middle Name, Suffix.
               Date of Birth, Sex dropdown (no default), Expanded DOB Search.
-              Region ID, Purpose Code (DL).
+              Region ID, Purpose Code (DL), Email Address (DL).
               License Number (DH), Purpose Code (DH).
               Last Name (DH), First Name (DH), Middle Name (DH), Suffix (DH).
               DOB (DH), Sex (DH) dropdown (no default), Reason Code (DH).
+              Attention (DH), Email Address (DH).
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "NCIC FIREARM QUERY".
               Serial Number, Make dropdown (no default).
@@ -110,9 +112,9 @@ PHASE 2: VEHICLE COMBOS (9 tests, 9 combos)
               Expected: VehicleInsuranceRegistrationQuery fires (VIN)
 12  Vehicle     DPSI+StickerNumber  stickerNumber=TEST               [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (DPSI)
-13  Vehicle     QV+.P              licensePlateNumber=TEST123       [    ]
+13  Vehicle     QV+.V              vehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleStolenQuery fires (QV)
-14  Vehicle     QV+.V              vehicleIdentificationNumber=1HGCM8263... [    ]
+14  Vehicle     QV+.P              licensePlateNumber=TEST123       [    ]
               Expected: VehicleStolenQuery fires (QV)
 
 PHASE 3: BOAT COMBOS (5 tests, 5 combos)
@@ -171,18 +173,18 @@ PHASE 7: ANY[] FIELD TESTS (5 tests)
               Expected: any[] fields present in XML output.
 30  Boat        QB+Reg             + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
-31  Person      QW+Name            + expandedBirthDateSearchCode, nameMiddle, nameSuffix [    ]
+31  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-32  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
+32  Article     QA+NCIC            + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
-33  Article     QA+NCIC            + relatedHitSearchIndicator     [    ]
+33  Person      KQ+Name            + attentionDH, emailAddressDH, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-34  Person      Deselect: DL deselects DH.     [    ]
+34  Vehicle     Deselect: VehStolen deselects VehicleInsuranceRegistration.     [    ]
               Fill both query fields. Check deselect behavior.
 
 PHASE 9: NEGATIVES (empty forms = no send)
@@ -197,7 +199,7 @@ TOTAL: 36 tests
 
 COMBO COVERAGE (23/23):
   VehicleInsuranceRegistrationQuery: 7/7 -- T6(RQ+Plate), T7(QV+Plate), T8(REG+Plate), T9(RQ+VIN), T10(QV+VIN), T11(VIN+VIN), T12(DPSI+StickerNumber)
-  VehicleStolenQuery: 2/2 -- T13(QV+.P), T14(QV+.V)
+  VehicleStolenQuery: 2/2 -- T13(QV+.V), T14(QV+.P)
   DriverLicenseQuery: 3/3 -- T20(DQ+OLN), T21(DQ+Name), T22(QW+Name)
   DriverHistoryQuery: 2/2 -- T23(KQ+OLN), T24(KQ+Name)
   GunQuery: 2/2 -- T25(Serial), T26(NCIC)

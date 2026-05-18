@@ -26,7 +26,7 @@ $ErrorActionPreference = "Stop"
 
 $xmlResolved = Resolve-Path $XmlPath
 $jsonResolved = Resolve-Path $Path
-$providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_(BASE|MC)(_READABLE)?$', ''
+$providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_(BASE|MC)$', ''
 
 [xml]$metadata = Get-Content $xmlResolved -Raw
 $json = [System.IO.File]::ReadAllText($jsonResolved) | ConvertFrom-Json

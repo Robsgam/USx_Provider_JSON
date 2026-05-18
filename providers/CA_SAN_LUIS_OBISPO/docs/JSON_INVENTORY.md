@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | CA_SAN_LUIS_OBISPO_BASE.json | v1.1 | Current BASE | 6 QIDMs, 15 combos. 63P/0F/0W/4LIM. 2026-05-07. |
-| CA_SAN_LUIS_OBISPO_BASE_READABLE.json | v1.1 | Pretty-print | Human-readable BASE variant. |
 | CA_SAN_LUIS_OBISPO_MC.json | v1.1 | Current MC | MC multi-card. 63P/0F/0W/4LIM. 2026-05-07. |
-| CA_SAN_LUIS_OBISPO_MC_READABLE.json | v1.1 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

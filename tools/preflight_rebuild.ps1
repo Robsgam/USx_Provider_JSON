@@ -356,7 +356,7 @@ function Get-KnownFlags([string]$providerDir, [string]$providerName) {
         $purposeCodeOk = $false
         # Check BASE JSON
         $baseJson = Get-ChildItem $providerDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -notmatch '_READABLE' } | Select-Object -First 1
+            Select-Object -First 1
         if ($baseJson) {
             $jsonText = [System.IO.File]::ReadAllText($baseJson.FullName)
             # Check if DriverHistory QIDM has PurposeCode attribute
@@ -503,9 +503,9 @@ function Run-PreflightSingle([string]$provName) {
     } else {
         # Run validator live
         $baseJson = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -notmatch '_READABLE' } | Select-Object -First 1
+            Select-Object -First 1
         $mcJson = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -notmatch '_READABLE' -and $_.Name -notmatch '_MC_BASE' } | Select-Object -First 1
+            Where-Object { $_.Name -notmatch '_MC_BASE' } | Select-Object -First 1
 
         $validatorPath = Join-Path $toolDir "validate.ps1"
         if ($baseJson -and (Test-Path $validatorPath)) {

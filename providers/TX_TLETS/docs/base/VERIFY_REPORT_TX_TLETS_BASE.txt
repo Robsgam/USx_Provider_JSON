@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_BASE
   Source: TX_TLETS_BASE.json
-  Generated: 2026-05-11 10:36
+  Generated: 2026-05-18 10:48
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -15,8 +15,6 @@ POST-BUILD VERIFICATION
   [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'EmailAddress' sourceField='emailAddress' not in Person QIF fieldIds
-  [FAIL] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'EmailAddress' sourceField='emailAddress' not in Person QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
@@ -24,9 +22,9 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 31 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, emailAddressDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
-  [INFO] RMS-only sourceFields (HIDLE defaults, no form match): 1 [vehicleModelCode]
+  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [vehicleModelCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -40,7 +38,7 @@ POST-BUILD VERIFICATION
   [PASS] All shared fields have matching types across BASE and MC
 
 ========================================
- VERIFICATION FAILED: 2 FAIL / 7 PASS
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

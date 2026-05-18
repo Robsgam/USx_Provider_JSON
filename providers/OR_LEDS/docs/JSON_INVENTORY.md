@@ -7,9 +7,7 @@ All JSON versions produced for this provider.
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
 | OR_LEDS_BASE.json | v1.1 | Current BASE | 5 queries, 8 combos. 58P/0F/2W/1LIM. 2026-05-07. |
-| OR_LEDS_BASE_READABLE.json | v1.1 | Pretty-print | Human-readable BASE variant. |
 | OR_LEDS_MC.json | v1.1 | Current MC | Multi-card layout (11 cards). 58P/0F/1W/1LIM. 2026-05-07. |
-| OR_LEDS_MC_READABLE.json | v1.1 | Pretty-print | Human-readable MC variant. |
 
 ## phases/
 

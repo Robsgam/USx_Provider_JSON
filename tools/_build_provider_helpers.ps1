@@ -88,20 +88,16 @@ function Write-ProviderJson {
     param(
         [Parameter(Mandatory)]$BundleObject,
         [Parameter(Mandatory)][string]$OutPath,
-        [Parameter(Mandatory)][string]$ReadablePath,
         [string]$PhasePath,
         [string]$Label
     )
-    $json = $BundleObject | ConvertTo-Json -Depth 100 -Compress
-    $jsonReadable = $BundleObject | ConvertTo-Json -Depth 100
-    [System.IO.File]::WriteAllText($OutPath,      $json,         [System.Text.UTF8Encoding]::new($false))
-    [System.IO.File]::WriteAllText($ReadablePath, $jsonReadable, [System.Text.UTF8Encoding]::new($false))
+    $json = $BundleObject | ConvertTo-Json -Depth 100
+    [System.IO.File]::WriteAllText($OutPath, $json, [System.Text.UTF8Encoding]::new($false))
     if ($PhasePath) {
         [System.IO.File]::WriteAllText($PhasePath, $json, [System.Text.UTF8Encoding]::new($false))
     }
     if ($Label) { Write-Host $Label }
-    Write-Host "  -> $OutPath (minified)"
-    Write-Host "  -> $ReadablePath (readable)"
+    Write-Host "  -> $OutPath"
     if ($PhasePath) { Write-Host "  -> $PhasePath (phase archive)" }
 
     $validatorPath = Join-Path $PSScriptRoot "validate.ps1"

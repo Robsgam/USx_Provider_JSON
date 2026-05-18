@@ -27,10 +27,23 @@ param(
     [string]$XmlResponse,
     [string]$FormState,
     [string]$Notes,
-    [switch]$NoCommit
+    [switch]$NoCommit,
+    [switch]$Negative
 )
 
 $ErrorActionPreference = "Stop"
+
+# ============================================================================
+# HARD GATE: No XML = No PASS (unless negative test)
+# ============================================================================
+
+if ($Result -eq 'PASS' -and -not $Negative -and (-not $XmlRequest -or $XmlRequest.Trim().Length -eq 0)) {
+    Write-Host ""
+    Write-Host "  BLOCKED: Cannot save PASS without XML evidence." -ForegroundColor Red
+    Write-Host "  Pass -XmlRequest with the server log XML, or use -Negative for empty-form tests." -ForegroundColor Red
+    Write-Host ""
+    exit 1
+}
 
 # ============================================================================
 # HELPERS

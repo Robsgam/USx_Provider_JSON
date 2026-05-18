@@ -1,20 +1,40 @@
 TX_TLETS -- Build Status
 ========================
-Last updated: 2026-05-11
-Current: v2.5 | BASE 84P/0F/0W/2LIM | MC 84P/0F/0W/2LIM | Updated 2026-05-11
-Current version: v2.3 BASE + v2.3 MC
+Last updated: 2026-05-18
+Current: v2.7 | BASE 84P/0F/0W | MC 84P/0F/0W | Updated 2026-05-18
+Current version: v2.7 BASE + v2.7 MC
 Provider: TX_TLETS
 Phase: Phase 1 (BASE) + Phase 2 (MC) -- rebuilt from scratch
 
 BUILD RESULTS
 =============
-  BASE (v2.3):
-    Validator: 82 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
+  BASE (v2.7):
+    Validator: 84 PASS / 0 FAIL / 0 WARN
+    Verify:    CLEAN (7 PASS / 0 FAIL)
     Queries:   18 FIRE / 5 SKIP
+    Test:      36/36 PASS
 
-  MC (v2.3):
-    Validator: 82 PASS / 0 FAIL / 0 WARN / 5 LIMITATION
+  MC (v2.7):
+    Validator: 84 PASS / 0 FAIL / 0 WARN
+    Verify:    CLEAN (7 PASS / 0 FAIL)
     Queries:   18 FIRE / 5 SKIP
+    Test:      36/36 PASS
+
+  CHANGES v2.6 -> v2.7 (2026-05-18):
+    1. One-directional queriesToDeselect fix:
+       - VehicleInsuranceRegistrationQuery: REMOVED queriesToDeselect (default query)
+       - VehicleStolenQuery: KEPT queriesToDeselect=['VehicleInsuranceRegistrationQuery'] (opt-in)
+       - DriverLicenseQuery: REMOVED queriesToDeselect (default query)
+       - DriverHistoryQuery: KEPT queriesToDeselect=['DriverLicenseQuery'] (opt-in)
+    2. Folder renamed: TX_TLETS_BLK -> TX_TLETS
+
+  CHANGES v2.5 -> v2.6 (2026-05-18):
+    1. EmailAddress made user-fillable on DL — added to all 3 DL combo any[] arrays, form field added
+    2. Attention fix on DH — removed CommsysGetLastNameFirstNameInitialRuleHandler,
+       sourceField changed to attentionDH, visible FormInput added
+    3. EmailAddress DH-suffix — sourceField changed to emailAddressDH, form field added,
+       added to both DH combo any[] arrays
+    4. MC casing fix — aligned all MC fieldIds/sourceFields to camelCase matching BASE
 
   CHANGES v2.2 -> v2.3 (2026-05-11):
     1. Removed EmailAddress from all combo any[] (QIDM-only attr, no form field)
@@ -50,46 +70,18 @@ ARCHITECTURE (v2.0)
   Total CommSys combos: 23 (v2.2: +2 VehicleStolenQuery)
   Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
 
-WARN ACKNOWLEDGMENT (13 WARNs)
-==============================
-  All WARNs are acknowledged and expected:
+WARN/LIMITATION STATUS (v2.6)
+=============================
+  v2.6 resolved all prior WARNs and verify FAILs:
+    - EmailAddress: now user-fillable with form fields on both DL and DH (was QIDM-only)
+    - Attention: now visible form field with attentionDH sourceField (was handler-only)
+    - DH-suffix fieldIds: fully implemented (was LIMITATION #25, now AP #14 compliant)
 
-  EmailAddress (5 WARNs):
-    - QIDM sourceField 'EmailAddress' not in QIF (x2: DL, DH)
-    - Combo any[] references EmailAddress not in QIF fieldIds (x3: DQ OLN, DQ Name, KQ OLN, KQ Name)
-    - EXPECTED: Engineering developing handler (similar to dexStateUserId). QIDM-only field.
+  No outstanding WARNs, LIMITATIONs, or verify FAILs.
 
-  Attention (3 WARNs):
-    - Combo any[] references Attention not in QIF fieldIds (x2: KQ OLN, KQ Name)
-    - Attention attr in combo any[] with handler present
-    - EXPECTED: DH uses CommsysGetLastNameFirstNameInitialRuleHandler, no form field.
-
-  ImageIndicator (1 WARN):
-    - Person ImageIndicator default='Y' with In/Out combos
-    - ACCEPTED: TX standard -- image requested by default.
-
-  Combo ordering (4 WARNs counted as LIMITATIONs -- see below)
-
-LIMITATION ACKNOWLEDGMENT (3 LIMITATIONs)
-==========================================
-  LIMITATION #1: DL combo order (fewer set[] before more)
-    DQ OLN (1 set) before DQ Name (4 set) before QW Name (3 set).
-    CORRECT: OLN is operationally prioritized over Name for DL queries.
-
-  LIMITATION #2: DH combo order (fewer set[] before more)
-    KQ OLN (1 set) before KQ Name (4 set).
-    CORRECT: OLN is operationally prioritized over Name for DH queries.
-
-  LIMITATION #3: DL+DH on single form without DH-suffix fieldIds (LIMITATION #25)
-    TX does not use DH-suffix. DH uses queriesToDeselect=DriverLicenseQuery.
-    ACCEPTED: Standard pattern when DL and DH share a form without conflicting fields.
-
-VERIFY FAIL ACKNOWLEDGMENT (2 FAILs)
-=====================================
-  FAIL #1: TX_TLETS_DriverLicenseQuery attr 'EmailAddress' sourceField not in Person QIF fieldIds
-  FAIL #2: TX_TLETS_DriverHistoryQuery attr 'EmailAddress' sourceField not in Person QIF fieldIds
-  EXPECTED: EmailAddress is QIDM-only, pending engineering handler deployment.
-  No form field until handler exists. Same pattern as dexStateUserId.
+  Metadata audit notes (expected, not actionable):
+    - VehicleStolenQuery: in JSON but not in XML (invented query, v2.2)
+    - MessageKey: in XML but not in QIDM (not applicable to ConnectCIC)
 
 MC LAYOUT (v2.0-mc)
 ====================
@@ -144,6 +136,19 @@ Format: [PASS] / [FAIL] / [PENDING]
 
 BUILD LOG (newest first)
 ========================
+  v2.7  2026-05-18  One-directional queriesToDeselect fix
+    VehReg+DL: removed queriesToDeselect (default queries)
+    VehStolen+DH: kept queriesToDeselect (opt-in deselects default)
+    Folder renamed: TX_TLETS_BLK -> TX_TLETS
+    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS
+
+  v2.6  2026-05-18  EmailAddress user-fillable + Attention fix + DH-suffix
+    EmailAddress added to DL combo any[] arrays with form field
+    Attention: removed handler, sourceField=attentionDH, visible FormInput
+    EmailAddress DH: sourceField=emailAddressDH, form field, in DH combo any[]
+    MC casing fix: aligned all fieldIds/sourceFields to camelCase matching BASE
+    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS
+
   v2.2  2026-05-07  Add VehicleStolenQuery (metadata gap fix)
     Added VehicleStolenQuery QIDM (QV.P plate, QV.V VIN)
     queriesToDeselect mutual exclusion with VehicleInsuranceRegistrationQuery
@@ -156,13 +161,13 @@ BUILD LOG (newest first)
 
   v2.0-mc  2026-05-05  MC build -- multi-card layout variant
     Build script: scripts/build_tx_tlets_mc.ps1
-    Output: TX_TLETS_MC.json + TX_TLETS_MC_READABLE.json
+    Output: TX_TLETS_MC.json
     Reports: docs/mc/ (6 files)
     QIDMs: identical to v2.0 BASE
 
   v2.0  2026-05-05  Complete rebuild from scratch (build script)
     Build script: scripts/build_tx_tlets.ps1
-    Output: TX_TLETS_BASE.json + TX_TLETS_BASE_READABLE.json
+    Output: TX_TLETS_BASE.json
     Reports: docs/base/ (6 files)
     Fixes from v1.0: ENTITIES first, NCIC state pattern, NIBRS sex+race,
       3 layout variants, RMS patches 1/3/6/7/8, CAD_DISPATCH fix,

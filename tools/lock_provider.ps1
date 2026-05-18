@@ -3,6 +3,13 @@
   Renames folder to/from _LOCKED suffix, updates STATUS.txt lock line,
   and updates all references in CLAUDE.md, KB, and tools.
 
+  On Lock:
+    - Moves the foundation-testing variant (BASE or MC) into deployed/
+    - Archives the other variant into phases/
+    - Root is left clean (no JSONs)
+  On Unlock:
+    - Restores both variants back to root from deployed/ and phases/
+
   Pre-lock validation (hard gates):
     1. BASE and MC JSON files must both exist
     2. BASE and MC versions must match
@@ -11,6 +18,7 @@
 
   Usage:
     .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Lock
+    .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Lock -Variant BASE
     .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Unlock
     .\lock_provider.ps1 -Provider NJ_NJCJIS -Action Lock -Force
 #>
@@ -21,8 +29,17 @@ param(
     [Parameter(Mandatory=$true)]
     [ValidateSet('Lock','Unlock')]
     [string]$Action,
+    [ValidateSet('BASE','MC')]
+    [string]$Variant,
     [switch]$Force
 )
+
+# Which variant goes to foundation testing for each provider.
+$variantMap = @{
+    'FL_FCIC'      = 'MC'
+    'NJ_NJCJIS'    = 'BASE'
+    'CA_CLETS'     = 'BASE'
+}
 
 $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
@@ -52,8 +69,8 @@ if ($Action -eq 'Lock') {
     Write-Host "  --- Pre-lock validation ---" -ForegroundColor Cyan
 
     # Gate 1: BASE and MC JSON files must exist
-    $baseJson = Get-ChildItem $srcFolder -Filter "*_BASE.json" -File | Where-Object { $_.Name -notmatch 'READABLE' } | Select-Object -First 1
-    $mcJson   = Get-ChildItem $srcFolder -Filter "*_MC.json"   -File | Where-Object { $_.Name -notmatch 'READABLE' } | Select-Object -First 1
+    $baseJson = Get-ChildItem $srcFolder -Filter "*_BASE.json" -File | Select-Object -First 1
+    $mcJson   = Get-ChildItem $srcFolder -Filter "*_MC.json"   -File | Select-Object -First 1
 
     if (-not $baseJson) {
         Write-Host "  [FAIL] No BASE JSON found in $srcFolder" -ForegroundColor Red
@@ -129,6 +146,42 @@ if ($Action -eq 'Lock') {
 
     Write-Host "  [RENAME] $unlockedName -> $lockedName" -ForegroundColor Green
     Rename-Item $srcFolder $dstFolder
+
+    # --- JSON STAGING: move active variant to deployed/, archive the other ---
+    $activeVariant = if ($Variant) { $Variant } elseif ($variantMap[$unlockedName]) { $variantMap[$unlockedName] } else { $null }
+
+    if ($activeVariant) {
+        $archiveVariant = if ($activeVariant -eq 'MC') { 'BASE' } else { 'MC' }
+        $deployedDir    = Join-Path $dstFolder "deployed"
+        $undeployedDir  = Join-Path $dstFolder "undeployed"
+        $phaseSub       = if ($archiveVariant -eq 'MC') { 'mc' } else { 'base' }
+        $archiveDir     = Join-Path $dstFolder "phases\$phaseSub"
+
+        if (-not (Test-Path $deployedDir))   { New-Item -ItemType Directory $deployedDir   -Force | Out-Null }
+        if (-not (Test-Path $undeployedDir)) { New-Item -ItemType Directory $undeployedDir -Force | Out-Null }
+        if (-not (Test-Path $archiveDir))    { New-Item -ItemType Directory $archiveDir    -Force | Out-Null }
+
+        # Archive the non-active variant
+        $archiveJsons = Get-ChildItem $dstFolder -Filter "*_${archiveVariant}*.json" -File
+        foreach ($j in $archiveJsons) {
+            $dest = Join-Path $archiveDir $j.Name
+            if (-not (Test-Path $dest)) { Copy-Item $j.FullName $dest }
+            Remove-Item $j.FullName
+            Write-Host "  [ARCHIVE] $($j.Name) -> phases\$phaseSub\" -ForegroundColor Yellow
+        }
+
+        # Move active variant to deployed/
+        $activeJsons = Get-ChildItem $dstFolder -Filter "*_${activeVariant}*.json" -File
+        foreach ($j in $activeJsons) {
+            Move-Item $j.FullName (Join-Path $deployedDir $j.Name) -Force
+            Write-Host "  [DEPLOY] $($j.Name) -> deployed\" -ForegroundColor Green
+        }
+
+        $variantMap[$unlockedName] = $activeVariant
+        Write-Host "  [STAGED] Foundation variant: $activeVariant" -ForegroundColor Cyan
+    } else {
+        Write-Host "  [WARN] No variant configured -- JSONs left in root. Use -Variant BASE or MC next time." -ForegroundColor Yellow
+    }
 }
 else {
     $srcFolder = Join-Path $repoRoot "providers\$lockedName"
@@ -145,6 +198,41 @@ else {
         }
         Write-Host "  [ERROR] Provider folder not found: $srcFolder" -ForegroundColor Red
         exit 1
+    }
+
+    # --- RESTORE JSONs: move deployed/ back to root, copy archived variant back ---
+    $deployedDir   = Join-Path $srcFolder "deployed"
+    $undeployedDir = Join-Path $srcFolder "undeployed"
+
+    if (Test-Path $deployedDir) {
+        $depJsons = Get-ChildItem $deployedDir -Filter "*.json" -File
+        foreach ($j in $depJsons) {
+            $dst = Join-Path $srcFolder $j.Name
+            if (-not (Test-Path $dst)) {
+                Move-Item $j.FullName $dst
+                Write-Host "  [RESTORE] deployed\$($j.Name) -> root" -ForegroundColor Green
+            }
+        }
+        $remaining = Get-ChildItem $deployedDir -File -ErrorAction SilentlyContinue
+        if (-not $remaining) { Remove-Item $deployedDir -Force }
+    }
+
+    # Restore archived variant from phases/
+    $activeVariant = if ($Variant) { $Variant } elseif ($variantMap[$unlockedName]) { $variantMap[$unlockedName] } else { $null }
+    if ($activeVariant) {
+        $archiveVariant = if ($activeVariant -eq 'MC') { 'BASE' } else { 'MC' }
+        $phaseSub       = if ($archiveVariant -eq 'MC') { 'mc' } else { 'base' }
+        $archiveDir     = Join-Path $srcFolder "phases\$phaseSub"
+        $src = Join-Path $archiveDir "${unlockedName}_${archiveVariant}.json"
+        $dst = Join-Path $srcFolder "${unlockedName}_${archiveVariant}.json"
+        if ((Test-Path $src) -and -not (Test-Path $dst)) {
+            Copy-Item $src $dst
+            Write-Host "  [RESTORE] phases\$phaseSub\$(Split-Path $src -Leaf) -> root" -ForegroundColor Green
+        }
+    }
+
+    if ((Test-Path $undeployedDir) -and -not (Get-ChildItem $undeployedDir -File -ErrorAction SilentlyContinue)) {
+        Remove-Item $undeployedDir -Force
     }
 
     $statusFile = Get-ChildItem (Join-Path $srcFolder "docs") -Filter "*STATUS*" -File -ErrorAction SilentlyContinue | Select-Object -First 1

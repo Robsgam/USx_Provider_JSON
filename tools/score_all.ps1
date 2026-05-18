@@ -77,18 +77,16 @@ foreach ($dir in $providerDirs) {
     $isLocked = $folderName -match '_(LOCKED|BLOCKED)$'
     $providerName = if ($isLocked) { $folderName -replace '_(LOCKED|BLOCKED)$', '' } else { $folderName }
 
-    # Find BASE JSON: look for *_BASE.json (not READABLE)
+    # Find BASE JSON
     $baseJson = Get-ChildItem $dir.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -notmatch '_READABLE' } |
         Select-Object -First 1
 
-    # Find MC JSON: look for *_MC.json or *_MC_BASE.json (not READABLE)
+    # Find MC JSON
     $mcJson = Get-ChildItem $dir.FullName -Filter "*_MC.json" -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -notmatch '_READABLE' -and $_.Name -notmatch '_MC_BASE' } |
+        Where-Object { $_.Name -notmatch '_MC_BASE' } |
         Select-Object -First 1
     if (-not $mcJson) {
         $mcJson = Get-ChildItem $dir.FullName -Filter "*_MC_BASE.json" -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -notmatch '_READABLE' } |
             Select-Object -First 1
     }
 
