@@ -2,14 +2,64 @@
 =================
 Last updated: 2026-05-12
 
-  *** ACTIVE -- v3.2 CAD-compatible rebuild ***
-Current: v3.1 | BASE 69P/0F/0W/0LIM | MC 69P/0F/0W/0LIM | Updated 2026-05-12
-  BASE  v3.1  -- 69P/0F/0W/0LIM -- -- 14/14 PASS (2026-05-12) -- full combo coverage
-  BASE  v3.0  -- 69P/0F/0W/1LIM -- -- 14/14 PASS (2026-05-08) -- full combo coverage -- DEPLOYED Newark NJ 2026-05-11
+  *** MC v3.2 FOUNDATION TESTING READY ***
+Current: v3.2 | BASE 69P/0F/0W/0LIM | MC 69P/0F/0W/0LIM | Updated 2026-05-18
+  MC    v3.2  -- 69P/0F/0W/0LIM -- 26/26 PASS (2026-05-18) -- full combo + CAD + deselect + any[] coverage -- FOUNDATION TESTING READY
+  BASE  v3.2  -- 69P/0F/0W/0LIM -- pending foundation test
+  BASE  v3.0  -- 69P/0F/0W/1LIM -- 14/14 PASS (2026-05-08) -- full combo coverage -- DEPLOYED Newark NJ 2026-05-11
   MC    v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- PRODUCTION TEST: 57/57 PASS (2026-04-29)
 
 DEPLOYMENT:
   v3.0 BASE  -- DEPLOYED 2026-05-11 -- Newark, NJ foundation tenant
+  v3.2 MC    -- FOUNDATION TESTING READY 2026-05-18
+
+  MC v3.2 PRODUCTION TEST MATRIX (2026-05-18):
+    Phase 1 - Render:
+    T1   Vehicle  Render   3 cards (OPTIONS/PLATE/VIN)  PASS
+    T2   Person   Render   3 cards (NAME/OLN/OPTIONS)   PASS
+    T3   Boat     Render   1 card (BOAT SEARCH)         PASS
+    T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
+    T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
+    Phase 2 - Vehicle combos:
+    T6   Vehicle  RQN_RAND VehReg VIN RAND              PASS  (VIN+random=Y, conditions routing)
+    T7   Vehicle  RQN      VehReg VIN FULL              PASS  (VIN+random=N fallback)
+    T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
+    T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
+    T10  Vehicle  QVV      VehStolen VIN                PASS  (VIN+image, queriesToDeselect)
+    T11  Vehicle  QVP      VehStolen plate              PASS  (plate+state+image, queriesToDeselect)
+    T12  Vehicle  QVN      VehStolen NCIC#              PASS  (NCICNumber+image, exclusive field)
+    Phase 3 - Person combos:
+    T13  Person   DQN      DL OLN                       PASS  (OLN+state+image=Y, RMS co-fire)
+    T14  Person   DQ       DL Name+DOB                  PASS  (Name=DOEA,JOE+DOB+state+image=Y)
+    Phase 4 - Boat combos:
+    T15  Boat     QBN      Boat hull ID                 PASS  (hullId+image)
+    T16  Boat     QBR      Boat reg number              PASS  (regNumber+image)
+    Phase 5 - Firearm:
+    T17  Firearm  QG       Firearm serial               PASS  (serial+image)
+    Phase 6 - Article:
+    T18  Article  QA       Article serial+type           PASS  (serial+typeCode+image)
+    Phase 7 - any[] fields:
+    T19  Vehicle  RQ_RAND  all any[] (plate+type+year+random+state+image) PASS
+    T20  Person   DQ       sexCode any[]                PASS  (Name+DOB+Sex=F+state+image)
+    T21  Firearm  QG       Make+Caliber+Model any[]     PASS  (serial+make+caliber+model+image)
+    Phase 8 - Deselect:
+    T22  Vehicle  QVP      VehStolen deselects VehReg   PASS  (one-directional confirmed)
+    Phase 9 - Negatives:
+    T23  Vehicle  Empty    no send                      PASS
+    T24  Boat     Empty    no send                      PASS
+    CAD Verification:
+    T25  Vehicle  RQ       CAD plate (no RandomRequest) PASS  (conditions fallback, v3.2 fix confirmed)
+    T26  Vehicle  RQN      CAD VIN (no RandomRequest)   PASS  (conditions fallback, v3.2 fix confirmed)
+
+  KEY FINDINGS (v3.2 MC testing):
+    - v3.2 CAD fix CONFIRMED: conditions routing allows CAD to bypass RAND combos
+    - CAD does NOT send RandomRequest or ImageIndicator
+    - CAD injects: PurposeCode=C, LicensePlateTypeCode=PC, LicensePlateYear=2026, State=NJ
+    - RMS state resolution bug: CAD passes "[NJ]" instead of attr ID (platform limitation)
+    - MC multi-card conditions routing works across OPTIONS + PLATE/VIN cards
+    - Clear-form bug hit during T6 (stale state); full page reload resolved
+    - All 13 CommSys combos + 2 CAD paths confirmed across 5 entities
+    - one-directional queriesToDeselect confirmed (VehStolen→VehReg only)
 
   BASE v3.1 PRODUCTION TEST MATRIX (2026-05-12):
     T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)

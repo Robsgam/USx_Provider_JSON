@@ -1,0 +1,78 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Vehicle
+Combo      : QVV (VehStolen VIN)
+Test type  : T10 (Phase 2 -- Vehicle combos)
+
+================================================================================
+FORM STATE
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber  23423423        typed
+  registrationState         NJ                 default
+  imageIndicator            N                  default
+  VehicleStolenQuery        checked            manual (officer opt-in)
+  VehicleRegistrationQuery  unchecked          queriesToDeselect fired
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY7M5ZFAJAT7BV8C4HCZXCQ
+  MessageType : VehicleStolenQuery
+  keyReference: QVV
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    VehicleIdentificationNumber  23423423
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QVV
+  Reason: vehicleIdentificationNumber in set[] satisfied
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  VehicleIdentificationNumber  YES  23423423  mapped from vehicleIdentificationNumber
+  ImageIndicator       YES    N               default
+  State                NO     --              not sent (not in QVV combo requirements)
+  VehicleMakeCode      NO     --              empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"23423423"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleStolenQuery fired via QVV. queriesToDeselect confirmed (VehReg auto-unchecked).
+  Detail: State not sent in CommSys XML (correct -- State in any[] but VehStolen doesn't require it for VIN). RMS still filtered by state (attrId resolved from form).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY7M5ZFAJAT7BV8C4HCZXCQ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KRY7M5ZFAJAT7BV8C4HCZXCQ</Id><VehicleIdentificationNumber>23423423</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"23423423"}},"from":0,"size":50}
+
+Response: No Returns

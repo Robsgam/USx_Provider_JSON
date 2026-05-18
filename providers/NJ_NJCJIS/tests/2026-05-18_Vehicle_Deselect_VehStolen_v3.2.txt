@@ -1,0 +1,81 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Vehicle
+Combo      : QVP (VehStolen plate -- deselect verification)
+Test type  : T22 (Phase 8 -- co-fire / deselect verification)
+
+================================================================================
+FORM STATE
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        ABC123             typed
+  registrationState         NJ                 default
+  imageIndicator            N                  default
+  VehicleRegistrationQuery  unchecked          queriesToDeselect fired
+  VehicleStolenQuery        checked            manual (officer opt-in)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY8HG4S9BNFD9KZRP14S01J
+  MessageType : VehicleStolenQuery
+  keyReference: QVP
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       N
+    State                NJ
+    LicensePlateNumber   ABC123
+
+  Transactions fired: 1 (VehicleStolenQuery only)
+  VehicleRegistrationQuery: NOT fired (deselected)
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Deselect behavior verified:
+    1. Plate entered → VehicleRegistrationQuery auto-selected (autoSelect=true)
+    2. VehicleStolenQuery manually checked
+    3. VehicleRegistrationQuery auto-unchecked (queriesToDeselect on VehStolen)
+    4. Only VehicleStolenQuery submitted
+
+  One-directional deselect CONFIRMED:
+    - VehStolen → deselects VehReg: YES
+    - VehReg → deselects VehStolen: NO (correct -- default query has no deselect)
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"tag":"abc123"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: queriesToDeselect confirmed. VehStolen deselected VehReg. Only 1 CommSys transaction (VehicleStolenQuery). RMS still co-fired (independent of CommSys deselect).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY8HG4S9BNFD9KZRP14S01J"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KRY8HG4S9BNFD9KZRP14S01J</Id><ImageIndicator>N</ImageIndicator><State>NJ</State><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"tag":"abc123"}},"from":0,"size":50}
+
+Response: No Returns

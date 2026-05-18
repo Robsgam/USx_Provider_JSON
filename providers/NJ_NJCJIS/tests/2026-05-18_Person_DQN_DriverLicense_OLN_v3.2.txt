@@ -1,0 +1,75 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Person
+Combo      : DQN (DriverLicense OLN)
+Test type  : T13 (Phase 3 -- Person combos)
+
+================================================================================
+FORM STATE
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumber     785875             typed
+  registrationState         NJ                 default
+  imageIndicator            Y                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY7YR747G3S7DVJM7SHNQ54
+  MessageType : DriverLicenseQuery
+  keyReference: DQN
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       Y
+    State                NJ
+    OperatorLicenseNumber 785875
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQN
+  Reason: operatorLicenseNumber in set[] satisfied
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber YES   785875          mapped from operatorLicenseNumber
+  ImageIndicator       YES    Y               default
+  State                YES    NJ              mapped from registrationState, codeTypeProvider=NCIC
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Person DL search
+  RMS request: {"elasticQuery":{"dlNumber":"785875","registrationStateAttrId":"69509884952"},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DriverLicenseQuery fired via DQN. OLN + State + Image sent. RMS co-fired with DL number + state attribute ID.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY7YR747G3S7DVJM7SHNQ54"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KRY7YR747G3S7DVJM7SHNQ54</Id><ImageIndicator>Y</ImageIndicator><State>NJ</State><OperatorLicenseNumber>785875</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"dlNumber":"785875","registrationStateAttrId":"69509884952"},"from":0,"size":50}
+
+Response: No Returns

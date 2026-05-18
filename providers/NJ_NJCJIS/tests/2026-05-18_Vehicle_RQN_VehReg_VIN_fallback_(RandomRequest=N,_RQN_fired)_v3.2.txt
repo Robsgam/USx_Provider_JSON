@@ -1,0 +1,80 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Vehicle
+Combo      : RQN (VehReg VIN fallback -- RandomRequest=N, RQN fired)
+Test type  : T6 (Phase 2 -- Vehicle combos)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber  9862344444      typed
+  registrationState         NJ                 default
+  randomRequest             N                  default
+  imageIndicator            Y                  changed from default (N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY6WM9TEC71R71G6T7APERK
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQN
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    VehicleIdentificationNumber  9862344444
+    ImageIndicator       Y
+    State                NJ
+    RandomRequest        N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQN (fallback -- RQN_RAND skipped because RandomRequest != Y)
+  Reason: vehicleIdentificationNumber in set[] satisfied
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  VehicleIdentificationNumber  YES  9862344444  mapped from vehicleIdentificationNumber
+  ImageIndicator       YES    Y               mapped from imageIndicator (changed to Y)
+  State                YES    NJ              mapped from registrationState, codeTypeProvider=NCIC
+  RandomRequest        YES    N               mapped from randomRequest (default)
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"9862344444"}},"from":0,"size":50}
+  Note: registrationStateAttrIds resolved to attribute ID (form submission, not CAD)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleRegistrationQuery fired on VIN via RQN fallback combo. RQN_RAND skipped (RandomRequest=N, conditions EQUALS Y not met).
+  Detail: RMS state resolved correctly (attrId 69509884952). RandomRequest=N sent as pass-through. Image changed to Y by user.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY6WM9TEC71R71G6T7APERK"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KRY6WM9TEC71R71G6T7APERK</Id><VehicleIdentificationNumber>9862344444</VehicleIdentificationNumber><ImageIndicator>Y</ImageIndicator><State>NJ</State><RandomRequest>N</RandomRequest></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509884952],"vinNumber":"9862344444"}},"from":0,"size":50}
+
+Response: No Returns

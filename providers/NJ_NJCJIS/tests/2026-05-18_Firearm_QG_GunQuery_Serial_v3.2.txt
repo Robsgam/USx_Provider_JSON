@@ -1,0 +1,68 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Firearm
+Combo      : QG (GunQuery Serial)
+Test type  : T17 (Phase 5 -- Firearm combos)
+
+================================================================================
+FORM STATE
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  gunSerialNumber           5654645            typed
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY86HDY5BYPCHPCFQKGQDC3
+  MessageType : GunQuery
+  keyReference: QG
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    GunSerialNumber      5654645
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QG
+  Reason: gunSerialNumber in set[] satisfied
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  GunSerialNumber      YES    5654645         mapped from gunSerialNumber
+  ImageIndicator       YES    N               default
+  GunMake              NO     --              empty (any[] field, not required)
+  GunCaliber           NO     --              empty (any[] field, not required)
+  GunModel             NO     --              empty (any[] field, not required)
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: none (no RMS QIDM for Firearm)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: GunQuery fired via QG. Serial + Image sent. any[] fields (Make, Caliber, Model) correctly omitted when empty.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY86HDY5BYPCHPCFQKGQDC3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KRY86HDY5BYPCHPCFQKGQDC3</Id><GunSerialNumber>5654645</GunSerialNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Response: No Returns

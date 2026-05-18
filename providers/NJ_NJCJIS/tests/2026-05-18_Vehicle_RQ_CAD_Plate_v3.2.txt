@@ -1,0 +1,88 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Vehicle
+Combo      : RQ (VehReg plate -- CAD dispatch)
+Test type  : T25 (CAD verification -- plate search)
+
+================================================================================
+FORM STATE (CAD API -- no form rendered)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        CADPLATE           CAD dispatch
+  registrationState         NJ                 CAD injected
+  licensePlateTypeCode      PC                 CAD injected default
+  licensePlateYear          2026               CAD injected default
+  randomRequest             (absent)           NOT in CAD field list
+  imageIndicator            (absent)           NOT sent by CAD
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY8QDSMCAP11P4ACEW135XA
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQ (fallback -- RQ_RAND skipped, no RandomRequest field)
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    LicensePlateYear     2026
+    State                NJ
+    LicensePlateTypeCode PC
+    LicensePlateNumber   CADPLATE
+
+  Fields NOT sent (CAD does not provide):
+    RandomRequest        -- absent (conditions fallback to RQ)
+    ImageIndicator       -- absent
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQ (fallback)
+  Reason: RandomRequest absent → conditions block (EQUALS Y) not matched →
+          RQ_RAND skipped → RQ fired (no conditions, licensePlateNumber in set[])
+
+  THIS IS THE FIX: v3.1 had RandomRequest in set[] (metadata pattern).
+  CAD never sends RandomRequest → no combo matched → VehReg never fired from CAD.
+  v3.2 moved RandomRequest to any[] with conditions routing → CAD falls through to RQ.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[NJ]","tag":"CADPLATE"}},"from":0,"size":50}
+
+  *** KNOWN PLATFORM BUG: CAD passes "[NJ]" raw string instead of resolved
+      attribute ID 69509884952. Form submission resolves correctly.
+      Not fixable at JSON level. Reported to Cringer.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: VehicleRegistrationQuery fires from CAD dispatch via RQ fallback combo.
+  This confirms the v3.2 CAD-compatible rebuild resolves the original bug.
+  RMS state resolution bug is a separate platform issue (not JSON-configurable).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY8QDSMCAP11P4ACEW135XA"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KRY8QDSMCAP11P4ACEW135XA</Id><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>CADPLATE</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[NJ]","tag":"CADPLATE"}},"from":0,"size":50}
+
+Response: No Returns

@@ -1,0 +1,68 @@
+NJ_NJCJIS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-18
+JSON       : NJ_NJCJIS_MC.json
+Entity     : Article
+Combo      : QA (ArticleSingleQuery Serial)
+Test type  : T18 (Phase 6 -- Article combos)
+
+================================================================================
+FORM STATE
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  articleSerialNumber        ART567889          typed
+  articleTypeCode            DCASE              selected
+  imageIndicator             N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KRY87TAQHX40163H2016E1J1
+  MessageType : ArticleSingleQuery
+  keyReference: QA
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       N
+    ArticleTypeCode      DCASE
+    ArticleSerialNumber  ART567889
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QA
+  Reason: articleSerialNumber in set[] satisfied
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  ArticleSerialNumber  YES    ART567889       mapped from articleSerialNumber
+  ArticleTypeCode      YES    DCASE           mapped from articleTypeCode (any[] field)
+  ImageIndicator       YES    N               default
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: none (no RMS QIDM for Article)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: ArticleSingleQuery fired via QA. Serial + ArticleType + Image sent. any[] field (ArticleTypeCode) correctly included when populated.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KRY87TAQHX40163H2016E1J1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KRY87TAQHX40163H2016E1J1</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>DCASE</ArticleTypeCode><ArticleSerialNumber>ART567889</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Response: No Returns
