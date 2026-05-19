@@ -30,11 +30,16 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v3.2  2026-05-18  [describe change here]
+v3.2  2026-05-18  CAD-compatible rebuild -- conditions routing for RandomRequest
   CHANGED
-    -
+    - RandomRequest moved from set[] to any[] on all VehicleRegistrationQuery combos (RQ, RQN, RQ_RAND, RQN_RAND)
+    - Added conditions routing: RQ_RAND/RQN_RAND require RandomRequest EQUALS Y, RQ/RQN have no conditions (fallback)
+    - CAD dispatch now falls through to RQ/RQN when RandomRequest is absent
+    - Same fix applied to both BASE and MC variants
   REASON
-    -
+    - CAD dispatch does not send RandomRequest (not in CAD field list)
+    - v3.1 had RandomRequest in set[] (per metadata) -- no combo matched from CAD, VehReg never fired
+    - Conditions routing lets form users still hit RAND combos (RandomRequest=Y) while CAD falls through
 v3.1  2026-05-11  DL combo reorder + validator path fix -- UNTESTED
   CHANGED
     - DL combos reordered: Name (3 set fields) before OLN (2 set fields) -- most-specific first

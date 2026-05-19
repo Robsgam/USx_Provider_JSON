@@ -17,7 +17,7 @@
 #   BoatQuery v35                 -- 7 combos in XML, collapsed to 5 (IA.QB hull/OAN/reg + NLTS.BQ hull/reg OOS)
 #
 # CA-SPECIFIC:
-#   CaRequestPurposeCode -- required in set[] on EVERY combo. Hidden InpH initialValue='C' (Criminal Justice).
+#   CaRequestPurposeCode -- required in set[] on EVERY combo. fieldId='purposeCode' (matches CAD PurposeCode). Visible Inp initialValue='C'.
 #   No ImageIndicator    -- not in CA metadata (unlike NJ v2).
 #   No VehicleStolenQuery -- CA combines stolen+reg in VehicleRegistrationQuery.
 #   No RandomRequest     -- not in CA metadata.
@@ -45,7 +45,7 @@
 #   DH-suffix fieldIds isolate DH from DL field pool.
 
 param(
-    [string]$Version = "1.8",
+    [string]$Version = "1.9",
     [string]$Phase   = "base"
 )
 
@@ -86,7 +86,7 @@ $qmf = Build-Qmf -ProviderName 'CA_CLETS'
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode';       size = 1;  sourceField = @('caRequestPurposeCode');       targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode';       size = 1;  sourceField = @('purposeCode');       targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('licensePlateNumber');          targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('licensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('licensePlateYear');            targetField = 'LicensePlateYear' }
@@ -97,25 +97,25 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'NLTS.RQ.P'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'NLTS.RQ.V'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber'); any = @('vehicleMakeCode','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','vehicleIdentificationNumber'); any = @('vehicleMakeCode','registrationState') }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'IA.QVK'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber'); any = @('registrationState','licensePlateTypeCode','licensePlateYear','vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','licensePlateNumber'); any = @('registrationState','licensePlateTypeCode','licensePlateYear','vehicleMakeCode','vehicleYear') }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'IA.QV'
             state                 = 'In/Out'
@@ -147,7 +147,7 @@ $dlQuery = [PSCustomObject]@{
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
         }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
@@ -158,19 +158,19 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber','registrationState'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber'); any = @('registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ID.L1'
             state                 = 'In/Out'
@@ -193,7 +193,7 @@ $dlQuery = [PSCustomObject]@{
 # XML v22: 2 combos (NLTS.KQ Name, NLTS.KQ OLN) -- both Nlets
 # CA has no in-state DH; all DH goes through Nlets
 # DH-suffix fieldIds isolate from DL field pool (AP #14 / LIMITATION #24-25)
-# PurposeCode: DH attr maps from caRequestPurposeCodeDH (DH-suffix form field)
+# PurposeCode: DH attr maps from purposeCodeDH (DH-suffix form field)
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
@@ -202,26 +202,26 @@ $dhQuery = [PSCustomObject]@{
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
         }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCodeDH'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCodeDH'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
             size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCodeDH'); targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCodeDH','birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCodeDH','birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'NLTS.KQ.N'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCodeDH','operatorLicenseNumberDH'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCodeDH','operatorLicenseNumberDH'); any = @('registrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.KQ.O'
             state                 = 'In/Out'
@@ -247,7 +247,7 @@ $dhQuery = [PSCustomObject]@{
 # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('firearmMake');           targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
@@ -255,7 +255,7 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('gunCaliber','firearmMake','gunTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','serialNumber'); any = @('gunCaliber','firearmMake','gunTypeCode') }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'IG.QGB'
             state                 = 'In/Out'
@@ -283,18 +283,18 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ArticleBrand';        size = 6;  sourceField = @('articleBrand');        targetField = 'ArticleBrand' }
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('serialNumber');        targetField = 'ArticleSerialNumber' }
         [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 6;  sourceField = @('articleTypeCode');     targetField = 'ArticleTypeCode' }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1; sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1; sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'OwnerAppliedNumber';  size = 20; sourceField = @('ownerAppliedNumber');  targetField = 'OwnerAppliedNumber' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('articleBrand','articleTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','serialNumber'); any = @('articleBrand','articleTypeCode') }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'IP.QA.S'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ownerAppliedNumber'); any = @('articleBrand','articleTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','ownerAppliedNumber'); any = @('articleBrand','articleTypeCode') }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'IP.QA.O'
             state                 = 'In/Out'
@@ -321,38 +321,38 @@ $artQuery = [PSCustomObject]@{
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BoatHullIdNumber';      size = 20; sourceField = @('boatHullIdNumber');      targetField = 'BoatHullIdNumber' }
-        [PSCustomObject]@{ name = 'CaRequestPurposeCode';  size = 1;  sourceField = @('caRequestPurposeCode');  targetField = 'CaRequestPurposeCode' }
+        [PSCustomObject]@{ name = 'CaRequestPurposeCode';  size = 1;  sourceField = @('purposeCode');  targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'OwnerAppliedNumber';    size = 20; sourceField = @('ownerAppliedNumber');    targetField = 'OwnerAppliedNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';    size = 8;  sourceField = @('registrationNumber');    targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','boatHullIdNumber','registrationState'); any = @() }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'NLTS.BQ.H'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','registrationNumber','registrationState'); any = @() }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'NLTS.BQ.R'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','boatHullIdNumber'); any = @('registrationState') }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'IA.QB.H'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ownerAppliedNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','ownerAppliedNumber'); any = @('registrationState') }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'IA.QB.O'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','registrationNumber'); any = @('registrationState') }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'IA.QB.R'
             state                 = 'In/Out'
@@ -399,7 +399,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
+                @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_VEH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
@@ -428,7 +428,7 @@ $vehicleForm = [PSCustomObject]@{
 # Person -- 1 card
 # Serves 2 QIDMs: DL + DH (co-fire with queriesToDeselect + DH-suffix).
 # State: NO initialValue (LIMITATION #30 -- ID.L1 vs NLTS.DQ routing)
-# DH-suffix fields: operatorLicenseNumberDH, caRequestPurposeCodeDH,
+# DH-suffix fields: operatorLicenseNumberDH, purposeCodeDH,
 #   nameLastDH, nameFirstDH, birthDateDH, sexCodeDH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
@@ -439,7 +439,7 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
                 @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
-                @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
+                @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
                 @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }
@@ -451,7 +451,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_4' }
-                @{ id = 'caRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
+                @{ id = 'purposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_5'; cols = @('6','6'); fields = @(
                 @{ id = 'nameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_5' }
@@ -486,7 +486,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'firearmMake_Input';  node = Sel 'firearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_1' @{ initialValue = 'C' } }
+                @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
                 @{ id = 'gunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -516,7 +516,7 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'serialNumber_Input';       node = Inp 'serialNumber'       'Serial Number'        '20' 'ROW_ART_1' }
                 @{ id = 'ownerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
+                @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'articleTypeCode_Input'; node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
@@ -547,7 +547,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'registrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
                 @{ id = 'registrationState_Input';   node = Sel 'registrationState'  'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
-                @{ id = 'caRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
+                @{ id = 'purposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_BOA_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
                 @{ id = 'boatHullIdNumber_Input';   node = Inp 'boatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_2' }

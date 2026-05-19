@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-18 12:57
+  Generated: 2026-05-19 08:59
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -32,7 +32,7 @@ LAYOUT DETAIL
     CARD "CARD_VEH_OPT"
       ROW ROW_VEH_OPT_1 [6 4]
         registrationState (Dropdown | attributeTypeId=STATE)
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_VEH_PLATE"
       ROW ROW_VEH_PLATE_1 [12]
         licensePlateNumber (Text | maxLen=10)
@@ -56,7 +56,7 @@ LAYOUT DETAIL
     CARD "CARD_PER_OPT"
       ROW ROW_PER_OPT_1 [6 4]
         registrationState (Dropdown | attributeTypeId=STATE)
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_OLN"
       ROW ROW_PER_OLN_1 [12]
         operatorLicenseNumber (Text | maxLen=20)
@@ -70,7 +70,7 @@ LAYOUT DETAIL
     CARD "CARD_PER_OLN_DH"
       ROW ROW_PER_OLN_DH_1 [6 6]
         operatorLicenseNumberDH (Text | maxLen=20)
-        caRequestPurposeCodeDH (Text | maxLen=1 | default=C)
+        purposeCodeDH (Text | maxLen=1 | default=C)
     CARD "CARD_PER_NAME_DH"
       ROW ROW_PER_NAME_DH_1 [6 6]
         nameFirstDH (Text | maxLen=30)
@@ -84,7 +84,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_GUN_OPT"
       ROW ROW_GUN_OPT_1 [4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_GUN_SERIAL"
       ROW ROW_GUN_SERIAL_1 [6 6]
         serialNumber (Text | maxLen=20)
@@ -102,7 +102,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_ART_OPT"
       ROW ROW_ART_OPT_1 [4]
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_ART_SERIAL"
       ROW ROW_ART_SERIAL_1 [12]
         serialNumber (Text | maxLen=20)
@@ -119,7 +119,7 @@ LAYOUT DETAIL
     CARD "CARD_BOA_OPT"
       ROW ROW_BOA_OPT_1 [6 4]
         registrationState (Dropdown | attributeTypeId=STATE)
-        caRequestPurposeCode (Text | maxLen=1 | default=C)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_BOA_HULL"
       ROW ROW_BOA_HULL_1 [12]
         boatHullIdNumber (Text | maxLen=20)
@@ -142,14 +142,14 @@ LAYOUT DETAIL
     nameLast -> lastName
     operatorLicenseNumber -> dlNumber
     birthDate -> dateOfBirth
-    RaceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
     sexCode -> sexAttrId (useAttrId)
     registrationState -> registrationStateAttrId (useAttrId)
   RMS Vehicle search query
     vehicleYear -> vehicle.yearOfManufacture
     vehicleIdentificationNumber -> vehicle.vinNumber
     vehicleMakeCode -> vehicle.makeNcicCode
-    VehicleModelCode -> vehicle.modelNcicCode
+    vehicleModelCode -> vehicle.modelNcicCode
     licensePlateNumber -> vehicle.tag
     registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

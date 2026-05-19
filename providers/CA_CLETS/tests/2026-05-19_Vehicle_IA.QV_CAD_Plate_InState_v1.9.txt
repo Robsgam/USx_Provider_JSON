@@ -1,0 +1,80 @@
+CA_CLETS BASE v1.9 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : CA_CLETS_BASE.json
+Entity     : Vehicle
+Combo      : IA.QV (VehReg plate -- CAD dispatch, in-state)
+Test type  : CAD verification -- in-state plate search
+
+================================================================================
+FORM STATE (CAD API -- no form rendered)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        CADPLATE           CAD dispatch
+  registrationState         CA                 CAD injected
+  licensePlateTypeCode      PC                 CAD injected default
+  licensePlateYear          2026               CAD injected default
+  purposeCode               C                  CAD injected
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KS058455CTFVBD5A0RHBDRY7
+  MessageType : VehicleRegistrationQuery
+  keyReference: IA.QV (in-state plate -- State=CA matched but in any[], not set[])
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    LicensePlateYear     2026
+    State                CA
+    LicensePlateTypeCode PC
+    LicensePlateNumber   CADPLATE
+    CaRequestPurposeCode C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: IA.QV (in-state plate)
+  Reason: purposeCode + licensePlateNumber in set[] satisfied.
+          State=CA present but in any[] -- does not force OOS routing.
+
+  THIS IS THE FIX: v1.8 had fieldId='caRequestPurposeCode'. CAD sends 'PurposeCode'.
+  No case-insensitive match. Field in set[] on all 17 combos -> zero combos fired.
+  v1.9 renamed fieldId to 'purposeCode' -> CAD's 'PurposeCode' matches.
+  QIDM targetField='CaRequestPurposeCode' maps to correct XML element.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[CA]","tag":"cadplate"}},"from":0,"size":50}
+
+  *** KNOWN PLATFORM BUG: CAD passes "[CA]" raw string instead of resolved
+      attribute ID. Form submission resolves correctly. Not fixable at JSON level.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS058455CTFVBD5A0RHBDRY7"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS058455CTFVBD5A0RHBDRY7</Id><LicensePlateYear>2026</LicensePlateYear><State>CA</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>CADPLATE</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[CA]","tag":"cadplate"}},"from":0,"size":50}
+
+Response: No Returns

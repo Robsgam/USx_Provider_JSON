@@ -1,6 +1,6 @@
-CA_CLETS MC v1.8 -- TEST MATRIX
+CA_CLETS MC v1.9 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-18
+Generated: 2026-05-19
 Variant: MC (multi-card per entity)
 Validator: 70 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 
@@ -10,7 +10,7 @@ Vehicle (4 cards, 10 fields):
   CARD_VEH_NAME (NAME SEARCH (Vehicle by Owner)):
     nameFirst [Inp 30], nameLast [Inp 30]
   CARD_VEH_OPT (OPTIONS - Leave blank for CA queries):
-    registrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
+    registrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_VEH_PLATE (PLATE SEARCH):
     licensePlateNumber [Inp 10]
     licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
@@ -28,15 +28,15 @@ Person (5 cards, 13 fields):
   CARD_PER_OLN (OLN SEARCH):
     operatorLicenseNumber [Inp 20]
   CARD_PER_OLN_DH (OLN SEARCH (Driver History)):
-    operatorLicenseNumberDH [Inp 20], caRequestPurposeCodeDH [Inp C, 1]
+    operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
   CARD_PER_OPT (OPTIONS - Leave blank for CA queries):
-    registrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
+    registrationState [Sel STATE], purposeCode [Inp C, 1]
 
 Firearm (3 cards, 7 fields):
   CARD_GUN_NAME (NAME SEARCH (Gun by Owner)):
     nameFirst [Inp 30], nameLast [Inp 30]
   CARD_GUN_OPT (OPTIONS):
-    caRequestPurposeCode [Inp C, 1]
+    purposeCode [Inp C, 1]
   CARD_GUN_SERIAL (SERIAL SEARCH):
     ROW 1: serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
@@ -45,7 +45,7 @@ Article (3 cards, 5 fields):
   CARD_ART_OAN (OAN SEARCH):
     ownerAppliedNumber [Inp 20]
   CARD_ART_OPT (OPTIONS):
-    caRequestPurposeCode [Inp C, 1]
+    purposeCode [Inp C, 1]
   CARD_ART_SERIAL (SERIAL SEARCH):
     serialNumber [Inp 20]
     articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], articleBrand [Inp 6]
@@ -59,7 +59,7 @@ Boat (5 cards, 8 fields):
   CARD_BOA_OAN (OAN SEARCH):
     ownerAppliedNumber [Inp 20]
   CARD_BOA_OPT (OPTIONS - Leave blank for CA queries):
-    registrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
+    registrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_BOA_REG (REGISTRATION SEARCH):
     registrationNumber [Inp 8]
 
@@ -137,65 +137,65 @@ PHASE 2: BOAT COMBOS (6 tests, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Boat        IA.QB.+IA.QB.H     caRequestPurposeCode=C, boatHullIdNum... [    ]
+ 6  Boat        IA.QB.+IA.QB.H     purposeCode=C, boatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (IA.QB.)
- 7  Boat        IA.QB.+IA.QB.O     caRequestPurposeCode=C, ownerAppliedN... [    ]
+ 7  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: BoatQuery fires (IA.QB.)
- 8  Boat        IA.QB.+IA.QB.R     caRequestPurposeCode=C, registrationN... [    ]
+ 8  Boat        IA.QB.+IA.QB.R     purposeCode=C, registrationNumber=FL1... [    ]
               Expected: BoatQuery fires (IA.QB.)
- 9  Boat        NLTS+.BQ.N+State   caRequestPurposeCode=C, nameLast=DOE,... [    ]
+ 9  Boat        NLTS+.BQ.N+State   purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: BoatQuery fires (NLTS)
-10  Boat        NLTS+.BQ.H+State   caRequestPurposeCode=C, boatHullIdNum... [    ]
+10  Boat        NLTS+.BQ.H+State   purposeCode=C, boatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (NLTS)
-11  Boat        NLTS+.BQ.R+State   caRequestPurposeCode=C, registrationN... [    ]
+11  Boat        NLTS+.BQ.R+State   purposeCode=C, registrationNumber=FL1... [    ]
               Expected: BoatQuery fires (NLTS)
 
 PHASE 3: PERSON COMBOS (5 tests, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-12  Person      ID.L1+ID.L1        caRequestPurposeCode=C, operatorLicen... [    ]
+12  Person      ID.L1+ID.L1        purposeCode=C, operatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (ID.L1)
-13  Person      NLTS+.DQ+State     caRequestPurposeCode=C, operatorLicen... [    ]
+13  Person      NLTS+.DQ+State     purposeCode=C, operatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (NLTS)
-14  Person      IN+.L1             caRequestPurposeCode=C, nameLast=DOE,... [    ]
+14  Person      IN+.L1             purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: DriverLicenseQuery fires (IN)
-15  Person      NLTS+.KQ.O         caRequestPurposeCodeDH=C, operatorLic... [    ]
+15  Person      NLTS+.KQ.O         purposeCodeDH=C, operatorLicenseNumbe... [    ]
               Expected: DriverHistoryQuery fires (NLTS)
-16  Person      NLTS+.KQ.N         caRequestPurposeCodeDH=C, birthDateDH... [    ]
+16  Person      NLTS+.KQ.N         purposeCodeDH=C, birthDateDH=01/15/19... [    ]
               Expected: DriverHistoryQuery fires (NLTS)
 
 PHASE 4: VEHICLE COMBOS (5 tests, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-17  Vehicle     IA.QVK+IA.QVK      caRequestPurposeCode=C, vehicleIdenti... [    ]
+17  Vehicle     IA.QVK+IA.QVK      purposeCode=C, vehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QVK)
-18  Vehicle     IA.QV+IA.QV        caRequestPurposeCode=C, licensePlateN... [    ]
+18  Vehicle     IA.QV+IA.QV        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QV)
-19  Vehicle     IN+.VP             caRequestPurposeCode=C, nameLast=DOE,... [    ]
+19  Vehicle     IN+.VP             purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: VehicleRegistrationQuery fires (IN)
-20  Vehicle     NLTS+.RQ.P+State   caRequestPurposeCode=C, licensePlateN... [    ]
+20  Vehicle     NLTS+.RQ.P+State   purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS)
-21  Vehicle     NLTS+.RQ.V+State   caRequestPurposeCode=C, vehicleIdenti... [    ]
+21  Vehicle     NLTS+.RQ.V+State   purposeCode=C, vehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS)
 
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-22  Firearm     IG+.QGB            caRequestPurposeCode=C, serialNumber=... [    ]
+22  Firearm     IG+.QGB            purposeCode=C, serialNumber=TEST [    ]
               Expected: GunQuery fires (IG)
-23  Firearm     IG+.QGH            caRequestPurposeCode=C, nameLast=DOE,... [    ]
+23  Firearm     IG+.QGH            purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: GunQuery fires (IG)
 
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-24  Article     IP.QA.+IP.QA.O     caRequestPurposeCode=C, ownerAppliedN... [    ]
+24  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: ArticleSingleQuery fires (IP.QA.)
-25  Article     IP.QA.+IP.QA.S     caRequestPurposeCode=C, serialNumber=... [    ]
+25  Article     IP.QA.+IP.QA.S     purposeCode=C, serialNumber=TEST [    ]
               Expected: ArticleSingleQuery fires (IP.QA.)
 
 PHASE 7: ANY[] FIELD TESTS (4 tests)

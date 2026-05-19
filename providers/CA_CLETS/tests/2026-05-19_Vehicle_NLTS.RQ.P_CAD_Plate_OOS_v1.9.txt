@@ -1,0 +1,79 @@
+CA_CLETS BASE v1.9 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : CA_CLETS_BASE.json
+Entity     : Vehicle
+Combo      : NLTS.RQ.P (VehReg plate -- CAD dispatch, OOS)
+Test type  : CAD verification -- OOS plate search
+
+================================================================================
+FORM STATE (CAD API -- no form rendered)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        OOSPLATE           CAD dispatch
+  registrationState         AL                 CAD injected (non-CA = OOS)
+  licensePlateTypeCode      PC                 CAD injected default
+  licensePlateYear          2026               CAD injected default
+  purposeCode               C                  CAD injected
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KS05ADG8CPNAMPGS7DTEPEC4
+  MessageType : VehicleRegistrationQuery
+  keyReference: NLTS.RQ.P (OOS plate -- State=AL in set[] triggers Nlets routing)
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    LicensePlateYear     2026
+    State                AL
+    LicensePlateTypeCode PC
+    LicensePlateNumber   OOSPLATE
+    CaRequestPurposeCode C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: NLTS.RQ.P (OOS plate via Nlets)
+  Reason: purposeCode + licensePlateNumber + licensePlateTypeCode +
+          licensePlateYear + registrationState ALL in set[] -> OOS combo fires.
+          NLTS.RQ.P evaluated before IA.QV (more set[] fields = more specific).
+
+  State routing CONFIRMED:
+    - State=CA (or blank) -> IA.QV (in-state, State in any[])
+    - State=AL (non-CA)   -> NLTS.RQ.P (OOS, State in set[])
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[AL]","tag":"oosplate"}},"from":0,"size":50}
+
+  *** KNOWN PLATFORM BUG: "[AL]" raw string instead of resolved attribute ID.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS05ADG8CPNAMPGS7DTEPEC4"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS05ADG8CPNAMPGS7DTEPEC4</Id><LicensePlateYear>2026</LicensePlateYear><State>AL</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>OOSPLATE</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":"[AL]","tag":"oosplate"}},"from":0,"size":50}
+
+Response: No Returns
