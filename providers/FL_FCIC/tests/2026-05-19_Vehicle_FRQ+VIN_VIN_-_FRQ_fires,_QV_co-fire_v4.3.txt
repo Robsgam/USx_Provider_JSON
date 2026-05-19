@@ -1,0 +1,63 @@
+FL_FCIC MC v4.3 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+VIN (VIN - FRQ fires, QV co-fire)
+Test type  : T2 -- Basic combo (v4.3 retest)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 42355            typed
+  registrationState         (blank)            empty
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (FRQVehicleIdentificationNumber)
+     Transaction : 01KS0ZQ1W4Z0K3CRRXAGKQ1G1D
+     Fields:
+       VehicleIdentificationNumber  42355
+       ImageIndicator               N
+
+  2. VehicleStolenQuery (QVVehicleIdentificationNumber) -- co-fire
+     Transaction : 01KS0ZQ1XQ0RWMPSWPPXSSYZ9T
+     Fields:
+       VehicleIdentificationNumber  42355
+       ImageIndicator               N
+
+  3. RMS Vehicle search (VIN)
+     {"elasticQuery":{"vehicle":{"vinNumber":"42355"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZQ1W4Z0K3CRRXAGKQ1G1D"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0ZQ1W4Z0K3CRRXAGKQ1G1D</Id><VehicleIdentificationNumber>42355</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZQ1XQ0RWMPSWPPXSSYZ9T"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0ZQ1XQ0RWMPSWPPXSSYZ9T</Id><VehicleIdentificationNumber>42355</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Parameter></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"vinNumber":"42355"}},"from":0,"size":50}

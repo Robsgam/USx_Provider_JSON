@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-19 13:48
+  Generated: 2026-05-19 17:05
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -27,7 +27,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Person' -> Person : 20 fieldIds
   [PASS] QIF 'ENTITY_Vehicle' ImageIndicator default='N' for Vehicle
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 17 fieldIds
   [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='N' for Firearm
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
@@ -39,7 +39,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' -> Vehicle : 10 attrs, 6 combos
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' ImageIndicator size=1
-  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' -> Vehicle : 5 attrs, 2 combos
+  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' -> Vehicle : 9 attrs, 6 combos
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' ImageIndicator size=1
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' -> Person : 6 attrs, 4 combos
@@ -94,6 +94,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQTitleLienInformation': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVProcessControlNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVNCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVOwnerAppliedNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo 'QVPartSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
@@ -121,7 +125,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBProcessControlNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 97 PASS / 0 FAIL / 0 WARN
+  RESULTS: 101 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Ready for import.

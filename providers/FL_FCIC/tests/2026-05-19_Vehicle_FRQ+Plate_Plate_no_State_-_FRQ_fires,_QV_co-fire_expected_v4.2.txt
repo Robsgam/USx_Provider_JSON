@@ -1,0 +1,90 @@
+FL_FCIC MC v4.2 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+Plate (Plate no State - FRQ fires, QV co-fire)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        TEST123            typed
+  licensePlateTypeCode      PC                 default
+  licensePlateYear          2026               default
+  registrationState         (blank)            empty
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (FRQLicensePlateNumber)
+     Transaction : 01KS0WZC5X6129HV6Q32EC8RJX
+     Fields:
+       LicensePlateNumber    TEST123
+       LicensePlateYear      2026
+       ImageIndicator        N
+
+  2. VehicleStolenQuery (QVLicensePlateNumber) -- co-fire
+     Transaction : 01KS0WZC89X5FD4CSH7T51VSW1
+     Fields:
+       LicensePlateNumber    TEST123
+       ImageIndicator        N
+
+  3. RMS Vehicle search (plate)
+     {"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQLicensePlateNumber
+  Reason: set[] = [licensePlateNumber] populated, no State = FRQ (FL in-state)
+
+  Co-fire: QVLicensePlateNumber (VehicleStolenQuery)
+  Reason: set[] = [licensePlateNumber] populated
+
+  Note: FRQ XML does NOT include LicensePlateTypeCode (not in FRQ any[]).
+  QV XML does NOT include LicensePlateYear or LicensePlateTypeCode.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES -- RMS Vehicle search (plate)
+  RMS request: {"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 3 requests fire correctly. FRQ+Plate (in-state), QV co-fire, RMS co-fire.
+  Detail: PlateType=PC default NOT sent in FRQ XML (not in FRQ any[] -- correct).
+    PlateYear=2026 sent in FRQ (in any[]). ImageIndicator=N sent in both CommSys requests.
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0WZC89X5FD4CSH7T51VSW1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0WZC89X5FD4CSH7T51VSW1</Id><ImageIndicator>N</ImageIndicator><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0WZC5X6129HV6Q32EC8RJX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0WZC5X6129HV6Q32EC8RJX</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}

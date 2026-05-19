@@ -1,0 +1,44 @@
+FL_FCIC MC v4.2 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Boat
+Combo      : FBQ+Hull (Hull - FBQ fires, no State, no Stolen)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  boatHullIdNumber          KHSDF08YWDF        typed
+  registrationState         (blank)            empty
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  1 request fired:
+
+  1. BoatQuery (FBQBoatHullIdNumber)
+     Transaction : 01KS0XHDTC3EM94A0SG3VKB46W
+     Fields:
+       BoatHullIdNumber      KHSDF08YWDF
+       ImageIndicator        N
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 1 request only. FBQ+Hull fires correctly. No State = in-state FBQ path.
+
+================================================================================
+RAW XML REQUEST (BoatQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0XHDTC3EM94A0SG3VKB46W"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KS0XHDTC3EM94A0SG3VKB46W</Id><BoatHullIdNumber>KHSDF08YWDF</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>

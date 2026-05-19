@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-19 13:48
+  Generated: 2026-05-19 17:05
 ================================================================
 CAD AUDIT
 =========
@@ -32,6 +32,10 @@ CAD AUDIT
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] decalNumber: in QIF, not in CAD list (provider-specific)
     [INFO] titleLienInformation: in QIF, not in CAD list (provider-specific)
+    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] processControlNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] partSerialNumber: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF and CAD list
     [PASS] nameFirst: in QIF and CAD list
@@ -166,6 +170,10 @@ CAD AUDIT
     [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQTitleLienInformation -- missing default for ImageIndicator (form default='N')
     [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVLicensePlateNumber -- missing default for ImageIndicator (form default='N')
     [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVVehicleIdentificationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVProcessControlNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVNCICNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVOwnerAppliedNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVPartSerialNumber -- missing default for ImageIndicator (form default='N')
     [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- missing default for ImageIndicator (form default='Y')
     [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQName -- missing default for ImageIndicator (form default='Y')
     [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- missing default for ImageIndicator (form default='Y')
@@ -198,6 +206,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 54 PASS / 32 FAIL / 0 WARN / 80 INFO
+Total: 54 PASS / 36 FAIL / 0 WARN / 84 INFO
 
 

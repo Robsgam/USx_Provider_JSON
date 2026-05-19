@@ -1,0 +1,65 @@
+FL_FCIC MC v4.2 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+VIN (VIN no State - FRQ fires, QV co-fire)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 74448234908      typed
+  registrationState         (blank)            empty
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (FRQVehicleIdentificationNumber)
+     Transaction : 01KS0X2PF05CGWZB3BKH9P0BWG
+     Fields:
+       VehicleIdentificationNumber  74448234908
+       ImageIndicator               N
+
+  2. VehicleStolenQuery (QVVehicleIdentificationNumber) -- co-fire
+     Transaction : 01KS0X2PH8QAMA3YHPVPN96G4E
+     Fields:
+       VehicleIdentificationNumber  74448234908
+       ImageIndicator               N
+
+  3. RMS Vehicle search (VIN)
+     {"elasticQuery":{"vehicle":{"vinNumber":"74448234908"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 3 requests fire correctly. FRQ+VIN (in-state), QV co-fire, RMS co-fire.
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0X2PH8QAMA3YHPVPN96G4E"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0X2PH8QAMA3YHPVPN96G4E</Id><VehicleIdentificationNumber>74448234908</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0X2PF05CGWZB3BKH9P0BWG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0X2PF05CGWZB3BKH9P0BWG</Id><VehicleIdentificationNumber>74448234908</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"vinNumber":"74448234908"}},"from":0,"size":50}

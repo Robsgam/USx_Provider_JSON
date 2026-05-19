@@ -1,0 +1,55 @@
+FL_FCIC MC v4.3 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : DQ+OLN+State (OLN+State OOS - DQ fires)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumber     7W67URUR           typed (DL card)
+  registrationState         ID                 selected (OOS)
+  imageIndicator            Y                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  2 requests fired:
+
+  1. DriverLicenseQuery (DQOperatorLicenseNumber)
+     Transaction : 01KS0ZBQ96FTWETG7MWFPEFM01
+     Fields:
+       OperatorLicenseNumber 7W67URUR
+       State                 ID
+       ImageIndicator        Y
+
+  2. RMS Person search (DL number + state)
+     {"elasticQuery":{"dlNumber":"7w67urur","registrationStateAttrId":"69510838716"},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 2 requests fire correctly. DQ+OLN (OOS with State=ID), RMS co-fire with state.
+    RMS includes registrationStateAttrId for OOS queries (confirms LIMITATION #33: only in-state missing).
+
+================================================================================
+RAW XML REQUEST (DriverLicenseQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZBQ96FTWETG7MWFPEFM01"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KS0ZBQ96FTWETG7MWFPEFM01</Id><ImageIndicator>Y</ImageIndicator><State>ID</State><OperatorLicenseNumber>7W67URUR</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"dlNumber":"7w67urur","registrationStateAttrId":"69510838716"},"from":0,"size":50}

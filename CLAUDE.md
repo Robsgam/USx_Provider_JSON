@@ -24,7 +24,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | FL_FCIC | providers/FL_FCIC/ | v4.2 | 97P/0F/0W/0LIM -- 33/33 combos, QW removed (CommSys auto-sends) | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible |
 | TX_TLETS | providers/TX_TLETS/ | v2.7 | 84P/0F/0W (BASE) 84P/0F/0W (MC) | DH-suffix+one-directional queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress user-fillable, Attention visible |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
-| CA_CLETS | providers/CA_CLETS/ | v2.1 | 70P/0F/0W/0LIM -- 20/20 combos all on single-card BASE, MC archived | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV |
+| CA_CLETS | providers/CA_CLETS/ | v2.2 | 90P/0F/0W/1LIM -- 39/40 combos (98%), MC active, 6 QIDMs | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV, IV.4* plate-type conditions routing, IR.QVC criminal records (CII/SSN), -SkipRace on RMS |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | INCOMPLETE -- metadata has only JAWS person queries, no OLN, no Vehicle/Boat/Gun/Article; CLETSPersonSuperQuery in devdoc but NOT in metadata; waiting for updated docs | 2 transactions (6 combos), Person only, RequestingAgencyId on all combos |
 | CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v1.2 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, 19 combos, OCATS-specific queries available (warrants, juvenile, LARS) |
@@ -422,10 +422,14 @@ Every provider under `providers/` MUST have this structure. All new providers fo
 
 **NAMING RULE**: `<PROVIDER>` MUST match the metadata XML filename minus `.xml`. Verify before creating the folder. See `BUILD_RULES.txt` Section 0.
 
+**ONE JSON IN ROOT RULE**: Exactly one JSON in the provider root folder at all times.
+- MC active → `<PROVIDER>_MC.json` in root, BASE lives in `phases/base/`
+- MC archived/none → `<PROVIDER>_BASE.json` in root
+- NEVER both BASE and MC in root simultaneously. Enforce checks this.
+
 ```
 providers/<PROVIDER>/
-├── <PROVIDER>_BASE.json                   # Current BASE JSON
-├── <PROVIDER>_MC.json                     # Current MC JSON (if applicable)
+├── <PROVIDER>_MC.json                     # Current JSON (MC if active, BASE if no MC)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version

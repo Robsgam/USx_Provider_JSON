@@ -1,0 +1,65 @@
+FL_FCIC MC v4.3 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : FRQ+Plate (Plate - FRQ fires, QV co-fire)
+Test type  : T2 -- Basic combo (v4.3 retest)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        ABC123             typed
+  licensePlateYear          2026               default
+  registrationState         (blank)            empty
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (FRQLicensePlateNumber)
+     Transaction : 01KS0ZPTW1TWBJY24W00RRGF55
+     Fields:
+       LicensePlateNumber    ABC123
+       LicensePlateYear      2026
+       ImageIndicator        N
+
+  2. VehicleStolenQuery (QVLicensePlateNumber) -- co-fire
+     Transaction : 01KS0ZPTX1PWHXHTJ4Z70YWPT2
+     Fields:
+       LicensePlateNumber    ABC123
+       ImageIndicator        N
+
+  3. RMS Vehicle search (plate)
+     {"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZPTW1TWBJY24W00RRGF55"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0ZPTW1TWBJY24W00RRGF55</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZPTX1PWHXHTJ4Z70YWPT2"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0ZPTX1PWHXHTJ4Z70YWPT2</Id><ImageIndicator>N</ImageIndicator><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}

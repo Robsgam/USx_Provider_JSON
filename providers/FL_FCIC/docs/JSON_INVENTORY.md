@@ -6,7 +6,6 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v4.2 | Current | 7-QIDM architecture (QW removed). 97P/0F/0W/0LIM. |
 | FL_FCIC_MC.json | v4.2 | Current | MC multi-card layout. 97P/0F/0W/0LIM. |
 
 ## phases/base/

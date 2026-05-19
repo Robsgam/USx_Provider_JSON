@@ -1,0 +1,85 @@
+FL_FCIC MC v4.2 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : RQ+Plate+State (Plate+State OOS - RQ fires, QV co-fire)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        XYVJH---3          typed
+  licensePlateTypeCode      PC                 default
+  licensePlateYear          2026               default
+  registrationState         OK                 selected (OOS)
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (RQLicensePlateNumber)
+     Transaction : 01KS0XD78VHMHKW78FDKRDHZ6W
+     Fields:
+       LicensePlateNumber    XYVJH---3
+       LicensePlateTypeCode  PC
+       LicensePlateYear      2026
+       State                 OK
+       ImageIndicator        N
+
+  2. VehicleStolenQuery (QVLicensePlateNumber) -- co-fire
+     Transaction : 01KS0XD7BR6SMHWAZ070ZHHZ0Y
+     Fields:
+       LicensePlateNumber    XYVJH---3
+       State                 OK
+       ImageIndicator        N
+
+  3. RMS Vehicle search (plate + state)
+     {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510843059],"tag":"xyvjh---3"}},"from":0,"size":50}
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQLicensePlateNumber (OOS)
+  Reason: set[] = [licensePlateNumber, registrationState] both populated; State present = RQ (not FRQ)
+
+  Note: RQ XML includes LicensePlateTypeCode=PC (in RQ any[] -- correct).
+    FRQ does NOT include PlateTypeCode (not in FRQ any[]). This confirms OOS vs in-state routing.
+  QV co-fire includes State=OK in XML (State in QV any[]).
+  RMS includes registrationStateAttrIds (attribute ID for OK) + tag (plate).
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 3 requests fire correctly. RQ+Plate (OOS with State=OK), QV co-fire, RMS co-fire.
+  Detail: State=OK triggers RQ path (not FRQ). PlateTypeCode=PC sent in RQ (in any[]).
+    PlateYear=2026 sent in RQ. All 3 requests include correct State value.
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0XD78VHMHKW78FDKRDHZ6W"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0XD78VHMHKW78FDKRDHZ6W</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>OK</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>XYVJH---3</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0XD7BR6SMHWAZ070ZHHZ0Y"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0XD7BR6SMHWAZ070ZHHZ0Y</Id><ImageIndicator>N</ImageIndicator><State>OK</State><LicensePlateNumber>XYVJH---3</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510843059],"tag":"xyvjh---3"}},"from":0,"size":50}

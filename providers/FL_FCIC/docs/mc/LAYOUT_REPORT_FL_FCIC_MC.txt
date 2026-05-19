@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-19 13:48
+  Generated: 2026-05-19 17:05
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,13 +9,13 @@ LAYOUT SUMMARY
 === FL_FCIC_MC.json ===
 QIFs: 5
   Person | entity=Person | qidm= | cards=2 fields=10
-  Vehicle | entity=Vehicle | qidm= | cards=2 fields=6
+  Vehicle | entity=Vehicle | qidm= | cards=2 fields=10
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
   Boat | entity=Boat | qidm= | cards=2 fields=10
 QIDMs: 7
   FL_FCIC_VehicleRegistrationQuery | attrs=10 combos=6 autoSelect=
-  FL_FCIC_VehicleStolenQuery | attrs=5 combos=2 autoSelect=
+  FL_FCIC_VehicleStolenQuery | attrs=9 combos=6 autoSelect=
   FL_FCIC_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
   FL_FCIC_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   FL_FCIC_GunQuery | attrs=5 combos=3 autoSelect=
@@ -46,7 +46,7 @@ LAYOUT DETAIL
     CARD "CARD_DH"
       ROW ROW_DH1 [6 3 3]
         operatorLicenseNumberDH (Text | maxLen=20)
-        registrationStateDH (Dropdown | attributeTypeId=STATE | default=FL)
+        registrationStateDH (Dropdown | attributeTypeId=STATE)
         purposeCodeDH (Text | maxLen=1)
       ROW ROW_DH2 [6 6]
         nameLastDH (Text | maxLen=30)
@@ -76,6 +76,12 @@ LAYOUT DETAIL
       ROW ROW_VEH_3 [6 6]
         decalNumber (Text | maxLen=10)
         titleLienInformation (Text | maxLen=8)
+      ROW ROW_VEH_4 [6 6]
+        ncicNumber (Text | maxLen=10)
+        processControlNumber (Text | maxLen=10)
+      ROW ROW_VEH_5 [6 6]
+        ownerAppliedNumber (Text | maxLen=20)
+        partSerialNumber (Text | maxLen=20)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

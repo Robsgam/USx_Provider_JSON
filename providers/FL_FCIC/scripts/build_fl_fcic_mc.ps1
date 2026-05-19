@@ -8,16 +8,16 @@
 #   Article: 1 card (no State routing issue)
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
-#      & .\scripts\build_fl_fcic_mc.ps1 -Version 4.1
+#      & .\scripts\build_fl_fcic_mc.ps1 -Version 4.2
 #
 # INPUTS:
 #   source\FL_FCIC.xml   -- XML metadata (FCIC v94, 170+ message keys) [AUTHORITATIVE]
 #   source\FL_FCIC.pdf   -- CommSys devdoc (6 basic queries) [CROSS-CHECK]
 #   tools\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs, no external template)
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 7 QIDMs, 33 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 7 QIDMs, 37 combos):
 #   VehicleRegistrationQuery   FRQ (plate/VIN/Decal/Title) + RQ (plate+state/VIN+state) = 6 combos
-#   VehicleStolenQuery         QV (plate/VIN) = 2 combos
+#   VehicleStolenQuery         QV (plate/VIN/PCN/NCIC#/OAN/PartSerial) = 6 combos
 #   DriverLicenseQuery         FDQ (OLN/Name) + DQ (OLN+state/Name+state) = 4 combos, autoSelect=true
 #   WantedPersonQuery          REMOVED -- CommSys auto-sends QW
 #   DriverHistoryQuery         KQ (OLN/Name) = 2 combos, DH-suffix fields
@@ -26,7 +26,7 @@
 #   BoatQuery                  FBQ (hull/reg/decal/title) + QB (CG/NCIC/PCN/hull/reg) + BQ (name/hull/reg) = 12 combos
 #
 # ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- 2 cards: Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,Make,Year)
+#   Vehicle  -- 2 cards: Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,Make,Year,NCIC#,PCN,OAN,PartSerial)
 #   Person   -- 2 cards: DL(OLN/Name/DOB/Sex/State/Image) + DH(OLN/Name/DOB/Sex, DH-suffix)
 #   Firearm  -- 1 card: serial + make + NCIC# + PCN
 #   Article  -- 1 card: serial + type + OAN + NCIC# + PCN
@@ -133,12 +133,16 @@ $vehRegQuery = [PSCustomObject]@{
     targetEntity    = 'Vehicle'
 }
 
-# --- 2. VehicleStolenQuery (QV) -- 2 combos ---
-# XML: QV by plate, QV by VIN (NCIC stolen vehicle check)
+# --- 2. VehicleStolenQuery (QV) -- 6 combos ---
+# XML: QV by plate, QV by VIN (co-fire), QV by PCN, QV by NCIC#, QV by OAN, QV by PartSerial (standalone)
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('imageIndicator');               targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('licensePlateNumber');         targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'NCICNumber';                   size = 10; sourceField = @('ncicNumber');                   targetField = 'NCICNumber' }
+        [PSCustomObject]@{ name = 'OwnerAppliedNumber';           size = 20; sourceField = @('ownerAppliedNumber');           targetField = 'OwnerAppliedNumber' }
+        [PSCustomObject]@{ name = 'PartSerialNumber';             size = 20; sourceField = @('partSerialNumber');             targetField = 'PartSerialNumber' }
+        [PSCustomObject]@{ name = 'ProcessControlNumber';         size = 10; sourceField = @('processControlNumber');         targetField = 'ProcessControlNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('vehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
         [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 24; sourceField = @('vehicleMakeCode');              targetField = 'VehicleMakeCode' }
@@ -156,8 +160,32 @@ $vehStolenQuery = [PSCustomObject]@{
             keyReference          = 'QVVehicleIdentificationNumber'
             state                 = 'In/Out'
         }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator') }
+            primaryFieldReference = 'ProcessControlNumber'
+            keyReference          = 'QVProcessControlNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator') }
+            primaryFieldReference = 'NCICNumber'
+            keyReference          = 'QVNCICNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('ownerAppliedNumber'); any = @('imageIndicator') }
+            primaryFieldReference = 'OwnerAppliedNumber'
+            keyReference          = 'QVOwnerAppliedNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('partSerialNumber'); any = @('imageIndicator') }
+            primaryFieldReference = 'PartSerialNumber'
+            keyReference          = 'QVPartSerialNumber'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'VehicleStolenQuery -- QV by plate, QV by VIN. NCIC stolen vehicle check.'
+    description     = 'VehicleStolenQuery -- QV by plate/VIN (co-fire), PCN/NCIC#/OAN/PartSerial (standalone). 6 combos.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_VehicleStolenQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -249,13 +277,13 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('registrationStateDH','purposeCodeDH','attentionDH') }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('registrationStateDH','purposeCodeDH','attentionDH') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -520,11 +548,19 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'DecalNumber_Input';          node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
                 @{ id = 'TitleLienInformation_Input'; node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_3' }
             )}
+            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Veh_Input';           node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_4' }
+                @{ id = 'ProcessControlNumber_Veh_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_VEH_4' }
+            )}
+            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
+                @{ id = 'OwnerAppliedNumber_Veh_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_VEH_5' }
+                @{ id = 'PartSerialNumber_Input';       node = Inp 'partSerialNumber' 'Part Serial Number' '20' 'ROW_VEH_5' }
+            )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- 2 cards MC. Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title). State isolated on Options card.'
+    description  = 'Vehicle queries -- 2 cards MC. Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,NCIC#,PCN,OAN,PartSerial). State isolated on Options card.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -562,7 +598,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'registrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'FL' } 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'registrationStateDH' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('6','6'); fields = @(

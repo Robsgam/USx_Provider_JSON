@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-19 13:48
+  Generated: 2026-05-19 17:05
 ================================================================
 QUERY SIMULATION
 ================
@@ -129,7 +129,7 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: FL_FCIC_VehicleStolenQuery [Vehicle] ---
-    Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
+    Query: VehicleStolenQuery  |  Attrs: 9  |  Combos: 6
 
     [FIRES] QVLicensePlateNumber
       set: [licensePlateNumber]
@@ -140,6 +140,7 @@ QUERY SIMULATION
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -154,10 +155,29 @@ QUERY SIMULATION
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
+    [SKIP] QVProcessControlNumber -- missing set: processControlNumber
+
+    [FIRES] QVNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+    [SKIP] QVOwnerAppliedNumber -- missing set: ownerAppliedNumber
+    [SKIP] QVPartSerialNumber -- missing set: partSerialNumber
 
 --- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
@@ -226,8 +246,8 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES] KQName
-      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationStateDH]
-      any: [purposeCodeDH, attentionDH] -> matched: [purposeCodeDH]
+      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+      any: [registrationStateDH, purposeCodeDH, attentionDH] -> matched: [registrationStateDH, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -241,8 +261,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES] KQOperatorLicenseNumber
-      set: [operatorLicenseNumberDH, registrationStateDH]
-      any: [purposeCodeDH, attentionDH] -> matched: [purposeCodeDH]
+      set: [operatorLicenseNumberDH]
+      any: [registrationStateDH, purposeCodeDH, attentionDH] -> matched: [registrationStateDH, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

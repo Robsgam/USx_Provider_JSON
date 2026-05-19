@@ -1,0 +1,68 @@
+FL_FCIC MC v4.2 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Vehicle
+Combo      : RQ+VIN+State (VIN+State OOS - RQ fires, QV co-fire)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber OTY2PYFEWF       typed
+  registrationState         UT                 selected (OOS)
+  imageIndicator            N                  default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  3 requests fired:
+
+  1. VehicleRegistrationQuery (RQVehicleIdentificationNumber)
+     Transaction : 01KS0XF4YRYQFKD9Q04YXMV24D
+     Fields:
+       VehicleIdentificationNumber  OTY2PYFEWF
+       State                        UT
+       ImageIndicator               N
+
+  2. VehicleStolenQuery (QVVehicleIdentificationNumber) -- co-fire
+     Transaction : 01KS0XF510PZTT70C1SJ4KV5SG
+     Fields:
+       VehicleIdentificationNumber  OTY2PYFEWF
+       State                        UT
+       ImageIndicator               N
+
+  3. RMS Vehicle search (VIN + state)
+     {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510844092],"vinNumber":"oty2pyfewf"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 3 requests fire correctly. RQ+VIN (OOS with State=UT), QV co-fire, RMS co-fire.
+  Detail: All 6 VehicleRegistrationQuery combos and 2 VehicleStolenQuery combos now confirmed.
+
+================================================================================
+RAW XML REQUEST (VehicleRegistrationQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0XF4YRYQFKD9Q04YXMV24D"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0XF4YRYQFKD9Q04YXMV24D</Id><VehicleIdentificationNumber>OTY2PYFEWF</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>UT</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML REQUEST (VehicleStolenQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0XF510PZTT70C1SJ4KV5SG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KS0XF510PZTT70C1SJ4KV5SG</Id><VehicleIdentificationNumber>OTY2PYFEWF</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>UT</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510844092],"vinNumber":"oty2pyfewf"}},"from":0,"size":50}

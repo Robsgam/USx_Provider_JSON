@@ -1,0 +1,48 @@
+FL_FCIC MC v4.3 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : FL_FCIC_MC.json
+Entity     : Person
+Combo      : KQ+Name (Name+DOB+Sex on DH card - KQ fires, blank State = FL)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  nameLastDH                BLOW               typed (DH card)
+  nameFirstDH               JOE                typed (DH card)
+  birthDateDH               1985-01-01         typed (DH card)
+  sexCodeDH                 M                  selected (DH card)
+  registrationStateDH       (blank)            empty (leave blank for FL)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  1 request fired:
+
+  1. DriverHistoryQuery (KQName)
+     Transaction : 01KS0ZK7EJ178FWYDQ608RR8YJ
+     Fields:
+       Name                  BLOW,JOE
+       BirthDate             19850101
+       SexCode               M
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: 1 request only. KQ+Name fires correctly. No State in XML (blank = FL in-state).
+    DL checkbox stays dark. No RMS co-fire (RMS uses DL fields, not DH-suffix).
+
+================================================================================
+RAW XML REQUEST (DriverHistoryQuery)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0ZK7EJ178FWYDQ608RR8YJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KS0ZK7EJ178FWYDQ608RR8YJ</Id><SexCode>M</SexCode><BirthDate>19850101</BirthDate><Name>BLOW,JOE</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
