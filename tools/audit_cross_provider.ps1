@@ -51,7 +51,7 @@ function Pass($msg)  { OutColor "    [PASS] $msg" Green;      $script:passCount+
 function Info($msg)  { OutColor "    [INFO] $msg" Gray;       $script:infoCount++ }
 
 # ── Skip list ─────────────────────────────────────────────────────────────────
-$skipProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$skipProviders = @('CA_CONTRA_COSTA')
 
 # ── Discover providers ────────────────────────────────────────────────────────
 $providerDirs = @(Get-ChildItem $Path -Directory | Where-Object { $_.Name -notin $skipProviders })
@@ -622,10 +622,11 @@ foreach ($prov in $validProviders) {
     $isCA = $prov.Name -match '^CA_'
     $fields = Get-FormFields -json $prov.Json
 
-    # Find CaRequestPurposeCode across all entities (including DH-suffix variants)
+    # Find CaRequestPurposeCode across all entities (including DH-suffix and camelCase variants)
     $purposeCodeFields = @($fields | Where-Object {
         $_.FieldId -eq 'CaRequestPurposeCode' -or $_.FieldId -eq 'caRequestPurposeCode' -or
-        $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH'
+        $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH' -or
+        $_.FieldId -eq 'purposeCode' -or $_.FieldId -eq 'purposeCodeDH'
     })
 
     Out "  $($prov.Tag):"

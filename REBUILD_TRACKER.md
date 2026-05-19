@@ -1,5 +1,5 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-05-14
+Generated: 2026-05-08 | Last updated: 2026-05-19
 
 ## Status: 15 PROVIDERS FLAGGED FOR FULL MC REBUILD — HIDLE_MC migration
 
@@ -11,14 +11,14 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v3.1 | 69P/0F/0W | 69P/0F/0W | 0 | LOCKED -- v3.0 DEPLOYED Newark NJ |
+| 1 | NJ_NJCJIS | v3.2 | 69P/0F/0W | 69P/0F/0W | 0 | CAD defaults DONE, v3.0 DEPLOYED Newark NJ |
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
 | 5 | FL_FCIC | v4.1 | 102P/0F/0W | 102P/0F/0W | 0 | **FIXED** — Attention visible FormInput (attentionDH), MC 2-card (Options+Search) |
 | 6 | TX_TLETS | v2.7 | 84P/0F/0W | 84P/0F/0W | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v1.8 | 66P/0F/0W | 70P/0F/0W | 0 | LOCKED -- MC rebuilt, one-directional deselect |
+| 8 | CA_CLETS | v2.1 | 70P/0F/0W | -- (archived) | 0 | Full 20-combo single-card BASE, MC archived |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 0 | |
 | 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/0W | 0 | |
@@ -30,7 +30,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/0W | 0 | |
 
-**CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). BLOCKED — awaiting updated devdoc/metadata decision.
+**CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). Incomplete — awaiting updated devdoc/metadata decision.
 
 ## What Was Fixed (2026-05-08 through 2026-05-11)
 
@@ -128,8 +128,8 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 
 | Provider | MC Version | Score | Status |
 |---|---|---|---|
-| NJ_NJCJIS | v3.1 | 69P/0F/0W | LOCKED — CAD audit CLEAN |
-| CA_CLETS | v1.8 | 70P/0F/0W | LOCKED — CAD audit CLEAN |
+| NJ_NJCJIS | v3.2 | 69P/0F/0W | CAD audit CLEAN |
+| CA_CLETS | v2.1 | 70P/0F/0W | Full 20-combo BASE, MC archived, CAD defaults clean |
 | FL_FCIC | v4.1 | 102P/0F/0W | CAD audit CLEAN, 35 FIRE/0 SKIP |
 
 ### Flagged for Full Rebuild on Next Test (15)
@@ -155,7 +155,25 @@ build_report.ps1, verify 0 FAIL on all 8 checks including CAD audit.
 | 14 | OR_LEDS | YES | NO | Standard cleanup |
 | 15 | TN_TIES | YES | YES (DH only) | Keep SSN |
 
+## CAD Defaults — Flagged 2026-05-19
+
+CAD dispatch does NOT apply QIF form initialValues. Fields in any[] with initialValues
+need combination-level `defaults[]` to ensure CAD-dispatched XML includes them.
+audit_cad.ps1 CHECK 6 now validates this automatically. BUILD_RULES.txt Section 12 documents the rule.
+
+**NJ_NJCJIS v3.3 DONE** — all 13 combos have defaults. 0 FAIL on CAD audit CHECK 6.
+
+**142 FAIL across remaining 17 providers.** Most common missing defaults:
+- ImageIndicator (nearly all providers that have it)
+- LicensePlateTypeCode / LicensePlateYear (all providers with plate combos)
+- RelatedHitSearchIndicator (TX_TLETS)
+- PurposeCode (CA providers — flagged as INFO due to codeTypeProvider)
+
+Fix on next rebuild of each provider. Fields to default are provider-specific — check
+each provider's form initialValues, not a universal list.
+
 ## Next Actions
 - Live testing per provider work order: FL_FCIC v4.1 MC (44 tests, Veh+Boat first), TX_TLETS, NY, AZ
 - Fix Attention hidden automation on next rebuild of each flagged provider
-- Each provider's first test triggers: build MC → build_report → verify CAD audit CLEAN
+- Fix CAD defaults (142 FAILs) on next rebuild of each provider
+- Each provider's first test triggers: build MC → build_report → verify CAD audit CHECK 6 CLEAN
