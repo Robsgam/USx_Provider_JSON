@@ -1,6 +1,33 @@
 CA_CLETS -- Build Notes
 ========================
 
+v2.1 (2026-05-19) -- Full combo coverage BASE + CAD defaults fix
+  CHANGED: Added 3 cross-entity combos to single-card BASE layout:
+           - IN.VP (Vehicle by owner Name) -- nameFirst/nameLast on Vehicle card
+           - IG.QGH (Firearm by owner Name) -- nameFirst/nameLast on Firearm card
+           - NLTS.BQ.N (Boat by owner Name+DOB OOS) -- nameFirst/nameLast/birthDate on Boat card
+           Added CAD defaults on IA.QV combo (LicensePlateTypeCode=PC, LicensePlateYear=$currentYear).
+           Archived MC variant -- all 20 combos achievable on single-card-per-entity BASE.
+  REASON:  audit_metadata.ps1 CHECK 5 (Primary Field Coverage) identified 3 metadata search paths
+           with no matching combo. Cross-entity Name fields on Veh/Gun/Boat cards enable these
+           combos without needing a separate MC layout. CAD audit flagged missing defaults on IA.QV.
+  VALIDATOR: BASE 70P/0F/0W/0LIM
+  CAD AUDIT: 80P/0F/0W/57INFO
+  TEST CONDUCTOR: 32/32 PASS (20 combos)
+
+v1.9 (2026-05-19) -- CAD field alignment: purposeCode fieldId
+  CHANGED: Renamed fieldId 'caRequestPurposeCode' to 'purposeCode' on all 5 entity forms.
+           Renamed 'caRequestPurposeCodeDH' to 'purposeCodeDH' on Person DH fields.
+           QIDM targetField='CaRequestPurposeCode' unchanged (XML element name).
+  REASON:  CAD dispatch sends PurposeCode (PascalCase). Platform matches case-insensitively
+           to JSON fieldId. 'caRequestPurposeCode' did not match -> zero combos fired from CAD.
+           'purposeCode' matches CAD's 'PurposeCode'. QIDM sourceField→targetField handles
+           the mapping to the correct XML element name CaRequestPurposeCode.
+  VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM
+  PRODUCTION TEST: 3/3 CAD PASS (IA.QV plate, NLTS.RQ.P OOS plate, IA.QVK VIN)
+  CROSS-PROVIDER: All CA providers need same rename on next rebuild (CA_eSUN, CA_VENTURA,
+                  CA_SAN_LUIS_OBISPO, CA_CLETS_OCATS).
+
 v1.8 (2026-05-12) -- One-directional queriesToDeselect fix
   CHANGED: Removed queriesToDeselect from DL QIDM (was bidirectional with DH).
   REASON:  Bidirectional queriesToDeselect suppresses DH autoSelect. One-directional pattern:

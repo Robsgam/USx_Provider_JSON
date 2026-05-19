@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-19 09:08
+  Generated: 2026-05-19 13:33
 ================================================================
 CAD AUDIT
 =========
@@ -21,8 +21,8 @@ CAD AUDIT
     [PASS] vehicleYear: in QIF and CAD list
     [PASS] registrationState: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -70,8 +70,8 @@ CAD AUDIT
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] gunTypeCode: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -100,11 +100,11 @@ CAD AUDIT
     [PASS] registrationNumber: in QIF and CAD list
     [PASS] registrationState: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] birthDate: in QIF and CAD list
     [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -140,6 +140,28 @@ CAD AUDIT
     [PASS] QIDM 'CA_CLETS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'CA_CLETS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'CA_CLETS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo NLTS.RQ.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo NLTS.RQ.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo IN.VP -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo IA.QVK -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo IA.QV -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo IN.L1 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo NLTS.DQ -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo ID.L1 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo NLTS.KQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo NLTS.KQ.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_GunQuery' combo IG.QGH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_GunQuery' combo IG.QGB -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo IP.QA.S -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo IP.QA.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo NLTS.BQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo NLTS.BQ.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo NLTS.BQ.R -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo IA.QB.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo IA.QB.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_BoatQuery' combo IA.QB.R -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -147,6 +169,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 53 PASS / 0 FAIL / 0 WARN / 64 INFO
+Total: 80 PASS / 0 FAIL / 0 WARN / 57 INFO
 
 

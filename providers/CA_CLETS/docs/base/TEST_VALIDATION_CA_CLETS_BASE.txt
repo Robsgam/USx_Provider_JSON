@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-19 09:08
+  Generated: 2026-05-19 13:33
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -13,44 +13,47 @@ Matrix: CA_CLETS_BASE_TEST_MATRIX.txt
 Generated: 2026-05-19
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
-  T1  Vehicle    [PASS] 1 cards, 8 fields, defaults verified
-  T2  Boat       [PASS] 1 cards, 5 fields, defaults verified
+  T1  Vehicle    [PASS] 1 cards, 10 fields, defaults verified
+  T2  Boat       [PASS] 1 cards, 8 fields, defaults verified
   T3  Person     [PASS] 1 cards, 13 fields, defaults verified
-  T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T4  Firearm    [PASS] 1 cards, 7 fields, defaults verified
   T5  Article    [PASS] 1 cards, 5 fields, defaults verified
-PHASE 2: VEHICLE COMBOS (4 tests, 4 combos)
+PHASE 2: VEHICLE COMBOS (5 tests, 5 combos)
   T6  Vehicle    [PASS] (structural check)
   T7  Vehicle    [PASS] (structural check)
-  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (IN.VP)
   T9  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
-PHASE 3: BOAT COMBOS (5 tests, 5 combos)
-  T10  Boat       [PASS] (structural check)
+  T10  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
+PHASE 3: BOAT COMBOS (6 tests, 6 combos)
   T11  Boat       [PASS] (structural check)
   T12  Boat       [PASS] (structural check)
-  T13  Boat       [PASS] BoatQuery fires (NLTS.BQ.H)
-  T14  Boat       [PASS] BoatQuery fires (NLTS.BQ.H)
+  T13  Boat       [PASS] (structural check)
+  T14  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
+  T15  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
+  T16  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
 PHASE 4: PERSON COMBOS (5 tests, 5 combos)
-  T15  Person     [PASS] (structural check)
-  T16  Person     [PASS] DriverLicenseQuery fires (NLTS.DQ)
-  T17  Person     [PASS] DriverLicenseQuery fires (IN.L1)
-  T18  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
-  T19  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
-PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
-  T20  Firearm    [PASS] GunQuery fires (IG.QGB)
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] DriverLicenseQuery fires (NLTS.DQ)
+  T19  Person     [PASS] DriverLicenseQuery fires (IN.L1)
+  T20  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
+  T21  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
+PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
+  T22  Firearm    [PASS] GunQuery fires (IG.QGH)
+  T23  Firearm    [PASS] GunQuery fires (IG.QGH)
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
-  T21  Article    [PASS] (structural check)
-  T22  Article    [PASS] (structural check)
+  T24  Article    [PASS] (structural check)
+  T25  Article    [PASS] (structural check)
 PHASE 7: ANY[] FIELD TESTS (4 tests)
-  T23  Vehicle    [PASS] any[] fields verified: vehicleMakeCode, vehicleYear
-  T24  Person     [PASS] any[] fields verified: birthDate
-  T25  Article    [PASS] any[] fields verified: articleBrand, articleTypeCode
-  T26  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode
+  T26  Vehicle    [PASS] any[] fields verified: vehicleMakeCode, vehicleYear
+  T27  Person     [PASS] any[] fields verified: birthDate
+  T28  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode
+  T29  Article    [PASS] any[] fields verified: articleBrand, articleTypeCode
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T27  Person     [PASS] queriesToDeselect verified
+  T30  Person     [PASS] queriesToDeselect verified
 PHASE 9: NEGATIVES (empty forms = no send)
-  T28  Vehicle    [PASS] empty form: no combos fire
-  T29  Person     [PASS] empty form: no combos fire
+  T31  Vehicle    [PASS] empty form: no combos fire
+  T32  Person     [PASS] empty form: no combos fire
 
-SUMMARY: 29/29 PASS, 0 FAIL
+SUMMARY: 32/32 PASS, 0 FAIL
 
 

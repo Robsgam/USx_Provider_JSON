@@ -622,7 +622,84 @@ function Audit-Provider {
     }
 
     # ══════════════════════════════════════════════════════════════════════════
-    # CHECK 5: Field maxLength Alignment
+    # CHECK 5: Primary Field Coverage (HARD GATE)
+    # For each built query, every unique primaryFieldReference in the metadata
+    # must have at least one matching combo in the JSON. If a metadata search
+    # path exists and we build the query but skip that path, that's a FAIL.
+    # This catches cross-entity gaps (Name on Vehicle/Firearm/Boat) and any
+    # other missing search paths within queries we claim to support.
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 5: Primary Field Coverage (HARD GATE) ---"
+
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+        if (-not $qidmByQuery.ContainsKey($qName)) { continue }
+        if (-not $txn.Combinations -or -not $txn.Combinations.Combination) { continue }
+
+        $xmlCombos = @($txn.Combinations.Combination)
+        $jsonQidms = $qidmByQuery[$qName]
+
+        # Collect unique primaryFieldReferences from metadata
+        $xmlPrimaries = @{}
+        foreach ($xmlCombo in $xmlCombos) {
+            $pfr = $null
+            try { $pfr = $xmlCombo.primaryFieldReference } catch { }
+            if (-not $pfr) {
+                try { $pfr = $xmlCombo.GetAttribute('primaryFieldReference') } catch { }
+            }
+            if ($pfr -and -not $xmlPrimaries.ContainsKey($pfr)) {
+                $kr = $xmlCombo.keyReference
+                if (-not $kr) { try { $kr = $xmlCombo.GetAttribute('keyReference') } catch { $kr = '?' } }
+                $xmlPrimaries[$pfr] = $kr
+            }
+        }
+
+        # Collect unique primaryFieldReferences from JSON combos
+        $jsonPrimaries = @{}
+        foreach ($qidm in $jsonQidms) {
+            if (-not $qidm.combinations) { continue }
+            foreach ($jc in @($qidm.combinations)) {
+                $pfr = $jc.primaryFieldReference
+                if ($pfr) { $jsonPrimaries[$pfr] = $true }
+            }
+        }
+
+        # Also collect JSON QIDM attribute targetFields (for Name fields that use FormatStringRuleHandler)
+        $jsonTargetFields = @{}
+        foreach ($qidm in $jsonQidms) {
+            if (-not $qidm.attributes) { continue }
+            foreach ($attr in @($qidm.attributes)) {
+                if ($attr.targetField) { $jsonTargetFields[$attr.targetField] = $true }
+            }
+        }
+
+        Out-Line "  ${qName}: $($xmlPrimaries.Count) metadata search paths"
+        foreach ($pfr in ($xmlPrimaries.Keys | Sort-Object)) {
+            $kr = $xmlPrimaries[$pfr]
+            $hasComboPfr = $false
+            foreach ($jp in $jsonPrimaries.Keys) {
+                if ($jp -ieq $pfr) { $hasComboPfr = $true; break }
+            }
+
+            if ($hasComboPfr) {
+                Out-Pass "  $pfr`: at least one combo built (e.g. $kr)"
+            } else {
+                $hasAttr = $false
+                foreach ($tf in $jsonTargetFields.Keys) {
+                    if ($tf -ieq $pfr) { $hasAttr = $true; break }
+                }
+                if ($hasAttr) {
+                    Out-Fail "  $pfr`: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for $kr path)"
+                } else {
+                    Out-Warn "  $pfr`: metadata search path not built -- no attribute, no combo (keyRef $kr)"
+                }
+            }
+        }
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 6: Field maxLength Alignment
     # ══════════════════════════════════════════════════════════════════════════
     Out-Line ""
     Out-Line "--- CHECK 5: Field maxLength Alignment ---"

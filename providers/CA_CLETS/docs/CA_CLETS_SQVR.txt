@@ -1,33 +1,33 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
-Last updated: 2026-05-12
-JSON version: v1.8 BASE + v1.8 MC
+Last updated: 2026-05-19
+JSON version: v1.9 BASE + v1.9 MC
 
 VEHICLE REGISTRATION (VehicleRegistrationQuery)
   Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
 
   NLTS.RQ.P -- OOS Plate query (Nlets)
-    set: CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
+    set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
     Status: [PENDING]
 
   NLTS.RQ.V -- OOS VIN query (Nlets)
-    set: CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState
+    set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
     Status: [PENDING]
 
   IA.QVK -- In-state VIN query
-    set: CaRequestPurposeCode, VehicleIdentificationNumber
+    set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
     Status: [PENDING]
 
   IA.QV -- In-state Plate query
-    set: CaRequestPurposeCode, LicensePlateNumber
+    set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     Status: [PENDING]
 
   IN.VP -- Vehicle by Name (MC only, cross-entity)
-    set: CaRequestPurposeCode, NameLast, NameFirst
+    set: PurposeCode, NameLast, NameFirst
     any: (none)
     Status: [PENDING] [MC-ONLY]
 
@@ -35,17 +35,17 @@ DRIVER LICENSE (DriverLicenseQuery)
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
 
   NLTS.DQ -- OOS DL by OLN (Nlets)
-    set: CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState
+    set: PurposeCode, OperatorLicenseNumber, RegistrationState
     any: (none)
     Status: [PENDING]
 
   ID.L1 -- In-state DL by OLN
-    set: CaRequestPurposeCode, OperatorLicenseNumber
+    set: PurposeCode, OperatorLicenseNumber
     any: RegistrationState
     Status: [PENDING]
 
   IN.L1 -- In-state DL by Name
-    set: CaRequestPurposeCode, NameLast, NameFirst
+    set: PurposeCode, NameLast, NameFirst
     any: BirthDate, RegistrationState
     Status: [PENDING]
 
@@ -53,12 +53,12 @@ DRIVER HISTORY (DriverHistoryQuery)
   Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true
 
   NLTS.KQ.N -- DH by Name+DOB+Sex (Nlets)
-    set: CaRequestPurposeCode, BirthDate, NameLast, NameFirst, SexCode
+    set: PurposeCode, BirthDate, NameLast, NameFirst, SexCode
     any: RegistrationState
     Status: [PENDING]
 
   NLTS.KQ.O -- DH by OLN (Nlets)
-    set: CaRequestPurposeCode, OperatorLicenseNumber
+    set: PurposeCode, OperatorLicenseNumber
     any: RegistrationState
     Status: [PENDING]
 
@@ -66,12 +66,12 @@ FIREARM (GunQuery)
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: (not set)
 
   IG.QGB -- Gun by Serial
-    set: CaRequestPurposeCode, SerialNumber
+    set: PurposeCode, SerialNumber
     any: GunCaliber, FirearmMake, GunTypeCode
     Status: [PENDING]
 
   IG.QGH -- Gun by Name (MC only, cross-entity)
-    set: CaRequestPurposeCode, NameLast, NameFirst
+    set: PurposeCode, NameLast, NameFirst
     any: (none)
     Status: [PENDING] [MC-ONLY]
 
@@ -79,12 +79,12 @@ ARTICLE (ArticleSingleQuery)
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: (not set)
 
   IP.QA.S -- Article by Serial
-    set: CaRequestPurposeCode, SerialNumber
+    set: PurposeCode, SerialNumber
     any: ArticleBrand, ArticleTypeCode
     Status: [PENDING]
 
   IP.QA.O -- Article by OAN
-    set: CaRequestPurposeCode, OwnerAppliedNumber
+    set: PurposeCode, OwnerAppliedNumber
     any: ArticleBrand, ArticleTypeCode
     Status: [PENDING]
 
@@ -92,32 +92,32 @@ BOAT (BoatQuery)
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: (not set)
 
   NLTS.BQ.H -- OOS Boat by Hull ID (Nlets)
-    set: CaRequestPurposeCode, BoatHullIdNumber, RegistrationState
+    set: PurposeCode, BoatHullIdNumber, RegistrationState
     any: (none)
     Status: [PENDING]
 
   NLTS.BQ.R -- OOS Boat by Registration (Nlets)
-    set: CaRequestPurposeCode, RegistrationNumber, RegistrationState
+    set: PurposeCode, RegistrationNumber, RegistrationState
     any: (none)
     Status: [PENDING]
 
   NLTS.BQ.N -- OOS Boat by Name+DOB (MC only, cross-entity)
-    set: CaRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
+    set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
     Status: [PENDING] [MC-ONLY]
 
   IA.QB.H -- Boat by Hull ID
-    set: CaRequestPurposeCode, BoatHullIdNumber
+    set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
     Status: [PENDING]
 
   IA.QB.O -- Boat by OAN
-    set: CaRequestPurposeCode, OwnerAppliedNumber
+    set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
     Status: [PENDING]
 
   IA.QB.R -- Boat by Registration
-    set: CaRequestPurposeCode, RegistrationNumber
+    set: PurposeCode, RegistrationNumber
     any: RegistrationState
     Status: [PENDING]
 

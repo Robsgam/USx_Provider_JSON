@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-19 09:08
+  Generated: 2026-05-19 13:33
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -24,14 +24,14 @@ VALIDATOR RESULTS
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 16 fieldIds
-  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 10 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
-  [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 11 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 4 combos
+  [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' -> Vehicle : 9 attrs, 5 combos
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' -> Person : 5 attrs, 3 combos
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -40,10 +40,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'CA_CLETS_GunQuery' -> Firearm : 5 attrs, 1 combos
+  [PASS] QIDM 'CA_CLETS_GunQuery' -> Firearm : 6 attrs, 2 combos
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
-  [PASS] QIDM 'CA_CLETS_BoatQuery' -> Boat : 5 attrs, 5 combos
+  [PASS] QIDM 'CA_CLETS_BoatQuery' -> Boat : 7 attrs, 6 combos
   [PASS] QIDM 'CA_CLETS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'CA_CLETS_BoatQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
 
@@ -73,6 +74,7 @@ VALIDATOR RESULTS
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'NLTS.RQ.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'NLTS.RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IN.VP': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IA.QVK': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_VehicleRegistrationQuery' combo 'IA.QV': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'IN.L1': all set[]/any[] fields resolvable
@@ -80,9 +82,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'ID.L1': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo 'NLTS.KQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_DriverHistoryQuery' combo 'NLTS.KQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_GunQuery' combo 'IG.QGH': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_GunQuery' combo 'IG.QGB': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo 'IP.QA.S': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_ArticleSingleQuery' combo 'IP.QA.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.H': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'NLTS.BQ.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'IA.QB.H': all set[]/any[] fields resolvable
@@ -90,7 +94,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_BoatQuery' combo 'IA.QB.R': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 66 PASS / 0 FAIL / 0 WARN
+  RESULTS: 70 PASS / 0 FAIL / 0 WARN
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Ready for import.

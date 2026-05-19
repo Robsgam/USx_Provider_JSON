@@ -13,29 +13,29 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-05-15)
+## Provider Status (updated 2026-05-19)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS_LOCKED/ | v3.1 | 69P/0F/0W/0LIM LOCKED -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, CAD field alignment |
-| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) NEW | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.6 | 74P/0F/0W (BASE) 74P/0F/0W (MC) NEW | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
-| AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v4.1 | 102P/0F/0W/0LIM LOCKED -- 44/44 MC PASS full combo coverage | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible |
-| TX_TLETS | providers/TX_TLETS/ | v2.7 | 84P/0F/0W (BASE) 84P/0F/0W (MC) ACTIVE | DH-suffix+one-directional queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress user-fillable, Attention visible |
-| LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) NEW | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
-| CA_CLETS | providers/CA_CLETS_LOCKED/ | v1.8 | 18/18 PASS LOCKED -- one-directional queriesToDeselect fix | CaRequestPurposeCode, State routing (blank=in-state), DH-suffix fieldIds, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), no ImageIndicator, 6 basic queries, yyyyMMdd dates |
-| CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) NEW | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
-| CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA_BLOCKED/ | -- | BLOCKED -- metadata has only JAWS person queries, no OLN, no Vehicle/Boat/Gun/Article; CLETSPersonSuperQuery in devdoc but NOT in metadata; waiting for updated docs | 2 transactions (6 combos), Person only, RequestingAgencyId on all combos |
-| CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v1.2 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) NEW | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, 19 combos, OCATS-specific queries available (warrants, juvenile, LARS) |
-| CA_eSUN | providers/CA_eSUN/ | v1.5 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) NEW | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
-| CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.3 | 65P/0F/0W (BASE) 65P/0F/0W (MC) NEW | Regional interface, DL+DH DH-suffix+queriesToDeselect, short keyRefs, MC multi-card (15 cards) |
-| IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.1 | 61P/0F/0W/0LIM (BASE) 61P/0F/0W/0LIM (MC) NEW | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
-| MD_METERS | providers/MD_METERS/ | v1.3 | 69P/0F/0W/0LIM (BASE) 69P/0F/0W/0LIM (MC) NEW | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (12 cards), State no-default |
-| OH_LEADS | providers/OH_LEADS/ | v1.3 | 77P/0F/0W/0LIM (BASE) 77P/0F/0W/0LIM (MC) NEW | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
-| NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.3 | 66P/0F/0W/0LIM (BASE) 66P/0F/0W/0LIM (MC) NEW | 6 basic queries, DH-suffix+queriesToDeselect, GunModel field, MC multi-card (12 cards) |
-| OR_LEDS | providers/OR_LEDS/ | v1.3 | 58P/0F/0W/0LIM (BASE) 58P/0F/0W/0LIM (MC) NEW | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
-| TN_TIES | providers/TN_TIES/ | v1.4 | 80P/0F/0W/0LIM (BASE) 80P/0F/0W/0LIM (MC) NEW | 6 basic queries, 28 combos, no State initialValue, MC multi-card (14 cards), DH-suffix |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.2 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module |
+| HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.6 | 74P/0F/0W (BASE) 74P/0F/0W (MC) | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
+| AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
+| FL_FCIC | providers/FL_FCIC/ | v4.1 | 102P/0F/0W/0LIM -- 44/44 MC PASS full combo coverage | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible |
+| TX_TLETS | providers/TX_TLETS/ | v2.7 | 84P/0F/0W (BASE) 84P/0F/0W (MC) | DH-suffix+one-directional queriesToDeselect, TX-specific queries (DPSI/REG/VIN+FRT), VehicleStolenQuery, EmailAddress user-fillable, Attention visible |
+| LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
+| CA_CLETS | providers/CA_CLETS/ | v2.1 | 70P/0F/0W/0LIM -- 20/20 combos all on single-card BASE, MC archived | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV |
+| CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
+| CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | -- | INCOMPLETE -- metadata has only JAWS person queries, no OLN, no Vehicle/Boat/Gun/Article; CLETSPersonSuperQuery in devdoc but NOT in metadata; waiting for updated docs | 2 transactions (6 combos), Person only, RequestingAgencyId on all combos |
+| CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v1.2 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, 19 combos, OCATS-specific queries available (warrants, juvenile, LARS) |
+| CA_eSUN | providers/CA_eSUN/ | v1.5 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | CaRequestPurposeCode (visible Inp), VP owner search, gun-by-name, Attention handler, MC multi-card (14 cards) |
+| CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v1.3 | 65P/0F/0W (BASE) 65P/0F/0W (MC) | Regional interface, DL+DH DH-suffix+queriesToDeselect, short keyRefs, MC multi-card (15 cards) |
+| IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v1.1 | 61P/0F/0W/0LIM (BASE) 61P/0F/0W/0LIM (MC) | 5 basic queries (no DH), Z2/Z5 keyRefs, MC multi-card (11 cards) |
+| MD_METERS | providers/MD_METERS/ | v1.3 | 69P/0F/0W/0LIM (BASE) 69P/0F/0W/0LIM (MC) | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZDRV invented keyRefs, MC multi-card (12 cards), State no-default |
+| OH_LEADS | providers/OH_LEADS/ | v1.3 | 77P/0F/0W/0LIM (BASE) 77P/0F/0W/0LIM (MC) | 6 basic queries, 9 VehReg combos, BMVIMS, owner search (RN), MC multi-card (14 cards) |
+| NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v1.3 | 66P/0F/0W/0LIM (BASE) 66P/0F/0W/0LIM (MC) | 6 basic queries, DH-suffix+queriesToDeselect, GunModel field, MC multi-card (12 cards) |
+| OR_LEDS | providers/OR_LEDS/ | v1.3 | 58P/0F/0W/0LIM (BASE) 58P/0F/0W/0LIM (MC) | 5 basic queries (no DH), invented keyRefs, MC multi-card (11 cards) |
+| TN_TIES | providers/TN_TIES/ | v1.4 | 80P/0F/0W/0LIM (BASE) 80P/0F/0W/0LIM (MC) | 6 basic queries, 28 combos, no State initialValue, MC multi-card (14 cards), DH-suffix |
 
 ## Legacy Repos (READ-ONLY)
 
@@ -288,7 +288,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 
 | # | Tool | Purpose | Key flags |
 |---|---|---|---|
-| 1 | `validate.ps1` | 6-phase structural validator (encoding, bundles, QIF types, QIDM refs, autoSelect, combos) | `-Path <json>` `-ShowDetail` `-Force` (override lock) |
+| 1 | `validate.ps1` | 6-phase structural validator (encoding, bundles, QIF types, QIDM refs, autoSelect, combos) | `-Path <json>` `-ShowDetail` |
 | 2 | `render_layout.ps1` | CLI layout tree renderer | `-Path <json>` `-Summary` `-Entity` `-Variant` `-QidmOnly` |
 | 3 | `test_commsys.ps1` | CommSys query simulator (combo matching + XML output) | `-Path <json>` `-Entity` `-Combo` `-OutFile` |
 | 4 | `report_picklists.ps1` | Scans FormSelect dropdowns + QRDM/QIDM code types | `-Path <json>` `-OutFile` |
@@ -298,7 +298,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
 | 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — runs all 10 above + saves reports to docs/ | `-Path <json>` `-Release` (bundles to release/) |
+| -- | `build_report.ps1` | **Master orchestrator** — runs all 10 above + saves reports to docs/ | `-Path <json>` |
 
 ### Auditors (repo-wide checks)
 
@@ -328,7 +328,6 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | Tool | Purpose | Key flags |
 |---|---|---|
 | `new_provider.ps1` | Scaffolds new provider (canonical structure, build scripts, doc templates, tool registrations) | `-XmlPath <xml>` `-PdfPath` `-Force` |
-| `lock_provider.ps1` | One-command lock/unlock (folder rename, STATUS.txt, cascading reference updates) | `-Provider <name>` `-Action <Lock\|Unlock>` |
 | `new_test_log.ps1` | Creates stub test log in tests/ (GATE 2 requirement) | `-Provider` `-Variant` `-Version` `-Entity` `-Combo` `-Description` |
 | `post_test.ps1` | Instant-save after test (artifacts, STATUS, SQVR, commit, push) | `-Provider` `-Entity` `-Query` `-Combo` `-Result` `-Description` |
 

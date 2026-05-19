@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_BASE
   Source: CA_CLETS_BASE.json
-  Generated: 2026-05-19 09:08
+  Generated: 2026-05-19 13:33
 ================================================================
 QUERY SIMULATION
 ================
@@ -12,7 +12,7 @@ QUERY SIMULATION
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 4
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 5
 
     [FIRES] NLTS.RQ.P
       set: [purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
@@ -47,6 +47,7 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
+    [SKIP] IN.VP -- missing set: nameLast, nameFirst
 
     [FIRES] IA.QVK
       set: [purposeCode, vehicleIdentificationNumber]
@@ -162,7 +163,8 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
-    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
+    [SKIP] IG.QGH -- missing set: nameLast, nameFirst
 
     [FIRES] IG.QGB
       set: [purposeCode, serialNumber]
@@ -207,7 +209,22 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: CA_CLETS_BoatQuery [Boat] ---
-    Query: BoatQuery  |  Attrs: 5  |  Combos: 5
+    Query: BoatQuery  |  Attrs: 7  |  Combos: 6
+
+    [FIRES] NLTS.BQ.N
+      set: [purposeCode, nameLast, nameFirst, birthDate, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>NLTS.BQ.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
     [FIRES] NLTS.BQ.H
       set: [purposeCode, boatHullIdNumber, registrationState]
@@ -215,8 +232,10 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>
@@ -228,8 +247,10 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>
@@ -242,8 +263,10 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.H</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>
@@ -256,8 +279,10 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.O</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>
@@ -270,8 +295,10 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.R</MessageKey>
+        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <State>FL</State>

@@ -2,8 +2,10 @@
 
 | Version | Date | File | Notes |
 |---------|------|------|-------|
-| v1.8 BASE | 2026-05-12 | CA_CLETS_BASE.json | One-directional queriesToDeselect fix; 66P/0F/0W/0LIM; 18/18 PASS LOCKED |
-| v1.8 MC | 2026-05-12 | CA_CLETS_MC.json | One-directional queriesToDeselect fix; 70P/0F/0W/0LIM |
+| v1.9 BASE | 2026-05-19 | CA_CLETS_BASE.json | CAD purposeCode fieldId fix; 66P/0F/0W/0LIM; 3/3 CAD PASS FOUNDATION READY |
+| v1.9 MC | 2026-05-19 | CA_CLETS_MC.json | CAD purposeCode fieldId fix; 70P/0F/0W/0LIM |
+| v1.8 BASE | 2026-05-12 | phases/base/CA_CLETS_v1.8_2026-05-12.json | One-directional queriesToDeselect fix; 66P/0F/0W/0LIM; 18/18 PASS |
+| v1.8 MC | 2026-05-12 | phases/mc/CA_CLETS_MC_v1.8_2026-05-12.json | One-directional queriesToDeselect fix; 70P/0F/0W/0LIM |
 | v1.7 BASE | 2026-05-11 | phases/base/CA_CLETS_v1.7_2026-05-11.json | camelCase + DH-suffix + combo ordering; 66P/0F/0W/0LIM |
 | v1.7 MC | 2026-05-11 | phases/mc/CA_CLETS_MC_v1.7_2026-05-11.json | camelCase + DH-suffix; 70P/0F/0W/0LIM |
 | v1.6 BASE | 2026-05-07 | phases/base/CA_CLETS_v1.6_2026-05-07.json | VehicleMakeCode dropdown, Stats cleanup; 64P/0F/0W/5LIM |
