@@ -1,12 +1,11 @@
-# build_ca_clets_mc.ps1  -- CA_CLETS v1.x MC
-# MC variant: camelCase fieldIds for CAD auto-populate.
-# Phase 2 multi-card. Cross-entity combos (IN.VP, IG.QGH, NLTS.BQ.N).
-# CAD_DISPATCH + FIRST_RESPONDER context cards.
+# build_ca_clets_mc.ps1  -- CA_CLETS MC (ARCHIVED)
+# MC variant archived at v1.9 -- all 20 combos now on BASE v2.1 single-card layout.
+# Kept for historical reference. Do not run.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '1.9'
+$Version  = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases\mc"
