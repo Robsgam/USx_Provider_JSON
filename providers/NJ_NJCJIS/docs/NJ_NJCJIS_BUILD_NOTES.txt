@@ -1,4 +1,4 @@
-﻿NJ_NJCJIS BUILD NOTES -- v2.x Line
+NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
@@ -30,11 +30,26 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v3.3  2026-05-19  [describe change here]
+v3.2  2026-05-19  [describe change here]
   CHANGED
     -
   REASON
     -
+v3.3  2026-05-19  Combination-level defaults for CAD dispatch
+  CHANGED
+    - Added defaults[] to ALL 13 CommSys combos across 6 QIDMs
+    - VehicleRegistrationQuery: RandomRequest=N, ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026 on RQ/RQN; ImageIndicator=N + plate defaults on RQ_RAND/RQN_RAND
+    - VehicleStolenQuery: ImageIndicator=N on QVN/QVP/QVV
+    - DriverLicenseQuery: ImageIndicator=Y on DQ/DQN
+    - GunQuery: ImageIndicator=N on QG
+    - ArticleSingleQuery: ImageIndicator=N on QA
+    - BoatQuery: ImageIndicator=N on QB/QBN
+    - Same defaults on both BASE and MC
+  REASON
+    - CAD dispatch does NOT apply QIF form initialValues
+    - Without combo defaults[], CAD-dispatched XML omits defaulted fields entirely
+    - Caught by NJ CAD XML analysis: VIN query had only VIN+State, missing RandomRequest/ImageIndicator
+    - New BUILD_RULES.txt Section 12 and audit_cad.ps1 CHECK 6 codify this as build-time gate
 v3.2  2026-05-18  CAD-compatible rebuild -- conditions routing for RandomRequest
   CHANGED
     - RandomRequest moved from set[] to any[] on all VehicleRegistrationQuery combos (RQ, RQN, RQ_RAND, RQN_RAND)
@@ -187,6 +202,7 @@ v2.0-mc  2026-04-28  MC variant of v2.0 BASE
     - RMS identical to BASE (HIDLE + Patch 1+3+6)
   REASON
     - Standard MC variant per build methodology
+
 
 
 
