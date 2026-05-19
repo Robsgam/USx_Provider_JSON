@@ -1,10 +1,9 @@
 CA_CLETS -- Build Status
 =========================
-Last updated: 2026-05-12
+Last updated: 2026-05-19
 
-  *** BASE v1.9 FOUNDATION TESTING READY ***
-Current: v1.8 | BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM | 18/18 PASS | Updated 2026-05-12
-Current version: v1.8 (one-directional queriesToDeselect fix, 18/18 BASE PASS)
+Current: v2.1 | BASE 70P/0F/0W/0LIM | 20/20 combos | 32/32 conductor PASS | Updated 2026-05-19
+Current version: v2.1 (full combo coverage on single-card BASE, MC archived)
 Provider: CA_CLETS
 
 ARCHITECTURE
@@ -12,31 +11,33 @@ ARCHITECTURE
 Entities: 5 (Vehicle, Person, Firearm, Article, Boat)
 QIFs:     5 (1 per entity, single card each)
 QIDMs:    6 CommSys + 2 RMS = 8 total
-Combos:   BASE 17 CommSys / MC 20 CommSys (3 MC-only cross-entity)
+Combos:   20 CommSys (all on single-card BASE -- MC no longer needed)
 
-BASE combos (17):
-  VehicleRegistrationQuery  -- 4: NLTS.RQ.P, NLTS.RQ.V, IA.QVK, IA.QV
+BASE combos (20):
+  VehicleRegistrationQuery  -- 5: NLTS.RQ.P, NLTS.RQ.V, IN.VP, IA.QVK, IA.QV
   DriverLicenseQuery        -- 3: NLTS.DQ, ID.L1, IN.L1
   DriverHistoryQuery        -- 2: NLTS.KQ.N, NLTS.KQ.O
-  GunQuery                  -- 1: IG.QGB
+  GunQuery                  -- 2: IG.QGH, IG.QGB
   ArticleSingleQuery        -- 2: IP.QA.S, IP.QA.O
-  BoatQuery                 -- 5: NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R
+  BoatQuery                 -- 6: NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R
 
-MC-only combos (+3):
-  VehicleRegistrationQuery  -- +IN.VP (Name, cross-entity)
-  GunQuery                  -- +IG.QGH (Name, cross-entity)
-  BoatQuery                 -- +NLTS.BQ.N (Name+DOB, cross-entity)
+Cross-entity combos (on BASE single-card):
+  VehicleRegistrationQuery  -- IN.VP (Name fields on Vehicle card)
+  GunQuery                  -- IG.QGH (Name fields on Firearm card)
+  BoatQuery                 -- NLTS.BQ.N (Name+DOB fields on Boat card)
 
 CA-SPECIFIC
 -----------
-- CaRequestPurposeCode: hidden InpH initialValue='C' on every form, in set[] on every combo
+- CaRequestPurposeCode: visible Inp fieldId='purposeCode' initialValue='C' on every form, in set[] on every combo
 - No ImageIndicator (not in CA metadata)
 - No VehicleStolenQuery (combined with VehicleRegistrationQuery)
 - No RandomRequest (not in CA metadata)
 - No State initialValue on any form (LIMITATION #30: in-state IA.* vs OOS NLTS.* routing)
 - PlateType=PC, PlateYear=2026 defaults (standard, safe because State is combo routing discriminator)
-- 2 Person QIDMs co-fire by design (DL + DH)
-- MC: person fields (NameFirst, NameLast, BirthDate) on Vehicle/Firearm/Boat forms for cross-entity combos
+- CAD defaults on IA.QV (LicensePlateTypeCode=PC, LicensePlateYear=current)
+- 2 Person QIDMs co-fire by design (DL + DH, one-directional queriesToDeselect)
+- Name fields (nameFirst, nameLast) on Vehicle/Firearm/Boat forms for cross-entity combos
+- BirthDate on Boat form for NLTS.BQ.N combo
 
 NOT IMPLEMENTED (devdoc audit)
 -------------------------------
@@ -62,47 +63,55 @@ VALIDATOR RESULTS
   | MC      | v1.5    | 68P/0F/0W/7LIM       | CLEAN  | 2026-05-06 |
   | BASE    | v1.6    | 64P/0F/0W/5LIM       | CLEAN  | 2026-05-07 |
   | MC      | v1.6    | 68P/0F/0W/7LIM       | CLEAN  | 2026-05-08 |
+  | BASE    | v1.8    | 66P/0F/0W/0LIM       | CLEAN  | 2026-05-12 |
+  | MC      | v1.8    | 70P/0F/0W/0LIM       | CLEAN  | 2026-05-12 |
+  | BASE    | v1.9    | 66P/0F/0W/0LIM       | CLEAN  | 2026-05-19 |
+  | MC      | v1.9    | 70P/0F/0W/0LIM       | CLEAN  | 2026-05-19 |
+  | BASE    | v2.1    | 70P/0F/0W/0LIM       | CLEAN  | 2026-05-19 |
 
-  BASE WARN (0): All false-positive WARNs resolved (validator now recognizes camelCase fieldIds)
-  MC WARN (0): Clean
-  LIMITATION (BASE 5 / MC 7): combo ordering, 2 Person QIDMs co-fire, DL+DH no DH-suffix,
-    no queriesToDeselect, MC cross-entity combo ordering (Gun, Vehicle, Boat)
-    -> All by design
+  MC archived at v1.9 -- all 20 combos now on BASE single-card layout.
 
 PRODUCTION TESTS
 ----------
 Import: v1.8 BASE IMPORTED 2026-05-12
 
-v1.8 BASE Test Matrix (18/18 PASS Ã¢â‚¬â€ 2026-05-12)
-  T1  | Vehicle | UI CHECK        | PASS Ã¢â‚¬â€ Registration auto-checks, State blank, PurposeCode hidden
-  T2  | Vehicle | IA.QV           | PASS Ã¢â‚¬â€ VehicleRegistrationQuery, LicensePlateNumber=ABC1234, CaRequestPurposeCode=C
-  T3  | Vehicle | NLTS.RQ.P       | PASS Ã¢â‚¬â€ VehicleRegistrationQuery, Plate+State+PlateType+PlateYear, OOS
-  T4  | Vehicle | IA.QVK          | PASS Ã¢â‚¬â€ VehicleRegistrationQuery, VIN in-state
-  T5  | Vehicle | NLTS.RQ.V       | PASS Ã¢â‚¬â€ VehicleRegistrationQuery, VIN+State OOS
-  T6  | Person  | ID.L1           | PASS Ã¢â‚¬â€ DriverLicenseQuery by OLN, DL auto-checks, DH greyed out (v1.8 fix confirmed)
-  T7  | Person  | NLTS.DQ         | PASS Ã¢â‚¬â€ DriverLicenseQuery by OLN+State OOS
-  T8  | Person  | IN.L1           | PASS Ã¢â‚¬â€ DriverLicenseQuery by Name, FormatStringRuleHandler=DOE,JOHN
-  T9  | Person  | NLTS.KQ.O       | PASS Ã¢â‚¬â€ DriverHistoryQuery by OLN, DH auto-checks! (v1.8 fix confirmed)
-  T10 | Person  | NLTS.KQ.N       | PASS Ã¢â‚¬â€ DriverHistoryQuery by Name+DOB+Sex, BirthDate=19850101 yyyyMMdd
-  T11 | Firearm | IG.QGB          | PASS Ã¢â‚¬â€ GunQuery, GunSerialNumber=ABC12345
-  T12 | Article | IP.QA.S         | PASS Ã¢â‚¬â€ ArticleSingleQuery by serial
-  T13 | Article | IP.QA.O         | PASS Ã¢â‚¬â€ ArticleSingleQuery by OAN
-  T14 | Boat    | IA.QB.R         | PASS Ã¢â‚¬â€ BoatQuery by RegistrationNumber in-state
-  T15 | Boat    | IA.QB.H         | PASS Ã¢â‚¬â€ BoatQuery by BoatHullIdNumber in-state
-  T16 | Boat    | IA.QB.O         | PASS Ã¢â‚¬â€ BoatQuery by OwnerAppliedNumber in-state
-  T17 | Boat    | NLTS.BQ.R       | PASS Ã¢â‚¬â€ BoatQuery by Registration+State OOS
-  T18 | Boat    | NLTS.BQ.H       | PASS Ã¢â‚¬â€ BoatQuery by HullId+State OOS
+v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
+  T1  | Vehicle | UI CHECK        | PASS -- Registration auto-checks, State blank, PurposeCode hidden
+  T2  | Vehicle | IA.QV           | PASS -- VehicleRegistrationQuery, LicensePlateNumber=ABC1234, CaRequestPurposeCode=C
+  T3  | Vehicle | NLTS.RQ.P       | PASS -- VehicleRegistrationQuery, Plate+State+PlateType+PlateYear, OOS
+  T4  | Vehicle | IA.QVK          | PASS -- VehicleRegistrationQuery, VIN in-state
+  T5  | Vehicle | NLTS.RQ.V       | PASS -- VehicleRegistrationQuery, VIN+State OOS
+  T6  | Person  | ID.L1           | PASS -- DriverLicenseQuery by OLN, DL auto-checks, DH greyed out (v1.8 fix confirmed)
+  T7  | Person  | NLTS.DQ         | PASS -- DriverLicenseQuery by OLN+State OOS
+  T8  | Person  | IN.L1           | PASS -- DriverLicenseQuery by Name, FormatStringRuleHandler=DOE,JOHN
+  T9  | Person  | NLTS.KQ.O       | PASS -- DriverHistoryQuery by OLN, DH auto-checks! (v1.8 fix confirmed)
+  T10 | Person  | NLTS.KQ.N       | PASS -- DriverHistoryQuery by Name+DOB+Sex, BirthDate=19850101 yyyyMMdd
+  T11 | Firearm | IG.QGB          | PASS -- GunQuery, GunSerialNumber=ABC12345
+  T12 | Article | IP.QA.S         | PASS -- ArticleSingleQuery by serial
+  T13 | Article | IP.QA.O         | PASS -- ArticleSingleQuery by OAN
+  T14 | Boat    | IA.QB.R         | PASS -- BoatQuery by RegistrationNumber in-state
+  T15 | Boat    | IA.QB.H         | PASS -- BoatQuery by BoatHullIdNumber in-state
+  T16 | Boat    | IA.QB.O         | PASS -- BoatQuery by OwnerAppliedNumber in-state
+  T17 | Boat    | NLTS.BQ.R       | PASS -- BoatQuery by Registration+State OOS
+  T18 | Boat    | NLTS.BQ.H       | PASS -- BoatQuery by HullId+State OOS
+
+v2.1 BASE -- PENDING IMPORT + TESTING (20 combos)
+  New combos to test: IN.VP, IG.QGH, NLTS.BQ.N
+  Retested combos: all 17 from v1.8 (layout changed for Vehicle/Firearm/Boat)
 
 KEY FINDINGS:
-  - v1.7Ã¢â€ â€™v1.8: Removed bidirectional queriesToDeselect from DL QIDM (one-directional pattern)
+  - v1.7-v1.8: Removed bidirectional queriesToDeselect from DL QIDM (one-directional pattern)
   - v1.8 T6: DL auto-checks correctly, DH stays greyed out (fix confirmed)
   - v1.8 T9: DH auto-checks correctly when DH fields entered (fix confirmed)
   - CaRequestPurposeCode=C present in all 17 XML requests
   - All date formats yyyyMMdd (CA-specific)
   - FormatStringRuleHandler confirmed: Name="Last, First"
   - Clear form platform bug: use full page reload between tests
+  - v2.1: Cross-entity Name fields added to Vehicle/Firearm/Boat for IN.VP/IG.QGH/NLTS.BQ.N
+  - v2.1: CAD defaults added on IA.QV (LicensePlateTypeCode=PC, LicensePlateYear=current)
+  - v2.1: MC variant archived -- all 20 combos on single-card-per-entity BASE
 
 NEXT STEPS
 ----------
-1. Import MC for cross-entity testing (IN.VP, IG.QGH, NLTS.BQ.N)
+1. Import v2.1 BASE for testing (20 combos, 3 new cross-entity)
 2. Continue provider work order: FL_FCIC next

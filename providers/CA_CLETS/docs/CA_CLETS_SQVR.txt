@@ -1,7 +1,7 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
 Last updated: 2026-05-19
-JSON version: v1.9 BASE + v1.9 MC
+JSON version: v2.1 BASE (MC archived)
 
 VEHICLE REGISTRATION (VehicleRegistrationQuery)
   Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
@@ -9,147 +9,122 @@ VEHICLE REGISTRATION (VehicleRegistrationQuery)
   NLTS.RQ.P -- OOS Plate query (Nlets)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS v1.8] Retest needed for v2.1 layout change (Name fields added)
 
   NLTS.RQ.V -- OOS VIN query (Nlets)
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS v1.8] Retest needed for v2.1 layout change
+
+  IN.VP -- Owner Name query (new in v2.1)
+    set: PurposeCode, NameLast, NameFirst
+    any: (none)
+    Status: [PENDING] New cross-entity combo -- nameFirst/nameLast on Vehicle card
 
   IA.QVK -- In-state VIN query
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8] Retest needed for v2.1 layout change
 
   IA.QV -- In-state Plate query
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
-    Status: [PENDING]
-
-  IN.VP -- Vehicle by Name (MC only, cross-entity)
-    set: PurposeCode, NameLast, NameFirst
-    any: (none)
-    Status: [PENDING] [MC-ONLY]
+    defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
+    Status: [PASS v1.8] Retest needed for v2.1 layout change + CAD defaults added
 
 DRIVER LICENSE (DriverLicenseQuery)
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
 
-  NLTS.DQ -- OOS DL by OLN (Nlets)
-    set: PurposeCode, OperatorLicenseNumber, RegistrationState
-    any: (none)
-    Status: [PENDING]
-
-  ID.L1 -- In-state DL by OLN
-    set: PurposeCode, OperatorLicenseNumber
-    any: RegistrationState
-    Status: [PENDING]
-
-  IN.L1 -- In-state DL by Name
+  IN.L1 -- Name query
     set: PurposeCode, NameLast, NameFirst
     any: BirthDate, RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8]
+
+  NLTS.DQ -- OOS OLN query (Nlets)
+    set: PurposeCode, OperatorLicenseNumber, RegistrationState
+    any: (none)
+    Status: [PASS v1.8]
+
+  ID.L1 -- In-state OLN query
+    set: PurposeCode, OperatorLicenseNumber
+    any: BirthDate, RegistrationState
+    Status: [PASS v1.8]
 
 DRIVER HISTORY (DriverHistoryQuery)
-  Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true
+  Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true | queriesToDeselect: DriverLicenseQuery
 
-  NLTS.KQ.N -- DH by Name+DOB+Sex (Nlets)
-    set: PurposeCode, BirthDate, NameLast, NameFirst, SexCode
+  NLTS.KQ.N -- Name+DOB+Sex query
+    set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8]
 
-  NLTS.KQ.O -- DH by OLN (Nlets)
-    set: PurposeCode, OperatorLicenseNumber
-    any: RegistrationState
-    Status: [PENDING]
+  NLTS.KQ.O -- OLN query
+    set: PurposeCodeDH, OperatorLicenseNumberDH
+    any: BirthDateDH, RegistrationState
+    Status: [PASS v1.8]
 
-FIREARM (GunQuery)
-  Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: (not set)
+GUN QUERY (GunQuery)
+  Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
 
-  IG.QGB -- Gun by Serial
-    set: PurposeCode, SerialNumber
-    any: GunCaliber, FirearmMake, GunTypeCode
-    Status: [PENDING]
-
-  IG.QGH -- Gun by Name (MC only, cross-entity)
+  IG.QGH -- Owner Name query (new in v2.1)
     set: PurposeCode, NameLast, NameFirst
     any: (none)
-    Status: [PENDING] [MC-ONLY]
+    Status: [PENDING] New cross-entity combo -- nameFirst/nameLast on Firearm card
 
-ARTICLE (ArticleSingleQuery)
-  Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: (not set)
-
-  IP.QA.S -- Article by Serial
+  IG.QGB -- Serial Number query
     set: PurposeCode, SerialNumber
-    any: ArticleBrand, ArticleTypeCode
-    Status: [PENDING]
+    any: FirearmMake, GunCaliber, GunTypeCode
+    Status: [PASS v1.8] Retest needed for v2.1 layout change (Name fields added)
 
-  IP.QA.O -- Article by OAN
+ARTICLE QUERY (ArticleSingleQuery)
+  Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
+
+  IP.QA.S -- Serial Number query
+    set: PurposeCode, SerialNumber
+    any: ArticleTypeCode, ArticleBrand
+    Status: [PASS v1.8]
+
+  IP.QA.O -- OAN query
     set: PurposeCode, OwnerAppliedNumber
-    any: ArticleBrand, ArticleTypeCode
-    Status: [PENDING]
+    any: ArticleTypeCode, ArticleBrand
+    Status: [PASS v1.8]
 
-BOAT (BoatQuery)
-  Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: (not set)
+BOAT QUERY (BoatQuery)
+  Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
 
-  NLTS.BQ.H -- OOS Boat by Hull ID (Nlets)
-    set: PurposeCode, BoatHullIdNumber, RegistrationState
-    any: (none)
-    Status: [PENDING]
-
-  NLTS.BQ.R -- OOS Boat by Registration (Nlets)
-    set: PurposeCode, RegistrationNumber, RegistrationState
-    any: (none)
-    Status: [PENDING]
-
-  NLTS.BQ.N -- OOS Boat by Name+DOB (MC only, cross-entity)
+  NLTS.BQ.N -- OOS Owner Name+DOB query (new in v2.1)
     set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
-    Status: [PENDING] [MC-ONLY]
+    Status: [PENDING] New cross-entity combo -- nameFirst/nameLast/birthDate on Boat card
 
-  IA.QB.H -- Boat by Hull ID
+  NLTS.BQ.H -- OOS Hull ID query
+    set: PurposeCode, BoatHullIdNumber, RegistrationState
+    any: (none)
+    Status: [PASS v1.8] Retest needed for v2.1 layout change (Name/DOB fields added)
+
+  NLTS.BQ.R -- OOS Registration query
+    set: PurposeCode, RegistrationNumber, RegistrationState
+    any: (none)
+    Status: [PASS v1.8] Retest needed for v2.1 layout change
+
+  IA.QB.H -- In-state Hull ID query
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8]
 
-  IA.QB.O -- Boat by OAN
+  IA.QB.O -- In-state OAN query
     set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8]
 
-  IA.QB.R -- Boat by Registration
+  IA.QB.R -- In-state Registration query
     set: PurposeCode, RegistrationNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS v1.8]
 
-RMS (Person + Vehicle)
-  autoSelect: true (both)
-  Status: [PENDING] -- co-fires with CommSys queries
-
-LIMITATIONS
------------
-#21 -- Invented keyRefs for duplicate metadata keyRefs (NLTS.RQ.P/V, NLTS.KQ.N/O, IP.QA.S/O, IA.QB.H/O/R)
-#26 -- Shared field pool: 2 Person QIDMs (DL+DH) share all fields (standard co-fire)
-#30 -- No State initialValue: in-state (IA.*) vs OOS (NLTS.*) routing by State field presence
-#31 -- IV.4* DMV plate-type combos: COVERED by IA.QV (LicensePlateTypeCode sent as QIDM attribute; CommSys routes by value)
-#32 -- IV.4V (VIN/Hull): COVERED by IA.QVK (VIN) and IA.QB (Hull)
-#33 -- IV.4B (DMV Vessels): COVERED by IA.QB.H/R (same fields, different keyRef; CommSys routes by content)
-
-NOT IMPLEMENTED (not in devdoc Basic Queries Supported)
----------------------------------------------------------
-- WMPIWantedPersonQuery (IW.QW) -- in metadata but NOT in devdoc basic or expanded
-- WMPIMissingPersonQuery (UM.QM) -- in metadata but NOT in devdoc basic or expanded
-- CAISupervisedReleaseQuery (IR.QVC) -- in metadata but NOT in devdoc basic or expanded
-- CAILojackQuery (IA.QV) -- devdoc Expanded only, not basic
-
-COVERED BY EXISTING COMBOS
-----------------------------
-- IV.4* (DMV plate-type combos) -- COVERED by IA.QV (LIMITATION #31)
-- IV.4B (DMV vessels) -- COVERED by IA.QB (LIMITATION #33)
-- IV.4V (VIN/Engine/Hull) -- COVERED by IA.QVK + IA.QB (LIMITATION #32)
-
-CROSS-ENTITY (MC-ONLY)
------------------------
-These combos require person fields on non-person entity forms. Implemented in MC variant only.
-- IN.VP (Vehicle by Name) -- NameFirst+NameLast on Vehicle form
-- IG.QGH (Gun by Name) -- NameFirst+NameLast on Firearm form
-- NLTS.BQ.N (Boat by Name+DOB) -- NameFirst+NameLast+BirthDate on Boat form
+SUMMARY
+-------
+Total combos: 20 (all on single-card BASE)
+Tested (v1.8): 17/20
+New in v2.1: 3 (IN.VP, IG.QGH, NLTS.BQ.N)
+Status: PENDING v2.1 import + testing
