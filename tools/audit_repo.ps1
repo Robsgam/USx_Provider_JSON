@@ -25,7 +25,7 @@ $infoCount = 0
 function Fail($msg) { Write-Host "  [FAIL] $msg" -ForegroundColor Red; $script:failCount++ }
 function Pass($msg) { Write-Host "  [PASS] $msg" -ForegroundColor Green; $script:passCount++ }
 function Info($msg) { Write-Host "  [INFO] $msg" -ForegroundColor Gray; $script:infoCount++ }
-function DocPrefix($name) { $name -replace '_(LOCKED|BLOCKED)$', '' }
+
 
 # ── Active file filter ────────────────────────────────────────────────────────
 $excludePattern = '(\\|/)(?:archive|v1|source|templates|phases)(\\|/|$)'
@@ -41,6 +41,9 @@ function Get-StepCount {
     $content = [System.IO.File]::ReadAllText("$repoRoot\tools\build_report.ps1")
     if ($content -match '\$stepCount\s*=\s*if\s*\(\$Release\)\s*\{\s*(\d+)\s*\}\s*else\s*\{\s*(\d+)\s*\}') {
         return [int]$Matches[2]
+    }
+    if ($content -match '\$stepCount\s*=\s*(\d+)') {
+        return [int]$Matches[1]
     }
     return -1
 }
@@ -201,7 +204,7 @@ if ($validLabels.Count -gt 0) {
     }
 
     # Check build scripts for non-standard queryLabels
-    $flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+    $flaggedProviders = @('CA_CONTRA_COSTA')
     $buildScripts = Get-ChildItem "$repoRoot\providers" -Recurse -File -Include 'build_*.ps1' |
         Where-Object { $_.FullName -notmatch $excludePattern }
     foreach ($bs in $buildScripts) {
@@ -423,8 +426,7 @@ $requiredDocs = @('STATUS.txt','SQVR.txt','BUILD_NOTES.txt','JSON_INVENTORY.md')
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    if ($provName -match '_BLOCKED$') { Info "${provName} -- BLOCKED provider, skipping structure check"; continue }
-    $docPrefix = DocPrefix $provName
+    $docPrefix = $provName
 
     # Required subdirectories
     foreach ($rd in $requiredDirs) {
@@ -460,7 +462,7 @@ Write-Host "--- CATEGORY 10: Report File Completeness ---" -ForegroundColor Yell
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 $reportPrefixes = @('VALIDATOR_REPORT','LAYOUT_REPORT','QUERY_REPORT','PICKLIST_REPORT','VERIFY_REPORT','METADATA_AUDIT','CAD_AUDIT')
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -525,7 +527,7 @@ Write-Host "--- CATEGORY 11: Cross-Provider JSON Consistency ---" -ForegroundCol
 
 # Providers flagged or known-exception get INFO instead of FAIL
 $needsRebuild = @('TX_TLETS','LA_LEMS')
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $validLabels = Get-ValidLabels
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
@@ -604,12 +606,12 @@ Write-Host ""
 Write-Host "--- CATEGORY 12: Version Consistency ---" -ForegroundColor Yellow
 
 $claudeMdLines = Get-Content "$repoRoot\CLAUDE.md"
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    $docPrefix = DocPrefix $provName
+    $docPrefix = $provName
     $isFlagged = $provName -in $flaggedProviders
 
     # Extract version from BASE build script
@@ -624,7 +626,7 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { Info "${provName} -- no version in build script"; continue }
 
-    # Check CLAUDE.md version (match on canonical name without _LOCKED)
+    # Check CLAUDE.md version (match on canonical name)
     $claudeVersion = $null
     foreach ($line in $claudeMdLines) {
         if ($line -match "^\|\s*$docPrefix\s*\|.*\|\s*v([^\s|]+)\s*\|") {
@@ -690,11 +692,11 @@ if ($Category -eq 0 -or $Category -eq 13) {
 Write-Host ""
 Write-Host "--- CATEGORY 13: BUILD_NOTES Version Coverage ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    $docPrefix = DocPrefix $provName
+    $docPrefix = $provName
     $isFlagged = $provName -in $flaggedProviders
 
     $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
@@ -731,7 +733,7 @@ if ($Category -eq 0 -or $Category -eq 14) {
 Write-Host ""
 Write-Host "--- CATEGORY 14: JSON_INVENTORY Version Coverage ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -771,11 +773,11 @@ if ($Category -eq 0 -or $Category -eq 15) {
 Write-Host ""
 Write-Host "--- CATEGORY 15: STATUS.txt Score Accuracy ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    $docPrefix = DocPrefix $provName
+    $docPrefix = $provName
     $isFlagged = $provName -in $flaggedProviders
 
     $statusFile = "$($pd.FullName)\docs\${docPrefix}_STATUS.txt"
@@ -824,7 +826,7 @@ if ($Category -eq 0 -or $Category -eq 16) {
 Write-Host ""
 Write-Host "--- CATEGORY 16: Phase Archive Completeness ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
@@ -864,11 +866,11 @@ if ($Category -eq 0 -or $Category -eq 17) {
 Write-Host ""
 Write-Host "--- CATEGORY 17: Validator WARN Audit ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    $docPrefix = DocPrefix $provName
+    $docPrefix = $provName
     $isFlagged = $provName -in $flaggedProviders
 
     foreach ($variant in @('base','mc')) {
@@ -923,7 +925,7 @@ if ($Category -eq 0 -or $Category -eq 18) {
 Write-Host ""
 Write-Host "--- CATEGORY 18: camelCase FieldId Consistency ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$flaggedProviders = @('CA_CONTRA_COSTA')
 $knownPascalFields = @(
     'RegistrationState','SexCode','RaceCode','ImageIndicator',
     'OperatorLicenseNumber','NameFirst','NameLast','NameMiddle','NameSuffix',
