@@ -1,37 +1,37 @@
 ﻿FL_FCIC Build Status
 ====================
-Current: v4.1 | BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM | Updated 2026-05-15
-Current version : v4.1
-Last updated    : 2026-05-15
+Current: v4.2 | BASE 97P/0F/0W/0LIM | MC 97P/0F/0W/0LIM | Updated 2026-05-19
+Current version : v4.2
+Last updated    : 2026-05-19
 Output file     : FL_FCIC_BASE.json
 Build script    : scripts/build_fl_fcic.ps1
 Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
 
 VALIDATOR RESULTS
 -----------------
-  BASE: 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-  MC:   102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+  BASE: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+  MC:   97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 
 BUNDLE SUMMARY
 --------------
   ENTITIES  --  5 configurations (QUERYINPUTFORM, provider=MARK43)
-  FL_FCIC   -- 11 configurations (AUTH + QRDM + QMF + 8 CommSys QIDMs)
+  FL_FCIC   -- 10 configurations (AUTH + QRDM + QMF + 7 CommSys QIDMs)
   RMS       --  6 configurations (cloned from HIDLE.json + Patches 1,3,6,7)
 
-FL_FCIC BUNDLE -- 8 QUERYINPUTDATAMAPPING CONFIGURATIONS
+FL_FCIC BUNDLE -- 7 QUERYINPUTDATAMAPPING CONFIGURATIONS
 ---------------------------------------------------------
   Name                                Query                      Combos  Entity
   ----------------------------------  -------------------------  ------  ------
   FL_FCIC_VehicleRegistrationQuery    VehicleRegistrationQuery   6       Vehicle
   FL_FCIC_VehicleStolenQuery          VehicleStolenQuery         2       Vehicle
   FL_FCIC_DriverLicenseQuery          DriverLicenseQuery         4       Person
-  FL_FCIC_WantedPersonQuery           WantedPersonQuery          2       Person
   FL_FCIC_DriverHistoryQuery          DriverHistoryQuery         2       Person
   FL_FCIC_GunQuery                    GunQuery                   3       Firearm
   FL_FCIC_ArticleSingleQuery          ArticleSingleQuery         4       Article
   FL_FCIC_BoatQuery                   BoatQuery                  12      Boat
 
-  Total: 8 QIDMs, 37 combos (35 CommSys + 2 RMS)
+  Total: 7 QIDMs, 35 combos (33 CommSys + 2 RMS)
+  WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW
 
 KEY REFERENCE LEGEND
 --------------------
@@ -40,7 +40,7 @@ KEY REFERENCE LEGEND
   RQ   Nlets Vehicle Registration Query (out-of-state; requires State)
   FDQ  FL DHSMV Driver License Query
   DQ   Nlets Driver License Query (out-of-state; requires State)
-  QW   NCIC Wanted Person Query
+  QW   NCIC Wanted Person Query (REMOVED v4.2 -- CommSys auto-sends)
   KQ   FL Driver History Query (FL-specific; requires State + PurposeCode)
   FBQ  FL FCIC Boat Query (DMVR)
   QB   NCIC Stolen Boat Query
@@ -77,8 +77,8 @@ ENTITY FORM FIELDS
 
 BUILD SCRIPTS
 -------------
-  build_fl_fcic.ps1 -- rebuild BASE JSON from scratch (v3.1)
-  build_fl_fcic_mc.ps1 -- rebuild MC JSON from scratch (v3.1)
+  build_fl_fcic.ps1 -- rebuild BASE JSON from scratch (v4.2)
+  build_fl_fcic_mc.ps1 -- rebuild MC JSON from scratch (v4.2)
   Run:
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
     & .\scripts\build_fl_fcic.ps1 -Version "3.0"

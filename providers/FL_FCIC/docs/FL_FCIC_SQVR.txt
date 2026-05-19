@@ -1,17 +1,18 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
-Last updated: 2026-05-15
-JSON version: v4.1 BASE + v4.1 MC
-Validator: 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (BASE) | 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (MC)
+Last updated: 2026-05-19
+JSON version: v4.2 BASE + v4.2 MC
+Validator: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (BASE) | 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (MC)
 Live test: BASE v3.1 21 PASS / MC v3.1 60 PASS / MC v4.1 44 PASS / 0 FAIL (2026-05-15)
+v4.2 change: Removed WantedPersonQuery QIDM (CommSys auto-sends QW). 7 QIDMs, 33 combos.
 v4.1 change: MC 2-card Vehicle+Boat (Options+Search), State label hints, Boat name/DOB exception
 v4.0 change: Attention field now visible FormInput (was hidden handler-only)
 QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8)
 
-ARCHITECTURE: v3.0 uses 8 merged QIDMs (1 per entity+query pair) with invented
+ARCHITECTURE: v4.2 uses 7 merged QIDMs (1 per entity+query pair) with invented
 keyReferences per LIMITATION #21. This replaces v2.x's 25 split QIDMs.
-Separate platform query types (VehicleStolenQuery, WantedPersonQuery) solve
-LIMITATION #2 (one QIDM per entity+query pair).
+VehicleStolenQuery uses separate platform query type to solve LIMITATION #2.
+WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW queries.
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
@@ -109,24 +110,12 @@ LIMITATION #2 (one QIDM per entity+query pair).
   DQ (with State) before FDQ (without State) within each group.
 
 ================================================================================
-4. WantedPersonQuery -- Person Entity
+4. WantedPersonQuery -- REMOVED v4.2
 ================================================================================
 
-  QIDM: FL_FCIC_WantedPersonQuery (2 combos)
-  QIF:  Person (shared with DriverLicenseQuery)
-
-  QW+OLN -- NCIC Wanted Person (OLN + Name) [CONFIRMED]
-    keyReference: QWOperatorLicenseNumber
-    set: [NameLast, NameFirst, OperatorLicenseNumber]
-    any: [ImageIndicator]
-
-  QW+Name -- NCIC Wanted Person (Name + DOB) [CONFIRMED]
-    keyReference: QWName
-    set: [BirthDate, NameLast, NameFirst]
-    any: [OperatorLicenseNumber, ImageIndicator]
-
-  Co-fire: WantedPersonQuery fires alongside DL when fields are populated.
-  Uses separate platform query type to avoid LIMITATION #2 with DriverLicenseQuery.
+  REMOVED: CommSys automatically sends QW queries when Person fields are populated.
+  No JSON-side QIDM needed. Confirmed by platform team 2026-05-19.
+  Previous: 2 combos (QWOperatorLicenseNumber, QWName) -- see v4.1 SQVR for details.
 
 ================================================================================
 5. DriverHistoryQuery -- Person Entity
@@ -307,10 +296,11 @@ RMS BUNDLE (Patched from HIDLE)
 SUMMARY
 ================================================================================
 
-  Architecture: 8 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
-  Total CommSys combos: 35 (6+2+4+2+2+3+4+12)
+  Architecture: 7 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
+  Total CommSys combos: 33 (6+2+4+2+3+4+12)
   Total RMS combos: ~8 (after Patch 6 cleanup)
-  [CONFIRMED]: 35 CommSys + 2 RMS (all combos reachable)
+  [CONFIRMED]: 33 CommSys + 2 RMS (all combos reachable)
+  [REMOVED]: WantedPersonQuery (2 combos) -- CommSys auto-sends QW (v4.2)
   [LIMITATION]: 0 (QB+Hull/QB+Reg RESOLVED via FL-8 routing, 2026-05-05)
   [PENDING]: 0
   Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL (2026-05-05)

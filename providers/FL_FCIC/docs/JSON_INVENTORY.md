@@ -6,8 +6,8 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v3.1 | Current | 8-QIDM merged architecture. 101P/0F/1W/4LIM. Patch 8 + VehicleMakeCode fix. |
-| FL_FCIC_MC.json | v3.1 | Current | MC multi-card layout. 101P/0F/1W/5LIM. |
+| FL_FCIC_BASE.json | v4.2 | Current | 7-QIDM architecture (QW removed). 97P/0F/0W/0LIM. |
+| FL_FCIC_MC.json | v4.2 | Current | MC multi-card layout. 97P/0F/0W/0LIM. |
 
 ## phases/base/
 
@@ -42,12 +42,19 @@ All JSON versions produced for this provider.
 | archive/FL_FCIC_v2.5_2026-04-21.json | v2.5 | Archived | Pre-v2.6 iteration (2026-04-21). |
 | archive/FL_FCIC_v2.6_2026-04-22.json | v2.6 | Archived | Last v2.x before v3.0 rebuild (2026-04-23). |
 
+## v4.2 (2026-05-19)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_BASE.json | v4.2 | Current | 97P/0F/0W/0LIM. Removed WantedPersonQuery QIDM (CommSys auto-sends QW). 7 QIDMs, 33 combos. |
+| FL_FCIC_MC.json | v4.2 | Current | 97P/0F/0W/0LIM. Same QW removal as BASE. |
+
 ## v4.1 (2026-05-15)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_BASE.json | v4.1 | Current | 102P/0F/0W/0LIM. State label fix (Vehicle+Boat). |
-| FL_FCIC_MC.json | v4.1 | Current | 102P/0F/0W/0LIM. MC 2-card: Vehicle(Options+Search), Boat(Options+Search). State+Stolen isolated. |
+| FL_FCIC_BASE.json | v4.1 | Archived | 102P/0F/0W/0LIM. State label fix (Vehicle+Boat). |
+| FL_FCIC_MC.json | v4.1 | Archived | 102P/0F/0W/0LIM. MC 2-card: Vehicle(Options+Search), Boat(Options+Search). State+Stolen isolated. |
 
 ## v4.0 (2026-05-13)
 
