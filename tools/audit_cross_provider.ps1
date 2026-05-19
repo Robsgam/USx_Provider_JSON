@@ -622,20 +622,26 @@ foreach ($prov in $validProviders) {
     $isCA = $prov.Name -match '^CA_'
     $fields = Get-FormFields -json $prov.Json
 
-    # Find CaRequestPurposeCode across all entities (including DH-suffix and camelCase variants)
-    $purposeCodeFields = @($fields | Where-Object {
+    # CA-specific fieldId patterns (explicit CaRequestPurposeCode names)
+    $caExplicitFields = @($fields | Where-Object {
         $_.FieldId -eq 'CaRequestPurposeCode' -or $_.FieldId -eq 'caRequestPurposeCode' -or
-        $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH' -or
-        $_.FieldId -eq 'purposeCode' -or $_.FieldId -eq 'purposeCodeDH'
+        $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH'
     })
+    # CA providers may also use generic 'purposeCode'/'purposeCodeDH' as the CAD-aligned rename
+    $caAllFields = if ($isCA) {
+        @($fields | Where-Object {
+            $_.FieldId -eq 'CaRequestPurposeCode' -or $_.FieldId -eq 'caRequestPurposeCode' -or
+            $_.FieldId -eq 'CaRequestPurposeCodeDH' -or $_.FieldId -eq 'caRequestPurposeCodeDH' -or
+            $_.FieldId -eq 'purposeCode' -or $_.FieldId -eq 'purposeCodeDH'
+        })
+    } else { $caExplicitFields }
 
     Out "  $($prov.Tag):"
 
     if ($isCA) {
-        # CA providers: CaRequestPurposeCode (or DH-suffix) should exist in Person QIF
-        $personPurpose = @($purposeCodeFields | Where-Object { $_.Entity -eq 'Person' })
+        # CA providers: CaRequestPurposeCode (or DH-suffix or purposeCode rename) should exist in Person QIF
+        $personPurpose = @($caAllFields | Where-Object { $_.Entity -eq 'Person' })
         if ($personPurpose.Count -eq 0) {
-            # Check if Person entity exists at all
             $personFields = @($fields | Where-Object { $_.Entity -eq 'Person' })
             if ($personFields.Count -gt 0) {
                 Warn "CaRequestPurposeCode not found in Person QIF"
@@ -643,12 +649,10 @@ foreach ($prov in $validProviders) {
                 Info "No Person entity fields found"
             }
         } else {
-            # Must be visible (FormInput, not hidden)
             $pf = $personPurpose[0]
             if ($pf.Hidden -eq $true) {
                 Warn "CaRequestPurposeCode is hidden (must be visible for officers)"
             } elseif ($pf.ResolvedName -ne 'FormInput') {
-                # FormSelect is also acceptable if visible
                 Info "CaRequestPurposeCode type='$($pf.ResolvedName)' (FormInput preferred)"
             } else {
                 $fieldName = $pf.FieldId
@@ -656,9 +660,9 @@ foreach ($prov in $validProviders) {
             }
         }
     } else {
-        # Non-CA: CaRequestPurposeCode should NOT exist
-        if ($purposeCodeFields.Count -gt 0) {
-            $entities = ($purposeCodeFields | ForEach-Object { $_.Entity }) -join ', '
+        # Non-CA: explicit CaRequestPurposeCode names should NOT exist (generic purposeCode is fine)
+        if ($caExplicitFields.Count -gt 0) {
+            $entities = ($caExplicitFields | ForEach-Object { $_.Entity }) -join ', '
             Warn "CaRequestPurposeCode found on non-CA provider in: $entities"
         } else {
             Pass "No CaRequestPurposeCode (correct for non-CA provider)"
