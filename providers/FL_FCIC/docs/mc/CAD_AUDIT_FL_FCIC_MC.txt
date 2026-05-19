@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-16 13:22
+  Generated: 2026-05-19 13:48
 ================================================================
 CAD AUDIT
 =========
@@ -151,11 +151,46 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_VehicleStolenQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
-    [PASS] QIDM 'FL_FCIC_WantedPersonQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_DriverHistoryQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQLicensePlateNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQVehicleIdentificationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQDecalNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQLicensePlateNumber -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQLicensePlateNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQVehicleIdentificationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQTitleLienInformation -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVLicensePlateNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVVehicleIdentificationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQName -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQOperatorLicenseNumber -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'FL_FCIC_GunQuery' combo QGGunSerialNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_GunQuery' combo QGNCICNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_GunQuery' combo QGProcessControlNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAArticleSerialNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAOwnerAppliedNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_ArticleSingleQuery' combo QANCICNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAProcessControlNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo BQName -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo BQBoatHullIdNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo BQRegistrationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo QBBoatHullIdNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo QBRegistrationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo FBQBoatHullIdNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo FBQRegistrationNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo FBQDecalNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo FBQTitleLienInformation -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo QBCoastGuardDocumentNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo QBNCICNumber -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'FL_FCIC_BoatQuery' combo QBProcessControlNumber -- missing default for ImageIndicator (form default='N')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -163,6 +198,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 53 PASS / 0 FAIL / 0 WARN / 80 INFO
+Total: 54 PASS / 32 FAIL / 0 WARN / 80 INFO
 
 

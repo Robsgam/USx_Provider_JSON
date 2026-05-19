@@ -1,8 +1,8 @@
-FL_FCIC MC v4.1 -- TEST MATRIX
+FL_FCIC MC v4.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-16
+Generated: 2026-05-19
 Variant: MC (multi-card per entity)
-Validator: 102 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
@@ -41,12 +41,11 @@ Boat (1 card, 13 fields):
     ROW 3: ncicNumber [Inp 10], processControlNumber [Inp 10], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Inp 1]
     ROW 4: nameLast [Inp 30], nameFirst [Inp 30], birthDate [FormDate]
 
-QIDM SUMMARY (8 QIDMs, 35 combos)
+QIDM SUMMARY (7 QIDMs, 33 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 6 combos (RQ x2, FRQ x4)
   VehicleStolenQuery: 2 combos (QV x2) -- co-fires with VehReg
   DriverLicenseQuery: 4 combos (DQ x2, FDQ x2), autoSelect=true
-  WantedPersonQuery: 2 combos (QW x2) -- co-fires with DL
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 3 combos (QG x3)
   ArticleSingleQuery: 4 combos (QA x4)
@@ -137,7 +136,7 @@ PHASE 3: BOAT COMBOS (12 tests, 12 combos)
 23  Boat        QB+PCN             processControlNumber=0000012345  [    ]
               Expected: BoatQuery fires (QB)
 
-PHASE 4: PERSON COMBOS (7 tests, 8 combos -- Wanted co-fires with DL)
+PHASE 4: PERSON COMBOS (6 tests, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
@@ -146,78 +145,75 @@ PHASE 4: PERSON COMBOS (7 tests, 8 combos -- Wanted co-fires with DL)
 25  Person      DQ+OLN+State       operatorLicenseNumber=D999888777, reg... [    ]
               Expected: DriverLicenseQuery fires (DQ)
 26  Person      FDQ+Name           birthDate=01/15/1990, nameLast=DOE, n... [    ]
-              Expected: DriverLicenseQuery fires (FDQ). Check for WantedPersonQuery co-fire
+              Expected: DriverLicenseQuery fires (FDQ)
 27  Person      DQ+Name+State      birthDate=01/15/1990, nameLast=DOE, n... [    ]
-              Expected: DriverLicenseQuery fires (DQ). Check for WantedPersonQuery co-fire
-28  Person      QW+OLN             nameLast=DOE, nameFirst=JOHN, operato... [    ]
-              Expected: DriverLicenseQuery fires (FDQ). WantedPersonQuery co-fires (QW)
-29  Person      KQ+OLN             operatorLicenseNumberDH=D999888777, r... [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+28  Person      KQ+OLN             operatorLicenseNumberDH=D999888777, r... [    ]
               Expected: DriverHistoryQuery fires (KQ)
-30  Person      KQ+Name            birthDateDH=01/15/1990, nameLastDH=DO... [    ]
+29  Person      KQ+Name            birthDateDH=01/15/1990, nameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 
 PHASE 5: FIREARM COMBOS (3 tests, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-31  Firearm     QG+Serial          gunSerialNumber=GUN12345         [    ]
+30  Firearm     QG+Serial          gunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (QG)
-32  Firearm     QG+NCIC            ncicNumber=X123456789            [    ]
+31  Firearm     QG+NCIC            ncicNumber=X123456789            [    ]
               Expected: GunQuery fires (QG)
-33  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
+32  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
               Expected: GunQuery fires (QG)
 
 PHASE 6: ARTICLE COMBOS (4 tests, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-34  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
+33  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
               Expected: ArticleSingleQuery fires (QA)
-35  Article     QA+OAN             articleTypeCode=BBICYCL, ownerApplied... [    ]
+34  Article     QA+OAN             articleTypeCode=BBICYCL, ownerApplied... [    ]
               Expected: ArticleSingleQuery fires (QA)
-36  Article     QA+NCIC            ncicNumber=X123456789            [    ]
+35  Article     QA+NCIC            ncicNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QA)
-37  Article     QA+PCN             processControlNumber=0000012345  [    ]
+36  Article     QA+PCN             processControlNumber=0000012345  [    ]
               Expected: ArticleSingleQuery fires (QA)
 
 PHASE 7: ANY[] FIELD TESTS (3 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-38  Vehicle     FRQ+Plate          + vehicleMakeCode, vehicleYear  [    ]
+37  Vehicle     FRQ+Plate          + vehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-39  Firearm     QG+Serial          + gunMake                       [    ]
+38  Firearm     QG+Serial          + gunMake                       [    ]
               Expected: any[] fields present in XML output.
-40  Person      KQ+OLN             + purposeCodeDH, attentionDH    [    ]
+39  Person      KQ+OLN             + purposeCodeDH, attentionDH    [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-41  Person      Deselect: DH deselects DL.     [    ]
+40  Person      Deselect: DH deselects DL.     [    ]
               Fill both query fields. Check deselect behavior.
-42  Vehicle     Priority routing: verify more-specific combo wins.  [    ]
+41  Vehicle     Priority routing: verify more-specific combo wins.  [    ]
               Fill fields that match multiple combos, verify correct one fires.
 
 PHASE 9: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-43  Vehicle     Empty form, verify no Send button / no request.    [    ]
-44  Person      Empty form, verify no Send button / no request.    [    ]
+42  Vehicle     Empty form, verify no Send button / no request.    [    ]
+43  Person      Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 44 tests
+TOTAL: 43 tests
 
-COMBO COVERAGE (35/35):
+COMBO COVERAGE (33/33):
   VehicleRegistrationQuery: 6/6 -- T6(FRQ+Plate), T7(RQ+Plate), T8(FRQ+VIN), T9(RQ+VIN), T10(FRQ+Decal), T11(FRQ+TitleLien)
   VehicleStolenQuery: 2/2 -- T6(QV+Plate co-fire), T8(QV+VIN co-fire)
   DriverLicenseQuery: 4/4 -- T24(FDQ+OLN), T25(DQ+OLN), T26(FDQ+Name), T27(DQ+Name)
-  WantedPersonQuery: 2/2 -- T26(QW+Name co-fire), T28(QW+OLN co-fire)
-  DriverHistoryQuery: 2/2 -- T29(KQ+OLN), T30(KQ+Name)
-  GunQuery: 3/3 -- T31(Serial), T32(NCIC), T33(PCN)
-  ArticleSingleQuery: 4/4 -- T34(Serial), T35(OAN), T36(NCIC), T37(PCN)
+  DriverHistoryQuery: 2/2 -- T28(KQ+OLN), T29(KQ+Name)
+  GunQuery: 3/3 -- T30(Serial), T31(NCIC), T32(PCN)
+  ArticleSingleQuery: 4/4 -- T33(Serial), T34(OAN), T35(NCIC), T36(PCN)
   BoatQuery: 12/12 -- T12(FBQ+Hull), T13(BQ+Hull), T14(QB+Hull), T15(FBQ+Reg), T16(BQ+Reg), T17(QB+Reg), T18(BQ+Name), T19(FBQ+Decal), T20(FBQ+TitleLien), T21(QB+CG), T22(QB+NCIC), T23(QB+PCN)
 
 IMPORT FILE: FL_FCIC_BASE.json

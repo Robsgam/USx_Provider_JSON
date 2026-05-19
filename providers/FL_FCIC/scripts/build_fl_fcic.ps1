@@ -9,11 +9,11 @@
 #   source\FL_FCIC.pdf   -- CommSys devdoc (6 basic queries) [CROSS-CHECK]
 #   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 8 QIDMs, 35 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 7 QIDMs, 33 combos):
 #   VehicleRegistrationQuery   FRQ (plate/VIN/Decal/Title) + RQ (plate+state/VIN+state) = 6 combos
 #   VehicleStolenQuery         QV (plate/VIN) = 2 combos
 #   DriverLicenseQuery         FDQ (OLN/Name) + DQ (OLN+state/Name+state) = 4 combos, autoSelect=true
-#   WantedPersonQuery          QW (OLN/Name) = 2 combos
+#   WantedPersonQuery          REMOVED -- CommSys auto-sends QW
 #   DriverHistoryQuery         KQ (OLN/Name) = 2 combos, DH-suffix fields
 #   GunQuery                   QG (serial/NCIC/PCN) = 3 combos
 #   ArticleSingleQuery         QA (serial/OAN/NCIC/PCN) = 4 combos
@@ -34,7 +34,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.1"
+    [string]$Version = "4.2"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -218,45 +218,8 @@ $dlQuery = [PSCustomObject]@{
     targetEntity    = 'Person'
 }
 
-# --- 4. WantedPersonQuery (QW) -- 2 combos ---
-# XML: QW by OLN+Name, QW by Name+DOB (NCIC wanted person check)
-$wpQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name = 'BirthDate'; size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
-            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
-        }
-        [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('imageIndicator');        targetField = 'ImageIndicator' }
-        [PSCustomObject]@{
-            name = 'Name'; size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
-        }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst','operatorLicenseNumber'); any = @('imageIndicator') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'QWOperatorLicenseNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('operatorLicenseNumber','imageIndicator') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'QWName'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'WantedPersonQuery -- QW by OLN+Name, QW by Name+DOB. NCIC wanted person.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = "${provider}_WantedPersonQuery"
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = $provider
-    providerType    = 'Commsys'
-    query           = 'WantedPersonQuery'
-    queryLabel      = 'Wanted Person'
-    targetEntity    = 'Person'
-}
+# --- 4. WantedPersonQuery (QW) -- REMOVED ---
+# CommSys auto-sends QW; no QIDM needed in JSON.
 
 # --- 5. DriverHistoryQuery (KQ) -- 2 combos, DH-suffix fields ---
 # XML: KQ by OLN+State+Purpose, KQ by Name+DOB+Sex+State+Purpose
@@ -509,7 +472,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $providerBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $wpQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $vehStolenQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for $provider v$Version"
     name           = $provider
     type           = 'BUNDLE'
@@ -597,7 +560,7 @@ $perLayout = MakeLayouts @(
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (DQ/FDQ/QW) + DH (KQ) on single card. DH-suffix fields.'
+    description  = 'Person queries -- DL (DQ/FDQ) + DH (KQ) on single card. DH-suffix fields. QW auto-sent by CommSys.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

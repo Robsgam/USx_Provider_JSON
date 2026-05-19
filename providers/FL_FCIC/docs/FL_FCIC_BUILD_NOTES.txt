@@ -4,6 +4,13 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.2 (2026-05-19) -- Remove WantedPersonQuery (QW) QIDM
+  CHANGED: Removed FL_FCIC_WantedPersonQuery QIDM and its 2 combos (QWOperatorLicenseNumber, QWName).
+           Provider bundle: 10 configs (was 11). CommSys combos: 33 (was 35). QIDMs: 7 (was 8).
+  REASON:  CommSys auto-sends QW query; no JSON-side QIDM needed. Confirmed by platform team.
+  VALIDATOR: BASE 97P/0F/0W | MC 97P/0F/0W
+  TEST CONDUCTOR: BASE 43/43 PASS | MC 43/43 PASS
+
 v4.1 (2026-05-15) -- MC multi-card: Vehicle (2 cards) + Boat (2 cards) + State label fix
   CHANGED: MC Vehicle split into 2 cards: Options(State,Image) + Vehicle Search(all search fields).
            MC Boat split into 2 cards: Options(State,Stolen,Image) + Boat Search(all search fields).
