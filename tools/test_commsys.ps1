@@ -55,7 +55,7 @@ $testData["Person"] = @{
     BirthDateDH                = "1990-01-15"
     SexCodeDH                  = "M"
     RegistrationStateDH        = "FL"
-    PurposeCodeDH              = "C"
+    purposeCodeDH              = "C"
     PurposeCode                = "D"
     Attention                  = "DISPATCHER JONES"
     Requestor                  = "DISPATCHER JONES"
@@ -81,6 +81,7 @@ $testData["Person"] = @{
 }
 $testData["Vehicle"] = @{
     caRequestPurposeCode        = "C"
+    purposeCode                 = "C"
     LicensePlateNumber          = "ABC1234"
     LicensePlateYear            = "2024"
     LicensePlateTypeCode        = "PC"
@@ -101,6 +102,7 @@ $testData["Vehicle"] = @{
 }
 $testData["Firearm"] = @{
     caRequestPurposeCode      = "C"
+    purposeCode               = "C"
     serialNumber              = "ABC12345"
     GunSerialNumber           = "ABC12345"
     firearmMake               = "SMTH"
@@ -115,6 +117,7 @@ $testData["Firearm"] = @{
 }
 $testData["Article"] = @{
     caRequestPurposeCode      = "C"
+    purposeCode               = "C"
     serialNumber              = "SN12345678"
     ArticleSerialNumber       = "SN12345678"
     ArticleTypeCode           = "COMP"
@@ -127,6 +130,7 @@ $testData["Article"] = @{
 }
 $testData["Boat"] = @{
     caRequestPurposeCode       = "C"
+    purposeCode                = "C"
     BoatHullIdNumber           = "FL1234AB56H7"
     RegistrationNumber         = "FL1234AB"
     DecalNumber                = "FL12345678"
