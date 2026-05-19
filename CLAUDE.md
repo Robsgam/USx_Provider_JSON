@@ -305,7 +305,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | Tool | Purpose | Key flags |
 |---|---|---|
 | `enforce.ps1` | **MANDATORY FINAL GATE** -- runs ALL checks (build freshness, validator scores, doc sync, cross-provider, repo audit, git status) | `-Provider <name>` `-SkipGit` `-Rebuild` `-OutFile` |
-| `pipeline.ps1` | **ONE-COMMAND PIPELINE** -- build + report + metadata + sync + cross-provider + repo audit + enforce in 9 steps; stops on first failure | `-Provider <name>` (required) `-BaseOnly` `-SkipBuild` `-SkipEnforce` |
+| `pipeline.ps1` | **ONE-COMMAND PIPELINE** -- build + report + metadata + sync + version docs + cross-provider + repo audit + enforce in 10 steps; stops on first failure | `-Provider <name>` (required) `-BaseOnly` `-SkipBuild` `-SkipEnforce` |
 | `audit_repo.ps1` | Full monorepo audit (18 categories: banned patterns, versions, docs, structure, cross-provider, camelCase) | `-Category <1-18>` |
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
@@ -313,6 +313,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
 | `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
 | `sync_provider_table.ps1` | Auto-updates CLAUDE.md provider table scores from validator reports | `-DryRun` `-OutFile` |
+| `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md, REBUILD_TRACKER.md with current version and scores | `-Provider <name>` `-DryRun` |
 | `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
 
 ### Metadata & Extraction
@@ -397,7 +398,7 @@ Three commands run everything. No manual checklists.
 | **Final verification (all providers)** | `enforce.ps1` |
 | **New provider setup** | `new_provider.ps1 -XmlPath <xml>` |
 
-`pipeline.ps1` chains 9 steps: build BASE → build MC → report BASE → report MC → extract metadata → sync CLAUDE.md → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-BaseOnly` (no MC), `-SkipEnforce` (mid-work).
+`pipeline.ps1` chains 10 steps: build BASE → build MC → report BASE → report MC → extract metadata → sync CLAUDE.md → sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER) → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-BaseOnly` (no MC), `-SkipEnforce` (mid-work).
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider consistency, repo integrity + git status. Exit 0 = verified. Exit 1 = blocked.
 

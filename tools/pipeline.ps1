@@ -9,9 +9,10 @@
     4. Build report on MC (10 tools + test matrix + test conductor)
     5. Extract metadata reference
     6. Sync CLAUDE.md provider table
-    7. Cross-provider audit (ALL providers, not just this one)
-    8. Repo audit (full monorepo)
-    9. Enforce (final gate)
+    7. Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)
+    8. Cross-provider audit (ALL providers, not just this one)
+    9. Repo audit (full monorepo)
+   10. Enforce (final gate)
 
   If any step FAILs, pipeline stops and reports exactly what broke.
 
@@ -40,11 +41,11 @@ if (-not (Test-Path $provDir)) {
     exit 1
 }
 
-$docPrefix = $Provider -replace '_(LOCKED|BLOCKED)$', ''
+$docPrefix = $Provider
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 $script:stepNum = 0
-$script:totalSteps = 9
+$script:totalSteps = 10
 if ($BaseOnly)    { $script:totalSteps-- }
 if ($SkipBuild)   { $script:totalSteps -= $(if ($BaseOnly) { 1 } else { 2 }) }
 if ($SkipEnforce) { $script:totalSteps-- }
@@ -187,7 +188,21 @@ if ($output -match 'Updated (\d+)') {
     StepPass "sync_provider_table ran"
 }
 
-# ── STEP 7: Cross-provider audit ─────────────────────────────────────────────
+# ── STEP 7: Sync version docs ────────────────────────────────────────────────
+Step "Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)"
+$output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_version_docs.ps1" -Provider $Provider 2>&1 | Out-String
+if ($output -match '(\d+) updated') {
+    $count = [int]$Matches[1]
+    if ($count -gt 0) {
+        StepPass "Version docs: $count files updated"
+    } else {
+        StepPass "Version docs already current"
+    }
+} else {
+    StepPass "sync_version_docs ran"
+}
+
+# ── STEP 8: Cross-provider audit ─────────────────────────────────────────────
 Step "Cross-provider audit (ALL providers)"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_cross_provider.ps1" `
     -Path (Join-Path $repoRoot "providers") 2>&1 | Out-String
@@ -207,7 +222,7 @@ if ($output -match '(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL') {
 }
 if ($script:failedStep) { break pipeline }
 
-# ── STEP 8: Repo audit ───────────────────────────────────────────────────────
+# ── STEP 9: Repo audit ───────────────────────────────────────────────────────
 Step "Repo audit (full monorepo)"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_repo.ps1" 2>&1 | Out-String
 
@@ -224,7 +239,7 @@ if ($output -match 'AUDIT\s+PASSED') {
 }
 if ($script:failedStep) { break pipeline }
 
-# ── STEP 9: Enforce ──────────────────────────────────────────────────────────
+# ── STEP 10: Enforce ─────────────────────────────────────────────────────────
 if (-not $SkipEnforce) {
     Step "Enforce (final gate)"
     $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -Provider $Provider -SkipGit 2>&1 | Out-String

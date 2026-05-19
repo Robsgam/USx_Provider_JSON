@@ -272,18 +272,6 @@ TOOLS
     XML capture and form state documentation.
     Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
 
-  tools/stage_provider.ps1
-    Retroactive staging for already-locked providers. Moves foundation-testing
-    variant to deployed/, archives the other to phases/. lock_provider.ps1 now
-    handles this automatically; this script is for providers locked before that change.
-    Usage: .\stage_provider.ps1 [-Provider <name>] [-Undo]
-
-  tools/lock_provider.ps1
-    One-command lock/unlock for provider folders. Renames folder to/from
-    _LOCKED suffix, updates STATUS.txt, cascades reference updates across
-    CLAUDE.md, KB README.txt, new_test_log.ps1, and audit_cad.ps1.
-    Usage: .\lock_provider.ps1 -Provider <name> -Action <Lock|Unlock>
-
   tools/map_cad_fields.ps1
     Maps CAD field names to provider JSON fieldIds. Reports MATCH,
     CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects BASE vs MC variant.
@@ -326,6 +314,16 @@ TOOLS
     files. Ensures CLAUDE.md always reflects the latest build results.
     Usage: .\sync_provider_table.ps1 [-DryRun] [-OutFile <path>]
 
+  tools/sync_version_docs.ps1
+    Auto-updates version-dependent docs after a build. Updates 4 files to
+    match the current build script version and validator scores:
+      1. STATUS.txt (header, version, date, validator scores)
+      2. SQVR.txt (header, version, date, validator scores)
+      3. JSON_INVENTORY.md (root section + new version entry)
+      4. REBUILD_TRACKER.md (provider row version + scores)
+    Called automatically by pipeline.ps1 as step 7.
+    Usage: .\sync_version_docs.ps1 -Provider <name> [-DryRun]
+
   tools/enforce.ps1
     *** MANDATORY FINAL GATE -- RUN BEFORE DECLARING ANYTHING DONE ***
     Single-command verification that runs ALL checks in sequence:
@@ -350,16 +348,17 @@ TOOLS
       .\pipeline.ps1 -Provider HI_HCJDC_OFML -BaseOnly    # skip MC
       .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipBuild   # reports + audit only
       .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipEnforce # stop before enforce
-    Steps (9):
+    Steps (10):
       1. Build BASE JSON (run build script)
       2. Build MC JSON (run MC build script)
       3. Build report on BASE (10 tools via build_report.ps1)
       4. Build report on MC (10 tools via build_report.ps1)
       5. Extract metadata reference (METADATA_REFERENCE.txt)
       6. Sync CLAUDE.md provider table (sync_provider_table.ps1)
-      7. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
-      8. Repo audit (audit_repo.ps1 — full monorepo)
-      9. Enforce (enforce.ps1 — final gate)
+      7. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)
+      8. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
+      9. Repo audit (audit_repo.ps1 — full monorepo)
+     10. Enforce (enforce.ps1 — final gate)
     Stops on first failure with specific error reporting.
     Replaces manual multi-step workflow with one command.
 
@@ -410,12 +409,12 @@ AUTHORITATIVE SOURCE FILES (read-only)
   tools/_build_provider_helpers.ps1
     Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
 
-  providers/FL_FCIC/FL_FCIC.json
+  providers/FL_FCIC/FL_FCIC_MC.json
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
     DH-suffix pattern, GunQuery sourceField naming).
 
-  providers/NJ_NJCJIS_LOCKED/
-    v3.0 BASE LOCKED (2026-05-08) -- 14/14 live tests PASS. Do not modify.
+  providers/NJ_NJCJIS/
+    v3.0 DEPLOYED Newark NJ (2026-05-08) -- 14/14 live tests PASS.
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
     AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
 
