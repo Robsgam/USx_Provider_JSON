@@ -9,28 +9,25 @@ FORM FIELDS (MC layout)
 Vehicle (1 card, 10 fields):
   CARD_VEH (VEHICLE QUERY):
     ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
-    ROW 2: vehicleIdentificationNumber [Inp 20]
-    ROW 3: vehicleMakeCode [Inp 4], vehicleYear [Inp 4], stickerNumber [Inp 10]
-    ROW 4: financialResponsibilityType [Inp 1], registrationState [Sel STATE], regionId [Inp 4]
+    ROW 2: vehicleIdentificationNumber [Inp 20], stickerNumber [Inp 10], financialResponsibilityType [Inp 1]
+    ROW 3: vehicleMakeCode [Inp 4], vehicleYear [Inp 4], registrationState [Sel STATE, TX], regionId [Inp 4]
 
-Person (2 cards, 25 fields):
+Person (3 cards, 24 fields):
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: operatorLicenseNumberDH [Inp 20], reasonCodeDH [Inp 1]
+    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1], attentionDH [Inp 30]
     ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
-    ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX], purposeCodeDH [Inp 1]
-    ROW 4: attentionDH [Inp 30], emailAddressDH [Inp 80]
+    ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX], emailAddressDH [Inp 80]
   CARD_PER_DL (DRIVER LICENSE):
-    ROW 1: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel NIBRS_RACE/NIBRS]
-    ROW 2: operatorLicenseNumber [Inp 20], reasonCode [Inp 1]
-    ROW 3: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
-    ROW 4: birthDate [FormDate], sexCode [Sel SEX], emailAddress [Inp 80]
-    ROW 5: expandedBirthDateSearchCode [Inp 1], regionId [Inp 4]
+    ROW 1: operatorLicenseNumber [Inp 20], expandedBirthDateSearchCode [Inp 1], raceCode [Sel NIBRS_RACE/NIBRS]
+    ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
+    ROW 3: birthDate [FormDate], sexCode [Sel SEX], emailAddress [Inp 80], regionId [Inp 4]
+  CARD_PER_OPT (SEARCH OPTIONS):
+    registrationState [Sel STATE, TX], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM QUERY):
     ROW 1: gunSerialNumber [Inp 20], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ncicNumber [Inp 10], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 3: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ncicNumber [Inp 10], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
   CARD_ART (ARTICLE QUERY):
@@ -40,8 +37,7 @@ Article (1 card, 5 fields):
 Boat (1 card, 6 fields):
   CARD_BOA (BOAT QUERY):
     ROW 1: registrationNumber [Inp 11], boatHullIdNumber [Inp 20]
-    ROW 2: ncicNumber [Inp 10], registrationState [Sel STATE]
-    ROW 3: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: ncicNumber [Inp 10], registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (7 QIDMs, 24 combos)
 ----------------------------------------
@@ -61,34 +57,30 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 2 cards:                        [    ]
+ 1  Person      Render form. Verify 3 cards:                        [    ]
               CARD_PER_DH: titled "DRIVER HISTORY".
-              License Number (DH), Reason Code (DH).
+              License Number (DH), Purpose (DH)=C, Attention (DH).
               Last Name (DH), First Name (DH), Middle Name (DH), Suffix (DH).
-              DOB (DH), Sex (DH) dropdown (no default), Purpose Code (DH).
-              Attention (DH), Email Address (DH).
+              DOB (DH), Sex (DH) dropdown (no default), Email (DH).
               CARD_PER_DL: titled "DRIVER LICENSE".
-              State dropdown (no default), Image dropdown=Y, Race dropdown (no default).
-              License Number, Reason Code.
+              License Number, Expanded DOB, Race dropdown (no default).
               Last Name, First Name, Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default), Email Address.
-              Expanded DOB Search, Region ID.
+              Date of Birth, Sex dropdown (no default), Email Address, Region ID.
+              CARD_PER_OPT: titled "SEARCH OPTIONS".
+              State dropdown=TX, Image dropdown=Y, Reason Code=C.
  2  Vehicle     Render form. Verify 1 card:                        [    ]
               CARD_VEH: titled "VEHICLE QUERY".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              VIN.
-              Vehicle Make, Vehicle Year, Sticker Number.
-              Financial Resp Type, State dropdown (no default), Region ID.
+              VIN, Sticker Number, FRT.
+              Vehicle Make, Vehicle Year, State dropdown=TX, Region ID.
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT QUERY".
               Registration Number, Hull ID Number.
-              NCIC Number, State dropdown (no default).
-              Image dropdown=N, Related Hit Search dropdown=Y.
+              NCIC Number, State dropdown (no default), Image dropdown=N, Related Hit Search dropdown=Y.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM QUERY".
               Serial Number, Make dropdown (no default).
-              Caliber dropdown (no default), NCIC Number, Image dropdown=N.
-              Related Hit Search dropdown=Y.
+              Caliber dropdown (no default), NCIC Number, Image dropdown=N, Related Hit Search dropdown=Y.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE QUERY".
               Serial Number, Article Type dropdown (no default).
@@ -98,15 +90,15 @@ PHASE 2: PERSON COMBOS (6 tests, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Person      DQ+OLN             operatorLicenseNumber=D999888777 [    ]
+ 6  Person      DQ+OLN             operatorLicenseNumber=D999888777, ema... [    ]
               Expected: DriverLicenseQuery fires (DQ)
  7  Person      DQ+Name            sexCode=M, birthDate=01/15/1990, name... [    ]
               Expected: DriverLicenseQuery fires (DQ)
  8  Person      QW+Name            birthDate=01/15/1990, nameLast=DOE, n... [    ]
               Expected: DriverLicenseQuery fires (QW)
- 9  Person      CPLNam+CPLName     nameLast=DOE, nameFirst=JOHN     [    ]
+ 9  Person      CPLNam+CPLName     nameLast=DOE, nameFirst=JOHN, emailAd... [    ]
               Expected: DriverLicenseQuery fires (CPLNam)
-10  Person      KQ+OLN             operatorLicenseNumberDH=D999888777 [    ]
+10  Person      KQ+OLN             operatorLicenseNumberDH=D999888777, e... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 11  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQ)
@@ -177,7 +169,7 @@ PHASE 7: ANY[] FIELD TESTS (5 tests)
               Expected: any[] fields present in XML output.
 32  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-33  Person      KQ+Name            + attentionDH, emailAddressDH, nameMiddleDH [    ]
+33  Person      KQ+Name            + attentionDH, nameMiddleDH, nameSuffixDH [    ]
               Expected: any[] fields present in XML output.
 34  Article     QA+NCIC            + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.

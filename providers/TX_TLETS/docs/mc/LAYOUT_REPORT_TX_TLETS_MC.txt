@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-20 13:57
+  Generated: 2026-05-20 16:18
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === TX_TLETS_MC.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=8
-  Person | entity=Person | qidm= | cards=2 fields=18
+  Person | entity=Person | qidm= | cards=3 fields=17
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=3
@@ -35,55 +35,52 @@ LAYOUT DETAIL
         licensePlateNumber (Text | maxLen=10)
         licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         licensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_2 [12]
+      ROW ROW_VEH_2 [6 3 3]
         vehicleIdentificationNumber (Text | maxLen=20)
-      ROW ROW_VEH_3 [4 4 4]
+        stickerNumber (Text | maxLen=10)
+        financialResponsibilityType (Text | maxLen=1)
+      ROW ROW_VEH_3 [3 3 3 3]
         vehicleMakeCode (Text | maxLen=4)
         vehicleYear (Text | maxLen=4)
-        stickerNumber (Text | maxLen=10)
-      ROW ROW_VEH_4 [4 4 4]
-        financialResponsibilityType (Text | maxLen=1)
-        registrationState (Dropdown | attributeTypeId=STATE)
+        registrationState (Dropdown | attributeTypeId=STATE | default=TX)
         regionId (Text | maxLen=4)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_PER_DL"
+    CARD "CARD_PER_OPT"
       ROW ROW_PER_O1 [4 4 4]
-        registrationState (Dropdown | attributeTypeId=STATE)
+        registrationState (Dropdown | attributeTypeId=STATE | default=TX)
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
-      ROW ROW_PER_L1 [8 4]
+        reasonCode (Text | maxLen=1 | default=C)
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_L1 [6 3 3]
         operatorLicenseNumber (Text | maxLen=20)
-        reasonCode (Text | maxLen=1)
+        expandedBirthDateSearchCode (Text | maxLen=1)
+        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
       ROW ROW_PER_N1 [3 3 3 3]
         nameLast (Text | maxLen=30)
         nameFirst (Text | maxLen=30)
         nameMiddle (Text | maxLen=30)
         nameSuffix (Text | maxLen=30)
-      ROW ROW_PER_N2 [4 4 4]
+      ROW ROW_PER_N2 [3 2 4 3]
         birthDate (FormDate)
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         emailAddress (Text | maxLen=80)
-      ROW ROW_PER_N3 [4 4]
-        expandedBirthDateSearchCode (Text | maxLen=1)
         regionId (Text | maxLen=4)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DHL1 [8 4]
+      ROW ROW_PER_DHL1 [6 2 4]
         operatorLicenseNumberDH (Text | maxLen=20)
-        reasonCodeDH (Text | maxLen=1)
+        purposeCodeDH (Text | maxLen=1 | default=C)
+        attentionDH (Text | maxLen=30)
       ROW ROW_PER_DHN1 [3 3 3 3]
         nameLastDH (Text | maxLen=30)
         nameFirstDH (Text | maxLen=30)
         nameMiddleDH (Text | maxLen=30)
         nameSuffixDH (Text | maxLen=30)
-      ROW ROW_PER_DHN2 [4 4 4]
+      ROW ROW_PER_DHN2 [3 2 7]
         birthDateDH (FormDate)
         sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        purposeCodeDH (Text | maxLen=1)
-      ROW ROW_PER_DHO1 [4 8]
-        attentionDH (Text | maxLen=30)
         emailAddressDH (Text | maxLen=80)
 
 === Firearm ===
@@ -93,11 +90,10 @@ LAYOUT DETAIL
       ROW ROW_GUN_1 [6 6]
         gunSerialNumber (Text | maxLen=20)
         gunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-      ROW ROW_GUN_2 [4 4 4]
+      ROW ROW_GUN_2 [3 3 3 3]
         gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         ncicNumber (Text | maxLen=10)
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
-      ROW ROW_GUN_3 [6]
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Article ===
@@ -119,10 +115,9 @@ LAYOUT DETAIL
       ROW ROW_BOA_1 [6 6]
         registrationNumber (Text | maxLen=11)
         boatHullIdNumber (Text | maxLen=20)
-      ROW ROW_BOA_2 [6 6]
+      ROW ROW_BOA_2 [3 3 3 3]
         ncicNumber (Text | maxLen=10)
         registrationState (Dropdown | attributeTypeId=STATE)
-      ROW ROW_BOA_3 [6 6]
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 

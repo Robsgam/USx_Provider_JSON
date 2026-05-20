@@ -44,12 +44,12 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateYear','financialResponsibilityType'); any = @('registrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateYear','licensePlateTypeCode'); any = @('registrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','financialResponsibilityType'); any = @('registrationState') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('registrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('regionId','registrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('registrationState','vehicleMakeCode','vehicleYear') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateYear','financialResponsibilityType'); any = @('registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateYear','licensePlateTypeCode'); any = @('registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','financialResponsibilityType'); any = @('registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('regionId','registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('registrationState','vehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('regionId') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
     )
     description = 'VehicleInsuranceRegistrationQuery -- 7 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
@@ -63,7 +63,7 @@ $vehStolenQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('vehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('regionId','registrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QV.P'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('regionId','registrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QV.P'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('regionId') }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QV.V'; state = 'In/Out' }
     )
     description = 'VehicleStolenQuery -- QV.P (plate), QV.V (VIN).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleStolenQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $false; queriesToDeselect = @('VehicleInsuranceRegistrationQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleStolenQuery'; queryLabel = 'Vehicle Stolen'; targetEntity = 'Vehicle'
@@ -84,10 +84,10 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('emailAddress','imageIndicator','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOperatorLicenseNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumber','emailAddress'); any = @('imageIndicator','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOperatorLicenseNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst','emailAddress'); any = @('imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('expandedBirthDateSearchCode','nameMiddle','nameSuffix','raceCode','regionId','sexCode') }; primaryFieldReference = 'Name'; keyReference = 'QWName'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('nameLast','nameFirst','emailAddress'); any = @('imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
     )
     description = 'DriverLicenseQuery -- 4 combos.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
 }
@@ -97,7 +97,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention' }
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate' }
         [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddressDH'); targetField = 'EmailAddress' }
-        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('imageIndicator'); targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('imageIndicatorDH'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }; size = 30; sourceField = @('nameLastDH','nameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name' }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
@@ -106,8 +106,8 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','emailAddressDH','imageIndicator','purposeCodeDH','reasonCodeDH','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOperatorLicenseNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','emailAddressDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddressDH'); any = @('attentionDH','imageIndicatorDH','purposeCodeDH','reasonCodeDH','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOperatorLicenseNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddressDH'); any = @('attentionDH','imageIndicatorDH','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
     )
     description = 'DriverHistoryQuery -- 2 combos. DH-suffix.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
@@ -184,18 +184,16 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('12'); fields = @(
+            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                @{ id = 'stickerNumber_Input';               node = Inp 'stickerNumber' 'Sticker Number' '10' 'ROW_VEH_2' }
+                @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'FRT' '1' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'vehicleMakeCode_Input'; node = Inp 'vehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_3' }
-                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_3' }
-                @{ id = 'stickerNumber_Input';   node = Inp 'stickerNumber' 'Sticker Number' '10' 'ROW_VEH_3' }
-            )}
-            @{ id = 'ROW_VEH_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'Financial Resp Type' '1' 'ROW_VEH_4' }
-                @{ id = 'registrationState_Input';           node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
-                @{ id = 'regionId_Input';                    node = Inp 'regionId' 'Region ID' '4' 'ROW_VEH_4' }
+            @{ id = 'ROW_VEH_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'vehicleMakeCode_Input';   node = Inp 'vehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_3' }
+                @{ id = 'vehicleYear_Input';       node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_3' }
+                @{ id = 'registrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_3' }
+                @{ id = 'regionId_Input';          node = Inp 'regionId' 'Region ID' '4' 'ROW_VEH_3' }
             )}
         )
     }
@@ -208,13 +206,15 @@ $perLayout = MakeLayouts @(
         title = 'PERSON QUERY'
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'registrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'registrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_1' }
                 @{ id = 'imageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
                 @{ id = 'raceCode_Input';          node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('8','4'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number (DL)' '20' 'ROW_PER_2' }
-                @{ id = 'reasonCode_Input';            node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_2' }
+            @{ id = 'ROW_PER_2'; cols = @('6','2','2','2'); fields = @(
+                @{ id = 'operatorLicenseNumber_Input';      node = Inp 'operatorLicenseNumber' 'License Number (DL)' '20' 'ROW_PER_2' }
+                @{ id = 'reasonCode_Input';                 node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_2' @{ initialValue = 'C' } }
+                @{ id = 'expandedBirthDateSearchCode_Input'; node = Inp 'expandedBirthDateSearchCode' 'Expanded DOB' '1' 'ROW_PER_2' }
+                @{ id = 'regionId_Input';                   node = Inp 'regionId' 'Region ID' '4' 'ROW_PER_2' }
             )}
             @{ id = 'ROW_PER_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'nameLast_Input';   node = Inp 'nameLast'   'Last Name'   '30' 'ROW_PER_3' }
@@ -222,33 +222,28 @@ $perLayout = MakeLayouts @(
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_3' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '30' 'ROW_PER_3' }
             )}
-            @{ id = 'ROW_PER_4'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_PER_4'; cols = @('3','3','6'); fields = @(
                 @{ id = 'birthDate_Input';    node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_4' }
                 @{ id = 'sexCode_Input';      node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_4' }
                 @{ id = 'emailAddress_Input'; node = Inp 'emailAddress' 'Email (DL)' '80' 'ROW_PER_4' }
             )}
-            @{ id = 'ROW_PER_5'; cols = @('4','4','4'); fields = @(
-                @{ id = 'expandedBirthDateSearchCode_Input'; node = Inp 'expandedBirthDateSearchCode' 'Expanded DOB Search' '1' 'ROW_PER_5' }
-                @{ id = 'regionId_Input';                    node = Inp 'regionId' 'Region ID' '4' 'ROW_PER_5' }
-                @{ id = 'purposeCodeDH_Input';               node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_5' }
+            @{ id = 'ROW_PER_5'; cols = @('4','2','2','2','2'); fields = @(
+                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_5' }
+                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose (DH)' '1' 'ROW_PER_5' @{ initialValue = 'C' } }
+                @{ id = 'reasonCodeDH_Input';            node = Inp 'reasonCodeDH' 'Reason (DH)' '1' 'ROW_PER_5' @{ initialValue = 'C' } }
+                @{ id = 'imageIndicatorDH_Input';        node = Sel 'imageIndicatorDH' 'Image (DH)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_5' }
+                @{ id = 'attentionDH_Input';             node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_PER_5' }
             )}
-            @{ id = 'ROW_PER_6'; cols = @('8','4'); fields = @(
-                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_6' }
-                @{ id = 'reasonCodeDH_Input';            node = Inp 'reasonCodeDH' 'Reason Code (DH)' '1' 'ROW_PER_6' }
+            @{ id = 'ROW_PER_6'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_6' }
+                @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_6' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '30' 'ROW_PER_6' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '30' 'ROW_PER_6' }
             )}
-            @{ id = 'ROW_PER_7'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_7' }
-                @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_7' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '30' 'ROW_PER_7' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '30' 'ROW_PER_7' }
-            )}
-            @{ id = 'ROW_PER_8'; cols = @('4','4'); fields = @(
-                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_8' }
-                @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_8' }
-            )}
-            @{ id = 'ROW_PER_9'; cols = @('4','8'); fields = @(
-                @{ id = 'attentionDH_Input';    node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_PER_9' }
-                @{ id = 'emailAddressDH_Input'; node = Inp 'emailAddressDH' 'Email (DH)' '80' 'ROW_PER_9' }
+            @{ id = 'ROW_PER_7'; cols = @('3','2','7'); fields = @(
+                @{ id = 'birthDateDH_Input';    node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_7' }
+                @{ id = 'sexCodeDH_Input';      node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_7' }
+                @{ id = 'emailAddressDH_Input'; node = Inp 'emailAddressDH' 'Email (DH)' '80' 'ROW_PER_7' }
             )}
         )
     }
@@ -264,13 +259,11 @@ $faLayout = MakeLayouts @(
                 @{ id = 'gunSerialNumber_Input'; node = Inp 'gunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'gunMake_Input';         node = Sel 'gunMake' 'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_GUN_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'gunCaliber_Input';                node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
                 @{ id = 'ncicNumber_Input';                node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'imageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
-            )}
-            @{ id = 'ROW_GUN_3'; cols = @('6'); fields = @(
-                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_3' }
+                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -305,13 +298,11 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'registrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }
                 @{ id = 'boatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
-                @{ id = 'ncicNumber_Input';          node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
-                @{ id = 'registrationState_Input';   node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
-            )}
-            @{ id = 'ROW_BOA_3'; cols = @('6','6'); fields = @(
-                @{ id = 'imageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_3' }
-                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_3' }
+            @{ id = 'ROW_BOA_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'ncicNumber_Input';                node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
+                @{ id = 'registrationState_Input';         node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
+                @{ id = 'imageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
     }

@@ -5,27 +5,30 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
-v3.0  2026-05-20  Fresh rebuild -- minimized cards, CPL combo, CAD defaults
+v3.0  2026-05-20  Fresh rebuild -- minimized cards, tightened layouts, full defaults
 --------------------------------------------------------------------------------
 CHANGED : Complete rewrite from scratch (fresh start per new-project policy).
-          Vehicle consolidated: 3 cards -> 1 (all 10 fields fit).
-          Person consolidated: 6 cards -> 2 (OPTIONS merged into DL; DH separate).
-          Boat consolidated: 3 cards -> 1 (all 6 fields fit).
+          Vehicle consolidated: 3 cards -> 1 (3 rows, VIN+Sticker+FRT on row 2).
+          Person consolidated: 6 cards -> 2 (DL 4 rows, DH 4 rows).
+          Boat consolidated: 3 cards -> 1 (2 rows).
+          Firearm tightened: 2 rows (was 3).
           Added CPL Name combo on DL (name-only search, metadata keyRef CPL).
           Removed dead purposeCode from DL card (not in DL metadata).
           VehicleMakeCode changed from Sel to Inp (text input).
-          CAD defaults added to all combos with initialValue'd any[] fields.
+          State defaulted to TX on Vehicle, Person, Boat (home state, any[] only).
+          CAD defaults on all combos: ImageIndicator + State + RelatedHitSearchIndicator.
           RMS Vehicle stripped to 3 attrs via shared module.
 REASON  : v2.7 had 14 cards with fragmented layout. Fresh build to minimize
-          card count and clean up field presentation per user request.
+          card count, tighten field presentation, and set all defaults from start.
           MC needed for Person DL/DH separation (25+ fields on single card = bad UX).
-LIMITS  : RSDWW OLN unreachable (identical set[] with DQ OLN).
+LIMITS  : RSDWW OLN unreachable (identical set[] with DQ OLN -- may be CommSys auto-send, verify in live test).
           QV VIN on VehReg unreachable (same set[] as RQ VIN).
           DL/DH combo priority order (OLN before Name = operational priority).
+          Boat State initialValue=TX with BQ In/Out routing (LIMITATION #30).
 SCRIPT  : scripts/build_tx_tlets.ps1 + scripts/build_tx_tlets_mc.ps1
 OUTPUT  : TX_TLETS_MC.json (6 cards, 24 combos, 7 QIDMs)
           TX_TLETS_BASE.json (5 cards, 24 combos, 7 QIDMs)
-RESULTS : 85 PASS / 0 FAIL / 0 WARN / 2 LIM | Verify: CLEAN | 37/37 test PASS
+RESULTS : 85 PASS / 0 FAIL / 0 WARN / 3 LIM | Verify: CLEAN | 37/37 test PASS
 
 --------------------------------------------------------------------------------
 v2.7  2026-05-18  One-directional queriesToDeselect fix

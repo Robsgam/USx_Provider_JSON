@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-20 13:57
+  Generated: 2026-05-20 16:18
 ================================================================
 QUERY SIMULATION
 ================
@@ -84,40 +84,8 @@ QUERY SIMULATION
 
 --- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 4
-
-    [FIRES] DQOperatorLicenseNumber
-      set: [operatorLicenseNumber]
-      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] DQName
-      set: [sexCode, birthDate, nameLast, nameFirst]
-      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] DQOperatorLicenseNumber -- missing set: emailAddress
+    [SKIP] DQName -- missing set: emailAddress
 
     [FIRES] QWName
       set: [birthDate, nameLast, nameFirst]
@@ -135,58 +103,12 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
-
-    [FIRES] CPLName
-      set: [nameLast, nameFirst]
-      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>CPLName</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] CPLName -- missing set: emailAddress
 
 --- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
-
-    [FIRES] KQOperatorLicenseNumber
-      set: [operatorLicenseNumberDH]
-      any: [attentionDH, emailAddressDH, imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES] KQName
-      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [attentionDH, emailAddressDH, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] KQOperatorLicenseNumber -- missing set: emailAddressDH
+    [SKIP] KQName -- missing set: emailAddressDH
 
 --- QIDM: TX_TLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
