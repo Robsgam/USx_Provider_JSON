@@ -1,7 +1,7 @@
-﻿NJ_NJCJIS METADATA REFERENCE
+NJ_NJCJIS METADATA REFERENCE
 =============================
-Generated: 2026-05-08
-Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_BASE.json
+Generated: 2026-05-20
+Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_MC.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -19,7 +19,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   ImageIndicator
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[serialNumber, articleTypeCode]
+  BUILT   QA             set[articleSerialNumber, articleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 1)
@@ -59,8 +59,8 @@ METADATA COMBINATIONS (2 total):
   FULL          OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   DQN            set[operatorLicenseNumber, registrationState]
   BUILT   DQ             set[birthDate, nameLast, nameFirst]
+  BUILT   DQN            set[operatorLicenseNumber, registrationState]
   SKIP    FULL           Name -- MC expansion candidate
   SKIP    FULL           OperatorLicenseNumber -- MC expansion candidate
 
@@ -81,7 +81,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, GunMod...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[serialNumber]
+  BUILT   QG             set[gunSerialNumber]
 
 ================================================================================
 5. VehicleRegistrationQuery (version 1)
@@ -104,8 +104,10 @@ METADATA COMBINATIONS (4 total):
   FULL          LicensePlateNumber      LicensePlateNumber, State, LicensePlateTypeCode, R...  ImageIndicator, LicensePlat...
   FULL          VehicleIdentificationNumber  VehicleIdentificationNumber, State, RandomRequest      ImageIndicator
 
-BUILD COVERAGE (2 of 4 built):
+BUILD COVERAGE (4 of 4 built):
+  BUILT   RQ_RAND        set[licensePlateNumber]
   BUILT   RQ             set[licensePlateNumber]
+  BUILT   RQN_RAND       set[vehicleIdentificationNumber]
   BUILT   RQN            set[vehicleIdentificationNumber]
   SKIP    RAND           LicensePlateNumber -- MC expansion candidate
   SKIP    RAND           VehicleIdentificationNumber -- MC expansion candidate
@@ -149,10 +151,10 @@ BUILD SUMMARY
   BoatQuery                                  2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         2      2     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   4      2     2  50%
+  VehicleRegistrationQuery                   4      4     0  100% (COMPLETE)
   VehicleStolenQuery                         3      3     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   13     11     2  85%
+  TOTAL                                   13     13     0  100%
 
 ================================================================================
 MC EXPANSION CANDIDATES (9 combos not in BASE)

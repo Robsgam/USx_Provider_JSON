@@ -156,13 +156,18 @@ function Audit-Provider {
     $jsonDir = Split-Path $JsonPath -Parent
     $xmlPath = $null
 
-    # Look for source/<PROVIDER>.xml (case-insensitive)
+    # Look for source/<PROVIDER>.xml — prefer exact provider name match
     $sourceDir = Join-Path $jsonDir 'source'
     if (Test-Path $sourceDir) {
         $xmlCandidates = Get-ChildItem $sourceDir -Filter '*.xml' -File |
             Where-Object { $_.Name -notmatch '(?i)\bold\b' }
         if ($xmlCandidates.Count -gt 0) {
-            $xmlPath = $xmlCandidates[0].FullName
+            $exactMatch = $xmlCandidates | Where-Object { $_.BaseName -ieq $providerName }
+            if ($exactMatch) {
+                $xmlPath = @($exactMatch)[0].FullName
+            } else {
+                $xmlPath = $xmlCandidates[0].FullName
+            }
         }
     }
 
@@ -171,7 +176,12 @@ function Audit-Provider {
         $xmlCandidates = Get-ChildItem $jsonDir -Filter '*.xml' -File |
             Where-Object { $_.Name -notmatch '(?i)\bold\b' }
         if ($xmlCandidates.Count -gt 0) {
-            $xmlPath = $xmlCandidates[0].FullName
+            $exactMatch = $xmlCandidates | Where-Object { $_.BaseName -ieq $providerName }
+            if ($exactMatch) {
+                $xmlPath = @($exactMatch)[0].FullName
+            } else {
+                $xmlPath = $xmlCandidates[0].FullName
+            }
         }
     }
 
