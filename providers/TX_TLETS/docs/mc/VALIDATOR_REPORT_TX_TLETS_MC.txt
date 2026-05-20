@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-18 10:31
+  Generated: 2026-05-20 13:57
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 29 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 28 fieldIds
   [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='N' for Firearm
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
@@ -39,11 +39,13 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' -> Vehicle : 4 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 3 combos
+  [LIMITATION] QIDM 'TX_TLETS_DriverLicenseQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 4 combos
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [LIMITATION] QIDM 'TX_TLETS_DriverHistoryQuery' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -92,11 +94,12 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo 'QV.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo 'QV.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[]/any[] fields resolvable
@@ -108,8 +111,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  RESULTS: 84 PASS / 0 FAIL / 0 WARN
+  RESULTS: 85 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  2 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-18 10:31
+  Generated: 2026-05-20 13:57
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -21,10 +21,8 @@ POST-BUILD VERIFICATION
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, emailAddressDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 1
-  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [vehicleModelCode]
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 34 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, emailAddressDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -35,10 +33,10 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 7: Cross-Variant Consistency ---
-  [PASS] All shared fields have matching types across MC and BASE
+  [INFO] No BASE JSON found -- skipping cross-variant check
 
 ========================================
- VERIFICATION PASSED: 7 PASS / 0 FAIL
+ VERIFICATION PASSED: 6 PASS / 0 FAIL
 ========================================
 
 

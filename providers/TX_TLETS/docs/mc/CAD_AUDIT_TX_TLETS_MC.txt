@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-18 10:31
+  Generated: 2026-05-20 13:57
 ================================================================
 CAD AUDIT
 =========
@@ -30,9 +30,9 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] regionId: in QIF, not in CAD list (provider-specific)
-    [INFO] financialResponsibilityType: in QIF, not in CAD list (provider-specific)
     [INFO] stickerNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] financialResponsibilityType: in QIF, not in CAD list (provider-specific)
+    [INFO] regionId: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF and CAD list
     [PASS] nameFirst: in QIF and CAD list
@@ -45,7 +45,7 @@ CAD AUDIT
     [PASS] imageIndicator: in QIF and CAD list
     [PASS] registrationState: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] purposeCode: in QIF and CAD list
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -60,10 +60,10 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] reasonCode: in QIF, not in CAD list (provider-specific)
+    [INFO] emailAddress: in QIF, not in CAD list (provider-specific)
     [INFO] expandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
     [INFO] regionId: in QIF, not in CAD list (provider-specific)
-    [INFO] emailAddress: in QIF, not in CAD list (provider-specific)
-    [INFO] reasonCode: in QIF, not in CAD list (provider-specific)
     [INFO] operatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] reasonCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] nameLastDH: in QIF, not in CAD list (provider-specific)
@@ -156,6 +156,32 @@ CAD AUDIT
     [PASS] QIDM 'TX_TLETS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'TX_TLETS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'TX_TLETS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo REGLicensePlateNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo RQLicensePlateNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo VINVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo DPSIStickerNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo QVLicensePlateNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo QVVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo QV.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo QV.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo QWName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo CPLName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_GunQuery' combo QGGunSerialNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_GunQuery' combo QGNCICNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo QAArticleSerialNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo QANCICNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_BoatQuery' combo BQRegistrationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_BoatQuery' combo BQBoatHullIdNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_BoatQuery' combo QBRegistrationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_BoatQuery' combo QBBoatHullIdNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_BoatQuery' combo QBNCICNumber -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -163,6 +189,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 53 PASS / 0 FAIL / 0 WARN / 80 INFO
+Total: 76 PASS / 0 FAIL / 0 WARN / 81 INFO
 
 

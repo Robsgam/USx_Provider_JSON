@@ -16,7 +16,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
 | 5 | FL_FCIC | v4.2 | 97P/0F/0W/0LIM | 97P/0F/0W/0LIM | 0 | QW removed (CommSys auto-sends), 7 QIDMs/33 combos, Attention visible, MC 2-card |
-| 6 | TX_TLETS | v2.7 | 84P/0F/0W | 84P/0F/0W | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
+| 6 | TX_TLETS | v3.0 | 84P/0F/0W/0LIM | 85P/0F/0W/2LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.1 | 70P/0F/0W | -- (archived) | 0 | Full 20-combo single-card BASE, MC archived |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |

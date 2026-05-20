@@ -5,6 +5,29 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v3.0  2026-05-20  Fresh rebuild -- minimized cards, CPL combo, CAD defaults
+--------------------------------------------------------------------------------
+CHANGED : Complete rewrite from scratch (fresh start per new-project policy).
+          Vehicle consolidated: 3 cards -> 1 (all 10 fields fit).
+          Person consolidated: 6 cards -> 2 (OPTIONS merged into DL; DH separate).
+          Boat consolidated: 3 cards -> 1 (all 6 fields fit).
+          Added CPL Name combo on DL (name-only search, metadata keyRef CPL).
+          Removed dead purposeCode from DL card (not in DL metadata).
+          VehicleMakeCode changed from Sel to Inp (text input).
+          CAD defaults added to all combos with initialValue'd any[] fields.
+          RMS Vehicle stripped to 3 attrs via shared module.
+REASON  : v2.7 had 14 cards with fragmented layout. Fresh build to minimize
+          card count and clean up field presentation per user request.
+          MC needed for Person DL/DH separation (25+ fields on single card = bad UX).
+LIMITS  : RSDWW OLN unreachable (identical set[] with DQ OLN).
+          QV VIN on VehReg unreachable (same set[] as RQ VIN).
+          DL/DH combo priority order (OLN before Name = operational priority).
+SCRIPT  : scripts/build_tx_tlets.ps1 + scripts/build_tx_tlets_mc.ps1
+OUTPUT  : TX_TLETS_MC.json (6 cards, 24 combos, 7 QIDMs)
+          TX_TLETS_BASE.json (5 cards, 24 combos, 7 QIDMs)
+RESULTS : 85 PASS / 0 FAIL / 0 WARN / 2 LIM | Verify: CLEAN | 37/37 test PASS
+
+--------------------------------------------------------------------------------
 v2.7  2026-05-18  One-directional queriesToDeselect fix
 --------------------------------------------------------------------------------
 CHANGED : Removed queriesToDeselect from default queries (VehicleInsuranceRegistrationQuery,

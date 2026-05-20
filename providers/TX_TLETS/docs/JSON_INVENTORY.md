@@ -32,3 +32,10 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | (v1.0 BASE) | v1.0 | Superseded | Pre-KB build. 67P/16F/44W. Replaced by v2.0 rebuild. |
 
+
+## v3.0 (2026-05-20)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_BASE.json | v3.0 | Current | 84P/0F/0W/0LIM. |
+| TX_TLETS_MC.json | v3.0 | Current | 85P/0F/0W/2LIM. |

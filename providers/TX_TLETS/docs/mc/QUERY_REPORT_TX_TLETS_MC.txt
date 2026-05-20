@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-18 10:31
+  Generated: 2026-05-20 13:57
 ================================================================
 QUERY SIMULATION
 ================
@@ -83,7 +83,24 @@ QUERY SIMULATION
     [SKIP] QV.V -- no any[] match
 
 --- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 3
+    Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 4
+
+    [FIRES] DQOperatorLicenseNumber
+      set: [operatorLicenseNumber]
+      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John A</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
 
     [FIRES] DQName
       set: [sexCode, birthDate, nameLast, nameFirst]
@@ -104,7 +121,7 @@ QUERY SIMULATION
 
     [FIRES] QWName
       set: [birthDate, nameLast, nameFirst]
-      any: [emailAddress, expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
+      any: [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -119,13 +136,13 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQOperatorLicenseNumber
-      set: [operatorLicenseNumber]
-      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
+    [FIRES] CPLName
+      set: [nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DQ</MessageKey>
+        <MessageKey>CPLName</MessageKey>
         <BirthDate>01151990</BirthDate>
         <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -139,9 +156,9 @@ QUERY SIMULATION
 --- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
 
-    [FIRES] KQName
-      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [attentionDH, emailAddressDH, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
+    [FIRES] KQOperatorLicenseNumber
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, emailAddressDH, imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -155,9 +172,9 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] KQOperatorLicenseNumber
-      set: [operatorLicenseNumberDH]
-      any: [attentionDH, emailAddressDH, imageIndicator, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
+    [FIRES] KQName
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, emailAddressDH, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCodeDH, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
