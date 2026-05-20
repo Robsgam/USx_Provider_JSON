@@ -1,12 +1,12 @@
 # build_ca_clets_mc.ps1  -- CA_CLETS MC (multi-card)
 # Builds CA_CLETS_MC.json from source\CA_CLETS.xml metadata + KB specs.
-# QIDMs expanded to cover ALL 40 metadata combos (39 built + 1 LIMITATION).
+# QIDMs expanded to cover ALL 40 metadata combos (40 built, 0 LIMITATION).
 # Layout: Vehicle(4), Person(6), Firearm(3), Article(3), Boat(5)
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 39 combos):
+# QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 40 combos):
 #   VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IA.QVK + IA.QV + IV.4*(13) + IV.4V = 19 combos
-#   DriverLicenseQuery         NLTS.DQ(N/O) + IN.L1 + ID.L1 + IR.QVC(Name/CriminalId/SSN) = 7 combos
-#     LIMITATION: IR.QVC OLN has same set[] as ID.L1 — unreachable without field-presence conditions
+#   DriverLicenseQuery         NLTS.DQ(N/O) + IN.L1 + ID.L1 + IR.QVC(OLN/Name/CriminalId/SSN) = 8 combos
+#     IR.QVC OLN: criminalIdNumber promoted from any[] to set[] as routing differentiator vs ID.L1
 #   DriverHistoryQuery         NLTS.KQ(N/O) = 2 combos, DH-suffix fields
 #   GunQuery                   IG.QGH (name) + IG.QGB (serial) = 2 combos
 #   ArticleSingleQuery         IP.QA(S/O) = 2 combos
@@ -260,10 +260,11 @@ $vehRegQuery = [PSCustomObject]@{
     targetEntity       = 'Vehicle'
 }
 
-# --- 2. DriverLicenseQuery -- 7 combos ---
+# --- 2. DriverLicenseQuery -- 8 combos ---
 # NLTS.DQ(N/O) = OOS name/OLN, IN.L1 = name in-state, ID.L1 = OLN in-state,
-# IR.QVC(CriminalId/SSN/Name) = criminal records search.
-# LIMITATION: IR.QVC OLN has same set[] as ID.L1 — unreachable. ID.L1 any[] expanded to cover.
+# IR.QVC(OLN/CriminalId/SSN/Name) = criminal records search.
+# IR.QVC OLN: criminalIdNumber promoted from any[] to set[] — differentiates from ID.L1.
+#   OLN alone → ID.L1 (DL lookup). OLN + CII → IR.QVC.O (criminal records).
 # IR.QVC.Name: broadest fallback (set=[purposeCode] only), fires when no specific combo matches.
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -310,11 +311,18 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
         }
-        # --- ID.L1: In-state OLN search (any[] expanded with IR.QVC OLN optional fields) ---
+        # --- ID.L1: In-state OLN search ---
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber'); any = @('registrationState','criminalIdNumber','socialSecurityNumber','age') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber'); any = @('registrationState','socialSecurityNumber','age') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ID.L1'
+            state                 = 'In/Out'
+        }
+        # --- IR.QVC.OLN: Criminal records by OLN + CII (criminalIdNumber promoted to set[] to differentiate from ID.L1) ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber','criminalIdNumber'); any = @('socialSecurityNumber','age') }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.O'
             state                 = 'In/Out'
         }
         # --- IR.QVC.CriminalId: Criminal records by CII ---
@@ -339,7 +347,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- 7 combos: NLTS.DQ (OOS name/OLN), IN.L1 (name), ID.L1 (OLN), IR.QVC (CriminalId/SSN/Name). LIMITATION: IR.QVC OLN unreachable (same set as ID.L1).'
+    description     = 'DriverLicenseQuery -- 8 combos: NLTS.DQ (OOS name/OLN), IN.L1 (name), ID.L1 (OLN), IR.QVC (OLN+CII/CII/SSN/Name). 100% metadata coverage.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverLicenseQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -548,7 +556,7 @@ $boatQuery = [PSCustomObject]@{
 
 $caBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for ${provider} v${Version} MC -- 6 QIDMs, 39 combos + 1 LIMITATION"
+    description    = "Provider configuration for ${provider} v${Version} MC -- 6 QIDMs, 40 combos, 100% metadata coverage"
     name           = $provider
     type           = 'BUNDLE'
     provider       = $provider

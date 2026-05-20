@@ -1,0 +1,81 @@
+CA_CLETS BASE v2.1 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : CA_CLETS_BASE.json
+Entity     : Vehicle
+Combo      : IA.QV (Plate search - no State - IA.QV fires)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  purposeCode               C                  default
+  licensePlateNumber        TEST123            typed
+  licensePlateTypeCode      PC                 default
+  licensePlateYear          2026               default
+  registrationState         (blank)            empty
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KS0TDSKP3ES2Z2HKP8X1TZF3
+  MessageType : VehicleRegistrationQuery
+  keyReference: IA.QV (inferred -- Plate + Purpose, no State)
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    LicensePlateNumber       TEST123
+    LicensePlateTypeCode     PC
+    LicensePlateYear         2026
+    CaRequestPurposeCode     C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: IA.QV
+  Reason: set[] = [purposeCode, licensePlateNumber] both populated; any[] defaults sent
+
+  QIDM attribute           Sent?  Value    Note
+  -----------------------  -----  -------  --------------------------------
+  CaRequestPurposeCode     YES    C        default
+  LicensePlateNumber       YES    TEST123  typed
+  LicensePlateTypeCode     YES    PC       any[], default sent
+  LicensePlateYear         YES    2026     any[], default sent
+  VehicleMakeCode          NO     --       any[], not populated
+  VehicleYear              NO     --       any[], not populated
+  State                    NO     --       any[], blank
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES -- RMS Vehicle search (plate)
+  RMS request: {"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: IA.QV fires correctly with Plate + PurposeCode. PlateType=PC and PlateYear=2026 defaults sent in XML.
+  Detail: RMS co-fires with plate tag. No returns (test plate).
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0TDSKP3ES2Z2HKP8X1TZF3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0TDSKP3ES2Z2HKP8X1TZF3</Id><LicensePlateYear>2026</LicensePlateYear><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>TEST123</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}

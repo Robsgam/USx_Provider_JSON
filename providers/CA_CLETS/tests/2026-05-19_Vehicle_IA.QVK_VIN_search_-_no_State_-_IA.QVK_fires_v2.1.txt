@@ -1,0 +1,74 @@
+CA_CLETS BASE v2.1 -- Test Log
+============================================================
+Date       : 2026-05-19
+JSON       : CA_CLETS_BASE.json
+Entity     : Vehicle
+Combo      : IA.QVK (VIN search - no State - IA.QVK fires)
+Test type  : T2 -- Basic combo
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  purposeCode               C                  default
+  vehicleIdentificationNumber 9864237890623    typed
+  registrationState         (blank)            empty
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KS0T4AEDEZKSNDS4M365RR53
+  MessageType : VehicleRegistrationQuery
+  keyReference: IA.QVK (inferred -- VIN + Purpose, no State)
+
+  Fields sent in XML request:
+    Element                      Value
+    ---------------------------  -------------------
+    VehicleIdentificationNumber  9864237890623
+    CaRequestPurposeCode         C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: IA.QVK
+  Reason: set[] = [purposeCode, vehicleIdentificationNumber] both populated
+
+  QIDM attribute               Sent?  Value           Note
+  ---------------------------  -----  --------------  --------------------------------
+  CaRequestPurposeCode         YES    C               default
+  VehicleIdentificationNumber  YES    9864237890623   typed
+  VehicleMakeCode              NO     --              any[], not populated
+  State                        NO     --              any[], blank
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES -- RMS Vehicle search (VIN)
+  RMS request: {"elasticQuery":{"vehicle":{"vinNumber":"9864237890623"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: IA.QVK fires correctly with VIN + PurposeCode. No State = in-state CA path.
+  Detail: RMS co-fires with VIN. No returns (test VIN). XML matches expected combo.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS0T4AEDEZKSNDS4M365RR53"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS0T4AEDEZKSNDS4M365RR53</Id><VehicleIdentificationNumber>9864237890623</VehicleIdentificationNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"vinNumber":"9864237890623"}},"from":0,"size":50}

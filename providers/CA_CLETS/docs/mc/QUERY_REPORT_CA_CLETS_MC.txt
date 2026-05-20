@@ -1,7 +1,7 @@
 ================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-19 18:04
+  Generated: 2026-05-19 18:45
 ================================================================
 QUERY SIMULATION
 ================
@@ -309,7 +309,7 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 7
+    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
 
     [FIRES] NLTS.DQ.N
       set: [purposeCode, nameLast, nameFirst, registrationState]
@@ -369,7 +369,7 @@ QUERY SIMULATION
 
     [FIRES] ID.L1
       set: [purposeCode, operatorLicenseNumber]
-      any: [registrationState, criminalIdNumber, socialSecurityNumber, age] -> matched: [registrationState, socialSecurityNumber, age]
+      any: [registrationState, socialSecurityNumber, age] -> matched: [registrationState, socialSecurityNumber, age]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -385,6 +385,7 @@ QUERY SIMULATION
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
         <State>NJ</State>
       </Transaction>
+    [SKIP] IR.QVC.O -- missing set: criminalIdNumber
     [SKIP] IR.QVC.C -- missing set: criminalIdNumber
 
     [FIRES] IR.QVC.S

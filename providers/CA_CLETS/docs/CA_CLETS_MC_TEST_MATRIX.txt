@@ -68,10 +68,10 @@ Boat (5 cards, 8 fields):
   CARD_BOA_REG (REGISTRATION SEARCH):
     registrationNumber [Inp 8]
 
-QIDM SUMMARY (6 QIDMs, 39 combos)
+QIDM SUMMARY (6 QIDMs, 40 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 19 combos (IV.4P x1, IV.4K x1, IL.A1 x1, IV.4H x1, IV.4A x1, IA.QVK x1, IA.QV x1, IN x1, IV.4V x1, IV.4C x1, IV.4M x1, NLTS x2, IV.4I x1, IV.4L x1, IV.4S x1, IV.4E x1, IV.4T x1, IV.4F x1), autoSelect=true
-  DriverLicenseQuery: 7 combos (ID.L1 x1, IR.QVC x3, NLTS x2, IN x1), autoSelect=true
+  DriverLicenseQuery: 8 combos (ID.L1 x1, IR.QVC x4, NLTS x2, IN x1), autoSelect=true
   DriverHistoryQuery: 2 combos (NLTS x2), autoSelect=true, deselects: [DL]
   GunQuery: 2 combos (IG x2)
   ArticleSingleQuery: 2 combos (IP.QA. x2)
@@ -143,145 +143,147 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Serial Number.
               Article Type dropdown (no default), Brand.
 
-PHASE 2: PERSON COMBOS (9 tests, 9 combos)
+PHASE 2: PERSON COMBOS (10 tests, 10 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
  6  Person      IR.QVC+IR.QVC.C    purposeCode=C, criminalIdNumber=TEST [    ]
               Expected: DriverLicenseQuery fires (IR.QVC)
- 7  Person      IR.QVC+IR.QVC.S    purposeCode=C, socialSecurityNumber=TEST [    ]
+ 7  Person      IR.QVC+IR.QVC.O    purposeCode=C, operatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (IR.QVC)
  8  Person      IR.QVC+IR.QVC.N    purposeCode=C                    [    ]
               Expected: DriverLicenseQuery fires (IR.QVC)
- 9  Person      ID.L1+ID.L1        purposeCode=C, operatorLicenseNumber=... [    ]
+ 9  Person      IR.QVC+IR.QVC.S    purposeCode=C, socialSecurityNumber=TEST [    ]
+              Expected: DriverLicenseQuery fires (IR.QVC)
+10  Person      NLTS+.DQ+State     purposeCode=C, operatorLicenseNumber=... [    ]
+              Expected: DriverLicenseQuery fires (NLTS)
+11  Person      NLTS+.DQ.N+State   purposeCode=C, nameLast=DOE, nameFirs... [    ]
+              Expected: DriverLicenseQuery fires (NLTS)
+12  Person      ID.L1+ID.L1        purposeCode=C, operatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (ID.L1)
-10  Person      NLTS+.DQ.N+State   purposeCode=C, nameLast=DOE, nameFirs... [    ]
-              Expected: DriverLicenseQuery fires (NLTS)
-11  Person      NLTS+.DQ+State     purposeCode=C, operatorLicenseNumber=... [    ]
-              Expected: DriverLicenseQuery fires (NLTS)
-12  Person      IN+.L1             purposeCode=C, nameLast=DOE, nameFirs... [    ]
+13  Person      IN+.L1             purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: DriverLicenseQuery fires (IN)
-13  Person      NLTS+.KQ.O         purposeCodeDH=C, operatorLicenseNumbe... [    ]
+14  Person      NLTS+.KQ.O         purposeCodeDH=C, operatorLicenseNumbe... [    ]
               Expected: DriverHistoryQuery fires (NLTS)
-14  Person      NLTS+.KQ.N         purposeCodeDH=C, birthDateDH=01/15/19... [    ]
+15  Person      NLTS+.KQ.N         purposeCodeDH=C, birthDateDH=01/15/19... [    ]
               Expected: DriverHistoryQuery fires (NLTS)
 
 PHASE 3: BOAT COMBOS (7 tests, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-15  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
+16  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: BoatQuery fires (IA.QB.)
-16  Boat        IA.QB.+IA.QB.R     purposeCode=C, registrationNumber=FL1... [    ]
+17  Boat        IA.QB.+IA.QB.R     purposeCode=C, registrationNumber=FL1... [    ]
               Expected: BoatQuery fires (IA.QB.)
-17  Boat        IV.4B+IV.4B        purposeCode=C, registrationNumber=FL1... [    ]
+18  Boat        IV.4B+IV.4B        purposeCode=C, registrationNumber=FL1... [    ]
               Expected: BoatQuery fires (IV.4B)
-18  Boat        IA.QB.+IA.QB.H     purposeCode=C, boatHullIdNumber=FL123... [    ]
+19  Boat        IA.QB.+IA.QB.H     purposeCode=C, boatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (IA.QB.)
-19  Boat        NLTS+.BQ.N+State   purposeCode=C, nameLast=DOE, nameFirs... [    ]
+20  Boat        NLTS+.BQ.N+State   purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: BoatQuery fires (NLTS)
-20  Boat        NLTS+.BQ.H+State   purposeCode=C, boatHullIdNumber=FL123... [    ]
+21  Boat        NLTS+.BQ.H+State   purposeCode=C, boatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (NLTS)
-21  Boat        NLTS+.BQ.R+State   purposeCode=C, registrationNumber=FL1... [    ]
+22  Boat        NLTS+.BQ.R+State   purposeCode=C, registrationNumber=FL1... [    ]
               Expected: BoatQuery fires (NLTS)
 
 PHASE 4: VEHICLE COMBOS (19 tests, 19 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-22  Vehicle     IV.4P+IV.4P        purposeCode=C, licensePlateNumber=TES... [    ]
+23  Vehicle     IV.4P+IV.4P        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4P)
-23  Vehicle     IV.4K+IV.4K        purposeCode=C, licensePlateNumber=TES... [    ]
+24  Vehicle     IV.4K+IV.4K        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4K)
-24  Vehicle     IL.A1+IL.A1        purposeCode=C, licensePlateNumber=TES... [    ]
+25  Vehicle     IL.A1+IL.A1        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IL.A1)
-25  Vehicle     IV.4H+IV.4H        purposeCode=C, licensePlateNumber=TES... [    ]
+26  Vehicle     IV.4H+IV.4H        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4H)
-26  Vehicle     IV.4A+IV.4A        purposeCode=C, licensePlateNumber=TES... [    ]
+27  Vehicle     IV.4A+IV.4A        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4A)
-27  Vehicle     IA.QVK+IA.QVK      purposeCode=C, vehicleIdentificationN... [    ]
+28  Vehicle     IA.QVK+IA.QVK      purposeCode=C, vehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QVK)
-28  Vehicle     IA.QV+IA.QV        purposeCode=C, licensePlateNumber=TES... [    ]
+29  Vehicle     IA.QV+IA.QV        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QV)
-29  Vehicle     IN+.VP             purposeCode=C, nameLast=DOE, nameFirs... [    ]
+30  Vehicle     IN+.VP             purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: VehicleRegistrationQuery fires (IN)
-30  Vehicle     IV.4V+IV.4V        purposeCode=C, vehicleIdentificationN... [    ]
+31  Vehicle     IV.4V+IV.4V        purposeCode=C, vehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4V)
-31  Vehicle     IV.4E+IV.4E        purposeCode=C, licensePlateNumber=TES... [    ]
+32  Vehicle     IV.4E+IV.4E        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4E)
-32  Vehicle     IV.4I+IV.4I        purposeCode=C, licensePlateNumber=TES... [    ]
+33  Vehicle     IV.4I+IV.4I        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4I)
-33  Vehicle     IV.4C+IV.4C        purposeCode=C, licensePlateNumber=TES... [    ]
+34  Vehicle     IV.4C+IV.4C        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4C)
-34  Vehicle     NLTS+.RQ.P+State   purposeCode=C, licensePlateNumber=TES... [    ]
+35  Vehicle     NLTS+.RQ.P+State   purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS)
-35  Vehicle     NLTS+.RQ.V+State   purposeCode=C, vehicleIdentificationN... [    ]
+36  Vehicle     NLTS+.RQ.V+State   purposeCode=C, vehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS)
-36  Vehicle     IV.4M+IV.4M        purposeCode=C, licensePlateNumber=TES... [    ]
+37  Vehicle     IV.4M+IV.4M        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4M)
-37  Vehicle     IV.4F+IV.4F        purposeCode=C, licensePlateNumber=TES... [    ]
+38  Vehicle     IV.4F+IV.4F        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4F)
-38  Vehicle     IV.4S+IV.4S        purposeCode=C, licensePlateNumber=TES... [    ]
+39  Vehicle     IV.4S+IV.4S        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4S)
-39  Vehicle     IV.4L+IV.4L        purposeCode=C, licensePlateNumber=TES... [    ]
+40  Vehicle     IV.4L+IV.4L        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4L)
-40  Vehicle     IV.4T+IV.4T        purposeCode=C, licensePlateNumber=TES... [    ]
+41  Vehicle     IV.4T+IV.4T        purposeCode=C, licensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IV.4T)
 
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-41  Firearm     IG+.QGB            purposeCode=C, serialNumber=TEST [    ]
+42  Firearm     IG+.QGB            purposeCode=C, serialNumber=TEST [    ]
               Expected: GunQuery fires (IG)
-42  Firearm     IG+.QGH            purposeCode=C, nameLast=DOE, nameFirs... [    ]
+43  Firearm     IG+.QGH            purposeCode=C, nameLast=DOE, nameFirs... [    ]
               Expected: GunQuery fires (IG)
 
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-43  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
+44  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: ArticleSingleQuery fires (IP.QA.)
-44  Article     IP.QA.+IP.QA.S     purposeCode=C, serialNumber=TEST [    ]
+45  Article     IP.QA.+IP.QA.S     purposeCode=C, serialNumber=TEST [    ]
               Expected: ArticleSingleQuery fires (IP.QA.)
 
 PHASE 7: ANY[] FIELD TESTS (4 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-45  Vehicle     IA.QV+IA.QV        + vehicleMakeCode, vehicleYear  [    ]
+46  Vehicle     IA.QV+IA.QV        + vehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-46  Person      IN+.L1             + birthDate, sexCode, addressCounty [    ]
+47  Person      IN+.L1             + birthDate, sexCode, addressCounty [    ]
               Expected: any[] fields present in XML output.
-47  Firearm     IG+.QGB            + gunCaliber, firearmMake, gunTypeCode [    ]
+48  Firearm     IG+.QGB            + gunCaliber, firearmMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
-48  Article     IP.QA.+IP.QA.S     + articleBrand, articleTypeCode [    ]
+49  Article     IP.QA.+IP.QA.S     + articleBrand, articleTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-49  Person      Deselect: DH deselects DL.     [    ]
+50  Person      Deselect: DH deselects DL.     [    ]
               Fill both query fields. Check deselect behavior.
 
 PHASE 9: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-50  Person      Empty form, verify no Send button / no request.    [    ]
-51  Vehicle     Empty form, verify no Send button / no request.    [    ]
+51  Person      Empty form, verify no Send button / no request.    [    ]
+52  Vehicle     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 51 tests
+TOTAL: 52 tests
 
-COMBO COVERAGE (39/39):
-  VehicleRegistrationQuery: 19/19 -- T22(IV.4P+IV.4P), T23(IV.4K+IV.4K), T24(IL.A1+IL.A1), T25(IV.4H+IV.4H), T26(IV.4A+IV.4A), T27(IA.QVK+IA.QVK), T28(IA.QV+IA.QV), T29(IN+.VP), T30(IV.4V+IV.4V), T31(IV.4E+IV.4E), T32(IV.4I+IV.4I), T33(IV.4C+IV.4C), T34(NLTS+.RQ.P), T35(NLTS+.RQ.V), T36(IV.4M+IV.4M), T37(IV.4F+IV.4F), T38(IV.4S+IV.4S), T39(IV.4L+IV.4L), T40(IV.4T+IV.4T)
-  DriverLicenseQuery: 7/7 -- T6(IR.QVC+IR.QVC.C), T7(IR.QVC+IR.QVC.S), T8(IR.QVC+IR.QVC.N), T9(ID.L1+ID.L1), T10(NLTS+.DQ.N), T11(NLTS+.DQ), T12(IN+.L1)
-  DriverHistoryQuery: 2/2 -- T13(NLTS+.KQ.O), T14(NLTS+.KQ.N)
-  GunQuery: 2/2 -- T41(.QGB), T42(.QGH)
-  ArticleSingleQuery: 2/2 -- T43(IP.QA.O), T44(IP.QA.S)
-  BoatQuery: 7/7 -- T15(IA.QB.+IA.QB.O), T16(IA.QB.+IA.QB.R), T17(IV.4B+IV.4B), T18(IA.QB.+IA.QB.H), T19(NLTS+.BQ.N), T20(NLTS+.BQ.H), T21(NLTS+.BQ.R)
+COMBO COVERAGE (40/40):
+  VehicleRegistrationQuery: 19/19 -- T23(IV.4P+IV.4P), T24(IV.4K+IV.4K), T25(IL.A1+IL.A1), T26(IV.4H+IV.4H), T27(IV.4A+IV.4A), T28(IA.QVK+IA.QVK), T29(IA.QV+IA.QV), T30(IN+.VP), T31(IV.4V+IV.4V), T32(IV.4E+IV.4E), T33(IV.4I+IV.4I), T34(IV.4C+IV.4C), T35(NLTS+.RQ.P), T36(NLTS+.RQ.V), T37(IV.4M+IV.4M), T38(IV.4F+IV.4F), T39(IV.4S+IV.4S), T40(IV.4L+IV.4L), T41(IV.4T+IV.4T)
+  DriverLicenseQuery: 8/8 -- T6(IR.QVC+IR.QVC.C), T7(IR.QVC+IR.QVC.O), T8(IR.QVC+IR.QVC.N), T9(IR.QVC+IR.QVC.S), T10(NLTS+.DQ), T11(NLTS+.DQ.N), T12(ID.L1+ID.L1), T13(IN+.L1)
+  DriverHistoryQuery: 2/2 -- T14(NLTS+.KQ.O), T15(NLTS+.KQ.N)
+  GunQuery: 2/2 -- T42(.QGB), T43(.QGH)
+  ArticleSingleQuery: 2/2 -- T44(IP.QA.O), T45(IP.QA.S)
+  BoatQuery: 7/7 -- T16(IA.QB.+IA.QB.O), T17(IA.QB.+IA.QB.R), T18(IV.4B+IV.4B), T19(IA.QB.+IA.QB.H), T20(NLTS+.BQ.N), T21(NLTS+.BQ.H), T22(NLTS+.BQ.R)
 
 IMPORT FILE: CA_CLETS_MC.json
