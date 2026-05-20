@@ -4,7 +4,7 @@
   and updates the score portion of the Status column in the CLAUDE.md Provider Status table.
 
   Preserves all other table content: Version, Path, Notable patterns, and any flags
-  after the score (LOCKED, NEW, test results, descriptive text).
+  after the score (NEW, test results, descriptive text).
 
   Usage: .\sync_provider_table.ps1
          .\sync_provider_table.ps1 -DryRun
@@ -143,7 +143,7 @@ for ($i = ($headerLineIdx + 2); $i -lt $tableEnd; $i++) {
 
     $totalProviders++
 
-    # Extract folder name from path column (e.g., "providers/NJ_NJCJIS_LOCKED/" -> "NJ_NJCJIS_LOCKED")
+    # Extract folder name from path column (e.g., "providers/NJ_NJCJIS/" -> "NJ_NJCJIS")
     $folderName = $null
     if ($pathCol -match 'providers/([^/]+)/?') {
         $folderName = $Matches[1]

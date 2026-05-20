@@ -7,32 +7,10 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
-    [switch]$ShowDetail,
-    [switch]$Force
+    [switch]$ShowDetail
 )
 
 $ErrorActionPreference = "Stop"
-
-# ── LOCK GATE ──
-$jsonDir = Split-Path (Resolve-Path $Path) -Parent
-$docsDir = Join-Path $jsonDir "docs"
-if (Test-Path $docsDir) {
-    $statusFiles = Get-ChildItem $docsDir -Filter "*STATUS*" -File -ErrorAction SilentlyContinue
-    foreach ($sf in $statusFiles) {
-        $sfContent = Get-Content $sf.FullName -Raw
-        if ($sfContent -cmatch '\bLOCKED\b' -and -not $Force) {
-            Write-Host ""
-            Write-Host "  ██  JSON LOCKED  ██" -ForegroundColor Red
-            Write-Host "  $($sf.Name) says this provider is frozen." -ForegroundColor Red
-            Write-Host "  Pass -Force to override." -ForegroundColor Red
-            Write-Host ""
-            exit 1
-        }
-        if ($sfContent -cmatch '\bLOCKED\b' -and $Force) {
-            Write-Host "  [FORCE] Lock override accepted. Proceeding with validation." -ForegroundColor Yellow
-        }
-    }
-}
 
 function Write-Pass($msg) { Write-Host "  [PASS] $msg" -ForegroundColor Green }
 function Write-Fail($msg) { Write-Host "  [FAIL] $msg" -ForegroundColor Red; $script:failCount++ }

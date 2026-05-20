@@ -1,14 +1,14 @@
 PROVIDER STATUS SUMMARY
 =======================
-Generated: 2026-05-18 (updated folder renames: FL_FCIC→LOCKED, TX_TLETS→BLOCKED)
+Generated: 2026-05-19 (lock mechanism removed, folder suffixes eliminated)
 Source: CLAUDE.md provider table + enforce.ps1
 
 PORTFOLIO OVERVIEW
 ------------------
 Total providers:  19
-Active:           14
-Locked:            3 (NJ_NJCJIS, CA_CLETS, FL_FCIC) — folders suffixed _LOCKED
-Blocked:           2 (CA_CONTRA_COSTA, TX_TLETS) — folders suffixed _BLOCKED
+Active:           17
+Incomplete:        1 (CA_CONTRA_COSTA — awaiting updated devdoc/metadata)
+On hold:           1 (TX_TLETS — ready, awaiting work order slot)
 JSON completeness: 18/19 have both BASE + MC (CA_CONTRA_COSTA BASE-only)
 Validation:        All 18 complete providers at 0 FAIL, 0 WARN
 Enforce gate:      218 PASS / 0 FAIL / 0 WARN (2026-05-15)
@@ -18,24 +18,24 @@ PROVIDER TABLE
  #  Provider               Version  Validation       Status    JSON Files  Notes
 --- ---------------------- -------- ---------------- --------- ----------- --------------------------------------------------
  1  AZ_AZDPS               v2.3    71P/0F/0W        ACTIVE    BASE+MC     dexStateUserId, DH-suffix, WMPI queries
- 2  CA_CLETS               v1.8    66P/0F/0W (BASE) LOCKED    BASE+MC     one-directional deselect fix; 18/18 BASE PASS
+ 2  CA_CLETS               v1.9    66P/0F/0W        ACTIVE    BASE+MC     CAD purposeCode fix; 3/3 CAD PASS
  3  CA_CLETS_OCATS         v1.2    63P/0F/0W        ACTIVE    BASE+MC     CLETS_OCATS v21, 5 queries, 19 combos
- 4  CA_CONTRA_COSTA        ---     INCOMPLETE       BLOCKED   BASE only   Awaiting updated devdoc/metadata; Person-only
+ 4  CA_CONTRA_COSTA        ---     INCOMPLETE       INCOMPLETE BASE only  Awaiting updated devdoc/metadata; Person-only
  5  CA_eSUN                v1.5    71P/0F/0W        ACTIVE    BASE+MC     MC multi-card; VP owner search + gun-by-name
  6  CA_SAN_LUIS_OBISPO     v1.3    65P/0F/0W        ACTIVE    BASE+MC     Regional interface; DL+DH DH-suffix pattern
  7  CA_VENTURA_COUNTY      v1.4    72P/0F/0W (MC)   ACTIVE    BASE+MC     6 basic queries; MC multi-card (14 cards)
- 8  FL_FCIC                v4.1    102P/0F/0W       LOCKED    BASE+MC     44/44 MC PASS; production-ready 2026-05-18
+ 8  FL_FCIC                v4.1    102P/0F/0W       ACTIVE    BASE+MC     44/44 MC PASS; production-ready
  9  HI_HCJDC_OFML          v1.6    72P/0F/0W        ACTIVE    BASE+MC     7-transaction build; State no-default
 10  IL_LEADS_OFML          v1.1    61P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
 11  LA_LEMS                v2.5    63P/0F/0W        ACTIVE    BASE+MC     7 QIDMs; DH-suffix + queriesToDeselect
 12  MD_METERS              v1.3    69P/0F/0W        ACTIVE    BASE+MC     6 basic queries; State no-default; MC (12 cards)
-13  NJ_NJCJIS              v3.1    69P/0F/0W        LOCKED    BASE+MC     14/14 PASS; v3.0 DEPLOYED Newark NJ 2026-05-11
+13  NJ_NJCJIS              v3.2    69P/0F/0W        ACTIVE    BASE+MC     14/14 PASS; v3.0 DEPLOYED Newark NJ 2026-05-11
 14  NM_NMLETS_OFML         v1.3    66P/0F/0W        ACTIVE    BASE+MC     6 basic queries; GunModel field
 15  NY_NYSPIN_EJUSTICE     v1.6    74P/0F/0W        ACTIVE    BASE+MC     DL+DH DH-suffix; State no-default (LIMIT #30)
 16  OH_LEADS               v1.3    77P/0F/0W        ACTIVE    BASE+MC     6 queries, 9 VehReg combos; MC (14 cards)
 17  OR_LEDS                v1.3    58P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
 18  TN_TIES                v1.4    80P/0F/0W        ACTIVE    BASE+MC     6 queries, 28 combos; MC (14 cards)
-19  TX_TLETS               v2.6    84P/0F/0W        BLOCKED   BASE+MC     EmailAddress user-fillable + Attention fix applied
+19  TX_TLETS               v2.7    84P/0F/0W        ACTIVE    BASE+MC     EmailAddress user-fillable + Attention fix applied
 
 FLAGGED FOR NEXT REBUILD
 ------------------------
@@ -49,8 +49,8 @@ Attention Field Fix (7 providers):
   - TN_TIES               DH only
   Already fixed: FL_FCIC v4.0 (model for the fix)
 
-Bidirectional queriesToDeselect Fix (14 providers):
-  See DESELECT_REBUILD_FLAGS in REBUILD_TRACKER.md
+CAD Defaults (17 providers — 142 FAILs):
+  Fix on next rebuild of each provider. See REBUILD_TRACKER.md.
 
 KNOWN LIMITATIONS
 -----------------
@@ -58,12 +58,12 @@ KNOWN LIMITATIONS
 
 WORK ORDER (user-specified)
 ---------------------------
-  NJ (DONE/LOCKED) -> CA_CLETS (DONE/LOCKED) -> FL_FCIC (DONE/LOCKED) -> TX_TLETS (BLOCKED) -> NY_NYSPIN -> AZ_AZDPS
+  NJ (DONE) -> CA_CLETS (DONE) -> FL_FCIC (DONE) -> TX_TLETS -> NY_NYSPIN -> AZ_AZDPS
 
 NEXT ACTIONS
 ------------
-  1. TX_TLETS v2.6 rebuilt -- decide if unblocked (EmailAddress+Attention fixed, 0 LIM)
-  2. Live testing per work order: NY_NYSPIN v1.6 next, then AZ_AZDPS
-  3. NJ v3.1 deploy to Newark foundation tenant (v3.0 currently live)
-  4. Attention field fix on remaining 6 flagged providers (TX done)
+  1. Live testing per work order: TX_TLETS next, then NY_NYSPIN, then AZ_AZDPS
+  2. NJ v3.2 deploy to Newark foundation tenant (v3.0 currently live)
+  3. Attention field fix on remaining 7 flagged providers
+  4. CAD defaults fix on remaining 17 providers
   5. Each provider first test: build MC -> build_report.ps1 -> CAD audit -> pipeline.ps1

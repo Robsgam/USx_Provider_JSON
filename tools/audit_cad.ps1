@@ -9,10 +9,11 @@
     3. FIRST_RESPONDER Layout Variant Exists
     4. Patch 8 Completeness (RMS sourceFields are camelCase in BASE)
     5. QIDM sourceField Case Alignment (sourceField matches QIF fieldId exactly)
+    6. CAD Defaults Coverage (any[] fields with form initialValue need combo defaults[])
 
   Usage:
     .\audit_cad.ps1                                  # scan all providers
-    .\audit_cad.ps1 -Path providers\NJ_NJCJIS_LOCKED\NJ_NJCJIS_BASE.json
+    .\audit_cad.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
     .\audit_cad.ps1 -Variant MC                      # scan all MC JSONs
     .\audit_cad.ps1 -OutFile docs\cad_audit.txt      # write to file
 #>
@@ -71,7 +72,7 @@ if ($Path) {
     if (-not (Test-Path $providersDir)) { Write-Error "Providers dir not found: $providersDir"; return }
     $suffix = if ($Variant -eq 'MC') { '*_MC.json' } else { '*_BASE.json' }
     $jsonFiles = @(Get-ChildItem -Path $providersDir -Filter $suffix -Recurse |
-        Where-Object { $_.DirectoryName -notmatch '(archive|phases|release|v1[\\\/])' -and $_.DirectoryName -notmatch 'CA_CONTRA_COSTA(_BLOCKED)?' } |
+        Where-Object { $_.DirectoryName -notmatch '(archive|phases|release|v1[\\\/])' -and $_.DirectoryName -notmatch 'CA_CONTRA_COSTA' } |
         Sort-Object Name)
 }
 
@@ -115,6 +116,30 @@ function Get-LayoutFieldIds($layoutObj) {
         }
     }
     return $fieldIds
+}
+
+# ── Helper: Extract fieldId -> initialValue map from a QIF layout ───────────
+
+function Get-LayoutInitialValues($layoutObj) {
+    $map = @{}
+    if (-not $layoutObj) { return $map }
+    foreach ($prop in $layoutObj.PSObject.Properties) {
+        $node = $prop.Value
+        if (-not $node.type) { continue }
+        $resolved = $null
+        try { $resolved = $node.type.resolvedName } catch {}
+        if (-not $resolved) { continue }
+        if ($resolved -in @('FormInput','FormSelect','FormDate','FormDateInput','FormCheckbox',
+                            'CheckboxInput','TextInput','SelectInput','SelectHistoryInput','HiddenInput')) {
+            $fid = $null
+            try { $fid = $node.props.fieldId } catch {}
+            if (-not $fid) { continue }
+            $iv = $null
+            try { $iv = $node.props.initialValue } catch {}
+            if ($iv) { $map[$fid] = $iv }
+        }
+    }
+    return $map
 }
 
 # ── Helper: Check if layout variant has CONTEXT_INFO_CARD ───────────────────
@@ -184,13 +209,14 @@ foreach ($jf in $jsonFiles) {
             $qifByEntity[$entity] = @{
                 allFieldIds   = [System.Collections.Generic.HashSet[string]]::new()
                 defaultFields = [System.Collections.Generic.HashSet[string]]::new()
+                initialValues = @{}
                 cadLayout     = $null
                 frLayout      = $null
                 qifName       = $cfg.name
             }
         }
 
-        # Default layout fieldIds
+        # Default layout fieldIds + initialValues
         $defLayout = $null
         try { $defLayout = $cfg.layout.default } catch {}
         if ($defLayout) {
@@ -198,6 +224,10 @@ foreach ($jf in $jsonFiles) {
             foreach ($f in $defFields) {
                 [void]$qifByEntity[$entity].allFieldIds.Add($f)
                 [void]$qifByEntity[$entity].defaultFields.Add($f)
+            }
+            $ivMap = Get-LayoutInitialValues $defLayout
+            foreach ($k in $ivMap.Keys) {
+                $qifByEntity[$entity].initialValues[$k] = $ivMap[$k]
             }
         }
 
@@ -466,6 +496,98 @@ foreach ($jf in $jsonFiles) {
         }
     } else {
         Out-Warn "No provider bundle found -- cannot check QIDM sourceField alignment"
+    }
+
+    # ── CHECK 6: CAD Defaults Coverage ─────────────────────────────────────────
+    # For each CommSys QIDM combo, any[] fields with a form initialValue must
+    # have a combination-level defaults[] entry. CAD dispatch does NOT apply
+    # form initialValues — without defaults[], those fields are absent from XML.
+    # Exceptions:
+    #   - Fields guaranteed by conditions (user must have set them for combo to fire)
+    #   - Fields with codeTypeProvider (reverse-lookup interaction needs live testing → INFO)
+    Out ''
+    Out '--- CHECK 6: CAD Defaults Coverage ---'
+
+    if ($providerBundle) {
+        foreach ($cfg in $providerBundle.configurations) {
+            if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            $entity = $cfg.targetEntity
+            $qidmName = $cfg.name
+            $qifData = $qifByEntity[$entity]
+
+            if (-not $qifData) { continue }
+            $ivMap = $qifData.initialValues
+
+            # Build sourceField -> attribute name map, and track codeTypeProvider attrs
+            $sfToAttrName = @{}
+            $codeTypeProviderAttrs = [System.Collections.Generic.HashSet[string]]::new()
+            if ($cfg.attributes) {
+                foreach ($attr in $cfg.attributes) {
+                    if (-not $attr.sourceField) { continue }
+                    foreach ($sf in $attr.sourceField) {
+                        $sfToAttrName[$sf] = $attr.name
+                    }
+                    if ($attr.codeTypeProvider) {
+                        [void]$codeTypeProviderAttrs.Add($attr.name)
+                    }
+                }
+            }
+
+            $comboIdx = 0
+            foreach ($combo in $cfg.combinations) {
+                $comboIdx++
+                $keyRef = $combo.keyReference
+                $anyFields = @()
+                if ($combo.requirements.any) { $anyFields = @($combo.requirements.any) }
+
+                # Collect fields guaranteed by conditions (user must set them)
+                $conditionFields = [System.Collections.Generic.HashSet[string]]::new()
+                if ($combo.requirements.conditions) {
+                    foreach ($cond in $combo.requirements.conditions) {
+                        $condField = $null
+                        if ($cond.field -is [array]) { $condField = $cond.field[0] }
+                        else { $condField = $cond.field }
+                        if ($condField) { [void]$conditionFields.Add($condField) }
+                    }
+                }
+
+                # Collect existing defaults for this combo
+                $existingDefaults = [System.Collections.Generic.HashSet[string]]::new()
+                if ($combo.requirements.defaults) {
+                    foreach ($d in $combo.requirements.defaults) {
+                        [void]$existingDefaults.Add($d.field)
+                    }
+                }
+
+                $missing = @()
+                $codeTypeMissing = @()
+                foreach ($anyField in $anyFields) {
+                    if (-not $ivMap.ContainsKey($anyField)) { continue }
+                    $attrName = $sfToAttrName[$anyField]
+                    if (-not $attrName) { continue }
+                    if ($existingDefaults.Contains($attrName)) { continue }
+                    if ($conditionFields.Contains($attrName)) { continue }
+                    if ($codeTypeProviderAttrs.Contains($attrName)) {
+                        $codeTypeMissing += "$attrName (form default='$($ivMap[$anyField])', codeTypeProvider -- needs live test)"
+                    } else {
+                        $missing += "$attrName (form default='$($ivMap[$anyField])')"
+                    }
+                }
+
+                if ($missing.Count -eq 0 -and $codeTypeMissing.Count -eq 0) {
+                    Out-Pass "QIDM '$qidmName' combo $keyRef -- defaults cover all initialValue any[] fields"
+                } else {
+                    foreach ($m in $missing) {
+                        Out-Fail "QIDM '$qidmName' combo $keyRef -- missing default for $m"
+                    }
+                    foreach ($m in $codeTypeMissing) {
+                        Out-Info "QIDM '$qidmName' combo $keyRef -- $m"
+                    }
+                }
+            }
+        }
+    } else {
+        Out-Warn "No provider bundle found -- cannot check CAD defaults coverage"
     }
 
     # Also check RMS QIDM sourceFields against QIF fieldIds

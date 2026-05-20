@@ -10,7 +10,7 @@
     .\preflight_rebuild.ps1 -All -Quick -OutFile preflight.txt
 
   Parameters:
-    -Provider <name>   Run preflight for a single provider (folder name without _LOCKED)
+    -Provider <name>   Run preflight for a single provider
     -All               Run preflight for ALL providers that need rebuilds (any WARNs > 0)
     -OutFile <path>    Save report to file
     -Quick             Parse existing report files instead of running tools live
@@ -465,24 +465,14 @@ function Build-ActionChecklist {
 # PREFLIGHT ONE PROVIDER -- main workhorse
 # ══════════════════════════════════════════════════════════════════════════════
 function Run-PreflightSingle([string]$provName) {
-    # Resolve folder (handle _LOCKED/_BLOCKED suffix)
-    $folderName = $provName
-    $provDir = Join-Path $providersDir $folderName
+    # Resolve folder
+    $provDir = Join-Path $providersDir $provName
     if (-not (Test-Path $provDir)) {
-        $folderName = "${provName}_LOCKED"
-        $provDir = Join-Path $providersDir $folderName
-    }
-    if (-not (Test-Path $provDir)) {
-        $folderName = "${provName}_BLOCKED"
-        $provDir = Join-Path $providersDir $folderName
-    }
-    if (-not (Test-Path $provDir)) {
-        Out-Line "  [ERROR] Provider not found: $provName (checked $provName, ${provName}_LOCKED, ${provName}_BLOCKED)" 'Red'
+        Out-Line "  [ERROR] Provider not found: $provName" 'Red'
         return $null
     }
 
-    $isLocked = $folderName -match '_(LOCKED|BLOCKED)$'
-    $cleanProvName = $folderName -replace '_(LOCKED|BLOCKED)$', ''
+    $cleanProvName = $provName
 
     # ── Get validator results ────────────────────────────────────────────────
     $baseReport = $null
@@ -525,7 +515,6 @@ function Run-PreflightSingle([string]$provName) {
     # ── Format score strings ─────────────────────────────────────────────────
     $baseScoreStr = if ($baseReport) { "$($baseReport.Pass)P/$($baseReport.Fail)F/$($baseReport.Warn)W/$($baseReport.Limit)LIM" } else { "--" }
     $mcScoreStr   = if ($mcReport)   { "$($mcReport.Pass)P/$($mcReport.Fail)F/$($mcReport.Warn)W/$($mcReport.Limit)LIM" } else { "--" }
-    $lockTag = if ($isLocked) { " [LOCKED]" } else { "" }
 
     # ── Lint build scripts ───────────────────────────────────────────────────
     $lintFindings = Lint-BuildScripts $provDir
@@ -544,7 +533,7 @@ function Run-PreflightSingle([string]$provName) {
     # ══════════════════════════════════════════════════════════════════════
     Out-Line ""
     Out-Divider
-    Out-Line "  Preflight Rebuild: $cleanProvName$lockTag" "Cyan"
+    Out-Line "  Preflight Rebuild: $cleanProvName" "Cyan"
     Out-Line "  Current: $baseScoreStr (BASE) | $mcScoreStr (MC)" "White"
     Out-Divider
     Out-Line ""
@@ -650,7 +639,6 @@ function Run-PreflightSingle([string]$provName) {
     # Return summary for -All mode
     return @{
         Provider      = $cleanProvName
-        Locked        = $isLocked
         BaseWarns     = $baseWarnCount
         McWarns       = $mcWarnCount
         ScriptIssues  = $lintWarnCount + $lintFailCount
@@ -685,7 +673,7 @@ if ($Provider) {
 
     foreach ($dir in $providerDirs) {
         $folderName = $dir.Name
-        $cleanName  = $folderName -replace '_(LOCKED|BLOCKED)$', ''
+        $cleanName  = $folderName
 
         # Quick check: does this provider have WARNs?
         $needsRebuild = $false
@@ -757,10 +745,9 @@ if ($Provider) {
         foreach ($row in $sorted) {
             $totalWarns = $row.BaseWarns + $row.McWarns
             $warnStr    = "$totalWarns"
-            $lockStr    = if ($row.Locked) { " (LOCKED)" } else { "" }
 
             $line = "  {0,-$colProv} {1,-$colWarns} {2,-$colScript} {3,-$colFlags} {4}" -f `
-                "$($row.Provider)$lockStr", $warnStr, $row.ScriptIssues, $row.Flags, $row.TotalActions
+                "$($row.Provider)", $warnStr, $row.ScriptIssues, $row.Flags, $row.TotalActions
 
             $color = if ($totalWarns -gt 10) { 'Red' } elseif ($totalWarns -gt 0) { 'Yellow' } else { 'White' }
             Out-Line $line $color

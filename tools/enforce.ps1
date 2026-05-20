@@ -88,7 +88,7 @@ function SectionHeader($title) {
 function Get-ProviderList {
     $dirs = Get-ChildItem $provDir -Directory | Where-Object {
         $_.Name -ne 'CA_CONTRA_COSTA' -and
-        $_.Name -ne 'CA_CONTRA_COSTA_BLOCKED' -and
+        $_.Name -ne 'CA_CONTRA_COSTA' -and
         (Test-Path (Join-Path $_.FullName "scripts"))
     }
     if ($Provider) {
@@ -121,8 +121,6 @@ function Get-McScriptVersion($provPath) {
     }
     return $null
 }
-
-function Get-DocPrefix($name) { $name -replace '_(LOCKED|BLOCKED)$', '' }
 
 # ── Parse validator report ────────────────────────────────────────────────────
 function Parse-Report($path) {
@@ -158,41 +156,52 @@ SectionHeader "PHASE 1: Build Freshness"
 
 foreach ($pd in $providers) {
     $provName = $pd.Name
-    $docPrefix = Get-DocPrefix $provName
+    $docPrefix = $provName
 
-    # Check BASE JSON exists
     $baseJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}_BASE.json" -File -ErrorAction SilentlyContinue
-    if (-not $baseJson) {
-        if ($provName -match 'LOCKED') {
-            $baseJson = Get-ChildItem $pd.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue
-        }
-        if (-not $baseJson) { Info "$provName -- no BASE JSON found (flagged/locked?)"; continue }
+    $mcJson   = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json"   -File -ErrorAction SilentlyContinue
+
+    # ONE JSON IN ROOT: FAIL if both BASE and MC in root
+    if ($baseJson -and $mcJson) {
+        Fail "$provName -- both BASE and MC in root (one-JSON-in-root rule: MC active = MC only, MC archived = BASE only)"
     }
 
-    $baseTime = $baseJson.LastWriteTime
+    if (-not $baseJson -and -not $mcJson) {
+        Info "$provName -- no JSON found in root"
+        continue
+    }
 
-    # Check BASE reports exist and are fresh
+    # Check BASE reports (BASE JSON may be in root or phases/base/)
     $baseDocsDir = Join-Path $pd.FullName "docs\base"
     $validatorReport = Join-Path $baseDocsDir "VALIDATOR_REPORT_${docPrefix}_BASE.txt"
     if (Test-Path $validatorReport) {
-        $reportTime = (Get-Item $validatorReport).LastWriteTime
-        if ($reportTime -lt $baseTime) {
-            if ($Rebuild) {
-                Out "  Rebuilding reports for $provName BASE..."
-                & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $baseJson.FullName 2>&1 | Out-Null
-                Fixed "$provName BASE -- reports rebuilt (were stale)"
+        $baseRef = $baseJson
+        if (-not $baseRef) {
+            $phaseBasePath = Join-Path $pd.FullName "phases\base\${docPrefix}_BASE.json"
+            if (Test-Path $phaseBasePath) { $baseRef = Get-Item $phaseBasePath }
+        }
+        if ($baseRef) {
+            $baseTime = $baseRef.LastWriteTime
+            $reportTime = (Get-Item $validatorReport).LastWriteTime
+            if ($reportTime -lt $baseTime) {
+                if ($Rebuild) {
+                    Out "  Rebuilding reports for $provName BASE..."
+                    & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $baseRef.FullName 2>&1 | Out-Null
+                    Fixed "$provName BASE -- reports rebuilt (were stale)"
+                } else {
+                    Fail "$provName BASE -- reports STALE (JSON: $($baseTime.ToString('HH:mm')), reports: $($reportTime.ToString('HH:mm')))"
+                }
             } else {
-                Fail "$provName BASE -- reports STALE (JSON: $($baseTime.ToString('HH:mm')), reports: $($reportTime.ToString('HH:mm')))"
+                Pass "$provName BASE -- reports fresh"
             }
         } else {
-            Pass "$provName BASE -- reports fresh"
+            Pass "$provName BASE -- reports exist"
         }
-    } else {
+    } elseif ($baseJson) {
         Fail "$provName BASE -- no validator report in docs/base/"
     }
 
-    # Check MC JSON + reports
-    $mcJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json" -File -ErrorAction SilentlyContinue
+    # Check MC reports
     if ($mcJson) {
         $mcTime = $mcJson.LastWriteTime
         $mcDocsDir = Join-Path $pd.FullName "docs\mc"
@@ -238,7 +247,7 @@ SectionHeader "PHASE 2: Validator Scores"
 
 foreach ($pd in $providers) {
     $provName = $pd.Name
-    $docPrefix = Get-DocPrefix $provName
+    $docPrefix = $provName
 
     foreach ($variant in @('BASE', 'MC')) {
         $subdir = if ($variant -eq 'MC') { 'mc' } else { 'base' }
@@ -276,7 +285,7 @@ SectionHeader "PHASE 3: Doc Version Sync"
 
 foreach ($pd in $providers) {
     $provName = $pd.Name
-    $docPrefix = Get-DocPrefix $provName
+    $docPrefix = $provName
     $version = Get-ScriptVersion $pd.FullName
     if (-not $version) { Info "$provName -- no version in build script"; continue }
 
@@ -290,7 +299,7 @@ foreach ($pd in $providers) {
     }
 
     # Check 3b: CLAUDE.md
-    $escapedName = [regex]::Escape((Get-DocPrefix $provName))
+    $escapedName = [regex]::Escape($provName)
     if ($claudeText -match "\|\s*${escapedName}\s*\|[^|]*\|\s*v([^\s|]+)") {
         $claudeVer = $Matches[1]
         if ($claudeVer -eq $version) {

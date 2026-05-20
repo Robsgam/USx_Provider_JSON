@@ -15,25 +15,8 @@
 
 param(
     [string]$Version = "3.2",
-    [string]$Phase   = "mc",
-    [switch]$Unlock
+    [string]$Phase   = “mc”
 )
-
-# â”€â”€ LOCK GATE â”€â”€
-$statusFile = Join-Path (Resolve-Path "$PSScriptRoot\..").Path "docs\NJ_NJCJIS_STATUS.txt"
-if (Test-Path $statusFile) {
-    $statusContent = Get-Content $statusFile -Raw
-    if ($statusContent -match 'LOCKED' -and -not $Unlock) {
-        Write-Host ""
-        Write-Host "  â–ˆâ–ˆ  JSON LOCKED  â–ˆâ–ˆ" -ForegroundColor Red
-        Write-Host "  NJ_NJCJIS is frozen. Pass -Unlock to override." -ForegroundColor Red
-        Write-Host ""
-        exit 1
-    }
-    if ($Unlock) {
-        Write-Host "  [UNLOCK] Lock override accepted. Proceeding with build." -ForegroundColor Yellow
-    }
-}
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
@@ -86,13 +69,27 @@ $vehRegQuery = [PSCustomObject]@{
                 set        = @('licensePlateNumber')
                 any        = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear')
                 conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
+                    [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
+                    [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
+                )
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ_RAND'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear') }
+            requirements          = [PSCustomObject]@{
+                set      = @('licensePlateNumber')
+                any      = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'RandomRequest';        value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
+                    [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
+                    [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
+                )
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'In/Out'
@@ -102,13 +99,23 @@ $vehRegQuery = [PSCustomObject]@{
                 set        = @('vehicleIdentificationNumber')
                 any        = @('randomRequest','registrationState','imageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQN_RAND'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('randomRequest','registrationState','imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('vehicleIdentificationNumber')
+                any      = @('randomRequest','registrationState','imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'RandomRequest';  value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQN'
             state                 = 'In/Out'
@@ -143,19 +150,37 @@ $vehStolenQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('ncicNumber')
+                any      = @('imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QVN'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('imageIndicator','registrationState','vehicleIdentificationNumber','vehicleMakeCode') }
+            requirements          = [PSCustomObject]@{
+                set      = @('licensePlateNumber')
+                any      = @('imageIndicator','registrationState','vehicleIdentificationNumber','vehicleMakeCode')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator','vehicleMakeCode') }
+            requirements          = [PSCustomObject]@{
+                set      = @('vehicleIdentificationNumber')
+                any      = @('imageIndicator','vehicleMakeCode')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVV'
             state                 = 'In/Out'
@@ -196,13 +221,25 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('imageIndicator','sexCode','registrationState') }
+            requirements          = [PSCustomObject]@{
+                set      = @('birthDate','nameLast','nameFirst')
+                any      = @('imageIndicator','sexCode','registrationState')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
+                )
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('operatorLicenseNumber','registrationState')
+                any      = @('imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
+                )
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQN'
             state                 = 'In/Out'
@@ -233,7 +270,13 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('gunSerialNumber'); any = @('gunCaliber','gunMake','gunModel','imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('gunSerialNumber')
+                any      = @('gunCaliber','gunMake','gunModel','imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QG'
             state                 = 'In/Out'
@@ -261,7 +304,13 @@ $artQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('articleSerialNumber','articleTypeCode'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('articleSerialNumber','articleTypeCode')
+                any      = @('imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA'
             state                 = 'In/Out'
@@ -289,13 +338,25 @@ $boatQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('registrationNumber')
+                any      = @('imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QB'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('boatHullIdNumber')
+                any      = @('imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                )
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QBN'
             state                 = 'In/Out'

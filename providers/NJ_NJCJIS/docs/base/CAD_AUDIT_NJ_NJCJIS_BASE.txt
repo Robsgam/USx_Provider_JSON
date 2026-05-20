@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS_BASE
   Source: NJ_NJCJIS_BASE.json
-  Generated: 2026-05-18 12:56
+  Generated: 2026-05-19 09:49
 ================================================================
 CAD AUDIT
 =========
@@ -134,6 +134,21 @@ CAD AUDIT
     [PASS] QIDM 'NJ_NJCJIS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NJ_NJCJIS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NJ_NJCJIS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVN -- defaults cover all initialValue any[] fields
+    [INFO] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVP -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVV -- defaults cover all initialValue any[] fields
+    [INFO] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQ_RAND -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [INFO] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQ -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [INFO] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQN_RAND -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [INFO] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQN -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [INFO] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo DQ -- State (form default='NJ', codeTypeProvider -- needs live test)
+    [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo DQN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'NJ_NJCJIS_GunQuery' combo QG -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'NJ_NJCJIS_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo QB -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'NJ_NJCJIS_BoatQuery' combo QBN -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -141,6 +156,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 50 PASS / 0 FAIL / 0 WARN / 61 INFO
+Total: 57 PASS / 0 FAIL / 0 WARN / 67 INFO
 
 

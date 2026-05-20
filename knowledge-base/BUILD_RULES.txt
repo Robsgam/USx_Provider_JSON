@@ -44,6 +44,13 @@ See also:
     [ ] Update any build scripts referencing the old name
     [ ] Grep full repo for the old name to catch stragglers
 
+  ONE JSON IN ROOT RULE:
+    Exactly one JSON file in the provider root folder at all times.
+    - MC active:   <PROVIDER>_MC.json in root, BASE in phases/base/
+    - MC archived:  <PROVIDER>_BASE.json in root
+    NEVER both BASE and MC in root simultaneously. enforce.ps1 checks this.
+    Build scripts must output to the correct location.
+
   SOURCE FOLDER SETUP (before any build):
     [ ] Copy metadata XML to source/<PROVIDER>.xml
     [ ] Copy devdoc PDF to source/<PROVIDER>.pdf
@@ -786,3 +793,61 @@ See also:
     OH_LEADS v1.3: Vehicle(6 cards), Person(2 cards)
     TX_TLETS v2.5: Vehicle(3 cards), Person(2 cards)
     HI_HCJDC_OFML v1.6: Vehicle(3 cards), Person(2 cards)
+
+================================================================================
+12. CAD DEFAULTS -- COMBINATION-LEVEL DEFAULT VALUES
+================================================================================
+
+  CAD dispatch does NOT apply QIF form initialValues. When CAD sends a query,
+  only the fields CAD explicitly populates are present. Fields with form
+  initialValues (ImageIndicator=N, RandomRequest=N, PlateType=PC, etc.) are
+  absent from CAD-dispatched XML unless the QIDM combo has a defaults[] entry.
+
+  RULE: Every field that meets ALL of these conditions needs a combo default:
+    1. The field is in any[] (optional, not in set[])
+    2. The corresponding form field has an initialValue
+    3. The provider expects a value (field appears in XML spec)
+
+  SYNTAX (inside requirements alongside set/any):
+    defaults = @(
+        [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+        [PSCustomObject]@{ field = 'RandomRequest';  value = 'N' }
+    )
+
+  In JSON output:
+    "requirements": {
+      "set": ["licensePlateNumber"],
+      "any": ["randomRequest", "imageIndicator"],
+      "defaults": [
+        { "field": "RandomRequest", "value": "N" },
+        { "field": "ImageIndicator", "value": "N" }
+      ]
+    }
+
+  FIELD NAME: defaults[].field uses the QIDM attribute name (PascalCase
+  targetField), NOT the sourceField (camelCase). This matches the server's
+  attribute-level injection point.
+
+  VALUE: The literal string value the server injects. Must match what the
+  provider expects (e.g., 'N' for ImageIndicator, 'PC' for PlateType).
+
+  NOT ALL PROVIDERS HAVE THE SAME FIELDS:
+    - ImageIndicator: NJ, HI, AZ, FL, TX, LA, CA_VENTURA, CA_eSUN, OH, TN,
+      NM, OR, IL, MD (but NOT CA_CLETS, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO)
+    - RandomRequest: NJ only
+    - LicensePlateTypeCode: most providers with plate search
+    - LicensePlateYear: most providers with plate search
+    - PurposeCode: CA providers
+    Check each provider's metadata — do NOT assume any field is universal.
+
+  AUDIT: audit_cad.ps1 CHECK 6 validates defaults coverage automatically.
+  Run after every build. Any[] fields with form initialValues that lack
+  combo defaults[] are flagged as FAIL.
+
+  COEXISTENCE WITH FORM INITIALVALUE:
+    Form initialValue and combo defaults[] serve different channels:
+    - initialValue: UI-side, shown in form when officer uses the browser
+    - defaults[]: server-side, injected when field is absent from input
+    Both should be set. initialValue handles the officer workflow, defaults[]
+    handles CAD dispatch. They do not conflict — explicit user values override
+    both mechanisms.

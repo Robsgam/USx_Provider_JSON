@@ -65,7 +65,7 @@ $script:issueProviders = [System.Collections.Generic.List[string]]::new()
 
 # ── Skip list ────────────────────────────────────────────────────────────────
 
-$skipProviders = @('CA_CONTRA_COSTA', 'CA_CONTRA_COSTA_BLOCKED')
+$skipProviders = @('CA_CONTRA_COSTA')
 
 # ── Resolve provider list ────────────────────────────────────────────────────
 

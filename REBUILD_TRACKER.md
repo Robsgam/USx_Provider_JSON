@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
-| 5 | FL_FCIC | v4.2 | 97P/0F/0W | 97P/0F/0W | 0 | QW removed (CommSys auto-sends), 7 QIDMs/33 combos, Attention visible, MC 2-card |
+| 5 | FL_FCIC | v4.2 | 97P/0F/0W/0LIM | 97P/0F/0W/0LIM | 0 | QW removed (CommSys auto-sends), 7 QIDMs/33 combos, Attention visible, MC 2-card |
 | 6 | TX_TLETS | v2.7 | 84P/0F/0W | 84P/0F/0W | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.1 | 70P/0F/0W | -- (archived) | 0 | Full 20-combo single-card BASE, MC archived |
@@ -130,7 +130,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v3.2 | 69P/0F/0W | CAD audit CLEAN |
 | CA_CLETS | v2.1 | 70P/0F/0W | Full 20-combo BASE, MC archived, CAD defaults clean |
-| FL_FCIC | v4.2 | 97P/0F/0W | CAD audit CLEAN, 33 combos, QW removed (CommSys auto-sends) |
+| FL_FCIC | v4.2 | 97P/0F/0W/0LIM | CAD audit CLEAN, 33 combos, QW removed (CommSys auto-sends) |
 
 ### Flagged for Full Rebuild on Next Test (15)
 

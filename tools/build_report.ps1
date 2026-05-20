@@ -6,20 +6,14 @@
     *_BASE*.json (or other) -> docs/base/
   Override with -DocsDir.
 
-  With -Release: also copies the JSON + all reports to release/ as a
-  finalized snapshot. Use this when a BASE or MC_BASE JSON is confirmed.
-
   Usage: .\build_report.ps1 -Path <provider.json>
-         .\build_report.ps1 -Path <provider.json> -Release
          .\build_report.ps1 -Path <provider.json> -DocsDir <output-dir>
 #>
 
 param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
-    [string]$DocsDir,
-    [switch]$Release,
-    [switch]$Force
+    [string]$DocsDir
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,15 +38,12 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = if ($Release) { 11 } else { 10 }
+$stepCount = 10
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host "  Build Report -- $jsonName" -ForegroundColor Cyan
 Write-Host "  Generated: $timestamp" -ForegroundColor Cyan
-if ($Release) {
-    Write-Host "  Mode: RELEASE (will bundle to release/)" -ForegroundColor Magenta
-}
 Write-Host "================================================================" -ForegroundColor Cyan
 
 $header = @"
@@ -124,7 +115,6 @@ Write-Host ""
 Write-Host "  [1/$stepCount] Running validator..." -ForegroundColor Yellow
 $validatorPath = Join-Path $toolDir "validate.ps1"
 $validatorArgs = @('-ExecutionPolicy','Bypass','-File',$validatorPath,'-Path',$resolved)
-if ($Force) { $validatorArgs += '-Force' }
 $validatorOut = & powershell @validatorArgs 2>&1 | Out-String
 $validatorFile = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
 ($header + "VALIDATOR RESULTS`n================`n`n" + $validatorOut) | Out-File -FilePath $validatorFile -Encoding utf8
@@ -258,45 +248,6 @@ if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
     Write-Host "  [10/$stepCount] SKIPPED (run_test_matrix.ps1 or matrix not found)" -ForegroundColor Gray
 }
 
-# --- 11. Release Bundle (optional) ---
-if ($Release) {
-    Write-Host ""
-    Write-Host "  [11/$stepCount] Building release bundle..." -ForegroundColor Yellow
-
-    $releaseDir = Join-Path $jsonDir "release"
-    if (-not (Test-Path $releaseDir)) {
-        New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
-    }
-
-    Copy-Item $resolved (Join-Path $releaseDir $jsonFile) -Force
-    Copy-Item $validatorFile (Join-Path $releaseDir "VALIDATOR_REPORT_$jsonName.txt") -Force
-    Copy-Item $layoutFile (Join-Path $releaseDir "LAYOUT_REPORT_$jsonName.txt") -Force
-    Copy-Item $queryFile (Join-Path $releaseDir "QUERY_REPORT_$jsonName.txt") -Force
-    Copy-Item $picklistFile (Join-Path $releaseDir "PICKLIST_REPORT_$jsonName.txt") -Force
-    Copy-Item $htmlFile (Join-Path $releaseDir "LAYOUT_$jsonName.html") -Force
-    Copy-Item $verifyFile (Join-Path $releaseDir "VERIFY_REPORT_$jsonName.txt") -Force
-    if (Test-Path $metadataFile) {
-        Copy-Item $metadataFile (Join-Path $releaseDir "METADATA_AUDIT_$jsonName.txt") -Force
-    }
-    if (Test-Path $cadFile) {
-        Copy-Item $cadFile (Join-Path $releaseDir "CAD_AUDIT_$jsonName.txt") -Force
-    }
-    if (Test-Path $lintFile) {
-        Copy-Item $lintFile (Join-Path $releaseDir "LINT_REPORT_$jsonName.txt") -Force
-    }
-
-    if (Test-Path $matrixFile) {
-        Copy-Item $matrixFile (Join-Path $releaseDir $matrixFileName) -Force
-    }
-
-    if (Test-Path $conductorFile) {
-        Copy-Item $conductorFile (Join-Path $releaseDir "TEST_VALIDATION_$jsonName.txt") -Force
-    }
-
-    $releaseCount = (Get-ChildItem $releaseDir -File).Count
-    Write-Host "  [11/$stepCount] Release bundle: $releaseDir ($releaseCount files)" -ForegroundColor Green
-}
-
 # --- Summary ---
 $fires = ([regex]::Matches($queryOut, '\[FIRES\]')).Count
 $skips = ([regex]::Matches($queryOut, '\[SKIP\]')).Count
@@ -312,8 +263,5 @@ Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor 
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
 Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray
-if ($Release) {
-    Write-Host "  Release:   $(Join-Path $jsonDir 'release')" -ForegroundColor Magenta
-}
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""

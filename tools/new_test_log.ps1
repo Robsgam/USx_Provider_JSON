@@ -26,31 +26,9 @@ param(
 
 if (-not $ProviderDir) {
     $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
-    $knownPaths = @{
-        'NJ_NJCJIS'           = "$repoRoot\providers\NJ_NJCJIS_LOCKED"
-        'NY_NYSPIN_EJUSTICE'  = "$repoRoot\providers\NY_NYSPIN_EJUSTICE"
-        'HI_HCJDC_OFML'       = "$repoRoot\providers\HI_HCJDC_OFML"
-        'AZ_AZDPS'            = "$repoRoot\providers\AZ_AZDPS"
-        'FL_FCIC'             = "$repoRoot\providers\FL_FCIC"
-        'TX_TLETS'            = "$repoRoot\providers\TX_TLETS"
-        'LA_LEMS'       = "$repoRoot\providers\LA_LEMS"
-        'CA_CLETS'            = "$repoRoot\providers\CA_CLETS_LOCKED"
-        'CA_VENTURA_COUNTY'   = "$repoRoot\providers\CA_VENTURA_COUNTY"
-        'CA_CONTRA_COSTA'     = "$repoRoot\providers\CA_CONTRA_COSTA_BLOCKED"
-        'CA_CLETS_OCATS'      = "$repoRoot\providers\CA_CLETS_OCATS"
-        'CA_eSUN'             = "$repoRoot\providers\CA_eSUN"
-        'CA_SAN_LUIS_OBISPO' = "$repoRoot\providers\CA_SAN_LUIS_OBISPO"
-        'IL_LEADS_OFML'       = "$repoRoot\providers\IL_LEADS_OFML"
-        'MD_METERS'           = "$repoRoot\providers\MD_METERS"
-        'OH_LEADS'            = "$repoRoot\providers\OH_LEADS"
-        'NM_NMLETS_OFML'      = "$repoRoot\providers\NM_NMLETS_OFML"
-        'OR_LEDS'             = "$repoRoot\providers\OR_LEDS"
-        'TN_TIES'             = "$repoRoot\providers\TN_TIES"
-    }
-    if ($knownPaths.ContainsKey($Provider)) {
-        $ProviderDir = $knownPaths[$Provider]
-    } else {
-        Write-Error "Unknown provider '$Provider'. Pass -ProviderDir explicitly."
+    $ProviderDir = "$repoRoot\providers\$Provider"
+    if (-not (Test-Path $ProviderDir)) {
+        Write-Error "Provider directory not found: $ProviderDir. Pass -ProviderDir explicitly."
         exit 1
     }
 }

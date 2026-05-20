@@ -197,7 +197,7 @@ if ($Path) {
     $providersDir = Join-Path $repoRoot "providers"
     foreach ($dir in (Get-ChildItem $providersDir -Directory)) {
         $provName = $dir.Name
-        if ($provName -match '_(BLOCKED)$' -or $provName -eq 'CA_CONTRA_COSTA') { continue }
+        if ($provName -eq 'CA_CONTRA_COSTA') { continue }
 
         # Prefer MC.json (more combos), fall back to BASE.json
         $mcJson = Get-ChildItem $dir.FullName -Filter "*_MC.json" -File | Select-Object -First 1

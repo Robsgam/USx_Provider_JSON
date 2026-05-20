@@ -258,6 +258,10 @@ SECTION 2b -- DEFAULTS (Default Field Values)
     defaults injects "PC" server-side if the user somehow clears it.
   - For our builds: PlateType=PC uses QIF initialValue (visible to user).
     QIDM defaults are used by some CA metadata combos for PurposeCode routing.
+  - CRITICAL FOR CAD: CAD dispatch does NOT apply QIF initialValues. Any
+    field in any[] with a form initialValue MUST also have a combo default.
+    Without it, CAD-dispatched queries omit the field entirely from XML.
+    See BUILD_RULES.txt Section 12 for the complete rule and field list.
 
 ================================================================================
 SECTION 3 -- COMBINATION ROUTING

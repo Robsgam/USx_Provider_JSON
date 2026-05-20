@@ -74,8 +74,7 @@ $results = @()
 
 foreach ($dir in $providerDirs) {
     $folderName = $dir.Name
-    $isLocked = $folderName -match '_(LOCKED|BLOCKED)$'
-    $providerName = if ($isLocked) { $folderName -replace '_(LOCKED|BLOCKED)$', '' } else { $folderName }
+    $providerName = $folderName
 
     # Find BASE JSON
     $baseJson = Get-ChildItem $dir.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue |
@@ -137,7 +136,6 @@ foreach ($dir in $providerDirs) {
     $results += [PSCustomObject]@{
         Provider   = $providerName
         Folder     = $folderName
-        IsLocked   = $isLocked
         HasBase    = [bool]$baseJson
         HasMC      = [bool]$mcJson
         BaseScore  = $baseScore
@@ -205,11 +203,6 @@ foreach ($r in $results) {
 
     if (-not $r.HasBase -and -not $r.HasMC) {
         $rebuildStr = "N/A"
-    } elseif ($r.IsLocked -and $combinedWarns -eq 0 -and $combinedFails -eq 0) {
-        $rebuildStr = "NO (LOCKED)"
-    } elseif ($r.IsLocked -and ($combinedWarns -gt 0 -or $combinedFails -gt 0)) {
-        $rebuildStr = "YES (LOCKED)"
-        $totalNeedRebuild++
     } elseif ($combinedWarns -gt 0 -or $combinedFails -gt 0) {
         $rebuildStr = "YES"
         $totalNeedRebuild++

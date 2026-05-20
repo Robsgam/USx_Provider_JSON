@@ -379,6 +379,39 @@ LIMITATION #31: initialValue fields not counted for set[] combo evaluation
     autoSelect-involved QIDMs, not regular FormInput/FormSelect defaults.
     Further testing needed to confirm the precise scope boundary.
 
+--------------------------------------------------------------------------------
+
+LIMITATION #32: autoSelect=true triggers on initialValue in any[] fields
+  CONFIRMED: FL_FCIC v4.2 (2026-05-19)
+  Behavior: autoSelect=true lights the QIDM checkbox when ANY attribute's
+    sourceField has a value, including initialValue defaults -- even if that
+    field is in any[], not set[]. This means a DH QIDM with registrationStateDH
+    initialValue='FL' auto-lights the DH checkbox on page load, causing DH to
+    co-fire with DL queries and producing CommSys errors.
+  Impact: DH-suffix fields with initialValue cannot coexist with autoSelect=true
+    on the same QIDM. Either drop the initialValue or remove the field from
+    the QIDM entirely.
+  Workaround: Remove initialValue from DH State field. Use label text to guide
+    officers (e.g., "State (required for Driver History)"). registrationStateDH
+    stays in any[] so State is sent when officer selects it.
+  Related: LIMITATION #30 (State initialValue changes routing),
+    LIMITATION #31 (initialValue not counted for set[])
+
+--------------------------------------------------------------------------------
+
+LIMITATION #33: RMS Person cannot receive DH State due to field isolation
+  CONFIRMED: FL_FCIC v4.3 (2026-05-19)
+  Behavior: RMS Person QIDM reads registrationState (DL card). DH card uses
+    registrationStateDH (DH-suffix for isolation). RMS cannot reference both
+    fields to the same targetField (duplicate targetField = error). When DL
+    State is blank (in-state FDQ), RMS Person search has no state filter.
+  Impact: In-state Person queries do not include state in the RMS elastic search.
+    OOS queries (DQ with registrationState populated) do include state in RMS.
+  Workaround: Pending Cringer platform fix -- defaults[] with proper attribute
+    UUID handling would allow injecting home state into RMS without a form field.
+    Cannot rename fields (CAD auto-populate depends on registrationState).
+  Related: LIMITATION #5 (RMS fatals on plain text state)
+
 ================================================================================
 SECTION 6 -- CODE TYPE AND DROPDOWN CONSTRAINTS
 ================================================================================
