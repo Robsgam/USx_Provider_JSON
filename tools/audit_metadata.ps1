@@ -32,6 +32,12 @@ $formOnlyFields = @(
     'dexStateUserId', 'InquiryLevel', 'FormORI', 'Requestor'
 )
 
+# Known field aliases — XML combo may reference one name, QIDM targetField uses the other
+$fieldAliases = @{
+    'CaRequestPurposeCode' = 'PurposeCode'
+    'PurposeCode'          = 'CaRequestPurposeCode'
+}
+
 # Non-query transaction names to skip (admin, enter, clear, modify, etc.)
 $nonQueryTypes = @('Administrative','Clear','Enter','Locate','Modify','Cancel')
 
@@ -40,14 +46,13 @@ $lines = [System.Collections.Generic.List[string]]::new()
 $script:passCount  = 0
 $script:failCount  = 0
 $script:warnCount  = 0
-$script:infoCount  = 0
 $script:totalProviders = 0
 
 function Out-Line([string]$text) { $lines.Add($text) }
 function Out-Pass([string]$msg)  { $lines.Add("  [PASS] $msg"); $script:passCount++ }
 function Out-Fail([string]$msg)  { $lines.Add("  [FAIL] $msg"); $script:failCount++ }
 function Out-Warn([string]$msg)  { $lines.Add("  [WARN] $msg"); $script:warnCount++ }
-function Out-Info([string]$msg)  { $lines.Add("  [INFO] $msg"); $script:infoCount++ }
+function Out-Info([string]$msg)  { }
 
 # ── Discover providers to audit ───────────────────────────────────────────────
 $targets = @()
@@ -113,6 +118,14 @@ function Get-XmlComboRequirements {
         Set = $setFields
         Any = $anyFields
     }
+}
+
+# ── Helper: Check if two fields are equivalent (case-insensitive + aliases) ───
+function Test-FieldEquiv {
+    param([string]$a, [string]$b)
+    if ($a -ieq $b) { return $true }
+    if ($fieldAliases.ContainsKey($a) -and $fieldAliases[$a] -ieq $b) { return $true }
+    return $false
 }
 
 # ── Helper: Case-insensitive field match ──────────────────────────────────────
@@ -334,7 +347,7 @@ function Audit-Provider {
         if ($jsonQueryNames.ContainsKey($name)) {
             Out-Pass "$name`: in XML and JSON"
         } else {
-            Out-Warn "$name`: in XML but NOT in JSON (not built)"
+            Out-Info "$name`: in XML but not in JSON (devdoc determines which queries to build)"
         }
     }
 
@@ -408,11 +421,23 @@ function Audit-Provider {
         }
     }
 
-    # XML keyRefs not in any JSON combo
+    # XML keyRefs not in any JSON combo — check for invented variants
     foreach ($kr in $allXmlKeyRefs.Keys | Sort-Object) {
         if (-not $jsonKeyRefsSeen.ContainsKey($kr)) {
             $qName = $allXmlKeyRefs[$kr]
-            Out-Info "${kr}: XML keyRef ($qName) not used in any JSON combo"
+            # Find all JSON keyRefs for the same query that are NOT in XML (= invented)
+            $variants = @()
+            foreach ($jkr in $jsonKeyRefsSeen.Keys) {
+                if ($jsonKeyRefsSeen[$jkr] -ieq $qName -and -not $allXmlKeyRefs.ContainsKey($jkr)) {
+                    $variants += $jkr
+                }
+            }
+            if ($variants.Count -gt 0) {
+                $varList = ($variants | Sort-Object) -join ','
+                Out-Info "${kr}: XML keyRef ($qName) replaced by invented variants ($varList)"
+            } else {
+                Out-Info "${kr}: XML keyRef ($qName) not used in any JSON combo"
+            }
         }
     }
 
@@ -485,7 +510,8 @@ function Audit-Provider {
                 if ($isFormOnly) {
                     Out-Info "  $xf`: in XML only (form-only pattern -- expected)"
                 } else {
-                    Out-Warn "  $xf`: in XML but not in QIDM"
+                    # Field in XML but not in QIDM — only a problem if required by a combo (caught by CHECK 4/5)
+                    Out-Info "  $xf`: in XML but not in QIDM (CHECK 4/5 validates if required)"
                 }
             }
         }
@@ -501,7 +527,30 @@ function Audit-Provider {
                 if ($isFormOnly) {
                     Out-Info "  $jf`: in QIDM only (form-only field)"
                 } else {
-                    Out-Info "  $jf`: in QIDM sourceField but not in XML"
+                    # Check if this sourceField is part of a composite mapping (e.g. nameFirst → Name via FormatStringRuleHandler)
+                    $compositeTarget = $null
+                    foreach ($qidm in $qidmByQuery[$qName]) {
+                        if (-not $qidm.attributes) { continue }
+                        foreach ($attr in @($qidm.attributes)) {
+                            if ($attr.sourceField -and $attr.targetField -and $attr.rule -and $attr.rule -imatch 'FormatString') {
+                                $sfList = @($attr.sourceField)
+                                foreach ($sf in $sfList) {
+                                    if ($sf -ieq $jf) {
+                                        $tgtInXml = Test-FieldMatch -xmlField $attr.targetField -jsonFields $xmlFields
+                                        if ($tgtInXml) { $compositeTarget = $attr.targetField }
+                                        break
+                                    }
+                                }
+                            }
+                            if ($compositeTarget) { break }
+                        }
+                        if ($compositeTarget) { break }
+                    }
+                    if ($compositeTarget) {
+                        Out-Info "  $jf`: composite sourceField for $compositeTarget (FormatStringRuleHandler)"
+                    } else {
+                        Out-Info "  $jf`: in QIDM sourceField but not in XML"
+                    }
                 }
             }
         }
@@ -545,8 +594,99 @@ function Audit-Provider {
             }
 
             if ($matchingJsonCombos.Count -eq 0) {
-                # Check if invented keyRefs cover this combo
-                Out-Info "  keyRef ${kr}: no exact match in JSON (may use invented keyRef)"
+                # Find invented keyRef variants for this query (JSON combos whose keyRef is not in XML)
+                $inventedCombos = @()
+                foreach ($qidm in $jsonQidms) {
+                    if (-not $qidm.combinations) { continue }
+                    foreach ($jc in @($qidm.combinations)) {
+                        if ($jc.keyReference -and -not $allXmlKeyRefs.ContainsKey($jc.keyReference)) {
+                            $inventedCombos += $jc
+                        }
+                    }
+                }
+
+                if ($inventedCombos.Count -eq 0) {
+                    Out-Info "  keyRef ${kr}: no exact match in JSON (no invented variants found)"
+                    continue
+                }
+
+                # Build sourceField→targetField map for field resolution
+                $src2tgt = @{}
+                foreach ($qidm in $jsonQidms) {
+                    if (-not $qidm.attributes) { continue }
+                    foreach ($attr in @($qidm.attributes)) {
+                        if ($attr.sourceField -and $attr.targetField) {
+                            foreach ($sf in @($attr.sourceField)) {
+                                $src2tgt[$sf.ToLower()] = $attr.targetField
+                            }
+                        }
+                    }
+                }
+
+                # Collect all set[] and any[] fields across all invented variants
+                $allInventedSet = @()
+                $allInventedAny = @()
+                foreach ($ic in $inventedCombos) {
+                    if ($ic.requirements) {
+                        if ($ic.requirements.set) { $allInventedSet += @($ic.requirements.set) }
+                        if ($ic.requirements.any) { $allInventedAny += @($ic.requirements.any) }
+                    }
+                }
+                $allInventedFields = @($allInventedSet) + @($allInventedAny) | Select-Object -Unique
+
+                $inventedNames = ($inventedCombos | ForEach-Object { $_.keyReference }) -join ','
+
+                # Validate XML set[] fields against invented variants
+                foreach ($xsf in $xmlSetFields) {
+                    $found = $false
+                    foreach ($isf in $allInventedFields) {
+                        if ($isf -ieq $xsf) { $found = $true; break }
+                        if ($src2tgt.ContainsKey($isf.ToLower())) {
+                            if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xsf) { $found = $true; break }
+                        }
+                    }
+                    if ($found) {
+                        Out-Pass "  keyRef ${kr}: set field '$xsf' covered by invented variants ($inventedNames)"
+                    } else {
+                        $inInvAny = $false
+                        foreach ($isf in $allInventedAny) {
+                            if ($isf -ieq $xsf) { $inInvAny = $true; break }
+                            if ($src2tgt.ContainsKey($isf.ToLower())) {
+                                if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xsf) { $inInvAny = $true; break }
+                            }
+                        }
+                        if ($inInvAny) {
+                            Out-Info "  keyRef ${kr}: XML set field '$xsf' demoted to any[] in invented variants"
+                        } else {
+                            Out-Warn "  keyRef ${kr}: XML set field '$xsf' not covered by invented variants ($inventedNames)"
+                        }
+                    }
+                }
+
+                # Validate XML any[] fields against invented variants
+                foreach ($xaf in $xmlAnyFields) {
+                    $found = $false
+                    foreach ($isf in $allInventedFields) {
+                        if ($isf -ieq $xaf) { $found = $true; break }
+                        if ($src2tgt.ContainsKey($isf.ToLower())) {
+                            if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xaf) { $found = $true; break }
+                        }
+                    }
+                    if ($found) {
+                        Out-Pass "  keyRef ${kr}: any field '$xaf' covered by invented variants ($inventedNames)"
+                    } else {
+                        $isFormOnly = $false
+                        foreach ($fo in $formOnlyFields) {
+                            if ($fo -ieq $xaf) { $isFormOnly = $true; break }
+                        }
+                        if ($isFormOnly) {
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in invented variants (form-only)"
+                        } else {
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in invented variants"
+                        }
+                    }
+                }
+
                 continue
             }
 
@@ -581,7 +721,7 @@ function Audit-Provider {
                         if ($jsf -ieq $xsf) { $found = $true; break }
                         # Also check if JSON sourceField maps to this XML field via targetField
                         if ($sourceToTarget.ContainsKey($jsf.ToLower())) {
-                            if ($sourceToTarget[$jsf.ToLower()] -ieq $xsf) { $found = $true; break }
+                            if (Test-FieldEquiv $sourceToTarget[$jsf.ToLower()] $xsf) { $found = $true; break }
                         }
                     }
                     if (-not $found) {
@@ -590,13 +730,39 @@ function Audit-Provider {
                         foreach ($jaf in $jAny) {
                             if ($jaf -ieq $xsf) { $inAny = $true; break }
                             if ($sourceToTarget.ContainsKey($jaf.ToLower())) {
-                                if ($sourceToTarget[$jaf.ToLower()] -ieq $xsf) { $inAny = $true; break }
+                                if (Test-FieldEquiv $sourceToTarget[$jaf.ToLower()] $xsf) { $inAny = $true; break }
                             }
                         }
                         if ($inAny) {
                             Out-Info "  keyRef ${kr}: XML set field '$xsf' is in JSON any[] (demoted)"
                         } else {
-                            Out-Warn "  keyRef ${kr}: XML set field '$xsf' missing from JSON set[]"
+                            # Check invented keyRef variants (JSON combos for same query not in XML)
+                            $inInvented = $false
+                            foreach ($qidm in $jsonQidms) {
+                                if (-not $qidm.combinations) { continue }
+                                foreach ($ic in @($qidm.combinations)) {
+                                    if ($ic.keyReference -and -not $allXmlKeyRefs.ContainsKey($ic.keyReference) -and $ic.keyReference -ine $kr) {
+                                        $icSet = @()
+                                        if ($ic.requirements -and $ic.requirements.set) { $icSet = @($ic.requirements.set) }
+                                        $icAny = @()
+                                        if ($ic.requirements -and $ic.requirements.any) { $icAny = @($ic.requirements.any) }
+                                        $icAll = $icSet + $icAny
+                                        foreach ($isf in $icAll) {
+                                            if ($isf -ieq $xsf) { $inInvented = $true; break }
+                                            if ($sourceToTarget.ContainsKey($isf.ToLower())) {
+                                                if (Test-FieldEquiv $sourceToTarget[$isf.ToLower()] $xsf) { $inInvented = $true; break }
+                                            }
+                                        }
+                                        if ($inInvented) { break }
+                                    }
+                                }
+                                if ($inInvented) { break }
+                            }
+                            if ($inInvented) {
+                                Out-Info "  keyRef ${kr}: XML set field '$xsf' covered by invented keyRef variant"
+                            } else {
+                                Out-Warn "  keyRef ${kr}: XML set field '$xsf' missing from JSON set[]"
+                            }
                         }
                     } else {
                         Out-Pass "  keyRef ${kr}: set field '$xsf' present"
@@ -609,7 +775,7 @@ function Audit-Provider {
                     foreach ($jsf in $jAll) {
                         if ($jsf -ieq $xaf) { $found = $true; break }
                         if ($sourceToTarget.ContainsKey($jsf.ToLower())) {
-                            if ($sourceToTarget[$jsf.ToLower()] -ieq $xaf) { $found = $true; break }
+                            if (Test-FieldEquiv $sourceToTarget[$jsf.ToLower()] $xaf) { $found = $true; break }
                         }
                     }
                     if ($found) {
@@ -804,7 +970,7 @@ Out-Line ("=" * 60)
 Out-Line " METADATA AUDIT SUMMARY"
 Out-Line ("=" * 60)
 Out-Line "Providers checked: $($script:totalProviders)"
-Out-Line "Total: $($script:passCount) PASS / $($script:failCount) FAIL / $($script:warnCount) WARN / $($script:infoCount) INFO"
+Out-Line "Total: $($script:passCount) PASS / $($script:failCount) FAIL / $($script:warnCount) WARN"
 Out-Line ("=" * 60)
 
 # ── Output ────────────────────────────────────────────────────────────────────

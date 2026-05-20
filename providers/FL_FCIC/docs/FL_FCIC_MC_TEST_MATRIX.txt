@@ -1,27 +1,25 @@
-FL_FCIC MC v4.4 -- TEST MATRIX
+FL_FCIC MC v4.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-19
+Generated: 2026-05-20
 Variant: MC (multi-card per entity)
 Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
 Vehicle (2 cards, 14 fields):
-  CARD_VEH_OPT (Options):
+  CARD_VEH_OPT (Search Options):
     registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_VEH_SEARCH (Vehicle Search):
     ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 2: vehicleIdentificationNumber [Inp 20], vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
-    ROW 4: ncicNumber [Inp 10], processControlNumber [Inp 10]
-    ROW 5: ownerAppliedNumber [Inp 20], partSerialNumber [Inp 20]
+    ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8], ncicNumber [Inp 10], processControlNumber [Inp 10]
+    ROW 4: ownerAppliedNumber [Inp 20], partSerialNumber [Inp 20]
 
 Person (2 cards, 17 fields):
   CARD_DH (Driver History):
     ROW 1: operatorLicenseNumberDH [Inp 20], registrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
-    ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30]
-    ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
-    ROW 4: attentionDH [Inp 30]
+    ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], birthDateDH [FormDate], sexCodeDH [Sel SEX]
+    ROW 3: attentionDH [Inp 30]
   CARD_DL (Driver License):
     ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30]
@@ -34,18 +32,16 @@ Firearm (1 card, 5 fields):
 
 Article (1 card, 6 fields):
   CARD_ART (ARTICLE QUERY):
-    ROW 1: articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: ownerAppliedNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 3: ncicNumber [Inp 10], processControlNumber [Inp 10]
+    ROW 1: articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ownerAppliedNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: ncicNumber [Inp 10], processControlNumber [Inp 10]
 
 Boat (2 cards, 13 fields):
-  CARD_BOA_OPT (Options):
+  CARD_BOA_OPT (Search Options):
     registrationState [Sel STATE], relatedHitSearchIndicator [Inp 1], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_BOA_SEARCH (Boat Search):
-    ROW 1: boatHullIdNumber [Inp 62], registrationNumber [Inp 8]
-    ROW 2: decalNumber [Inp 20], titleLienInformation [Inp 10], coastGuardDocumentNumber [Inp 8]
-    ROW 3: ncicNumber [Inp 10], processControlNumber [Inp 10]
-    ROW 4: nameLast [Inp 30], nameFirst [Inp 30], birthDate [FormDate]
+    ROW 1: boatHullIdNumber [Inp 62], registrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
+    ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], ncicNumber [Inp 10], processControlNumber [Inp 10]
+    ROW 3: nameLast [Inp 30], nameFirst [Inp 30], birthDate [FormDate]
 
 QIDM SUMMARY (7 QIDMs, 37 combos)
 ----------------------------------------
@@ -66,27 +62,24 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     Render form. Verify 2 cards:                        [    ]
-              CARD_VEH_OPT: titled "Options".
+              CARD_VEH_OPT: titled "Search Options".
               State (leave blank for FL) dropdown (no default), Image dropdown=N.
               CARD_VEH_SEARCH: titled "Vehicle Search".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
               VIN, Vehicle Make dropdown (no default), Vehicle Year.
-              Decal Number, Title/Lien Info.
-              NCIC Number, PCN.
+              Decal Number, Title/Lien Info, NCIC Number, PCN.
               Owner Applied Number, Part Serial Number.
  2  Boat        Render form. Verify 2 cards:                        [    ]
-              CARD_BOA_OPT: titled "Options".
+              CARD_BOA_OPT: titled "Search Options".
               State (leave blank for FL, required for name/DOB) dropdown (no default), Stolen Search (Y), Image dropdown=N.
               CARD_BOA_SEARCH: titled "Boat Search".
-              Hull ID Number, Registration Number.
-              Decal Number, Title/Lien Info, Coast Guard Doc #.
-              NCIC Number, PCN.
+              Hull ID Number, Registration Number, Coast Guard Doc #.
+              Decal Number, Title/Lien Info, NCIC Number, PCN.
               Last Name, First Name, DOB.
  3  Person      Render form. Verify 2 cards:                        [    ]
               CARD_DH: titled "Driver History".
               OLN (DH), State (leave blank for FL) dropdown (no default), Purpose Code.
-              Last Name (DH), First Name (DH).
-              DOB (DH), Sex (DH) dropdown (no default).
+              Last Name (DH), First Name (DH), DOB (DH), Sex (DH) dropdown (no default).
               Attention (DH).
               CARD_DL: titled "Driver License".
               OLN, State (leave blank for FL) dropdown (no default), Image dropdown=Y.
@@ -98,8 +91,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               NCIC Number, PCN, Image dropdown=N.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default).
-              Owner Applied Number, Image dropdown=N.
+              Serial Number, Article Type dropdown (no default), Owner Applied Number, Image dropdown=N.
               NCIC Number, PCN.
 
 PHASE 2: VEHICLE COMBOS (10 tests, 12 combos -- VehReg co-fires with VehStolen)

@@ -3,18 +3,18 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis_mc.ps1
 #
-# MC LAYOUT (5 QIFs, multi-card where applicable):
-#   Vehicle: 3 cards (OPTIONS, PLATE SEARCH, VIN SEARCH)
-#   Person:  3 cards (OPTIONS, LICENSE NUMBER, NAME SEARCH)
-#   Firearm: 1 card (same as BASE)
-#   Article: 1 card (same as BASE)
-#   Boat:    1 card (same as BASE -- only 3 fields, no State in v2)
+# MC LAYOUT (5 QIFs, multi-card + compacted):
+#   Vehicle: 3 cards (OPTIONS: State+Random+Image, PLATE: Plate+Type+Year, VIN: VIN+NCIC+Make)
+#   Person:  3 cards (OPTIONS: State+Image, LICENSE: OLN, NAME: First+Last+DOB+Sex)
+#   Firearm: 1 card (Serial/Make/Caliber/Model/Image)
+#   Article: 1 card (Serial/Type/Image)
+#   Boat:    1 card (Reg/Hull/Image)
 #
 # QIDMs: identical to BASE (6 QIDMs, 12 combos)
 # RMS: from KB specs (no HIDLE dependency)
 
 param(
-    [string]$Version = "3.2",
+    [string]$Version = "3.3",
     [string]$Phase   = “mc”
 )
 
@@ -383,19 +383,20 @@ $njBundle = [PSCustomObject]@{
 
 # =====================================================================
 # BUNDLE 2: ENTITIES -- MC VARIANT (multi-card layouts)
-# Vehicle: 3 cards, Person: 3 cards, Firearm/Article/Boat: 1 card each
+# Vehicle: 3 cards (OPTIONS+PLATE+VIN), Person: 3 cards (OPTIONS+OLN+NAME)
+# Firearm/Article/Boat: 1 card each (compacted rows)
 # =====================================================================
 
 # ------------------------------------------------------------------
 # Vehicle -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
-# OPTIONS: State, RandomRequest, ImageIndicator (shared across all combos)
-# PLATE SEARCH: Plate, PlateType, PlateYear (VehicleReg RQ + VehicleStolen QVP)
-# VIN SEARCH: VIN, NCICNumber, VehicleMakeCode (VehicleReg RQN + VehicleStolen QVN/QVV)
+# OPTIONS: State+Random+Image (shared routing fields for all combos)
+# PLATE SEARCH: Plate+PlateType+PlateYear
+# VIN SEARCH: VIN+NCIC+Make (compacted to 1 row)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_OPT'
-        title = 'OPTIONS'
+        title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_O1' }
@@ -409,9 +410,9 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
             )}
         )
     }
@@ -419,18 +420,16 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH_VIN'
         title = 'VIN SEARCH'
         rows  = @(
-            @{ id = 'ROW_VEH_V1'; cols = @('12'); fields = @(
+            @{ id = 'ROW_VEH_V1'; cols = @('5','4','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_V1' }
-            )}
-            @{ id = 'ROW_VEH_V2'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';     node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_V2' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_V2' }
+                @{ id = 'NCICNumber_Input';     node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_V1' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_V1' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VehicleReg + VehicleStolen.'
+    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VIN card compacted to 1 row.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -440,14 +439,14 @@ $vehicleForm = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Person -- 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
-# OPTIONS: State, ImageIndicator (shared)
-# LICENSE NUMBER: OLN (DQN combo)
-# NAME SEARCH: FirstName, LastName, DOB, Sex (DQ combo)
+# OPTIONS: State+Image (shared routing fields for DQ/DQN)
+# LICENSE NUMBER: OLN
+# NAME SEARCH: First+Last+DOB+Sex (compacted to 1 row)
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_OPT'
-        title = 'OPTIONS'
+        title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_PER_O1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_O1' }
@@ -468,19 +467,17 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_NAME'
         title = 'NAME SEARCH'
         rows  = @(
-            @{ id = 'ROW_PER_N1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_N1' }
                 @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_N1' }
-            )}
-            @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N2' }
-                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N1' }
+                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N1' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH cards.'
+    description  = 'Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH. Name compacted to 1 row.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -518,25 +515,23 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card (same as BASE)
+# Article -- 1 card (compacted)
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
         title = 'NCIC ARTICLE QUERY'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'articleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-            )}
-            @{ id = 'ROW_ART_2'; cols = @('6'); fields = @(
-                @{ id = 'ImageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- QA. Adds ImageIndicator in v2.'
+    description  = 'Article query -- QA. Serial+Type+Image on one row.'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -545,25 +540,23 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card (same as BASE -- only 3 fields, no State in v2)
+# Boat -- 1 card (compacted -- Reg+Hull+Image on one row)
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
         title = 'BOAT SEARCH'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
-                @{ id = 'RegistrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
-            )}
-            @{ id = 'ROW_BOA_2'; cols = @('12'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
+            @{ id = 'ROW_BOA_1'; cols = @('5','5','2'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- QB (Reg) and QBN (Hull). No State in v2.'
+    description  = 'Boat queries -- QB (Reg) and QBN (Hull). Reg+Hull+Image on one row.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'

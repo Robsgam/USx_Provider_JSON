@@ -46,7 +46,7 @@
 #   DH-suffix fieldIds isolate DH from DL field pool.
 
 param(
-    [string]$Version = "2.1",
+    [string]$Version = "2.4",
     [string]$Phase   = "base"
 )
 

@@ -1,7 +1,7 @@
 ================================================================
   Build Report: FL_FCIC_MC
   Source: FL_FCIC_MC.json
-  Generated: 2026-05-19 17:05
+  Generated: 2026-05-20 11:05
 ================================================================
 QUERY SIMULATION
 ================
@@ -141,6 +141,9 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -156,11 +159,31 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
-    [SKIP] QVProcessControlNumber -- missing set: processControlNumber
+
+    [FIRES] QVProcessControlNumber
+      set: [processControlNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
 
     [FIRES] QVNCICNumber
       set: [ncicNumber]
@@ -172,12 +195,49 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
-    [SKIP] QVOwnerAppliedNumber -- missing set: ownerAppliedNumber
-    [SKIP] QVPartSerialNumber -- missing set: partSerialNumber
+
+    [FIRES] QVOwnerAppliedNumber
+      set: [ownerAppliedNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] QVPartSerialNumber
+      set: [partSerialNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <NCICNumber>V123456789</NCICNumber>
+        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+        <PartSerialNumber>PSN12345</PartSerialNumber>
+        <ProcessControlNumber>0000012345</ProcessControlNumber>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
 
 --- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4

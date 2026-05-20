@@ -1,6 +1,14 @@
+================================================================
+  Build Report: NJ_NJCJIS_MC
+  Source: NJ_NJCJIS_MC.json
+  Generated: 2026-05-20 11:05
+================================================================
+METADATA AUDIT
+==============
+
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-20 09:04
+ Generated: 2026-05-20 11:05
 ============================================================
 
 ============================================================
@@ -18,22 +26,9 @@
   [PASS] VehicleStolenQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
-  [INFO] QVN: invented keyRef (not in XML) -- acceptable
-  [INFO] QVP: invented keyRef (not in XML) -- acceptable
-  [INFO] QVV: invented keyRef (not in XML) -- acceptable
-  [INFO] RQ_RAND: invented keyRef (not in XML) -- acceptable
-  [INFO] RQ: invented keyRef (not in XML) -- acceptable
-  [INFO] RQN_RAND: invented keyRef (not in XML) -- acceptable
-  [INFO] RQN: invented keyRef (not in XML) -- acceptable
-  [INFO] DQ: invented keyRef (not in XML) -- acceptable
-  [INFO] DQN: invented keyRef (not in XML) -- acceptable
   [PASS] QG: exists in XML GunQuery
   [PASS] QA: exists in XML ArticleSingleQuery
   [PASS] QB: exists in XML BoatQuery
-  [INFO] QBN: invented keyRef (not in XML) -- acceptable
-  [INFO] FULL: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
-  [INFO] QV: XML keyRef (VehicleStolenQuery) not used in any JSON combo
-  [INFO] RAND: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
 
 --- CHECK 3: Field Coverage ---
   ArticleSingleQuery:
@@ -51,9 +46,6 @@
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   nameFirst: in QIDM sourceField but not in XML
-  [INFO]   nameLast: in QIDM sourceField but not in XML
-  [INFO]   registrationState: in QIDM only (form-only field)
   GunQuery:
   [PASS]   GunCaliber: in XML and QIDM
   [PASS]   GunMake: in XML and QIDM
@@ -68,7 +60,6 @@
   [PASS]   RandomRequest: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
-  [INFO]   registrationState: in QIDM only (form-only field)
   VehicleStolenQuery:
   [PASS]   ImageIndicator: in XML and QIDM
   [PASS]   LicensePlateNumber: in XML and QIDM
@@ -76,7 +67,6 @@
   [PASS]   State: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
   [PASS]   VehicleMakeCode: in XML and QIDM
-  [INFO]   registrationState: in QIDM only (form-only field)
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
@@ -86,11 +76,16 @@
   BoatQuery:
   [PASS]   keyRef QB: set field 'RegistrationNumber' present
   [PASS]   keyRef QB: any field 'ImageIndicator' present
-  [WARN]   keyRef QB: XML set field 'BoatHullIdNumber' missing from JSON set[]
   [PASS]   keyRef QB: any field 'ImageIndicator' present
   DriverLicenseQuery:
-  [INFO]   keyRef FULL: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef FULL: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef FULL: set field 'BirthDate' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: set field 'Name' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'SexCode' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'State' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: set field 'OperatorLicenseNumber' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'State' covered by invented variants (DQ,DQN)
   GunQuery:
   [PASS]   keyRef QG: set field 'GunSerialNumber' present
   [PASS]   keyRef QG: any field 'GunCaliber' present
@@ -98,14 +93,37 @@
   [PASS]   keyRef QG: any field 'GunModel' present
   [PASS]   keyRef QG: any field 'ImageIndicator' present
   VehicleRegistrationQuery:
-  [INFO]   keyRef RAND: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef RAND: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef FULL: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef FULL: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef RAND: set field 'LicensePlateNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'LicensePlateTypeCode' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'LicensePlateYear' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'VehicleIdentificationNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'LicensePlateNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'LicensePlateTypeCode' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'LicensePlateYear' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'VehicleIdentificationNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
   VehicleStolenQuery:
-  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef QV: set field 'NCICNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'State' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleIdentificationNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by invented variants (QVN,QVP,QVV)
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
   ArticleSingleQuery: 1 metadata search paths
@@ -146,5 +164,6 @@
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 75 PASS / 0 FAIL / 1 WARN / 27 INFO
+Total: 113 PASS / 0 FAIL / 0 WARN
 ============================================================
+

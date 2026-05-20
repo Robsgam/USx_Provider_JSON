@@ -1,7 +1,7 @@
 ================================================================
   Build Report: CA_CLETS_MC
   Source: CA_CLETS_MC.json
-  Generated: 2026-05-19 18:45
+  Generated: 2026-05-20 13:23
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -21,10 +21,8 @@ POST-BUILD VERIFICATION
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 26 [addressCity, addressStreetNumber, purposeCode, licensePlateTypeCode, licensePlateYear, addressCounty, age, criminalIdNumber, height, raceCode, socialSecurityNumber, birthDateDH, purposeCodeDH, nameLastDH, nameFirstDH, operatorLicenseNumberDH, sexCodeDH, gunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleTypeCode, ownerAppliedNumber, boatHullIdNumber, registrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 1
-  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [vehicleModelCode]
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 28 [addressCity, addressStreetNumber, purposeCode, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, raceCode, socialSecurityNumber, birthDateDH, purposeCodeDH, nameLastDH, nameFirstDH, operatorLicenseNumberDH, sexCodeDH, gunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleTypeCode, ownerAppliedNumber, boatHullIdNumber, registrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -35,10 +33,10 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 7: Cross-Variant Consistency ---
-  [INFO] No BASE JSON found -- skipping cross-variant check
+  [PASS] All shared fields have matching types across MC and BASE
 
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION PASSED: 7 PASS / 0 FAIL
 ========================================
 
 

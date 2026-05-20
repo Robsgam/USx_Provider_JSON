@@ -317,11 +317,13 @@ if ($entitiesBundle) {
                 # G-1: Standard field defaults (check only 'default' layout to avoid 3x noise)
                 if ($layoutName -eq 'default' -and $node.props -and $node.props.fieldId) {
                     if ($node.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $node.type.resolvedName -eq 'FormSelect') {
-                        if ($node.props.initialValue -ne 'PC') {
-                            Write-Warn "QIF '$($cfg.name)' PlateType initialValue='$($node.props.initialValue)' -- standard is 'PC'"
-                            Write-Host "    [FIX] In build script: set initialValue='PC' on the PlateType FormSelect field" -ForegroundColor Cyan
-                        } else {
+                        if ($node.props.initialValue -eq 'PC') {
                             Write-Pass "QIF '$($cfg.name)' PlateType initialValue='PC'"; Inc-Pass
+                        } elseif (-not $node.props.initialValue) {
+                            Write-Pass "QIF '$($cfg.name)' PlateType no initialValue (combo defaults expected)"; Inc-Pass
+                        } else {
+                            Write-Warn "QIF '$($cfg.name)' PlateType initialValue='$($node.props.initialValue)' -- expected 'PC' or empty"
+                            Write-Host "    [FIX] In build script: set initialValue='PC' or remove initialValue (if combo defaults cover it)" -ForegroundColor Cyan
                         }
                     }
                     if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$') {

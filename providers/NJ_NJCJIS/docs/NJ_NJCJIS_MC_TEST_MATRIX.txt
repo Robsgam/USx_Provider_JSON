@@ -1,8 +1,8 @@
 NJ_NJCJIS MC v3.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-19
+Generated: 2026-05-20
 Variant: MC (multi-card per entity)
-Validator: 69 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
@@ -12,13 +12,11 @@ Vehicle (3 cards, 9 fields):
   CARD_VEH_PLATE (PLATE SEARCH):
     licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
   CARD_VEH_VIN (VIN SEARCH):
-    vehicleIdentificationNumber [Inp 20]
-    ncicNumber [Inp 10], vehicleMakeCode [Sel VEHICLE_MAKE]
+    vehicleIdentificationNumber [Inp 20], ncicNumber [Inp 10], vehicleMakeCode [Sel VEHICLE_MAKE]
 
 Person (3 cards, 7 fields):
   CARD_PER_NAME (NAME SEARCH):
-    ROW 1: nameFirst [Inp 30], nameLast [Inp 30]
-    ROW 2: birthDate [FormDate], sexCode [Sel SEX]
+    nameFirst [Inp 30], nameLast [Inp 30], birthDate [FormDate], sexCode [Sel SEX]
   CARD_PER_OLN (LICENSE NUMBER):
     operatorLicenseNumber [Inp 20]
   CARD_PER_OPT (OPTIONS):
@@ -31,13 +29,11 @@ Firearm (1 card, 5 fields):
 
 Article (1 card, 3 fields):
   CARD_ART (NCIC ARTICLE QUERY):
-    articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Boat (1 card, 3 fields):
   CARD_BOA (BOAT SEARCH):
-    registrationNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    boatHullIdNumber [Inp 20]
+    registrationNumber [Inp 20], boatHullIdNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 QIDM SUMMARY (6 QIDMs, 13 combos)
 ----------------------------------------
@@ -62,28 +58,24 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_VEH_PLATE: titled "PLATE SEARCH".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
               CARD_VEH_VIN: titled "VIN SEARCH".
-              VIN.
-              NCIC Number, Vehicle Make dropdown (no default).
+              VIN, NCIC Number, Vehicle Make dropdown (no default).
  2  Person      Render form. Verify 3 cards:                        [    ]
               CARD_PER_NAME: titled "NAME SEARCH".
-              First Name, Last Name.
-              Date of Birth, Sex dropdown (no default).
+              First Name, Last Name, Date of Birth, Sex dropdown (no default).
               CARD_PER_OLN: titled "LICENSE NUMBER".
               License Number.
               CARD_PER_OPT: titled "OPTIONS".
               State dropdown=NJ, Image dropdown=Y.
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT SEARCH".
-              Registration Number, Image dropdown=N.
-              Hull ID Number.
+              Registration Number, Hull ID Number, Image dropdown=N.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "NCIC FIREARM QUERY".
               Serial Number, Make dropdown (no default).
               Caliber dropdown (no default), Model, Image dropdown=N.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "NCIC ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default).
-              Image dropdown=N.
+              Serial Number, Article Type dropdown (no default), Image dropdown=N.
 
 PHASE 2: VEHICLE COMBOS (7 tests, 7 combos)
 ------------------------------------------------------------------------

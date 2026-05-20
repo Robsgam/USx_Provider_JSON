@@ -3,7 +3,7 @@
     {
       "configurations": [
         {
-          "description": "Vehicle queries -- MC: OPTIONS (State + Purpose) + PLATE (IA.QV/NLTS.RQ.P) + VIN (IA.QVK/NLTS.RQ.V) + NAME (IN.VP cross-entity)",
+          "description": "Vehicle queries -- MC collapsed: OPTIONS (State + Purpose) + SEARCH (Plate/VIN/Name all on one card)",
           "label": "Vehicle",
           "layout": {
             "default": {
@@ -26,8 +26,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -49,9 +49,7 @@
                 "hidden": false,
                 "nodes": [
                   "CARD_VEH_OPT",
-                  "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_NAME"
+                  "CARD_VEH_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -62,7 +60,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -125,40 +123,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_OPT_1"
               },
-              "CARD_VEH_PLATE": {
+              "CARD_VEH_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "PLATE SEARCH"
+                  "title": "VEHICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_VEH_PLATE_1",
-                  "ROW_VEH_PLATE_2"
+                  "ROW_VEH_1",
+                  "ROW_VEH_2",
+                  "ROW_VEH_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_VEH_PLATE_1": {
+              "ROW_VEH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "LicensePlateNumber_Input"
+                  "LicensePlateNumber_Input",
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "CARD_VEH_SEARCH"
               },
               "LicensePlateNumber_Input": {
                 "type": {
@@ -174,27 +177,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_1"
-              },
-              "ROW_VEH_PLATE_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateTypeCode_Input",
-                  "LicensePlateYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateTypeCode_Input": {
                 "type": {
@@ -204,15 +187,15 @@
                 "props": {
                   "fieldId": "licensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "PC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateYear_Input": {
                 "type": {
@@ -229,42 +212,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
-              "CARD_VEH_VIN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "VIN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_VIN_1",
-                  "ROW_VEH_VIN_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_VIN_1": {
+              "ROW_VEH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "VehicleMakeCode_Input",
+                  "VehicleYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "CARD_VEH_SEARCH"
               },
               "VehicleIdentificationNumber_Input": {
                 "type": {
@@ -280,27 +250,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_1"
-              },
-              "ROW_VEH_VIN_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "VehicleMakeCode_Input",
-                  "VehicleYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "ROW_VEH_2"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -317,7 +267,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
               "VehicleYear_Input": {
                 "type": {
@@ -333,44 +283,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
-              "CARD_VEH_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Vehicle by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_NAME_1",
-                  "ROW_VEH_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_NAME_1": {
+              "ROW_VEH_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "AddressCity_Input",
+                  "AddressStreetNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "CARD_VEH_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -386,7 +323,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
+                "parent": "ROW_VEH_3"
               },
               "NameLast_Input": {
                 "type": {
@@ -402,27 +339,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
-              },
-              "ROW_VEH_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "AddressCity_Input",
-                  "AddressStreetNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "ROW_VEH_3"
               },
               "AddressCity_Input": {
                 "type": {
@@ -438,7 +355,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               },
               "AddressStreetNumber_Input": {
                 "type": {
@@ -454,7 +371,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               }
             },
             "CAD_DISPATCH": {
@@ -477,8 +394,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -501,9 +418,7 @@
                 "nodes": [
                   "CONTEXT_INFO_CARD",
                   "CARD_VEH_OPT",
-                  "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_NAME"
+                  "CARD_VEH_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -514,7 +429,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -577,40 +492,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_OPT_1"
               },
-              "CARD_VEH_PLATE": {
+              "CARD_VEH_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "PLATE SEARCH"
+                  "title": "VEHICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_VEH_PLATE_1",
-                  "ROW_VEH_PLATE_2"
+                  "ROW_VEH_1",
+                  "ROW_VEH_2",
+                  "ROW_VEH_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_VEH_PLATE_1": {
+              "ROW_VEH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "LicensePlateNumber_Input"
+                  "LicensePlateNumber_Input",
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "CARD_VEH_SEARCH"
               },
               "LicensePlateNumber_Input": {
                 "type": {
@@ -626,27 +546,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_1"
-              },
-              "ROW_VEH_PLATE_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateTypeCode_Input",
-                  "LicensePlateYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateTypeCode_Input": {
                 "type": {
@@ -656,15 +556,15 @@
                 "props": {
                   "fieldId": "licensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "PC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateYear_Input": {
                 "type": {
@@ -681,42 +581,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
-              "CARD_VEH_VIN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "VIN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_VIN_1",
-                  "ROW_VEH_VIN_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_VIN_1": {
+              "ROW_VEH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "VehicleMakeCode_Input",
+                  "VehicleYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "CARD_VEH_SEARCH"
               },
               "VehicleIdentificationNumber_Input": {
                 "type": {
@@ -732,27 +619,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_1"
-              },
-              "ROW_VEH_VIN_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "VehicleMakeCode_Input",
-                  "VehicleYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "ROW_VEH_2"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -769,7 +636,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
               "VehicleYear_Input": {
                 "type": {
@@ -785,44 +652,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
-              "CARD_VEH_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Vehicle by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_NAME_1",
-                  "ROW_VEH_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_NAME_1": {
+              "ROW_VEH_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "AddressCity_Input",
+                  "AddressStreetNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "CARD_VEH_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -838,7 +692,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
+                "parent": "ROW_VEH_3"
               },
               "NameLast_Input": {
                 "type": {
@@ -854,27 +708,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
-              },
-              "ROW_VEH_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "AddressCity_Input",
-                  "AddressStreetNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "ROW_VEH_3"
               },
               "AddressCity_Input": {
                 "type": {
@@ -890,7 +724,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               },
               "AddressStreetNumber_Input": {
                 "type": {
@@ -906,7 +740,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -966,8 +800,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -996,8 +830,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -1020,9 +854,7 @@
                 "nodes": [
                   "CONTEXT_INFO_CARD",
                   "CARD_VEH_OPT",
-                  "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_NAME"
+                  "CARD_VEH_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -1033,7 +865,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -1096,40 +928,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_OPT_1"
               },
-              "CARD_VEH_PLATE": {
+              "CARD_VEH_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "PLATE SEARCH"
+                  "title": "VEHICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_VEH_PLATE_1",
-                  "ROW_VEH_PLATE_2"
+                  "ROW_VEH_1",
+                  "ROW_VEH_2",
+                  "ROW_VEH_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_VEH_PLATE_1": {
+              "ROW_VEH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "LicensePlateNumber_Input"
+                  "LicensePlateNumber_Input",
+                  "LicensePlateTypeCode_Input",
+                  "LicensePlateYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "CARD_VEH_SEARCH"
               },
               "LicensePlateNumber_Input": {
                 "type": {
@@ -1145,27 +982,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_1"
-              },
-              "ROW_VEH_PLATE_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateTypeCode_Input",
-                  "LicensePlateYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_PLATE"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateTypeCode_Input": {
                 "type": {
@@ -1175,15 +992,15 @@
                 "props": {
                   "fieldId": "licensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "PC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
               "LicensePlateYear_Input": {
                 "type": {
@@ -1200,42 +1017,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_PLATE_2"
+                "parent": "ROW_VEH_1"
               },
-              "CARD_VEH_VIN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "VIN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_VIN_1",
-                  "ROW_VEH_VIN_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_VIN_1": {
+              "ROW_VEH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "VehicleMakeCode_Input",
+                  "VehicleYear_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "CARD_VEH_SEARCH"
               },
               "VehicleIdentificationNumber_Input": {
                 "type": {
@@ -1251,27 +1055,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_1"
-              },
-              "ROW_VEH_VIN_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "VehicleMakeCode_Input",
-                  "VehicleYear_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_VIN"
+                "parent": "ROW_VEH_2"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -1288,7 +1072,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
               "VehicleYear_Input": {
                 "type": {
@@ -1304,44 +1088,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_VIN_2"
+                "parent": "ROW_VEH_2"
               },
-              "CARD_VEH_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Vehicle by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_NAME_1",
-                  "ROW_VEH_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_NAME_1": {
+              "ROW_VEH_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "AddressCity_Input",
+                  "AddressStreetNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "CARD_VEH_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -1357,7 +1128,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
+                "parent": "ROW_VEH_3"
               },
               "NameLast_Input": {
                 "type": {
@@ -1373,27 +1144,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_1"
-              },
-              "ROW_VEH_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "AddressCity_Input",
-                  "AddressStreetNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_NAME"
+                "parent": "ROW_VEH_3"
               },
               "AddressCity_Input": {
                 "type": {
@@ -1409,7 +1160,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               },
               "AddressStreetNumber_Input": {
                 "type": {
@@ -1425,7 +1176,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_NAME_2"
+                "parent": "ROW_VEH_3"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -1447,9 +1198,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "checkboxLabel": "Link to the current assigned event",
                   "label": " ",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1464,7 +1215,7 @@
           "targetEntity": "Vehicle"
         },
         {
-          "description": "Person queries -- MC: OPTIONS + OLN + NAME (age/height/county/race) + CR (CII/SSN) + OLN DH + NAME DH. DH-suffix fields.",
+          "description": "Person queries -- MC collapsed: OPTIONS + DL SEARCH (OLN/CII/SSN/Name/DOB/Sex/Age/Height/County/Race) + DH SEARCH (DH-suffix fields).",
           "label": "Person",
           "layout": {
             "default": {
@@ -1487,8 +1238,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -1510,11 +1261,8 @@
                 "hidden": false,
                 "nodes": [
                   "CARD_PER_OPT",
-                  "CARD_PER_OLN",
-                  "CARD_PER_NAME",
-                  "CARD_PER_CR",
-                  "CARD_PER_OLN_DH",
-                  "CARD_PER_NAME_DH"
+                  "CARD_PER_DL",
+                  "CARD_PER_DH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -1525,7 +1273,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -1588,39 +1336,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_OPT_1"
               },
-              "CARD_PER_OLN": {
+              "CARD_PER_DL": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OLN SEARCH"
+                  "title": "DRIVER LICENSE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_OLN_1"
+                  "ROW_PER_DL_1",
+                  "ROW_PER_DL_2",
+                  "ROW_PER_DL_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_OLN_1": {
+              "ROW_PER_DL_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "CriminalIdNumber_Input",
+                  "SocialSecurityNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN"
+                "parent": "CARD_PER_DL"
               },
               "OperatorLicenseNumber_Input": {
                 "type": {
@@ -1636,46 +1390,61 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_1"
+                "parent": "ROW_PER_DL_1"
               },
-              "CARD_PER_NAME": {
+              "CriminalIdNumber_Input": {
                 "type": {
-                  "resolvedName": "Card"
+                  "resolvedName": "FormInput"
                 },
-                "displayName": "Card",
+                "displayName": "Input",
                 "props": {
-                  "title": "NAME SEARCH"
+                  "fieldId": "criminalIdNumber",
+                  "label": "Criminal ID (CII)",
+                  "maxLength": "11"
                 },
-                "isCanvas": true,
+                "isCanvas": false,
                 "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_1",
-                  "ROW_PER_NAME_2",
-                  "ROW_PER_NAME_3",
-                  "ROW_PER_NAME_4"
-                ],
+                "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROOT_PAGE"
+                "parent": "ROW_PER_DL_1"
               },
-              "ROW_PER_NAME_1": {
+              "SocialSecurityNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "socialSecurityNumber",
+                  "label": "SSN",
+                  "maxLength": "9"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_DL_1"
+              },
+              "ROW_PER_DL_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "BirthDate_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "CARD_PER_DL"
               },
               "NameFirst_Input": {
                 "type": {
@@ -1691,7 +1460,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
+                "parent": "ROW_PER_DL_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -1707,27 +1476,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
-              },
-              "ROW_PER_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input",
-                  "SexCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_2"
               },
               "BirthDate_Input": {
                 "type": {
@@ -1735,14 +1484,40 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
+                "parent": "ROW_PER_DL_2"
+              },
+              "ROW_PER_DL_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "3",
+                    "2",
+                    "2",
+                    "2",
+                    "3"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "SexCode_Input",
+                  "Age_Input",
+                  "Height_Input",
+                  "AddressCounty_Input",
+                  "RaceCode_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
               },
               "SexCode_Input": {
                 "type": {
@@ -1759,29 +1534,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
-              },
-              "ROW_PER_NAME_3": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "4",
-                    "4",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "Age_Input",
-                  "Height_Input",
-                  "AddressCounty_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "Age_Input": {
                 "type": {
@@ -1797,7 +1550,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "Height_Input": {
                 "type": {
@@ -1813,7 +1566,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "AddressCounty_Input": {
                 "type": {
@@ -1829,25 +1582,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
-              },
-              "ROW_PER_NAME_4": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RaceCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "RaceCode_Input": {
                 "type": {
@@ -1864,25 +1599,26 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_4"
+                "parent": "ROW_PER_DL_3"
               },
-              "CARD_PER_CR": {
+              "CARD_PER_DH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "CRIMINAL RECORDS SEARCH"
+                  "title": "DRIVER HISTORY SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_CR_1"
+                  "ROW_PER_DH_1",
+                  "ROW_PER_DH_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_CR_1": {
+              "ROW_PER_DH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -1890,75 +1626,7 @@
                 "props": {
                   "templateColumns": [
                     "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "CriminalIdNumber_Input",
-                  "SocialSecurityNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_CR"
-              },
-              "CriminalIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "criminalIdNumber",
-                  "label": "Criminal ID (CII)",
-                  "maxLength": "11"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "SocialSecurityNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "socialSecurityNumber",
-                  "label": "SSN",
-                  "maxLength": "9"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "CARD_PER_OLN_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OLN SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_OLN_DH_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_OLN_DH_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "4"
                   ]
                 },
                 "isCanvas": true,
@@ -1968,7 +1636,7 @@
                   "PurposeCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN_DH"
+                "parent": "CARD_PER_DH"
               },
               "OperatorLicenseNumberDH_Input": {
                 "type": {
@@ -1977,14 +1645,14 @@
                 "displayName": "Input",
                 "props": {
                   "fieldId": "operatorLicenseNumberDH",
-                  "label": "OLN (DH)",
+                  "label": "License Number (DH)",
                   "maxLength": "20"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
               "PurposeCodeDH_Input": {
                 "type": {
@@ -2001,44 +1669,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
-              "CARD_PER_NAME_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_DH_1",
-                  "ROW_PER_NAME_DH_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_NAME_DH_1": {
+              "ROW_PER_DH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input"
+                  "NameLastDH_Input",
+                  "BirthDateDH_Input",
+                  "SexCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "CARD_PER_DH"
               },
               "NameFirstDH_Input": {
                 "type": {
@@ -2054,7 +1709,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
+                "parent": "ROW_PER_DH_2"
               },
               "NameLastDH_Input": {
                 "type": {
@@ -2070,27 +1725,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
-              },
-              "ROW_PER_NAME_DH_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDateDH_Input",
-                  "SexCodeDH_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "ROW_PER_DH_2"
               },
               "BirthDateDH_Input": {
                 "type": {
@@ -2098,14 +1733,14 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "DOB (DH)",
-                  "fieldId": "birthDateDH"
+                  "fieldId": "birthDateDH",
+                  "label": "DOB (DH)"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               },
               "SexCodeDH_Input": {
                 "type": {
@@ -2122,7 +1757,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               }
             },
             "CAD_DISPATCH": {
@@ -2145,8 +1780,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -2169,11 +1804,8 @@
                 "nodes": [
                   "CONTEXT_INFO_CARD",
                   "CARD_PER_OPT",
-                  "CARD_PER_OLN",
-                  "CARD_PER_NAME",
-                  "CARD_PER_CR",
-                  "CARD_PER_OLN_DH",
-                  "CARD_PER_NAME_DH"
+                  "CARD_PER_DL",
+                  "CARD_PER_DH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -2184,7 +1816,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -2247,39 +1879,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_OPT_1"
               },
-              "CARD_PER_OLN": {
+              "CARD_PER_DL": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OLN SEARCH"
+                  "title": "DRIVER LICENSE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_OLN_1"
+                  "ROW_PER_DL_1",
+                  "ROW_PER_DL_2",
+                  "ROW_PER_DL_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_OLN_1": {
+              "ROW_PER_DL_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "CriminalIdNumber_Input",
+                  "SocialSecurityNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN"
+                "parent": "CARD_PER_DL"
               },
               "OperatorLicenseNumber_Input": {
                 "type": {
@@ -2295,46 +1933,61 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_1"
+                "parent": "ROW_PER_DL_1"
               },
-              "CARD_PER_NAME": {
+              "CriminalIdNumber_Input": {
                 "type": {
-                  "resolvedName": "Card"
+                  "resolvedName": "FormInput"
                 },
-                "displayName": "Card",
+                "displayName": "Input",
                 "props": {
-                  "title": "NAME SEARCH"
+                  "fieldId": "criminalIdNumber",
+                  "label": "Criminal ID (CII)",
+                  "maxLength": "11"
                 },
-                "isCanvas": true,
+                "isCanvas": false,
                 "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_1",
-                  "ROW_PER_NAME_2",
-                  "ROW_PER_NAME_3",
-                  "ROW_PER_NAME_4"
-                ],
+                "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROOT_PAGE"
+                "parent": "ROW_PER_DL_1"
               },
-              "ROW_PER_NAME_1": {
+              "SocialSecurityNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "socialSecurityNumber",
+                  "label": "SSN",
+                  "maxLength": "9"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_DL_1"
+              },
+              "ROW_PER_DL_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "BirthDate_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "CARD_PER_DL"
               },
               "NameFirst_Input": {
                 "type": {
@@ -2350,7 +2003,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
+                "parent": "ROW_PER_DL_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -2366,27 +2019,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
-              },
-              "ROW_PER_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input",
-                  "SexCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_2"
               },
               "BirthDate_Input": {
                 "type": {
@@ -2394,14 +2027,40 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
+                "parent": "ROW_PER_DL_2"
+              },
+              "ROW_PER_DL_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "3",
+                    "2",
+                    "2",
+                    "2",
+                    "3"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "SexCode_Input",
+                  "Age_Input",
+                  "Height_Input",
+                  "AddressCounty_Input",
+                  "RaceCode_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
               },
               "SexCode_Input": {
                 "type": {
@@ -2418,29 +2077,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
-              },
-              "ROW_PER_NAME_3": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "4",
-                    "4",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "Age_Input",
-                  "Height_Input",
-                  "AddressCounty_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "Age_Input": {
                 "type": {
@@ -2456,7 +2093,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "Height_Input": {
                 "type": {
@@ -2472,7 +2109,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "AddressCounty_Input": {
                 "type": {
@@ -2488,25 +2125,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
-              },
-              "ROW_PER_NAME_4": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RaceCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "RaceCode_Input": {
                 "type": {
@@ -2523,25 +2142,26 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_4"
+                "parent": "ROW_PER_DL_3"
               },
-              "CARD_PER_CR": {
+              "CARD_PER_DH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "CRIMINAL RECORDS SEARCH"
+                  "title": "DRIVER HISTORY SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_CR_1"
+                  "ROW_PER_DH_1",
+                  "ROW_PER_DH_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_CR_1": {
+              "ROW_PER_DH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -2549,75 +2169,7 @@
                 "props": {
                   "templateColumns": [
                     "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "CriminalIdNumber_Input",
-                  "SocialSecurityNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_CR"
-              },
-              "CriminalIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "criminalIdNumber",
-                  "label": "Criminal ID (CII)",
-                  "maxLength": "11"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "SocialSecurityNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "socialSecurityNumber",
-                  "label": "SSN",
-                  "maxLength": "9"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "CARD_PER_OLN_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OLN SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_OLN_DH_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_OLN_DH_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "4"
                   ]
                 },
                 "isCanvas": true,
@@ -2627,7 +2179,7 @@
                   "PurposeCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN_DH"
+                "parent": "CARD_PER_DH"
               },
               "OperatorLicenseNumberDH_Input": {
                 "type": {
@@ -2636,14 +2188,14 @@
                 "displayName": "Input",
                 "props": {
                   "fieldId": "operatorLicenseNumberDH",
-                  "label": "OLN (DH)",
+                  "label": "License Number (DH)",
                   "maxLength": "20"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
               "PurposeCodeDH_Input": {
                 "type": {
@@ -2660,44 +2212,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
-              "CARD_PER_NAME_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_DH_1",
-                  "ROW_PER_NAME_DH_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_NAME_DH_1": {
+              "ROW_PER_DH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input"
+                  "NameLastDH_Input",
+                  "BirthDateDH_Input",
+                  "SexCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "CARD_PER_DH"
               },
               "NameFirstDH_Input": {
                 "type": {
@@ -2713,7 +2252,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
+                "parent": "ROW_PER_DH_2"
               },
               "NameLastDH_Input": {
                 "type": {
@@ -2729,27 +2268,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
-              },
-              "ROW_PER_NAME_DH_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDateDH_Input",
-                  "SexCodeDH_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "ROW_PER_DH_2"
               },
               "BirthDateDH_Input": {
                 "type": {
@@ -2757,14 +2276,14 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "DOB (DH)",
-                  "fieldId": "birthDateDH"
+                  "fieldId": "birthDateDH",
+                  "label": "DOB (DH)"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               },
               "SexCodeDH_Input": {
                 "type": {
@@ -2781,7 +2300,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -2841,8 +2360,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2871,8 +2390,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -2895,11 +2414,8 @@
                 "nodes": [
                   "CONTEXT_INFO_CARD",
                   "CARD_PER_OPT",
-                  "CARD_PER_OLN",
-                  "CARD_PER_NAME",
-                  "CARD_PER_CR",
-                  "CARD_PER_OLN_DH",
-                  "CARD_PER_NAME_DH"
+                  "CARD_PER_DL",
+                  "CARD_PER_DH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -2910,7 +2426,7 @@
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "Search Options"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -2973,39 +2489,45 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_OPT_1"
               },
-              "CARD_PER_OLN": {
+              "CARD_PER_DL": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OLN SEARCH"
+                  "title": "DRIVER LICENSE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_OLN_1"
+                  "ROW_PER_DL_1",
+                  "ROW_PER_DL_2",
+                  "ROW_PER_DL_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_OLN_1": {
+              "ROW_PER_DL_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "CriminalIdNumber_Input",
+                  "SocialSecurityNumber_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN"
+                "parent": "CARD_PER_DL"
               },
               "OperatorLicenseNumber_Input": {
                 "type": {
@@ -3021,46 +2543,61 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_1"
+                "parent": "ROW_PER_DL_1"
               },
-              "CARD_PER_NAME": {
+              "CriminalIdNumber_Input": {
                 "type": {
-                  "resolvedName": "Card"
+                  "resolvedName": "FormInput"
                 },
-                "displayName": "Card",
+                "displayName": "Input",
                 "props": {
-                  "title": "NAME SEARCH"
+                  "fieldId": "criminalIdNumber",
+                  "label": "Criminal ID (CII)",
+                  "maxLength": "11"
                 },
-                "isCanvas": true,
+                "isCanvas": false,
                 "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_1",
-                  "ROW_PER_NAME_2",
-                  "ROW_PER_NAME_3",
-                  "ROW_PER_NAME_4"
-                ],
+                "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROOT_PAGE"
+                "parent": "ROW_PER_DL_1"
               },
-              "ROW_PER_NAME_1": {
+              "SocialSecurityNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "socialSecurityNumber",
+                  "label": "SSN",
+                  "maxLength": "9"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_DL_1"
+              },
+              "ROW_PER_DL_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "BirthDate_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "CARD_PER_DL"
               },
               "NameFirst_Input": {
                 "type": {
@@ -3076,7 +2613,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
+                "parent": "ROW_PER_DL_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -3092,27 +2629,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_1"
-              },
-              "ROW_PER_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input",
-                  "SexCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_2"
               },
               "BirthDate_Input": {
                 "type": {
@@ -3120,14 +2637,40 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
+                "parent": "ROW_PER_DL_2"
+              },
+              "ROW_PER_DL_3": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "3",
+                    "2",
+                    "2",
+                    "2",
+                    "3"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "SexCode_Input",
+                  "Age_Input",
+                  "Height_Input",
+                  "AddressCounty_Input",
+                  "RaceCode_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
               },
               "SexCode_Input": {
                 "type": {
@@ -3144,29 +2687,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_2"
-              },
-              "ROW_PER_NAME_3": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "4",
-                    "4",
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "Age_Input",
-                  "Height_Input",
-                  "AddressCounty_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "Age_Input": {
                 "type": {
@@ -3182,7 +2703,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "Height_Input": {
                 "type": {
@@ -3198,7 +2719,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
+                "parent": "ROW_PER_DL_3"
               },
               "AddressCounty_Input": {
                 "type": {
@@ -3214,25 +2735,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_3"
-              },
-              "ROW_PER_NAME_4": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RaceCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME"
+                "parent": "ROW_PER_DL_3"
               },
               "RaceCode_Input": {
                 "type": {
@@ -3249,25 +2752,26 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_4"
+                "parent": "ROW_PER_DL_3"
               },
-              "CARD_PER_CR": {
+              "CARD_PER_DH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "CRIMINAL RECORDS SEARCH"
+                  "title": "DRIVER HISTORY SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_PER_CR_1"
+                  "ROW_PER_DH_1",
+                  "ROW_PER_DH_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_PER_CR_1": {
+              "ROW_PER_DH_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -3275,75 +2779,7 @@
                 "props": {
                   "templateColumns": [
                     "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "CriminalIdNumber_Input",
-                  "SocialSecurityNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_CR"
-              },
-              "CriminalIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "criminalIdNumber",
-                  "label": "Criminal ID (CII)",
-                  "maxLength": "11"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "SocialSecurityNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "socialSecurityNumber",
-                  "label": "SSN",
-                  "maxLength": "9"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_CR_1"
-              },
-              "CARD_PER_OLN_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OLN SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_OLN_DH_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_OLN_DH_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "4"
                   ]
                 },
                 "isCanvas": true,
@@ -3353,7 +2789,7 @@
                   "PurposeCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_OLN_DH"
+                "parent": "CARD_PER_DH"
               },
               "OperatorLicenseNumberDH_Input": {
                 "type": {
@@ -3362,14 +2798,14 @@
                 "displayName": "Input",
                 "props": {
                   "fieldId": "operatorLicenseNumberDH",
-                  "label": "OLN (DH)",
+                  "label": "License Number (DH)",
                   "maxLength": "20"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
               "PurposeCodeDH_Input": {
                 "type": {
@@ -3386,44 +2822,31 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_OLN_DH_1"
+                "parent": "ROW_PER_DH_1"
               },
-              "CARD_PER_NAME_DH": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Driver History)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_PER_NAME_DH_1",
-                  "ROW_PER_NAME_DH_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_PER_NAME_DH_1": {
+              "ROW_PER_DH_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input"
+                  "NameLastDH_Input",
+                  "BirthDateDH_Input",
+                  "SexCodeDH_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "CARD_PER_DH"
               },
               "NameFirstDH_Input": {
                 "type": {
@@ -3439,7 +2862,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
+                "parent": "ROW_PER_DH_2"
               },
               "NameLastDH_Input": {
                 "type": {
@@ -3455,27 +2878,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_1"
-              },
-              "ROW_PER_NAME_DH_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDateDH_Input",
-                  "SexCodeDH_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_PER_NAME_DH"
+                "parent": "ROW_PER_DH_2"
               },
               "BirthDateDH_Input": {
                 "type": {
@@ -3483,14 +2886,14 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "label": "DOB (DH)",
-                  "fieldId": "birthDateDH"
+                  "fieldId": "birthDateDH",
+                  "label": "DOB (DH)"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               },
               "SexCodeDH_Input": {
                 "type": {
@@ -3507,7 +2910,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_NAME_DH_2"
+                "parent": "ROW_PER_DH_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -3529,9 +2932,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "checkboxLabel": "Link to the current assigned event",
                   "label": " ",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3546,7 +2949,7 @@
           "targetEntity": "Person"
         },
         {
-          "description": "Firearm query -- MC: OPTIONS (Purpose) + SERIAL (IG.QGB) + NAME (IG.QGH cross-entity)",
+          "description": "Firearm query -- MC collapsed: OPTIONS (Purpose) + SEARCH (Serial/Make/Caliber/Type/Name)",
           "label": "Firearm",
           "layout": {
             "default": {
@@ -3569,8 +2972,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -3591,100 +2994,51 @@
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "CARD_GUN_OPT",
-                  "CARD_GUN_SERIAL",
-                  "CARD_GUN_NAME"
+                  "CARD_GUN_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_GUN_OPT": {
+              "CARD_GUN_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "FIREARM SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_GUN_OPT_1"
+                  "ROW_GUN_1",
+                  "ROW_GUN_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_GUN_OPT_1": {
+              "ROW_GUN_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "PurposeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_OPT"
-              },
-              "PurposeCode_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "purposeCode",
-                  "label": "Purpose Code",
-                  "maxLength": "1",
-                  "initialValue": "C"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_GUN_OPT_1"
-              },
-              "CARD_GUN_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_SERIAL_1",
-                  "ROW_GUN_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "SerialNumber_Input",
-                  "FirearmMake_Input"
+                  "FirearmMake_Input",
+                  "GunCaliber_Input",
+                  "GunTypeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "CARD_GUN_SEARCH"
               },
               "SerialNumber_Input": {
                 "type": {
@@ -3700,7 +3054,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
+                "parent": "ROW_GUN_1"
               },
               "FirearmMake_Input": {
                 "type": {
@@ -3717,27 +3071,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
-              },
-              "ROW_GUN_SERIAL_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "GunCaliber_Input",
-                  "GunTypeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "ROW_GUN_1"
               },
               "GunCaliber_Input": {
                 "type": {
@@ -3754,7 +3088,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
               "GunTypeCode_Input": {
                 "type": {
@@ -3771,43 +3105,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
-              "CARD_GUN_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Gun by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_NAME_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_NAME_1": {
+              "ROW_GUN_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_NAME"
+                "parent": "CARD_GUN_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -3823,7 +3143,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -3839,7 +3159,24 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
+              },
+              "PurposeCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "purposeCode",
+                  "label": "Purpose Code",
+                  "maxLength": "1",
+                  "initialValue": "C"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_GUN_2"
               }
             },
             "CAD_DISPATCH": {
@@ -3862,8 +3199,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -3885,100 +3222,51 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_GUN_OPT",
-                  "CARD_GUN_SERIAL",
-                  "CARD_GUN_NAME"
+                  "CARD_GUN_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_GUN_OPT": {
+              "CARD_GUN_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "FIREARM SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_GUN_OPT_1"
+                  "ROW_GUN_1",
+                  "ROW_GUN_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_GUN_OPT_1": {
+              "ROW_GUN_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "PurposeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_OPT"
-              },
-              "PurposeCode_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "purposeCode",
-                  "label": "Purpose Code",
-                  "maxLength": "1",
-                  "initialValue": "C"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_GUN_OPT_1"
-              },
-              "CARD_GUN_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_SERIAL_1",
-                  "ROW_GUN_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "SerialNumber_Input",
-                  "FirearmMake_Input"
+                  "FirearmMake_Input",
+                  "GunCaliber_Input",
+                  "GunTypeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "CARD_GUN_SEARCH"
               },
               "SerialNumber_Input": {
                 "type": {
@@ -3994,7 +3282,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
+                "parent": "ROW_GUN_1"
               },
               "FirearmMake_Input": {
                 "type": {
@@ -4011,27 +3299,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
-              },
-              "ROW_GUN_SERIAL_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "GunCaliber_Input",
-                  "GunTypeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "ROW_GUN_1"
               },
               "GunCaliber_Input": {
                 "type": {
@@ -4048,7 +3316,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
               "GunTypeCode_Input": {
                 "type": {
@@ -4065,43 +3333,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
-              "CARD_GUN_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Gun by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_NAME_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_NAME_1": {
+              "ROW_GUN_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_NAME"
+                "parent": "CARD_GUN_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -4117,7 +3371,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -4133,7 +3387,24 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
+              },
+              "PurposeCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "purposeCode",
+                  "label": "Purpose Code",
+                  "maxLength": "1",
+                  "initialValue": "C"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_GUN_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -4193,8 +3464,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4223,8 +3494,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -4246,100 +3517,51 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_GUN_OPT",
-                  "CARD_GUN_SERIAL",
-                  "CARD_GUN_NAME"
+                  "CARD_GUN_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_GUN_OPT": {
+              "CARD_GUN_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "FIREARM SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_GUN_OPT_1"
+                  "ROW_GUN_1",
+                  "ROW_GUN_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_GUN_OPT_1": {
+              "ROW_GUN_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "4"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "PurposeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_OPT"
-              },
-              "PurposeCode_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "purposeCode",
-                  "label": "Purpose Code",
-                  "maxLength": "1",
-                  "initialValue": "C"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_GUN_OPT_1"
-              },
-              "CARD_GUN_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_SERIAL_1",
-                  "ROW_GUN_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
+                    "3",
+                    "3",
+                    "3",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "SerialNumber_Input",
-                  "FirearmMake_Input"
+                  "FirearmMake_Input",
+                  "GunCaliber_Input",
+                  "GunTypeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "CARD_GUN_SEARCH"
               },
               "SerialNumber_Input": {
                 "type": {
@@ -4355,7 +3577,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
+                "parent": "ROW_GUN_1"
               },
               "FirearmMake_Input": {
                 "type": {
@@ -4372,27 +3594,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_1"
-              },
-              "ROW_GUN_SERIAL_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "GunCaliber_Input",
-                  "GunTypeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_GUN_SERIAL"
+                "parent": "ROW_GUN_1"
               },
               "GunCaliber_Input": {
                 "type": {
@@ -4409,7 +3611,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
               "GunTypeCode_Input": {
                 "type": {
@@ -4426,43 +3628,29 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_SERIAL_2"
+                "parent": "ROW_GUN_1"
               },
-              "CARD_GUN_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Gun by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_GUN_NAME_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_GUN_NAME_1": {
+              "ROW_GUN_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "6",
-                    "6"
+                    "4",
+                    "4",
+                    "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input"
+                  "NameLast_Input",
+                  "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_GUN_NAME"
+                "parent": "CARD_GUN_SEARCH"
               },
               "NameFirst_Input": {
                 "type": {
@@ -4478,7 +3666,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
               },
               "NameLast_Input": {
                 "type": {
@@ -4494,7 +3682,24 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_GUN_NAME_1"
+                "parent": "ROW_GUN_2"
+              },
+              "PurposeCode_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "purposeCode",
+                  "label": "Purpose Code",
+                  "maxLength": "1",
+                  "initialValue": "C"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_GUN_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -4516,9 +3721,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "checkboxLabel": "Link to the current assigned event",
                   "label": " ",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4533,7 +3738,7 @@
           "targetEntity": "Firearm"
         },
         {
-          "description": "Article query -- MC: OPTIONS (Purpose) + SERIAL (IP.QA.S) + OAN (IP.QA.O)",
+          "description": "Article query -- MC collapsed: single card (Serial/OAN/Purpose/Type/Brand)",
           "label": "Article",
           "layout": {
             "default": {
@@ -4556,8 +3761,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -4578,46 +3783,81 @@
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "CARD_ART_OPT",
-                  "CARD_ART_SERIAL",
-                  "CARD_ART_OAN"
+                  "CARD_ART_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_ART_OPT": {
+              "CARD_ART_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "ARTICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_ART_OPT_1"
+                  "ROW_ART_1",
+                  "ROW_ART_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_ART_OPT_1": {
+              "ROW_ART_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
+                    "4",
+                    "4",
                     "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
+                  "SerialNumber_Input",
+                  "OwnerAppliedNumber_Input",
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_OPT"
+                "parent": "CARD_ART_SEARCH"
+              },
+              "SerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "serialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -4634,60 +3874,9 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_OPT_1"
+                "parent": "ROW_ART_1"
               },
-              "CARD_ART_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_SERIAL_1",
-                  "ROW_ART_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "SerialNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
-              },
-              "SerialNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "serialNumber",
-                  "label": "Serial Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_1"
-              },
-              "ROW_ART_SERIAL_2": {
+              "ROW_ART_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -4705,7 +3894,7 @@
                   "ArticleBrand_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
+                "parent": "CARD_ART_SEARCH"
               },
               "ArticleTypeCode_Input": {
                 "type": {
@@ -4722,7 +3911,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
+                "parent": "ROW_ART_2"
               },
               "ArticleBrand_Input": {
                 "type": {
@@ -4738,57 +3927,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
-              },
-              "CARD_ART_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_OAN_1"
+                "parent": "ROW_ART_2"
               }
             },
             "CAD_DISPATCH": {
@@ -4811,8 +3950,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -4834,46 +3973,81 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_ART_OPT",
-                  "CARD_ART_SERIAL",
-                  "CARD_ART_OAN"
+                  "CARD_ART_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_ART_OPT": {
+              "CARD_ART_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "ARTICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_ART_OPT_1"
+                  "ROW_ART_1",
+                  "ROW_ART_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_ART_OPT_1": {
+              "ROW_ART_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
+                    "4",
+                    "4",
                     "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
+                  "SerialNumber_Input",
+                  "OwnerAppliedNumber_Input",
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_OPT"
+                "parent": "CARD_ART_SEARCH"
+              },
+              "SerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "serialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -4890,60 +4064,9 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_OPT_1"
+                "parent": "ROW_ART_1"
               },
-              "CARD_ART_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_SERIAL_1",
-                  "ROW_ART_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "SerialNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
-              },
-              "SerialNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "serialNumber",
-                  "label": "Serial Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_1"
-              },
-              "ROW_ART_SERIAL_2": {
+              "ROW_ART_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -4961,7 +4084,7 @@
                   "ArticleBrand_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
+                "parent": "CARD_ART_SEARCH"
               },
               "ArticleTypeCode_Input": {
                 "type": {
@@ -4978,7 +4101,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
+                "parent": "ROW_ART_2"
               },
               "ArticleBrand_Input": {
                 "type": {
@@ -4994,57 +4117,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
-              },
-              "CARD_ART_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_OAN_1"
+                "parent": "ROW_ART_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -5104,8 +4177,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5134,8 +4207,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -5157,46 +4230,81 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_ART_OPT",
-                  "CARD_ART_SERIAL",
-                  "CARD_ART_OAN"
+                  "CARD_ART_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_ART_OPT": {
+              "CARD_ART_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS"
+                  "title": "ARTICLE SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_ART_OPT_1"
+                  "ROW_ART_1",
+                  "ROW_ART_2"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_ART_OPT_1": {
+              "ROW_ART_1": {
                 "type": {
                   "resolvedName": "Row"
                 },
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
+                    "4",
+                    "4",
                     "4"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
+                  "SerialNumber_Input",
+                  "OwnerAppliedNumber_Input",
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_OPT"
+                "parent": "CARD_ART_SEARCH"
+              },
+              "SerialNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "serialNumber",
+                  "label": "Serial Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_ART_1"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -5213,60 +4321,9 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_OPT_1"
+                "parent": "ROW_ART_1"
               },
-              "CARD_ART_SERIAL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "SERIAL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_SERIAL_1",
-                  "ROW_ART_SERIAL_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_SERIAL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "SerialNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
-              },
-              "SerialNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "serialNumber",
-                  "label": "Serial Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_1"
-              },
-              "ROW_ART_SERIAL_2": {
+              "ROW_ART_2": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -5284,7 +4341,7 @@
                   "ArticleBrand_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_ART_SERIAL"
+                "parent": "CARD_ART_SEARCH"
               },
               "ArticleTypeCode_Input": {
                 "type": {
@@ -5301,7 +4358,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
+                "parent": "ROW_ART_2"
               },
               "ArticleBrand_Input": {
                 "type": {
@@ -5317,57 +4374,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_ART_SERIAL_2"
-              },
-              "CARD_ART_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_ART_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_ART_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_ART_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_ART_OAN_1"
+                "parent": "ROW_ART_2"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -5389,9 +4396,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "checkboxLabel": "Link to the current assigned event",
                   "label": " ",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5406,7 +4413,7 @@
           "targetEntity": "Article"
         },
         {
-          "description": "Boat queries -- MC: OPTIONS (State + Purpose) + HULL (IA.QB.H/NLTS.BQ.H) + REG (IA.QB.R/NLTS.BQ.R) + OAN (IA.QB.O) + NAME (NLTS.BQ.N cross-entity)",
+          "description": "Boat queries -- MC collapsed: single card (Hull/Reg/OAN/Name/DOB/State/Purpose)",
           "label": "Boat",
           "layout": {
             "default": {
@@ -5429,8 +4436,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -5451,32 +4458,169 @@
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "CARD_BOA_OPT",
-                  "CARD_BOA_HULL",
-                  "CARD_BOA_REG",
-                  "CARD_BOA_OAN",
-                  "CARD_BOA_NAME"
+                  "CARD_BOA_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_BOA_OPT": {
+              "CARD_BOA_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "BOAT SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_BOA_OPT_1"
+                  "ROW_BOA_1",
+                  "ROW_BOA_2",
+                  "ROW_BOA_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_BOA_OPT_1": {
+              "ROW_BOA_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BoatHullIdNumber_Input",
+                  "RegistrationNumber_Input",
+                  "OwnerAppliedNumber_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "BoatHullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "boatHullIdNumber",
+                  "label": "Hull ID Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "registrationNumber",
+                  "label": "Registration Number",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "ROW_BOA_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameFirst_Input",
+                  "NameLast_Input",
+                  "BirthDate_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "NameFirst_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameFirst",
+                  "label": "First Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "NameLast_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameLast",
+                  "label": "Last Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "BirthDate_Input": {
+                "type": {
+                  "resolvedName": "FormDate"
+                },
+                "displayName": "Date",
+                "props": {
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "ROW_BOA_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -5494,7 +4638,7 @@
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_BOA_OPT"
+                "parent": "CARD_BOA_SEARCH"
               },
               "RegistrationState_Input": {
                 "type": {
@@ -5510,7 +4654,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
+                "parent": "ROW_BOA_3"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -5527,259 +4671,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
-              },
-              "CARD_BOA_HULL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "HULL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_HULL_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_HULL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BoatHullIdNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_HULL"
-              },
-              "BoatHullIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "boatHullIdNumber",
-                  "label": "Hull ID Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_HULL_1"
-              },
-              "CARD_BOA_REG": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "REGISTRATION SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_REG_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_REG_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RegistrationNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_REG"
-              },
-              "RegistrationNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "registrationNumber",
-                  "label": "Registration Number",
-                  "maxLength": "8"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_REG_1"
-              },
-              "CARD_BOA_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_OAN_1"
-              },
-              "CARD_BOA_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Boat by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_NAME_1",
-                  "ROW_BOA_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_NAME_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NameFirst_Input",
-                  "NameLast_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "NameFirst_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameFirst",
-                  "label": "First Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "NameLast_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameLast",
-                  "label": "Last Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "ROW_BOA_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "BirthDate_Input": {
-                "type": {
-                  "resolvedName": "FormDate"
-                },
-                "displayName": "Date",
-                "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_2"
+                "parent": "ROW_BOA_3"
               }
             },
             "CAD_DISPATCH": {
@@ -5802,8 +4694,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -5825,32 +4717,169 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_BOA_OPT",
-                  "CARD_BOA_HULL",
-                  "CARD_BOA_REG",
-                  "CARD_BOA_OAN",
-                  "CARD_BOA_NAME"
+                  "CARD_BOA_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_BOA_OPT": {
+              "CARD_BOA_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "BOAT SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_BOA_OPT_1"
+                  "ROW_BOA_1",
+                  "ROW_BOA_2",
+                  "ROW_BOA_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_BOA_OPT_1": {
+              "ROW_BOA_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BoatHullIdNumber_Input",
+                  "RegistrationNumber_Input",
+                  "OwnerAppliedNumber_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "BoatHullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "boatHullIdNumber",
+                  "label": "Hull ID Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "registrationNumber",
+                  "label": "Registration Number",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "ROW_BOA_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameFirst_Input",
+                  "NameLast_Input",
+                  "BirthDate_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "NameFirst_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameFirst",
+                  "label": "First Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "NameLast_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameLast",
+                  "label": "Last Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "BirthDate_Input": {
+                "type": {
+                  "resolvedName": "FormDate"
+                },
+                "displayName": "Date",
+                "props": {
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "ROW_BOA_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -5868,7 +4897,7 @@
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_BOA_OPT"
+                "parent": "CARD_BOA_SEARCH"
               },
               "RegistrationState_Input": {
                 "type": {
@@ -5884,7 +4913,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
+                "parent": "ROW_BOA_3"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -5901,259 +4930,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
-              },
-              "CARD_BOA_HULL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "HULL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_HULL_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_HULL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BoatHullIdNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_HULL"
-              },
-              "BoatHullIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "boatHullIdNumber",
-                  "label": "Hull ID Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_HULL_1"
-              },
-              "CARD_BOA_REG": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "REGISTRATION SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_REG_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_REG_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RegistrationNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_REG"
-              },
-              "RegistrationNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "registrationNumber",
-                  "label": "Registration Number",
-                  "maxLength": "8"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_REG_1"
-              },
-              "CARD_BOA_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_OAN_1"
-              },
-              "CARD_BOA_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Boat by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_NAME_1",
-                  "ROW_BOA_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_NAME_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NameFirst_Input",
-                  "NameLast_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "NameFirst_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameFirst",
-                  "label": "First Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "NameLast_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameLast",
-                  "label": "Last Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "ROW_BOA_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "BirthDate_Input": {
-                "type": {
-                  "resolvedName": "FormDate"
-                },
-                "displayName": "Date",
-                "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_2"
+                "parent": "ROW_BOA_3"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -6213,8 +4990,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6243,8 +5020,8 @@
                 },
                 "displayName": "Form",
                 "props": {
-                  "layout": "page",
-                  "hidePageItems": true
+                  "hidePageItems": true,
+                  "layout": "page"
                 },
                 "isCanvas": true,
                 "hidden": false,
@@ -6266,32 +5043,169 @@
                 "hidden": false,
                 "nodes": [
                   "CONTEXT_INFO_CARD",
-                  "CARD_BOA_OPT",
-                  "CARD_BOA_HULL",
-                  "CARD_BOA_REG",
-                  "CARD_BOA_OAN",
-                  "CARD_BOA_NAME"
+                  "CARD_BOA_SEARCH"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
               },
-              "CARD_BOA_OPT": {
+              "CARD_BOA_SEARCH": {
                 "type": {
                   "resolvedName": "Card"
                 },
                 "displayName": "Card",
                 "props": {
-                  "title": "OPTIONS - Leave blank for CA queries"
+                  "title": "BOAT SEARCH"
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "ROW_BOA_OPT_1"
+                  "ROW_BOA_1",
+                  "ROW_BOA_2",
+                  "ROW_BOA_3"
                 ],
                 "linkedNodes": {},
                 "parent": "ROOT_PAGE"
               },
-              "ROW_BOA_OPT_1": {
+              "ROW_BOA_1": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "BoatHullIdNumber_Input",
+                  "RegistrationNumber_Input",
+                  "OwnerAppliedNumber_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "BoatHullIdNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "boatHullIdNumber",
+                  "label": "Hull ID Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "RegistrationNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "registrationNumber",
+                  "label": "Registration Number",
+                  "maxLength": "8"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "OwnerAppliedNumber_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "ownerAppliedNumber",
+                  "label": "Owner Applied Number",
+                  "maxLength": "20"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_1"
+              },
+              "ROW_BOA_2": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "4",
+                    "4",
+                    "4"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "NameFirst_Input",
+                  "NameLast_Input",
+                  "BirthDate_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_BOA_SEARCH"
+              },
+              "NameFirst_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameFirst",
+                  "label": "First Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "NameLast_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "nameLast",
+                  "label": "Last Name",
+                  "maxLength": "30"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "BirthDate_Input": {
+                "type": {
+                  "resolvedName": "FormDate"
+                },
+                "displayName": "Date",
+                "props": {
+                  "fieldId": "birthDate",
+                  "label": "Date of Birth"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_BOA_2"
+              },
+              "ROW_BOA_3": {
                 "type": {
                   "resolvedName": "Row"
                 },
@@ -6309,7 +5223,7 @@
                   "PurposeCode_Input"
                 ],
                 "linkedNodes": {},
-                "parent": "CARD_BOA_OPT"
+                "parent": "CARD_BOA_SEARCH"
               },
               "RegistrationState_Input": {
                 "type": {
@@ -6325,7 +5239,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
+                "parent": "ROW_BOA_3"
               },
               "PurposeCode_Input": {
                 "type": {
@@ -6342,259 +5256,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_BOA_OPT_1"
-              },
-              "CARD_BOA_HULL": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "HULL SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_HULL_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_HULL_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BoatHullIdNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_HULL"
-              },
-              "BoatHullIdNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "boatHullIdNumber",
-                  "label": "Hull ID Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_HULL_1"
-              },
-              "CARD_BOA_REG": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "REGISTRATION SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_REG_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_REG_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "RegistrationNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_REG"
-              },
-              "RegistrationNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "registrationNumber",
-                  "label": "Registration Number",
-                  "maxLength": "8"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_REG_1"
-              },
-              "CARD_BOA_OAN": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "OAN SEARCH"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_OAN_1"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_OAN_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "OwnerAppliedNumber_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_OAN"
-              },
-              "OwnerAppliedNumber_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "ownerAppliedNumber",
-                  "label": "Owner Applied Number",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_OAN_1"
-              },
-              "CARD_BOA_NAME": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "NAME SEARCH (Boat by Owner)"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_BOA_NAME_1",
-                  "ROW_BOA_NAME_2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_BOA_NAME_1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NameFirst_Input",
-                  "NameLast_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "NameFirst_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameFirst",
-                  "label": "First Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "NameLast_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "nameLast",
-                  "label": "Last Name",
-                  "maxLength": "30"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_1"
-              },
-              "ROW_BOA_NAME_2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "12"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "BirthDate_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_BOA_NAME"
-              },
-              "BirthDate_Input": {
-                "type": {
-                  "resolvedName": "FormDate"
-                },
-                "displayName": "Date",
-                "props": {
-                  "label": "Date of Birth",
-                  "fieldId": "birthDate"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_BOA_NAME_2"
+                "parent": "ROW_BOA_3"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -6616,9 +5278,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "checkboxLabel": "Link to the current assigned event",
                   "label": " ",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7997,6 +6659,22 @@
               "requirements": {
                 "set": [
                   "purposeCode",
+                  "nameLast",
+                  "nameFirst"
+                ],
+                "any": [
+                  "addressCity",
+                  "addressStreetNumber"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "IN.VP",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "purposeCode",
                   "licensePlateNumber"
                 ],
                 "any": [
@@ -8017,22 +6695,6 @@
               },
               "primaryFieldReference": "LicensePlateNumber",
               "keyReference": "IV.4A",
-              "state": "In/Out"
-            },
-            {
-              "requirements": {
-                "set": [
-                  "purposeCode",
-                  "nameLast",
-                  "nameFirst"
-                ],
-                "any": [
-                  "addressCity",
-                  "addressStreetNumber"
-                ]
-              },
-              "primaryFieldReference": "Name",
-              "keyReference": "IN.VP",
               "state": "In/Out"
             },
             {
@@ -8273,22 +6935,6 @@
               "requirements": {
                 "set": [
                   "purposeCode",
-                  "operatorLicenseNumber"
-                ],
-                "any": [
-                  "registrationState",
-                  "socialSecurityNumber",
-                  "age"
-                ]
-              },
-              "primaryFieldReference": "OperatorLicenseNumber",
-              "keyReference": "ID.L1",
-              "state": "In/Out"
-            },
-            {
-              "requirements": {
-                "set": [
-                  "purposeCode",
                   "operatorLicenseNumber",
                   "criminalIdNumber"
                 ],
@@ -8299,6 +6945,41 @@
               },
               "primaryFieldReference": "OperatorLicenseNumber",
               "keyReference": "IR.QVC.O",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "purposeCode",
+                  "nameLast",
+                  "nameFirst"
+                ],
+                "any": [
+                  "addressCounty",
+                  "height",
+                  "raceCode",
+                  "sexCode",
+                  "age"
+                ]
+              },
+              "primaryFieldReference": "Name",
+              "keyReference": "IR.QVC.N",
+              "state": "In/Out"
+            },
+            {
+              "requirements": {
+                "set": [
+                  "purposeCode",
+                  "operatorLicenseNumber"
+                ],
+                "any": [
+                  "registrationState",
+                  "socialSecurityNumber",
+                  "age"
+                ]
+              },
+              "primaryFieldReference": "OperatorLicenseNumber",
+              "keyReference": "ID.L1",
               "state": "In/Out"
             },
             {
@@ -8331,25 +7012,6 @@
               },
               "primaryFieldReference": "SocialSecurityNumber",
               "keyReference": "IR.QVC.S",
-              "state": "In/Out"
-            },
-            {
-              "requirements": {
-                "set": [
-                  "purposeCode"
-                ],
-                "any": [
-                  "nameLast",
-                  "nameFirst",
-                  "addressCounty",
-                  "height",
-                  "raceCode",
-                  "sexCode",
-                  "age"
-                ]
-              },
-              "primaryFieldReference": "Name",
-              "keyReference": "IR.QVC.N",
               "state": "In/Out"
             }
           ],
@@ -8852,7 +7514,7 @@
           "targetEntity": "Boat"
         }
       ],
-      "description": "Provider configuration for CA_CLETS v2.2 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
+      "description": "Provider configuration for CA_CLETS v2.4 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
       "name": "CA_CLETS",
       "type": "BUNDLE",
       "provider": "CA_CLETS"
@@ -9057,33 +7719,11 @@
         {
           "attributes": [
             {
-              "name": "yearOfManufacture",
-              "size": 60,
-              "sourceField": [
-                "vehicleYear"
-              ],
-              "targetField": "vehicle.yearOfManufacture"
-            },
-            {
               "name": "vinNumber",
               "sourceField": [
                 "vehicleIdentificationNumber"
               ],
               "targetField": "vehicle.vinNumber"
-            },
-            {
-              "name": "makeNcicCode",
-              "sourceField": [
-                "vehicleMakeCode"
-              ],
-              "targetField": "vehicle.makeNcicCode"
-            },
-            {
-              "name": "modelNcicCode",
-              "sourceField": [
-                "vehicleModelCode"
-              ],
-              "targetField": "vehicle.modelNcicCode"
             },
             {
               "name": "licensePlateNumber",
@@ -9112,9 +7752,6 @@
                   "vehicleIdentificationNumber"
                 ],
                 "any": [
-                  "vehicleYear",
-                  "vehicleMakeCode",
-                  "vehicleModelCode",
                   "licensePlateNumber",
                   "registrationState"
                 ],
@@ -9129,9 +7766,6 @@
                   "licensePlateNumber"
                 ],
                 "any": [
-                  "vehicleYear",
-                  "vehicleMakeCode",
-                  "vehicleModelCode",
                   "registrationState"
                 ],
                 "conditions": null,

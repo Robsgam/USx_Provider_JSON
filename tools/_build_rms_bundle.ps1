@@ -69,14 +69,11 @@ function Build-RmsBundle {
         payloadParent        = 'body'
     }
 
-    # --- RMS VEHICLE QIDM (6 attrs, 2 combos) ---
+    # --- RMS VEHICLE QIDM (3 attrs, 2 combos — primary keys only, no year/make/model filtering) ---
     $rmsVeh = [PSCustomObject]@{
         attributes = @(
-            [PSCustomObject]@{ name = 'yearOfManufacture'; size = 60; sourceField = @('vehicleYear');                 targetField = 'vehicle.yearOfManufacture' }
-            [PSCustomObject]@{ name = 'vinNumber';                    sourceField = @('vehicleIdentificationNumber'); targetField = 'vehicle.vinNumber' }
-            [PSCustomObject]@{ name = 'makeNcicCode';                 sourceField = @('vehicleMakeCode');              targetField = 'vehicle.makeNcicCode' }
-            [PSCustomObject]@{ name = 'modelNcicCode';                sourceField = @('vehicleModelCode');             targetField = 'vehicle.modelNcicCode' }
-            [PSCustomObject]@{ name = 'licensePlateNumber';           sourceField = @('licensePlateNumber');           targetField = 'vehicle.tag' }
+            [PSCustomObject]@{ name = 'vinNumber';            sourceField = @('vehicleIdentificationNumber'); targetField = 'vehicle.vinNumber' }
+            [PSCustomObject]@{ name = 'licensePlateNumber';   sourceField = @('licensePlateNumber');           targetField = 'vehicle.tag' }
             [PSCustomObject]@{
                 name            = 'registrationState'
                 rule            = _R 'AttributeArrayWrapperRuleHandler' $null
@@ -86,8 +83,8 @@ function Build-RmsBundle {
             }
         )
         combinations = @(
-            _C 'vehicleIdentificationNumber' @('vehicleIdentificationNumber') @('vehicleYear','vehicleMakeCode','vehicleModelCode','licensePlateNumber','registrationState') $null
-            _C 'licensePlateIn'              @('licensePlateNumber')           @('vehicleYear','vehicleMakeCode','vehicleModelCode','registrationState') $null
+            _C 'vehicleIdentificationNumber' @('vehicleIdentificationNumber') @('licensePlateNumber','registrationState') $null
+            _C 'licensePlateIn'              @('licensePlateNumber')           @('registrationState') $null
         )
         description     = 'Configuration for handling elastic query with various attributes'
         handlerFunction = 'RmsRestPayloadHandler'

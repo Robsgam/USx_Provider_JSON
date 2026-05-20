@@ -368,7 +368,7 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'BoatHullIdNumber';          size = 62; sourceField = @('boatHullIdNumber');          targetField = 'BoatHullIdNumber' }
         [PSCustomObject]@{ name = 'CoastGuardDocumentNumber';  size = 8;  sourceField = @('coastGuardDocumentNumber');  targetField = 'CoastGuardDocumentNumber' }
-        [PSCustomObject]@{ name = 'DecalNumber';               size = 20; sourceField = @('decalNumber');               targetField = 'DecalNumber' }
+        [PSCustomObject]@{ name = 'DecalNumber';               size = 10; sourceField = @('decalNumber');               targetField = 'DecalNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('imageIndicator');            targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'; size = 60; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
@@ -378,7 +378,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('registrationNumber');        targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'TitleLienInformation';      size = 10; sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
+        [PSCustomObject]@{ name = 'TitleLienInformation';      size = 8;  sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
@@ -637,8 +637,8 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'registrationState_Input';  node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'decalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '20' 'ROW_BOA_2' }
-                @{ id = 'titleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '10' 'ROW_BOA_2' }
+                @{ id = 'decalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_BOA_2' }
+                @{ id = 'titleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_BOA_2' }
                 @{ id = 'coastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(

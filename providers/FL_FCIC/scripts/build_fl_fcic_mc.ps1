@@ -1,11 +1,11 @@
 # build_fl_fcic_mc.ps1 -- FL_FCIC MC (multi-card)
 # Builds FL_FCIC_MC.json from source\FL_FCIC.xml metadata + KB specs.
 # QIDMs identical to BASE. Layout changes:
-#   Vehicle: 2 cards (Options, Vehicle Search) -- State isolated on Options
-#   Person:  2 cards (DL, DH) -- DH-suffix fields isolate DH from DL pool
-#   Boat:    2 cards (Options, Boat Search) -- State+Stolen isolated on Options
-#   Firearm: 1 card (no State routing issue)
-#   Article: 1 card (no State routing issue)
+#   Vehicle: 2 cards (OPTIONS: State+Image, SEARCH: compacted rows)
+#   Person:  2 cards (DL + DH, compacted rows)
+#   Boat:    2 cards (OPTIONS: State+Stolen+Image, SEARCH: compacted rows)
+#   Firearm: 1 card (compacted)
+#   Article: 1 card (compacted)
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 #      & .\scripts\build_fl_fcic_mc.ps1 -Version 4.2
@@ -26,11 +26,11 @@
 #   BoatQuery                  FBQ (hull/reg/decal/title) + QB (CG/NCIC/PCN/hull/reg) + BQ (name/hull/reg) = 12 combos
 #
 # ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- 2 cards: Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,Make,Year,NCIC#,PCN,OAN,PartSerial)
-#   Person   -- 2 cards: DL(OLN/Name/DOB/Sex/State/Image) + DH(OLN/Name/DOB/Sex, DH-suffix)
-#   Firearm  -- 1 card: serial + make + NCIC# + PCN
-#   Article  -- 1 card: serial + type + OAN + NCIC# + PCN
-#   Boat     -- 2 cards: Options(State,Stolen,Image) + Boat Search(Hull,Reg,Decal,Title,CG,NCIC,PCN,Name,DOB)
+#   Vehicle  -- 2 cards: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title/NCIC/PCN/OAN/PartSerial)
+#   Person   -- 2 cards: DL(OLN/State/Image/Name/DOB/Sex) + DH(OLN/State/Purpose/Name/DOB/Sex/Attention)
+#   Firearm  -- 1 card: serial + make + NCIC# + PCN + Image (2 rows)
+#   Article  -- 1 card: serial + type + OAN + Image + NCIC# + PCN (2 rows)
+#   Boat     -- 2 cards: OPTIONS(State/Stolen/Image) + SEARCH(Hull/Reg/CG/Decal/Title/NCIC/PCN/Name/DOB)
 #
 # FL-SPECIFIC PATTERNS:
 #   Date format: yyyyMMdd (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','yyyyMMdd'])
@@ -40,7 +40,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.2"
+    [string]$Version = "4.3"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -86,37 +86,64 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState')
+                any      = @('imageIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQLicensePlateNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear','imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('vehicleIdentificationNumber','registrationState')
+                any      = @('vehicleMakeCode','vehicleYear','imageIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQVehicleIdentificationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('decalNumber','licensePlateYear'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('decalNumber','licensePlateYear')
+                any      = @('imageIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FRQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('licensePlateYear','vehicleMakeCode','vehicleYear','imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('licensePlateNumber')
+                any      = @('licensePlateYear','vehicleMakeCode','vehicleYear','imageIndicator')
+                defaults = @(
+                    [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }
+                    [PSCustomObject]@{ field = 'ImageIndicator';   value = 'N' }
+                )
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'FRQLicensePlateNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('vehicleMakeCode','vehicleYear','imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('vehicleIdentificationNumber')
+                any      = @('vehicleMakeCode','vehicleYear','imageIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'FRQVehicleIdentificationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('titleLienInformation'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{
+                set      = @('titleLienInformation')
+                any      = @('imageIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FRQTitleLienInformation'
             state                 = 'In/Out'
@@ -149,37 +176,37 @@ $vehStolenQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('imageIndicator','registrationState','vehicleMakeCode') }
+            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('imageIndicator','registrationState','vehicleMakeCode'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVLicensePlateNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator','registrationState','vehicleMakeCode') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator','registrationState','vehicleMakeCode'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVVehicleIdentificationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QVProcessControlNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QVNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ownerAppliedNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ownerAppliedNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'QVOwnerAppliedNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('partSerialNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('partSerialNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'PartSerialNumber'
             keyReference          = 'QVPartSerialNumber'
             state                 = 'In/Out'
@@ -216,25 +243,25 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'FDQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'FDQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -314,19 +341,19 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('gunSerialNumber'); any = @('gunMake','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('gunSerialNumber'); any = @('gunMake','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QGGunSerialNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('gunMake','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('gunMake','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QGNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('gunMake','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('gunMake','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QGProcessControlNumber'
             state                 = 'In/Out'
@@ -356,25 +383,25 @@ $artQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('articleSerialNumber','articleTypeCode'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('articleSerialNumber','articleTypeCode'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QAArticleSerialNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('articleTypeCode','ownerAppliedNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('articleTypeCode','ownerAppliedNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'QAOwnerAppliedNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QANCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QAProcessControlNumber'
             state                 = 'In/Out'
@@ -402,7 +429,7 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'BoatHullIdNumber';          size = 62; sourceField = @('boatHullIdNumber');          targetField = 'BoatHullIdNumber' }
         [PSCustomObject]@{ name = 'CoastGuardDocumentNumber';  size = 8;  sourceField = @('coastGuardDocumentNumber');  targetField = 'CoastGuardDocumentNumber' }
-        [PSCustomObject]@{ name = 'DecalNumber';               size = 20; sourceField = @('decalNumber');               targetField = 'DecalNumber' }
+        [PSCustomObject]@{ name = 'DecalNumber';               size = 10; sourceField = @('decalNumber');               targetField = 'DecalNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('imageIndicator');            targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'; size = 60; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
@@ -412,25 +439,25 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('registrationNumber');        targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'TitleLienInformation';      size = 10; sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
+        [PSCustomObject]@{ name = 'TitleLienInformation';      size = 8;  sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
         # BQ combos (state-routed Nlets OOS)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','registrationState'); any = @('boatHullIdNumber','registrationNumber','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','registrationState'); any = @('boatHullIdNumber','registrationNumber','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'BQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','registrationState'); any = @('registrationNumber','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','registrationState'); any = @('registrationNumber','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber','registrationState'); any = @('boatHullIdNumber','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('registrationNumber','registrationState'); any = @('boatHullIdNumber','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
             state                 = 'In/Out'
@@ -438,57 +465,57 @@ $boatQuery = [PSCustomObject]@{
         # QB+Hull/QB+Reg (NCIC stolen -- RelatedHitSearchIndicator in set[] routes here)
         # MUST be before FBQ+Hull/FBQ+Reg: more-specific set[] fires first when flag is filled
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','relatedHitSearchIndicator'); any = @('imageIndicator','registrationNumber') }
+            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','relatedHitSearchIndicator'); any = @('imageIndicator','registrationNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QBBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber','relatedHitSearchIndicator'); any = @('imageIndicator','boatHullIdNumber') }
+            requirements          = [PSCustomObject]@{ set = @('registrationNumber','relatedHitSearchIndicator'); any = @('imageIndicator','boatHullIdNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QBRegistrationNumber'
             state                 = 'In/Out'
         }
         # FBQ combos (FCIC registration -- no RelatedHitSearchIndicator, fires when flag is blank)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('decalNumber','registrationNumber','titleLienInformation','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('decalNumber','registrationNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'FBQBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('boatHullIdNumber','decalNumber','titleLienInformation','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('boatHullIdNumber','decalNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'FBQRegistrationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('decalNumber'); any = @('boatHullIdNumber','registrationNumber','titleLienInformation','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('decalNumber'); any = @('boatHullIdNumber','registrationNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FBQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('titleLienInformation'); any = @('boatHullIdNumber','decalNumber','registrationNumber','imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('titleLienInformation'); any = @('boatHullIdNumber','decalNumber','registrationNumber','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'
         }
         # QB combos with unique set[] fields (already reachable, no routing issue)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('imageIndicator','relatedHitSearchIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('imageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'CoastGuardDocumentNumber'
             keyReference          = 'QBCoastGuardDocumentNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator','relatedHitSearchIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QBNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator','relatedHitSearchIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('imageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QBProcessControlNumber'
             state                 = 'In/Out'
@@ -517,16 +544,17 @@ $providerBundle = [PSCustomObject]@{
 # BUNDLE 2: ENTITIES (5 QUERYINPUTFORM)
 # =====================================================================
 
-# --- Vehicle (2 cards MC: Options + Vehicle Search) ---
-# State on OPTIONS card prevents accidental RQ routing when officer wants FRQ
+# --- Vehicle (2 cards: OPTIONS + SEARCH) ---
+# OPTIONS: State+Image (shared routing for VehReg+VehStolen)
+# SEARCH: Plate/VIN/Decal/Title/NCIC/PCN/OAN/PartSerial (compacted rows)
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_OPT'
-        title = 'Options'
+        title = 'Search Options'
         rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT_1' }
+            @{ id = 'ROW_VEH_O1'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
             )}
         )
     }
@@ -534,33 +562,31 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH_SEARCH'
         title = 'Vehicle Search'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';              node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
-                @{ id = 'DecalNumber_Input';          node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
-                @{ id = 'TitleLienInformation_Input'; node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'DecalNumber_Input';                  node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
+                @{ id = 'TitleLienInformation_Input';         node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_3' }
+                @{ id = 'NCICNumber_Veh_Input';               node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_3' }
+                @{ id = 'ProcessControlNumber_Veh_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Veh_Input';           node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_4' }
-                @{ id = 'ProcessControlNumber_Veh_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_VEH_4' }
-            )}
-            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
-                @{ id = 'OwnerAppliedNumber_Veh_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_VEH_5' }
-                @{ id = 'PartSerialNumber_Input';       node = Inp 'partSerialNumber' 'Part Serial Number' '20' 'ROW_VEH_5' }
+                @{ id = 'OwnerAppliedNumber_Veh_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_VEH_4' }
+                @{ id = 'PartSerialNumber_Input';       node = Inp 'partSerialNumber' 'Part Serial Number' '20' 'ROW_VEH_4' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- 2 cards MC. Options(State,Image) + Vehicle Search(Plate,VIN,Decal,Title,NCIC#,PCN,OAN,PartSerial). State isolated on Options card.'
+    description  = 'Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title/NCIC/PCN/OAN/PartSerial).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -597,17 +623,15 @@ $perLayout = MakeLayouts @(
         title = 'Driver History'
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_DH1' }
                 @{ id = 'RegistrationStateDH_Input';     node = Sel 'registrationStateDH' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
-            @{ id = 'ROW_DH2'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }
                 @{ id = 'NameFirstDH_Input'; node = Inp 'nameFirstDH' 'First Name (DH)' '30' 'ROW_DH2' }
-            )}
-            @{ id = 'ROW_DH3'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_DH3' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'sexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH3' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_DH2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'sexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             @{ id = 'ROW_DH4'; cols = @('12'); fields = @(
                 @{ id = 'AttentionDH_Input'; node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_DH4' }
@@ -657,17 +681,15 @@ $artLayout = MakeLayouts @(
         id    = 'CARD_ART'
         title = 'ARTICLE QUERY'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_ART_1'; cols = @('4','2','4','2'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'articleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_2' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
-            )}
-            @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';          node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_ART_3' }
-                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_3' }
+                @{ id = 'NCICNumber_Input';           node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_ART_2' }
+                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_2' }
             )}
         )
     }
@@ -681,17 +703,18 @@ $articleForm = [PSCustomObject]@{
     targetEntity = 'Article'
 }
 
-# --- Boat (2 cards MC: Options + Boat Search) ---
-# State + Stolen Search on OPTIONS card prevents accidental BQ/QB routing when officer wants FBQ
+# --- Boat (2 cards: OPTIONS + SEARCH) ---
+# OPTIONS: State+StolenSearch+Image (shared routing for BQ/FBQ/QB)
+# SEARCH: Hull/Reg/CG/Decal/Title/NCIC/PCN/Name/DOB (compacted rows)
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA_OPT'
-        title = 'Options'
+        title = 'Search Options'
         rows  = @(
-            @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'registrationState' 'State (leave blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_OPT_1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
+            @{ id = 'ROW_BOA_O1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'registrationState' 'State (leave blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_O1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_O1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
             )}
         )
     }
@@ -699,29 +722,27 @@ $boaLayout = MakeLayouts @(
         id    = 'CARD_BOA_SEARCH'
         title = 'Boat Search'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
+                @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '20' 'ROW_BOA_2' }
-                @{ id = 'TitleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '10' 'ROW_BOA_2' }
-                @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_2' }
+            @{ id = 'ROW_BOA_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_BOA_2' }
+                @{ id = 'TitleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_BOA_2' }
+                @{ id = 'NCICNumber_Input';               node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
+                @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_2' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';           node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
-                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_3' }
-            )}
-            @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name' '30' 'ROW_BOA_4' }
-                @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_BOA_4' }
-                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'DOB' 'ROW_BOA_4' }
+            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name' '30' 'ROW_BOA_3' }
+                @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_BOA_3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'DOB' 'ROW_BOA_3' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- 2 cards MC. Options(State,Stolen,Image) + Boat Search(Hull,Reg,Decal,Title,CG,NCIC,PCN,Name,DOB). State+Stolen isolated on Options card.'
+    description  = 'Boat queries -- MC 2-card: OPTIONS(State/Stolen/Image) + SEARCH(Hull/Reg/CG/Decal/Title/NCIC/PCN/Name/DOB).'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'

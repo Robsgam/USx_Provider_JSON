@@ -1,52 +1,44 @@
-﻿================================================================
-  Build Report: TX_TLETS_MC
-  Source: TX_TLETS_MC.json
-  Generated: 2026-05-18 10:31
-================================================================
-METADATA AUDIT
-==============
-
-============================================================
+﻿============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-05-18 10:31
+ Generated: 2026-05-20 09:18
 ============================================================
 
 ============================================================
  METADATA AUDIT: TX_TLETS
 ============================================================
-  XML: TX_TLET.5.6.2026.xml
+  XML: TX_TLETS.xml
   JSON: TX_TLETS_MC.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
   [PASS] BoatQuery: in XML and JSON
-  [WARN] CCHCriminalHistoryAQQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryARQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryFQQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryIQQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryQHQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryQRQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryQWIQuery: in XML but NOT in JSON (not built)
-  [WARN] CCHCriminalHistoryZRQuery: in XML but NOT in JSON (not built)
+  [INFO] CCHCriminalHistoryAQQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryARQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryFQQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryIQQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryQHQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryQRQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryQWIQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] CCHCriminalHistoryZRQuery: in XML but not in JSON (devdoc determines which queries to build)
   [PASS] DriverHistoryQuery: in XML and JSON
   [PASS] DriverLicenseQuery: in XML and JSON
   [PASS] GunQuery: in XML and JSON
-  [WARN] ProtectiveOrderQuery: in XML but NOT in JSON (not built)
-  [WARN] SexOffenderQuery: in XML but NOT in JSON (not built)
-  [WARN] StolenSecuritiesQuery: in XML but NOT in JSON (not built)
-  [WARN] StolenVehicleQuery: in XML but NOT in JSON (not built)
-  [WARN] TxDriverHistoryQuery: in XML but NOT in JSON (not built)
-  [WARN] TxDriverMultiQuery: in XML but NOT in JSON (not built)
-  [WARN] TxRSDWMultiQuery: in XML but NOT in JSON (not built)
-  [WARN] TxVehicleRegistrationQuery: in XML but NOT in JSON (not built)
+  [INFO] ProtectiveOrderQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] SexOffenderQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] StolenSecuritiesQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] StolenVehicleQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] TxDriverHistoryQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] TxDriverMultiQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] TxRSDWMultiQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] TxVehicleRegistrationQuery: in XML but not in JSON (devdoc determines which queries to build)
   [PASS] VehicleInsuranceRegistrationQuery: in XML and JSON
-  [WARN] VehicleRegistrationQuery: in XML but NOT in JSON (not built)
-  [WARN] WantedPersonQuery: in XML but NOT in JSON (not built)
-  [WARN] WMPIMissingPersonQuery: in XML but NOT in JSON (not built)
-  [WARN] WMPIProtectionOrderQuery: in XML but NOT in JSON (not built)
-  [WARN] WMPISexOffenderQuery: in XML but NOT in JSON (not built)
-  [WARN] WMPIUnidentifiedPersonQuery: in XML but NOT in JSON (not built)
-  [WARN] WMPIWantedPersonQuery: in XML but NOT in JSON (not built)
+  [INFO] VehicleRegistrationQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WantedPersonQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WMPIMissingPersonQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WMPIProtectionOrderQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WMPISexOffenderQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WMPIUnidentifiedPersonQuery: in XML but not in JSON (devdoc determines which queries to build)
+  [INFO] WMPIWantedPersonQuery: in XML but not in JSON (devdoc determines which queries to build)
   [FAIL] VehicleStolenQuery: in JSON but NOT in XML (invalid query)
 
 --- CHECK 2: KeyReference Validation ---
@@ -75,17 +67,17 @@ METADATA AUDIT
   [INFO] QBNCICNumber: invented keyRef (not in XML) -- acceptable
   [INFO] AQ: XML keyRef (CCHCriminalHistoryAQQuery) not used in any JSON combo
   [INFO] AR: XML keyRef (CCHCriminalHistoryARQuery) not used in any JSON combo
-  [INFO] BQ: XML keyRef (BoatQuery) not used in any JSON combo
+  [INFO] BQ: XML keyRef (BoatQuery) replaced by invented variants (BQBoatHullIdNumber,BQRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber,QBRegistrationNumber)
   [INFO] CPI: XML keyRef (TxDriverHistoryQuery) not used in any JSON combo
-  [INFO] CPL: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] CPL: XML keyRef (DriverLicenseQuery) replaced by invented variants (DQName,DQOperatorLicenseNumber,QWName)
   [INFO] DPSI: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
-  [INFO] DQ: XML keyRef (DriverLicenseQuery) not used in any JSON combo
+  [INFO] DQ: XML keyRef (DriverLicenseQuery) replaced by invented variants (DQName,DQOperatorLicenseNumber,QWName)
   [INFO] FQ: XML keyRef (CCHCriminalHistoryFQQuery) not used in any JSON combo
   [INFO] IQ: XML keyRef (CCHCriminalHistoryIQQuery) not used in any JSON combo
-  [INFO] KQ: XML keyRef (DriverHistoryQuery) not used in any JSON combo
-  [INFO] QA: XML keyRef (ArticleSingleQuery) not used in any JSON combo
-  [INFO] QB: XML keyRef (BoatQuery) not used in any JSON combo
-  [INFO] QG: XML keyRef (GunQuery) not used in any JSON combo
+  [INFO] KQ: XML keyRef (DriverHistoryQuery) replaced by invented variants (KQName,KQOperatorLicenseNumber)
+  [INFO] QA: XML keyRef (ArticleSingleQuery) replaced by invented variants (QAArticleSerialNumber,QANCICNumber)
+  [INFO] QB: XML keyRef (BoatQuery) replaced by invented variants (BQBoatHullIdNumber,BQRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber,QBRegistrationNumber)
+  [INFO] QG: XML keyRef (GunQuery) replaced by invented variants (QGGunSerialNumber,QGNCICNumber)
   [INFO] QH: XML keyRef (CCHCriminalHistoryQHQuery) not used in any JSON combo
   [INFO] QM: XML keyRef (WMPIMissingPersonQuery) not used in any JSON combo
   [INFO] QPO: XML keyRef (WMPIProtectionOrderQuery) not used in any JSON combo
@@ -97,11 +89,11 @@ METADATA AUDIT
   [INFO] QWA: XML keyRef (WantedPersonQuery) not used in any JSON combo
   [INFO] QWI: XML keyRef (CCHCriminalHistoryQWIQuery) not used in any JSON combo
   [INFO] QXS: XML keyRef (WMPISexOffenderQuery) not used in any JSON combo
-  [INFO] REG: XML keyRef (VehicleInsuranceRegistrationQuery) not used in any JSON combo
+  [INFO] REG: XML keyRef (VehicleInsuranceRegistrationQuery) replaced by invented variants (DPSIStickerNumber,QVLicensePlateNumber,QVVehicleIdentificationNumber,REGLicensePlateNumber,RQLicensePlateNumber,RQVehicleIdentificationNumber,VINVehicleIdentificationNumber)
   [INFO] RQ: XML keyRef (VehicleRegistrationQuery) not used in any JSON combo
   [INFO] RSDW: XML keyRef (TxRSDWMultiQuery) not used in any JSON combo
   [INFO] RSDWW: XML keyRef (TxRSDWMultiQuery) not used in any JSON combo
-  [INFO] VIN: XML keyRef (VehicleInsuranceRegistrationQuery) not used in any JSON combo
+  [INFO] VIN: XML keyRef (VehicleInsuranceRegistrationQuery) replaced by invented variants (DPSIStickerNumber,QVLicensePlateNumber,QVVehicleIdentificationNumber,REGLicensePlateNumber,RQLicensePlateNumber,RQVehicleIdentificationNumber,VINVehicleIdentificationNumber)
   [INFO] ZR: XML keyRef (CCHCriminalHistoryZRQuery) not used in any JSON combo
 
 --- CHECK 3: Field Coverage ---
@@ -141,10 +133,10 @@ METADATA AUDIT
   [INFO]   attentionDH: in QIDM sourceField but not in XML
   [INFO]   birthDateDH: in QIDM sourceField but not in XML
   [INFO]   emailAddressDH: in QIDM sourceField but not in XML
-  [INFO]   nameFirstDH: in QIDM sourceField but not in XML
-  [INFO]   nameLastDH: in QIDM sourceField but not in XML
-  [INFO]   nameMiddleDH: in QIDM sourceField but not in XML
-  [INFO]   nameSuffixDH: in QIDM sourceField but not in XML
+  [INFO]   nameFirstDH: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameLastDH: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameMiddleDH: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameSuffixDH: composite sourceField for Name (FormatStringRuleHandler)
   [INFO]   operatorLicenseNumberDH: in QIDM sourceField but not in XML
   [INFO]   purposeCodeDH: in QIDM sourceField but not in XML
   [INFO]   reasonCodeDH: in QIDM sourceField but not in XML
@@ -155,7 +147,7 @@ METADATA AUDIT
   [PASS]   EmailAddress: in XML and QIDM
   [PASS]   ExpandedBirthDateSearchCode: in XML and QIDM
   [PASS]   ImageIndicator: in XML and QIDM
-  [WARN]   MessageKey: in XML but not in QIDM
+  [INFO]   MessageKey: in XML but not in QIDM (CHECK 4/5 validates if required)
   [PASS]   Name: in XML and QIDM
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   RaceCode: in XML and QIDM
@@ -163,10 +155,10 @@ METADATA AUDIT
   [PASS]   RegionId: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  [INFO]   nameFirst: in QIDM sourceField but not in XML
-  [INFO]   nameLast: in QIDM sourceField but not in XML
-  [INFO]   nameMiddle: in QIDM sourceField but not in XML
-  [INFO]   nameSuffix: in QIDM sourceField but not in XML
+  [INFO]   nameFirst: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameLast: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameMiddle: composite sourceField for Name (FormatStringRuleHandler)
+  [INFO]   nameSuffix: composite sourceField for Name (FormatStringRuleHandler)
   [INFO]   registrationState: in QIDM only (form-only field)
   GunQuery:
   [PASS]   GunCaliber: in XML and QIDM
@@ -205,32 +197,111 @@ METADATA AUDIT
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
-  [INFO]   keyRef QA: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef QA: any field 'ImageIndicator' covered by invented variants (QAArticleSerialNumber,QANCICNumber)
+  [PASS]   keyRef QA: any field 'RelatedHitSearchIndicator' covered by invented variants (QAArticleSerialNumber,QANCICNumber)
   BoatQuery:
-  [INFO]   keyRef QB: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QB: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QB: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef BQ: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef BQ: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef QB: set field 'RegistrationNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'BoatHullIdNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'ImageIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: set field 'BoatHullIdNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'ImageIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: set field 'NCICNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'ImageIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef BQ: set field 'RegistrationNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef BQ: any field 'State' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef BQ: set field 'BoatHullIdNumber' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
+  [PASS]   keyRef BQ: any field 'State' covered by invented variants (BQRegistrationNumber,BQBoatHullIdNumber,QBRegistrationNumber,QBBoatHullIdNumber,QBNCICNumber)
   DriverHistoryQuery:
-  [INFO]   keyRef KQ: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef KQ: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'Attention' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'State' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: set field 'Name' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: set field 'BirthDate' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: set field 'SexCode' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'Attention' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by invented variants (KQName,KQOperatorLicenseNumber)
+  [PASS]   keyRef KQ: any field 'State' covered by invented variants (KQName,KQOperatorLicenseNumber)
   DriverLicenseQuery:
-  [INFO]   keyRef DQ: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QW: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef CPL: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef RSDWW: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef DQ: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef DQ: set field 'SexCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: set field 'BirthDate' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: set field 'Name' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'EmailAddress' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'ImageIndicator' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'ReasonCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'State' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: set field 'BirthDate' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: set field 'Name' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: any field 'ExpandedBirthDateSearchCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: any field 'RaceCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: any field 'RegionId' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef QW: any field 'SexCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef CPL: set field 'Name' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef CPL: any field 'EmailAddress' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef CPL: any field 'ImageIndicator' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [INFO]   keyRef CPL: XML any field 'MessageKey' not in invented variants
+  [PASS]   keyRef CPL: any field 'ReasonCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef CPL: any field 'State' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: set field 'OperatorLicenseNumber' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: any field 'EmailAddress' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: any field 'ImageIndicator' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: any field 'ReasonCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: any field 'RegionId' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef RSDWW: any field 'State' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'EmailAddress' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'ImageIndicator' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'ReasonCode' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
+  [PASS]   keyRef DQ: any field 'State' covered by invented variants (DQName,QWName,DQOperatorLicenseNumber)
   GunQuery:
-  [INFO]   keyRef QG: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef QG: any field 'ImageIndicator' covered by invented variants (QGGunSerialNumber,QGNCICNumber)
+  [PASS]   keyRef QG: any field 'RelatedHitSearchIndicator' covered by invented variants (QGGunSerialNumber,QGNCICNumber)
   VehicleInsuranceRegistrationQuery:
-  [INFO]   keyRef RQ: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef RQ: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef QV: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef DPSI: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef REG: no exact match in JSON (may use invented keyRef)
-  [INFO]   keyRef VIN: no exact match in JSON (may use invented keyRef)
+  [PASS]   keyRef RQ: set field 'LicensePlateNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: set field 'LicensePlateYear' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: set field 'LicensePlateTypeCode' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef QV: any field 'RegionId' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef QV: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef RQ: any field 'VehicleYear' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef QV: any field 'RegionId' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef DPSI: set field 'StickerNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef DPSI: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef REG: set field 'LicensePlateNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef REG: set field 'LicensePlateYear' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef REG: set field 'FinancialResponsibilityType' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef REG: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef VIN: set field 'VehicleIdentificationNumber' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef VIN: set field 'FinancialResponsibilityType' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+  [PASS]   keyRef VIN: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
+
+--- CHECK 5: Primary Field Coverage (HARD GATE) ---
+  ArticleSingleQuery: 1 metadata search paths
+  [PASS]   ArticleSerialNumber: at least one combo built (e.g. QA)
+  BoatQuery: 3 metadata search paths
+  [PASS]   BoatHullIdNumber: at least one combo built (e.g. QB)
+  [PASS]   NCICNumber: at least one combo built (e.g. QB)
+  [PASS]   RegistrationNumber: at least one combo built (e.g. QB)
+  DriverHistoryQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. KQ)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. KQ)
+  DriverLicenseQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. DQ)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. RSDWW)
+  GunQuery: 1 metadata search paths
+  [PASS]   GunSerialNumber: at least one combo built (e.g. QG)
+  VehicleInsuranceRegistrationQuery: 3 metadata search paths
+  [PASS]   LicensePlateNumber: at least one combo built (e.g. RQ)
+  [PASS]   StickerNumber: at least one combo built (e.g. DPSI)
+  [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. RQ)
 
 --- CHECK 5: Field maxLength Alignment ---
   [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
@@ -270,6 +341,5 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 86 PASS / 1 FAIL / 24 WARN / 93 INFO
+Total: 177 PASS / 1 FAIL / 0 WARN / 97 INFO
 ============================================================
-

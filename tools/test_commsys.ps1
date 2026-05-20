@@ -63,6 +63,7 @@ $testData["Person"] = @{
     dexStateUserId             = "BADGE"
     StateDH                    = "AZ"
     SocialSecurityNumber       = "123456789"
+    criminalIdNumber           = "CA12345678"
     RaceCode                   = "W"
     NCICNumber                 = "W123456789"
     Age                        = "30"
@@ -102,6 +103,10 @@ $testData["Vehicle"] = @{
     ImageIndicator              = "Y"
     RelatedHitSearchIndicator   = "Y"
     dexStateUserId              = "BADGE"
+    nameLast                    = "Doe"
+    nameFirst                   = "John"
+    addressCity                 = "Los Angeles"
+    addressStreetNumber         = "123"
 }
 $testData["Firearm"] = @{
     caRequestPurposeCode      = "C"
@@ -117,6 +122,8 @@ $testData["Firearm"] = @{
     ImageIndicator            = "Y"
     RelatedHitSearchIndicator = "Y"
     dexStateUserId            = "BADGE"
+    nameLast                  = "Doe"
+    nameFirst                 = "John"
 }
 $testData["Article"] = @{
     caRequestPurposeCode      = "C"
