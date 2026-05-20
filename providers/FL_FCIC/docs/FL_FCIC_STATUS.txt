@@ -1,8 +1,8 @@
 FL_FCIC Build Status
 ====================
-Current: v4.2 | BASE 97P/0F/0W/0LIM | MC 97P/0F/0W/0LIM | Updated 2026-05-19
-Current version : v4.2
-Last updated    : 2026-05-19
+Current: v4.4 | MC 101P/0F/0W/0LIM | 37 combos | Updated 2026-05-20
+Current version : v4.4
+Last updated    : 2026-05-20
 Output file     : FL_FCIC_MC.json (BASE in phases/base/)
 Build script    : scripts/build_fl_fcic.ps1
 Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
@@ -23,15 +23,16 @@ FL_FCIC BUNDLE -- 7 QUERYINPUTDATAMAPPING CONFIGURATIONS
   Name                                Query                      Combos  Entity
   ----------------------------------  -------------------------  ------  ------
   FL_FCIC_VehicleRegistrationQuery    VehicleRegistrationQuery   6       Vehicle
-  FL_FCIC_VehicleStolenQuery          VehicleStolenQuery         2       Vehicle
+  FL_FCIC_VehicleStolenQuery          VehicleStolenQuery         6       Vehicle
   FL_FCIC_DriverLicenseQuery          DriverLicenseQuery         4       Person
   FL_FCIC_DriverHistoryQuery          DriverHistoryQuery         2       Person
   FL_FCIC_GunQuery                    GunQuery                   3       Firearm
   FL_FCIC_ArticleSingleQuery          ArticleSingleQuery         4       Article
   FL_FCIC_BoatQuery                   BoatQuery                  12      Boat
 
-  Total: 7 QIDMs, 35 combos (33 CommSys + 2 RMS)
+  Total: 7 QIDMs, 37 combos (35 CommSys + 2 RMS)
   WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW
+  VehicleStolenQuery EXPANDED v4.4 -- 2→6 combos (OAN, PSN, PCN, NCIC added)
 
 KEY REFERENCE LEGEND
 --------------------
@@ -288,6 +289,31 @@ LIVE TEST STATUS -- MC v4.1
   - Boat State label updated: "leave blank for FL, required for name/DOB" (T18 insight)
   - DH one-directional deselect: DH check->DL off, DH uncheck->both off (officer re-clicks DL)
   - All date formats yyyyMMdd, all name formats Last,First (no space)
+
+LIVE TEST STATUS -- MC v4.4
+-------------------------------
+  Date: 2026-05-20
+  Result: 7 PASS / 0 FAIL (delta tests; v4.1 44/44 baseline)
+  Combo coverage: 37/37
+
+  Test Matrix (delta from v4.1 — 4 new QV combos + render + 2 regression):
+  #   Phase       Entity    Combo                Result  Notes
+  --  ----------  --------  -------------------  ------  -----
+   1  Render      Vehicle   RENDER               PASS    2 new fields: ownerAppliedNumber, partSerialNumber (Row 5)
+   2  New QV      Vehicle   QV+OAN               PASS    ownerAppliedNumber=OAN999, QV fires, no VehReg co-fire
+   3  New QV      Vehicle   QV+PartSerial        PASS    partSerialNumber=PSN12345, QV fires
+   4  New QV      Vehicle   QV+PCN               PASS    processControlNumber=0000012345, QV fires
+   5  New QV      Vehicle   QV+NCIC              PASS    ncicNumber=V123456789, QV fires
+   6  Regression  Vehicle   FRQ+Plate            PASS    FRQ+QV co-fire, PlateYear=2026 default, RMS elastic
+   7  Regression  Person    FDQ+OLN              PASS    FDQ fires, ImageIndicator=Y, no QW, RMS elastic
+
+  Notes:
+  - All 4 new VehicleStolenQuery combos confirmed reachable
+  - ImageIndicator defaults correct (N on Vehicle, Y on Person DL)
+  - PlateYear=2026 dynamic default present in FRQ XML
+  - RMS elastic co-fire on both Vehicle and Person regression tests
+
+IMPORT: IMPORTED 2026-05-20
 
 PENDING
 -------
