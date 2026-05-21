@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_eSUN_MC
   Source: CA_eSUN_MC.json
-  Generated: 2026-05-16 15:07
+  Generated: 2026-05-21 15:59
 ================================================================
 CAD AUDIT
 =========
@@ -149,6 +149,28 @@ CAD AUDIT
     [PASS] QIDM 'CA_eSUN_DriverHistoryQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'CA_eSUN_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_BoatQuery' combo BQ.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_BoatQuery' combo BQ.R -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo DQ.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.N.DH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQ.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.O.DH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_GunQuery' combo QGH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_GunQuery' combo QGB -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo RQ.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo VP.D -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo VP.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo QV.V -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo QV.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo QV.P -- missing default for LicensePlateYear (form default='2026')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -156,6 +178,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 34 PASS / 15 FAIL / 0 WARN / 77 INFO
+Total: 52 PASS / 17 FAIL / 0 WARN / 77 INFO
 
 

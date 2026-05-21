@@ -1,8 +1,8 @@
 ﻿FL_FCIC METADATA REFERENCE
 ===========================
-Generated: 2026-05-15
-Source: FL_FCIC.xml (metadata) + FL_FCIC_BASE.json
-Metadata: 177 total transactions, 8 queries built in JSON
+Generated: 2026-05-21
+Source: FL_FCIC.xml (metadata) + FL_FCIC.json
+Metadata: 177 total transactions, 7 queries built in JSON
 
 ================================================================================
 1. ArticleSingleQuery (version 9)
@@ -122,8 +122,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           Attention, PurposeCode, Req...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationStateDH]
-  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, registrationStateDH]
+  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH]
   SKIP    KQ             Name -- MC expansion candidate
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
 
@@ -274,77 +274,19 @@ METADATA COMBINATIONS (6 total):
   QV            PartSerialNumber        PartSerialNumber                                       ImageIndicator, RelatedHitS...
   QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
 
-BUILD COVERAGE (2 of 6 built):
+BUILD COVERAGE (6 of 6 built):
   BUILT   QVLicensePlateNumber set[licensePlateNumber]
   BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   QVProcessControlNumber set[processControlNumber]
+  BUILT   QVNCICNumber   set[ncicNumber]
+  BUILT   QVOwnerAppliedNumber set[ownerAppliedNumber]
+  BUILT   QVPartSerialNumber set[partSerialNumber]
   SKIP    QV             ProcessControlNumber -- MC expansion candidate
   SKIP    QV             LicensePlateNumber -- MC expansion candidate
   SKIP    QV             NCICNumber -- MC expansion candidate
   SKIP    QV             OwnerAppliedNumber -- MC expansion candidate
   SKIP    QV             PartSerialNumber -- MC expansion candidate
   SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
-
-================================================================================
-8. WantedPersonQuery (version 18)
-================================================================================
-
-METADATA FIELDS (26):
-  BirthDate                   Date          maxLen= 8  Shall be a valid Gregorian Date (CCYYMMDD). The DOB shall...
-  DepartmentCorrectionsNumber Alphanumeric  maxLen= 6  department corrections number
-  ExpandedNameSearchCode      Alphabetic    maxLen= 1  Must be Y or N
-  FBINumber                   Alphanumeric  maxLen= 9  Shall be one of the following formats: up to 7 numeric, 1...
-  ImageIndicator              Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
-  JuvenileJusticeNumber       Alphanumeric  maxLen=10  juvenile justice number
-  LicensePlateNumber          Alphanumeric  maxLen=10  The values 'UNK', 'UNKN', 'UNKNOWN' shall be prohibited. ...
-  LicensePlateStateCode       Alphanumeric  maxLen= 2  part 6 codes from the code manual are used as reference only
-  LocalIdNumber               Alphanumeric  maxLen=10  local identification number
-  MiscellaneousNumber         Alphanumeric  maxLen=15  miscellaneous number
-  Name                        Name          maxLen=30  name of person
-  NCICNumber                  Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
-  OperatorLicenseNumber       Alphanumeric  maxLen=20  single zero only or run of zeros only shall be prohibited
-  OriginatingAgencyCaseNumber Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
-  OwnerAppliedNumber          Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
-  ProcessControlNumber        Alphanumeric  maxLen=10  FCIC process control number
-  RaceCode                    Alphabetic    maxLen= 1  Shall be a valid code from part 4 of code manual
-  RelatedHitSearchIndicator   Alphabetic    maxLen= 1  Must be Y or N
-  Requestor                   Alphanumeric  maxLen=30  attention
-  SerialNumber                Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
-  SexCode                     Alphabetic    maxLen= 1  Shall be a valid code from Part 4 of the code manual
-  SocialSecurityNumber        Alphanumeric  maxLen= 9  social security number
-  StateIdNumber               Alphanumeric  maxLen=10  state identification number
-  VehicleIdentificationNumber Alphanumeric  maxLen=20  Shall validate length and type. Single zero only, run of ...
-  VehicleMake                 Alphanumeric  maxLen=24  Vehicle Make
-  VehicleMakeCode             Alphanumeric  maxLen=24  The first four characters shall be a valid code from part...
-
-METADATA COMBINATIONS (11 total):
-  KeyRef      Primary                 Set                                                    Any
-  ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  QW            DepartmentCorrectionsNumber  DepartmentCorrectionsNumber                            BirthDate, ExpandedNameSear...
-  QW            JuvenileJusticeNumber   JuvenileJusticeNumber                                  BirthDate, DepartmentCorrec...
-  QW            LicensePlateNumber      LicensePlateNumber                                     BirthDate, DepartmentCorrec...
-  QW            LocalIdNumber           LocalIdNumber                                          BirthDate, DepartmentCorrec...
-  QW            Name                    Name                                                   DepartmentCorrectionsNumber...
-  QW            NCICNumber              NCICNumber                                             BirthDate, DepartmentCorrec...
-  QW            OwnerAppliedNumber      OwnerAppliedNumber                                     BirthDate, DepartmentCorrec...
-  QW            ProcessControlNumber    ProcessControlNumber                                   BirthDate, DepartmentCorrec...
-  QW            SerialNumber            SerialNumber                                           BirthDate, DepartmentCorrec...
-  QW            StateIdNumber           StateIdNumber                                          BirthDate, DepartmentCorrec...
-  QW            VehicleIdentificationNumber  VehicleIdentificationNumber                            BirthDate, DepartmentCorrec...
-
-BUILD COVERAGE (2 of 11 built):
-  BUILT   QWOperatorLicenseNumber set[nameLast, nameFirst, operatorLicenseNumber]
-  BUILT   QWName         set[birthDate, nameLast, nameFirst]
-  SKIP    QW             DepartmentCorrectionsNumber -- MC expansion candidate
-  SKIP    QW             JuvenileJusticeNumber -- MC expansion candidate
-  SKIP    QW             LicensePlateNumber -- MC expansion candidate
-  SKIP    QW             LocalIdNumber -- MC expansion candidate
-  SKIP    QW             Name -- MC expansion candidate
-  SKIP    QW             NCICNumber -- MC expansion candidate
-  SKIP    QW             OwnerAppliedNumber -- MC expansion candidate
-  SKIP    QW             ProcessControlNumber -- MC expansion candidate
-  SKIP    QW             SerialNumber -- MC expansion candidate
-  SKIP    QW             StateIdNumber -- MC expansion candidate
-  SKIP    QW             VehicleIdentificationNumber -- MC expansion candidate
 
 ================================================================================
 BUILD SUMMARY
@@ -358,13 +300,12 @@ BUILD SUMMARY
   DriverLicenseQuery                         6      4     2  67%
   GunQuery                                   3      3     0  100% (COMPLETE)
   VehicleRegistrationQuery                   8      6     2  75%
-  VehicleStolenQuery                         6      2     4  33%
-  WantedPersonQuery                         11      2     9  18%
+  VehicleStolenQuery                         6      6     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   52     35    17  67%
+  TOTAL                                   41     37     4  90%
 
 ================================================================================
-MC EXPANSION CANDIDATES (52 combos not in BASE)
+MC EXPANSION CANDIDATES (41 combos not in BASE)
 ================================================================================
 
   QA             ArticleSerialNumber      (ArticleSingleQuery)
@@ -408,20 +349,9 @@ MC EXPANSION CANDIDATES (52 combos not in BASE)
   QV             OwnerAppliedNumber       (VehicleStolenQuery)
   QV             PartSerialNumber         (VehicleStolenQuery)
   QV             VehicleIdentificationNumber (VehicleStolenQuery)
-  QW             DepartmentCorrectionsNumber (WantedPersonQuery)
-  QW             JuvenileJusticeNumber    (WantedPersonQuery)
-  QW             LicensePlateNumber       (WantedPersonQuery)
-  QW             LocalIdNumber            (WantedPersonQuery)
-  QW             Name                     (WantedPersonQuery)
-  QW             NCICNumber               (WantedPersonQuery)
-  QW             OwnerAppliedNumber       (WantedPersonQuery)
-  QW             ProcessControlNumber     (WantedPersonQuery)
-  QW             SerialNumber             (WantedPersonQuery)
-  QW             StateIdNumber            (WantedPersonQuery)
-  QW             VehicleIdentificationNumber (WantedPersonQuery)
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (169 of 177 in metadata)
+ALL UNBUILT TRANSACTIONS (170 of 177 in metadata)
 ================================================================================
 
   AdministrativeMessage                    v9    2 combos
@@ -537,6 +467,7 @@ ALL UNBUILT TRANSACTIONS (169 of 177 in metadata)
   NletsSexOffenderRegistrationQuery        v6    1 combos
   VehicleRegistrationNameQuery             v7    1 combos
   VehicleTitleLeinQuery                    v11   3 combos
+  WantedPersonQuery                        v18   11 combos
   WMPEDetainerCancel                       v10   2 combos
   WMPEDetainerEntry                        v10   2 combos
   WMPEDetainerModify                       v10   2 combos

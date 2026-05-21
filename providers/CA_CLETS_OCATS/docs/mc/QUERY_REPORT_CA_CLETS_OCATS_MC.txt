@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_CLETS_OCATS_MC
   Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-05-16 15:07
+  Generated: 2026-05-21 15:59
 ================================================================
 QUERY SIMULATION
 ================
@@ -25,6 +25,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -42,12 +43,29 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] VP -- missing set: NameLast, NameFirst
+
+    [FIRES] VP
+      set: [CaRequestPurposeCode, NameLast, NameFirst]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>VP</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
     [FIRES] 4V
       set: [CaRequestPurposeCode, VehicleIdentificationNumber]
@@ -60,6 +78,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -77,6 +96,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>

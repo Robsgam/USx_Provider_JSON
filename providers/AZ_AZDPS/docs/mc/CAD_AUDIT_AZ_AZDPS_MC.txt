@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: AZ_AZDPS_MC
   Source: AZ_AZDPS_MC.json
-  Generated: 2026-05-16 15:07
+  Generated: 2026-05-21 15:59
 ================================================================
 CAD AUDIT
 =========
@@ -157,6 +157,30 @@ CAD AUDIT
     [PASS] QIDM 'AZ_AZDPS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVR -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVR -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVR -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVRV -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVRV -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVRV -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo ACWL -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQN -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQ -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQSS -- missing default for State (form default='AZ')
+    [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQ -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_GunQuery' combo ACQG -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' combo ACQA -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'AZ_AZDPS_BoatQuery' combo ACQB -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_BoatQuery' combo ACQBH -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_BoatQuery' combo BQ -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_BoatQuery' combo BQH -- missing default for State (form default='AZ')
+    [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo ACQW -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo ACQWN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo ACQM -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo ACQMN -- defaults cover all initialValue any[] fields
     [FAIL] RMS QIDM 'RMS Person Search query': attr 'race' sourceField='raceCode' (QIF has 'RaceCode')
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -164,6 +188,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 52 PASS / 4 FAIL / 0 WARN / 78 INFO
+Total: 60 PASS / 18 FAIL / 0 WARN / 78 INFO
 
 

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TN_TIES_MC
   Source: TN_TIES_MC.json
-  Generated: 2026-05-16 15:10
+  Generated: 2026-05-21 16:02
 ================================================================
 CAD AUDIT
 =========
@@ -144,6 +144,36 @@ CAD AUDIT
     [PASS] QIDM 'TN_TIES_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'TN_TIES_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'TN_TIES_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ01 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV01 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ03 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV03 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ06 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ05 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ07 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.V -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.D -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo QWA -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ02 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ.O -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ01 -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ06 -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo KQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo KQ.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo DQ05 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_GunQuery' combo QG -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_BoatQuery' combo BB.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_BoatQuery' combo BB.R -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_BoatQuery' combo QB.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_BoatQuery' combo QB.R -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -151,6 +181,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 36 PASS / 12 FAIL / 0 WARN / 73 INFO
+Total: 60 PASS / 16 FAIL / 0 WARN / 73 INFO
 
 

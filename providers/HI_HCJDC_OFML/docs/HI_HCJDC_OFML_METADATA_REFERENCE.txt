@@ -1,7 +1,7 @@
 ﻿HI_HCJDC_OFML METADATA REFERENCE
 =================================
-Generated: 2026-05-11
-Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_BASE.json
+Generated: 2026-05-21
+Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_MC.json
 Metadata: 15 total transactions, 7 queries built in JSON
 
 ================================================================================
@@ -19,7 +19,7 @@ METADATA COMBINATIONS (1 total):
   QA                                    ArticleSerialNumber, ArticleTypeCode                   RelatedSearchHitIndicator
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[articleSerialNumber, articleTypeCode]
+  BUILT   QA             set[ArticleSerialNumber, ArticleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 5)
@@ -38,8 +38,8 @@ METADATA COMBINATIONS (2 total):
   QB                                                                                           RelatedSearchHitIndicator
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   BQ             set[registrationNumber]
-  BUILT   QB             set[boatHullIdNumber]
+  BUILT   BQ             set[RegistrationNumber]
+  BUILT   QB             set[BoatHullIdNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 4)
@@ -61,8 +61,8 @@ METADATA COMBINATIONS (2 total):
   KQ            Name                    SexCode, BirthDate, Name                               Attention, PurposeCode, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQ             set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-  BUILT   KQN            set[operatorLicenseNumberDH]
+  BUILT   KQ             set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+  BUILT   KQN            set[OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 4)
@@ -87,9 +87,9 @@ METADATA COMBINATIONS (3 total):
   QW            Name                    BirthDate, Name                                        SexCode
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   DQ             set[sexCode, birthDate, nameLast, nameFirst]
-  BUILT   QW             set[birthDate, nameLast, nameFirst]
-  BUILT   DQN            set[operatorLicenseNumber]
+  BUILT   DQ             set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   QW             set[BirthDate, NameLast, NameFirst]
+  BUILT   DQN            set[OperatorLicenseNumber]
 
 ================================================================================
 5. GunQuery (version 4)
@@ -108,7 +108,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, GunMod...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[gunSerialNumber]
+  BUILT   QG             set[GunSerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 5)
@@ -140,12 +140,12 @@ METADATA COMBINATIONS (6 total):
   M55S          VehicleIdentificationNumber  VehicleTypeCode, VehicleIdentificationNumber           --
 
 BUILD COVERAGE (6 of 6 built):
-  BUILT   RQ             set[licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-  BUILT   M55L           set[vehicleTypeCode, licensePlateNumber]
-  BUILT   QVP            set[licensePlateNumber, registrationState]
-  BUILT   M55S           set[vehicleTypeCode, vehicleIdentificationNumber]
-  BUILT   QVV            set[vehicleIdentificationNumber, vehicleMakeCode]
-  BUILT   RQV            set[vehicleIdentificationNumber]
+  BUILT   RQ             set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  BUILT   M55L           set[VehicleTypeCode, LicensePlateNumber]
+  BUILT   QVP            set[LicensePlateNumber, RegistrationState]
+  BUILT   M55S           set[VehicleTypeCode, VehicleIdentificationNumber]
+  BUILT   QVV            set[VehicleIdentificationNumber, VehicleMakeCode]
+  BUILT   RQV            set[VehicleIdentificationNumber]
   SKIP    QV             LicensePlateNumber -- MC expansion candidate
   SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
 

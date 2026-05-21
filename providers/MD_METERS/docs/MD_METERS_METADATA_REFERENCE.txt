@@ -1,7 +1,7 @@
 ﻿MD_METERS METADATA REFERENCE
 =============================
-Generated: 2026-05-08
-Source: MD_METERS.xml (metadata) + MD_METERS_BASE.json
+Generated: 2026-05-21
+Source: MD_METERS.xml (metadata) + MD_METERS_MC.json
 Metadata: 10 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -18,7 +18,7 @@ METADATA COMBINATIONS (1 total):
   ZART          ArticleSerialNumber     ArticleTypeCode, ArticleSerialNumber                   --
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ZART           set[serialNumber, articleTypeCode]
+  BUILT   ZART           set[SerialNumber, ArticleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 4)
@@ -36,8 +36,8 @@ METADATA COMBINATIONS (2 total):
   ZBOA          RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, ImageIndi...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   ZBOA.H         set[boatHullIdNumber]
-  BUILT   ZBOA.R         set[registrationNumber]
+  BUILT   ZBOA.H         set[BoatHullIdNumber]
+  BUILT   ZBOA.R         set[RegistrationNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 6)
@@ -57,8 +57,8 @@ METADATA COMBINATIONS (2 total):
   ZDRV          Name                    BirthDate, Name, SexCode                               ImageIndicator
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   ZDRV.O         set[operatorLicenseNumber]
-  BUILT   ZDRV.N         set[birthDate, nameLast, nameFirst, sexCode]
+  BUILT   ZDRV.N         set[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  BUILT   ZDRV.O         set[OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 7)
@@ -85,10 +85,10 @@ METADATA COMBINATIONS (5 total):
   ZLDR          OperatorLicenseNumber   OperatorLicenseNumber                                  State, ImageIndicator
 
 BUILD COVERAGE (4 of 5 built):
-  BUILT   ZWAR.N         set[birthDate, nameLast, nameFirst, raceCode, sexCode]
-  BUILT   ZWAR.O         set[nameLast, nameFirst, operatorLicenseNumber, raceCode, sexCode]
-  BUILT   ZLDR.O         set[operatorLicenseNumber]
-  BUILT   ZLDR.N         set[birthDate, nameLast, nameFirst, sexCode]
+  BUILT   ZWAR.N         set[BirthDate, NameLast, NameFirst, RaceCode, SexCode]
+  BUILT   ZWAR.O         set[NameLast, NameFirst, OperatorLicenseNumber, RaceCode, SexCode]
+  BUILT   ZLDR.N         set[BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   ZLDR.O         set[OperatorLicenseNumber]
   SKIP    ZDRV           OperatorLicenseNumber -- MC expansion candidate
 
 ================================================================================
@@ -106,7 +106,7 @@ METADATA COMBINATIONS (1 total):
   ZGUN          GunMake                 GunCaliber, GunMake, GunSerialNumber                   --
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ZGUN           set[gunCaliber, firearmMake, serialNumber]
+  BUILT   ZGUN           set[GunCaliber, FirearmMake, SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 6)
@@ -130,10 +130,10 @@ METADATA COMBINATIONS (4 total):
   ZLRG          VehicleIdentificationNumber  VehicleIdentificationNumber                            State, ImageIndicator
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   ZLRG.P         set[licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-  BUILT   ZLRG.V         set[vehicleIdentificationNumber]
-  BUILT   ZVEH.V         set[vehicleIdentificationNumber]
-  BUILT   ZVEH.P         set[licensePlateNumber]
+  BUILT   ZLRG.P         set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  BUILT   ZLRG.V         set[VehicleIdentificationNumber]
+  BUILT   ZVEH.V         set[VehicleIdentificationNumber]
+  BUILT   ZVEH.P         set[LicensePlateNumber]
 
 ================================================================================
 BUILD SUMMARY

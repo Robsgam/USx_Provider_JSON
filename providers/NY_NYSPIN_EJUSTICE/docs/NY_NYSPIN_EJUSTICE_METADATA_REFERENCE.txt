@@ -1,7 +1,7 @@
 ﻿NY_NYSPIN_EJUSTICE METADATA REFERENCE
 ======================================
-Generated: 2026-05-08
-Source: NY_NYSPIN_EJUSTICE.XML (metadata) + NY_NYSPIN_EJUSTICE_BASE.json
+Generated: 2026-05-21
+Source: NY_NYSPIN_EJUSTICE.XML (metadata) + NY_NYSPIN_EJUSTICE_MC.json
 Metadata: 30 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -20,7 +20,7 @@ METADATA COMBINATIONS (1 total):
   AINQ          ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   AINQ           set[ArticleSerialNumber, ArticleTypeCode]
+  BUILT   AINQ           set[articleSerialNumber, articleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 2)
@@ -41,10 +41,10 @@ METADATA COMBINATIONS (4 total):
   BVIN          BoatHullIdNumber        BoatHullIdNumber, State                                ImageIndicator
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   BVEH           set[RegistrationNumber, RegistrationState]
-  BUILT   BVIN           set[BoatHullIdNumber, RegistrationState]
-  BUILT   RVEH           set[RegistrationNumber]
-  BUILT   RCAR           set[BoatHullIdNumber]
+  BUILT   BVEH           set[registrationNumber, registrationState]
+  BUILT   BVIN           set[boatHullIdNumber, registrationState]
+  BUILT   RVEH           set[registrationNumber]
+  BUILT   RCAR           set[boatHullIdNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 3)
@@ -68,8 +68,8 @@ METADATA COMBINATIONS (2 total):
   DALL          Name                                                                           ImageIndicator, NyNyspinTra...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   DALL           set[OperatorLicenseNumber]
-  BUILT   DALH           set[BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   DALH           set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+  BUILT   DALL           set[operatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 2)
@@ -90,8 +90,8 @@ METADATA COMBINATIONS (2 total):
   DLIC          Name                    BirthDate, Name, SexCode                               ImageIndicator, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   DLIC           set[OperatorLicenseNumber]
-  BUILT   DLICN          set[BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   DLICN          set[birthDate, nameLast, nameFirst, sexCode]
+  BUILT   DLIC           set[operatorLicenseNumber]
 
 ================================================================================
 5. GunQuery (version 1)
@@ -109,7 +109,7 @@ METADATA COMBINATIONS (1 total):
   GINQ          GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, Relate...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   GINQ           set[GunSerialNumber]
+  BUILT   GINQ           set[gunSerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 1)
@@ -133,9 +133,9 @@ METADATA COMBINATIONS (3 total):
   RVIN          VehicleIdentificationNumber  State, VehicleIdentificationNumber                     ImageIndicator, VehicleMake...
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   RVIN           set[VehicleIdentificationNumber, RegistrationState]
-  BUILT   RVEH           set[RegistrationNumber]
-  BUILT   RCAR           set[BoatHullIdNumber]
+  BUILT   RVIN           set[vehicleIdentificationNumber, registrationState]
+  BUILT   RVEH           set[registrationNumber]
+  BUILT   RCAR           set[boatHullIdNumber]
 
 ================================================================================
 BUILD SUMMARY

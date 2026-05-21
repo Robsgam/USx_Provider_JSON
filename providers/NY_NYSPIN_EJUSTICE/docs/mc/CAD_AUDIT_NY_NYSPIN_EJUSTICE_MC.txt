@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE_MC
   Source: NY_NYSPIN_EJUSTICE_MC.json
-  Generated: 2026-05-18 12:58
+  Generated: 2026-05-21 16:01
 ================================================================
 CAD AUDIT
 =========
@@ -141,6 +141,23 @@ CAD AUDIT
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' combo RVIN -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' combo RVEH -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' combo RVEH -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' combo RVEH -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' combo RCAR -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' combo DLICN -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' combo DLIC -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALH -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALL -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery' combo GINQ -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_ArticleSingleQuery' combo AINQ -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo BVEH -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo BVIN -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo RVEH -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo RCAR -- missing default for ImageIndicator (form default='N')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -148,6 +165,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 48 PASS / 0 FAIL / 0 WARN / 70 INFO
+Total: 48 PASS / 15 FAIL / 0 WARN / 70 INFO
 
 

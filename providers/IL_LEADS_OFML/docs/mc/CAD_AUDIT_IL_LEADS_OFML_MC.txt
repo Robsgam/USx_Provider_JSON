@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: IL_LEADS_OFML_MC
   Source: IL_LEADS_OFML_MC.json
-  Generated: 2026-05-16 15:08
+  Generated: 2026-05-21 16:00
 ================================================================
 CAD AUDIT
 =========
@@ -132,6 +132,26 @@ CAD AUDIT
     [PASS] QIDM 'IL_LEADS_OFML_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'IL_LEADS_OFML_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'IL_LEADS_OFML_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.P -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.P -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.P -- missing default for State (form default='IL')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.V -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z2.V -- missing default for State (form default='IL')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z5 -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z5 -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'IL_LEADS_OFML_VehicleRegistrationQuery' combo Z5 -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'IL_LEADS_OFML_DriverLicenseQuery' combo Z2.N -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'IL_LEADS_OFML_DriverLicenseQuery' combo Z2.O -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'IL_LEADS_OFML_DriverLicenseQuery' combo Z2.O -- missing default for State (form default='IL')
+    [FAIL] QIDM 'IL_LEADS_OFML_GunQuery' combo QG -- missing default for ImageIndicator (form default='N')
+    [PASS] QIDM 'IL_LEADS_OFML_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'IL_LEADS_OFML_BoatQuery' combo BQ.H -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'IL_LEADS_OFML_BoatQuery' combo BQ.H -- missing default for State (form default='IL')
+    [FAIL] QIDM 'IL_LEADS_OFML_BoatQuery' combo BQ.R -- missing default for ImageIndicator (form default='N')
+    [FAIL] QIDM 'IL_LEADS_OFML_BoatQuery' combo BQ.R -- missing default for State (form default='IL')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -139,6 +159,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 38 PASS / 13 FAIL / 0 WARN / 58 INFO
+Total: 39 PASS / 30 FAIL / 0 WARN / 58 INFO
 
 

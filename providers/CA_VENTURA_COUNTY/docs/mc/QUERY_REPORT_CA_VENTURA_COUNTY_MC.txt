@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: CA_VENTURA_COUNTY_MC
   Source: CA_VENTURA_COUNTY_MC.json
-  Generated: 2026-05-16 15:08
+  Generated: 2026-05-21 16:00
 ================================================================
 QUERY SIMULATION
 ================
@@ -25,6 +25,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -42,12 +43,29 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-    [SKIP] IN.VP -- missing set: NameLast, NameFirst
+
+    [FIRES] IN.VP
+      set: [CaRequestPurposeCode, NameLast, NameFirst]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>IN.VP</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
 
     [FIRES] IA.QV
       set: [CaRequestPurposeCode, LicensePlateNumber]
@@ -60,6 +78,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -77,6 +96,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <Name>Doe, John</Name>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
@@ -136,7 +156,19 @@ QUERY SIMULATION
 
 --- QIDM: CA_VENTURA_COUNTY_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
-    [SKIP] IG.QGH -- missing set: NameLast, NameFirst
+
+    [FIRES] IG.QGH
+      set: [CaRequestPurposeCode, NameLast, NameFirst]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>IG.QGH</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <Name>Doe, John</Name>
+      </Transaction>
 
     [FIRES] IG.QGB
       set: [CaRequestPurposeCode, SerialNumber]
@@ -149,6 +181,7 @@ QUERY SIMULATION
         <GunCaliber>9MM</GunCaliber>
         <GunMake>SMT</GunMake>
         <GunSerialNumber>ABC12345</GunSerialNumber>
+        <Name>Doe, John</Name>
       </Transaction>
 
 --- QIDM: CA_VENTURA_COUNTY_ArticleSingleQuery [Article] ---

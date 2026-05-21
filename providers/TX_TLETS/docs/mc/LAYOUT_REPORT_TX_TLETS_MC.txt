@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: TX_TLETS_MC
   Source: TX_TLETS_MC.json
-  Generated: 2026-05-20 16:18
+  Generated: 2026-05-21 16:02
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -54,19 +54,19 @@ LAYOUT DETAIL
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         reasonCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_DL"
-      ROW ROW_PER_L1 [6 3 3]
+      ROW ROW_PER_L1 [6 6]
         operatorLicenseNumber (Text | maxLen=20)
-        expandedBirthDateSearchCode (Text | maxLen=1)
-        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
+        emailAddress (Text | maxLen=80)
       ROW ROW_PER_N1 [3 3 3 3]
         nameLast (Text | maxLen=30)
         nameFirst (Text | maxLen=30)
         nameMiddle (Text | maxLen=30)
         nameSuffix (Text | maxLen=30)
-      ROW ROW_PER_N2 [3 2 4 3]
+      ROW ROW_PER_N2 [3 2 3 2 2]
         birthDate (FormDate)
         sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        emailAddress (Text | maxLen=80)
+        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
+        expandedBirthDateSearchCode (Text | maxLen=1)
         regionId (Text | maxLen=4)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DHL1 [6 2 4]

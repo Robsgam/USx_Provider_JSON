@@ -1,7 +1,7 @@
 ﻿NM_NMLETS_OFML METADATA REFERENCE
 ==================================
-Generated: 2026-05-08
-Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_BASE.json
+Generated: 2026-05-21
+Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_MC.json
 Metadata: 118 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -20,7 +20,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   FormORI, RelatedHitSearchIn...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[serialNumber, articleTypeCode]
+  BUILT   QA             set[SerialNumber, ArticleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 4)
@@ -46,10 +46,10 @@ METADATA COMBINATIONS (4 total):
   BQ            RegistrationNumber      RegistrationNumber                                     FormORI, State, State2, Sta...
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   BQ.H           set[boatHullIdNumber]
-  BUILT   BQ.R           set[registrationNumber]
-  BUILT   QB.H           set[boatHullIdNumber]
-  BUILT   QB.R           set[registrationNumber]
+  BUILT   BQ.H           set[BoatHullIdNumber]
+  BUILT   BQ.R           set[RegistrationNumber]
+  BUILT   QB.H           set[BoatHullIdNumber]
+  BUILT   QB.R           set[RegistrationNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 3)
@@ -77,8 +77,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, FormORI, Purpose...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQ.N           set[nameLast, nameFirst, birthDate, sexCode]
-  BUILT   KQ.O           set[operatorLicenseNumber]
+  BUILT   KQ.N           set[NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+  BUILT   KQ.O           set[OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 5)
@@ -100,8 +100,8 @@ METADATA COMBINATIONS (1 total):
   QUERY                                 PurposeCode, Attention                                 State, ImageIndicator
 
 BUILD COVERAGE (2 of 1 built):
-  BUILT   DL.OLN         set[operatorLicenseNumber]
-  BUILT   DL.NAME        set[nameLast, nameFirst, birthDate, sexCode]
+  BUILT   DL.NAME        set[NameLast, NameFirst, BirthDate, SexCode]
+  BUILT   DL.OLN         set[OperatorLicenseNumber]
   SKIP    QUERY           -- MC expansion candidate
 
 ================================================================================
@@ -122,7 +122,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        FormORI, GunCaliber, GunMak...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[serialNumber]
+  BUILT   QG             set[SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 6)
@@ -152,10 +152,10 @@ METADATA COMBINATIONS (4 total):
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, VehicleMakeCode, Vehi...  FormORI, State, State2, Sta...
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   RQ.P           set[licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-  BUILT   RQ.V           set[vehicleIdentificationNumber, vehicleMakeCode, vehicleYear]
-  BUILT   QV.V           set[vehicleIdentificationNumber, vehicleMakeCode]
-  BUILT   QV.P           set[licensePlateNumber]
+  BUILT   RQ.P           set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  BUILT   RQ.V           set[VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+  BUILT   QV.V           set[VehicleIdentificationNumber, VehicleMakeCode]
+  BUILT   QV.P           set[LicensePlateNumber]
 
 ================================================================================
 BUILD SUMMARY

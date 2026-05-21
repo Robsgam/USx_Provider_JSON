@@ -1,7 +1,7 @@
 ﻿CA_VENTURA_COUNTY METADATA REFERENCE
 =====================================
-Generated: 2026-05-08
-Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_BASE.json
+Generated: 2026-05-21
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_MC.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -27,8 +27,8 @@ METADATA COMBINATIONS (2 total):
   IP.QA         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleBrand, ArticleCatego...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   IP.QA.S        set[caRequestPurposeCode, serialNumber]
-  BUILT   IP.QA.O        set[caRequestPurposeCode, ownerAppliedNumber]
+  BUILT   IP.QA.S        set[CaRequestPurposeCode, SerialNumber]
+  BUILT   IP.QA.O        set[CaRequestPurposeCode, OwnerAppliedNumber]
 
 ================================================================================
 2. BoatQuery (version 1)
@@ -54,12 +54,13 @@ METADATA COMBINATIONS (7 total):
   NLTS.BQ       BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber, State          --
   NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
-BUILD COVERAGE (5 of 7 built):
-  BUILT   IA.QB.H        set[caRequestPurposeCode, boatHullIdNumber]
-  BUILT   IA.QB.O        set[caRequestPurposeCode, ownerAppliedNumber]
-  BUILT   IA.QB.R        set[caRequestPurposeCode, registrationNumber]
-  BUILT   NLTS.BQ.H      set[caRequestPurposeCode, boatHullIdNumber, registrationState]
-  BUILT   NLTS.BQ.R      set[caRequestPurposeCode, registrationNumber, registrationState]
+BUILD COVERAGE (6 of 7 built):
+  BUILT   NLTS.BQ.N      set[CaRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+  BUILT   NLTS.BQ.H      set[CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
+  BUILT   NLTS.BQ.R      set[CaRequestPurposeCode, RegistrationNumber, RegistrationState]
+  BUILT   IA.QB.H        set[CaRequestPurposeCode, BoatHullIdNumber]
+  BUILT   IA.QB.O        set[CaRequestPurposeCode, OwnerAppliedNumber]
+  BUILT   IA.QB.R        set[CaRequestPurposeCode, RegistrationNumber]
   SKIP    IV.4B          RegistrationNumber -- MC expansion candidate
 
 ================================================================================
@@ -85,10 +86,10 @@ METADATA COMBINATIONS (4 total):
   NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   NLTS.KQ.N      set[caRequestPurposeCode, birthDate, nameLast, nameFirst, sexCode]
-  BUILT   NLTS.KQ.O      set[caRequestPurposeCode, operatorLicenseNumber]
-  BUILT   IN.B2          set[caRequestPurposeCode, nameLast, nameFirst]
-  BUILT   ID.B2          set[caRequestPurposeCode, operatorLicenseNumber]
+  BUILT   NLTS.KQ.N      set[CaRequestPurposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  BUILT   IN.B2          set[CaRequestPurposeCodeDH, NameLastDH, NameFirstDH]
+  BUILT   NLTS.KQ.O      set[CaRequestPurposeCodeDH, OperatorLicenseNumberDH]
+  BUILT   ID.B2          set[CaRequestPurposeCodeDH, OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 1)
@@ -121,9 +122,9 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
 BUILD COVERAGE (3 of 8 built):
-  BUILT   NLTS.DQ        set[caRequestPurposeCode, operatorLicenseNumber, registrationState]
-  BUILT   ID.L1          set[caRequestPurposeCode, operatorLicenseNumber]
-  BUILT   IN.L1          set[caRequestPurposeCode, nameLast, nameFirst]
+  BUILT   IN.L1          set[CaRequestPurposeCode, NameLast, NameFirst]
+  BUILT   NLTS.DQ        set[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   ID.L1          set[CaRequestPurposeCode, OperatorLicenseNumber]
   SKIP    IR.QVC         Name -- MC expansion candidate
   SKIP    IR.QVC         OperatorLicenseNumber -- MC expansion candidate
   SKIP    IR.QVC         CriminalIdNumber -- MC expansion candidate
@@ -149,9 +150,9 @@ METADATA COMBINATIONS (2 total):
   IG.QGB        GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
   IG.QGH        Name                    CaRequestPurposeCode, Name                             --
 
-BUILD COVERAGE (1 of 2 built):
-  BUILT   IG.QGB         set[caRequestPurposeCode, serialNumber]
-  SKIP    IG.QGH         Name -- MC expansion candidate
+BUILD COVERAGE (2 of 2 built):
+  BUILT   IG.QGH         set[CaRequestPurposeCode, NameLast, NameFirst]
+  BUILT   IG.QGB         set[CaRequestPurposeCode, SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 1)
@@ -194,11 +195,12 @@ METADATA COMBINATIONS (20 total):
   NLTS.RQ       VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber,...  VehicleMakeCode, VehicleYear
   IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
-BUILD COVERAGE (4 of 20 built):
-  BUILT   NLTS.RQ.P      set[caRequestPurposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   NLTS.RQ.V      set[caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
-  BUILT   IA.QVK         set[caRequestPurposeCode, vehicleIdentificationNumber]
-  BUILT   IA.QV          set[caRequestPurposeCode, licensePlateNumber]
+BUILD COVERAGE (5 of 20 built):
+  BUILT   NLTS.RQ.P      set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   NLTS.RQ.V      set[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   IN.VP          set[CaRequestPurposeCode, NameLast, NameFirst]
+  BUILT   IA.QV          set[CaRequestPurposeCode, LicensePlateNumber]
+  BUILT   IA.QVK         set[CaRequestPurposeCode, VehicleIdentificationNumber]
   SKIP    IV.4I          LicensePlateNumber -- MC expansion candidate
   SKIP    IV.4C          LicensePlateNumber -- MC expansion candidate
   SKIP    IV.4M          LicensePlateNumber -- MC expansion candidate
@@ -214,7 +216,6 @@ BUILD COVERAGE (4 of 20 built):
   SKIP    IV.4K          LicensePlateNumber -- MC expansion candidate
   SKIP    IV.4V          VehicleIdentificationNumber -- MC expansion candidate
   SKIP    IV.4           LicensePlateNumber -- MC expansion candidate
-  SKIP    IN.VP          Name -- MC expansion candidate
 
 ================================================================================
 BUILD SUMMARY
@@ -223,16 +224,16 @@ BUILD SUMMARY
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
-  BoatQuery                                  7      5     2  71%
+  BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
   DriverLicenseQuery                         8      3     5  38%
-  GunQuery                                   2      1     1  50%
-  VehicleRegistrationQuery                  20      4    16  20%
+  GunQuery                                   2      2     0  100% (COMPLETE)
+  VehicleRegistrationQuery                  20      5    15  25%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   43     19    24  44%
+  TOTAL                                   43     22    21  51%
 
 ================================================================================
-MC EXPANSION CANDIDATES (22 combos not in BASE)
+MC EXPANSION CANDIDATES (20 combos not in BASE)
 ================================================================================
 
   IV.4B          RegistrationNumber       (BoatQuery)
@@ -240,7 +241,6 @@ MC EXPANSION CANDIDATES (22 combos not in BASE)
   IR.QVC         OperatorLicenseNumber    (DriverLicenseQuery)
   IR.QVC         CriminalIdNumber         (DriverLicenseQuery)
   IR.QVC         SocialSecurityNumber     (DriverLicenseQuery)
-  IG.QGH         Name                     (GunQuery)
   IV.4I          LicensePlateNumber       (VehicleRegistrationQuery)
   IV.4C          LicensePlateNumber       (VehicleRegistrationQuery)
   IV.4M          LicensePlateNumber       (VehicleRegistrationQuery)
@@ -256,6 +256,5 @@ MC EXPANSION CANDIDATES (22 combos not in BASE)
   IV.4K          LicensePlateNumber       (VehicleRegistrationQuery)
   IV.4V          VehicleIdentificationNumber (VehicleRegistrationQuery)
   IV.4           LicensePlateNumber       (VehicleRegistrationQuery)
-  IN.VP          Name                     (VehicleRegistrationQuery)
 
 

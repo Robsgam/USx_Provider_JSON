@@ -1,7 +1,7 @@
 ﻿CA_SAN_LUIS_OBISPO METADATA REFERENCE
 ======================================
-Generated: 2026-05-08
-Source: CA_SAN_LUIS_OBISPO.xml (metadata) + CA_SAN_LUIS_OBISPO_BASE.json
+Generated: 2026-05-21
+Source: CA_SAN_LUIS_OBISPO.xml (metadata) + CA_SAN_LUIS_OBISPO_MC.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -20,7 +20,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber                                    ArticleBrand, ArticleCatego...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[serialNumber]
+  BUILT   QA             set[SerialNumber]
 
 ================================================================================
 2. BoatQuery (version 1)
@@ -38,8 +38,8 @@ METADATA COMBINATIONS (2 total):
   QB            RegistrationNumber                                                             State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   BQ             set[boatHullIdNumber]
-  BUILT   QB             set[registrationNumber]
+  BUILT   BQ             set[BoatHullIdNumber]
+  BUILT   QB             set[RegistrationNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 1)
@@ -63,10 +63,10 @@ METADATA COMBINATIONS (4 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, PurposeCode, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   KQ.N           set[nameLast, nameFirst, birthDate, sexCode]
-  BUILT   KQ.O           set[operatorLicenseNumber]
-  BUILT   B2.N           set[birthDate, nameLast, nameFirst]
-  BUILT   B2.O           set[operatorLicenseNumber]
+  BUILT   KQ.N           set[NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+  BUILT   B2.N           set[BirthDateDH, NameLastDH, NameFirstDH]
+  BUILT   KQ.O           set[OperatorLicenseNumberDH]
+  BUILT   B2.O           set[OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 1)
@@ -90,9 +90,9 @@ METADATA COMBINATIONS (6 total):
   QVC           OperatorLicenseNumber   OperatorLicenseNumber                                  --
 
 BUILD COVERAGE (3 of 6 built):
-  BUILT   DQ.O           set[operatorLicenseNumber, registrationState]
-  BUILT   L1.N           set[nameLast, nameFirst]
-  BUILT   L1.O           set[operatorLicenseNumber]
+  BUILT   L1.N           set[NameLast, NameFirst]
+  BUILT   DQ.O           set[OperatorLicenseNumber, RegistrationState]
+  BUILT   L1.O           set[OperatorLicenseNumber]
   SKIP    QVC            Name -- MC expansion candidate
   SKIP    QVC            OperatorLicenseNumber -- MC expansion candidate
 
@@ -112,7 +112,7 @@ METADATA COMBINATIONS (1 total):
   QGB           GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, GunTyp...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QGB            set[serialNumber]
+  BUILT   QGB            set[SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 1)
@@ -138,10 +138,10 @@ METADATA COMBINATIONS (6 total):
   4V            VehicleIdentificationNumber  VehicleIdentificationNumber                            --
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   RQ.P           set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   RQ.V           set[registrationState, vehicleIdentificationNumber]
-  BUILT   QV.V           set[vehicleIdentificationNumber]
-  BUILT   QV.P           set[licensePlateNumber]
+  BUILT   RQ.P           set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   RQ.V           set[RegistrationState, VehicleIdentificationNumber]
+  BUILT   QV.P           set[LicensePlateNumber]
+  BUILT   QV.V           set[VehicleIdentificationNumber]
   SKIP    4#             LicensePlateNumber -- MC expansion candidate
   SKIP    4V             VehicleIdentificationNumber -- MC expansion candidate
 

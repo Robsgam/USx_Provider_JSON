@@ -1,7 +1,7 @@
 ﻿OH_LEADS METADATA REFERENCE
 ============================
-Generated: 2026-05-08
-Source: OH_LEADS.xml (metadata) + OH_LEADS_BASE.json
+Generated: 2026-05-21
+Source: OH_LEADS.xml (metadata) + OH_LEADS_MC.json
 Metadata: 188 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -22,8 +22,8 @@ METADATA COMBINATIONS (2 total):
   QA            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   QA.S           set[articleTypeCode, serialNumber]
-  BUILT   QA.N           set[ncicNumber]
+  BUILT   QA.S           set[ArticleTypeCode, SerialNumber]
+  BUILT   QA.N           set[NCICNumber]
 
 ================================================================================
 2. BoatQuery (version 14)
@@ -45,10 +45,10 @@ METADATA COMBINATIONS (4 total):
   QB            BoatHullIdNumber        BoatHullIdNumber                                       ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   BQ.R           set[registrationNumber]
-  BUILT   BQ.H           set[boatHullIdNumber]
-  BUILT   QB.R           set[registrationNumber]
-  BUILT   QB.H           set[boatHullIdNumber]
+  BUILT   BQ.R           set[RegistrationNumber]
+  BUILT   BQ.H           set[BoatHullIdNumber]
+  BUILT   QB.R           set[RegistrationNumber]
+  BUILT   QB.H           set[BoatHullIdNumber]
 
 ================================================================================
 3. DriverHistoryQuery (version 9)
@@ -72,9 +72,9 @@ METADATA COMBINATIONS (3 total):
   BMVIMS        OperatorLicenseNumber   OperatorLicenseNumber                                  Attention, ReasonCode
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   KQ.O           set[operatorLicenseNumberDH]
-  BUILT   KQ.N           set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-  BUILT   BMVIMS         set[operatorLicenseNumberDH]
+  BUILT   KQ.N           set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+  BUILT   KQ.O           set[OperatorLicenseNumberDH]
+  BUILT   BMVIMS         set[OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 27)
@@ -104,10 +104,10 @@ METADATA COMBINATIONS (7 total):
   BMVIMS        SocialSecurityNumber    SocialSecurityNumber                                   ReasonCode, Requestor, User...
 
 BUILD COVERAGE (4 of 7 built):
-  BUILT   DQ.O           set[operatorLicenseNumber]
-  BUILT   DQ.N           set[sexCode, birthDate, nameLast, nameFirst]
-  BUILT   DL             set[operatorLicenseNumber]
-  BUILT   DN             set[nameLast, nameFirst]
+  BUILT   DQ.N           set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   DN             set[NameLast, NameFirst]
+  BUILT   DQ.O           set[OperatorLicenseNumber]
+  BUILT   DL             set[OperatorLicenseNumber]
   SKIP    QWA            Name -- MC expansion candidate
   SKIP    BMVIMS         OperatorLicenseNumber -- MC expansion candidate
   SKIP    BMVIMS         SocialSecurityNumber -- MC expansion candidate
@@ -128,7 +128,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunMake, GunCaliber, Relate...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[serialNumber]
+  BUILT   QG             set[SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 30)
@@ -161,15 +161,15 @@ METADATA COMBINATIONS (9 total):
   QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            --
 
 BUILD COVERAGE (9 of 9 built):
-  BUILT   ATDP           set[licensePlateNumber, licensePlateTypeCode, dealerPlateType]
-  BUILT   RQ.P           set[registrationState, licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-  BUILT   RP             set[licensePlateNumber, licensePlateTypeCode]
-  BUILT   QV.P           set[licensePlateNumber]
-  BUILT   RQ.V           set[vehicleIdentificationNumber, vehicleMakeCode, vehicleYear]
-  BUILT   RV             set[vehicleIdentificationNumber]
-  BUILT   QV.V           set[vehicleIdentificationNumber]
-  BUILT   RS             set[ownerSocialSecurityNumber]
-  BUILT   RN             set[ownerLastName, ownerFirstName]
+  BUILT   RQ.P           set[RegistrationState, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  BUILT   ATDP           set[LicensePlateNumber, LicensePlateTypeCode, DealerPlateType]
+  BUILT   RQ.V           set[VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+  BUILT   RP             set[LicensePlateNumber, LicensePlateTypeCode]
+  BUILT   RN             set[OwnerLastName, OwnerFirstName]
+  BUILT   QV.P           set[LicensePlateNumber]
+  BUILT   RV             set[VehicleIdentificationNumber]
+  BUILT   QV.V           set[VehicleIdentificationNumber]
+  BUILT   RS             set[OwnerSocialSecurityNumber]
 
 ================================================================================
 BUILD SUMMARY

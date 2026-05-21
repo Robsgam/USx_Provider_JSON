@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-05-16 15:09
+  Generated: 2026-05-21 16:01
 ================================================================
 CAD AUDIT
 =========
@@ -150,6 +150,31 @@ CAD AUDIT
     [PASS] QIDM 'OH_LEADS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'OH_LEADS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'OH_LEADS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RQ.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo ATDP -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RP -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo QV.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RV -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo QV.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo RS -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' combo DN -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'OH_LEADS_DriverLicenseQuery' combo DQ.O -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' combo DL -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' combo KQ.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' combo KQ.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' combo BMVIMS -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_GunQuery' combo QG -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'OH_LEADS_ArticleSingleQuery' combo QA.S -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'OH_LEADS_ArticleSingleQuery' combo QA.N -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'OH_LEADS_BoatQuery' combo BQ.R -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OH_LEADS_BoatQuery' combo BQ.H -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'OH_LEADS_BoatQuery' combo QB.R -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'OH_LEADS_BoatQuery' combo QB.H -- missing default for ImageIndicator (form default='Y')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -157,6 +182,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 34 PASS / 11 FAIL / 0 WARN / 82 INFO
+Total: 52 PASS / 16 FAIL / 0 WARN / 82 INFO
 
 

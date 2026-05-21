@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
   Build Report: OR_LEDS_MC
   Source: OR_LEDS_MC.json
-  Generated: 2026-05-16 15:09
+  Generated: 2026-05-21 16:02
 ================================================================
 CAD AUDIT
 =========
@@ -131,6 +131,21 @@ CAD AUDIT
     [PASS] QIDM 'OR_LEDS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'OR_LEDS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'OR_LEDS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
+
+--- CHECK 6: CAD Defaults Coverage ---
+    [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo RQ.PO -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo RQ.VO -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [FAIL] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateYear (form default='2026')
+    [FAIL] QIDM 'OR_LEDS_DriverLicenseQuery' combo DQ.NO -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'OR_LEDS_DriverLicenseQuery' combo DQ.N -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'OR_LEDS_DriverLicenseQuery' combo DQ.OO -- missing default for ImageIndicator (form default='Y')
+    [FAIL] QIDM 'OR_LEDS_DriverLicenseQuery' combo DQ.O -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'OR_LEDS_GunQuery' combo QG -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OR_LEDS_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OR_LEDS_BoatQuery' combo BQ.R -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'OR_LEDS_BoatQuery' combo BQ.H -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -138,6 +153,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 37 PASS / 11 FAIL / 0 WARN / 60 INFO
+Total: 44 PASS / 17 FAIL / 0 WARN / 60 INFO
 
 

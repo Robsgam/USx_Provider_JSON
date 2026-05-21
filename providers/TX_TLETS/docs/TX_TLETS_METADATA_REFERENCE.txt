@@ -1,7 +1,7 @@
 ﻿TX_TLETS METADATA REFERENCE
 ============================
-Generated: 2026-05-08
-Source: TX_TLETS.xml (metadata) + TX_TLETS_BASE.json
+Generated: 2026-05-21
+Source: TX_TLETS.xml (metadata) + TX_TLETS_MC.json
 Metadata: 113 total transactions, 7 queries built in JSON
 
 ================================================================================
@@ -21,8 +21,8 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber                                                            ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 1 built):
-  BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
-  BUILT   QANCICNumber   set[NCICNumber]
+  BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
+  BUILT   QANCICNumber   set[ncicNumber]
   SKIP    QA             ArticleSerialNumber -- MC expansion candidate
 
 ================================================================================
@@ -47,11 +47,11 @@ METADATA COMBINATIONS (5 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
 
 BUILD COVERAGE (5 of 5 built):
-  BUILT   BQRegistrationNumber set[RegistrationNumber, RegistrationState]
-  BUILT   BQBoatHullIdNumber set[BoatHullIdNumber, RegistrationState]
-  BUILT   QBRegistrationNumber set[RegistrationNumber]
-  BUILT   QBBoatHullIdNumber set[BoatHullIdNumber]
-  BUILT   QBNCICNumber   set[NCICNumber]
+  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
+  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
+  BUILT   QBRegistrationNumber set[registrationNumber]
+  BUILT   QBBoatHullIdNumber set[boatHullIdNumber]
+  BUILT   QBNCICNumber   set[ncicNumber]
   SKIP    QB             RegistrationNumber -- MC expansion candidate
   SKIP    QB             BoatHullIdNumber -- MC expansion candidate
   SKIP    QB             NCICNumber -- MC expansion candidate
@@ -81,8 +81,8 @@ METADATA COMBINATIONS (2 total):
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumber]
-  BUILT   KQName         set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, emailAddressDH]
+  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH, emailAddressDH]
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
   SKIP    KQ             Name -- MC expansion candidate
 
@@ -113,10 +113,11 @@ METADATA COMBINATIONS (5 total):
   RSDWW         OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
 
-BUILD COVERAGE (3 of 5 built):
-  BUILT   DQOperatorLicenseNumber set[OperatorLicenseNumber]
-  BUILT   DQName         set[SexCode, BirthDate, NameLast, NameFirst]
-  BUILT   QWName         set[BirthDate, NameLast, NameFirst]
+BUILD COVERAGE (4 of 5 built):
+  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, emailAddress]
+  BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst, emailAddress]
+  BUILT   QWName         set[birthDate, nameLast, nameFirst]
+  BUILT   CPLName        set[nameLast, nameFirst, emailAddress]
   SKIP    DQ             Name -- MC expansion candidate
   SKIP    QW             Name -- MC expansion candidate
   SKIP    CPL            Name -- MC expansion candidate
@@ -141,8 +142,8 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber                                                                ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 1 built):
-  BUILT   QGGunSerialNumber set[GunSerialNumber]
-  BUILT   QGNCICNumber   set[NCICNumber]
+  BUILT   QGGunSerialNumber set[gunSerialNumber]
+  BUILT   QGNCICNumber   set[ncicNumber]
   SKIP    QG             GunSerialNumber -- MC expansion candidate
 
 ================================================================================
@@ -173,13 +174,13 @@ METADATA COMBINATIONS (7 total):
   VIN           VehicleIdentificationNumber  VehicleIdentificationNumber, FinancialResponsibili...  State
 
 BUILD COVERAGE (7 of 7 built):
-  BUILT   REGLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType]
-  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
-  BUILT   VINVehicleIdentificationNumber set[VehicleIdentificationNumber, FinancialResponsibilityType]
-  BUILT   DPSIStickerNumber set[StickerNumber]
-  BUILT   QVLicensePlateNumber set[LicensePlateNumber]
-  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber]
-  BUILT   QVVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  BUILT   REGLicensePlateNumber set[licensePlateNumber, licensePlateYear, financialResponsibilityType]
+  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateYear, licensePlateTypeCode]
+  BUILT   VINVehicleIdentificationNumber set[vehicleIdentificationNumber, financialResponsibilityType]
+  BUILT   DPSIStickerNumber set[stickerNumber]
+  BUILT   QVLicensePlateNumber set[licensePlateNumber]
+  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
   SKIP    RQ             LicensePlateNumber -- MC expansion candidate
   SKIP    QV             LicensePlateNumber -- MC expansion candidate
   SKIP    RQ             VehicleIdentificationNumber -- MC expansion candidate
@@ -201,12 +202,12 @@ BUILD SUMMARY
   ArticleSingleQuery                         1      2     0  200%
   BoatQuery                                  5      5     0  100% (COMPLETE)
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
-  DriverLicenseQuery                         5      3     2  60%
+  DriverLicenseQuery                         5      4     1  80%
   GunQuery                                   1      2     0  200%
   VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
   VehicleStolenQuery                         0      2     0  N/A
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   21     23     2  110%
+  TOTAL                                   21     24     1  114%
 
 ================================================================================
 MC EXPANSION CANDIDATES (21 combos not in BASE)

@@ -13,7 +13,7 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-05-20)
+## Provider Status (updated 2026-05-21)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
@@ -397,12 +397,18 @@ Three commands run everything. No manual checklists.
 | Action | Command |
 |---|---|
 | **Build + verify one provider** | `pipeline.ps1 -Provider <NAME>` |
+| **Build + verify multiple providers** | `pipeline.ps1 -Providers 'TX_TLETS','HI_HCJDC_OFML'` |
+| **Build + verify ALL providers** | `pipeline.ps1 -All` |
 | **Final verification (all providers)** | `enforce.ps1` |
 | **New provider setup** | `new_provider.ps1 -XmlPath <xml>` |
 
-`pipeline.ps1` chains 8 steps: build JSON → build report → extract metadata → sync CLAUDE.md → sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER) → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-SkipEnforce` (mid-work).
+`pipeline.ps1` chains 8 steps: build JSON → build report (steps 1-9 parallel) → extract metadata → sync CLAUDE.md → sync version docs → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-SkipEnforce` (mid-work), `-DeferAudit` (skip steps 6-7 for mid-work iterations).
 
-`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider consistency, repo integrity + git status. Exit 0 = verified. Exit 1 = blocked.
+**Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
+
+`build_report.ps1` runs 10 tools. Steps 1-9 execute in parallel (all read-only on the JSON), step 10 (test conductor) runs after step 9 completes.
+
+`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 
 **If enforce.ps1 passes, the work is done. If it doesn't, fix what it flags.**
 

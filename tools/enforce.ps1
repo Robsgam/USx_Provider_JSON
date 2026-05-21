@@ -353,12 +353,30 @@ foreach ($pd in $providers) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PHASE 4: Cross-Provider Consistency
+#  PHASES 4+5: Cross-Provider + Repo Integrity (parallel)
 # ══════════════════════════════════════════════════════════════════════════════
-SectionHeader "PHASE 4: Cross-Provider Consistency"
+SectionHeader "PHASE 4+5: Cross-Provider + Repo Integrity (parallel)"
 
-Out "  Running audit_cross_provider.ps1..."
-$crossOutput = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_cross_provider.ps1" -Path $provDir 2>&1 | Out-String
+Out "  Launching audits in parallel..."
+
+$crossJob = Start-Job -ScriptBlock {
+    param($t, $p)
+    & powershell -ExecutionPolicy Bypass -File "$t\audit_cross_provider.ps1" -Path $p 2>&1 | Out-String
+} -ArgumentList $toolDir, $provDir
+
+$repoJob = Start-Job -ScriptBlock {
+    param($t)
+    & powershell -ExecutionPolicy Bypass -File "$t\audit_repo.ps1" 2>&1 | Out-String
+} -ArgumentList $toolDir
+
+$crossJob, $repoJob | Wait-Job -Timeout 300 | Out-Null
+
+# Phase 4: Cross-provider results
+$crossOutput = Receive-Job $crossJob
+Remove-Job $crossJob -Force
+
+Out ""
+Out "  -- Cross-Provider Consistency --"
 
 if ($crossOutput -match '(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN') {
     $xPass = [int]$Matches[1]
@@ -367,7 +385,6 @@ if ($crossOutput -match '(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN') {
 
     if ($xFail -gt 0) {
         Fail "Cross-provider: ${xPass}P/${xFail}F/${xWarn}W -- FAILURES DETECTED"
-        # Extract specific FAIL lines
         $crossOutput -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | ForEach-Object {
             $line = $_.Trim()
             Out "       $line"
@@ -381,14 +398,12 @@ if ($crossOutput -match '(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN') {
     Fail "Cross-provider audit -- could not parse output"
 }
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  PHASE 5: Repo Integrity
-# ══════════════════════════════════════════════════════════════════════════════
-SectionHeader "PHASE 5: Repo Integrity"
+# Phase 5a: Repo audit results
+$repoOutput = Receive-Job $repoJob
+Remove-Job $repoJob -Force
 
-# 5a: audit_repo.ps1
-Out "  Running audit_repo.ps1..."
-$repoOutput = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_repo.ps1" 2>&1 | Out-String
+Out ""
+Out "  -- Repo Integrity --"
 
 if ($repoOutput -match 'AUDIT\s+PASSED:\s*(\d+)\s*PASS') {
     $rPass = [int]$Matches[1]

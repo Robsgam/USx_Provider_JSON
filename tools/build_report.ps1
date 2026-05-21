@@ -1,6 +1,9 @@
 <#
   build_report.ps1 -- Generate layout + query reports for a provider JSON
   Runs validator, renderer, query simulator, and picklist scanner.
+  Steps 1-9 run in PARALLEL (all read-only on JSON, independent outputs).
+  Step 10 (test conductor) runs after step 9 completes.
+
   Auto-detects build path from JSON name:
     <PROVIDER>.json -> docs/
     *_MC*.json -> docs/mc/ (legacy)
@@ -58,7 +61,7 @@ $header = @"
 
 "@
 
-# --- PRE. Build Script Lint ---
+# --- PRE. Build Script Lint (fast, runs before parallel batch) ---
 Write-Host ""
 Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
 $scriptsDir = Join-Path $jsonDir "scripts"
@@ -73,21 +76,18 @@ if (Test-Path $scriptsDir) {
         $scriptName = $script.Name
         $scriptWarns = @()
 
-        # Hardcoded PlateYear (4-digit year literal, not $currentYear)
         $yearHits = Select-String -Path $script.FullName -Pattern "initialValue\s*=\s*['""]?(20(?:2[4-9]|[3-9]\d))['""]?" | Where-Object { $_.Line -notmatch '\$currentYear' -and $_.Line -notmatch '^\s*#' }
         foreach ($hit in $yearHits) {
             $scriptWarns += "  [WARN] Line $($hit.LineNumber): Hardcoded PlateYear '$($hit.Matches[0].Groups[1].Value)' -- [FIX] Use `$currentYear instead"
             $lintWarnCount++
         }
 
-        # LicensePlateNumberIn (banned -- not in Patch 8 rename context)
         $bannedHits = Select-String -Path $script.FullName -Pattern "LicensePlateNumberIn" | Where-Object { $_.Line -notmatch '-replace' -and $_.Line -notmatch '^\s*#' -and $_.Line -notmatch 'Patch\s*8' -and $_.Line -notmatch "'\s*=" }
         foreach ($hit in $bannedHits) {
             $scriptWarns += "  [WARN] Line $($hit.LineNumber): LicensePlateNumberIn (banned) -- [FIX] Use licensePlateNumber"
             $lintWarnCount++
         }
 
-        # AP #23: autoSelect as string instead of boolean
         $ap23Hits = Select-String -Path $script.FullName -Pattern "autoSelect\s*=\s*['""](?:true|false)['""]" | Where-Object { $_.Line -notmatch '^\s*#' }
         foreach ($hit in $ap23Hits) {
             $scriptWarns += "  [WARN] Line $($hit.LineNumber): autoSelect as string (AP #23) -- [FIX] Use `$true/`$false (boolean)"
@@ -113,57 +113,155 @@ if ($lintWarnCount -gt 0) {
     Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
 }
 
-# --- 1. Validator ---
+# ══════════════════════════════════════════════════════════════════════════════
+#  PARALLEL STEPS 1-9
+# ══════════════════════════════════════════════════════════════════════════════
+
 Write-Host ""
-Write-Host "  [1/$stepCount] Running validator..." -ForegroundColor Yellow
-$validatorPath = Join-Path $toolDir "validate.ps1"
-$validatorArgs = @('-ExecutionPolicy','Bypass','-File',$validatorPath,'-Path',$resolved)
-$validatorOut = & powershell @validatorArgs 2>&1 | Out-String
+Write-Host "  Launching steps 1-9 in parallel..." -ForegroundColor Yellow
+
+$resolvedStr = $resolved.ToString()
+$providerBase = $jsonName -replace '_(BASE|MC)$', ''
+$matrixFileName = "${providerBase}_TEST_MATRIX.txt"
+$matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
+$cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
+
 $validatorFile = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
+$layoutFile    = Join-Path $DocsDir "LAYOUT_REPORT_$jsonName.txt"
+$queryFile     = Join-Path $DocsDir "QUERY_REPORT_$jsonName.txt"
+$picklistFile  = Join-Path $DocsDir "PICKLIST_REPORT_$jsonName.txt"
+$htmlFile      = Join-Path $DocsDir "LAYOUT_$jsonName.html"
+$verifyFile    = Join-Path $DocsDir "VERIFY_REPORT_$jsonName.txt"
+$metadataFile  = Join-Path $DocsDir "METADATA_AUDIT_$jsonName.txt"
+$cadFile       = Join-Path $DocsDir "CAD_AUDIT_$jsonName.txt"
+
+$validatorPath   = Join-Path $toolDir "validate.ps1"
+$rendererPath    = Join-Path $toolDir "render_layout.ps1"
+$queryPath       = Join-Path $toolDir "test_commsys.ps1"
+$picklistPath    = Join-Path $toolDir "report_picklists.ps1"
+$htmlRendererPath = Join-Path $toolDir "render_html.ps1"
+$verifyPath      = Join-Path $toolDir "verify_build.ps1"
+$metadataPath    = Join-Path $toolDir "audit_metadata.ps1"
+$cadPath         = Join-Path $toolDir "audit_cad.ps1"
+$testMatrixPath  = Join-Path $toolDir "generate_test_matrix.ps1"
+
+$jobs = @{}
+
+# Step 1: Validator
+$jobs[1] = Start-Job -ScriptBlock {
+    param($tool, $json)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+} -ArgumentList $validatorPath, $resolvedStr
+
+# Step 2: Layout Renderer (summary + detail in one job)
+$jobs[2] = Start-Job -ScriptBlock {
+    param($tool, $json)
+    $summary = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Summary 2>&1 | Out-String
+    $detail  = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Variant default 2>&1 | Out-String
+    "$summary`n`nLAYOUT DETAIL`n=============`n`n$detail"
+} -ArgumentList $rendererPath, $resolvedStr
+
+# Step 3: Query Simulator
+$jobs[3] = Start-Job -ScriptBlock {
+    param($tool, $json)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+} -ArgumentList $queryPath, $resolvedStr
+
+# Step 4: Picklist Scanner
+$jobs[4] = Start-Job -ScriptBlock {
+    param($tool, $json, $outFile)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile 2>&1 | Out-String
+    "SAVED"
+} -ArgumentList $picklistPath, $resolvedStr, $picklistFile
+
+# Step 5: HTML Layout Render
+$jobs[5] = Start-Job -ScriptBlock {
+    param($tool, $json, $outFile)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile 2>&1 | Out-String
+    "SAVED"
+} -ArgumentList $htmlRendererPath, $resolvedStr, $htmlFile
+
+# Step 6: Post-Build Verification
+$jobs[6] = Start-Job -ScriptBlock {
+    param($tool, $json)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+} -ArgumentList $verifyPath, $resolvedStr
+
+# Step 7: Metadata Audit
+if (Test-Path $metadataPath) {
+    $jobs[7] = Start-Job -ScriptBlock {
+        param($tool, $json)
+        & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+    } -ArgumentList $metadataPath, $resolvedStr
+}
+
+# Step 8: CAD Audit
+if (Test-Path $cadPath) {
+    $jobs[8] = Start-Job -ScriptBlock {
+        param($tool, $json, $variant)
+        & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Variant $variant 2>&1 | Out-String
+    } -ArgumentList $cadPath, $resolvedStr, $cadVariant
+}
+
+# Step 9: Test Matrix
+if (Test-Path $testMatrixPath) {
+    $jobs[9] = Start-Job -ScriptBlock {
+        param($tool, $json, $outFile)
+        & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile 2>&1 | Out-String
+    } -ArgumentList $testMatrixPath, $resolvedStr, $matrixFile
+}
+
+# Wait for all jobs to complete (5 minute timeout)
+$allJobs = $jobs.Values | Where-Object { $_ }
+$allJobs | Wait-Job -Timeout 300 | Out-Null
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COLLECT RESULTS (in step order for deterministic output)
+# ══════════════════════════════════════════════════════════════════════════════
+
+$outputs = @{}
+$verifyFails = 0
+
+foreach ($step in (1..9)) {
+    if (-not $jobs[$step]) { continue }
+    $job = $jobs[$step]
+    if ($job.State -eq 'Failed') {
+        $outputs[$step] = "[ERROR] Step $step job failed: $($job.ChildJobs[0].JobStateInfo.Reason)"
+    } else {
+        $outputs[$step] = Receive-Job $job
+    }
+    Remove-Job $job -Force
+}
+
+# --- Step 1: Validator ---
+Write-Host ""
+$validatorOut = $outputs[1]
 ($header + "VALIDATOR RESULTS`n================`n`n" + $validatorOut) | Out-File -FilePath $validatorFile -Encoding utf8
 Write-Host "  [1/$stepCount] Saved: $validatorFile" -ForegroundColor Green
 
-# --- 2. Layout Renderer ---
+# --- Step 2: Layout ---
 Write-Host ""
-Write-Host "  [2/$stepCount] Running layout renderer..." -ForegroundColor Yellow
-$rendererPath = Join-Path $toolDir "render_layout.ps1"
-$layoutOut = & powershell -ExecutionPolicy Bypass -File $rendererPath -Path $resolved -Summary 2>&1 | Out-String
-$layoutDetail = & powershell -ExecutionPolicy Bypass -File $rendererPath -Path $resolved -Variant default 2>&1 | Out-String
-$layoutFile = Join-Path $DocsDir "LAYOUT_REPORT_$jsonName.txt"
-($header + "LAYOUT SUMMARY`n==============`n`n" + $layoutOut + "`n`nLAYOUT DETAIL`n=============`n`n" + $layoutDetail) | Out-File -FilePath $layoutFile -Encoding utf8
+$layoutOut = $outputs[2]
+($header + "LAYOUT SUMMARY`n==============`n`n" + $layoutOut) | Out-File -FilePath $layoutFile -Encoding utf8
 Write-Host "  [2/$stepCount] Saved: $layoutFile" -ForegroundColor Green
 
-# --- 3. Query Simulator ---
+# --- Step 3: Query Simulator ---
 Write-Host ""
-Write-Host "  [3/$stepCount] Running query simulator..." -ForegroundColor Yellow
-$queryPath = Join-Path $toolDir "test_commsys.ps1"
-$queryOut = & powershell -ExecutionPolicy Bypass -File $queryPath -Path $resolved 2>&1 | Out-String
-$queryFile = Join-Path $DocsDir "QUERY_REPORT_$jsonName.txt"
+$queryOut = $outputs[3]
 ($header + "QUERY SIMULATION`n================`n`n" + $queryOut) | Out-File -FilePath $queryFile -Encoding utf8
 Write-Host "  [3/$stepCount] Saved: $queryFile" -ForegroundColor Green
 
-# --- 4. Picklist Scanner ---
+# --- Step 4: Picklist ---
 Write-Host ""
-Write-Host "  [4/$stepCount] Running picklist scanner..." -ForegroundColor Yellow
-$picklistPath = Join-Path $toolDir "report_picklists.ps1"
-$picklistFile = Join-Path $DocsDir "PICKLIST_REPORT_$jsonName.txt"
-& powershell -ExecutionPolicy Bypass -File $picklistPath -Path $resolved -OutFile $picklistFile 2>&1 | Out-Null
 Write-Host "  [4/$stepCount] Saved: $picklistFile" -ForegroundColor Green
 
-# --- 5. HTML Layout Render ---
+# --- Step 5: HTML ---
 Write-Host ""
-Write-Host "  [5/$stepCount] Rendering HTML layout..." -ForegroundColor Yellow
-$htmlRendererPath = Join-Path $toolDir "render_html.ps1"
-$htmlFile = Join-Path $DocsDir "LAYOUT_$jsonName.html"
-& powershell -ExecutionPolicy Bypass -File $htmlRendererPath -Path $resolved -OutFile $htmlFile 2>&1 | Out-Null
 Write-Host "  [5/$stepCount] Saved: $htmlFile" -ForegroundColor Green
 
-# --- 6. Post-Build Verification ---
+# --- Step 6: Verify ---
 Write-Host ""
-Write-Host "  [6/$stepCount] Running post-build verification..." -ForegroundColor Yellow
-$verifyPath = Join-Path $toolDir "verify_build.ps1"
-$verifyOut = & powershell -ExecutionPolicy Bypass -File $verifyPath -Path $resolved 2>&1 | Out-String
-$verifyFile = Join-Path $DocsDir "VERIFY_REPORT_$jsonName.txt"
+$verifyOut = $outputs[6]
 ($header + "POST-BUILD VERIFICATION`n=======================`n`n" + $verifyOut) | Out-File -FilePath $verifyFile -Encoding utf8
 $verifyFails = ([regex]::Matches($verifyOut, '\[FAIL\]')).Count
 if ($verifyFails -gt 0) {
@@ -172,13 +270,10 @@ if ($verifyFails -gt 0) {
     Write-Host "  [6/$stepCount] Saved: $verifyFile" -ForegroundColor Green
 }
 
-# --- 7. Metadata Audit (XML vs JSON) ---
+# --- Step 7: Metadata Audit ---
 Write-Host ""
-Write-Host "  [7/$stepCount] Running metadata audit..." -ForegroundColor Yellow
-$metadataPath = Join-Path $toolDir "audit_metadata.ps1"
-$metadataFile = Join-Path $DocsDir "METADATA_AUDIT_$jsonName.txt"
-if (Test-Path $metadataPath) {
-    $metadataOut = & powershell -ExecutionPolicy Bypass -File $metadataPath -Path $resolved 2>&1 | Out-String
+if ($outputs[7]) {
+    $metadataOut = $outputs[7]
     ($header + "METADATA AUDIT`n==============`n`n" + $metadataOut) | Out-File -FilePath $metadataFile -Encoding utf8
     $metadataFails = ([regex]::Matches($metadataOut, '\[FAIL\]')).Count
     if ($metadataFails -gt 0) {
@@ -190,14 +285,10 @@ if (Test-Path $metadataPath) {
     Write-Host "  [7/$stepCount] SKIPPED (audit_metadata.ps1 not found)" -ForegroundColor Gray
 }
 
-# --- 8. CAD Audit ---
+# --- Step 8: CAD Audit ---
 Write-Host ""
-Write-Host "  [8/$stepCount] Running CAD audit..." -ForegroundColor Yellow
-$cadPath = Join-Path $toolDir "audit_cad.ps1"
-$cadFile = Join-Path $DocsDir "CAD_AUDIT_$jsonName.txt"
-if (Test-Path $cadPath) {
-    $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
-    $cadOut = & powershell -ExecutionPolicy Bypass -File $cadPath -Path $resolved -Variant $cadVariant 2>&1 | Out-String
+if ($outputs[8]) {
+    $cadOut = $outputs[8]
     ($header + "CAD AUDIT`n=========`n`n" + $cadOut) | Out-File -FilePath $cadFile -Encoding utf8
     $cadFails = ([regex]::Matches($cadOut, '\[FAIL\]')).Count
     if ($cadFails -gt 0) {
@@ -209,15 +300,10 @@ if (Test-Path $cadPath) {
     Write-Host "  [8/$stepCount] SKIPPED (audit_cad.ps1 not found)" -ForegroundColor Gray
 }
 
-# --- 9. Test Matrix ---
+# --- Step 9: Test Matrix ---
 Write-Host ""
-Write-Host "  [9/$stepCount] Generating test matrix..." -ForegroundColor Yellow
-$testMatrixPath = Join-Path $toolDir "generate_test_matrix.ps1"
-if (Test-Path $testMatrixPath) {
-    $providerBase = $jsonName -replace '_(BASE|MC)$', ''
-    $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
-    $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
-    $matrixOut = & powershell -ExecutionPolicy Bypass -File $testMatrixPath -Path $resolved -OutFile $matrixFile 2>&1 | Out-String
+if ($outputs[9]) {
+    $matrixOut = $outputs[9]
     if ($matrixOut -match '(\d+)/(\d+) combos') {
         $matCov = $Matches[0]
         Write-Host "  [9/$stepCount] Saved: $matrixFile ($matCov)" -ForegroundColor Green
@@ -228,12 +314,15 @@ if (Test-Path $testMatrixPath) {
     Write-Host "  [9/$stepCount] SKIPPED (generate_test_matrix.ps1 not found)" -ForegroundColor Gray
 }
 
-# --- 10. Test Conductor (automated test validation) ---
+# ══════════════════════════════════════════════════════════════════════════════
+#  STEP 10: Test Conductor (sequential -- depends on step 9 output)
+# ══════════════════════════════════════════════════════════════════════════════
+
 Write-Host ""
 Write-Host "  [10/$stepCount] Running test conductor..." -ForegroundColor Yellow
 $testConductorPath = Join-Path $toolDir "run_test_matrix.ps1"
 if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
-    $conductorOut = & powershell -ExecutionPolicy Bypass -File $testConductorPath -Path $resolved -Matrix $matrixFile 2>&1 | Out-String
+    $conductorOut = & powershell -ExecutionPolicy Bypass -File $testConductorPath -Path $resolvedStr -Matrix $matrixFile 2>&1 | Out-String
     $conductorFile = Join-Path $DocsDir "TEST_VALIDATION_$jsonName.txt"
     ($header + "TEST CONDUCTOR RESULTS`n=====================`n`n" + $conductorOut) | Out-File -FilePath $conductorFile -Encoding utf8
     if ($conductorOut -match '(\d+)/(\d+) PASS, (\d+) FAIL') {

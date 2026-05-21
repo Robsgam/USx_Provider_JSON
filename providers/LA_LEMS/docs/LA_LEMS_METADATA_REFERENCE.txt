@@ -1,7 +1,7 @@
 ﻿LA_LEMS METADATA REFERENCE
 ===========================
-Generated: 2026-05-08
-Source: LA_LEMS.xml (metadata) + LA_LEMS_BASE.json
+Generated: 2026-05-21
+Source: LA_LEMS.xml (metadata) + LA_LEMS_MC.json
 Metadata: 84 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -62,8 +62,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, PurposeCode                     State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumber, PurposeCode]
-  BUILT   KQName         set[SexCode, BirthDate, NameLast, NameFirst, PurposeCode]
+  BUILT   KQName         set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, PurposeCodeDH]
+  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, PurposeCodeDH]
   SKIP    KQ             Name -- MC expansion candidate
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
 
@@ -96,10 +96,10 @@ METADATA COMBINATIONS (6 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  State, State2, State3, Stat...
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   DP             set[OperatorLicenseNumber, ImageIndicator]
-  BUILT   DQ             set[OperatorLicenseNumber]
   BUILT   QWDN           set[SexCode, BirthDate, NameLast, NameFirst, RaceCode]
   BUILT   QWA            set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   DP             set[OperatorLicenseNumber, ImageIndicator]
+  BUILT   DQ             set[OperatorLicenseNumber]
 
 ================================================================================
 5. GunQuery (version 6)

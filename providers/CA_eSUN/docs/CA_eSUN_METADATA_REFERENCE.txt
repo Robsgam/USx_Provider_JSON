@@ -1,7 +1,7 @@
 ﻿CA_eSUN METADATA REFERENCE
 ===========================
-Generated: 2026-05-08
-Source: CA_eSUN.xml (metadata) + CA_eSUN_BASE.json
+Generated: 2026-05-21
+Source: CA_eSUN.xml (metadata) + CA_eSUN_MC.json
 Metadata: 64 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -25,7 +25,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     CaRequestPurposeCode, ArticleSerialNumber              ArticleBrand, ArticleCatego...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[caRequestPurposeCode, serialNumber]
+  BUILT   QA             set[CaRequestPurposeCode, SerialNumber]
 
 ================================================================================
 2. BoatQuery (version 8)
@@ -48,8 +48,8 @@ METADATA COMBINATIONS (6 total):
   QB            BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber                 --
 
 BUILD COVERAGE (2 of 6 built):
-  BUILT   BQ.H           set[caRequestPurposeCode, boatHullIdNumber]
-  BUILT   BQ.R           set[caRequestPurposeCode, registrationNumber]
+  BUILT   BQ.H           set[CaRequestPurposeCode, BoatHullIdNumber]
+  BUILT   BQ.R           set[CaRequestPurposeCode, RegistrationNumber]
   SKIP    4B             RegistrationNumber -- MC expansion candidate
   SKIP    4V             BoatHullIdNumber -- MC expansion candidate
   SKIP    QB             RegistrationNumber -- MC expansion candidate
@@ -78,10 +78,12 @@ METADATA COMBINATIONS (4 total):
   KQ            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   KQ.N           set[caRequestPurposeCode, nameLastDH, nameFirstDH, sexCodeDH, birthDateDH]
-  BUILT   KQ.O           set[caRequestPurposeCode, operatorLicenseNumberDH]
-  BUILT   L1.N           set[caRequestPurposeCode, nameLastDH, nameFirstDH]
-  BUILT   L1.O           set[caRequestPurposeCode, operatorLicenseNumberDH]
+  BUILT   KQ.N           set[CaRequestPurposeCode, NameLastDH, NameFirstDH, SexCodeDH, BirthDateDH]
+  BUILT   L1.N.DH        set[CaRequestPurposeCode, NameLastDH, NameFirstDH]
+  BUILT   KQ.O           set[CaRequestPurposeCode, OperatorLicenseNumberDH]
+  BUILT   L1.O.DH        set[CaRequestPurposeCode, OperatorLicenseNumberDH]
+  SKIP    L1             Name -- MC expansion candidate
+  SKIP    L1             OperatorLicenseNumber -- MC expansion candidate
 
 ================================================================================
 4. DriverLicenseQuery (version 11)
@@ -106,10 +108,10 @@ METADATA COMBINATIONS (6 total):
   QW            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   DQ.N           set[caRequestPurposeCode, sexCode, birthDate, nameLast, nameFirst]
-  BUILT   DQ.O           set[caRequestPurposeCode, operatorLicenseNumber]
-  BUILT   L1.N           set[caRequestPurposeCode, nameLastDH, nameFirstDH]
-  BUILT   L1.O           set[caRequestPurposeCode, operatorLicenseNumberDH]
+  BUILT   DQ.N           set[CaRequestPurposeCode, SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   L1.N           set[CaRequestPurposeCode, NameLast, NameFirst]
+  BUILT   DQ.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
+  BUILT   L1.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
   SKIP    QW             Name -- MC expansion candidate
   SKIP    QW             OperatorLicenseNumber -- MC expansion candidate
 
@@ -135,8 +137,8 @@ METADATA COMBINATIONS (2 total):
   QGH           Name                    CaRequestPurposeCode, Name                             --
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   QGB            set[caRequestPurposeCode, serialNumber]
-  BUILT   QGH            set[caRequestPurposeCode, gunNameLast, gunNameFirst]
+  BUILT   QGH            set[CaRequestPurposeCode, GunNameLast, GunNameFirst]
+  BUILT   QGB            set[CaRequestPurposeCode, SerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 13)
@@ -169,12 +171,12 @@ METADATA COMBINATIONS (8 total):
   VP            Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
 BUILD COVERAGE (6 of 8 built):
-  BUILT   RQ.P           set[caRequestPurposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   RQ.V           set[caRequestPurposeCode, vehicleIdentificationNumber, registrationState]
-  BUILT   VP.D           set[caRequestPurposeCode, vehNameLast, vehNameFirst, vehBirthDate]
-  BUILT   VP.N           set[caRequestPurposeCode, vehNameLast, vehNameFirst]
-  BUILT   QV.V           set[caRequestPurposeCode, vehicleIdentificationNumber]
-  BUILT   QV.P           set[caRequestPurposeCode, licensePlateNumber]
+  BUILT   RQ.P           set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   VP.D           set[CaRequestPurposeCode, VehNameLast, VehNameFirst, VehBirthDate]
+  BUILT   RQ.V           set[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   VP.N           set[CaRequestPurposeCode, VehNameLast, VehNameFirst]
+  BUILT   QV.V           set[CaRequestPurposeCode, VehicleIdentificationNumber]
+  BUILT   QV.P           set[CaRequestPurposeCode, LicensePlateNumber]
   SKIP    4              LicensePlateNumber -- MC expansion candidate
   SKIP    4V             VehicleIdentificationNumber -- MC expansion candidate
 
@@ -194,13 +196,15 @@ BUILD SUMMARY
   TOTAL                                   27     19     8  70%
 
 ================================================================================
-MC EXPANSION CANDIDATES (8 combos not in BASE)
+MC EXPANSION CANDIDATES (10 combos not in BASE)
 ================================================================================
 
   4B             RegistrationNumber       (BoatQuery)
   4V             BoatHullIdNumber         (BoatQuery)
   QB             RegistrationNumber       (BoatQuery)
   QB             BoatHullIdNumber         (BoatQuery)
+  L1             Name                     (DriverHistoryQuery)
+  L1             OperatorLicenseNumber    (DriverHistoryQuery)
   QW             Name                     (DriverLicenseQuery)
   QW             OperatorLicenseNumber    (DriverLicenseQuery)
   4              LicensePlateNumber       (VehicleRegistrationQuery)

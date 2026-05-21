@@ -1,7 +1,7 @@
 ﻿IL_LEADS_OFML METADATA REFERENCE
 =================================
-Generated: 2026-05-08
-Source: IL_LEADS_OFML.xml (metadata) + IL_LEADS_OFML_BASE.json
+Generated: 2026-05-21
+Source: IL_LEADS_OFML.xml (metadata) + IL_LEADS_OFML_MC.json
 Metadata: 35 total transactions, 5 queries built in JSON
 
 ================================================================================
@@ -19,7 +19,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   OwnerAppliedNumber
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[serialNumber, articleTypeCode]
+  BUILT   QA             set[SerialNumber, ArticleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 4)
@@ -43,8 +43,8 @@ METADATA COMBINATIONS (2 total):
   BQ            RegistrationNumber      RegistrationNumber                                     ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   BQ.H           set[boatHullIdNumber]
-  BUILT   BQ.R           set[registrationNumber]
+  BUILT   BQ.H           set[BoatHullIdNumber]
+  BUILT   BQ.R           set[RegistrationNumber]
 
 ================================================================================
 3. DriverLicenseQuery (version 2)
@@ -66,8 +66,8 @@ METADATA COMBINATIONS (2 total):
   Z2            OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   Z2.N           set[birthDate, nameLast, nameFirst]
-  BUILT   Z2.O           set[operatorLicenseNumber]
+  BUILT   Z2.N           set[BirthDate, NameLast, NameFirst]
+  BUILT   Z2.O           set[OperatorLicenseNumber]
 
 ================================================================================
 4. GunQuery (version 2)
@@ -86,7 +86,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, ImageI...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[serialNumber]
+  BUILT   QG             set[SerialNumber]
 
 ================================================================================
 5. VehicleRegistrationQuery (version 2)
@@ -111,9 +111,9 @@ METADATA COMBINATIONS (3 total):
   Z2            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   Z2.P           set[licensePlateNumber]
-  BUILT   Z2.V           set[vehicleIdentificationNumber]
-  BUILT   Z5             set[licensePlateNumber]
+  BUILT   Z2.P           set[LicensePlateNumber]
+  BUILT   Z2.V           set[VehicleIdentificationNumber]
+  BUILT   Z5             set[LicensePlateNumber]
 
 ================================================================================
 BUILD SUMMARY
