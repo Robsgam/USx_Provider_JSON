@@ -43,6 +43,12 @@ All JSON versions produced for this provider.
 | v1/NJ_NJCJIS_BASE.json | v1.x | Archived | Previous BASE before v2.0 rebuild (2026-04-28). |
 | v1/NJ_NJCJIS_MC.json | v1.x | Archived | Previous MC before v2.0 rebuild (2026-04-28). |
 
+
+## v3.4 (2026-05-21)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS.json | v3.4 | Current | 69P/0F/0W/0LIM. |
 ## v3.1 (2026-05-11)
 
 | File | Version | Status | Notes |

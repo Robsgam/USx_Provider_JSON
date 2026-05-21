@@ -23,3 +23,9 @@
 | v1.1 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.1_2026-05-06.json | SupervisedRelease + OOS boat |
 | v1.0 BASE | 2026-05-06 | phases/base/CA_CLETS_v1.0_2026-05-06.json | Phase 1 single-card; 5 entities, 8 QIDMs, 21 combos; 73P/0F/3W/4LIM |
 | v1.0 MC | 2026-05-06 | phases/mc/CA_CLETS_MC_v1.0_2026-05-06.json | Phase 1 PascalCase; 73P/0F/1W/4LIM |
+
+## v2.4 (2026-05-21)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS.json | v2.4 | Current | 91P/0F/0W/0LIM. |

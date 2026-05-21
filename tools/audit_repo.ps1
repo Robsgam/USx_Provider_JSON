@@ -843,18 +843,21 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { continue }
 
-    $phasesBase = "$($pd.FullName)\phases\base"
-    if (Test-Path $phasesBase) {
-        $versionedFile = Get-ChildItem $phasesBase -File | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
-        if ($versionedFile) {
-            Pass "${provName} -- phases/base/ has v${scriptVersion} snapshot"
-        } else {
-            if ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} in phases/base/" }
-            else { Fail "${provName} -- phases/base/ missing v${scriptVersion} snapshot" }
+    $phaseFound = $false
+    foreach ($phaseDir in @("$($pd.FullName)\phases", "$($pd.FullName)\phases\base", "$($pd.FullName)\phases\mc")) {
+        if (Test-Path $phaseDir) {
+            $versionedFile = Get-ChildItem $phaseDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
+            if ($versionedFile) {
+                $relDir = $phaseDir.Replace($pd.FullName + '\', '')
+                Pass "${provName} -- ${relDir} has v${scriptVersion} snapshot"
+                $phaseFound = $true
+                break
+            }
         }
-    } else {
-        if ($isFlagged) { Info "FLAGGED: ${provName} -- phases/base/ missing" }
-        else { Fail "${provName} -- phases/base/ directory missing" }
+    }
+    if (-not $phaseFound) {
+        if ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} phase snapshot" }
+        else { Fail "${provName} -- no v${scriptVersion} phase snapshot" }
     }
 }
 }

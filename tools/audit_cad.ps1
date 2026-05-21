@@ -21,7 +21,7 @@
 param(
     [string]$Path,
     [string]$OutFile,
-    [ValidateSet('BASE','MC')][string]$Variant = 'BASE'
+    [ValidateSet('BASE','MC')][string]$Variant = 'MC'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -70,10 +70,20 @@ if ($Path) {
 } else {
     $providersDir = Join-Path $repoRoot 'providers'
     if (-not (Test-Path $providersDir)) { Write-Error "Providers dir not found: $providersDir"; return }
-    $suffix = if ($Variant -eq 'MC') { '*_MC.json' } else { '*_BASE.json' }
-    $jsonFiles = @(Get-ChildItem -Path $providersDir -Filter $suffix -Recurse |
-        Where-Object { $_.DirectoryName -notmatch '(archive|phases|release|v1[\\\/])' -and $_.DirectoryName -notmatch 'CA_CONTRA_COSTA' } |
-        Sort-Object Name)
+    $provDirs = Get-ChildItem -Path $providersDir -Directory |
+        Where-Object { $_.Name -ne 'CA_CONTRA_COSTA' }
+    $jsonFiles = @()
+    foreach ($pd in $provDirs) {
+        $candidates = Get-ChildItem -Path $pd.FullName -Filter '*.json' -File |
+            Where-Object { $_.Name -notmatch '(archive|phases|release)' }
+        if ($Variant -eq 'BASE') {
+            $f = $candidates | Where-Object { $_.Name -match '_BASE\.json$' } | Select-Object -First 1
+        } else {
+            $f = $candidates | Where-Object { $_.Name -notmatch '_BASE\.json$' } | Select-Object -First 1
+        }
+        if ($f) { $jsonFiles += $f }
+    }
+    $jsonFiles = @($jsonFiles | Sort-Object Name)
 }
 
 if ($jsonFiles.Count -eq 0) { Write-Error "No provider JSONs found"; return }
@@ -504,7 +514,7 @@ foreach ($jf in $jsonFiles) {
     # form initialValues — without defaults[], those fields are absent from XML.
     # Exceptions:
     #   - Fields guaranteed by conditions (user must have set them for combo to fire)
-    #   - Fields with codeTypeProvider (reverse-lookup interaction needs live testing → INFO)
+    #   - codeTypeProvider fields (e.g., State) need defaults too — CommSys priority
     Out ''
     Out '--- CHECK 6: CAD Defaults Coverage ---'
 
@@ -567,11 +577,7 @@ foreach ($jf in $jsonFiles) {
                     if (-not $attrName) { continue }
                     if ($existingDefaults.Contains($attrName)) { continue }
                     if ($conditionFields.Contains($attrName)) { continue }
-                    if ($codeTypeProviderAttrs.Contains($attrName)) {
-                        $codeTypeMissing += "$attrName (form default='$($ivMap[$anyField])', codeTypeProvider -- needs live test)"
-                    } else {
-                        $missing += "$attrName (form default='$($ivMap[$anyField])')"
-                    }
+                    $missing += "$attrName (form default='$($ivMap[$anyField])')"
                 }
 
                 if ($missing.Count -eq 0 -and $codeTypeMissing.Count -eq 0) {

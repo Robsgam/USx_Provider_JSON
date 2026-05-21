@@ -4,6 +4,13 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.3 (2026-05-21) -- Single-JSON merge
+  CHANGED: Merged BASE/MC into single build: build_fl_fcic.ps1 → FL_FCIC.json (no suffix).
+           Deleted old BASE build script. Reports now in docs/ (not docs/mc/).
+  REASON:  BASE/MC split doubled maintenance; MC is always production target.
+  VALIDATOR: 101P/0F/0W
+  TEST CONDUCTOR: 47/47 PASS
+
 v4.2 (2026-05-19) -- Remove WantedPersonQuery (QW) QIDM
   CHANGED: Removed FL_FCIC_WantedPersonQuery QIDM and its 2 combos (QWOperatorLicenseNumber, QWName).
            Provider bundle: 10 configs (was 11). CommSys combos: 33 (was 35). QIDMs: 7 (was 8).

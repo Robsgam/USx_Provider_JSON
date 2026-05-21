@@ -57,16 +57,24 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        # OOS Plate (5 set -- most specific)
+        # OOS Plate (5 set -- most specific, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState')
+                any        = @('vehicleMakeCode','vehicleYear')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'NLTS.RQ.P'
             state                 = 'In/Out'
         }
-        # OOS VIN (3 set)
+        # OOS VIN (3 set, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState')
+                any        = @('vehicleMakeCode','vehicleYear')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'NLTS.RQ.V'
             state                 = 'In/Out'
@@ -130,9 +138,13 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
         }
-        # OOS OLN (3 set)
+        # OOS OLN (3 set, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','operatorLicenseNumber','registrationState')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'
@@ -323,23 +335,35 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # OOS Name -- most specific (5 set)
+        # OOS Name -- most specific (5 set, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','nameLast','nameFirst','birthDate','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','nameLast','nameFirst','birthDate','registrationState')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'NLTS.BQ.N'
             state                 = 'In/Out'
         }
-        # OOS hull (3 set)
+        # OOS hull (3 set, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','boatHullIdNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','boatHullIdNumber','registrationState')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'NLTS.BQ.H'
             state                 = 'In/Out'
         }
-        # OOS reg (3 set)
+        # OOS reg (3 set, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','registrationNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','registrationNumber','registrationState')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'NLTS.BQ.R'
             state                 = 'In/Out'

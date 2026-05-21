@@ -3,22 +3,19 @@
   ONE command. Runs EVERYTHING. No manual steps.
 
   Steps:
-    1. Build BASE JSON (run build script)
-    2. Build MC JSON (run MC build script)
-    3. Build report on BASE (10 tools + test matrix + test conductor)
-    4. Build report on MC (10 tools + test matrix + test conductor)
-    5. Extract metadata reference
-    6. Sync CLAUDE.md provider table
-    7. Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)
-    8. Cross-provider audit (ALL providers, not just this one)
-    9. Repo audit (full monorepo)
-   10. Enforce (final gate)
+    1. Build JSON (run build script)
+    2. Build report (10 tools + test matrix + test conductor)
+    3. Extract metadata reference
+    4. Sync CLAUDE.md provider table
+    5. Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)
+    6. Cross-provider audit (ALL providers, not just this one)
+    7. Repo audit (full monorepo)
+    8. Enforce (final gate)
 
   If any step FAILs, pipeline stops and reports exactly what broke.
 
   Usage:
     .\pipeline.ps1 -Provider HI_HCJDC_OFML
-    .\pipeline.ps1 -Provider HI_HCJDC_OFML -BaseOnly    # skip MC
     .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipBuild   # reports + audit only (JSON already built)
     .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipEnforce # stop before enforce (mid-work)
 #>
@@ -26,7 +23,6 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$Provider,
-    [switch]$BaseOnly,
     [switch]$SkipBuild,
     [switch]$SkipEnforce
 )
@@ -45,9 +41,8 @@ $docPrefix = $Provider
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 $script:stepNum = 0
-$script:totalSteps = 10
-if ($BaseOnly)    { $script:totalSteps-- }
-if ($SkipBuild)   { $script:totalSteps -= $(if ($BaseOnly) { 1 } else { 2 }) }
+$script:totalSteps = 8
+if ($SkipBuild)   { $script:totalSteps-- }
 if ($SkipEnforce) { $script:totalSteps-- }
 
 $script:failedStep = $null
@@ -69,14 +64,23 @@ function StepPass($msg) {
 }
 
 # ── Discover scripts and files ────────────────────────────────────────────────
-$baseScript = Get-ChildItem (Join-Path $provDir "scripts") -Filter "build_*" -File |
-    Where-Object { $_.Name -notmatch '_mc' } | Select-Object -First 1
+# Single build script per provider (no BASE/MC split)
+# Legacy: also check for _mc suffix for providers not yet migrated
+$buildScript = Get-ChildItem (Join-Path $provDir "scripts") -Filter "build_*" -File |
+    Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' } | Select-Object -First 1
+if (-not $buildScript) {
+    $buildScript = Get-ChildItem (Join-Path $provDir "scripts") -Filter "build_*_mc*" -File |
+        Select-Object -First 1
+}
 
-$mcScript = Get-ChildItem (Join-Path $provDir "scripts") -Filter "build_*_mc*" -File |
-    Select-Object -First 1
-
-$baseJson = Join-Path $provDir "${docPrefix}_BASE.json"
-$mcJson   = Join-Path $provDir "${docPrefix}_MC.json"
+# JSON: check for <PROVIDER>.json first, then legacy _MC.json / _BASE.json
+$provJson = Join-Path $provDir "${docPrefix}.json"
+if (-not (Test-Path $provJson)) {
+    $provJson = Join-Path $provDir "${docPrefix}_MC.json"
+}
+if (-not (Test-Path $provJson)) {
+    $provJson = Join-Path $provDir "${docPrefix}_BASE.json"
+}
 
 $xmlFile = Get-ChildItem (Join-Path $provDir "source") -Filter "*.xml" -File |
     Where-Object { $_.Name -notmatch 'HIDLE' } | Select-Object -First 1
@@ -93,78 +97,48 @@ Write-Host ("=" * 60) -ForegroundColor Magenta
 # All steps run inside a labeled loop so we can break to summary on failure
 :pipeline do {
 
-# ── STEP 1: Build BASE ───────────────────────────────────────────────────────
+# ── STEP 1: Build JSON ───────────────────────────────────────────────────────
 if (-not $SkipBuild) {
-    Step "Build BASE JSON"
-    if (-not $baseScript) {
-        StepFail "No BASE build script found in scripts/"
+    Step "Build JSON"
+    if (-not $buildScript) {
+        StepFail "No build script found in scripts/"
     } else {
-        $output = & powershell -ExecutionPolicy Bypass -File $baseScript.FullName 2>&1 | Out-String
+        $output = & powershell -ExecutionPolicy Bypass -File $buildScript.FullName 2>&1 | Out-String
         if ($output -match '0 FAIL') {
-            StepPass "BASE built successfully"
+            StepPass "Built successfully"
+            # Re-discover JSON after build (name may have changed)
+            $provJson = Join-Path $provDir "${docPrefix}.json"
+            if (-not (Test-Path $provJson)) { $provJson = Join-Path $provDir "${docPrefix}_MC.json" }
+            if (-not (Test-Path $provJson)) { $provJson = Join-Path $provDir "${docPrefix}_BASE.json" }
         } else {
-            StepFail "BASE build had failures"
+            StepFail "Build had failures"
             Write-Host $output
         }
     }
     if ($script:failedStep) { break pipeline }
 }
 
-# ── STEP 2: Build MC ─────────────────────────────────────────────────────────
-if (-not $SkipBuild -and -not $BaseOnly) {
-    Step "Build MC JSON"
-    if (-not $mcScript) {
-        StepFail "No MC build script found in scripts/"
-    } else {
-        $output = & powershell -ExecutionPolicy Bypass -File $mcScript.FullName 2>&1 | Out-String
-        if ($output -match '0 FAIL') {
-            StepPass "MC built successfully"
-        } else {
-            StepFail "MC build had failures"
-            Write-Host $output
-        }
-    }
-    if ($script:failedStep) { break pipeline }
-}
-
-# ── STEP 3: Build report BASE ────────────────────────────────────────────────
-Step "Build report (BASE)"
-if (Test-Path $baseJson) {
-    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $baseJson 2>&1 | Out-String
+# ── STEP 2: Build report ────────────────────────────────────────────────────
+Step "Build report"
+if (Test-Path $provJson) {
+    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $provJson 2>&1 | Out-String
     if ($output -match '0 FAIL') {
-        StepPass "BASE report complete"
+        StepPass "Report complete"
     } else {
-        StepFail "BASE report had issues"
+        StepFail "Report had issues"
         Write-Host $output
     }
 } else {
-    StepFail "BASE JSON not found: $baseJson"
+    StepFail "JSON not found: $provJson"
 }
 if ($script:failedStep) { break pipeline }
 
-# ── STEP 4: Build report MC ──────────────────────────────────────────────────
-if (-not $BaseOnly) {
-    Step "Build report (MC)"
-    if (Test-Path $mcJson) {
-        $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $mcJson 2>&1 | Out-String
-        if ($output -match '0 FAIL') {
-            StepPass "MC report complete"
-        } else {
-            StepFail "MC report had issues"
-            Write-Host $output
-        }
-    } else {
-        StepFail "MC JSON not found: $mcJson"
-    }
-    if ($script:failedStep) { break pipeline }
-}
-
-# ── STEP 5: Extract metadata reference ────────────────────────────────────────
+# ── STEP 3: Extract metadata reference ────────────────────────────────────────
 Step "Extract metadata reference"
-if ($xmlFile -and (Test-Path $baseJson)) {
+if ($xmlFile -and (Test-Path $provJson)) {
     $metaOut = Join-Path $provDir "docs\${docPrefix}_METADATA_REFERENCE.txt"
     & powershell -ExecutionPolicy Bypass -File "$toolDir\extract_metadata_reference.ps1" `
-        -XmlPath $xmlFile.FullName -Path $baseJson -OutFile $metaOut 2>&1 | Out-Null
+        -XmlPath $xmlFile.FullName -Path $provJson -OutFile $metaOut 2>&1 | Out-Null
     if (Test-Path $metaOut) {
         StepPass "METADATA_REFERENCE.txt updated"
     } else {
@@ -174,7 +148,7 @@ if ($xmlFile -and (Test-Path $baseJson)) {
     Write-Host "  [INFO] No XML metadata found -- skipping extraction" -ForegroundColor Gray
 }
 
-# ── STEP 6: Sync CLAUDE.md ───────────────────────────────────────────────────
+# ── STEP 4: Sync CLAUDE.md ───────────────────────────────────────────────────
 Step "Sync CLAUDE.md provider table"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_provider_table.ps1" 2>&1 | Out-String
 if ($output -match 'Updated (\d+)') {
@@ -188,7 +162,7 @@ if ($output -match 'Updated (\d+)') {
     StepPass "sync_provider_table ran"
 }
 
-# ── STEP 7: Sync version docs ────────────────────────────────────────────────
+# ── STEP 5: Sync version docs ────────────────────────────────────────────────
 Step "Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_version_docs.ps1" -Provider $Provider 2>&1 | Out-String
 if ($output -match '(\d+) updated') {
@@ -202,7 +176,7 @@ if ($output -match '(\d+) updated') {
     StepPass "sync_version_docs ran"
 }
 
-# ── STEP 8: Cross-provider audit ─────────────────────────────────────────────
+# ── STEP 6: Cross-provider audit ─────────────────────────────────────────────
 Step "Cross-provider audit (ALL providers)"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_cross_provider.ps1" `
     -Path (Join-Path $repoRoot "providers") 2>&1 | Out-String
@@ -222,7 +196,7 @@ if ($output -match '(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL') {
 }
 if ($script:failedStep) { break pipeline }
 
-# ── STEP 9: Repo audit ───────────────────────────────────────────────────────
+# ── STEP 7: Repo audit ───────────────────────────────────────────────────────
 Step "Repo audit (full monorepo)"
 $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_repo.ps1" 2>&1 | Out-String
 
@@ -239,7 +213,7 @@ if ($output -match 'AUDIT\s+PASSED') {
 }
 if ($script:failedStep) { break pipeline }
 
-# ── STEP 10: Enforce ─────────────────────────────────────────────────────────
+# ── STEP 8: Enforce ──────────────────────────────────────────────────────────
 if (-not $SkipEnforce) {
     Step "Enforce (final gate)"
     $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -Provider $Provider -SkipGit 2>&1 | Out-String

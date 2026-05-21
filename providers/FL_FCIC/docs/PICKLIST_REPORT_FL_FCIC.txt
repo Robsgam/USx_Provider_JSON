@@ -1,0 +1,123 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: FL_FCIC
+  Source: FL_FCIC.json
+  Generated: 2026-05-21 14:46
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    articleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+    imageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Boat
+    imageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    registrationState [State (leave blank for FL, required for name/DOB)]
+      Config: attributeTypeId=STATE
+
+  Entity: Firearm
+    gunMake [Gun Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+    imageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Person
+    imageIndicator [Image] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    registrationState [State (leave blank for FL)]
+      Config: attributeTypeId=STATE
+    registrationStateDH [State (leave blank for FL)]
+      Config: attributeTypeId=STATE
+    sexCode [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    sexCodeDH [Sex (DH)]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+
+  Entity: Vehicle
+    imageIndicator [Image] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    licensePlateTypeCode [Plate Type] (default=PC)
+      Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
+    registrationState [State (leave blank for FL)]
+      Config: attributeTypeId=STATE
+    vehicleMakeCode [Vehicle Make]
+      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: FL_FCIC_VehicleRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: FL_FCIC_VehicleStolenQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: FL_FCIC_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: FL_FCIC_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: FL_FCIC_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: FL_FCIC_Results
+      AddressStateCode -> AddressStateCode
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NIBRS
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMakeName -> VehicleMakeName
+        codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+      VehicleStyleCode -> BodyStyle
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+  QIDM: FL_FCIC_VehicleRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: FL_FCIC_VehicleStolenQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: FL_FCIC_DriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: FL_FCIC_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: FL_FCIC_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: FL_FCIC_DriverHistoryQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: FL_FCIC_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 15
+  QRDM code type attrs: 16

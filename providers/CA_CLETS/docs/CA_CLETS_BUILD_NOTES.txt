@@ -1,6 +1,14 @@
 CA_CLETS -- Build Notes
 ========================
 
+v2.4 (2026-05-21) -- Single-JSON merge
+  CHANGED: Merged BASE/MC into single build: build_ca_clets.ps1 → CA_CLETS.json (no suffix).
+           Deleted old BASE build script. Reports now in docs/ (not docs/mc/).
+           Phase snapshots to phases/ (not phases/mc/).
+  REASON:  BASE/MC split doubled maintenance; MC is always production target.
+  VALIDATOR: 91P/0F/0W
+  TEST CONDUCTOR: 52/52 PASS
+
 v2.1 (2026-05-19) -- Full combo coverage BASE + CAD defaults fix
   CHANGED: Added 3 cross-entity combos to single-card BASE layout:
            - IN.VP (Vehicle by owner Name) -- nameFirst/nameLast on Vehicle card

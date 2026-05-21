@@ -1,0 +1,145 @@
+﻿================================================================
+  Build Report: FL_FCIC
+  Source: FL_FCIC.json
+  Generated: 2026-05-21 14:46
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== FL_FCIC.json ===
+QIFs: 5
+  Person | entity=Person | qidm= | cards=2 fields=10
+  Vehicle | entity=Vehicle | qidm= | cards=2 fields=10
+  Firearm | entity=Firearm | qidm= | cards=1 fields=3
+  Article | entity=Article | qidm= | cards=1 fields=4
+  Boat | entity=Boat | qidm= | cards=2 fields=10
+QIDMs: 7
+  FL_FCIC_VehicleRegistrationQuery | attrs=10 combos=6 autoSelect=
+  FL_FCIC_VehicleStolenQuery | attrs=9 combos=6 autoSelect=
+  FL_FCIC_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
+  FL_FCIC_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
+  FL_FCIC_GunQuery | attrs=5 combos=3 autoSelect=
+  FL_FCIC_ArticleSingleQuery | attrs=6 combos=4 autoSelect=
+  FL_FCIC_BoatQuery | attrs=12 combos=12 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_DL"
+      ROW ROW_DL1 [6 3 3]
+        operatorLicenseNumber (Text | maxLen=20)
+        registrationState (Dropdown | attributeTypeId=STATE)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_DL2 [4 4 4]
+        nameLast (Text | maxLen=30)
+        nameFirst (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+      ROW ROW_DL3 [4 4 4]
+        birthDate (FormDate)
+        sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        nameSuffix (Text | maxLen=10)
+    CARD "CARD_DH"
+      ROW ROW_DH1 [6 3 3]
+        operatorLicenseNumberDH (Text | maxLen=20)
+        registrationStateDH (Dropdown | attributeTypeId=STATE)
+        purposeCodeDH (Text | maxLen=1)
+      ROW ROW_DH2 [4 4 2 2]
+        nameLastDH (Text | maxLen=30)
+        nameFirstDH (Text | maxLen=30)
+        birthDateDH (FormDate)
+        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_DH4 [12]
+        attentionDH (Text | maxLen=30)
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH_OPT"
+      ROW ROW_VEH_O1 [6 6]
+        registrationState (Dropdown | attributeTypeId=STATE)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+    CARD "CARD_VEH_SEARCH"
+      ROW ROW_VEH_1 [6 3 3]
+        licensePlateNumber (Text | maxLen=10)
+        licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        licensePlateYear (Text | maxLen=4 | default=2026)
+      ROW ROW_VEH_2 [5 4 3]
+        vehicleIdentificationNumber (Text | maxLen=20)
+        vehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        vehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_3 [3 3 3 3]
+        decalNumber (Text | maxLen=10)
+        titleLienInformation (Text | maxLen=8)
+        ncicNumber (Text | maxLen=10)
+        processControlNumber (Text | maxLen=10)
+      ROW ROW_VEH_4 [6 6]
+        ownerAppliedNumber (Text | maxLen=20)
+        partSerialNumber (Text | maxLen=20)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [6 6]
+        gunSerialNumber (Text | maxLen=11)
+        gunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+      ROW ROW_GUN_2 [4 4 4]
+        ncicNumber (Text | maxLen=10)
+        processControlNumber (Text | maxLen=10)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [4 2 4 2]
+        articleSerialNumber (Text | maxLen=20)
+        articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        ownerAppliedNumber (Text | maxLen=20)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+      ROW ROW_ART_2 [6 6]
+        ncicNumber (Text | maxLen=10)
+        processControlNumber (Text | maxLen=10)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA_OPT"
+      ROW ROW_BOA_O1 [4 4 4]
+        registrationState (Dropdown | attributeTypeId=STATE)
+        relatedHitSearchIndicator (Text | maxLen=1)
+        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+    CARD "CARD_BOA_SEARCH"
+      ROW ROW_BOA_1 [6 3 3]
+        boatHullIdNumber (Text | maxLen=62)
+        registrationNumber (Text | maxLen=8)
+        coastGuardDocumentNumber (Text | maxLen=8)
+      ROW ROW_BOA_2 [3 3 3 3]
+        decalNumber (Text | maxLen=10)
+        titleLienInformation (Text | maxLen=8)
+        ncicNumber (Text | maxLen=10)
+        processControlNumber (Text | maxLen=10)
+      ROW ROW_BOA_3 [4 4 4]
+        nameLast (Text | maxLen=30)
+        nameFirst (Text | maxLen=30)
+        birthDate (FormDate)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    nameFirst -> firstName
+    nameLast -> lastName
+    operatorLicenseNumber -> dlNumber
+    birthDate -> dateOfBirth
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    sexCode -> sexAttrId (useAttrId)
+    registrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    vehicleIdentificationNumber -> vehicle.vinNumber
+    licensePlateNumber -> vehicle.tag
+    registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

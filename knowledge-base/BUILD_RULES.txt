@@ -410,25 +410,35 @@ See also:
     Four fields:  ['3','3','3','3']
 
 ================================================================================
-6. BUILD PHASE MODEL
+6. BUILD MODEL -- SINGLE JSON, MULTI-CARD FROM START
 ================================================================================
 
-  PHASE 1 (standup): Always single card.
-    Every QIF gets exactly one card. ALL fields for that entity on that card.
-    Goal: confirm all query paths and QIDM combinations before introducing
-      layout complexity.
-    This is the only baseline that isolates QIDM problems from layout
-      problems cleanly.
-    CONFIRMED baseline: NJ_NJCJIS v1.7 (2026-04-20) -- 25/25 PASS, all
-      entities, single-card.
-    Save a <PROVIDER>_BASE.json copy when Phase 1 standup is complete.
+  ONE BUILD SCRIPT → ONE JSON per provider. Always multi-card. No separate
+  BASE/MC variants. The build script handles both QIDM definition and
+  multi-card layout in a single pass.
 
-  PHASE 2: Multi-card (one card per search path).
-    Promote from single-card AFTER Phase 1 standup passes 100%.
+  Output: <PROVIDER>.json (no _BASE or _MC suffix).
+  Reports: docs/ (no docs/base/ or docs/mc/ subdirectories).
+
+  HISTORY: Originally builds produced a BASE (single-card proof of concept)
+  and then an MC (multi-card production). In practice, BASE encouraged
+  skipping queries and doubled maintenance (two scripts, two JSONs, two
+  report directories per provider). All QIDMs are identical between BASE
+  and MC; only the layout differs. MC is always the production target.
+  Merged 2026-05-21 for NJ, FL, CA_CLETS. Other providers merge on rebuild.
+
+  BUILD DISCIPLINE (still applies -- just one JSON now):
+
+  Step 1: QIDM confirmation (single card mentally, multi-card in layout).
+    Build all QIDMs and combinations first. Every field on the form, every
+    combo requirement mapped. Run test_commsys.ps1 to verify all combos
+    fire. Do NOT declare any query "MC expansion candidate" -- build 100%
+    coverage from the start.
+
+  Step 2: Layout refinement.
     Entities with 2+ distinct search paths get one card per path.
     QIDM does NOT change -- layout only.
-    Retest only affected entities. QIDM issues will not appear (already
-      confirmed).
+    Retest only affected entities.
 
     Which entities benefit from multi-card:
       PROMOTE:  Any entity where two paths use mutually exclusive required
@@ -449,37 +459,35 @@ See also:
       field pool keeps them in sync. Operator sets state once; it carries to
       all cards.
 
-  PHASE 3: Split entity (multiple QIFs per targetEntity -- most providers
+  Step 3: Split entity (multiple QIFs per targetEntity -- most providers
     never need this).
-    Promote from multi-card ONLY when multi-card reveals a genuine state
-      model conflict: two search paths require fundamentally different hidden
-      state fields that cannot coexist in one QIF.
-    If NCIC state pattern is confirmed on this instance: Phase 3 is rarely
-      needed.
+    Only when multi-card reveals a genuine state model conflict: two search
+    paths require fundamentally different hidden state fields that cannot
+    coexist in one QIF.
 
     Use SPLIT ENTITY when:
       - In-state path needs SelH+InpH (dual-field); OOS path needs visible
           RegistrationStateOOS.
       - Paths are logically different enough to be navigated as separate
           sub-tabs.
-    Use MULTI-CARD (stay in Phase 2) when:
+    Use MULTI-CARD (stay in Step 2) when:
       - Paths share a common state model (NCIC pattern covers both).
       - Paths are logically grouped under one query type.
 
-  WHY THIS ORDER (lessons from NJ v1.0--v1.6 and NY v1.0--v1.10):
+  WHY QIDM-FIRST (lessons from NJ v1.0--v1.6 and NY v1.0--v1.10):
     NJ built multi-card and split-entity before QIDM combinations were
     confirmed. When OOS state failed it was impossible to isolate: was it
     the QIDM, the layout, or the state model? Re-investigating took
     multiple phases and dead ends.
     NY added multi-card during standup. Same confusion.
-    Single-card Phase 1 eliminates layout as a variable. Every failure in
-    Phase 1 is unambiguously a QIDM or combination problem -- not a form
-    layout problem.
+    Confirm all QIDMs first. Every failure before layout changes is
+    unambiguously a QIDM or combination problem -- not a form layout
+    problem.
 
-  Decision reference for Person forms (after Phase 1):
+  Decision reference for Person forms:
     DL only (NJ pattern): one QIF, two cards (OLN + Name)
-    DL + DH (AZ/FL pattern): single QIF with all paths on one card; Phase 2
-      may split cards
+    DL + DH (AZ/FL pattern): single QIF with all paths on one card, then
+      split cards
     DL + DH + WINQ/MINQ (AZ pattern): all on single Person QIF; cross-fire
       prevented by distinct required fields (RaceCode in ACQW set[], Age in
       ACQM set[], DH-suffix fieldIds)
@@ -831,6 +839,18 @@ See also:
   VALUE: The literal string value the server injects. Must match what the
   provider expects (e.g., 'N' for ImageIndicator, 'PC' for PlateType).
 
+  STATE DEFAULTS:
+    When a provider has State in any[] with a form initialValue (e.g., 'NJ'),
+    add State defaults to every combo where registrationState is in any[].
+    defaults[].field = 'State', defaults[].value = '<HOME_STATE>' (2-char NCIC
+    code matching the form initialValue).
+    NOTE: State defaults may trigger an RMS 400 because RMS expects a UUID
+    attribute ID, not a literal NCIC code. This is a known platform issue
+    (Cringer investigating 2026-05-19). Deploy State defaults anyway —
+    CommSys correctness is the priority; RMS fix is platform team's scope.
+    Providers with no State initialValue (CA_CLETS, LA_LEMS, NY, MD) do not
+    need State defaults.
+
   NOT ALL PROVIDERS HAVE THE SAME FIELDS:
     - ImageIndicator: NJ, HI, AZ, FL, TX, LA, CA_VENTURA, CA_eSUN, OH, TN,
       NM, OR, IL, MD (but NOT CA_CLETS, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO)
@@ -838,6 +858,7 @@ See also:
     - LicensePlateTypeCode: most providers with plate search
     - LicensePlateYear: most providers with plate search
     - PurposeCode: CA providers
+    - State: NJ, HI, AZ, FL, TX (providers with home state initialValue)
     Check each provider's metadata — do NOT assume any field is universal.
 
   AUDIT: audit_cad.ps1 CHECK 6 validates defaults coverage automatically.
@@ -851,3 +872,16 @@ See also:
     Both should be set. initialValue handles the officer workflow, defaults[]
     handles CAD dispatch. They do not conflict — explicit user values override
     both mechanisms.
+
+  CONDITIONS-VARIANT COMBOS MUST INHERIT DEFAULTS:
+    When a combo uses conditions (e.g., RandomRequest EQUALS Y) to create a
+    routing variant, it MUST carry the same defaults[] as the base combo for
+    all shared any[] fields. The condition restricts WHICH combo fires, not
+    WHAT fields are available. If the base combo defaults PlateType=PC and
+    PlateYear=currentYear, the conditions variant must also default them.
+    CONFIRMED: NJ v3.2 -- RQ_RAND had conditions but was missing defaults
+    present on RQ. CAD dispatch hit the RAND combo (when RandomRequest=Y was
+    sent) but PlateType/PlateYear were absent from the XML.
+    AUDIT: Compare defaults[] arrays between base and conditions-variant
+    combos in the same QIDM. Every default on the base combo should appear
+    on the variant unless the field is the routing toggle itself.

@@ -30,21 +30,15 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
-v3.4  2026-05-21  [describe change here]
+v3.4  2026-05-21  Single-JSON merge + State defaults
   CHANGED
-    -
+    - Merged BASE/MC into single build: build_nj_njcjis.ps1 → NJ_NJCJIS.json (no suffix)
+    - Added State='NJ' to defaults[] on 6 combos (RQ_RAND, RQ, RQN_RAND, RQN, QVP, DQ)
+    - Reports now in docs/ (not docs/mc/)
+    - Deleted old BASE build script
   REASON
-    -
-v3.2  2026-05-21  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-v3.2  2026-05-19  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
+    - BASE/MC split doubled maintenance with no benefit; MC is always production target
+    - State defaults required for CAD dispatch (CommSys priority over RMS 400 bug)
 v3.3  2026-05-19  Combination-level defaults for CAD dispatch
   CHANGED
     - Added defaults[] to ALL 13 CommSys combos across 6 QIDMs

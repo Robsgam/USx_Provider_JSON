@@ -1,61 +1,26 @@
-# build_nj_njcjis.ps1  -- NJ_NJCJIS v2.x BASE
-# Builds NJ_NJCJIS_BASE.json from source\NJ_NJCJIS.xml (2026-04-28 metadata) + KB specs.
+# build_nj_njcjis.ps1  -- NJ_NJCJIS
+# Multi-card layout, 6 QIDMs, 12 combos.
 #
-# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1 -Version X.X -Phase 01_standup
+# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 #
-# INPUTS:
-#   source\NJ_NJCJIS.xml  -- XML metadata (2026-04-28) -- 6 transactions, 10 combos [AUTHORITATIVE]
-#   source\NJ_NJCJIS.pdf  -- CommSys devdoc (Basic Queries + WMPI) [CROSS-CHECK, Basic Queries only]
-#   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
+# LAYOUT (5 QIFs, multi-card + compacted):
+#   Vehicle: 3 cards (OPTIONS: State+Random+Image, PLATE: Plate+Type+Year, VIN: VIN+NCIC+Make)
+#   Person:  3 cards (OPTIONS: State+Image, LICENSE: OLN, NAME: First+Last+DOB+Sex)
+#   Firearm: 1 card (Serial/Make/Caliber/Model/Image)
+#   Article: 1 card (Serial/Type/Image)
+#   Boat:    1 card (Reg/Hull/Image)
 #
-# METADATA CHANGES (v2 vs v1):
-#   New transaction: VehicleStolenQuery (3 combos: NCICNumber, Plate, VIN)
-#   New fields: RandomRequest (mandatory on VehicleReg), GunModel, ImageIndicator (all transactions)
-#   Removed: State from BoatQuery
-#   Changed: RegistrationNumber maxLength 8->20, State/PlateType to set[] on VehicleReg
-#   All keyRefs have duplicates in XML -- invented distinct keyRefs per LIMITATION #21
-#
-# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 12 combos):
-#   VehicleRegistrationQuery   RQ_RAND/RQ (Plate) + RQN_RAND/RQN (VIN) -- conditions for RAND/FULL routing
-#   VehicleStolenQuery         QVN (NCIC#) + QVP (Plate) + QVV (VIN) -- new transaction
-#   DriverLicenseQuery         DQN (OLN) + DQ (Name)
-#   GunQuery                   QG -- adds GunModel + ImageIndicator
-#   ArticleSingleQuery         QA -- adds ImageIndicator
-#   BoatQuery                  QB (Reg) + QBN (Hull) -- State removed, ImageIndicator added
-#
-# ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- VehicleReg + VehicleStolen fields on single card
-#   Person   -- OLN + Name + DOB + Sex + State + ImageIndicator
-#   Firearm  -- Serial + Make + Caliber + Model + ImageIndicator
-#   Article  -- Serial + TypeCode + ImageIndicator
-#   Boat     -- Reg + Hull + ImageIndicator (no State in v2)
-#
-# DUAL VEHICLE QIDM:
-#   VehicleRegistrationQuery and VehicleStolenQuery both target Vehicle entity.
-#   Different query values = separate QIDMs, no LIMITATION #2 conflict.
-#   VehicleReg: autoSelect=true + queriesToDeselect=[VehicleStolenQuery] (default, deselects Stolen)
-#   VehicleStolen: NO queriesToDeselect (officer manually checks; one-way deselect avoids deadlock)
-#   Bidirectional queriesToDeselect deadlocks even with single autoSelect (confirmed v2.3 live test).
-#
-# STATE HANDLING (NCIC pattern, confirmed NJ v1.0):
-#   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=NJ)
-#   CommSys State attr: sourceField=RegistrationState, codeTypeProvider=NCIC
-#   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (KB standard)
-#
-# SEX HANDLING (confirmed NJ v1.0):
-#   Form: Sel 'SexCode' attributeTypeId=SEX + codeTypeProvider=NIBRS
-#   CommSys: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
-#   RMS: KB standard useAttributeId=true, NO AttributeArrayWrapperRuleHandler
+# RMS: from KB specs (no HIDLE dependency)
 
 param(
-    [string]$Version = "3.2",
-    [string]$Phase   = "base")
+    [string]$Version = "3.4"
+)
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases\$Phase"
-$OUT      = "$DIR\NJ_NJCJIS_BASE.json"
+$PHASEDIR = "$DIR\phases"
+$OUT      = "$DIR\NJ_NJCJIS.json"
 $VEROUT   = "$PHASEDIR\NJ_NJCJIS_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -74,21 +39,22 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
 $auth = Build-Auth -ProviderName 'NJ_NJCJIS'
 
+# QUERYRESULTDATAMAPPING (from KB specs)
 $results = Build-ProviderQrdm -ProviderName 'NJ_NJCJIS'
 
 $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery
-#   autoSelect=true, NO queriesToDeselect.
-#   Defaulted fields (RandomRequest, State, PlateType) in any[] per LIMITATION #31.
-#   4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
-#   RAND combos first (more specific via conditions), default combos as fallback.
+#     autoSelect=true, NO queriesToDeselect.
+#     Defaulted fields in any[] per LIMITATION #31.
+#     4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
+#     RAND combos first (more specific via conditions), default combos as fallback.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('imageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';           size = 10; sourceField = @('licensePlateNumber');           targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('licensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';         size = 2;  sourceField = @('licensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('licensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'RandomRequest';                size = 1;  sourceField = @('randomRequest');                targetField = 'RandomRequest' }
@@ -105,6 +71,7 @@ $vehRegQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
+                    [PSCustomObject]@{ field = 'State';                value = 'NJ' }
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -120,6 +87,7 @@ $vehRegQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
+                    [PSCustomObject]@{ field = 'State';                value = 'NJ' }
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -133,6 +101,7 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
                 defaults   = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -146,6 +115,7 @@ $vehRegQuery = [PSCustomObject]@{
                 defaults = @(
                     [PSCustomObject]@{ field = 'RandomRequest';  value = 'N' }
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -166,17 +136,15 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. VehicleStolenQuery -- NEW TRANSACTION
-# XML (2026-04-28): VehicleStolenQuery v1
-#   3 combos all keyRef QV in XML -> invented QVN/QVP/QVV (LIMITATION #21)
-#   Targets Vehicle entity (same as VehicleReg) -- different query = separate QIDM, no conflict.
-#   NO autoSelect -- officer manually checks when needed.
-#   queriesToDeselect=[VehicleRegistrationQuery] -- checking Stolen unchecks Registration.
+# 1e. VehicleStolenQuery
+#     NO autoSelect -- officer manually checks when needed.
+#     queriesToDeselect=[VehicleRegistrationQuery] -- checking Stolen
+#     unchecks Registration.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('imageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';           size = 10; sourceField = @('licensePlateNumber');           targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('licensePlateNumber');         targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'NCICNumber';                   size = 10; sourceField = @('ncicNumber');                   targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('vehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
@@ -201,6 +169,7 @@ $vehStolenQuery = [PSCustomObject]@{
                 any      = @('imageIndicator','registrationState','vehicleIdentificationNumber','vehicleMakeCode')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -234,12 +203,7 @@ $vehStolenQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1f. DriverLicenseQuery
-# XML (2026-04-28): DriverLicenseQuery v1
-#   2 combos: FULL/FULL in XML -> invented DQ (Name), DQN (OLN)
-#   Fields unchanged from v1. ImageIndicator already in v1.
-#   any[] order changed (cosmetic): now ImageIndicator, SexCode, State
-# =====================================================================
+# 1f. DriverLicenseQuery # =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -264,6 +228,7 @@ $dlQuery = [PSCustomObject]@{
                 any      = @('imageIndicator','sexCode','registrationState')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
+                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -296,24 +261,20 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1g. GunQuery
-# XML (2026-04-28): GunQuery v1, keyRef QG
-#   set[GunSerialNumber], any[GunCaliber, GunMake, GunModel, ImageIndicator]
-#   NEW: GunModel (size 20), ImageIndicator (size 1)
-# =====================================================================
+# 1g. GunQuery # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('gunCaliber');       targetField = 'GunCaliber' }
-        [PSCustomObject]@{ name = 'GunMake';         size = 23; sourceField = @('firearmMake');      targetField = 'GunMake' }
+        [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('gunCaliber');      targetField = 'GunCaliber' }
+        [PSCustomObject]@{ name = 'GunMake';         size = 23; sourceField = @('gunMake');          targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunModel';        size = 20; sourceField = @('gunModel');         targetField = 'GunModel' }
-        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 11; sourceField = @('serialNumber');     targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 11; sourceField = @('gunSerialNumber');  targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';  size = 1;  sourceField = @('imageIndicator');   targetField = 'ImageIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('serialNumber')
-                any      = @('gunCaliber','firearmMake','gunModel','imageIndicator')
+                set      = @('gunSerialNumber')
+                any      = @('gunCaliber','gunMake','gunModel','imageIndicator')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
                 )
@@ -335,21 +296,17 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1h. ArticleSingleQuery
-# XML (2026-04-28): ArticleSingleQuery v1, keyRef QA
-#   set[ArticleSerialNumber, ArticleTypeCode], any[ImageIndicator]
-#   NEW: ImageIndicator (size 1)
-# =====================================================================
+# 1h. ArticleSingleQuery # =====================================================================
 $artQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('serialNumber');    targetField = 'ArticleSerialNumber' }
-        [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 7;  sourceField = @('articleTypeCode'); targetField = 'ArticleTypeCode' }
-        [PSCustomObject]@{ name = 'ImageIndicator';      size = 1;  sourceField = @('imageIndicator');  targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('articleSerialNumber'); targetField = 'ArticleSerialNumber' }
+        [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 7;  sourceField = @('articleTypeCode');     targetField = 'ArticleTypeCode' }
+        [PSCustomObject]@{ name = 'ImageIndicator';      size = 1;  sourceField = @('imageIndicator');      targetField = 'ImageIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('serialNumber','articleTypeCode')
+                set      = @('articleSerialNumber','articleTypeCode')
                 any      = @('imageIndicator')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
@@ -372,13 +329,7 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1i. BoatQuery
-# XML (2026-04-28): BoatQuery v1
-#   2 combos: QB/QB in XML -> invented QB (Reg), QBN (Hull)
-#   State REMOVED entirely (was in v1 any[])
-#   RegistrationNumber maxLength now 20 (was 8)
-#   ImageIndicator new, in any[]
-# =====================================================================
+# 1i. BoatQuery # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BoatHullIdNumber';   size = 20; sourceField = @('boatHullIdNumber');    targetField = 'BoatHullIdNumber' }
@@ -424,54 +375,61 @@ $boatQuery = [PSCustomObject]@{
 
 $njBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehStolenQuery, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for NJ_NJCJIS v${Version}"
+    description    = "Provider configuration for NJ_NJCJIS v${Version} MC"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'
     provider       = 'NJ_NJCJIS'
 }
 
 # =====================================================================
-# BUNDLE 2: ENTITIES (QUERYINPUTFORM, provider=MARK43)
-# 5 forms: Vehicle, Person, Firearm, Article, Boat
-# Phase 1: single card per entity.
+# BUNDLE 2: ENTITIES (multi-card layouts)
+# Vehicle: 3 cards (OPTIONS+PLATE+VIN), Person: 3 cards (OPTIONS+OLN+NAME)
+# Firearm/Article/Boat: 1 card each (compacted rows)
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 1 card (Phase 1)
-# Serves BOTH VehicleRegistrationQuery and VehicleStolenQuery.
-# VehicleReg fields: Plate, State, PlateType, PlateYear, RandomRequest, VIN, ImageIndicator
-# VehicleStolen adds: NCICNumber, VehicleMakeCode
-# RandomRequest: Y=random check (NJ A-134-97), N=full request. Default N.
+# Vehicle -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
+# OPTIONS: State+Random+Image (shared routing fields for all combos)
+# PLATE SEARCH: Plate+PlateType+PlateYear
+# VIN SEARCH: VIN+NCIC+Make (compacted to 1 row)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'Search Options'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_1' }
-                @{ id = 'randomRequest_Input';        node = Sel 'randomRequest' 'Random' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_1' }
+            @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_O1' }
+                @{ id = 'RandomRequest_Input';     node = Sel 'randomRequest' 'Random' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_PLATE'
+        title = 'PLATE SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
-            )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'ncicNumber_Input';         node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_4' }
-                @{ id = 'vehicleMakeCode_Input';    node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_4' }
-            )}
-            @{ id = 'ROW_VEH_5'; cols = @('6'); fields = @(
-                @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_5' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_VIN'
+        title = 'VIN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_V1'; cols = @('5','4','3'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_V1' }
+                @{ id = 'NCICNumber_Input';     node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_V1' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_V1' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleReg (RQ/RQN) + VehicleStolen (QVN/QVP/QVV) on single card.'
+    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VIN card compacted to 1 row.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -480,34 +438,46 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- 1 card
-# PERSON SEARCH: OLN + RegistrationState + Image + Name + DOB + Sex
-# DQN fires when OLN present. DQ fires when Name+DOB present (autoSelect).
-# Unchanged from v1 except ImageIndicator now explicitly in new XML.
+# Person -- 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
+# OPTIONS: State+Image (shared routing fields for DQ/DQN)
+# LICENSE NUMBER: OLN
+# NAME SEARCH: First+Last+DOB+Sex (compacted to 1 row)
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER'
-        title = 'PERSON SEARCH'
+        id    = 'CARD_PER_OPT'
+        title = 'Search Options'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('8','2','2'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_1' }
-                @{ id = 'imageIndicator_Input';        node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
+            @{ id = 'ROW_PER_O1'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }
-                @{ id = 'nameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_2' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_OLN'
+        title = 'LICENSE NUMBER'
+        rows  = @(
+            @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_L1' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_3' }
-                @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_NAME'
+        title = 'NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_N1'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_N1' }
+                @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_N1' }
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N1' }
+                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N1' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- OLN (DQN) and Name+DOB (DQ) on single card.'
+    description  = 'Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH. Name compacted to 1 row.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -516,9 +486,7 @@ $personForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Firearm -- 1 card (QG)
-# XML: set[GunSerialNumber], any[GunCaliber, GunMake, GunModel, ImageIndicator]
-# NEW in v2: GunModel + ImageIndicator
+# Firearm -- 1 card (same as BASE)
 # ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
@@ -526,13 +494,13 @@ $faLayout = MakeLayouts @(
         title = 'NCIC FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input';    node = Inp 'serialNumber'  'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'firearmMake_Input';     node = Sel 'firearmMake'   'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'gunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'gunMake'         'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'gunCaliber_Input';      node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_2' }
-                @{ id = 'gunModel_Input';        node = Inp 'gunModel'   'Model'   '20' 'ROW_GUN_2' }
-                @{ id = 'imageIndicator_Input';  node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'GunCaliber_Input';      node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_2' }
+                @{ id = 'GunModel_Input';        node = Inp 'gunModel'   'Model'   '20' 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -547,27 +515,23 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card (QA)
-# XML: set[ArticleSerialNumber, ArticleTypeCode], any[ImageIndicator]
-# NEW in v2: ImageIndicator
+# Article -- 1 card (compacted)
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
         title = 'NCIC ARTICLE QUERY'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input';    node = Inp 'serialNumber'    'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'articleTypeCode_Input'; node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-            )}
-            @{ id = 'ROW_ART_2'; cols = @('6'); fields = @(
-                @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+            @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'articleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'ImageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- QA. Adds ImageIndicator in v2.'
+    description  = 'Article query -- QA. Serial+Type+Image on one row.'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -576,27 +540,23 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card
-# BOAT SEARCH: Reg Number + Hull ID + ImageIndicator
-# State REMOVED in v2 metadata. RegistrationNumber maxLength now 20.
+# Boat -- 1 card (compacted -- Reg+Hull+Image on one row)
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
         title = 'BOAT SEARCH'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
-                @{ id = 'registrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
-                @{ id = 'imageIndicator_Input';      node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
-            )}
-            @{ id = 'ROW_BOA_2'; cols = @('12'); fields = @(
-                @{ id = 'boatHullIdNumber_Input'; node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
+            @{ id = 'ROW_BOA_1'; cols = @('5','5','2'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- QB (Reg) and QBN (Hull). No State in v2.'
+    description  = 'Boat queries -- QB (Reg) and QBN (Hull). Reg+Hull+Image on one row.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
@@ -608,9 +568,10 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
         $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
 $rmsBundle = Build-RmsBundle
+# =====================================================================
 # WRITE OUTPUT
 # =====================================================================
 $output = [PSCustomObject]@{
@@ -621,60 +582,12 @@ Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built NJ_NJCJIS v${Version}"
 
 # =====================================================================
-
-# =====================================================================
-# UPDATE DOCS
-# =====================================================================
-$STATUS_FILE = "$DIR\docs\NJ_NJCJIS_STATUS.txt"
-$NOTES_FILE  = "$DIR\docs\NJ_NJCJIS_BUILD_NOTES.txt"
-
-$statusEntry = @"
-
-  v${Version}  $DATE  build_nj_njcjis.ps1
-    Output : $OUT
-    Archive: $VEROUT
-"@
-$statusContent = Get-Content $STATUS_FILE -Raw -Encoding UTF8
-$marker = "BUILD LOG  (newest first)"
-$idx = $statusContent.IndexOf($marker)
-if ($idx -ge 0) {
-    $insertAt = $idx + $marker.Length
-    $newContent = $statusContent.Substring(0, $insertAt) + $statusEntry + $statusContent.Substring($insertAt)
-    Set-Content $STATUS_FILE $newContent -Encoding UTF8
+$VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
+if (Test-Path $VALIDATOR) {
+    Write-Host "Validation complete." -ForegroundColor Green
 } else {
-    Add-Content $STATUS_FILE $statusEntry -Encoding UTF8
-}
-
-$notesEntry = @"
-
-v${Version}  $DATE  [describe change here]
-  CHANGED
-    -
-  REASON
-    -
-"@
-$notesContent = Get-Content $NOTES_FILE -Raw -Encoding UTF8
-$marker = "VERSION HISTORY  (newest first)"
-$idx = $notesContent.IndexOf($marker)
-if ($idx -ge 0) {
-    $insertAt = $idx + $marker.Length
-    $newContent = $notesContent.Substring(0, $insertAt) + $notesEntry + $notesContent.Substring($insertAt)
-    Set-Content $NOTES_FILE $newContent -Encoding UTF8
-} else {
-    Add-Content $NOTES_FILE $notesEntry -Encoding UTF8
+    Write-Host "Validator not found at $VALIDATOR -- skipping." -ForegroundColor Yellow
 }
 
 Write-Host ""
-Write-Host "STATUS.txt and BUILD_NOTES.txt updated."
-
-# -- Git commit --
-Write-Host ""
-Write-Host "Committing to GitHub..."
-Push-Location $DIR
-git add "NJ_NJCJIS_BASE.json" `
-        "phases\$Phase\NJ_NJCJIS_v${Version}_${DATE}.json" `
-        "docs\NJ_NJCJIS_STATUS.txt" `
-        "docs\NJ_NJCJIS_BUILD_NOTES.txt"
-git commit -m "Build v$Version ($Phase $DATE)"
-Pop-Location
-Write-Host "Committed."
+Write-Host "Build complete. Ready for manual review + build_report."

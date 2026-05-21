@@ -17,7 +17,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.3 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, RMS Vehicle stripped to 3 attrs |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.4 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.0 DEPLOYED Newark NJ 2026-05-11 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos incl State, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, RMS Vehicle stripped to 3 attrs |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.6 | 74P/0F/0W (BASE) 74P/0F/0W (MC) | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
@@ -53,15 +53,17 @@ Individual repos are preserved for history but are now read-only. All active wor
 
 ---
 
-## Build Phase Model — NEVER SKIP PHASES
+## Build Model — Single JSON, Multi-Card from Start
 
-**Phase 1 — STANDUP**: Single entity, single card per QIF. ALL fields on one card. Confirm every query path and QIDM combination before touching layout. Save `<PROVIDER>_BASE.json` when done.
+One build script per provider → one `<PROVIDER>.json`. Always multi-card. No separate BASE/MC variants.
 
-**Phase 2 — MULTI-CARD**: One card per search path. QIDM does not change. Layout only. Retest affected entities.
+**Step 1 — QIDM Confirmation**: Build all QIDMs and combinations. Every field, every combo. Run `test_commsys.ps1` to verify all combos fire. 100% coverage from the start — no "MC expansion candidate" parking.
 
-**Phase 3 — SPLIT ENTITY**: Only if multi-card reveals a state model conflict that cannot coexist in one QIF. Most providers never need Phase 3 if NCIC state pattern works.
+**Step 2 — Layout Refinement**: One card per search path for entities with 2+ distinct paths. QIDM does not change. Layout only. Retest affected entities.
 
-**Why this order**: NJ and NY both introduced layout complexity before confirming QIDM paths. When tests failed it was impossible to tell if the failure was the QIDM, the layout, or the state model. Phase 1 single-card eliminates layout as a variable.
+**Step 3 — Split Entity**: Only if multi-card reveals a state model conflict that cannot coexist in one QIF. Most providers never need this if NCIC state pattern works.
+
+**Why QIDM-first**: NJ and NY both introduced layout complexity before confirming QIDM paths. When tests failed it was impossible to tell if the failure was the QIDM, the layout, or the state model. Confirm QIDMs first — isolate layout from data path problems.
 
 ---
 
@@ -206,11 +208,11 @@ Most-specific (most set[] fields) first. Less-specific last.
 
 ## RMS Bundle — Built from KB Specs
 
-**All builds** (BASE and MC): RMS bundle and CommSys QRDM are constructed by `tools/_build_rms_bundle.ps1` from inline KB specifications. No external template dependency (no HIDLE.json). Build scripts dot-source the module and call:
+**All builds**: RMS bundle and CommSys QRDM are constructed by `tools/_build_rms_bundle.ps1` from inline KB specifications. No external template dependency (no HIDLE.json). Build scripts dot-source the module and call:
 - `Build-RmsBundle` — returns complete RMS bundle (AUTH, QMF, Vehicle QIDM, Person QIDM, QRDM, ResultsLayout)
 - `Build-CommsysQrdm -ProviderName <name>` — returns CommSys QRDM for the PROVIDER bundle
 
-**Flags**: `Build-RmsBundle -KeepSsn` (AZ, TN — MC builds only) to include socialSecurityNumber. `Build-RmsBundle -SkipRace` (TX, LA, MD, CA_CONTRA_COSTA — all builds) to exclude race attr and raceCode from combo any[]. BASE builds never use `-KeepSsn`.
+**Flags**: `Build-RmsBundle -KeepSsn` (AZ, TN) to include socialSecurityNumber. `Build-RmsBundle -SkipRace` (TX, LA, MD, CA_CONTRA_COSTA) to exclude race attr and raceCode from combo any[].
 
 **No post-build patches.** If a new issue is found, update the build script or `_build_rms_bundle.ps1` — never add a JSON patch.
 
@@ -218,7 +220,7 @@ Most-specific (most set[] fields) first. Less-specific last.
 
 ## QIF Layout Helpers — Shared Module
 
-**All builds** (BASE and MC): All QIF layout construction functions are defined in `tools/_build_layout_helpers.ps1`. Build scripts dot-source it alongside `_build_rms_bundle.ps1`.
+**All builds**: All QIF layout construction functions are defined in `tools/_build_layout_helpers.ps1`. Build scripts dot-source it alongside `_build_rms_bundle.ps1`.
 
 **Exports**: `N` (node factory), `Inp` (FormInput), `InpH` (hidden FormInput), `Sel` (FormSelect), `SelH` (hidden FormSelect), `Dt` (FormDate), `BuildMultiCardLayout` (multi-card layout engine with hidden row support), `AddCadNodes` (CAD dispatch context card), `AddFrNodes` (First Responder context card), `MakeLayouts` (builds all 3 layout variants: default, CAD_DISPATCH, FIRST_RESPONDER).
 
@@ -228,7 +230,7 @@ Most-specific (most set[] fields) first. Less-specific last.
 
 ## Provider Helpers — Shared Module
 
-**All builds** (BASE and MC): Provider boilerplate (AUTH, QMF, QRDM, ENTITIES bundle, output+validation) is defined in `tools/_build_provider_helpers.ps1`. Build scripts dot-source it alongside the layout and RMS modules.
+**All builds**: Provider boilerplate (AUTH, QMF, QRDM, ENTITIES bundle, output+validation) is defined in `tools/_build_provider_helpers.ps1`. Build scripts dot-source it alongside the layout and RMS modules.
 
 **Exports**:
 - `Build-Auth -ProviderName <name> [-ExtraAttributes <array>] [-ExtraAny <array>]` — standard 3-attr AUTH config (ORI, Mnemonic, UserName/dexStateUserId). IL_LEADS_OFML uses `-ExtraAttributes` for CDCName.
@@ -305,7 +307,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | Tool | Purpose | Key flags |
 |---|---|---|
 | `enforce.ps1` | **MANDATORY FINAL GATE** -- runs ALL checks (build freshness, validator scores, doc sync, cross-provider, repo audit, git status) | `-Provider <name>` `-SkipGit` `-Rebuild` `-OutFile` |
-| `pipeline.ps1` | **ONE-COMMAND PIPELINE** -- build + report + metadata + sync + version docs + cross-provider + repo audit + enforce in 10 steps; stops on first failure | `-Provider <name>` (required) `-BaseOnly` `-SkipBuild` `-SkipEnforce` |
+| `pipeline.ps1` | **ONE-COMMAND PIPELINE** -- build + report + metadata + sync + version docs + cross-provider + repo audit + enforce in 8 steps; stops on first failure | `-Provider <name>` (required) `-SkipBuild` `-SkipEnforce` |
 | `audit_repo.ps1` | Full monorepo audit (18 categories: banned patterns, versions, docs, structure, cross-provider, camelCase) | `-Category <1-18>` |
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
@@ -343,7 +345,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `map_cad_fields.ps1` | Maps CAD field names to provider JSON fieldIds (MATCH/CASE_MISMATCH/NO_MATCH) | `-Path <json>` `-CadFields` `-OutFile` `-GeneratePatch` |
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
 | `Apply-CadFieldAlignment.ps1` | CAD field alignment function for MC builds (PascalCase → camelCase rename) | dot-source; `-QidmList` `-FormList` `-RmsBundle` `-ProviderRenames` |
-| `generate_build_script.ps1` | Generates BASE + MC build scripts from metadata XML (field mapping, QIDM generation, layout) | `-XmlPath <xml>` `-DevdocPath` `-OutDir` |
+| `generate_build_script.ps1` | Generates build script from metadata XML (field mapping, QIDM generation, layout) | `-XmlPath <xml>` `-DevdocPath` `-OutDir` |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 
@@ -361,7 +363,7 @@ See `knowledge-base/IMPORT_ERRORS.txt` for error-to-fix mapping.
 - Name format: `<PROVIDER>_v<X.Y>_<date>.json` or `<PROVIDER>_v<X.Y>.json`
 - Document every JSON in `docs/JSON_INVENTORY.md`
 - Keep all JSONs in project root
-- Build scripts handle version archiving. Phase snapshots are saved to phases/base/ and phases/mc/.
+- Build scripts handle version archiving. Phase snapshots are saved to phases/.
 
 ---
 
@@ -381,7 +383,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
 | **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs) | Memory, training data |
 | **What does the RMS bundle contain?** | `tools/_build_rms_bundle.ps1` (all builds) + CLAUDE.md RMS Bundle section | Raw JSON inspection |
-| **Current build state** (scores, warnings) | `docs/base/` and `docs/mc/` report files (generated by `build_report.ps1`) | Re-running validator ad hoc |
+| **Current build state** (scores, warnings) | `docs/` report files (generated by `build_report.ps1`). Legacy: `docs/base/` or `docs/mc/` | Re-running validator ad hoc |
 | **Test coverage status** | `audit_test_coverage.ps1 -Path <json>` + `docs/<PROVIDER>_SQVR.txt` | Counting test log files manually |
 
 **Rule: If a tool exists for the question, run the tool. If an extracted file exists, read the file. Raw sources are LAST resort only when no extracted reference exists.**
@@ -398,7 +400,7 @@ Three commands run everything. No manual checklists.
 | **Final verification (all providers)** | `enforce.ps1` |
 | **New provider setup** | `new_provider.ps1 -XmlPath <xml>` |
 
-`pipeline.ps1` chains 10 steps: build BASE → build MC → report BASE → report MC → extract metadata → sync CLAUDE.md → sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER) → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-BaseOnly` (no MC), `-SkipEnforce` (mid-work).
+`pipeline.ps1` chains 8 steps: build JSON → build report → extract metadata → sync CLAUDE.md → sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER) → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-SkipEnforce` (mid-work).
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider consistency, repo integrity + git status. Exit 0 = verified. Exit 1 = blocked.
 
@@ -423,28 +425,25 @@ Every provider under `providers/` MUST have this structure. All new providers fo
 **NAMING RULE**: `<PROVIDER>` MUST match the metadata XML filename minus `.xml`. Verify before creating the folder. See `BUILD_RULES.txt` Section 0.
 
 **ONE JSON IN ROOT RULE**: Exactly one JSON in the provider root folder at all times.
-- MC active → `<PROVIDER>_MC.json` in root, BASE lives in `phases/base/`
-- MC archived/none → `<PROVIDER>_BASE.json` in root
-- NEVER both BASE and MC in root simultaneously. Enforce checks this.
+- New providers: `<PROVIDER>.json` (no suffix)
+- Legacy providers may still have `<PROVIDER>_MC.json` or `<PROVIDER>_BASE.json` until rebuild
+- NEVER multiple JSONs in root simultaneously. Enforce checks this.
 
 ```
 providers/<PROVIDER>/
-├── <PROVIDER>_MC.json                     # Current JSON (MC if active, BASE if no MC)
+├── <PROVIDER>.json                        # Current JSON (single output per provider)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
-│   ├── base/                              # BASE variant reports (10 files)
-│   └── mc/                                # MC variant reports (if applicable)
+│   ├── VALIDATOR_REPORT_*.txt             # Build reports (10 files from build_report.ps1)
+│   └── ...                                # Other reports (LAYOUT, QUERY, PICKLIST, etc.)
 ├── tests/                                 # Per-test log files (one per test executed)
 ├── phases/                                # Version snapshots
-│   ├── base/
-│   └── mc/
 ├── scripts/                               # Provider-specific build scripts
-│   ├── build_<provider>.ps1
-│   └── build_<provider>_mc.ps1
+│   └── build_<provider>.ps1               # Single build script per provider
 ├── source/                                # Input materials
 │   ├── <provider>.xml                     # Metadata XML
 │   └── <provider>.pdf                     # Devdoc PDF
@@ -474,14 +473,14 @@ When a repo does not match this structure, fix it before doing any other work.
 
 ### Step 2: Build
 8. Create build script in `scripts/` (must include validator call)
-9. Phase 1: single card, all entities, confirm all query paths
+9. Build all QIDMs and multi-card layout in one pass. 100% combo coverage from start.
 10. GATE 1 after every build (report + commit + push)
 11. Update SQVR with [PENDING] markers for every query path
 
 ### Step 3: Iterate
-12. Phase 2: multi-card for entities with 2+ search paths
-13. Phase 3: split entity only if needed (NCIC state pattern usually avoids this)
-14. GATE 5 before declaring any variant DONE
+12. Refine layout (card splits, field ordering, defaults)
+13. Split entity only if needed (NCIC state pattern usually avoids this)
+14. GATE 5 before declaring DONE
 
 ### Bulk Onboarding (10+ providers)
 See `TESTING_REQUIREMENTS.txt` Section 16 for the complete workflow.

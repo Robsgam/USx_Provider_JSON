@@ -102,18 +102,13 @@ function Get-ProviderList {
 }
 
 function Get-ScriptVersion($provPath) {
+    # Single script model: find the build script (not _mc, not _old)
     $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*" -File |
-        Where-Object { $_.Name -notmatch '_mc' }
-    if ($scripts.Count -eq 0) { return $null }
-    $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
-    if ($text -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
-        return $Matches[1]
+        Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' }
+    # Legacy fallback: _mc script for providers not yet migrated
+    if ($scripts.Count -eq 0) {
+        $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*_mc*" -File
     }
-    return $null
-}
-
-function Get-McScriptVersion($provPath) {
-    $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*_mc*" -File
     if ($scripts.Count -eq 0) { return $null }
     $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
     if ($text -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
@@ -158,84 +153,68 @@ foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
 
+    # Find JSON: new naming (<PROVIDER>.json) or legacy (_BASE/_MC)
+    $provJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}.json" -File -ErrorAction SilentlyContinue
     $baseJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}_BASE.json" -File -ErrorAction SilentlyContinue
-    $mcJson   = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json"   -File -ErrorAction SilentlyContinue
+    $mcJson   = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json" -File -ErrorAction SilentlyContinue
 
-    # ONE JSON IN ROOT: FAIL if both BASE and MC in root
-    if ($baseJson -and $mcJson) {
-        Fail "$provName -- both BASE and MC in root (one-JSON-in-root rule: MC active = MC only, MC archived = BASE only)"
+    # ONE JSON IN ROOT
+    $jsonCount = @($provJson, $baseJson, $mcJson | Where-Object { $_ }).Count
+    if ($jsonCount -gt 1) {
+        Fail "$provName -- multiple JSONs in root (one-JSON-in-root rule)"
     }
-
-    if (-not $baseJson -and -not $mcJson) {
+    if ($jsonCount -eq 0) {
         Info "$provName -- no JSON found in root"
         continue
     }
 
-    # Check BASE reports (BASE JSON may be in root or phases/base/)
-    $baseDocsDir = Join-Path $pd.FullName "docs\base"
-    $validatorReport = Join-Path $baseDocsDir "VALIDATOR_REPORT_${docPrefix}_BASE.txt"
-    if (Test-Path $validatorReport) {
-        $baseRef = $baseJson
-        if (-not $baseRef) {
-            $phaseBasePath = Join-Path $pd.FullName "phases\base\${docPrefix}_BASE.json"
-            if (Test-Path $phaseBasePath) { $baseRef = Get-Item $phaseBasePath }
-        }
-        if ($baseRef) {
-            $baseTime = $baseRef.LastWriteTime
-            $reportTime = (Get-Item $validatorReport).LastWriteTime
-            if ($reportTime -lt $baseTime) {
-                if ($Rebuild) {
-                    Out "  Rebuilding reports for $provName BASE..."
-                    & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $baseRef.FullName 2>&1 | Out-Null
-                    Fixed "$provName BASE -- reports rebuilt (were stale)"
-                } else {
-                    Fail "$provName BASE -- reports STALE (JSON: $($baseTime.ToString('HH:mm')), reports: $($reportTime.ToString('HH:mm')))"
-                }
-            } else {
-                Pass "$provName BASE -- reports fresh"
-            }
-        } else {
-            Pass "$provName BASE -- reports exist"
-        }
-    } elseif ($baseJson) {
-        Fail "$provName BASE -- no validator report in docs/base/"
+    # Pick the active JSON
+    $activeJson = if ($provJson) { $provJson } elseif ($mcJson) { $mcJson } else { $baseJson }
+
+    # Check reports -- try docs/ first (new), then docs/mc/ or docs/base/ (legacy)
+    $docsDir = Join-Path $pd.FullName "docs"
+    $validatorReport = Join-Path $docsDir "VALIDATOR_REPORT_${docPrefix}.txt"
+    if (-not (Test-Path $validatorReport)) {
+        $validatorReport = Join-Path $docsDir "mc\VALIDATOR_REPORT_${docPrefix}_MC.txt"
+    }
+    if (-not (Test-Path $validatorReport)) {
+        $validatorReport = Join-Path $docsDir "base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
     }
 
-    # Check MC reports
-    if ($mcJson) {
-        $mcTime = $mcJson.LastWriteTime
-        $mcDocsDir = Join-Path $pd.FullName "docs\mc"
-        $mcReport = Join-Path $mcDocsDir "VALIDATOR_REPORT_${docPrefix}_MC.txt"
-        if (Test-Path $mcReport) {
-            $mcReportTime = (Get-Item $mcReport).LastWriteTime
-            if ($mcReportTime -lt $mcTime) {
-                if ($Rebuild) {
-                    Out "  Rebuilding reports for $provName MC..."
-                    & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $mcJson.FullName 2>&1 | Out-Null
-                    Fixed "$provName MC -- reports rebuilt (were stale)"
-                } else {
-                    Fail "$provName MC -- reports STALE"
-                }
+    if (Test-Path $validatorReport) {
+        $jsonTime = $activeJson.LastWriteTime
+        $reportTime = (Get-Item $validatorReport).LastWriteTime
+        if ($reportTime -lt $jsonTime) {
+            if ($Rebuild) {
+                Out "  Rebuilding reports for $provName..."
+                & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
+                Fixed "$provName -- reports rebuilt (were stale)"
             } else {
-                Pass "$provName MC -- reports fresh"
+                Fail "$provName -- reports STALE (JSON: $($jsonTime.ToString('HH:mm')), reports: $($reportTime.ToString('HH:mm')))"
             }
         } else {
-            Fail "$provName MC -- no validator report in docs/mc/"
+            Pass "$provName -- reports fresh"
         }
+    } else {
+        Fail "$provName -- no validator report found"
     }
 
     # Check phase archive exists for current version
     $version = Get-ScriptVersion $pd.FullName
     if ($version) {
-        $phaseBase = Join-Path $pd.FullName "phases\base"
-        $phaseFile = Get-ChildItem $phaseBase -Filter "${docPrefix}_v${version}_*.json" -File -ErrorAction SilentlyContinue
-        if (-not $phaseFile) {
-            $phaseFile = Get-ChildItem $phaseBase -Filter "${docPrefix}_BASE_v${version}_*.json" -File -ErrorAction SilentlyContinue
+        # Check phases/ (new), then phases/base/ and phases/mc/ (legacy)
+        $phaseFile = $null
+        foreach ($phaseDir in @("phases", "phases\base", "phases\mc")) {
+            $pDir = Join-Path $pd.FullName $phaseDir
+            if (Test-Path $pDir) {
+                $phaseFile = Get-ChildItem $pDir -Filter "${docPrefix}*v${version}*.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($phaseFile) { break }
+            }
         }
         if ($phaseFile) {
             Pass "$provName -- phase archive exists for v${version}"
         } else {
-            Fail "$provName -- no phase archive for v${version} in phases/base/"
+            Fail "$provName -- no phase archive for v${version}"
         }
     }
 }
@@ -249,32 +228,32 @@ foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
 
-    foreach ($variant in @('BASE', 'MC')) {
-        $subdir = if ($variant -eq 'MC') { 'mc' } else { 'base' }
-        $reportPath = Join-Path $pd.FullName "docs\$subdir\VALIDATOR_REPORT_${docPrefix}_${variant}.txt"
-
-        if (-not (Test-Path $reportPath)) {
-            if ($variant -eq 'MC') {
-                $mcJson = Join-Path $pd.FullName "${docPrefix}_MC.json"
-                if (-not (Test-Path $mcJson)) { continue }
-            }
-            Fail "$provName $variant -- validator report missing"
-            continue
+    foreach ($variant in @('', 'MC', 'BASE')) {
+        if ($variant -eq '') {
+            $reportPath = Join-Path $pd.FullName "docs\VALIDATOR_REPORT_${docPrefix}.txt"
+        } elseif ($variant -eq 'MC') {
+            $reportPath = Join-Path $pd.FullName "docs\mc\VALIDATOR_REPORT_${docPrefix}_MC.txt"
+        } else {
+            $reportPath = Join-Path $pd.FullName "docs\base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
         }
 
+        if (-not (Test-Path $reportPath)) { continue }
+
+        $label = if ($variant) { "$provName ($variant)" } else { $provName }
         $result = Parse-Report $reportPath
         if (-not $result) {
-            Fail "$provName $variant -- cannot parse validator report"
+            Fail "$label -- cannot parse validator report"
             continue
         }
 
         if ($result.Fail -gt 0) {
-            Fail "$provName $variant -- $($result.Pass)P/$($result.Fail)F/$($result.Warn)W"
+            Fail "$label -- $($result.Pass)P/$($result.Fail)F/$($result.Warn)W"
         } elseif ($result.Warn -gt 0) {
-            Warn "$provName $variant -- $($result.Pass)P/0F/$($result.Warn)W (WARNs remain)"
+            Warn "$label -- $($result.Pass)P/0F/$($result.Warn)W (WARNs remain)"
         } else {
-            Pass "$provName $variant -- $($result.Pass)P/0F/0W"
+            Pass "$label -- $($result.Pass)P/0F/0W"
         }
+        break  # found a valid report, skip remaining variants
     }
 }
 
@@ -289,16 +268,7 @@ foreach ($pd in $providers) {
     $version = Get-ScriptVersion $pd.FullName
     if (-not $version) { Info "$provName -- no version in build script"; continue }
 
-    $mcVersion = Get-McScriptVersion $pd.FullName
-
-    # Check 3a: BASE/MC version match
-    if ($mcVersion -and $mcVersion -ne $version) {
-        Fail "$provName -- BASE v${version} != MC v${mcVersion}"
-    } elseif ($mcVersion) {
-        Pass "$provName -- BASE/MC version match (v${version})"
-    }
-
-    # Check 3b: CLAUDE.md
+    # Check 3a: CLAUDE.md
     $escapedName = [regex]::Escape($provName)
     if ($claudeText -match "\|\s*${escapedName}\s*\|[^|]*\|\s*v([^\s|]+)") {
         $claudeVer = $Matches[1]

@@ -673,6 +673,45 @@ AP #19: Building multi-card or split-entity layout before Phase 1 confirmed
 
 --------------------------------------------------------------------------------
 
+LIMITATION #34: DH-suffix fields unreachable from CAD dispatch
+  CONFIRMED: FL_FCIC v4.1 (2026-05-12), CA_CLETS v2.4 (2026-05-21)
+  Behavior: CAD dispatch sends standard field names (operatorLicenseNumber,
+    nameFirst, nameLast, birthDate, sexCode). DH-suffix fieldIds
+    (operatorLicenseNumberDH, nameFirstDH, etc.) never appear in CAD payloads.
+    DH combos with DH-suffix fields in set[] can NEVER fire from CAD.
+  Impact: DriverHistoryQuery combos using DH-suffix fieldIds are effectively
+    browser-only queries. CAD dispatch cannot reach them.
+  Implication for defaults[]: DH combos with DH-suffix any[] fields do NOT
+    need CAD defaults[] because the combo is unreachable from CAD. audit_cad
+    correctly skips DH-suffix combos.
+  NOT A BUG: This is the intended behavior of DH-suffix field isolation.
+    DH-suffix prevents DH combos from co-firing with DL combos (AP #14).
+    The trade-off is that DH queries require manual officer selection.
+
+--------------------------------------------------------------------------------
+
+LIMITATION #35: OOS combos with home state in set[] misroute CAD queries
+  CONFIRMED: CA_CLETS v2.3 (2026-05-21), NJ_NJCJIS v3.2 (2026-05-15)
+  Behavior: When a provider has separate in-state vs OOS (out-of-state) combos
+    and State is in set[] on OOS combos, CAD auto-populating the home state
+    causes the OOS combo to fire instead of the in-state combo.
+  Example: CA_CLETS has IA.QV (in-state, no State in set[]) and NLTS.RQ.P
+    (OOS, State in set[]). CAD sends registrationState=CA. NLTS.RQ.P fires
+    (OOS/Nlets routing) instead of IA.QV (in-state/DMV routing).
+  Fix: Add NOT_EQUALS condition on all OOS combos with home state in set[]:
+    conditions = @([PSCustomObject]@{
+        field = @('State'); operator = 'NOT_EQUALS'; value = @('<HOME_STATE>')
+    })
+    This prevents OOS combos from firing when CAD sends the home state.
+    The in-state combo (without State in set[]) fires as the correct fallback.
+  Scope: Affects any provider with separate in-state/OOS keyRef groups where
+    State appears in OOS set[]. Currently confirmed: all CA providers (NLTS
+    prefix = OOS). Check NJ, TX, and any provider with State-based routing.
+  AUDIT: Grep for combos with State or registrationState in set[] and verify
+    they have NOT_EQUALS conditions if an in-state equivalent exists.
+
+--------------------------------------------------------------------------------
+
 AP #20: Defaulting BadgeNumber to visible without asking
   CONFIRMED bad default: AZ_AZDPS v1.0 (2026-04-20)
   CONFIRMED correct: AZ_AZDPS v1.1 (2026-04-20)
@@ -742,3 +781,5 @@ CROSS-REFERENCE INDEX
   AP #25 -> Section 9 (Layout/UI)
   AP #26 -> Section 9 (folded into LIMITATION #11)
   AP #27 -> Section 7 (RMS-Specific)
+  LIMITATION #34 -> Section 10 (Build Process) -- DH-suffix CAD unreachable
+  LIMITATION #35 -> Section 5 (Combo Routing) -- OOS home-state misroute

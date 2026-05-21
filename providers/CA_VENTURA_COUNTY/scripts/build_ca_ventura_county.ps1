@@ -102,13 +102,21 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState')
+                any        = @('vehicleMakeCode','vehicleYear')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'NLTS.RQ.P'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','vehicleIdentificationNumber','registrationState')
+                any        = @('vehicleMakeCode','vehicleYear')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'NLTS.RQ.V'
             state                 = 'In/Out'
@@ -169,9 +177,13 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
         }
-        # OOS OLN (3 set -- OLN + State + Purpose)
+        # OOS OLN (3 set -- OLN + State + Purpose, NOT CA condition)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','operatorLicenseNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','operatorLicenseNumber','registrationState')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'

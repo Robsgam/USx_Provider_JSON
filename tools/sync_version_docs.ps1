@@ -48,7 +48,7 @@ function Skipped($msg) {
 # ── Read version from build script ───────────────────────────────────────────
 function Get-ScriptVersion($provPath) {
     $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*" -File |
-        Where-Object { $_.Name -notmatch '_mc' }
+        Where-Object { $_.Name -notmatch '_old' }
     if ($scripts.Count -eq 0) { return $null }
     $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
     if ($text -match '\$Version\s*=\s*["''"]([^"'']+)["''"]') {
@@ -59,7 +59,11 @@ function Get-ScriptVersion($provPath) {
 
 # ── Read validator score from report ─────────────────────────────────────────
 function Get-ValidatorScore($variant) {
-    $reportDir = Join-Path $provDir "docs\$variant"
+    if ($variant) {
+        $reportDir = Join-Path $provDir "docs\$variant"
+    } else {
+        $reportDir = Join-Path $provDir "docs"
+    }
     if (-not (Test-Path $reportDir)) { return $null }
     $report = Get-ChildItem $reportDir -Filter "VALIDATOR_REPORT_*" -File | Select-Object -First 1
     if (-not $report) { return $null }
@@ -85,18 +89,30 @@ if (-not $version) {
     exit 1
 }
 
+# Try docs/ first (new single-variant), then docs/base and docs/mc (legacy)
+$score = Get-ValidatorScore $null
 $baseScore = Get-ValidatorScore "base"
 $mcScore   = Get-ValidatorScore "mc"
 
+$hasSingle = Test-Path (Join-Path $provDir "${Provider}.json")
 $hasMc = Test-Path (Join-Path $provDir "${Provider}_MC.json")
-$mcArchived = $false
-if (-not $hasMc -and -not $mcScore) { $mcArchived = $true }
+$hasBase = Test-Path (Join-Path $provDir "${Provider}_BASE.json")
+
+# For single-variant providers, use the docs/ score as the primary
+if ($hasSingle -and $score -and -not $baseScore -and -not $mcScore) {
+    $mcScore = $score
+    $hasMc = $false
+}
 
 Write-Host ""
 Write-Host "  sync_version_docs -- $Provider v${version}" -ForegroundColor Cyan
-Write-Host "    BASE: $baseScore"
-if ($hasMc) { Write-Host "    MC:   $mcScore" }
-else        { Write-Host "    MC:   (archived/none)" }
+if ($hasSingle -and $score) {
+    Write-Host "    Score: $score"
+} else {
+    if ($baseScore) { Write-Host "    BASE: $baseScore" }
+    if ($mcScore)   { Write-Host "    MC:   $mcScore" }
+    elseif (-not $hasMc) { Write-Host "    MC:   (archived/none)" }
+}
 Write-Host ""
 
 if ($DryRun) { Write-Host "  ** DRY RUN -- no files will be changed **" -ForegroundColor Yellow; Write-Host "" }
@@ -109,8 +125,14 @@ if (Test-Path $statusFile) {
     $text = [System.IO.File]::ReadAllText($statusFile)
     $changed = $false
 
-    # Header line: Current: vX.X | BASE ...
-    $scoreHeader = if ($hasMc) { "BASE $baseScore | MC $mcScore" } else { "BASE $baseScore" }
+    # Header line: Current: vX.X | SCORE ...
+    if ($hasSingle -and $score) {
+        $scoreHeader = $score
+    } elseif ($hasMc) {
+        $scoreHeader = "BASE $baseScore | MC $mcScore"
+    } else {
+        $scoreHeader = "BASE $baseScore"
+    }
     $newHeader = "Current: v${version} | $scoreHeader | Updated $today"
     if ($text -match '(?m)^Current:\s+v[^\r\n]+') {
         $text = $text -replace '(?m)^Current:\s+v[^\r\n]+', $newHeader
@@ -171,18 +193,25 @@ if (Test-Path $sqvrFile) {
     }
 
     # JSON version line
-    $versionLine = if ($hasMc) { "JSON version: v${version} BASE + v${version} MC" }
-                   else        { "JSON version: v${version} BASE" }
+    if ($hasSingle -and $score) {
+        $versionLine = "JSON version: v${version}"
+    } elseif ($hasMc) {
+        $versionLine = "JSON version: v${version} BASE + v${version} MC"
+    } else {
+        $versionLine = "JSON version: v${version} BASE"
+    }
     if ($text -match '(?m)^JSON version:\s*[^\r\n]+') {
         $text = $text -replace '(?m)^JSON version:\s*[^\r\n]+', $versionLine
         $changed = $true
     }
 
     # Validator line
-    $valLine = if ($hasMc) {
-        "Validator: $baseScore (BASE) | $mcScore (MC)"
+    if ($hasSingle -and $score) {
+        $valLine = "Validator: $score"
+    } elseif ($hasMc) {
+        $valLine = "Validator: $baseScore (BASE) | $mcScore (MC)"
     } else {
-        "Validator: $baseScore (BASE)"
+        $valLine = "Validator: $baseScore (BASE)"
     }
     if ($text -match '(?m)^Validator:\s+\d+P[^\r\n]+') {
         $text = $text -replace '(?m)^Validator:\s+\d+P[^\r\n]+', $valLine
@@ -217,13 +246,18 @@ if (Test-Path $invFile) {
         $rootBody   = $Matches[2]
         $provEscInv = [regex]::Escape($Provider)
 
-        if ($baseScore) {
-            $rootBody = $rootBody -replace "(\|\s*${provEscInv}_BASE\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
-                "`$1 v${version} | Current | $baseScore. |"
-        }
-        if ($mcScore -and $hasMc) {
-            $rootBody = $rootBody -replace "(\|\s*${provEscInv}_MC\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
-                "`$1 v${version} | Current | $mcScore. |"
+        if ($hasSingle -and $score) {
+            $rootBody = $rootBody -replace "(\|\s*${provEscInv}(?:_MC)?\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
+                "`$1 v${version} | Current | $score. |"
+        } else {
+            if ($baseScore) {
+                $rootBody = $rootBody -replace "(\|\s*${provEscInv}_BASE\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
+                    "`$1 v${version} | Current | $baseScore. |"
+            }
+            if ($mcScore -and $hasMc) {
+                $rootBody = $rootBody -replace "(\|\s*${provEscInv}_MC\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
+                    "`$1 v${version} | Current | $mcScore. |"
+            }
         }
 
         $text = $text.Substring(0, $text.IndexOf($Matches[0])) + $rootHeader + $rootBody + $text.Substring($text.IndexOf($Matches[0]) + $Matches[0].Length)
@@ -232,9 +266,14 @@ if (Test-Path $invFile) {
 
     # Add version section if not present
     if ($text -notmatch "## v$vEsc") {
-        $mcRow = if ($hasMc -and $mcScore) {
-            "`n| ${Provider}_MC.json | v${version} | Current | $mcScore. |"
-        } else { "" }
+        if ($hasSingle -and $score) {
+            $fileRow = "| ${Provider}.json | v${version} | Current | $score. |"
+        } else {
+            $fileRow = "| ${Provider}_BASE.json | v${version} | Current | $baseScore. |"
+            if ($hasMc -and $mcScore) {
+                $fileRow += "`n| ${Provider}_MC.json | v${version} | Current | $mcScore. |"
+            }
+        }
 
         $newSection = @"
 
@@ -242,7 +281,7 @@ if (Test-Path $invFile) {
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| ${Provider}_BASE.json | v${version} | Current | $baseScore. |$mcRow
+$fileRow
 
 "@
         # Insert before the first existing version section (## vN.N)

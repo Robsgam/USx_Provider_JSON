@@ -1,7 +1,7 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-05-19
+Generated: 2026-05-08 | Last updated: 2026-05-21
 
-## Status: 15 PROVIDERS FLAGGED FOR FULL MC REBUILD — HIDLE_MC migration
+## Status: 16 PROVIDERS FLAGGED FOR REBUILD — Single-JSON merge + HIDLE_MC migration
 
 All 18 active providers rebuilt and validated (0 FAIL / 0 WARN). But audit found
 7 providers with CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute
@@ -11,14 +11,14 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v3.2 | 69P/0F/0W | 69P/0F/0W | 0 | CAD defaults DONE, v3.0 DEPLOYED Newark NJ |
+| 1 | NJ_NJCJIS | v3.4 | 69P/0F/0W/0LIM | 69P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.0 DEPLOYED Newark NJ |
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |
-| 5 | FL_FCIC | v4.2 | 97P/0F/0W/0LIM | 97P/0F/0W/0LIM | 0 | QW removed (CommSys auto-sends), 7 QIDMs/33 combos, Attention visible, MC 2-card |
-| 6 | TX_TLETS | v3.0 | 84P/0F/0W/0LIM | 85P/0F/0W/2LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
+| 5 | FL_FCIC | v4.3 | 97P/0F/0W/0LIM | 101P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
+| 6 | TX_TLETS | v3.0 | 85P/0F/0W/2LIM | 85P/0F/0W/2LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v2.1 | 70P/0F/0W | -- (archived) | 0 | Full 20-combo single-card BASE, MC archived |
+| 8 | CA_CLETS | v2.4 | 70P/0F/0W/0LIM | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 0 | |
 | 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/0W | 0 | |
@@ -124,18 +124,20 @@ phase archiving, and validator-with-exit-on-fail across all scripts. ~2,400 line
 of duplication eliminated. Migration completed 2026-05-14 with 5 verification builds (CA_CLETS_OCATS
 63P, IL_LEADS_OFML 61P, AZ_AZDPS 71P, FL_FCIC 102P, TN_TIES 80P — all 0F/0W).
 
-### Already Built and Verified (3)
+### Already Built, Verified, and MERGED to Single-JSON (3)
 
-| Provider | MC Version | Score | Status |
+| Provider | Version | Score | Status |
 |---|---|---|---|
-| NJ_NJCJIS | v3.2 | 69P/0F/0W | CAD audit CLEAN |
-| CA_CLETS | v2.1 | 70P/0F/0W | Full 20-combo BASE, MC archived, CAD defaults clean |
-| FL_FCIC | v4.2 | 97P/0F/0W/0LIM | CAD audit CLEAN, 33 combos, QW removed (CommSys auto-sends) |
+| NJ_NJCJIS | v3.4 | 69P/0F/0W/0LIM | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
+| CA_CLETS | v2.4 | 70P/0F/0W/0LIM | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
+| FL_FCIC | v4.3 | 97P/0F/0W/0LIM | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
-### Flagged for Full Rebuild on Next Test (15)
+### Flagged for Full Rebuild on Next Test (16)
 
-Scripts updated, NOT yet built. On first test of each provider: run build script, then
-build_report.ps1, verify 0 FAIL on all 8 checks including CAD audit.
+Scripts updated, NOT yet built. On first test of each provider:
+1. Delete old BASE script, rename MC→primary (`build_<provider>.ps1`), update output to `<PROVIDER>.json`
+2. Run build script, then build_report.ps1, verify 0 FAIL on all checks including CAD audit
+3. Reports go to `docs/` (not `docs/base/` or `docs/mc/`)
 
 | # | Provider | MC Script Updated | Attention Fix Needed | Notes |
 |---|---|---|---|---|
@@ -154,6 +156,15 @@ build_report.ps1, verify 0 FAIL on all 8 checks including CAD audit.
 | 13 | NM_NMLETS_OFML | YES | NO | Standard cleanup |
 | 14 | OR_LEDS | YES | NO | Standard cleanup |
 | 15 | TN_TIES | YES | YES (DH only) | Keep SSN |
+| 16 | CA_CONTRA_COSTA | NO | NO | Incomplete — awaiting updated devdoc/metadata |
+
+## Single-JSON Merge — 2026-05-21
+
+BASE/MC dual-variant build path eliminated. One build script per provider → one JSON output.
+- NJ_NJCJIS, FL_FCIC, CA_CLETS: MERGED (scripts renamed, JSONs renamed, reports in docs/)
+- 16 remaining providers: merge on next rebuild (see instructions above)
+- Tools updated: pipeline.ps1, enforce.ps1, build_report.ps1, sync_version_docs.ps1, audit_cad.ps1
+- KB updated: BUILD_RULES.txt Section 6, CLAUDE.md
 
 ## CAD Defaults — Flagged 2026-05-19
 
@@ -173,7 +184,8 @@ Fix on next rebuild of each provider. Fields to default are provider-specific �
 each provider's form initialValues, not a universal list.
 
 ## Next Actions
-- Live testing per provider work order: FL_FCIC v4.1 MC (44 tests, Veh+Boat first), TX_TLETS, NY, AZ
+- Live testing per provider work order: TX_TLETS, NY, AZ
+- Merge BASE/MC → single-JSON on each rebuild (16 providers)
 - Fix Attention hidden automation on next rebuild of each flagged provider
 - Fix CAD defaults (142 FAILs) on next rebuild of each provider
-- Each provider's first test triggers: build MC → build_report → verify CAD audit CHECK 6 CLEAN
+- Each provider's first test triggers: merge scripts → build → build_report → verify all checks CLEAN

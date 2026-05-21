@@ -2,8 +2,9 @@
   build_report.ps1 -- Generate layout + query reports for a provider JSON
   Runs validator, renderer, query simulator, and picklist scanner.
   Auto-detects build path from JSON name:
-    *_MC*.json -> docs/mc/
-    *_BASE*.json (or other) -> docs/base/
+    <PROVIDER>.json -> docs/
+    *_MC*.json -> docs/mc/ (legacy)
+    *_BASE*.json -> docs/base/ (legacy)
   Override with -DocsDir.
 
   Usage: .\build_report.ps1 -Path <provider.json>
@@ -28,8 +29,10 @@ if (-not $DocsDir) {
     $docsRoot = Join-Path $jsonDir "docs"
     if ($jsonName -match '_MC') {
         $DocsDir = Join-Path $docsRoot "mc"
-    } else {
+    } elseif ($jsonName -match '_BASE') {
         $DocsDir = Join-Path $docsRoot "base"
+    } else {
+        $DocsDir = $docsRoot
     }
 }
 if (-not (Test-Path $DocsDir)) {
@@ -193,7 +196,7 @@ Write-Host "  [8/$stepCount] Running CAD audit..." -ForegroundColor Yellow
 $cadPath = Join-Path $toolDir "audit_cad.ps1"
 $cadFile = Join-Path $DocsDir "CAD_AUDIT_$jsonName.txt"
 if (Test-Path $cadPath) {
-    $cadVariant = if ($jsonName -match '_MC') { 'MC' } else { 'BASE' }
+    $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
     $cadOut = & powershell -ExecutionPolicy Bypass -File $cadPath -Path $resolved -Variant $cadVariant 2>&1 | Out-String
     ($header + "CAD AUDIT`n=========`n`n" + $cadOut) | Out-File -FilePath $cadFile -Encoding utf8
     $cadFails = ([regex]::Matches($cadOut, '\[FAIL\]')).Count
@@ -212,8 +215,7 @@ Write-Host "  [9/$stepCount] Generating test matrix..." -ForegroundColor Yellow
 $testMatrixPath = Join-Path $toolDir "generate_test_matrix.ps1"
 if (Test-Path $testMatrixPath) {
     $providerBase = $jsonName -replace '_(BASE|MC)$', ''
-    $variant = if ($jsonName -match '_MC') { 'MC' } else { 'BASE' }
-    $matrixFileName = "${providerBase}_${variant}_TEST_MATRIX.txt"
+    $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
     $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
     $matrixOut = & powershell -ExecutionPolicy Bypass -File $testMatrixPath -Path $resolved -OutFile $matrixFile 2>&1 | Out-String
     if ($matrixOut -match '(\d+)/(\d+) combos') {
