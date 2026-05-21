@@ -11,7 +11,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v3.4 | 69P/0F/0W/0LIM | 69P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.0 DEPLOYED Newark NJ |
+| 1 | NJ_NJCJIS | v3.4 | 69P/0F/0W/0LIM | 69P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation |
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W | 72P/0F/0W | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v1.6 | 74P/0F/0W | 74P/0F/0W | 0 | State no-default |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | |

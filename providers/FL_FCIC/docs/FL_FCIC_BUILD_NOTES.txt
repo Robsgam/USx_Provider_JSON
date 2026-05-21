@@ -7,7 +7,7 @@ Directory: C:\Users\Gordon Hallof\FL_FCIC\
 v4.3 (2026-05-21) -- Single-JSON merge
   CHANGED: Merged BASE/MC into single build: build_fl_fcic.ps1 → FL_FCIC.json (no suffix).
            Deleted old BASE build script. Reports now in docs/ (not docs/mc/).
-  REASON:  BASE/MC split doubled maintenance; MC is always production target.
+  REASON:  BASE/MC split doubled maintenance; single-JSON is the standard.
   VALIDATOR: 101P/0F/0W
   TEST CONDUCTOR: 47/47 PASS
 
@@ -26,7 +26,7 @@ v4.1 (2026-05-15) -- MC multi-card: Vehicle (2 cards) + Boat (2 cards) + State l
            QIDMs unchanged (35 combos, 8 QIDMs).
   REASON:  BASE single-card allows officers to accidentally route in-state queries (FRQ/FBQ)
            through OOS paths (RQ/BQ) by filling State. MC physically isolates State on a separate
-           Options card, preventing accidental routing. MC is mandatory for production deployment.
+           Options card, preventing accidental routing. Multi-card is the standard build model.
            Person was already 2-card (DL+DH) since v3.8. Vehicle and Boat were never split.
   VALIDATOR: BASE 102P/0F/0W/0LIM | MC 102P/0F/0W/0LIM
 

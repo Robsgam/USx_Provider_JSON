@@ -414,7 +414,7 @@ AUTHORITATIVE SOURCE FILES (read-only)
     DH-suffix pattern, GunQuery sourceField naming).
 
   providers/NJ_NJCJIS/
-    v3.0 DEPLOYED Newark NJ (2026-05-08) -- 14/14 live tests PASS.
+    v3.4 imported USx Provider Tenant + Newark Foundation Tenant (2026-05-21).
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
     AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
 

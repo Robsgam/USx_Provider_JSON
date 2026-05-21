@@ -2,18 +2,19 @@ NJ_NJCJIS STATUS
 =================
 Last updated    : 2026-05-21
 
-  *** MC v3.2 FOUNDATION TESTING READY ***
+  *** v3.4 imported USx Provider Tenant + Newark Foundation Tenant ***
 Current: v3.4 | 69P/0F/0W/0LIM | Updated 2026-05-21
-  MC    v3.2  -- 69P/0F/0W/0LIM -- 26/26 PASS (2026-05-18) -- full combo + CAD + deselect + any[] coverage -- FOUNDATION TESTING READY
-  BASE  v3.2  -- 69P/0F/0W/0LIM -- moot (MC is deployment target)
-  BASE  v3.0  -- 69P/0F/0W/1LIM -- 14/14 PASS (2026-05-08) -- full combo coverage -- DEPLOYED Newark NJ 2026-05-11
-  MC    v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- PRODUCTION TEST: 57/57 PASS (2026-04-29)
+  v3.4  -- 69P/0F/0W/0LIM -- State defaults, single-JSON merge (2026-05-21)
+  v3.2  -- 69P/0F/0W/0LIM -- 26/26 PASS (2026-05-18) -- full combo + CAD + deselect + any[] coverage
+  v3.0  -- 69P/0F/0W/1LIM -- 14/14 PASS (2026-05-08) -- full combo coverage
+  v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- 57/57 PASS (2026-04-29)
 
-DEPLOYMENT:
-  v3.0 BASE  -- DEPLOYED 2026-05-11 -- Newark, NJ foundation tenant
-  v3.2 MC    -- FOUNDATION TESTING READY 2026-05-18
+IMPORT HISTORY:
+  v3.4  -- imported 2026-05-21 -- USx Provider Tenant + Newark Foundation Tenant
+  v3.3  -- imported 2026-05-21 -- USx Provider Tenant + Newark Foundation Tenant
+  v3.0  -- imported 2026-05-11 -- Newark Foundation Tenant (first import)
 
-  MC v3.2 PRODUCTION TEST MATRIX (2026-05-18):
+  v3.2 TEST MATRIX (2026-05-18):
     Phase 1 - Render:
     T1   Vehicle  Render   3 cards (OPTIONS/PLATE/VIN)  PASS
     T2   Person   Render   3 cards (NAME/OLN/OPTIONS)   PASS
@@ -61,7 +62,7 @@ DEPLOYMENT:
     - All 13 CommSys combos + 2 CAD paths confirmed across 5 entities
     - one-directional queriesToDeselect confirmed (VehStolen→VehReg only)
 
-  BASE v3.1 PRODUCTION TEST MATRIX (2026-05-12):
+  BASE v3.1 IMPORT TEST MATRIX (2026-05-12):
     T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)
     T2   Vehicle  RQ     VehReg plate FULL       PASS  (plate+state+plateType+year+random=N+image)
     T3   Vehicle  RQ_RAND VehReg plate RAND      PASS  (plate+state+plateType+year+random=Y+image, conditions routing)
@@ -87,7 +88,7 @@ DEPLOYMENT:
     - POSSIBLE BUG (not reported): bidirectional queriesToDeselect causes deadlock error (v2.3, v2.8)
     - All 13 CommSys combos + OOS confirmed across 5 entities
 
-  BASE v3.0 PRODUCTION TEST MATRIX (2026-05-08):
+  BASE v3.0 IMPORT TEST MATRIX (2026-05-08):
     T1   Vehicle  UI     autoSelect check       PASS  (Reg auto-checks on plate entry, Stolen stays unchecked)
     T2   Vehicle  RQ     VehReg plate FULL       PASS  (plate+state+plateType+year+random=N+image)
     T3   Vehicle  RQ_RAND VehReg plate RAND      PASS  (plate+state+plateType+year+random=Y+image, conditions routing)

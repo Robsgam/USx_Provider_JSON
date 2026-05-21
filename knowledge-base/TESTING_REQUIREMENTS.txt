@@ -829,3 +829,45 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
       materials can be done in bulk. Building JSONs should be done one at
       a time -- each provider has unique query patterns, field sets, and
       combination logic that requires individual attention.
+
+================================================================================
+SECTION 17 -- DEPLOYMENT ENVIRONMENTS
+================================================================================
+
+  TENANT ARCHITECTURE:
+
+    USx Provider Tenant
+      One per JSON provider. This is where provider JSONs are imported for
+      testing and validation. Every provider gets its own USx Provider Tenant.
+      All 3 active providers (NJ, FL, CA_CLETS) have their JSONs imported here.
+
+    Foundation Tenant
+      Customer staging and testing environment. Used for customer-facing
+      validation before any live cutover. Example: Newark Foundation Tenant
+      (NJ_NJCJIS). Not all providers have a Foundation Tenant — only those
+      with an active customer engagement.
+
+    Live / Production
+      No provider JSONs have been deployed to a live environment yet.
+      All current imports are to Provider Tenants or Foundation Tenants only.
+
+  CURRENT IMPORT STATE (updated 2026-05-21):
+
+    | Provider    | Version | USx Provider Tenant | Foundation Tenant        |
+    |-------------|---------|---------------------|--------------------------|
+    | NJ_NJCJIS   | v3.4    | YES (2026-05-21)    | Newark Foundation (v3.4) |
+    | FL_FCIC     | v4.3    | YES (2026-05-21)    | --                       |
+    | CA_CLETS    | v2.4    | YES (2026-05-21)    | --                       |
+
+  IMPORT WORKFLOW:
+    1. Build JSON → build_report.ps1 → enforce.ps1 (all gates clear)
+    2. Import to USx Provider Tenant (always first)
+    3. Run live test matrix against Provider Tenant
+    4. If customer engagement exists: import to Foundation Tenant
+    5. Foundation Tenant testing with customer
+    6. Live cutover (not yet reached for any provider)
+
+  TERMINOLOGY:
+    - "Import" not "deploy" — we import JSONs into tenants
+    - "Foundation Tenant" not "production" — no live environments yet
+    - Never say "DEPLOYED" — use "imported to <tenant name>"

@@ -37,7 +37,7 @@ v3.4  2026-05-21  Single-JSON merge + State defaults
     - Reports now in docs/ (not docs/mc/)
     - Deleted old BASE build script
   REASON
-    - BASE/MC split doubled maintenance with no benefit; MC is always production target
+    - BASE/MC split doubled maintenance with no benefit; single-JSON is the standard
     - State defaults required for CAD dispatch (CommSys priority over RMS 400 bug)
 v3.3  2026-05-19  Combination-level defaults for CAD dispatch
   CHANGED
@@ -75,15 +75,15 @@ v3.1  2026-05-11  DL combo reorder + validator path fix -- UNTESTED
   RESULT
     - 69P/0F/0W/0LIM (BASE and MC)
     - NOT YET TESTED -- needs live DL test before replacing v3.0 at Newark
-v3.0  2026-05-08  Locked for Newark deployment
+v3.0  2026-05-08  Locked for Newark import
   CHANGED
     - Folder renamed to NJ_NJCJIS_LOCKED
     - Lock gates added to build scripts and validator (require -Force to rebuild)
-    - Marked as deployed to Newark NJ foundation tenant
+    - Imported to Newark Foundation Tenant 2026-05-11
   REASON
     - v2.9 passed 16/16 live tests; v3.0 is the same JSON with lock protection
   RESULT
-    - DEPLOYED Newark NJ 2026-05-11
+    - Imported Newark Foundation Tenant 2026-05-11
 v2.9  2026-05-08  PlateYear dynamic + PlateType default + WARNs eliminated
   CHANGED
     - PlateYear: dynamic $currentYear via build script (was hardcoded 2026)

@@ -5,7 +5,7 @@ v2.4 (2026-05-21) -- Single-JSON merge
   CHANGED: Merged BASE/MC into single build: build_ca_clets.ps1 → CA_CLETS.json (no suffix).
            Deleted old BASE build script. Reports now in docs/ (not docs/mc/).
            Phase snapshots to phases/ (not phases/mc/).
-  REASON:  BASE/MC split doubled maintenance; MC is always production target.
+  REASON:  BASE/MC split doubled maintenance; single-JSON is the standard.
   VALIDATOR: 91P/0F/0W
   TEST CONDUCTOR: 52/52 PASS
 
@@ -32,7 +32,7 @@ v1.9 (2026-05-19) -- CAD field alignment: purposeCode fieldId
            'purposeCode' matches CAD's 'PurposeCode'. QIDM sourceField→targetField handles
            the mapping to the correct XML element name CaRequestPurposeCode.
   VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM
-  PRODUCTION TEST: 3/3 CAD PASS (IA.QV plate, NLTS.RQ.P OOS plate, IA.QVK VIN)
+  IMPORT TEST: 3/3 CAD PASS (IA.QV plate, NLTS.RQ.P OOS plate, IA.QVK VIN)
   CROSS-PROVIDER: All CA providers need same rename on next rebuild (CA_eSUN, CA_VENTURA,
                   CA_SAN_LUIS_OBISPO, CA_CLETS_OCATS).
 
@@ -41,7 +41,7 @@ v1.8 (2026-05-12) -- One-directional queriesToDeselect fix
   REASON:  Bidirectional queriesToDeselect suppresses DH autoSelect. One-directional pattern:
            DL=default (autoSelect=true, no deselect), DH=opt-in (autoSelect=true, deselects DL).
   VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM
-  PRODUCTION TEST: 18/18 PASS (2026-05-12)
+  IMPORT TEST: 18/18 PASS (2026-05-12)
 
 v1.7 (2026-05-11) -- camelCase fieldIds + DH-suffix + combo ordering
   CHANGED: Full camelCase conversion, DH-suffix fieldIds, combo priority reorder.

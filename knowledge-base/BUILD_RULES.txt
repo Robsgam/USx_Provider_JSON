@@ -421,10 +421,10 @@ See also:
   Reports: docs/ (no docs/base/ or docs/mc/ subdirectories).
 
   HISTORY: Originally builds produced a BASE (single-card proof of concept)
-  and then an MC (multi-card production). In practice, BASE encouraged
-  skipping queries and doubled maintenance (two scripts, two JSONs, two
-  report directories per provider). All QIDMs are identical between BASE
-  and MC; only the layout differs. MC is always the production target.
+  and then an MC (multi-card). In practice, BASE encouraged skipping queries
+  and doubled maintenance (two scripts, two JSONs, two report directories
+  per provider). All QIDMs are identical between BASE and MC; only the layout
+  differs. Multi-card is the standard build model.
   Merged 2026-05-21 for NJ, FL, CA_CLETS. Other providers merge on rebuild.
 
   BUILD DISCIPLINE (still applies -- just one JSON now):
@@ -713,9 +713,9 @@ See also:
 11. MC MULTI-CARD DESIGN RULES
 ================================================================================
 
-  MC (multi-card) is the production variant. BASE is proof-of-concept only.
-  MC isolates routing fields onto a separate OPTIONS card so officers cannot
-  accidentally trigger the wrong query type.
+  Multi-card is the standard build model. Single-card (BASE) is eliminated.
+  Multi-card isolates routing fields onto a separate OPTIONS card so officers
+  cannot accidentally trigger the wrong query type.
 
   CORE PRINCIPLE:
     Routing fields (State, Stolen Search, etc.) go on an OPTIONS card.

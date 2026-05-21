@@ -8,7 +8,7 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | NJ_NJCJIS_BASE.json | v3.2 | CURRENT | CAD defaults on all 13 combos; 69P/0F/0W/0LIM |
 | NJ_NJCJIS_MC.json | v3.2 | CURRENT | CAD defaults on all 13 combos; 69P/0F/0W/0LIM |
-| NJ_NJCJIS_v3.0_LOCKED.json | v3.0 | LOCKED | 37P/1F/0W/1LIM. 14/14 live tests PASS. DEPLOYED Newark NJ. |
+| NJ_NJCJIS_v3.0_LOCKED.json | v3.0 | LOCKED | 37P/1F/0W/1LIM. 14/14 live tests PASS. Imported Newark Foundation Tenant. |
 
 ## phases/base/
 

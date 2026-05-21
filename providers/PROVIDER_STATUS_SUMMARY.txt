@@ -1,6 +1,6 @@
 PROVIDER STATUS SUMMARY
 =======================
-Generated: 2026-05-19 (lock mechanism removed, folder suffixes eliminated)
+Generated: 2026-05-21 (single-JSON build model, deployment terminology corrected)
 Source: CLAUDE.md provider table + enforce.ps1
 
 PORTFOLIO OVERVIEW
@@ -9,33 +9,33 @@ Total providers:  19
 Active:           17
 Incomplete:        1 (CA_CONTRA_COSTA — awaiting updated devdoc/metadata)
 On hold:           1 (TX_TLETS — ready, awaiting work order slot)
-JSON completeness: 18/19 have both BASE + MC (CA_CONTRA_COSTA BASE-only)
+JSON completeness: 18/19 (CA_CONTRA_COSTA incomplete)
 Validation:        All 18 complete providers at 0 FAIL, 0 WARN
 Enforce gate:      218 PASS / 0 FAIL / 0 WARN (2026-05-15)
 
 PROVIDER TABLE
 --------------
- #  Provider               Version  Validation       Status    JSON Files  Notes
+ #  Provider               Version  Validation       Status    Build       Notes
 --- ---------------------- -------- ---------------- --------- ----------- --------------------------------------------------
- 1  AZ_AZDPS               v2.3    71P/0F/0W        ACTIVE    BASE+MC     dexStateUserId, DH-suffix, WMPI queries
- 2  CA_CLETS               v1.9    66P/0F/0W        ACTIVE    BASE+MC     CAD purposeCode fix; 3/3 CAD PASS
- 3  CA_CLETS_OCATS         v1.2    63P/0F/0W        ACTIVE    BASE+MC     CLETS_OCATS v21, 5 queries, 19 combos
- 4  CA_CONTRA_COSTA        ---     INCOMPLETE       INCOMPLETE BASE only  Awaiting updated devdoc/metadata; Person-only
- 5  CA_eSUN                v1.5    71P/0F/0W        ACTIVE    BASE+MC     MC multi-card; VP owner search + gun-by-name
- 6  CA_SAN_LUIS_OBISPO     v1.3    65P/0F/0W        ACTIVE    BASE+MC     Regional interface; DL+DH DH-suffix pattern
- 7  CA_VENTURA_COUNTY      v1.4    72P/0F/0W (MC)   ACTIVE    BASE+MC     6 basic queries; MC multi-card (14 cards)
- 8  FL_FCIC                v4.1    102P/0F/0W       ACTIVE    BASE+MC     44/44 MC PASS; production-ready
- 9  HI_HCJDC_OFML          v1.6    72P/0F/0W        ACTIVE    BASE+MC     7-transaction build; State no-default
-10  IL_LEADS_OFML          v1.1    61P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
-11  LA_LEMS                v2.5    63P/0F/0W        ACTIVE    BASE+MC     7 QIDMs; DH-suffix + queriesToDeselect
-12  MD_METERS              v1.3    69P/0F/0W        ACTIVE    BASE+MC     6 basic queries; State no-default; MC (12 cards)
-13  NJ_NJCJIS              v3.2    69P/0F/0W        ACTIVE    BASE+MC     14/14 PASS; v3.0 DEPLOYED Newark NJ 2026-05-11
-14  NM_NMLETS_OFML         v1.3    66P/0F/0W        ACTIVE    BASE+MC     6 basic queries; GunModel field
-15  NY_NYSPIN_EJUSTICE     v1.6    74P/0F/0W        ACTIVE    BASE+MC     DL+DH DH-suffix; State no-default (LIMIT #30)
-16  OH_LEADS               v1.3    77P/0F/0W        ACTIVE    BASE+MC     6 queries, 9 VehReg combos; MC (14 cards)
-17  OR_LEDS                v1.3    58P/0F/0W        ACTIVE    BASE+MC     5 queries (no DH); MC multi-card (11 cards)
-18  TN_TIES                v1.4    80P/0F/0W        ACTIVE    BASE+MC     6 queries, 28 combos; MC (14 cards)
-19  TX_TLETS               v2.7    84P/0F/0W        ACTIVE    BASE+MC     EmailAddress user-fillable + Attention fix applied
+ 1  AZ_AZDPS               v2.3    71P/0F/0W        ACTIVE    READY     dexStateUserId, DH-suffix, WMPI queries
+ 2  CA_CLETS               v2.4    91P/0F/0W        ACTIVE    single-JSON v2.4 imported USx Provider 2026-05-21; 40/40 combos
+ 3  CA_CLETS_OCATS         v1.2    63P/0F/0W        ACTIVE    READY     CLETS_OCATS v21, 5 queries, 19 combos
+ 4  CA_CONTRA_COSTA        ---     INCOMPLETE       INCOMPLETE --          Awaiting updated devdoc/metadata; Person-only
+ 5  CA_eSUN                v1.5    71P/0F/0W        ACTIVE    READY     MC multi-card; VP owner search + gun-by-name
+ 6  CA_SAN_LUIS_OBISPO     v1.3    65P/0F/0W        ACTIVE    READY     Regional interface; DL+DH DH-suffix pattern
+ 7  CA_VENTURA_COUNTY      v1.4    72P/0F/0W (MC)   ACTIVE    READY     6 basic queries; MC multi-card (14 cards)
+ 8  FL_FCIC                v4.3    97P/0F/0W        ACTIVE    single-JSON v4.3 imported USx Provider 2026-05-21; 33 combos
+ 9  HI_HCJDC_OFML          v1.6    72P/0F/0W        ACTIVE    READY     7-transaction build; State no-default
+10  IL_LEADS_OFML          v1.1    61P/0F/0W        ACTIVE    READY     5 queries (no DH); MC multi-card (11 cards)
+11  LA_LEMS                v2.5    63P/0F/0W        ACTIVE    READY     7 QIDMs; DH-suffix + queriesToDeselect
+12  MD_METERS              v1.3    69P/0F/0W        ACTIVE    READY     6 basic queries; State no-default; MC (12 cards)
+13  NJ_NJCJIS              v3.4    69P/0F/0W        ACTIVE    single-JSON v3.4 imported USx Provider + Newark Foundation 2026-05-21
+14  NM_NMLETS_OFML         v1.3    66P/0F/0W        ACTIVE    READY     6 basic queries; GunModel field
+15  NY_NYSPIN_EJUSTICE     v1.6    74P/0F/0W        ACTIVE    READY     DL+DH DH-suffix; State no-default (LIMIT #30)
+16  OH_LEADS               v1.3    77P/0F/0W        ACTIVE    READY     6 queries, 9 VehReg combos; MC (14 cards)
+17  OR_LEDS                v1.3    58P/0F/0W        ACTIVE    READY     5 queries (no DH); MC multi-card (11 cards)
+18  TN_TIES                v1.4    80P/0F/0W        ACTIVE    READY     6 queries, 28 combos; MC (14 cards)
+19  TX_TLETS               v2.7    84P/0F/0W        ACTIVE    READY     EmailAddress user-fillable + Attention fix applied
 
 FLAGGED FOR NEXT REBUILD
 ------------------------
@@ -63,7 +63,7 @@ WORK ORDER (user-specified)
 NEXT ACTIONS
 ------------
   1. Live testing per work order: TX_TLETS next, then NY_NYSPIN, then AZ_AZDPS
-  2. NJ v3.2 deploy to Newark foundation tenant (v3.0 currently live)
+  2. NJ v3.4 imported to USx Provider Tenant + Newark Foundation Tenant (2026-05-21)
   3. Attention field fix on remaining 7 flagged providers
   4. CAD defaults fix on remaining 17 providers
-  5. Each provider first test: build MC -> build_report.ps1 -> CAD audit -> pipeline.ps1
+  5. Each provider first test: build -> build_report.ps1 -> CAD audit -> pipeline.ps1
