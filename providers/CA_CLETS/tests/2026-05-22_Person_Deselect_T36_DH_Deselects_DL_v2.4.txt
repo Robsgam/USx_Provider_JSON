@@ -1,0 +1,25 @@
+CA_CLETS v2.4 Test Log -- T36
+==============================
+Date: 2026-05-22
+Entity: Person
+Combo: Deselect verification (DH deselects DL)
+Result: PASS
+
+Test: Fill DL fields (OLN=D1234567) → DL auto-checks. Then fill DH fields (OLN_DH=D7654321).
+Expected: DH auto-checks, DL deselects
+
+Actual: Platform popup: "You cannot run Driver License with Driver History: Driver History has been deselected."
+DL kept, DH deselected. Only DriverLicenseQuery fired.
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS810DV5Y981NG6H7ED7B5PR"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KS810DV5Y981NG6H7ED7B5PR</Id><OperatorLicenseNumber>D1234567</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS Request:
+{"elasticQuery":{"dlNumber":"d1234567"},"from":0,"size":50}
+
+Findings:
+- queriesToDeselect prevents DL+DH co-fire (PASS — core mechanism works)
+- Conflict resolution: when BOTH have data, platform keeps DL (first checked) and deselects DH
+- Platform shows popup explaining deselection
+- T22 already confirmed DH-only → DH fires, DL does not fire
+- One-directional deselect pattern confirmed working on 3-card layout

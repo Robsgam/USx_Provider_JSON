@@ -1,0 +1,17 @@
+CA_CLETS v2.4 Test Log -- T22
+==============================
+Date: 2026-05-22
+Entity: Person
+Combo: NLTS.KQ.O (DH by OLN)
+Result: PASS
+
+Fields: purposeCodeDH=C, operatorLicenseNumberDH=D123456
+Expected: DriverHistoryQuery fires with OLN, DL deselects
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7XFY4NAMY5QR6NB4NE0DD8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KS7XFY4NAMY5QR6NB4NE0DD8</Id><OperatorLicenseNumber>D123456</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- DH fires correctly with DH-suffix OLN field
+- DL deselected (no DL transaction)
+- One-directional deselect confirmed on 3-card layout

@@ -1,0 +1,20 @@
+CA_CLETS v2.4 Test Log -- T32
+==============================
+Date: 2026-05-22
+Entity: Vehicle
+Combo: IA.QV + any[] fields (VehicleMakeCode, VehicleYear)
+Result: PASS
+
+Fields: purposeCode=C, licensePlateNumber=ABC1234, vehicleMakeCode=FORD (dropdown), vehicleYear=2023
+Expected: any[] fields present in XML output
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS80E3A2JGM1XR3SS2Q2G327"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS80E3A2JGM1XR3SS2Q2G327</Id><VehicleMakeCode>CNST_FORD</VehicleMakeCode><LicensePlateYear>2026</LicensePlateYear><VehicleYear>2023</VehicleYear><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS Request:
+{"elasticQuery":{"vehicle":{"tag":"abc1234"}},"from":0,"size":50}
+
+Findings:
+- VehicleMakeCode=CNST_FORD (VEHICLE_MAKE dropdown serializes with prefix, consistent with FL pattern)
+- VehicleYear=2023 present in XML
+- Both any[] fields confirmed in XML output

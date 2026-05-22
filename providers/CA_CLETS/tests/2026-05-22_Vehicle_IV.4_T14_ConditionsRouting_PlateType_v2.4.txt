@@ -1,0 +1,21 @@
+CA_CLETS v2.4 Test Log -- T14
+==============================
+Date: 2026-05-22
+Entity: Vehicle
+Combo: IV.4* conditions routing (PlateType=TK)
+Result: PASS
+
+Fields: purposeCode=C, licensePlateNumber=ABC1234, licensePlateTypeCode=TK (truck)
+Expected: VehicleRegistrationQuery fires with different PlateType than T13 (PC)
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7VNV7XPWWEHBWZ9N11HYWD"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS7VNV7XPWWEHBWZ9N11HYWD</Id><LicensePlateYear>2026</LicensePlateYear><LicensePlateTypeCode>TK</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS Request:
+{"elasticQuery":{"vehicle":{"tag":"abc1234"}},"from":0,"size":50}
+
+Findings:
+- VehicleRegistrationQuery fires with PlateType=TK (truck) — different from T13 (PC)
+- Conditions engine routes MessageKey internally based on PlateType value
+- Confirms IV.4* plate-type routing works — different PlateType values produce valid requests
+- RMS elastic co-fires on vehicle tag

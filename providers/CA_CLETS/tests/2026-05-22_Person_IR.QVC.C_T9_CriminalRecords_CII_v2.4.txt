@@ -1,0 +1,17 @@
+CA_CLETS v2.4 Test Log -- T9
+=============================
+Date: 2026-05-22
+Entity: Person
+Combo: IR.QVC.C (Criminal records by CII)
+Result: PASS
+
+Fields: purposeCode=C, criminalIdNumber=A12345678
+Expected: DriverLicenseQuery fires (IR.QVC.C)
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7V933SXNAC398V9BDDV2P3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KS7V933SXNAC398V9BDDV2P3</Id><CriminalIdNumber>A12345678</CriminalIdNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- DriverLicenseQuery fires with CriminalIdNumber only
+- IR.QVC criminal records search path confirmed working
+- First live test of IR.QVC combos

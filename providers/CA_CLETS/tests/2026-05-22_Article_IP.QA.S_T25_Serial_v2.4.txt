@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T25
+==============================
+Date: 2026-05-22
+Entity: Article
+Combo: IP.QA.S (Serial Number)
+Result: PASS
+
+Fields: purposeCode=C, serialNumber=ART676644
+Expected: ArticleSingleQuery fires with ArticleSerialNumber
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7Y0N1ZK0TXS0GJBGY9C9C0"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KS7Y0N1ZK0TXS0GJBGY9C9C0</Id><CaRequestPurposeCode>C</CaRequestPurposeCode><ArticleSerialNumber>ART676644</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- ArticleSingleQuery fires with serial number
+- Regression confirmed

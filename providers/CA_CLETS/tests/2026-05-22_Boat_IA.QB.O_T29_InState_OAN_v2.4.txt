@@ -1,0 +1,15 @@
+CA_CLETS v2.4 Test Log -- T29
+==============================
+Date: 2026-05-22
+Entity: Boat
+Combo: IA.QB.O (in-state OAN)
+Result: PASS
+
+Fields: purposeCode=C, ownerAppliedNumber=OAN45685
+Expected: BoatQuery fires with OwnerAppliedNumber
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS8053FS56EEHR2TYD2733G7"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KS8053FS56EEHR2TYD2733G7</Id><OwnerAppliedNumber>OAN45685</OwnerAppliedNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- BoatQuery fires with OAN (no State = in-state)

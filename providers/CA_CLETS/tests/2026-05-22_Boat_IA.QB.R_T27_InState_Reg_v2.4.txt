@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T27
+==============================
+Date: 2026-05-22
+Entity: Boat
+Combo: IA.QB.R (in-state Registration)
+Result: PASS
+
+Fields: purposeCode=C, registrationNumber=FL8363
+Expected: BoatQuery fires with RegistrationNumber
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS80321K0NEEAAK27DK0DYQD"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KS80321K0NEEAAK27DK0DYQD</Id><RegistrationNumber>FL8363</RegistrationNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- BoatQuery fires with Registration only (no State = in-state)
+- Regression confirmed

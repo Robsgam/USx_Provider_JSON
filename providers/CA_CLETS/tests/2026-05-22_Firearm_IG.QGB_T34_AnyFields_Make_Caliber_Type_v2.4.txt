@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T34
+==============================
+Date: 2026-05-22
+Entity: Firearm
+Combo: IG.QGB + any[] fields (FirearmMake, GunCaliber, GunTypeCode)
+Result: PASS
+
+Fields: purposeCode=C, serialNumber=ABC123, firearmMake=AAC, gunCaliber=17, gunTypeCode=D
+Expected: any[] fields present in XML output
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS80WY6NAZ1JNWQNK1EB7HFS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KS80WY6NAZ1JNWQNK1EB7HFS</Id><GunSerialNumber>ABC123</GunSerialNumber><GunCaliber>17</GunCaliber><GunMake>AAC</GunMake><GunTypeCode>D</GunTypeCode><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- All 3 any[] fields in XML: GunMake=AAC, GunCaliber=17, GunTypeCode=D
+- NCIC_FIREARM_MAKE/CALIBER/TYPE dropdowns all serialize correctly

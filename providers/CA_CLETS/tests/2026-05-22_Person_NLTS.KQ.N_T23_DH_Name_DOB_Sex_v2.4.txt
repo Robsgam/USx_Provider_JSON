@@ -1,0 +1,18 @@
+CA_CLETS v2.4 Test Log -- T23
+==============================
+Date: 2026-05-22
+Entity: Person
+Combo: NLTS.KQ.N (DH by Name+DOB+Sex)
+Result: PASS
+
+Fields: purposeCodeDH=C, nameLastDH=DOE, nameFirstDH=JKOHN, birthDateDH=01/01/1985, sexCodeDH=F
+Expected: DriverHistoryQuery fires with Name+BirthDate+SexCode
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7XH4M2SYKEMQ68KZPRFBHE"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KS7XH4M2SYKEMQ68KZPRFBHE</Id><SexCode>F</SexCode><BirthDate>19850101</BirthDate><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>DOE, JKOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- All 5 DH set[] fields in XML: PurposeCode, Name, BirthDate, SexCode + CaRequestPurposeCode
+- BirthDate=19850101 (yyyyMMdd CA format)
+- FormatStringRuleHandler: DOE, JKOHN
+- DH-suffix isolation confirmed on 3-card layout

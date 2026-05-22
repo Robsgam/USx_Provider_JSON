@@ -1,0 +1,20 @@
+CA_CLETS v2.4 Test Log -- T13
+==============================
+Date: 2026-05-22
+Entity: Vehicle
+Combo: IA.QV (in-state Plate catchall)
+Result: PASS
+
+Fields: purposeCode=C, licensePlateNumber=ABC123, licensePlateTypeCode=PC (default), licensePlateYear=2026 (default)
+Expected: VehicleRegistrationQuery fires with CAD defaults in XML
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7VKXMABD4XWGGX9368K1TM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS7VKXMABD4XWGGX9368K1TM</Id><LicensePlateYear>2026</LicensePlateYear><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC123</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS Request:
+{"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}
+
+Findings:
+- VehicleRegistrationQuery fires with Plate + PlateType=PC + PlateYear=2026
+- CAD defaults confirmed in XML (LicensePlateTypeCode + LicensePlateYear)
+- RMS elastic co-fires on vehicle tag

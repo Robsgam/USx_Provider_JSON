@@ -1,0 +1,19 @@
+CA_CLETS v2.4 Test Log -- T17
+==============================
+Date: 2026-05-22
+Entity: Vehicle
+Combo: NLTS.RQ.V (OOS VIN)
+Result: PASS
+
+Fields: purposeCode=C, vehicleIdentificationNumber=68096UIY034, registrationState=MT
+Expected: VehicleRegistrationQuery fires with VIN + State (OOS)
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7WEFN8WT1YA9H6CH2Z06HG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KS7WEFN8WT1YA9H6CH2Z06HG</Id><VehicleIdentificationNumber>68096UIY034</VehicleIdentificationNumber><State>MT</State><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+RMS Request:
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69586245307],"vinNumber":"68096uiy034"}},"from":0,"size":50}
+
+Findings:
+- OOS VIN routing confirmed (State=MT)
+- RMS elastic co-fires with VIN + state

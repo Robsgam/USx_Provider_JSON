@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T10
+==============================
+Date: 2026-05-22
+Entity: Person
+Combo: IR.QVC.S (Criminal records by SSN)
+Result: PASS
+
+Fields: purposeCode=C, socialSecurityNumber=123212222
+Expected: DriverLicenseQuery fires (IR.QVC.S)
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7V9RTVVYJH4CJPC7CFTVKH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KS7V9RTVVYJH4CJPC7CFTVKH</Id><SocialSecurityNumber>123212222</SocialSecurityNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- DriverLicenseQuery fires with SocialSecurityNumber only
+- IR.QVC.S criminal records by SSN confirmed working

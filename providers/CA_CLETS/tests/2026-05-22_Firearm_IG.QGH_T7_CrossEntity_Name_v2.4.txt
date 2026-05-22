@@ -1,0 +1,17 @@
+CA_CLETS v2.4 Test Log -- T7
+=============================
+Date: 2026-05-22
+Entity: Firearm
+Combo: IG.QGH (cross-entity Name search)
+Result: PASS
+
+Fields: purposeCode=C, nameLast=DOE, nameFirst=JOHN
+Expected: GunQuery fires (IG.QGH)
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7V4DG7NQERQZ5W2E0HT08X"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KS7V4DG7NQERQZ5W2E0HT08X</Id><CaRequestPurposeCode>C</CaRequestPurposeCode><Name>DOE, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- GunQuery fires correctly from Firearm entity Name fields
+- Cross-entity Name on Firearm card confirmed working
+- FormatStringRuleHandler: DOE, JOHN

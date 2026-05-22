@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T35
+==============================
+Date: 2026-05-22
+Entity: Article
+Combo: IP.QA.S + any[] fields (ArticleTypeCode, ArticleBrand)
+Result: PASS
+
+Fields: purposeCode=C, serialNumber=ART36478, articleTypeCode=CBODY (dropdown), articleBrand=SONY
+Expected: any[] fields present in XML output
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS80Y771GM9HFS8GFZ7F7BGP"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KS80Y771GM9HFS8GFZ7F7BGP</Id><ArticleBrand>SONY</ArticleBrand><ArticleTypeCode>CBODY</ArticleTypeCode><CaRequestPurposeCode>C</CaRequestPurposeCode><ArticleSerialNumber>ART36478</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- Both any[] fields in XML: ArticleTypeCode=CBODY, ArticleBrand=SONY
+- CA_CLETS article type dropdown serializes correctly

@@ -1,0 +1,15 @@
+CA_CLETS v2.4 Test Log -- T37 + T38
+=====================================
+Date: 2026-05-22
+Entity: All (Person, Vehicle, Firearm, Article, Boat)
+Combo: NEGATIVE (empty form)
+Result: PASS
+
+Test: Leave all fields blank on every entity, attempt to submit.
+Expected: No query fires / Send button disabled.
+
+Actual: All entities cannot submit query in default blank state. Confirmed across all 5 entities.
+
+Findings:
+- Empty form negative test confirmed for all entities
+- No false-positive submissions with only defaulted values (PurposeCode=C, PlateType=PC, PlateYear=2026)

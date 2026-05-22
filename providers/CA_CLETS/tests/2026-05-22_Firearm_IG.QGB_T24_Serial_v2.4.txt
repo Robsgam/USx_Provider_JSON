@@ -1,0 +1,16 @@
+CA_CLETS v2.4 Test Log -- T24
+==============================
+Date: 2026-05-22
+Entity: Firearm
+Combo: IG.QGB (Serial Number)
+Result: PASS
+
+Fields: purposeCode=C, serialNumber=ABC12345
+Expected: GunQuery fires with GunSerialNumber
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS7XMHWEDH9WRX747G9E0Y03"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KS7XMHWEDH9WRX747G9E0Y03</Id><GunSerialNumber>ABC12345</GunSerialNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- GunQuery fires with serial number
+- Regression confirmed (layout changed — Name fields added, serial still works)

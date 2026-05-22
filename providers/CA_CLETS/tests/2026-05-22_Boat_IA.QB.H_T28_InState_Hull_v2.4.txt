@@ -1,0 +1,15 @@
+CA_CLETS v2.4 Test Log -- T28
+==============================
+Date: 2026-05-22
+Entity: Boat
+Combo: IA.QB.H (in-state Hull)
+Result: PASS
+
+Fields: purposeCode=C, boatHullIdNumber=FL123654
+Expected: BoatQuery fires with BoatHullIdNumber
+
+XML Request:
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KS8042Z586FQHDPG8SAJQHZS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KS8042Z586FQHDPG8SAJQHZS</Id><BoatHullIdNumber>FL123654</BoatHullIdNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+Findings:
+- BoatQuery fires with Hull ID (no State = in-state)
