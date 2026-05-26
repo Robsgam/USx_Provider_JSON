@@ -15,16 +15,21 @@ Legend:
 SECTION 1 -- QUERY ROUTING AND COMBINATION BEHAVIOR
 ================================================================================
 
-LIMITATION #1: set[] and any[] control combination selection -- not field sending
-  CONFIRMED: NJ v2.1 (2026-04-08), NJ v2.0-mc live test (2026-04-29)
-  Behavior: When a combination fires, ALL populated attributes in the QIDM config
-    are sent to the provider, regardless of whether they appear in set[] or any[].
-    set/any cannot filter or suppress which attributes are serialized.
-  Impact: Split configs are required for true field isolation. Single merged config
-    will send extra fields from the unused path.
-  Workaround: Server is tolerant of extra fields. OLN path sent Name/DOB/Sex as
-    extras in NJ v2.1 and still returned results. Merge is preferred unless server
-    rejects specific unknown fields.
+LIMITATION #1: set[] and any[] control BOTH combination selection AND attribute serialization
+  CORRECTED: TX_TLETS v3.2 T7 (2026-05-26) disproved original claim.
+  ORIGINAL (WRONG): "ALL populated attributes in the QIDM are sent regardless of set[]/any[]."
+    Originally observed NJ v2.1 (2026-04-08) — likely misinterpreted because NJ combos
+    at that time had overlapping any[] arrays that included the "extra" fields.
+  ACTUAL BEHAVIOR: Platform only serializes attributes in the FIRING combo's set[]/any[].
+    Attributes defined on the QIDM but NOT in the firing combo's arrays are OMITTED
+    from the outgoing XML, even if the form field has a non-blank value.
+  PROOF: TX_TLETS v3.2 DQName catchall combo (set=[sexCode,birthDate,nameLast,nameFirst],
+    any=[nameMiddle,nameSuffix,registrationState]). Form had ImageIndicator=N, ReasonCode=C.
+    XML contained ONLY State, SexCode, BirthDate, Name. ImageIndicator, ReasonCode, and
+    EmailAddress were all absent — they are not in the DQName combo's set[]/any[].
+  DESIGN IMPLICATION: A single QIDM can send different XML payloads per combo by varying
+    each combo's set[]/any[] arrays. Combined with conditions routing, this enables
+    attribute-level control without splitting into multiple QIDMs.
 
   CLARIFICATION (confirmed FL_FCIC 2026-05-05, CA_CLETS 2026-05-08):
     any[] is NOT a minimum-one-required gate. A combo fires when all set[] fields

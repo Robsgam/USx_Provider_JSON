@@ -1,0 +1,91 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : DQNameImg (DQ Name image path - conditions ImageIndicator EQUALS Y)
+Test type  : T6 -- DL combo, image-path with conditions
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationState         TX                 default (initialValue)
+  imageIndicator            Y                  default (initialValue)
+  reasonCode                C                  default (initialValue)
+  emailAddress              TEST@TX.GOV        typed
+  birthDate                 01/01/1985         typed
+  sexCode                   M                  selected
+  nameLast                  DOE                typed
+  nameFirst                 JOHN               typed
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSJPWW10KQNZK51V2HTP75C6
+  MessageType : DriverLicenseQuery
+  keyReference: DQNameImg
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       Y
+    State                TX
+    SexCode              M
+    ReasonCode           C
+    EmailAddress         TEST@TX.GOV
+    BirthDate            01011985
+    Name                 DOE,JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQNameImg
+  Reason: set[sexCode, birthDate, nameLast, nameFirst] all populated + conditions ImageIndicator EQUALS Y matched
+
+  QIDM attribute       Sent?  Value           Note
+  -------------------  -----  --------------  --------------------------------
+  BirthDate            YES    01011985        CommsysParseDateRuleHandler (yyyy-MM-dd -> MMddyyyy)
+  EmailAddress         YES    TEST@TX.GOV     any[] (image-path combo)
+  ExpandedBirthDateSC  NO     --              sourceField empty
+  ImageIndicator       YES    Y               any[] + conditions matched
+  Name                 YES    DOE,JOHN        FormatStringRuleHandler
+  OperatorLicenseNum   NO     --              sourceField empty
+  RaceCode             NO     --              sourceField empty
+  ReasonCode           YES    C               any[] (image-path combo)
+  RegionId             NO     --              sourceField empty
+  SexCode              YES    M               set[]
+  State                YES    TX              any[] + default
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Person Search
+  RMS request: lastName=doe, firstName=john, sexAttrId=69509553096, dateOfBirth=1985-01-01, registrationStateAttrId=69509558547
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: DQNameImg fired with all image-path fields (Image=Y, Reason=C, Email) present in XML.
+  Detail: MessageType=DriverLicenseQuery (not keyRef) -- confirms keyRef is platform-internal.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSJPWW10KQNZK51V2HTP75C6"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KSJPWW10KQNZK51V2HTP75C6</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><SexCode>M</SexCode><ReasonCode>C</ReasonCode><EmailAddress>TEST@TX.GOV</EmailAddress><BirthDate>01011985</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"lastName":"doe","firstName":"john","sexAttrId":"69509553096","dateOfBirth":"1985-01-01","registrationStateAttrId":"69509558547"},"from":0,"size":50}
