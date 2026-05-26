@@ -1,0 +1,105 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : DQOLNImg (DQ OLN image path - 3-field conditions (Image=Y + Reason=C + Email REGEX) - REGEX validated)
+Test type  : T9 -- DQ OLN image-path, 3-field conditions validation, REGEX operator test
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationState         TX                 default
+  imageIndicator            Y                  default
+  reasonCode                C                  default
+  emailAddress              TEST@GOV.TX        typed
+  operatorLicenseNumber     D78896654          typed
+  NameFirst                 (blank)            --
+  NameLast                  (blank)            --
+  BirthDate                 (blank)            --
+  SexCode                   (blank)            --
+  RaceCode                  (blank)            --
+  DH card                   (all blank)        --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSJRBRSN6JVQRAX6ZPWEXS94
+  MessageType : DriverLicenseQuery
+  keyReference: DQOLNImg
+
+  Fields sent in XML request:
+    Element                Value
+    -------------------    -------------------
+    ImageIndicator         Y
+    State                  TX
+    OperatorLicenseNumber  D78896654
+    ReasonCode             C
+    EmailAddress           TEST@GOV.TX
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQOLNImg
+  Reason: set[operatorLicenseNumber] populated
+
+  3-field conditions evaluation:
+    Condition 1: ImageIndicator EQUALS Y     -- Y = Y         PASS
+    Condition 2: ReasonCode EQUALS C         -- C = C         PASS
+    Condition 3: EmailAddress REGEX .+       -- TEST@GOV.TX   PASS
+
+  QIDM attribute              Sent?  Value           Note
+  --------------------------  -----  --------------  --------------------------------
+  BirthDate                   NO     --              sourceField empty
+  EmailAddress                YES    TEST@GOV.TX     any[] + conditions (REGEX .+) passed
+  ExpandedBirthDateSearchCode NO     --              sourceField empty
+  ImageIndicator              YES    Y               any[] + conditions (EQUALS Y) passed
+  Name                        NO     --              sourceFields empty
+  OperatorLicenseNumber       YES    D78896654       set[]
+  RaceCode                    NO     --              sourceField empty
+  ReasonCode                  YES    C               any[] + conditions (EQUALS C) passed
+  RegionId                    NO     --              sourceField empty
+  SexCode                     NO     --              sourceField empty
+  State                       YES    TX              any[] + default (initialValue TX)
+
+  KEY FINDING: REGEX operator confirmed working as a conditions operator on the live platform.
+  First test of 3-field conditions combo. All 3 conditions evaluated and passed simultaneously.
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: RMS Person Search
+  RMS request fields:
+    dlNumber                  d78896654
+    registrationStateAttrId   69509558547
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: DQOLNImg fires with all 3 conditions passing. REGEX .+ works as conditions operator.
+  Detail: First test of 3-field conditions. All image fields (ImageIndicator=Y, ReasonCode=C,
+          EmailAddress=TEST@GOV.TX) present in XML alongside OperatorLicenseNumber and State.
+          REGEX operator confirmed functional on live platform -- platform correctly evaluates
+          EmailAddress REGEX .+ and passes when a non-empty value is present.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSJRBRSN6JVQRAX6ZPWEXS94"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KSJRBRSN6JVQRAX6ZPWEXS94</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><OperatorLicenseNumber>D78896654</OperatorLicenseNumber><ReasonCode>C</ReasonCode><EmailAddress>TEST@GOV.TX</EmailAddress></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"d78896654","registrationStateAttrId":"69509558547"},"from":0,"size":50}
