@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-05-26 12:10
+  Generated: 2026-05-26 13:34
 ================================================================
 CAD AUDIT
 =========
@@ -73,7 +73,6 @@ CAD AUDIT
     [INFO] nameSuffixDH: in QIF, not in CAD list (provider-specific)
     [INFO] birthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] sexCodeDH: in QIF, not in CAD list (provider-specific)
-    [INFO] emailAddressDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -166,12 +165,17 @@ CAD AUDIT
     [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo QVVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo QV.P -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_VehicleStolenQuery' combo QV.V -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQNameImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo QWName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo CPLNameImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo CPLName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQOLNImg -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo DQOLN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQNameImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQOLNImg -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo KQOLN -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_GunQuery' combo QGGunSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_GunQuery' combo QGNCICNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_ArticleSingleQuery' combo QAArticleSerialNumber -- defaults cover all initialValue any[] fields
@@ -188,6 +192,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 76 PASS / 0 FAIL / 0 WARN / 80 INFO
+Total: 81 PASS / 0 FAIL / 0 WARN / 79 INFO
 
 

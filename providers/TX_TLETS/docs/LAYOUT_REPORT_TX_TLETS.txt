@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-05-26 12:10
+  Generated: 2026-05-26 13:34
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,15 +9,15 @@ LAYOUT SUMMARY
 === TX_TLETS.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
-  Person | entity=Person | qidm= | cards=3 fields=17
+  Person | entity=Person | qidm= | cards=3 fields=16
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=3
 QIDMs: 7
   TX_TLETS_VehicleInsuranceRegistrationQuery | attrs=10 combos=7 autoSelect=True
   TX_TLETS_VehicleStolenQuery | attrs=4 combos=2 autoSelect=False
-  TX_TLETS_DriverLicenseQuery | attrs=11 combos=4 autoSelect=True
-  TX_TLETS_DriverHistoryQuery | attrs=10 combos=2 autoSelect=True
+  TX_TLETS_DriverLicenseQuery | attrs=11 combos=7 autoSelect=True
+  TX_TLETS_DriverHistoryQuery | attrs=10 combos=4 autoSelect=True
   TX_TLETS_GunQuery | attrs=6 combos=2 autoSelect=
   TX_TLETS_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
   TX_TLETS_BoatQuery | attrs=6 combos=5 autoSelect=
@@ -49,14 +49,14 @@ LAYOUT DETAIL
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_OPT"
-      ROW ROW_PER_O1 [4 4 4]
+      ROW ROW_PER_O1 [3 3 3 3]
         registrationState (Dropdown | attributeTypeId=STATE | default=TX)
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         reasonCode (Text | maxLen=1 | default=C)
-    CARD "CARD_PER_DL"
-      ROW ROW_PER_L1 [6 6]
-        operatorLicenseNumber (Text | maxLen=20)
         emailAddress (Text | maxLen=80)
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_L1 [6]
+        operatorLicenseNumber (Text | maxLen=20)
       ROW ROW_PER_N1 [3 3 3 3]
         nameLast (Text | maxLen=30)
         nameFirst (Text | maxLen=30)
@@ -78,10 +78,9 @@ LAYOUT DETAIL
         nameFirstDH (Text | maxLen=30)
         nameMiddleDH (Text | maxLen=30)
         nameSuffixDH (Text | maxLen=30)
-      ROW ROW_PER_DHN2 [3 2 7]
+      ROW ROW_PER_DHN2 [3 3]
         birthDateDH (FormDate)
         sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        emailAddressDH (Text | maxLen=80)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

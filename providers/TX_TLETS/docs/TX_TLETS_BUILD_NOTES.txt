@@ -5,6 +5,30 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v3.2  2026-05-26  Conditional image/email routing (ImageIndicator conditions)
+--------------------------------------------------------------------------------
+CHANGED : Conditions routing on DL + DH QIDMs: ImageIndicator EQUALS Y selects
+          image-path combos (with email+image+reason in any[]); catchall combos
+          (no conditions) omit those fields entirely.
+          Email moved from DL card + DH card to shared OPTIONS card (single field).
+          DH EmailAddress sourceField changed from emailAddressDH to emailAddress (shared).
+          DL combos: 4 -> 7 (3 image-path + 3 catchall + QW unchanged).
+          DH combos: 2 -> 4 (2 image-path + 2 catchall).
+          Image-path keyRefs: DQNameImg, CPLNameImg, DQOLNImg, KQNameImg, KQOLNImg.
+          Catchall keyRefs: DQName, CPLName, DQOLN, KQName, KQOLN.
+          OPTIONS card: 4 fields (State, Image, Reason, Email) in @('3','3','3','3').
+REASON  : Officers typed email twice (DL + DH cards). CAD dispatch couldn't fire
+          DL/DH because CAD doesn't send email and email was in set[].
+          Blank image/reason/email values may cause TX provider failure.
+          Conditions routing omits those QIDM attributes when Image != Y.
+PENDING : Live platform test needed — verify QW Name combo (no image/email in
+          set[]/any[]) confirms platform omits those attributes from XML.
+          If platform sends them anyway, pivot to Path B (two QIDMs per query).
+SCRIPT  : scripts/build_tx_tlets.ps1
+OUTPUT  : TX_TLETS.json (6 cards, 29 combos, 7 QIDMs)
+SCORE   : 90P/0F/0W/0LIM
+
+--------------------------------------------------------------------------------
 v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge, 0 LIM)
 --------------------------------------------------------------------------------
 CHANGED : Merged BASE+MC into single build script + single JSON output.

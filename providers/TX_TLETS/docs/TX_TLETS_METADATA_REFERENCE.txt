@@ -80,9 +80,11 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber + Choice[ImageIndicator + Re...  Attention, PurposeCode, State
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
-BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH, emailAddressDH]
-  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, emailAddressDH]
+BUILD COVERAGE (4 of 2 built):
+  BUILT   KQNameImg      set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   KQOLNImg       set[operatorLicenseNumberDH]
+  BUILT   KQOLN          set[operatorLicenseNumberDH]
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
   SKIP    KQ             Name -- MC expansion candidate
 
@@ -113,11 +115,14 @@ METADATA COMBINATIONS (5 total):
   RSDWW         OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
 
-BUILD COVERAGE (4 of 5 built):
-  BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst, emailAddress]
+BUILD COVERAGE (7 of 5 built):
+  BUILT   DQNameImg      set[sexCode, birthDate, nameLast, nameFirst]
+  BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst]
   BUILT   QWName         set[birthDate, nameLast, nameFirst]
-  BUILT   CPLName        set[nameLast, nameFirst, emailAddress]
-  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, emailAddress]
+  BUILT   CPLNameImg     set[nameLast, nameFirst]
+  BUILT   CPLName        set[nameLast, nameFirst]
+  BUILT   DQOLNImg       set[operatorLicenseNumber]
+  BUILT   DQOLN          set[operatorLicenseNumber]
   SKIP    DQ             Name -- MC expansion candidate
   SKIP    QW             Name -- MC expansion candidate
   SKIP    CPL            Name -- MC expansion candidate
@@ -201,13 +206,13 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         1      2     0  200%
   BoatQuery                                  5      5     0  100% (COMPLETE)
-  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
-  DriverLicenseQuery                         5      4     1  80%
+  DriverHistoryQuery                         2      4     0  200%
+  DriverLicenseQuery                         5      7     0  140%
   GunQuery                                   1      2     0  200%
   VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
   VehicleStolenQuery                         0      2     0  N/A
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   21     24     1  114%
+  TOTAL                                   21     29     0  138%
 
 ================================================================================
 MC EXPANSION CANDIDATES (21 combos not in BASE)
