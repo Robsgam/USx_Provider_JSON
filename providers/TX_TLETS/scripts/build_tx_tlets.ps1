@@ -265,18 +265,18 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE'
         rows  = @(
-            @{ id = 'ROW_PER_L1'; cols = @('6'); fields = @(
+            @{ id = 'ROW_PER_L1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_L1' }
+                @{ id = 'birthDate_Input';             node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_L1' }
+                @{ id = 'sexCode_Input';               node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
             )}
-            @{ id = 'ROW_PER_N1'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'nameLast_Input';   node = Inp 'nameLast'   'Last Name'   '30' 'ROW_PER_N1' }
                 @{ id = 'nameFirst_Input';  node = Inp 'nameFirst'  'First Name'  '30' 'ROW_PER_N1' }
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_N1' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '30' 'ROW_PER_N1' }
             )}
-            @{ id = 'ROW_PER_N2'; cols = @('3','2','3','2','2'); fields = @(
-                @{ id = 'birthDate_Input';                  node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_N2' }
-                @{ id = 'sexCode_Input';                    node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+            @{ id = 'ROW_PER_N2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'raceCode_Input';                   node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_N2' }
                 @{ id = 'expandedBirthDateSearchCode_Input'; node = Inp 'expandedBirthDateSearchCode' 'Expanded DOB' '1' 'ROW_PER_N2' }
                 @{ id = 'regionId_Input';                   node = Inp 'regionId' 'Region ID' '4' 'ROW_PER_N2' }

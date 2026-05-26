@@ -1413,13 +1413,17 @@
                                                                                                      "displayName":  "Row",
                                                                                                      "props":  {
                                                                                                                    "templateColumns":  [
-                                                                                                                                           "6"
+                                                                                                                                           "6",
+                                                                                                                                           "3",
+                                                                                                                                           "3"
                                                                                                                                        ]
                                                                                                                },
                                                                                                      "isCanvas":  true,
                                                                                                      "hidden":  false,
                                                                                                      "nodes":  [
-                                                                                                                   "operatorLicenseNumber_Input"
+                                                                                                                   "operatorLicenseNumber_Input",
+                                                                                                                   "birthDate_Input",
+                                                                                                                   "sexCode_Input"
                                                                                                                ],
                                                                                                      "linkedNodes":  {
 
@@ -1446,6 +1450,46 @@
                                                                                                                                       },
                                                                                                                       "parent":  "ROW_PER_L1"
                                                                                                                   },
+                                                                                  "birthDate_Input":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "FormDate"
+                                                                                                                   },
+                                                                                                          "displayName":  "Date",
+                                                                                                          "props":  {
+                                                                                                                        "fieldId":  "birthDate",
+                                                                                                                        "label":  "Date of Birth"
+                                                                                                                    },
+                                                                                                          "isCanvas":  false,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROW_PER_L1"
+                                                                                                      },
+                                                                                  "sexCode_Input":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "FormSelect"
+                                                                                                                 },
+                                                                                                        "displayName":  "Select",
+                                                                                                        "props":  {
+                                                                                                                      "fieldId":  "sexCode",
+                                                                                                                      "label":  "Sex",
+                                                                                                                      "attributeTypeId":  "SEX",
+                                                                                                                      "codeTypeProvider":  "NIBRS"
+                                                                                                                  },
+                                                                                                        "isCanvas":  false,
+                                                                                                        "hidden":  false,
+                                                                                                        "nodes":  [
+
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "ROW_PER_L1"
+                                                                                                    },
                                                                                   "ROW_PER_N1":  {
                                                                                                      "type":  {
                                                                                                                   "resolvedName":  "Row"
@@ -1453,10 +1497,10 @@
                                                                                                      "displayName":  "Row",
                                                                                                      "props":  {
                                                                                                                    "templateColumns":  [
-                                                                                                                                           "3",
-                                                                                                                                           "3",
-                                                                                                                                           "3",
-                                                                                                                                           "3"
+                                                                                                                                           "4",
+                                                                                                                                           "4",
+                                                                                                                                           "2",
+                                                                                                                                           "2"
                                                                                                                                        ]
                                                                                                                },
                                                                                                      "isCanvas":  true,
@@ -1559,18 +1603,14 @@
                                                                                                      "displayName":  "Row",
                                                                                                      "props":  {
                                                                                                                    "templateColumns":  [
-                                                                                                                                           "3",
-                                                                                                                                           "2",
-                                                                                                                                           "3",
-                                                                                                                                           "2",
-                                                                                                                                           "2"
+                                                                                                                                           "4",
+                                                                                                                                           "4",
+                                                                                                                                           "4"
                                                                                                                                        ]
                                                                                                                },
                                                                                                      "isCanvas":  true,
                                                                                                      "hidden":  false,
                                                                                                      "nodes":  [
-                                                                                                                   "birthDate_Input",
-                                                                                                                   "sexCode_Input",
                                                                                                                    "raceCode_Input",
                                                                                                                    "expandedBirthDateSearchCode_Input",
                                                                                                                    "regionId_Input"
@@ -1580,46 +1620,6 @@
                                                                                                                      },
                                                                                                      "parent":  "CARD_PER_DL"
                                                                                                  },
-                                                                                  "birthDate_Input":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "FormDate"
-                                                                                                                   },
-                                                                                                          "displayName":  "Date",
-                                                                                                          "props":  {
-                                                                                                                        "fieldId":  "birthDate",
-                                                                                                                        "label":  "Date of Birth"
-                                                                                                                    },
-                                                                                                          "isCanvas":  false,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
-
-                                                                                                                          },
-                                                                                                          "parent":  "ROW_PER_N2"
-                                                                                                      },
-                                                                                  "sexCode_Input":  {
-                                                                                                        "type":  {
-                                                                                                                     "resolvedName":  "FormSelect"
-                                                                                                                 },
-                                                                                                        "displayName":  "Select",
-                                                                                                        "props":  {
-                                                                                                                      "fieldId":  "sexCode",
-                                                                                                                      "label":  "Sex",
-                                                                                                                      "attributeTypeId":  "SEX",
-                                                                                                                      "codeTypeProvider":  "NIBRS"
-                                                                                                                  },
-                                                                                                        "isCanvas":  false,
-                                                                                                        "hidden":  false,
-                                                                                                        "nodes":  [
-
-                                                                                                                  ],
-                                                                                                        "linkedNodes":  {
-
-                                                                                                                        },
-                                                                                                        "parent":  "ROW_PER_N2"
-                                                                                                    },
                                                                                   "raceCode_Input":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "FormSelect"
@@ -2168,13 +2168,17 @@
                                                                                                           "displayName":  "Row",
                                                                                                           "props":  {
                                                                                                                         "templateColumns":  [
-                                                                                                                                                "6"
+                                                                                                                                                "6",
+                                                                                                                                                "3",
+                                                                                                                                                "3"
                                                                                                                                             ]
                                                                                                                     },
                                                                                                           "isCanvas":  true,
                                                                                                           "hidden":  false,
                                                                                                           "nodes":  [
-                                                                                                                        "operatorLicenseNumber_Input"
+                                                                                                                        "operatorLicenseNumber_Input",
+                                                                                                                        "birthDate_Input",
+                                                                                                                        "sexCode_Input"
                                                                                                                     ],
                                                                                                           "linkedNodes":  {
 
@@ -2201,6 +2205,46 @@
                                                                                                                                            },
                                                                                                                            "parent":  "ROW_PER_L1"
                                                                                                                        },
+                                                                                       "birthDate_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormDate"
+                                                                                                                        },
+                                                                                                               "displayName":  "Date",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "birthDate",
+                                                                                                                             "label":  "Date of Birth"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_PER_L1"
+                                                                                                           },
+                                                                                       "sexCode_Input":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "FormSelect"
+                                                                                                                      },
+                                                                                                             "displayName":  "Select",
+                                                                                                             "props":  {
+                                                                                                                           "fieldId":  "sexCode",
+                                                                                                                           "label":  "Sex",
+                                                                                                                           "attributeTypeId":  "SEX",
+                                                                                                                           "codeTypeProvider":  "NIBRS"
+                                                                                                                       },
+                                                                                                             "isCanvas":  false,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "ROW_PER_L1"
+                                                                                                         },
                                                                                        "ROW_PER_N1":  {
                                                                                                           "type":  {
                                                                                                                        "resolvedName":  "Row"
@@ -2208,10 +2252,10 @@
                                                                                                           "displayName":  "Row",
                                                                                                           "props":  {
                                                                                                                         "templateColumns":  [
-                                                                                                                                                "3",
-                                                                                                                                                "3",
-                                                                                                                                                "3",
-                                                                                                                                                "3"
+                                                                                                                                                "4",
+                                                                                                                                                "4",
+                                                                                                                                                "2",
+                                                                                                                                                "2"
                                                                                                                                             ]
                                                                                                                     },
                                                                                                           "isCanvas":  true,
@@ -2314,18 +2358,14 @@
                                                                                                           "displayName":  "Row",
                                                                                                           "props":  {
                                                                                                                         "templateColumns":  [
-                                                                                                                                                "3",
-                                                                                                                                                "2",
-                                                                                                                                                "3",
-                                                                                                                                                "2",
-                                                                                                                                                "2"
+                                                                                                                                                "4",
+                                                                                                                                                "4",
+                                                                                                                                                "4"
                                                                                                                                             ]
                                                                                                                     },
                                                                                                           "isCanvas":  true,
                                                                                                           "hidden":  false,
                                                                                                           "nodes":  [
-                                                                                                                        "birthDate_Input",
-                                                                                                                        "sexCode_Input",
                                                                                                                         "raceCode_Input",
                                                                                                                         "expandedBirthDateSearchCode_Input",
                                                                                                                         "regionId_Input"
@@ -2335,46 +2375,6 @@
                                                                                                                           },
                                                                                                           "parent":  "CARD_PER_DL"
                                                                                                       },
-                                                                                       "birthDate_Input":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "FormDate"
-                                                                                                                        },
-                                                                                                               "displayName":  "Date",
-                                                                                                               "props":  {
-                                                                                                                             "fieldId":  "birthDate",
-                                                                                                                             "label":  "Date of Birth"
-                                                                                                                         },
-                                                                                                               "isCanvas":  false,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROW_PER_N2"
-                                                                                                           },
-                                                                                       "sexCode_Input":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "FormSelect"
-                                                                                                                      },
-                                                                                                             "displayName":  "Select",
-                                                                                                             "props":  {
-                                                                                                                           "fieldId":  "sexCode",
-                                                                                                                           "label":  "Sex",
-                                                                                                                           "attributeTypeId":  "SEX",
-                                                                                                                           "codeTypeProvider":  "NIBRS"
-                                                                                                                       },
-                                                                                                             "isCanvas":  false,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
-
-                                                                                                                             },
-                                                                                                             "parent":  "ROW_PER_N2"
-                                                                                                         },
                                                                                        "raceCode_Input":  {
                                                                                                               "type":  {
                                                                                                                            "resolvedName":  "FormSelect"
@@ -3004,13 +3004,17 @@
                                                                                                              "displayName":  "Row",
                                                                                                              "props":  {
                                                                                                                            "templateColumns":  [
-                                                                                                                                                   "6"
+                                                                                                                                                   "6",
+                                                                                                                                                   "3",
+                                                                                                                                                   "3"
                                                                                                                                                ]
                                                                                                                        },
                                                                                                              "isCanvas":  true,
                                                                                                              "hidden":  false,
                                                                                                              "nodes":  [
-                                                                                                                           "operatorLicenseNumber_Input"
+                                                                                                                           "operatorLicenseNumber_Input",
+                                                                                                                           "birthDate_Input",
+                                                                                                                           "sexCode_Input"
                                                                                                                        ],
                                                                                                              "linkedNodes":  {
 
@@ -3037,6 +3041,46 @@
                                                                                                                                               },
                                                                                                                               "parent":  "ROW_PER_L1"
                                                                                                                           },
+                                                                                          "birthDate_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormDate"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Date",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "birthDate",
+                                                                                                                                "label":  "Date of Birth"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_PER_L1"
+                                                                                                              },
+                                                                                          "sexCode_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormSelect"
+                                                                                                                         },
+                                                                                                                "displayName":  "Select",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "sexCode",
+                                                                                                                              "label":  "Sex",
+                                                                                                                              "attributeTypeId":  "SEX",
+                                                                                                                              "codeTypeProvider":  "NIBRS"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_L1"
+                                                                                                            },
                                                                                           "ROW_PER_N1":  {
                                                                                                              "type":  {
                                                                                                                           "resolvedName":  "Row"
@@ -3044,10 +3088,10 @@
                                                                                                              "displayName":  "Row",
                                                                                                              "props":  {
                                                                                                                            "templateColumns":  [
-                                                                                                                                                   "3",
-                                                                                                                                                   "3",
-                                                                                                                                                   "3",
-                                                                                                                                                   "3"
+                                                                                                                                                   "4",
+                                                                                                                                                   "4",
+                                                                                                                                                   "2",
+                                                                                                                                                   "2"
                                                                                                                                                ]
                                                                                                                        },
                                                                                                              "isCanvas":  true,
@@ -3150,18 +3194,14 @@
                                                                                                              "displayName":  "Row",
                                                                                                              "props":  {
                                                                                                                            "templateColumns":  [
-                                                                                                                                                   "3",
-                                                                                                                                                   "2",
-                                                                                                                                                   "3",
-                                                                                                                                                   "2",
-                                                                                                                                                   "2"
+                                                                                                                                                   "4",
+                                                                                                                                                   "4",
+                                                                                                                                                   "4"
                                                                                                                                                ]
                                                                                                                        },
                                                                                                              "isCanvas":  true,
                                                                                                              "hidden":  false,
                                                                                                              "nodes":  [
-                                                                                                                           "birthDate_Input",
-                                                                                                                           "sexCode_Input",
                                                                                                                            "raceCode_Input",
                                                                                                                            "expandedBirthDateSearchCode_Input",
                                                                                                                            "regionId_Input"
@@ -3171,46 +3211,6 @@
                                                                                                                              },
                                                                                                              "parent":  "CARD_PER_DL"
                                                                                                          },
-                                                                                          "birthDate_Input":  {
-                                                                                                                  "type":  {
-                                                                                                                               "resolvedName":  "FormDate"
-                                                                                                                           },
-                                                                                                                  "displayName":  "Date",
-                                                                                                                  "props":  {
-                                                                                                                                "fieldId":  "birthDate",
-                                                                                                                                "label":  "Date of Birth"
-                                                                                                                            },
-                                                                                                                  "isCanvas":  false,
-                                                                                                                  "hidden":  false,
-                                                                                                                  "nodes":  [
-
-                                                                                                                            ],
-                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                  },
-                                                                                                                  "parent":  "ROW_PER_N2"
-                                                                                                              },
-                                                                                          "sexCode_Input":  {
-                                                                                                                "type":  {
-                                                                                                                             "resolvedName":  "FormSelect"
-                                                                                                                         },
-                                                                                                                "displayName":  "Select",
-                                                                                                                "props":  {
-                                                                                                                              "fieldId":  "sexCode",
-                                                                                                                              "label":  "Sex",
-                                                                                                                              "attributeTypeId":  "SEX",
-                                                                                                                              "codeTypeProvider":  "NIBRS"
-                                                                                                                          },
-                                                                                                                "isCanvas":  false,
-                                                                                                                "hidden":  false,
-                                                                                                                "nodes":  [
-
-                                                                                                                          ],
-                                                                                                                "linkedNodes":  {
-
-                                                                                                                                },
-                                                                                                                "parent":  "ROW_PER_N2"
-                                                                                                            },
                                                                                           "raceCode_Input":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "FormSelect"

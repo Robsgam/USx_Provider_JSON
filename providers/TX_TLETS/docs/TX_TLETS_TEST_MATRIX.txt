@@ -18,9 +18,9 @@ Person (3 cards, 23 fields):
     ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
   CARD_PER_DL (DRIVER LICENSE):
-    ROW 1: operatorLicenseNumber [Inp 20]
+    ROW 1: operatorLicenseNumber [Inp 20], birthDate [FormDate], sexCode [Sel SEX]
     ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
-    ROW 3: birthDate [FormDate], sexCode [Sel SEX], raceCode [Sel NIBRS_RACE/NIBRS], expandedBirthDateSearchCode [Inp 1], regionId [Inp 4]
+    ROW 3: raceCode [Sel NIBRS_RACE/NIBRS], expandedBirthDateSearchCode [Inp 1], regionId [Inp 4]
   CARD_PER_OPT (SEARCH OPTIONS):
     registrationState [Sel STATE, TX], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1], emailAddress [Inp 80]
 
@@ -63,9 +63,9 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Last Name (DH), First Name (DH), Middle Name (DH), Suffix (DH).
               DOB (DH), Sex (DH) dropdown (no default).
               CARD_PER_DL: titled "DRIVER LICENSE".
-              License Number.
+              License Number, Date of Birth, Sex dropdown (no default).
               Last Name, First Name, Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default), Race dropdown (no default), Expanded DOB, Region ID.
+              Race dropdown (no default), Expanded DOB, Region ID.
               CARD_PER_OPT: titled "SEARCH OPTIONS".
               State dropdown=TX, Image dropdown=Y, Reason Code=C, Email Address.
  2  Vehicle     Render form. Verify 1 card:                        [    ]
