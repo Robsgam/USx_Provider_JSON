@@ -13,16 +13,16 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-05-21)
+## Provider Status (updated 2026-05-26)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
 | NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.4 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.4 imported USx Provider Tenant + Newark Foundation Tenant 2026-05-21 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos incl State, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, RMS Vehicle stripped to 3 attrs |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
-| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v1.6 | 74P/0F/0W (BASE) 74P/0F/0W (MC) | DL+DH DH-suffix+queriesToDeselect, WINQ/MINQ, State no-default (LIMIT #30) |
+| NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v2.1 | 78P/0F/0W/0LIM | 7 cards (Veh 1, Per 3, Gun 1, Art 1, Boat 1), 14 combos, 7 QIDMs, DGRP (DL Name Search), DH-suffix+one-directional queriesToDeselect, CAD defaults all 14 combos, RelatedHitSearchIndicator on Gun/Art/Boat, VehicleMakeCode FormSelect, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v4.3 | 97P/0F/0W/0LIM -- 33/33 combos, QW removed (CommSys auto-sends) | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible, RMS Vehicle stripped to 3 attrs |
-| TX_TLETS | providers/TX_TLETS/ | v3.0 | 85P/0F/0W/2LIM (BASE) 85P/0F/0W/2LIM (MC) | MC 6 cards (Veh 1, Per 2 DL+DH, Gun 1, Art 1, Boat 1), 24 combos, 7 QIDMs, CPL Name combo, DH-suffix+one-directional queriesToDeselect, TX-specific (DPSI/REG/VIN+FRT), VehicleStolenQuery, CAD defaults, -SkipRace on RMS |
+| TX_TLETS | providers/TX_TLETS/ | v3.1 | 85P/0F/0W/0LIM | 6 cards (Veh 1, Per 3 DH+DL+Options, Gun 1, Art 1, Boat 1), 24 combos, 7 QIDMs, CPL Name combo, DH-suffix+one-directional queriesToDeselect, TX-specific (DPSI/REG/VIN+FRT), VehicleStolenQuery, CAD defaults, -SkipRace on RMS |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS/ | v2.4 | 91P/0F/0W -- 40/40 combos (100%), MC active, 6 QIDMs, live-tested all 5 entities | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV, IV.4* plate-type conditions routing, IR.QVC criminal records (CII/SSN promoted from any[] to set[]), -SkipRace on RMS, RMS Vehicle stripped to 3 attrs (VIN/plate/state) |
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v1.4 | 68P/0F/0W (BASE) 72P/0F/0W (MC) | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, MC cross-entity (IN.VP/IG.QGH/NLTS.BQ.N) |
@@ -103,6 +103,8 @@ Full reference: `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIO
 | NIBRS_RACE | NIBRS | DO NOT use attributeTypeId=RACE. NCIC = empty dropdown |
 | NJ_NIBRS_STATE | NJ_NIBRS | For OOS state dropdowns |
 | VEHICLE_BODY_STYLE | Provider-specific | NJ=NJ_NIBRS, CA=VEHICLE. NCIC = empty |
+| -- | **attributeTypeId** | -- |
+| VEHICLE_MAKE | NCIC (via attributeTypeId) | **MUST be FormSelect (Sel) on ALL providers.** Dropdown works. NEVER use FormInput. Confirmed: NJ, FL, CA_CLETS, TX live-tested. |
 
 ### State Field — NCIC Pattern (preferred)
 
@@ -157,6 +159,7 @@ Every QIDM must have a `queryLabel` property. Use these standard values:
 | VehicleRegistrationQuery | Vehicle Registration |
 | VehicleStolenQuery | Vehicle Stolen |
 | DriverLicenseQuery | Driver License |
+| NyNyspinDriverLicenseNameQuery | DL Name Search |
 | DriverHistoryQuery | Driver History |
 | GunQuery | Firearm |
 | ArticleSingleQuery | Article |

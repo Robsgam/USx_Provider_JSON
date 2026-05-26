@@ -1,7 +1,7 @@
 ﻿TX_TLETS METADATA REFERENCE
 ============================
-Generated: 2026-05-21
-Source: TX_TLETS.xml (metadata) + TX_TLETS_MC.json
+Generated: 2026-05-26
+Source: TX_TLETS.xml (metadata) + TX_TLETS.json
 Metadata: 113 total transactions, 7 queries built in JSON
 
 ================================================================================
@@ -81,8 +81,8 @@ METADATA COMBINATIONS (2 total):
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, emailAddressDH]
   BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH, emailAddressDH]
+  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, emailAddressDH]
   SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
   SKIP    KQ             Name -- MC expansion candidate
 
@@ -114,10 +114,10 @@ METADATA COMBINATIONS (5 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
 
 BUILD COVERAGE (4 of 5 built):
-  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, emailAddress]
   BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst, emailAddress]
   BUILT   QWName         set[birthDate, nameLast, nameFirst]
   BUILT   CPLName        set[nameLast, nameFirst, emailAddress]
+  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, emailAddress]
   SKIP    DQ             Name -- MC expansion candidate
   SKIP    QW             Name -- MC expansion candidate
   SKIP    CPL            Name -- MC expansion candidate

@@ -616,7 +616,7 @@ See also:
     LicensePlateTypeCode    FormSelect
     LicensePlateYear        FormInput (4 chars)
     VehicleIdentificationNumber  FormInput, maxLength=20
-    VehicleMakeCode         FormInput (no confirmed code list)
+    VehicleMakeCode         FormSelect (attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC). NEVER FormInput. Dropdown confirmed working on all tenants (NJ, FL, CA_CLETS, TX live-tested 2026-05-22).
     VehicleYear             FormInput, initialValue=current year
     ImageIndicator          FormSelect, initialValue='N' (vehicle default)
 

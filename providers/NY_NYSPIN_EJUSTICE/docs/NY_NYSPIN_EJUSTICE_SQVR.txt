@@ -1,239 +1,223 @@
 NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
-Last updated: 2026-05-21
-JSON version: v1.6 BASE + v1.6 MC
-Validator: 74 PASS / 0 FAIL / 0 WARN (both variants)
-Simulation: 13/13 combos FIRE (both variants, 2026-04-30)
-Prior live test: BASE 15/15 PASS (2026-04-24), MC 19/19 PASS (2026-04-24)
-BASE retested 2026-04-28 with PlateType=PC / PlateYear=2026 defaults: PASS
-v1.1 changes: ImageIndicator on all entities, AUTH keyRef, RMS autoSelect, NJ cross-ref
+Last updated: 2026-05-22
+JSON version: v2.1 (single JSON, multi-card)
+Validator: 78 PASS / 0 FAIL / 0 WARN / 0 LIM
+Simulation: 14/14 combos FIRE, 27/27 test conductor PASS
+Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP combo new, untested
 
 NOTE: Live tests were performed without per-test XML log captures.
 All [CONFIRMED] markers below are based on test summary results, not
 individual XML logs. Retroactive XML capture is not possible.
 Future tests must follow GATE 2/3 (per-test log with XML capture).
 
+v2.1 changes from v2.0:
+  - Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, DL Name Search, 1 combo)
+  - Layout tightened: Vehicle 3→1, Person 5→3, Boat 3→1 (13→7 cards)
+  - VehicleMakeCode corrected to FormSelect (VEHICLE_MAKE/NCIC dropdown)
+  - 7 QIDMs, 14 combos, 7 cards
+
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================
 
   QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery
-  QIF:  Vehicle
-  Combos: RVEH (plate), RVIN (VIN+State), RCAR (VIN only)
-  Optional fields: State, PlateType, Year, ImageIndicator
+  QIF:  Vehicle (1 card: VEHICLE QUERY)
+  Combos: RVIN (VIN+State), RVEH (plate), RCAR (VIN only)
   Defaults: PlateType=PC, PlateYear=2026, ImageIndicator=N
-  ImageIndicator: FormSelect (NIBRS/YES_NO_UNKNOWN) on OPTIONS card (MC) / main row (BASE)
-
-  RVEH -- Plate (NY in-state or OOS) [CONFIRMED]
-    set: LicensePlateNumber
-    any: State, PlateType, Year, Image
-    keyReference: RVEH
-    Fires when: Plate filled, State blank (NY DMV) or State filled (OOS/Nlets)
-    Tests: T2 (plate only), T13 (plate+State+PlateType+PlateYear)
+  CAD defaults: ImageIndicator=N on RVIN/RCAR, ImageIndicator=N+PlateType+PlateYear on RVEH
+  VehicleMakeCode: FormSelect (VEHICLE_MAKE/NCIC dropdown)
 
   RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
-    set: VehicleIdentificationNumber, State
-    any: (none documented)
+    set: vehicleIdentificationNumber, registrationState
+    any: imageIndicator, vehicleMakeCode, vehicleYear
+    defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
-    Tests: T3 (VIN+State NV)
+
+  RVEH -- Plate (NY in-state or OOS) [CONFIRMED]
+    set: licensePlateNumber
+    any: imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState
+    defaults: ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026
+    keyReference: RVEH
+    Fires when: Plate filled
 
   RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
-    set: VehicleIdentificationNumber
-    any: (none documented)
+    set: vehicleIdentificationNumber
+    any: imageIndicator
+    defaults: ImageIndicator=N
     keyReference: RCAR
     Fires when: VIN filled, State blank
-    Tests: T4 (VIN only)
 
-  NCIC state pattern: CONFIRMED on NY (T3, T13)
-    Single visible RegistrationState (codeTypeProvider=NCIC)
-    Blank = NY in-state query; filled = OOS via Nlets
-
-  VehicleMakeCode: Does NOT serialize to CommSys XML [CONFIRMED]
-    Kept as attributeTypeId=VEHICLE_MAKE for RMS dropdown only
-    No NCIC_VEHICLE_MAKE codeTypeCategory exists (AP #24)
-    T16 (MC): Make=TRLR submitted, present in RMS, absent from CommSys XML
-
-  RMS co-fire: CONFIRMED
-    Vehicle RMS combo fires alongside CommSys on plate and VIN paths
-
-  Priority: RVEH > RVIN > RCAR (plate wins over VIN)
-
-  LIMITATION #30: State has NO initialValue (blank default)
-    NY has separate in-state vs OOS keyRefs (RCAR vs RVIN)
-    Setting State=NY would route VIN queries to RVIN instead of RCAR
-    Card title hint: "OPTIONS - Leave blank for NY queries"
+  NCIC state pattern: CONFIRMED on NY
+  LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS)
+  Priority: RVIN (2 set) > RVEH (1 set) > RCAR (1 set, fewer any)
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery (autoSelect=true)
-  QIF:  Person
-  Combos: DLIC (OLN), DLICN (Name+DOB)
-  Optional fields: State, ImageIndicator, SexCode
-  Note: DGRP (NyNyspinDriverLicenseNameQuery) removed in BASE/MC -- caused
-        duplicate checkbox. DLICN handles Name path within DriverLicenseQuery.
-
-  DLIC -- OLN [CONFIRMED]
-    set: OperatorLicenseNumber
-    any: State, ImageIndicator
-    keyReference: DLIC
-    Fires when: OLN filled
-    Tests: T5 (OLN only), T14 (OLN+State), T17 (OLN+ImageIndicator)
-    Co-fires with DH DALL (DL+DH co-fire on OLN entry)
+  QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery (autoSelect=true, NO deselect)
+  QIF:  Person (3 cards: SEARCH OPTIONS + DRIVER LICENSE + DRIVER HISTORY)
+  Combos: DLICN (Name+DOB), DLIC (OLN)
+  Defaults: ImageIndicator=Y
+  CAD defaults: ImageIndicator=Y on DLICN and DLIC
 
   DLICN -- Name + DOB [CONFIRMED]
-    set: NameLast, NameFirst
-    any: BirthDate, NameMiddle, NameSuffix, SexCode, State
+    set: birthDate, nameLast, nameFirst, sexCode
+    any: imageIndicator, registrationState, nameMiddle, nameSuffix
+    defaults: ImageIndicator=Y
     keyReference: DLICN
-    Fires when: Last + First filled
-    Name format: FormatStringRuleHandler "LAST, FIRST [MIDDLE] [SUFFIX]"
+    Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
     Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
-    Tests: T6 (Name+DOB+Sex), T15 (Name+DOB+Sex+State OOS), T18 (4-field name)
-    Co-fires with DH DALH (DL+DH co-fire on Name entry)
 
-  NIBRS sex reverse-lookup: CONFIRMED on NY (T6, T15)
-    CommSys XML: <SexCode>M</SexCode> or <SexCode>F</SexCode>
-    RMS: sexAttrId resolves to correct attribute ID
+  DLIC -- OLN [CONFIRMED]
+    set: operatorLicenseNumber
+    any: imageIndicator, registrationState
+    defaults: ImageIndicator=Y
+    keyReference: DLIC
 
-  Priority: DLIC > DLICN (OLN wins over Name)
+  Priority: DLICN (4 set) > DLIC (1 set)
+  NIBRS sex reverse-lookup: CONFIRMED on NY
 
-  Single DL checkbox: CONFIRMED
-    Only "Driver License" checkbox on Person entity (no DGRP second checkbox)
+================================================================================
+2b. NyNyspinDriverLicenseNameQuery -- Person Entity (DGRP)
+================================================================================
+
+  QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery (autoSelect=true)
+  QIF:  Person (shared DRIVER LICENSE card)
+  queryLabel: DL Name Search
+  Combos: DGRP (Name+DOB)
+
+  DGRP -- Name search (broader DL lookup) [PENDING]
+    set: nameLast, nameFirst
+    any: nameMiddle, nameSuffix, birthDate, sexCode
+    defaults: (none)
+    keyReference: DGRP
+    Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
+    Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
+    Co-fires with DL when name fields are entered
 
 ================================================================================
 3. DriverHistoryQuery -- Person Entity
 ================================================================================
 
-  QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery (autoSelect=true)
-  QIF:  Person (shared with DL)
-  Combos: DALL (OLN), DALH (Name -- invented keyRef)
-  Shared fieldIds with DL (no DH-suffix): OperatorLicenseNumber, NameFirst, NameLast,
-    NameMiddle, NameSuffix, BirthDate, SexCode
-
-  DALL -- OLN [CONFIRMED]
-    set: OperatorLicenseNumber
-    any: ImageIndicator, RegistrationState
-    keyReference: DALL
-    Fires when: OperatorLicenseNumber filled (via DL+DH co-fire)
-    Tests: T5 (co-fire with DLIC), T14 (co-fire OOS)
+  QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery (autoSelect=true, queriesToDeselect=DL)
+  QIF:  Person (shared DRIVER HISTORY card -- DH-suffix fieldIds isolate DH fields)
+  Combos: DALH (Name), DALL (OLN)
+  DH-suffix fieldIds: operatorLicenseNumberDH, nameLastDH, nameFirstDH,
+    nameMiddleDH, nameSuffixDH, birthDateDH, sexCodeDH
+  Defaults: ImageIndicator=Y
+  CAD defaults: ImageIndicator=Y on DALH and DALL
+  Deselect: One-directional -- DH deselects DL (DL has no deselect)
 
   DALH -- Name + DOB (invented keyRef) [CONFIRMED]
-    set: BirthDate, NameLast, NameFirst, SexCode
-    any: ImageIndicator, RegistrationState, NameMiddle, NameSuffix
+    set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH
+    any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH
+    defaults: ImageIndicator=Y
     keyReference: DALH
-    Fires when: NameLast + NameFirst filled (via DL+DH co-fire)
-    Tests: T6 (co-fire with DLICN), T15 (co-fire OOS), T18 (4-field name)
 
-  DL+DH co-fire: CONFIRMED
-    When user enters OLN -> DLIC + DALL both fire (DL first, DH second)
-    When user enters Name+DOB -> DLICN + DALH both fire
-    NY uses shared fieldIds (no DH-suffix) because DL+DH co-fire is the
-    correct workflow. DH-suffix fieldIds only needed when DL and DH must be
-    independently selectable (FL pattern with queriesToDeselect).
-    Correct police workflow: officer wants both DL and DH from single entry
+  DALL -- OLN [CONFIRMED]
+    set: operatorLicenseNumberDH
+    any: imageIndicator, registrationState
+    defaults: ImageIndicator=Y
+    keyReference: DALL
+
+  Priority: DALH (4 set) > DALL (1 set)
 
 ================================================================================
 4. GunQuery -- Firearm Entity
 ================================================================================
 
   QIDM: NY_NYSPIN_EJUSTICE_GunQuery
-  QIF:  Firearm
+  QIF:  Firearm (1 card)
   Combos: GINQ
-  Optional fields: GunMake, GunCaliber, ImageIndicator
-  ImageIndicator: FormSelect (NIBRS/YES_NO_UNKNOWN), default=N
+  Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+  CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on GINQ
 
   GINQ -- Serial Number [CONFIRMED]
-    set: GunSerialNumber
-    any: ImageIndicator, GunMake, GunCaliber
+    set: gunSerialNumber
+    any: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: GINQ
-    Tests: T7 (serial only), T19 (serial+Make+Caliber)
-
-  NCIC_FIREARM_MAKE: Does NOT contain vehicle makes [CONFIRMED]
-    GunMake dropdown uses NCIC_FIREARM_MAKE codeTypeCategory (correct)
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
 ================================================================================
 
   QIDM: NY_NYSPIN_EJUSTICE_ArticleSingleQuery
-  QIF:  Article
+  QIF:  Article (1 card)
   Combos: AINQ
-
-  ImageIndicator: FormSelect (NIBRS/YES_NO_UNKNOWN), default=N
+  Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+  CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on AINQ
 
   AINQ -- Serial + ArticleType [CONFIRMED]
-    set: ArticleSerialNumber, ArticleTypeCode
-    any: ImageIndicator
+    set: articleSerialNumber, articleTypeCode
+    any: imageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: AINQ
-    Tests: T8 (serial+type)
 
 ================================================================================
 6. BoatQuery -- Boat Entity
 ================================================================================
 
   QIDM: NY_NYSPIN_EJUSTICE_BoatQuery
-  QIF:  Boat
-  Combos: RVEH (reg NY), RCAR (hull NY), BVEH (reg OOS), BVIN (hull OOS)
+  QIF:  Boat (1 card: BOAT QUERY)
+  Combos: BVEH (reg OOS), BVIN (hull OOS), RVEH (reg NY), RCAR (hull NY)
   Routing: State blank = NY in-state (RVEH/RCAR), State filled = OOS (BVEH/BVIN)
-  ImageIndicator: FormSelect (NIBRS/YES_NO_UNKNOWN), default=N, on OPTIONS card (MC) / main row (BASE)
+  Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+  CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  RVEH -- Registration Number, NY (no state) [CONFIRMED]
-    set: RegistrationNumber
-    any: ImageIndicator
-    keyReference: RVEH
-    Fires when: Reg filled, State blank
-    Tests: T9
-
-  RCAR -- Hull ID, NY (no state) [CONFIRMED]
-    set: BoatHullIdNumber
-    any: ImageIndicator
-    keyReference: RCAR
-    Fires when: Hull filled, State blank
-    Tests: T10
-
   BVEH -- Registration Number + State OOS [CONFIRMED]
-    set: RegistrationNumber, State
-    any: ImageIndicator
+    set: registrationNumber, registrationState
+    any: imageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVEH
-    Fires when: Reg + State both filled
-    Tests: T11 (State=AR in BASE, State=IN in MC)
 
   BVIN -- Hull ID + State OOS [CONFIRMED]
-    set: BoatHullIdNumber, State
-    any: ImageIndicator
+    set: boatHullIdNumber, registrationState
+    any: imageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVIN
-    Fires when: Hull + State both filled
-    Tests: T12 (State=TX in BASE, State=KS in MC)
+
+  RVEH -- Registration Number, NY (no state) [CONFIRMED]
+    set: registrationNumber
+    any: imageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    keyReference: RVEH
+
+  RCAR -- Hull ID, NY (no state) [CONFIRMED]
+    set: boatHullIdNumber
+    any: imageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    keyReference: RCAR
+
+  Priority: BVEH (2 set) > BVIN (2 set) > RVEH (1 set) > RCAR (1 set)
 
 ================================================================================
 RMS BUNDLE
 ================================================================================
 
   RMS co-fire tested on Vehicle (plate, VIN) and Person (OLN, Name) [CONFIRMED]
-  Patches applied: 7 (RMS cleanup + autoSelect)
-  Patch 7: autoSelect=true on both Vehicle and Person RMS QIDMs
-  SexCodeOOS (sexOOS) removed from RMS Person QIDM; main sex attr retained (HIDLE default)
-  VehicleMakeCode present in RMS (VEHICLE_MAKE attrType) but absent from CommSys XML
+  Both RMS QIDMs autoSelect=true
+  Built from KB specs via _build_rms_bundle.ps1
 
 ================================================================================
-KNOWN LIMITATIONS
+KNOWN CONSTRAINTS
 ================================================================================
 
   LIMITATION #30: No State initialValue -- separate in-state/OOS keyRef routing
-  AP #24: VehicleMakeCode does not serialize to CommSys XML
-  WINQ/MINQ: WantedPersonQuery and MissingPersonQuery have MessageKeys in XML
-    but NO Transaction element. Not implementable until vendor adds XML definitions.
 
 ================================================================================
 SUMMARY
 ================================================================================
 
-  Entities: 6 QIFs (Vehicle, Person-DL, Person-DH, Firearm, Article, Boat)
-  QIDMs: 6 (VehicleReg, DL, DH, Gun, Article, Boat)
-  Total combos: 13 CommSys + RMS
-  [CONFIRMED]: ALL (15 BASE + 19 MC tests, live on MK43RS)
-  [PENDING]: NONE
+  Entities: 5 QIFs (Vehicle, Person, Firearm, Article, Boat)
+  Cards: 7 (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1)
+  QIDMs: 7 (VehicleReg, DL, DGRP, DH, Gun, Article, Boat)
+  Total combos: 14 CommSys + 2 RMS
+  CAD defaults: All 14 combos covered
+  [CONFIRMED]: 13 combos (v1.0 live test 2026-04-24)
+  [PENDING]: 1 combo (DGRP -- new in v2.1)
   Missing: Per-test XML logs (retroactive capture not possible)

@@ -243,7 +243,7 @@ if ($providerBundle) {
         if (-not $cfg.queryLabel) {
             Fail "QIDM '$($cfg.name)' missing queryLabel"
         } else {
-            $validLabels = @('Vehicle Registration','Vehicle Stolen','Driver License','Driver History','Firearm','Article','Boat','Wanted Person','Missing Person','Supervised Release','RMS')
+            $validLabels = @('Vehicle Registration','Vehicle Stolen','Driver License','Driver History','DL Name Search','Firearm','Article','Boat','Wanted Person','Missing Person','Supervised Release','RMS')
             if ($cfg.queryLabel -notin $validLabels) {
                 Fail "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' not in standard set [$($validLabels -join ', ')]"
             }

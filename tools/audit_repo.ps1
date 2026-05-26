@@ -470,15 +470,26 @@ foreach ($pd in $providerDirs) {
     $baseDir = Join-Path $pd.FullName 'docs\base'
     $mcDir = Join-Path $pd.FullName 'docs\mc'
 
-    # BASE reports
-    if (Test-Path $baseDir) {
+    # Reports: check docs/ directly (single-JSON), then docs/base/ (legacy)
+    $docsDir = Join-Path $pd.FullName 'docs'
+    $docsFiles = @(Get-ChildItem $docsDir -File -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })
+    $missingSingle = @()
+    foreach ($rp in $reportPrefixes) {
+        $match = $docsFiles | Where-Object { $_ -match "^${rp}_" }
+        if (-not $match) { $missingSingle += $rp }
+    }
+    $htmlSingle = $docsFiles | Where-Object { $_ -match '^LAYOUT_.*\.html$' }
+    if (-not $htmlSingle) { $missingSingle += 'LAYOUT_HTML' }
+
+    if ($missingSingle.Count -eq 0) {
+        Pass "${provName} -- docs/ has all 8 report files (single-JSON)"
+    } elseif (Test-Path $baseDir) {
         $baseFiles = @(Get-ChildItem $baseDir -File | ForEach-Object { $_.Name })
         $missingBase = @()
         foreach ($rp in $reportPrefixes) {
             $match = $baseFiles | Where-Object { $_ -match "^${rp}_" }
             if (-not $match) { $missingBase += $rp }
         }
-        # Also check HTML layout
         $htmlMatch = $baseFiles | Where-Object { $_ -match '^LAYOUT_.*\.html$' }
         if (-not $htmlMatch) { $missingBase += 'LAYOUT_HTML' }
 
@@ -489,8 +500,8 @@ foreach ($pd in $providerDirs) {
             Pass "${provName} -- docs/base/ has all 8 report files"
         }
     } else {
-        if ($isFlagged) { Info "FLAGGED: ${provName} -- docs/base/ directory missing" }
-        else { Fail "${provName} -- docs/base/ directory missing" }
+        if ($isFlagged) { Info "FLAGGED: ${provName} -- no report files in docs/ or docs/base/" }
+        else { Fail "${provName} -- no report files in docs/ or docs/base/" }
     }
 
     # MC reports (only check if MC JSON exists)
@@ -796,8 +807,11 @@ foreach ($pd in $providerDirs) {
         continue
     }
 
-    # Extract PASS count from validator report
-    $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
+    # Extract PASS count from validator report (single-JSON first, then legacy base)
+    $reportFile = "$($pd.FullName)\docs\VALIDATOR_REPORT_${docPrefix}.txt"
+    if (-not (Test-Path $reportFile)) {
+        $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
+    }
     if (-not (Test-Path $reportFile)) { continue }
 
     $reportText = [System.IO.File]::ReadAllText($reportFile)
@@ -844,7 +858,7 @@ foreach ($pd in $providerDirs) {
     if (-not $scriptVersion) { continue }
 
     $phaseFound = $false
-    foreach ($phaseDir in @("$($pd.FullName)\phases", "$($pd.FullName)\phases\base", "$($pd.FullName)\phases\mc")) {
+    foreach ($phaseDir in @("$($pd.FullName)\phases", "$($pd.FullName)\phases\current", "$($pd.FullName)\phases\base", "$($pd.FullName)\phases\mc")) {
         if (Test-Path $phaseDir) {
             $versionedFile = Get-ChildItem $phaseDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
             if ($versionedFile) {

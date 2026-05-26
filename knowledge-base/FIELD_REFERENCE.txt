@@ -154,22 +154,16 @@ SECTION 3 -- ATTRIBUTETYPEID RULES
                       Use codeTypeCategory=NIBRS_RACE instead.    (AP #3)
                       Confirmed: NY v1.12.
 
-  VEHICLE_MAKE        Sends attribute ID -- OK for RMS vehicle    UPDATED 2026-05-19:
-                      search. RMS receives makeNcicCode            DOES serialize to
-                      correctly (e.g., "TRLR_HIDE").               XML when in any[].
-                      FL_FCIC v3.1 MC Test 20/38: VehicleMakeCode  FL confirmed XML
-                      IS sent in CommSys XML when field is in      output for both
-                      any[] on the combination. Contradicts NY     FRQ and QV combos.
-                      2026-04-24 test (XML omitted entirely).
-                      Possible cause: NY test may have had field
-                      in neither set[] nor any[], or platform
-                      update between 04-24 and 05-01.
-                      No NCIC_VEHICLE_MAKE codeTypeCategory exists.
-                      NCIC_FIREARM_MAKE populates FIREARM makes,
-                      not vehicle makes.
-                      Decision: keep attributeTypeId=VEHICLE_MAKE
-                      for RMS dropdown. XML serialization confirmed
-                      working when field is in combo any[].
+  VEHICLE_MAKE        MANDATORY FormSelect (Sel) on ALL providers. UPDATED 2026-05-22:
+                      attributeTypeId=VEHICLE_MAKE,                 MUST be Sel, NEVER Inp.
+                      codeTypeProvider=NCIC.                        Dropdown works on all
+                      Confirmed working: NJ, FL, CA_CLETS (all     tenants. TX_TLETS v3.1
+                      imported and live-tested as Sel dropdowns).   live test confirmed
+                      Sends attribute ID for RMS vehicle search.    dropdown populates.
+                      Also serializes to CommSys XML when field     NCIC_FIREARM_MAKE is
+                      is in combo any[].                            for FIREARMS only —
+                      NEVER use FormInput for VehicleMakeCode.      do NOT confuse with
+                      NEVER use NCIC_FIREARM_MAKE for vehicles.     VEHICLE_MAKE (AP #24).
 
   CAD_UNIT_SELECT     CAD integration field.                      CAD card only.
   _VALUE              Never in QIDM by design.
@@ -180,7 +174,7 @@ SECTION 3 -- ATTRIBUTETYPEID RULES
   SUMMARY: attributeTypeId should be used ONLY for:
     1. RMS-specific hidden fields (SelH for STATE)
     2. SEX with codeTypeProvider=NIBRS (see Section 5)
-    3. VEHICLE_MAKE for RMS dropdown (serializes to XML when in any[])
+    3. VEHICLE_MAKE — FormSelect on ALL providers (dropdown works, confirmed live)
     4. CAD integration fields
   For all other fields that need to send a value to outbound XML, use
   codeTypeCategory + codeTypeSource.

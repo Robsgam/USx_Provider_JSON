@@ -29,6 +29,40 @@ Sex NIBRS_SEX CommSys-only: NIBRS reverse-lookup unconfirmed on NY instance.
   Sex removed from RMS person QIDM entirely. Same pattern as FL_FCIC.
 
 VERSION HISTORY  (newest first)
+--------------------------------------------------------------------------------
+v2.1  2026-05-22  Layout tightening + DGRP QIDM
+--------------------------------------------------------------------------------
+CHANGED : Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, queryLabel='DL Name Search').
+          DGRP combo: set=[nameLast,nameFirst], any=[nameMiddle,nameSuffix,birthDate,sexCode].
+          Layout tightened: Vehicle 3→1 card, Person 5→3 cards, Boat 3→1 card (13→7 cards).
+          VehicleMakeCode corrected to FormSelect (VEHICLE_MAKE/NCIC dropdown).
+REASON  : DGRP is a separate NY transaction for name-based DL search. Broader search coverage.
+          Layout tightening per standard: one card per entity where possible.
+          VehicleMakeCode must be FormSelect on ALL providers (confirmed working on NJ/FL/CA/TX).
+SCRIPT  : scripts/build_ny_nyspin_ejustice.ps1
+OUTPUT  : NY_NYSPIN_EJUSTICE.json (7 QIDMs, 14 combos, 7 cards)
+SCORE   : 78P/0F/0W/0LIM | 14 FIRE / 0 SKIP | 27/27 test conductor PASS
+
+v2.0  2026-05-22  Single JSON rebuild (BASE/MC merge, 7 fixes)
+--------------------------------------------------------------------------------
+CHANGED : Merged BASE+MC into single build script + single JSON output.
+          Removed _MC suffix from JSON filename (NY_NYSPIN_EJUSTICE_MC.json -> NY_NYSPIN_EJUSTICE.json).
+          Fixed bidirectional queriesToDeselect -> one-directional (DH deselects DL only).
+          Added CAD defaults on all 13 combos (ImageIndicator + PlateType/PlateYear on RVEH).
+          Fixed camelCase: NameMiddleDH -> nameMiddleDH, NameSuffixDH -> nameSuffixDH.
+          Changed VehicleMakeCode from FormSelect to FormInput (maxLength 4).
+          Added RelatedHitSearchIndicator to Gun/Article/Boat forms + QIDM any[] + defaults.
+          Phase directory: phases/mc/ -> phases/current/.
+REASON  : Eliminate BASE/MC split per single-JSON-per-provider policy.
+          Bidirectional deselect causes error popup (AP #14).
+          CAD ignores form initialValues, needs combo defaults[].
+          PascalCase fieldIds break CAD auto-populate.
+          NCIC VEHICLE_MAKE gives empty dropdown (AP #24).
+          RelatedHitSearchIndicator in metadata any[] for Gun/Article/Boat.
+SCRIPT  : scripts/build_ny_nyspin_ejustice.ps1 (single script)
+OUTPUT  : NY_NYSPIN_EJUSTICE.json (6 QIDMs, 13 combos)
+SCORE   : 74P/0F/0W/0LIM | CAD 64P/0F/0W/67I
+
 v1.6  2026-05-18  Single JSON output + shared tooling rebuild
   CHANGED
     - Single pretty-printed JSON output (READABLE files eliminated)

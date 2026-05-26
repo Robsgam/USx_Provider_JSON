@@ -1,78 +1,74 @@
 NY_NYSPIN_EJUSTICE -- BUILD STATUS
 ====================================
-Last updated    : 2026-05-21
-Current: v1.6 | BASE 74P/0F/0W/0LIM | MC 74P/0F/0W/0LIM | Updated 2026-05-21
+Last updated    : 2026-05-22
+Current: v2.1 | 78P/0F/0W/0LIM | Updated 2026-05-22
 Provider: NY_NYSPIN_EJUSTICE
-GitHub: Robsgam/NY_NYSPIN_EJUSTICE
+Phase: Single JSON (multi-card)
 
 CURRENT VERSION
 ---------------
-BASE: v1.2  72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
-MC:   v1.2  72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
-Simulation: 13/13 combos FIRE on both variants (2026-04-30)
-Prior live test: BASE 15/15 PASS (2026-04-24), MC 19/19 PASS (2026-04-24)
-Import: IMPORTED 2026-05-06
+v2.1  78 PASS / 0 FAIL / 0 WARN / 0 LIM / 14 FIRE / 0 SKIP
+CAD audit: 68 PASS / 0 FAIL / 0 WARN / 71 INFO
+Simulation: 14/14 combos FIRE, 27/27 test conductor PASS
+Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP combo new, untested
+Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.1
 
 ARCHITECTURE
 ------------
 Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs)
-QIDMs:    VehicleRegistrationQuery (RVEH/RVIN/RCAR)
-          DriverLicenseQuery (DLIC/DLICN) -- autoSelect=true
-          DriverHistoryQuery (DALL/DALH) -- autoSelect=true
-          GunQuery (GINQ)
-          ArticleSingleQuery (AINQ)
-          BoatQuery (BVEH/BVIN/RVEH/RCAR)
+Layout: Multi-card (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1) = 7 cards
+QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RCAR) -- 3 combos
+          DriverLicenseQuery (DLICN/DLIC) -- 2 combos, autoSelect=true, no deselect
+          NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=true, DL Name Search
+          DriverHistoryQuery (DALH/DALL) -- 2 combos, autoSelect=true, queriesToDeselect=DL
+          GunQuery (GINQ) -- 1 combo
+          ArticleSingleQuery (AINQ) -- 1 combo
+          BoatQuery (BVEH/BVIN/RVEH/RCAR) -- 4 combos
 RMS:      Vehicle + Person QIDMs, both autoSelect=true
-Total combos: 13 CommSys + 2 RMS
+Total combos: 14 CommSys + 2 RMS
 
-Standard patterns (all confirmed NJ cross-reference):
-  - ImageIndicator on ALL entities (FormSelect, NIBRS/YES_NO_UNKNOWN, Person=Y, others=N)
-  - AUTH keyReference='AUTH'
-  - RMS autoSelect=true on both QIDMs
+Standard patterns:
+  - ImageIndicator on ALL entities (Person=Y, others=N) + CAD defaults on all 14 combos
+  - RelatedHitSearchIndicator on Gun/Article/Boat (Y default) + CAD defaults
+  - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
+  - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
   - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
-  - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS on Person)
-  - queryLabel standard (Vehicle Registration, Driver License, etc.)
-  - PlateType=PC, PlateYear=2026 defaults
+  - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS on Person DL+DH+DGRP)
+  - PlateType=PC, PlateYear=2026 defaults + CAD defaults on RVEH
+  - VehicleMakeCode as FormSelect (VEHICLE_MAKE/NCIC dropdown)
+  - All fieldIds camelCase
 
-KNOWN LIMITATIONS (5)
----------------------
-1. DL+DH co-fire autoSelect (both DL and DH QIDMs fire on Person -- correct police workflow)
-2. DL+DH no DH-suffix fieldIds (v1.1 uses shared field pool, DH co-fires with DL)
-3. queriesToDeselect not used (platform limitation #24)
-4. Combo priority order (RVIN > RVEH > RCAR, etc. -- operational priority, not XML spec order)
-5. LIMITATION #30: State has NO initialValue (blank default, separate in-state/OOS keyRefs)
-
-AP #24: VehicleMakeCode does not serialize to CommSys XML (no NCIC_VEHICLE_MAKE codeTypeCategory)
-WINQ/MINQ: No Transaction XML in metadata. Not buildable until vendor adds XML definitions.
-
-FIXES APPLIED 2026-04-30 (v1.0 -> v1.1)
------------------------------------------
-1. ImageIndicator FormSelect on ALL entities (was missing from Vehicle, Firearm, Article, Boat)
-2. ImageIndicator QIDM attribute + combo any[] on ALL QIDMs that support it
-3. AUTH keyReference='AUTH' added
-4. RMS autoSelect=true on both Vehicle and Person RMS QIDMs
-5. Person ImageIndicator changed from FormInput to FormSelect (NIBRS/YES_NO_UNKNOWN)
-6. NJ cross-reference (GATE 7) verified: all standard patterns present
-7. Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate) [2026-05-05]
+KNOWN CONSTRAINTS
+-----------------
+LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS routing)
 
 TEST MATRIX
 -----------
-See SQVR for per-combo test results. All combos [CONFIRMED] on v1.0 live tests.
-v1.1 re-import required to verify ImageIndicator and RMS autoSelect changes.
+See docs/NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt (auto-generated, 14 combos).
+v2.1 re-import needed -- DGRP added, layout tightened, VehicleMakeCode corrected to FormSelect.
 
 BUILD LOG  (newest first)
+  v2.1  2026-05-22  build_ny_nyspin_ejustice.ps1 (layout tightening + DGRP)
+    78 PASS / 0 FAIL / 0 WARN / 0 LIM / 14 FIRE / 0 SKIP
+    Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, DL Name Search, 1 combo).
+    Layout tightened: Vehicle 3→1, Person 5→3, Boat 3→1 (13→7 cards).
+    VehicleMakeCode corrected to FormSelect (VEHICLE_MAKE/NCIC dropdown).
+    7 QIDMs, 14 combos.
+
+  v2.0  2026-05-22  build_ny_nyspin_ejustice.ps1 (single script)
+    74 PASS / 0 FAIL / 0 WARN / 0 LIM / 13 FIRE / 0 SKIP
+    CAD: 64P/0F/0W/67I
+    BASE/MC merge, one-directional deselect, CAD defaults all 13 combos,
+    camelCase fix (nameMiddleDH/nameSuffixDH), VehicleMakeCode Sel→Inp,
+    RelatedHitSearchIndicator on Gun/Article/Boat.
+
   v1.6  2026-05-18  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
-    BASE: 74 PASS / 0 FAIL / 0 WARN
-    MC:   74 PASS / 0 FAIL / 0 WARN
+    BASE: 74P/0F/0W | MC: 74P/0F/0W
     Routine rebuild -- shared tooling improvements, no functional changes.
 
   v1.1  2026-04-30  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
-    BASE: 74 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
-    MC:   74 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP
-    Simulation logs: tests/ (10 files, 5 BASE + 5 MC)
+    BASE: 74P/0F/0W/5LIM | MC: 74P/0F/0W/5LIM
     Fixes: ImageIndicator all entities, AUTH keyRef, RMS autoSelect, Person Image FormSelect
 
   v1.0  2026-04-24  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
-    BASE: 44 PASS / 0 FAIL / 15/15 live test PASS
-    MC:   44 PASS / 0 FAIL / 19/19 live test PASS
-    Patch 6 (RMS cleanup) applied
+    BASE: 44P/0F, 15/15 live test PASS | MC: 44P/0F, 19/19 live test PASS

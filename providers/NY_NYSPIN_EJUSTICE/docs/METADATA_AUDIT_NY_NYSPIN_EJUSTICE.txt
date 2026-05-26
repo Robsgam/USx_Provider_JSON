@@ -1,0 +1,188 @@
+================================================================
+  Build Report: NY_NYSPIN_EJUSTICE
+  Source: NY_NYSPIN_EJUSTICE.json
+  Generated: 2026-05-22 15:12
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-05-22 15:12
+============================================================
+
+============================================================
+ METADATA AUDIT: NY_NYSPIN_EJUSTICE
+============================================================
+  XML: NY_NYSPIN_EJUSTICE.XML
+  JSON: NY_NYSPIN_EJUSTICE.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [PASS] NyNyspinDriverLicenseNameQuery: in XML and JSON
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+
+--- CHECK 2: KeyReference Validation ---
+  [PASS] RVIN: exists in XML VehicleRegistrationQuery
+  [PASS] RVEH: exists in XML VehicleRegistrationQuery
+  [PASS] RCAR: exists in XML VehicleRegistrationQuery
+  [PASS] DLIC: exists in XML DriverLicenseQuery
+  [PASS] DGRP: exists in XML NyNyspinDriverLicenseNameQuery
+  [PASS] DALL: exists in XML DriverHistoryQuery
+  [PASS] GINQ: exists in XML GunQuery
+  [PASS] AINQ: exists in XML ArticleSingleQuery
+  [PASS] BVEH: exists in XML BoatQuery
+  [PASS] BVIN: exists in XML BoatQuery
+  [PASS] RVEH: exists in XML BoatQuery
+  [PASS] RCAR: exists in XML BoatQuery
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  DriverHistoryQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  NyNyspinBoatBINQQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinBoatRegistrationNameQuery: (not built in JSON -- see CHECK 1)
+  CBICanadaDriverLicenseQuery: (not built in JSON -- see CHECK 1)
+  CBICanadaVehicleRegistrationQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinDriverLicenseNameQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  NyNyspinNicbAllFilesQuery: (not built in JSON -- see CHECK 1)
+  WMPIPersonMINQQuery: (not built in JSON -- see CHECK 1)
+  WMPIPersonWINQQuery: (not built in JSON -- see CHECK 1)
+  WMPIProtectionOrderQuery: (not built in JSON -- see CHECK 1)
+  NyNyspinVehicleRegistrationNameQuery: (not built in JSON -- see CHECK 1)
+  VehicleRegistrationQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [PASS]   VehicleYear: in XML and QIDM
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef AINQ: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef AINQ: set field 'ArticleTypeCode' present
+  [PASS]   keyRef AINQ: any field 'ImageIndicator' present
+  [PASS]   keyRef AINQ: any field 'RelatedHitSearchIndicator' present
+  BoatQuery:
+  [PASS]   keyRef RVEH: set field 'RegistrationNumber' present
+  [PASS]   keyRef RVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef RCAR: set field 'BoatHullIdNumber' present
+  [PASS]   keyRef RCAR: any field 'ImageIndicator' present
+  [PASS]   keyRef BVEH: set field 'RegistrationNumber' present
+  [PASS]   keyRef BVEH: set field 'State' present
+  [PASS]   keyRef BVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef BVIN: set field 'BoatHullIdNumber' present
+  [PASS]   keyRef BVIN: set field 'State' present
+  [PASS]   keyRef BVIN: any field 'ImageIndicator' present
+  DriverHistoryQuery:
+  [PASS]   keyRef DALL: any field 'ImageIndicator' present
+  [PASS]   keyRef DALL: any field 'ImageIndicator' present
+  DriverLicenseQuery:
+  [PASS]   keyRef DLIC: set field 'OperatorLicenseNumber' present
+  [PASS]   keyRef DLIC: any field 'ImageIndicator' present
+  [PASS]   keyRef DLIC: any field 'State' present
+  [PASS]   keyRef DLIC: any field 'ImageIndicator' present
+  [PASS]   keyRef DLIC: any field 'State' present
+  GunQuery:
+  [PASS]   keyRef GINQ: set field 'GunSerialNumber' present
+  [PASS]   keyRef GINQ: any field 'GunCaliber' present
+  [PASS]   keyRef GINQ: any field 'GunMake' present
+  [PASS]   keyRef GINQ: any field 'RelatedHitSearchIndicator' present
+  NyNyspinDriverLicenseNameQuery:
+  [PASS]   keyRef DGRP: set field 'Name' present
+  [PASS]   keyRef DGRP: any field 'BirthDate' present
+  [PASS]   keyRef DGRP: any field 'SexCode' present
+  VehicleRegistrationQuery:
+  [PASS]   keyRef RVEH: any field 'ImageIndicator' present
+  [PASS]   keyRef RCAR: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef RCAR: any field 'ImageIndicator' present
+  [PASS]   keyRef RVIN: set field 'State' present
+  [PASS]   keyRef RVIN: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef RVIN: any field 'ImageIndicator' present
+  [PASS]   keyRef RVIN: any field 'VehicleMakeCode' present
+  [PASS]   keyRef RVIN: any field 'VehicleYear' present
+
+--- CHECK 5: Primary Field Coverage (HARD GATE) ---
+  ArticleSingleQuery: 1 metadata search paths
+  [PASS]   ArticleSerialNumber: at least one combo built (e.g. AINQ)
+  BoatQuery: 2 metadata search paths
+  [PASS]   BoatHullIdNumber: at least one combo built (e.g. RCAR)
+  [PASS]   RegistrationNumber: at least one combo built (e.g. RVEH)
+  DriverHistoryQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. DALL)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. DALL)
+  DriverLicenseQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. DLIC)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. DLIC)
+  GunQuery: 1 metadata search paths
+  [PASS]   GunSerialNumber: at least one combo built (e.g. GINQ)
+  NyNyspinDriverLicenseNameQuery: 1 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. DGRP)
+  VehicleRegistrationQuery: 2 metadata search paths
+  [PASS]   LicensePlateNumber: at least one combo built (e.g. RVEH)
+  [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. RCAR)
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] registrationNumber: maxLength 10 matches XML (RegistrationNumber)
+  [PASS] nameLastDH: maxLength 35 matches XML (Name)
+  [PASS] nameFirstDH: maxLength 35 matches XML (Name)
+  [PASS] nameMiddleDH: maxLength 35 matches XML (Name)
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameLast: maxLength 35 matches XML (Name)
+  [PASS] nameFirst: maxLength 35 matches XML (Name)
+  [PASS] nameMiddle: maxLength 35 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] gunSerialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] nameLast: maxLength 35 matches XML (Name)
+  [PASS] nameFirst: maxLength 35 matches XML (Name)
+  [PASS] nameMiddle: maxLength 35 matches XML (Name)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 120 PASS / 0 FAIL / 0 WARN
+============================================================
+

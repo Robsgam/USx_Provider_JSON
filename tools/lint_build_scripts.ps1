@@ -194,13 +194,16 @@ foreach ($scriptFile in ($scripts | Sort-Object FullName)) {
             }
         }
 
-        # VehicleMakeCode: special case -- CLAUDE.md says should use Sel with attributeTypeId='VEHICLE_MAKE'
-        # But per AP #24 and FIELD_REFERENCE, VehicleMakeCode is text input for CommSys (NCIC has no vehicle make dropdown).
-        # DO NOT flag VehicleMakeCode as Inp -- it is correctly Inp for CommSys providers.
-        # Only flag if using Sel with NCIC_FIREARM_MAKE (AP #24).
+        # VehicleMakeCode: MUST be FormSelect with attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC.
+        # NEVER FormInput. Dropdown confirmed working on all tenants (NJ, FL, CA_CLETS, TX 2026-05-22).
+        if ($line -match "[Vv]ehicle[Mm]ake[Cc]ode" -and $line -match "\bInp\b") {
+            Out-Finding 'WARN' $lineNum "VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE"
+            Out-Finding 'FIX' '' "Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }"
+            $issueCount++
+        }
         if ($line -match "(?:NCIC_FIREARM_MAKE)" -and $line -match "[Vv]ehicle[Mm]ake") {
             Out-Finding 'WARN' $lineNum "VehicleMakeCode uses NCIC_FIREARM_MAKE -- wrong code type (AP #24)"
-            Out-Finding 'FIX' '' "Use attributeTypeId='VEHICLE_MAKE' for dropdown, or Inp for text input"
+            Out-Finding 'FIX' '' "Use attributeTypeId='VEHICLE_MAKE' with codeTypeProvider='NCIC'"
             $issueCount++
         }
     }

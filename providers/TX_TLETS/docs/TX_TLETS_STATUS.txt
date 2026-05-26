@@ -1,49 +1,36 @@
 TX_TLETS -- Build Status
 ========================
-Last updated    : 2026-05-21
-Current: v3.0 | BASE 85P/0F/0W/2LIM | MC 85P/0F/0W/2LIM | Updated 2026-05-21
-Current version : v3.0
+Last updated    : 2026-05-26
+Current: v3.1 | 85P/0F/0W/0LIM | Updated 2026-05-26
+Current version : v3.1
 Provider: TX_TLETS
-Phase: Phase 1 (BASE) + Phase 2 (MC) -- rebuilt from scratch
+Phase: Single JSON (multi-card)
 
-BUILD RESULTS
-=============
-  BASE (v2.7):
-    Validator: 84 PASS / 0 FAIL / 0 WARN
-    Verify:    CLEAN (7 PASS / 0 FAIL)
-    Queries:   18 FIRE / 5 SKIP
-    Test:      36/36 PASS
+BUILD RESULTS (v3.1)
+====================
+  Validator: 85 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+  Verify:    CLEAN
+  Queries:   14 FIRE / 10 SKIP
+  Test:      37/37 PASS (test conductor)
+  Lint:      CLEAN
 
-  MC (v2.7):
-    Validator: 84 PASS / 0 FAIL / 0 WARN
-    Verify:    CLEAN (7 PASS / 0 FAIL)
-    Queries:   18 FIRE / 5 SKIP
-    Test:      36/36 PASS
+  Import: v3.1 imported USx Provider Tenant 2026-05-22
+  Live Test: 36/36 PASS (T1-T36) -- 24/24 combos, 7/7 QIDMs -- 2026-05-22
 
-  CHANGES v2.6 -> v2.7 (2026-05-18):
-    1. One-directional queriesToDeselect fix:
-       - VehicleInsuranceRegistrationQuery: REMOVED queriesToDeselect (default query)
-       - VehicleStolenQuery: KEPT queriesToDeselect=['VehicleInsuranceRegistrationQuery'] (opt-in)
-       - DriverLicenseQuery: REMOVED queriesToDeselect (default query)
-       - DriverHistoryQuery: KEPT queriesToDeselect=['DriverLicenseQuery'] (opt-in)
-    2. Folder renamed: TX_TLETS_BLK -> TX_TLETS
+LIVE TEST FINDINGS (v3.1)
+=========================
+  FRT label: "FRT" unclear to officers. Renamed to "Fin. Resp. Type" in build script. FIXED.
+  VehicleMakeCode: Was FormInput, should be FormSelect (VEHICLE_MAKE/NCIC dropdown). FIXED.
+  Both fixes applied in rebuild. Re-import needed for v3.1+fixes.
 
-  CHANGES v2.5 -> v2.6 (2026-05-18):
-    1. EmailAddress made user-fillable on DL — added to all 3 DL combo any[] arrays, form field added
-    2. Attention fix on DH — removed CommsysGetLastNameFirstNameInitialRuleHandler,
-       sourceField changed to attentionDH, visible FormInput added
-    3. EmailAddress DH-suffix — sourceField changed to emailAddressDH, form field added,
-       added to both DH combo any[] arrays
-    4. MC casing fix — aligned all MC fieldIds/sourceFields to camelCase matching BASE
+PENDING PLATFORM FEATURES
+==========================
+  EmailAddress handler: TX expects a handler that reads email from user profile and
+  auto-fills the EmailAddress field on DL and DH forms. Currently manual entry.
+  When handler is available: wire into EmailAddress (DL) and EmailAddressDH (DH) attributes.
+  Until then, officers must manually type their email for DL/DH queries.
 
-  CHANGES v2.2 -> v2.3 (2026-05-11):
-    1. Removed EmailAddress from all combo any[] (QIDM-only attr, no form field)
-    2. Removed Attention from DH combo any[] (handler auto-fills, not combo-dependent)
-    3. Dynamic PlateYear ($currentYear instead of hardcoded '2026')
-
-  Import: IMPORTED 2026-05-06 (v2.1), re-import needed for v2.2
-
-ARCHITECTURE (v2.0)
+ARCHITECTURE (v3.1)
 ===================
   Bundles: 3 (ENTITIES first, TX_TLETS second, RMS third)
   Entities: Vehicle, Person, Firearm, Article, Boat
@@ -53,89 +40,55 @@ ARCHITECTURE (v2.0)
     TX_TLETS_Results                                QUERYRESULTDATAMAPPING
     TX_TLETS_QueryMessageFormat                     QUERYMESSAGEFORMAT
     TX_TLETS_VehicleInsuranceRegistrationQuery      QUERYINPUTDATAMAPPING  (7 combos)
-    TX_TLETS_VehicleStolenQuery                     QUERYINPUTDATAMAPPING  (2 combos) [v2.2]
-    TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (3 combos)
+    TX_TLETS_VehicleStolenQuery                     QUERYINPUTDATAMAPPING  (2 combos)
+    TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (4 combos)
     TX_TLETS_DriverHistoryQuery                     QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_GunQuery                               QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_ArticleSingleQuery                     QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_BoatQuery                              QUERYINPUTDATAMAPPING  (5 combos)
 
-  RMS: cloned from HIDLE.json + Patches 1/3/6/7/8
-    Patch 1: RegistrationState in Vehicle licensePlateIn any[]
-    Patch 3: registrationState attr + RegistrationState in Person combo any[]
-    Patch 6: removed dead HIDLE fields (Vehicle+Person) + race removal (AP #11)
-    Patch 7: autoSelect=true on all RMS QIDMs
-    Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)
+  RMS: Built from KB specs via _build_rms_bundle.ps1 (-SkipRace)
 
-  Total CommSys combos: 23 (v2.2: +2 VehicleStolenQuery)
-  Total RMS combos: ~6 (2 Vehicle + 4 Person after Patch 6 cleanup)
+  Total CommSys combos: 24
+  Total RMS combos: ~6 (2 Vehicle + 4 Person)
 
-WARN/LIMITATION STATUS (v2.6)
+WARN/LIMITATION STATUS (v3.1)
 =============================
-  v2.6 resolved all prior WARNs and verify FAILs:
-    - EmailAddress: now user-fillable with form fields on both DL and DH (was QIDM-only)
-    - Attention: now visible form field with attentionDH sourceField (was handler-only)
-    - DH-suffix fieldIds: fully implemented (was LIMITATION #25, now AP #14 compliant)
+  0 WARN / 0 LIMITATION / 0 FAIL
 
-  No outstanding WARNs, LIMITATIONs, or verify FAILs.
+  v3.1 resolved 2 LIMITATIONs from v3.0:
+    - DL combo order: reordered to most-specific first (DQName 5 set → QWName 3 → CPLName 3 → DQOperatorLicenseNumber 2)
+    - DH combo order: reordered to most-specific first (KQName 5 set → KQOperatorLicenseNumber 2)
 
   Metadata audit notes (expected, not actionable):
-    - VehicleStolenQuery: in JSON but not in XML (invented query, v2.2)
-    - MessageKey: in XML but not in QIDM (not applicable to ConnectCIC)
+    - VehicleStolenQuery: in JSON but not in XML (invented query)
 
-MC LAYOUT (v2.0-mc)
-====================
-  Vehicle: 3 cards (OPTIONS / PLATE SEARCH / VIN SEARCH)
-  Person:  3 cards (OPTIONS / LICENSE NUMBER / NAME SEARCH)
-  Firearm: 1 card  (same as BASE)
-  Article: 1 card  (same as BASE)
-  Boat:    3 cards (OPTIONS / REGISTRATION / HULL-NCIC)
-
-  QIDMs: identical to BASE (MC is layout-only change)
+LAYOUT (v3.1)
+=============
+  Vehicle: 1 card (VEHICLE QUERY)
+  Person:  3 cards (DRIVER HISTORY / DRIVER LICENSE / SEARCH OPTIONS)
+  Firearm: 1 card (FIREARM QUERY)
+  Article: 1 card (ARTICLE QUERY)
+  Boat:    1 card (BOAT QUERY)
 
 TEST MATRIX
 ===========
-Format: [PASS] / [FAIL] / [PENDING]
-
-  VEHICLE (VehicleInsuranceRegistrationQuery -- 7 combos)
-  VEH-1: RQ Plate (Plate+Year+PlateType)          CommSys+RMS     [PENDING]
-  VEH-2: RQ VIN (VIN+Make+Year)                   CommSys+RMS     [PENDING]
-  VEH-3: REG Plate (Plate+Year+FRT)               CommSys         [PENDING]
-  VEH-4: VIN+FRT (VIN+FinancialResp)              CommSys         [PENDING]
-  VEH-5: QV Plate (Plate only)                    CommSys         [PENDING]
-  VEH-6: QV VIN (VIN only)                        CommSys         [PENDING]
-  VEH-7: DPSI (StickerNumber)                     CommSys         [PENDING]
-
-  VEHICLE (VehicleStolenQuery -- 2 combos, v2.2)
-  VEH-8: QV.P Stolen Plate (Plate)                CommSys         [PENDING]
-  VEH-9: QV.V Stolen VIN (VIN)                    CommSys         [PENDING]
-
-  PERSON -- Driver License (3 combos)
-  PER-1: DQ OLN (OLN)                             CommSys+RMS     [PENDING]
-  PER-2: DQ Name (Name+DOB+Sex)                   CommSys+RMS     [PENDING]
-  PER-3: QW Name (Name+DOB, expanded)             CommSys         [PENDING]
-
-  PERSON -- Driver History (2 combos)
-  PER-4: KQ OLN (OLN)                             CommSys         [PENDING]
-  PER-5: KQ Name (Name+DOB+Sex)                   CommSys         [PENDING]
-
-  FIREARM (2 combos)
-  FA-1:  QG Serial (GunSerialNumber)               CommSys         [PENDING]
-  FA-2:  QG NCIC (NCICNumber)                      CommSys         [PENDING]
-
-  ARTICLE (2 combos)
-  ART-1: QA Serial+Type (ArticleSerial+Type)       CommSys         [PENDING]
-  ART-2: QA NCIC (NCICNumber)                      CommSys         [PENDING]
-
-  BOAT (5 combos)
-  BOA-1: BQ Reg (RegNumber+State, Nlets)           CommSys         [PENDING]
-  BOA-2: BQ Hull (HullID+State, Nlets)             CommSys         [PENDING]
-  BOA-3: QB Reg (RegNumber, NCIC)                  CommSys         [PENDING]
-  BOA-4: QB Hull (HullID, NCIC)                    CommSys         [PENDING]
-  BOA-5: QB NCIC (NCICNumber)                      CommSys         [PENDING]
+  See TX_TLETS_TEST_MATRIX.txt (auto-generated, 37 tests, 24/24 combo coverage)
+  All combos [PENDING] — re-import needed for v3.1
 
 BUILD LOG (newest first)
 ========================
+  v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge)
+    Merged BASE+MC into single build script + single JSON output
+    Added CPL Name combo (DL: 3→4 combos, total 23→24)
+    Reordered DL+DH combos to most-specific first (eliminated 2 LIMs)
+    Removed _MC suffix from JSON filename
+    85P/0F/0W/0LIM, Verify CLEAN, 37/37 test conductor PASS
+
+  v3.0  2026-05-20  Complete rewrite from scratch
+    Tightened layouts, full CAD defaults, all metadata fields wired in
+    85P/0F/0W/2LIM
+
   v2.7  2026-05-18  One-directional queriesToDeselect fix
     VehReg+DL: removed queriesToDeselect (default queries)
     VehStolen+DH: kept queriesToDeselect (opt-in deselects default)

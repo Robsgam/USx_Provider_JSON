@@ -202,9 +202,9 @@ foreach ($pd in $providers) {
     # Check phase archive exists for current version
     $version = Get-ScriptVersion $pd.FullName
     if ($version) {
-        # Check phases/ (new), then phases/base/ and phases/mc/ (legacy)
+        # Check phases/ (new), phases/current/ (single-JSON), then phases/base/ and phases/mc/ (legacy)
         $phaseFile = $null
-        foreach ($phaseDir in @("phases", "phases\base", "phases\mc")) {
+        foreach ($phaseDir in @("phases", "phases\current", "phases\base", "phases\mc")) {
             $pDir = Join-Path $pd.FullName $phaseDir
             if (Test-Path $pDir) {
                 $phaseFile = Get-ChildItem $pDir -Filter "${docPrefix}*v${version}*.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1

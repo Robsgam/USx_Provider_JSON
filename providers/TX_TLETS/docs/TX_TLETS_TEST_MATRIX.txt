@@ -1,6 +1,6 @@
-TX_TLETS MC v3.0 -- TEST MATRIX
+TX_TLETS MC v3.1 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-21
+Generated: 2026-05-26
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -10,7 +10,7 @@ Vehicle (1 card, 10 fields):
   CARD_VEH (VEHICLE QUERY):
     ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 2: vehicleIdentificationNumber [Inp 20], stickerNumber [Inp 10], financialResponsibilityType [Inp 1]
-    ROW 3: vehicleMakeCode [Inp 4], vehicleYear [Inp 4], registrationState [Sel STATE, TX], regionId [Inp 4]
+    ROW 3: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], registrationState [Sel STATE, TX], regionId [Inp 4]
 
 Person (3 cards, 24 fields):
   CARD_PER_DH (DRIVER HISTORY):
@@ -71,8 +71,8 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
  2  Vehicle     Render form. Verify 1 card:                        [    ]
               CARD_VEH: titled "VEHICLE QUERY".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              VIN, Sticker Number, FRT.
-              Vehicle Make, Vehicle Year, State dropdown=TX, Region ID.
+              VIN, Sticker Number, Fin. Resp. Type.
+              Vehicle Make dropdown (no default), Vehicle Year, State dropdown=TX, Region ID.
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT QUERY".
               Registration Number, Hull ID Number.
@@ -200,4 +200,4 @@ COMBO COVERAGE (24/24):
   ArticleSingleQuery: 2/2 -- T28(Serial), T29(NCIC)
   BoatQuery: 5/5 -- T21(BQ+Hull), T22(QB+Hull), T23(BQ+Reg), T24(QB+Reg), T25(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_MC.json
+IMPORT FILE: TX_TLETS.json

@@ -5,6 +5,20 @@ State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 
 --------------------------------------------------------------------------------
+v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge, 0 LIM)
+--------------------------------------------------------------------------------
+CHANGED : Merged BASE+MC into single build script + single JSON output.
+          Removed _MC suffix from JSON filename (TX_TLETS_MC.json -> TX_TLETS.json).
+          Added CPL Name combo to DriverLicenseQuery (3->4 DL combos, 23->24 total).
+          Reordered DL combos: DQName (5 set) -> QWName (3) -> CPLName (3) -> DQOperatorLicenseNumber (2).
+          Reordered DH combos: KQName (5 set) -> KQOperatorLicenseNumber (2).
+REASON  : Eliminate BASE/MC split per single-JSON-per-provider policy.
+          Combo reorder eliminates both v3.0 LIMITATIONs (most-specific first).
+SCRIPT  : scripts/build_tx_tlets.ps1 (single script)
+OUTPUT  : TX_TLETS.json (6 cards, 24 combos, 7 QIDMs)
+SCORE   : 85P/0F/0W/0LIM
+
+--------------------------------------------------------------------------------
 v3.0  2026-05-20  Fresh rebuild -- minimized cards, tightened layouts, full defaults
 --------------------------------------------------------------------------------
 CHANGED : Complete rewrite from scratch (fresh start per new-project policy).
