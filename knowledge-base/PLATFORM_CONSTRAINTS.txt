@@ -15,21 +15,31 @@ Legend:
 SECTION 1 -- QUERY ROUTING AND COMBINATION BEHAVIOR
 ================================================================================
 
-LIMITATION #1: set[] and any[] control BOTH combination selection AND attribute serialization
-  CORRECTED: TX_TLETS v3.2 T7 (2026-05-26) disproved original claim.
-  ORIGINAL (WRONG): "ALL populated attributes in the QIDM are sent regardless of set[]/any[]."
-    Originally observed NJ v2.1 (2026-04-08) — likely misinterpreted because NJ combos
-    at that time had overlapping any[] arrays that included the "extra" fields.
-  ACTUAL BEHAVIOR: Platform only serializes attributes in the FIRING combo's set[]/any[].
-    Attributes defined on the QIDM but NOT in the firing combo's arrays are OMITTED
-    from the outgoing XML, even if the form field has a non-blank value.
-  PROOF: TX_TLETS v3.2 DQName catchall combo (set=[sexCode,birthDate,nameLast,nameFirst],
-    any=[nameMiddle,nameSuffix,registrationState]). Form had ImageIndicator=N, ReasonCode=C.
-    XML contained ONLY State, SexCode, BirthDate, Name. ImageIndicator, ReasonCode, and
-    EmailAddress were all absent — they are not in the DQName combo's set[]/any[].
-  DESIGN IMPLICATION: A single QIDM can send different XML payloads per combo by varying
-    each combo's set[]/any[] arrays. Combined with conditions routing, this enables
-    attribute-level control without splitting into multiple QIDMs.
+LIMITATION #1: Attribute serialization controlled by CONDITIONS POOL, not just firing combo
+  CORRECTED: TX_TLETS v3.2 T7+T8 (2026-05-26). Original claim and first correction both
+    incomplete. Full behavior now understood.
+  ORIGINAL (INCOMPLETE): "ALL populated attributes in the QIDM are sent regardless of
+    set[]/any[]." True for QIDMs without conditions. NJ v2.1 had no conditions.
+  ACTUAL BEHAVIOR: Platform builds a serialization pool from the UNION of set[]/any[]
+    from all combos whose conditions match (or have no conditions). Then serializes
+    populated fields from that pool. The combo that FIRES is determined by set[] matching,
+    but serialization draws from the entire conditions-matched pool.
+  PROOF (TX_TLETS v3.2):
+    T7: Image=N → DQNameImg conditions (EQUALS Y) FAIL → Image/Reason/Email excluded
+        from pool → DQName catchall fires → XML has only State, Sex, DOB, Name. PASS.
+    T8: Image=Y → DQNameImg conditions (EQUALS Y) PASS (but set[] fails, no Sex) →
+        Image/Reason/Email ADDED to pool → QWName fires → XML includes Image=Y,
+        Reason=C even though they are NOT in QWName's set[]/any[]. PASS.
+  KEY INSIGHT: Conditions filter the serialization pool. When conditions FAIL, those
+    combos' unique fields are excluded even if form values exist. When conditions PASS,
+    fields are included even if that combo doesn't fire (set[] not met).
+  DESIGN IMPLICATION: Conditions routing can control attribute omission within a single
+    QIDM. Put fields-to-omit ONLY in conditions-guarded combos' any[]. When conditions
+    fail, those fields are excluded from XML. When conditions pass, they serialize.
+    No need for separate QIDMs.
+  COMPATIBILITY: QIDMs without conditions behave as originally documented — all combos'
+    fields form one pool, and all populated attributes serialize. LIMITATION #1 original
+    claim is correct for the no-conditions case (e.g., NJ v2.1).
 
   CLARIFICATION (confirmed FL_FCIC 2026-05-05, CA_CLETS 2026-05-08):
     any[] is NOT a minimum-one-required gate. A combo fires when all set[] fields
