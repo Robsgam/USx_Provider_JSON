@@ -77,10 +77,14 @@ $vehStolenQuery = [PSCustomObject]@{
 }
 
 # --- DriverLicenseQuery (7 combos) ---
-# v3.2: conditions routing — ImageIndicator EQUALS Y combos include image+reason+email;
+# v3.2: conditions routing — all 3 image fields must be present for image-path combos;
 # catchall combos (no conditions) omit them. Email on shared OPTIONS card.
 # Order: image-path before catchall at each specificity level.
-$imgCond = @([PSCustomObject]@{ field = @('ImageIndicator'); operator = 'EQUALS'; value = @('Y') })
+$imgCond = @(
+    [PSCustomObject]@{ field = @('ImageIndicator'); operator = 'EQUALS'; value = @('Y') }
+    [PSCustomObject]@{ field = @('ReasonCode');     operator = 'EQUALS'; value = @('C') }
+    [PSCustomObject]@{ field = @('EmailAddress');   operator = 'REGEX';  value = @('.+') }
+)
 $imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefs = @([PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dlQuery = [PSCustomObject]@{
