@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-05-27 12:06
+  Generated: 2026-05-27 13:21
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -12,7 +12,7 @@ QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=2 fields=6
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
-  Boat | entity=Boat | qidm= | cards=2 fields=8
+  Boat | entity=Boat | qidm= | cards=2 fields=7
 QIDMs: 6
   FL_FCIC_VehicleRegistrationQuery | attrs=10 combos=6 autoSelect=
   FL_FCIC_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
@@ -105,7 +105,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_BOA_OPT"
       ROW ROW_BOA_O1 [6 6]
-        relatedHitSearchIndicator (Text | maxLen=1)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
     CARD "CARD_BOA_SEARCH"
       ROW ROW_BOA_1 [6 3 3]

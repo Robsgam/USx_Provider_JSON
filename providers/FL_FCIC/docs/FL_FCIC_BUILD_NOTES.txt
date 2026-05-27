@@ -4,6 +4,14 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.5 (2026-05-27) -- Boat Stolen Search field type fix
+  CHANGED: relatedHitSearchIndicator on Boat OPTIONS card changed from FormInput
+           (officer typed "Y") to FormSelect dropdown (YES_NO_UNKNOWN/NCIC = Y/N).
+           No initialValue — field is routing toggle between FBQ (registration) and
+           QB (stolen) combos. Label changed from "Stolen Search (Y)" to "Stolen Search".
+  REASON:  Cross-provider consistency. All other providers (TX, NY) use FormSelect for
+           this field. FormInput required officer to know to type "Y".
+
 v4.4 (2026-05-27) -- Remove unauthorized queries (VehicleStolenQuery + BQ combos)
   CHANGED: Removed FL_FCIC_VehicleStolenQuery QIDM and its 6 combos (QV by plate/VIN/PCN/NCIC#/OAN/PartSerial).
            Removed 3 BQ combos from BoatQuery (BQName, BQBoatHullIdNumber, BQRegistrationNumber).

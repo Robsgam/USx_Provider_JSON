@@ -1,4 +1,4 @@
-FL_FCIC MC v4.4 -- TEST MATRIX
+FL_FCIC MC v4.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-05-27
 Variant: MC (multi-card per entity)
@@ -36,7 +36,7 @@ Article (1 card, 6 fields):
 
 Boat (2 cards, 9 fields):
   CARD_BOA_OPT (Search Options):
-    relatedHitSearchIndicator [Inp 1], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_BOA_SEARCH (Boat Search):
     ROW 1: boatHullIdNumber [Inp 62], registrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], ncicNumber [Inp 10], processControlNumber [Inp 10]
@@ -67,7 +67,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Decal Number, Title/Lien Info.
  2  Boat        Render form. Verify 2 cards:                        [    ]
               CARD_BOA_OPT: titled "Search Options".
-              Stolen Search (Y), Image dropdown=N.
+              Stolen Search dropdown (no default), Image dropdown=N.
               CARD_BOA_SEARCH: titled "Boat Search".
               Hull ID Number, Registration Number, Coast Guard Doc #.
               Decal Number, Title/Lien Info, NCIC Number, PCN.

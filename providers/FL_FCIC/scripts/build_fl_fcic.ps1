@@ -40,7 +40,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.4"
+    [string]$Version = "4.5"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -621,7 +621,7 @@ $boaLayout = MakeLayouts @(
         title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_BOA_O1'; cols = @('6','6'); fields = @(
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Search (Y)' '1' 'ROW_BOA_O1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
             )}
         )
