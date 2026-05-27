@@ -1,0 +1,82 @@
+FL_FCIC v4.4 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Boat
+Combo      : FBQBoatHullIdNumber (Hull search - FBQ fires, no BQ)
+Test type  : T1 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  boatHullIdNumber          FL9565521245784    typed
+  imageIndicator            N                  default (initialValue=N)
+  relatedHitSearchIndicator Y                  default (initialValue=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN6R2VP1PE1DFHZDY1V19JP
+  MessageType : BoatQuery
+  keyReference: FBQBoatHullIdNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    BoatHullIdNumber     FL9565521245784
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQBoatHullIdNumber
+  Reason: set[boatHullIdNumber] populated; any[imageIndicator, relatedHitSearchIndicator]
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  BoatHullIdNumber               YES    FL9565521245784 set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  CoastGuardDocumentNumber       NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+  RegistrationNumber             NO     --              sourceField empty
+  RelatedHitSearchIndicator      NO     --              not sent (Y default but not in FBQ any[]?)
+  State                          NO     --              blank (no default)
+  TitleLienInformation           NO     --              sourceField empty
+
+  CONFIRMED: No BQ (Nlets OOS Boat) transaction generated (BQ combos removed in v4.4).
+  Previously (v4.3): hull search would co-fire BQ alongside FBQ.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS boat search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQBoatHullIdNumber fires correctly with hull-only input. No unauthorized BQ co-fire.
+  Detail: Single BoatQuery transaction. Response not captured (test plate).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN6R2VP1PE1DFHZDY1V19JP"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KSN6R2VP1PE1DFHZDY1V19JP</Id><BoatHullIdNumber>FL9565521245784</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS boat search)
