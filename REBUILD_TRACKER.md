@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.6 | 72P/0F/0W/0LIM | 72P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v2.1 | 78P/0F/0W/0LIM | 78P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W/0LIM | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v4.3 | 97P/0F/0W/0LIM | 101P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
+| 5 | FL_FCIC | v4.4 | 97P/0F/0W/0LIM | 101P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
 | 6 | TX_TLETS | v3.2 |  | 90P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W/0LIM | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.4 | 70P/0F/0W/0LIM | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
@@ -130,7 +130,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v3.4 | 69P/0F/0W/0LIM | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.4 | 70P/0F/0W/0LIM | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v4.3 | 97P/0F/0W/0LIM | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
+| FL_FCIC | v4.4 | 97P/0F/0W/0LIM | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
 ### Flagged for Full Rebuild on Next Test (16)
 

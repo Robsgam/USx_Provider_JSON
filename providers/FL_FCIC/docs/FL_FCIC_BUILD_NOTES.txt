@@ -4,6 +4,19 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.4 (2026-05-27) -- Remove unauthorized queries (VehicleStolenQuery + BQ combos)
+  CHANGED: Removed FL_FCIC_VehicleStolenQuery QIDM and its 6 combos (QV by plate/VIN/PCN/NCIC#/OAN/PartSerial).
+           Removed 3 BQ combos from BoatQuery (BQName, BQBoatHullIdNumber, BQRegistrationNumber).
+           Removed Vehicle form fields: ncicNumber, processControlNumber, ownerAppliedNumber, partSerialNumber.
+           Removed Boat form fields: nameLast, nameFirst, birthDate, registrationState.
+           Provider bundle: 9 configs (was 10). CommSys combos: 28 (was 37). QIDMs: 6 (was 7).
+  REASON:  VehicleStolenQuery not in devdoc "Basic Queries Supported". QV key listed under
+           VehicleRegistrationQuery, not as a separate query. BQ (Nlets OOS Boat) not in devdoc
+           key list (FBQ + QB only). Devdoc is the ONLY authority for which queries to build;
+           metadata existence does not equal authorization.
+  VALIDATOR: 87P/0F/0W
+  TEST CONDUCTOR: 28/28 PASS
+
 v4.3 (2026-05-21) -- Single-JSON merge
   CHANGED: Merged BASE/MC into single build: build_fl_fcic.ps1 → FL_FCIC.json (no suffix).
            Deleted old BASE build script. Reports now in docs/ (not docs/mc/).

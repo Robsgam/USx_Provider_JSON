@@ -13,7 +13,7 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-05-26)
+## Provider Status (updated 2026-05-27)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
@@ -21,7 +21,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.6 | 72P/0F/0W/0LIM (BASE) 72P/0F/0W/0LIM (MC) | 7-transaction build, VehicleStolenQuery, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v2.1 | 78P/0F/0W/0LIM | 7 cards (Veh 1, Per 3, Gun 1, Art 1, Boat 1), 14 combos, 7 QIDMs, DGRP (DL Name Search), DH-suffix+one-directional queriesToDeselect, CAD defaults all 14 combos, RelatedHitSearchIndicator on Gun/Art/Boat, VehicleMakeCode FormSelect, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
-| FL_FCIC | providers/FL_FCIC/ | v4.3 | 97P/0F/0W/0LIM -- 33/33 combos, QW removed (CommSys auto-sends) | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible, RMS Vehicle stripped to 3 attrs |
+| FL_FCIC | providers/FL_FCIC/ | v4.4 | 97P/0F/0W/0LIM -- 28/28 combos, 6 QIDMs | MC 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8), one-directional queriesToDeselect, RegistrationStateDH, Attention visible, RMS Vehicle stripped to 3 attrs |
 | TX_TLETS | providers/TX_TLETS/ | v3.2 | 90P/0F/0W/0LIM | 6 cards (Veh 1, Per 3 DH+DL+Options, Gun 1, Art 1, Boat 1), 29 combos, 7 QIDMs, conditions routing (ImageIndicator EQUALS Y), email→shared OPTIONS card, CPL Name combo, DH-suffix+one-directional queriesToDeselect, TX-specific (DPSI/REG/VIN+FRT), VehicleStolenQuery, CAD defaults, -SkipRace on RMS |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS/ | v2.4 | 91P/0F/0W -- 40/40 combos (100%), MC active, 6 QIDMs, live-tested all 5 entities | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV, IV.4* plate-type conditions routing, IR.QVC criminal records (CII/SSN promoted from any[] to set[]), -SkipRace on RMS, RMS Vehicle stripped to 3 attrs (VIN/plate/state) |

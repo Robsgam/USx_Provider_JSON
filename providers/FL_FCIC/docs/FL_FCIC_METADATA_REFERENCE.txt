@@ -1,8 +1,8 @@
 ﻿FL_FCIC METADATA REFERENCE
 ===========================
-Generated: 2026-05-21
+Generated: 2026-05-27
 Source: FL_FCIC.xml (metadata) + FL_FCIC.json
-Metadata: 177 total transactions, 7 queries built in JSON
+Metadata: 177 total transactions, 6 queries built in JSON
 
 ================================================================================
 1. ArticleSingleQuery (version 9)
@@ -75,10 +75,7 @@ METADATA COMBINATIONS (12 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber, State                                RegistrationNumber, Request...
   BQ            RegistrationNumber      RegistrationNumber, State                              BoatHullIdNumber, Requestor...
 
-BUILD COVERAGE (12 of 12 built):
-  BUILT   BQName         set[birthDate, nameLast, nameFirst, registrationState]
-  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
-  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
+BUILD COVERAGE (9 of 12 built):
   BUILT   QBBoatHullIdNumber set[boatHullIdNumber, relatedHitSearchIndicator]
   BUILT   QBRegistrationNumber set[registrationNumber, relatedHitSearchIndicator]
   BUILT   FBQBoatHullIdNumber set[boatHullIdNumber]
@@ -248,64 +245,22 @@ BUILD COVERAGE (6 of 8 built):
   SKIP    RQ             VehicleIdentificationNumber -- MC expansion candidate
 
 ================================================================================
-7. VehicleStolenQuery (version 14)
-================================================================================
-
-METADATA FIELDS (11):
-  ImageIndicator              Alphabetic    maxLen= 1  Shall be 'Y' or 'N'. If blank, default value shall be 'N'...
-  LicensePlateNumber          Alphanumeric  maxLen=10  The values 'UNK', 'UNKN', 'UNKNOWN' shall be prohibited. ...
-  NCICNumber                  Alphanumeric  maxLen=10  Shall be a single alphabetic character followed by nine n...
-  OwnerAppliedNumber          Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
-  PartSerialNumber            Alphanumeric  maxLen=20  Single zero only, run of zeros only, single alphabetic on...
-  ProcessControlNumber        Alphanumeric  maxLen=10  FCIC process control number
-  RelatedHitSearchIndicator   Alphabetic    maxLen= 1  Must be Y or N
-  Requestor                   Alphanumeric  maxLen=30  attention
-  State                       Alphanumeric  maxLen= 2  identifying state
-  VehicleIdentificationNumber Alphanumeric  maxLen=20  Shall validate length and type. Single zero only, run of ...
-  VehicleMakeCode             Alphanumeric  maxLen=24  The first four characters shall be a valid code from part...
-
-METADATA COMBINATIONS (6 total):
-  KeyRef      Primary                 Set                                                    Any
-  ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  QV            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
-  QV            LicensePlateNumber      LicensePlateNumber + Choice[VehicleIdentificationN...  ImageIndicator, RelatedHitS...
-  QV            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
-  QV            OwnerAppliedNumber      OwnerAppliedNumber                                     ImageIndicator, RelatedHitS...
-  QV            PartSerialNumber        PartSerialNumber                                       ImageIndicator, RelatedHitS...
-  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, RelatedHitS...
-
-BUILD COVERAGE (6 of 6 built):
-  BUILT   QVLicensePlateNumber set[licensePlateNumber]
-  BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
-  BUILT   QVProcessControlNumber set[processControlNumber]
-  BUILT   QVNCICNumber   set[ncicNumber]
-  BUILT   QVOwnerAppliedNumber set[ownerAppliedNumber]
-  BUILT   QVPartSerialNumber set[partSerialNumber]
-  SKIP    QV             ProcessControlNumber -- MC expansion candidate
-  SKIP    QV             LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             NCICNumber -- MC expansion candidate
-  SKIP    QV             OwnerAppliedNumber -- MC expansion candidate
-  SKIP    QV             PartSerialNumber -- MC expansion candidate
-  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
-
-================================================================================
 BUILD SUMMARY
 ================================================================================
 
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         4      4     0  100% (COMPLETE)
-  BoatQuery                                 12     12     0  100% (COMPLETE)
+  BoatQuery                                 12      9     3  75%
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         6      4     2  67%
   GunQuery                                   3      3     0  100% (COMPLETE)
   VehicleRegistrationQuery                   8      6     2  75%
-  VehicleStolenQuery                         6      6     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   41     37     4  90%
+  TOTAL                                   35     28     7  80%
 
 ================================================================================
-MC EXPANSION CANDIDATES (41 combos not in BASE)
+MC EXPANSION CANDIDATES (35 combos not in BASE)
 ================================================================================
 
   QA             ArticleSerialNumber      (ArticleSingleQuery)
@@ -343,15 +298,9 @@ MC EXPANSION CANDIDATES (41 combos not in BASE)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
   RQ             LicensePlateNumber       (VehicleRegistrationQuery)
   RQ             VehicleIdentificationNumber (VehicleRegistrationQuery)
-  QV             ProcessControlNumber     (VehicleStolenQuery)
-  QV             LicensePlateNumber       (VehicleStolenQuery)
-  QV             NCICNumber               (VehicleStolenQuery)
-  QV             OwnerAppliedNumber       (VehicleStolenQuery)
-  QV             PartSerialNumber         (VehicleStolenQuery)
-  QV             VehicleIdentificationNumber (VehicleStolenQuery)
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (170 of 177 in metadata)
+ALL UNBUILT TRANSACTIONS (171 of 177 in metadata)
 ================================================================================
 
   AdministrativeMessage                    v9    2 combos
@@ -466,6 +415,7 @@ ALL UNBUILT TRANSACTIONS (170 of 177 in metadata)
   NletsParoleProbationCorrectionsQuery     v6    1 combos
   NletsSexOffenderRegistrationQuery        v6    1 combos
   VehicleRegistrationNameQuery             v7    1 combos
+  VehicleStolenQuery                       v14   6 combos
   VehicleTitleLeinQuery                    v11   3 combos
   WantedPersonQuery                        v18   11 combos
   WMPEDetainerCancel                       v10   2 combos

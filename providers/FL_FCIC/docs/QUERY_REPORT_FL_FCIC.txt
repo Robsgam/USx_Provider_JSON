@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-05-21 16:00
+  Generated: 2026-05-27 12:06
 ================================================================
 QUERY SIMULATION
 ================
@@ -126,117 +126,6 @@ QUERY SIMULATION
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
-      </Transaction>
-
---- QIDM: FL_FCIC_VehicleStolenQuery [Vehicle] ---
-    Query: VehicleStolenQuery  |  Attrs: 9  |  Combos: 6
-
-    [FIRES] QVLicensePlateNumber
-      set: [licensePlateNumber]
-      any: [imageIndicator, registrationState, vehicleMakeCode] -> matched: [imageIndicator, registrationState, vehicleMakeCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QVVehicleIdentificationNumber
-      set: [vehicleIdentificationNumber]
-      any: [imageIndicator, registrationState, vehicleMakeCode] -> matched: [imageIndicator, registrationState, vehicleMakeCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QVProcessControlNumber
-      set: [processControlNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QVNCICNumber
-      set: [ncicNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QVOwnerAppliedNumber
-      set: [ownerAppliedNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QVPartSerialNumber
-      set: [partSerialNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
-        <PartSerialNumber>PSN12345</PartSerialNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
 --- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
@@ -444,70 +333,7 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: FL_FCIC_BoatQuery [Boat] ---
-    Query: BoatQuery  |  Attrs: 12  |  Combos: 12
-
-    [FIRES] BQName
-      set: [birthDate, nameLast, nameFirst, registrationState]
-      any: [boatHullIdNumber, registrationNumber, imageIndicator] -> matched: [boatHullIdNumber, registrationNumber, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
-        <DecalNumber>FL12345678</DecalNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
-        <NCICNumber>B123456789</NCICNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-        <TitleLienInformation>ABCD1234</TitleLienInformation>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
-
-    [FIRES] BQBoatHullIdNumber
-      set: [boatHullIdNumber, registrationState]
-      any: [registrationNumber, imageIndicator] -> matched: [registrationNumber, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
-        <DecalNumber>FL12345678</DecalNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
-        <NCICNumber>B123456789</NCICNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-        <TitleLienInformation>ABCD1234</TitleLienInformation>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
-
-    [FIRES] BQRegistrationNumber
-      set: [registrationNumber, registrationState]
-      any: [boatHullIdNumber, imageIndicator] -> matched: [boatHullIdNumber, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
-        <DecalNumber>FL12345678</DecalNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
-        <NCICNumber>B123456789</NCICNumber>
-        <ProcessControlNumber>0000012345</ProcessControlNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-        <TitleLienInformation>ABCD1234</TitleLienInformation>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
+    Query: BoatQuery  |  Attrs: 9  |  Combos: 9
 
     [FIRES] QBBoatHullIdNumber
       set: [boatHullIdNumber, relatedHitSearchIndicator]
@@ -516,16 +342,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -537,16 +360,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -558,16 +378,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -579,16 +396,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -600,16 +414,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -621,16 +432,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -642,16 +450,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -663,16 +468,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
@@ -684,16 +486,13 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
-        <BirthDate>19900115</BirthDate>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
         <DecalNumber>FL12345678</DecalNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John</Name>
         <NCICNumber>B123456789</NCICNumber>
         <ProcessControlNumber>0000012345</ProcessControlNumber>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
         <TitleLienInformation>ABCD1234</TitleLienInformation>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>

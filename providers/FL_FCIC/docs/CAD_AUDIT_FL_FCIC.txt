@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-05-21 16:00
+  Generated: 2026-05-27 12:06
 ================================================================
 CAD AUDIT
 =========
@@ -32,10 +32,6 @@ CAD AUDIT
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] decalNumber: in QIF, not in CAD list (provider-specific)
     [INFO] titleLienInformation: in QIF, not in CAD list (provider-specific)
-    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] processControlNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] partSerialNumber: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF and CAD list
     [PASS] nameFirst: in QIF and CAD list
@@ -113,13 +109,13 @@ CAD AUDIT
   Boat:
     [PASS] boatHullIdNumber: in QIF and CAD list
     [PASS] registrationNumber: in QIF and CAD list
-    [PASS] registrationState: in QIF and CAD list
+    [INFO] registrationState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] imageIndicator: in QIF and CAD list
-    [PASS] nameFirst: in QIF and CAD list
-    [PASS] nameLast: in QIF and CAD list
+    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] birthDate: in QIF and CAD list
+    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -153,7 +149,6 @@ CAD AUDIT
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_DriverHistoryQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'FL_FCIC_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -167,12 +162,6 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQLicensePlateNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQTitleLienInformation -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVLicensePlateNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVProcessControlNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVNCICNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVOwnerAppliedNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleStolenQuery' combo QVPartSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
@@ -186,9 +175,6 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAOwnerAppliedNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QANCICNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAProcessControlNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQBoatHullIdNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBBoatHullIdNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQBoatHullIdNumber -- defaults cover all initialValue any[] fields
@@ -205,6 +191,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 89 PASS / 0 FAIL / 0 WARN / 84 INFO
+Total: 75 PASS / 0 FAIL / 0 WARN / 84 INFO
 
 
