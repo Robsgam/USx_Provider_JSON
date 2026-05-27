@@ -40,7 +40,7 @@
 #   State:       No initialValue (LIMITATION #30 -- FL has in-state vs OOS keyRefs)
 
 param(
-    [string]$Version = "4.5"
+    [string]$Version = "4.6"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -376,16 +376,17 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
-        # QB+Hull/QB+Reg (NCIC stolen -- RelatedHitSearchIndicator in set[] routes here)
-        # MUST be before FBQ+Hull/FBQ+Reg: more-specific set[] fires first when flag is filled
+        # QB+Hull/QB+Reg (NCIC stolen -- conditions EQUALS Y routes here, N/blank falls through to FBQ)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','relatedHitSearchIndicator'); any = @('imageIndicator','registrationNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            conditions            = @([PSCustomObject]@{ field = 'relatedHitSearchIndicator'; operator = 'EQUALS'; value = 'Y' })
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QBBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('registrationNumber','relatedHitSearchIndicator'); any = @('imageIndicator','boatHullIdNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            conditions            = @([PSCustomObject]@{ field = 'relatedHitSearchIndicator'; operator = 'EQUALS'; value = 'Y' })
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QBRegistrationNumber'
             state                 = 'In/Out'
