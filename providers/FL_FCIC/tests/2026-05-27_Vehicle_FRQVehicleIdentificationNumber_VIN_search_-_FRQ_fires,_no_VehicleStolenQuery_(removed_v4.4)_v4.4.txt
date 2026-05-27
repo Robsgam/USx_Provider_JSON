@@ -1,0 +1,85 @@
+FL_FCIC v4.4 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : FRQVehicleIdentificationNumber (VIN search - FRQ fires, no VehicleStolenQuery)
+Test type  : T1 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 676567856878     typed
+  licensePlateYear          2026               default (initialValue=$currentYear)
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  imageIndicator            N                  default (initialValue=N)
+  registrationState         (blank)            no default (LIMITATION #30)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN6JZ6N1RWJR445DK5RQDRJ
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQVehicleIdentificationNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    VehicleIdentificationNumber 676567856878
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQVehicleIdentificationNumber
+  Reason: set[vehicleIdentificationNumber] populated; any[vehicleMakeCode, vehicleYear, imageIndicator]
+
+  QIDM attribute             Sent?  Value           Note
+  -------------------------  -----  --------------  --------------------------------
+  VehicleIdentificationNumber YES   676567856878    set[] -- typed
+  ImageIndicator             YES    N               any[] -- default N
+  DecalNumber                NO     --              sourceField empty
+  LicensePlateNumber         NO     --              sourceField empty
+  LicensePlateTypeCode       NO     --              not sent (PC default on form but not in FRQ any[])
+  LicensePlateYear           NO     --              not sent (2026 default on form but not in FRQ any[])
+  State                      NO     --              blank (no default, LIMITATION #30)
+  TitleLienInformation       NO     --              sourceField empty
+  VehicleMakeCode            NO     --              sourceField empty
+  VehicleYear                NO     --              sourceField empty
+
+  CONFIRMED: No VehicleStolenQuery request generated (QIDM removed in v4.4).
+  Previously (v4.3): VIN search would co-fire both VehicleRegistrationQuery + VehicleStolenQuery.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle VIN search
+  RMS request: {"elasticQuery":{"vehicle":{"vinNumber":"676567856878"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQVehicleIdentificationNumber fires correctly with VIN-only input. No unauthorized VehicleStolenQuery co-fire.
+  Detail: Response "No Returns" expected for test VIN 676567856878.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN6JZ6N1RWJR445DK5RQDRJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN6JZ6N1RWJR445DK5RQDRJ</Id><VehicleIdentificationNumber>676567856878</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"vinNumber":"676567856878"}},"from":0,"size":50}
