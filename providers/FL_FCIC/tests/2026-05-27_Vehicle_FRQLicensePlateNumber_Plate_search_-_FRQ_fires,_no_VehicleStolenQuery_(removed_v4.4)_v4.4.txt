@@ -1,0 +1,86 @@
+FL_FCIC v4.4 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : FRQLicensePlateNumber (Plate search - FRQ fires, no VehicleStolenQuery)
+Test type  : T1 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        ABC123             typed
+  licensePlateYear          2026               default (initialValue=$currentYear)
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  imageIndicator            N                  default (initialValue=N)
+  registrationState         (blank)            no default (LIMITATION #30)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN3QC5MD8B69NNEHR1PDYFP
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQLicensePlateNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    ImageIndicator       N
+    LicensePlateYear     2026
+    LicensePlateNumber   ABC123
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQLicensePlateNumber
+  Reason: set[licensePlateNumber] populated; any[licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator]
+
+  QIDM attribute             Sent?  Value           Note
+  -------------------------  -----  --------------  --------------------------------
+  LicensePlateNumber         YES    ABC123          set[] -- typed
+  LicensePlateYear           YES    2026            any[] -- default $currentYear
+  ImageIndicator             YES    N               any[] -- default N
+  DecalNumber                NO     --              sourceField empty
+  LicensePlateTypeCode       NO     --              not sent (PC default on form but not in FRQ any[])
+  State                      NO     --              blank (no default, LIMITATION #30)
+  TitleLienInformation       NO     --              sourceField empty
+  VehicleIdentificationNumber NO    --              sourceField empty
+  VehicleMakeCode            NO     --              sourceField empty
+  VehicleYear                NO     --              sourceField empty
+
+  CONFIRMED: No VehicleStolenQuery request generated (QIDM removed in v4.4).
+  Previously (v4.3): plate search would co-fire both VehicleRegistrationQuery + VehicleStolenQuery.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle tag search
+  RMS request: {"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQLicensePlateNumber fires correctly with plate-only input. No unauthorized VehicleStolenQuery co-fire.
+  Detail: Response "No Returns" expected for test plate ABC123.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN3QC5MD8B69NNEHR1PDYFP"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN3QC5MD8B69NNEHR1PDYFP</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"abc123"}},"from":0,"size":50}
