@@ -1,0 +1,89 @@
+FL_FCIC v4.4 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : RQLicensePlateNumber (OOS Plate+State - RQ fires, no VehicleStolenQuery)
+Test type  : T1 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        TEST6783           typed
+  registrationState         GA                 selected (Georgia)
+  licensePlateYear          2026               default (initialValue=$currentYear)
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN6NJVHR1G6G0MH0891PFA5
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQLicensePlateNumber
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    LicensePlateNumber   TEST6783
+    State                GA
+    LicensePlateYear     2026
+    LicensePlateTypeCode PC
+    ImageIndicator       N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQLicensePlateNumber
+  Reason: set[licensePlateNumber, registrationState] populated; any[licensePlateYear, licensePlateTypeCode, vehicleMakeCode, vehicleYear, imageIndicator]
+
+  QIDM attribute             Sent?  Value           Note
+  -------------------------  -----  --------------  --------------------------------
+  LicensePlateNumber         YES    TEST6783        set[] -- typed
+  State                      YES    GA              set[] -- selected (NCIC reverse-lookup)
+  LicensePlateYear           YES    2026            any[] -- default $currentYear
+  LicensePlateTypeCode       YES    PC              any[] -- default PC
+  ImageIndicator             YES    N               any[] -- default N
+  DecalNumber                NO     --              sourceField empty
+  TitleLienInformation       NO     --              sourceField empty
+  VehicleIdentificationNumber NO    --              sourceField empty
+  VehicleMakeCode            NO     --              sourceField empty
+  VehicleYear                NO     --              sourceField empty
+
+  CONFIRMED: No VehicleStolenQuery request generated (QIDM removed in v4.4).
+  Previously (v4.3): OOS plate search would co-fire VehicleStolenQuery.
+  CONFIRMED: NCIC reverse-lookup on State works (GA selected from dropdown → GA in XML).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle tag+state search
+  RMS request: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510834680],"tag":"test6783"}},"from":0,"size":50}
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: RQLicensePlateNumber fires correctly with OOS plate+state. No unauthorized VehicleStolenQuery co-fire.
+  Detail: State NCIC reverse-lookup confirmed (GA). RMS sends registrationStateAttrIds. Response "No Returns" expected for test plate.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN6NJVHR1G6G0MH0891PFA5"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN6NJVHR1G6G0MH0891PFA5</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>GA</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>TEST6783</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510834680],"tag":"test6783"}},"from":0,"size":50}
