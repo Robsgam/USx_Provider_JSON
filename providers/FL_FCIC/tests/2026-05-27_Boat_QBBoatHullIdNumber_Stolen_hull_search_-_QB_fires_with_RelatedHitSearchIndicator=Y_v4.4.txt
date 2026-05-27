@@ -1,0 +1,86 @@
+FL_FCIC v4.4 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Boat
+Combo      : QBBoatHullIdNumber (Stolen hull search - QB fires with RelatedHitSearchIndicator=Y)
+Test type  : T1 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  boatHullIdNumber          34234233           typed
+  relatedHitSearchIndicator Y                  typed (no default — routing toggle)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN6WNAGFMPVXZ9Y3VJTRJH2
+  MessageType : BoatQuery
+  keyReference: QBBoatHullIdNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    BoatHullIdNumber         34234233
+    RelatedHitSearchIndicator Y
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QBBoatHullIdNumber
+  Reason: set[boatHullIdNumber, relatedHitSearchIndicator] both populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  BoatHullIdNumber               YES    34234233        set[] -- typed
+  RelatedHitSearchIndicator      YES    Y               set[] -- typed (routing toggle)
+  ImageIndicator                 YES    N               any[] -- default N
+  CoastGuardDocumentNumber       NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+  RegistrationNumber             NO     --              any[] -- sourceField empty
+  State                          NO     --              blank (no default)
+  TitleLienInformation           NO     --              sourceField empty
+
+  NOTE: relatedHitSearchIndicator has no initialValue in FL — intentional.
+  It is in set[] for QB Hull/Reg combos, making it the routing toggle
+  between FBQ (registration) and QB (stolen). Defaulting would cause
+  stolen queries to fire on every boat search.
+  Future improvement: change from FormInput to FormSelect (Y/N dropdown).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS boat search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QBBoatHullIdNumber fires correctly when RelatedHitSearchIndicator=Y typed manually.
+  Detail: QB stolen path confirmed working after BQ combo removal in v4.4.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN6WNAGFMPVXZ9Y3VJTRJH2"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KSN6WNAGFMPVXZ9Y3VJTRJH2</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><BoatHullIdNumber>34234233</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS boat search)
