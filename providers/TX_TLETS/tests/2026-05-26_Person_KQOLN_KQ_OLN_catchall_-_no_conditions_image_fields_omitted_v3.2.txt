@@ -1,0 +1,106 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : KQOLN (KQ OLN catchall - no conditions, image fields omitted)
+Test type  : T16 -- DH OLN catchall, conditions FAIL path
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationState         TX                 default
+  imageIndicator            Y                  default
+  reasonCode                C                  default
+  emailAddress              (blank)            not filled
+  DL card                   (all blank)        --
+  operatorLicenseNumberDH   D123654789         typed
+  purposeCodeDH             C                  default
+  attentionDH               (blank)            --
+  nameLastDH                (blank)            --
+  nameFirstDH               (blank)            --
+  nameMiddleDH              (blank)            --
+  nameSuffixDH              (blank)            --
+  birthDateDH               (blank)            --
+  sexCodeDH                 (blank)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSJVRVPB03G1912JS7J049VX
+  MessageType : DriverHistoryQuery
+  keyReference: KQOLN
+
+  Fields sent in XML request:
+    Element                Value
+    -------------------    -------------------
+    State                  TX
+    OperatorLicenseNumber  D123654789
+    PurposeCode            C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQOLN (catchall -- no conditions)
+  Reason: set[operatorLicenseNumberDH] populated. No name/DOB/sex so KQName skipped.
+          KQOLNImg conditions failed (EmailAddress REGEX .+ -- blank).
+          KQOLN catchall fired.
+
+  3-field conditions evaluation (ImageIndicator EQUALS Y AND ReasonCode EQUALS C AND EmailAddress REGEX .+):
+    ImageIndicator  EQUALS Y    -> PASS  (Y = Y)
+    ReasonCode      EQUALS C    -> PASS  (C = C)
+    EmailAddress    REGEX .+    -> FAIL  (blank -- no match)
+    Overall result: FAIL (AND logic -- one failure kills all)
+    Effect: Image-path combos' fields excluded from serialization pool
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Attention                 NO     --              sourceField empty
+  BirthDate                 NO     --              sourceField empty
+  EmailAddress              NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  ImageIndicator            NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  Name                      NO     --              sourceFields empty
+  OperatorLicenseNumber     YES    D123654789      set[]
+  PurposeCode               YES    C               any[] + default
+  ReasonCode                NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  SexCode                   NO     --              sourceField empty
+  State                     YES    TX              any[] + default
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Person Search
+  RMS request fields:
+    dlNumber                 d123654789
+    registrationStateAttrId  69509558547
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: KQOLN catchall fires. Image/Reason/Email all absent from XML despite
+          Image=Y and Reason=C on form -- blank email caused conditions FAIL.
+          PurposeCode=C present (in catchall any[] + default).
+  Detail: Last DH combo. All 4 DH combos validated (KQNameImg, KQName, KQOLNImg, KQOLN).
+          Conditions routing confirmed working identically on DH and DL QIDMs.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSJVRVPB03G1912JS7J049VX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSJVRVPB03G1912JS7J049VX</Id><State>TX</State><OperatorLicenseNumber>D123654789</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"d123654789","registrationStateAttrId":"69509558547"},"from":0,"size":50}

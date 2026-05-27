@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML_BASE
   Source: HI_HCJDC_OFML_BASE.json
-  Generated: 2026-05-11 12:32
+  Generated: 2026-05-27 12:44
 ================================================================
 QUERY SIMULATION
 ================
@@ -122,37 +122,6 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
---- QIDM: HI_HCJDC_OFML_VehicleStolenQuery [Vehicle] ---
-    Query: VehicleStolenQuery  |  Attrs: 5  |  Combos: 2
-
-    [FIRES] QV.P
-      set: [licensePlateNumber]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
-    [FIRES] QV.V
-      set: [vehicleIdentificationNumber]
-      any: [vehicleMakeCode, imageIndicator] -> matched: [vehicleMakeCode, imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
-
 --- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
@@ -208,6 +177,7 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>John Doe A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
@@ -222,6 +192,7 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>John Doe A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>

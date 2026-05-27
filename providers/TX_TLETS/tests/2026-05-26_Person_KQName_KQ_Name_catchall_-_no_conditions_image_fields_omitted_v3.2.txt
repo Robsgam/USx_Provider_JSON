@@ -1,0 +1,111 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : KQName (KQ Name catchall - no conditions, image fields omitted)
+Test type  : T14 -- DH Name catchall, conditions FAIL path
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationState         TX                 default
+  imageIndicator            Y                  default
+  reasonCode                C                  default
+  emailAddress              (blank)            not filled
+  DL card                   (all blank)        --
+  operatorLicenseNumberDH   (blank)            --
+  purposeCodeDH             C                  default
+  attentionDH               (blank)            --
+  nameLastDH                DOE                typed
+  nameFirstDH               JOHN               typed
+  nameMiddleDH              (blank)            --
+  nameSuffixDH              (blank)            --
+  birthDateDH               01/01/1985         typed
+  sexCodeDH                 M                  selected
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSJVJKCFBKWC370WK9EWG5W3
+  MessageType : DriverHistoryQuery
+  keyReference: KQName
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    State                TX
+    SexCode              M
+    PurposeCode          C
+    BirthDate            01011985
+    Name                 DOE,JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQName (catchall -- no conditions)
+  Reason: set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH] all populated.
+          KQNameImg conditions failed (EmailAddress REGEX .+ -- blank).
+          KQName catchall fired.
+
+  3-field conditions evaluation (ImageIndicator EQUALS Y AND ReasonCode EQUALS C AND EmailAddress REGEX .+):
+    ImageIndicator  EQUALS Y    -> PASS  (Y = Y)
+    ReasonCode      EQUALS C    -> PASS  (C = C)
+    EmailAddress    REGEX .+    -> FAIL  (blank -- no match)
+    Overall result: FAIL (AND logic -- one failure kills all)
+    Effect: Image-path combos' fields excluded from serialization pool
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  Attention                 NO     --              sourceField empty
+  BirthDate                 YES    01011985        set[] + CommsysParseDateRuleHandler
+  EmailAddress              NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  ImageIndicator            NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  Name                      YES    DOE,JOHN        set[] + FormatStringRuleHandler
+  OperatorLicenseNumber     NO     --              sourceField empty
+  PurposeCode               YES    C               any[] + default
+  ReasonCode                NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  SexCode                   YES    M               set[]
+  State                     YES    TX              any[] + default
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Person Search
+  RMS request fields:
+    lastName                 doe
+    firstName                john
+    registrationStateAttrId  69509558547
+
+  (RMS XML not captured -- same pattern as T13)
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: KQName catchall fires. Image/Reason/Email all absent from XML despite
+          Image=Y and Reason=C on form -- blank email caused conditions FAIL.
+          PurposeCode=C present (in catchall any[] + default).
+  Detail: Counterpart to T13 (KQNameImg -- all conditions pass).
+          DH conditions routing fully validated for Name combos.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSJVJKCFBKWC370WK9EWG5W3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSJVJKCFBKWC370WK9EWG5W3</Id><State>TX</State><SexCode>M</SexCode><PurposeCode>C</PurposeCode><BirthDate>01011985</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"lastName":"doe","firstName":"john","registrationStateAttrId":"69509558547"},"from":0,"size":50}

@@ -18,6 +18,13 @@ Every iteration saved. Never overwrite.
 | phases/base/HI_HCJDC_OFML_v1.0_2026-05-07.json | v1.0 | 2026-05-07 | Monorepo rebuild. |
 | phases/mc/HI_HCJDC_OFML_v1.0_2026-05-07.json | v1.0 | 2026-05-07 | Monorepo rebuild. |
 
+
+## v1.7 (2026-05-27)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML_BASE.json | v1.7 | Current | 72P/0F/0W/0LIM. |
+| HI_HCJDC_OFML_MC.json | v1.7 | Current | 72P/0F/0W/0LIM. |
 ## v1.5 (2026-05-11)
 
 | File | Version | Status | Notes |

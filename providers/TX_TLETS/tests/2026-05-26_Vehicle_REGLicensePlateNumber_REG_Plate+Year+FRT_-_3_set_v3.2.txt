@@ -1,0 +1,99 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Vehicle
+Combo      : REGLicensePlateNumber (REG Plate+Year+FRT - 3 set)
+Test type  : T17 -- VehReg most-specific combo (plate+year+FRT)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                        Value              Source
+  ---------------------------  -----------------  --------------------------------
+  licensePlateNumber           ABC1234            typed
+  licensePlateTypeCode         PC                 default (initialValue)
+  licensePlateYear             2026               default (initialValue)
+  vehicleIdentificationNumber  (blank)            --
+  stickerNumber                (blank)            --
+  financialResponsibilityType  L                  typed
+  vehicleMakeCode              (blank)            --
+  vehicleYear                  (blank)            --
+  registrationState            TX                 default (initialValue)
+  regionId                     (blank)            --
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSJVV6GGS359ESYTZ986F4YB
+  MessageType : VehicleInsuranceRegistrationQuery
+  keyReference: REGLicensePlateNumber
+
+  Fields sent in XML request:
+    Element                     Value
+    --------------------------  -------------------
+    FinancialResponsibilityType L
+    LicensePlateYear            2026
+    State                       TX
+    LicensePlateTypeCode        PC
+    LicensePlateNumber          ABC1234
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: REGLicensePlateNumber (3 set — most specific)
+  Reason: set[licensePlateNumber, licensePlateYear, financialResponsibilityType]
+          all populated. First in combo array → fires first.
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  ----------------------------------------
+  FinancialResponsibilityType    YES    L               set[]
+  LicensePlateNumber             YES    ABC1234         set[]
+  LicensePlateTypeCode           YES    PC              POOL -- not in REG any[]; from RQ set[];
+                                                        form default PC populated → serialized
+  LicensePlateYear               YES    2026            set[]
+  RegionId                       NO     --              sourceField empty
+  State                          YES    TX              any[] + default
+  StickerNumber                  NO     --              sourceField empty
+  VehicleIdentificationNumber    NO     --              sourceField empty
+  VehicleMakeCode                NO     --              sourceField empty (dropdown not selected)
+  VehicleYear                    NO     --              sourceField empty
+
+  NOTE: LicensePlateTypeCode=PC appears because VehReg QIDM has NO conditions
+  on any combo → all combos' fields form one serialization pool → all populated
+  attributes serialize. PlateType is in RQ combo's set[] and has form value PC.
+  This is the no-conditions pool behavior (PLATFORM_CONSTRAINTS.txt LIMITATION #1).
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Vehicle Search
+  RMS request fields:
+    tag                      abc1234
+    registrationStateAttrIds [69509558547]
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: REGLicensePlateNumber fires. All set[] fields + State default present.
+          Extra LicensePlateTypeCode=PC is expected no-conditions pool behavior.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSJVV6GGS359ESYTZ986F4YB"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleInsuranceRegistrationQuery</MessageType><Id>01KSJVV6GGS359ESYTZ986F4YB</Id><FinancialResponsibilityType>L</FinancialResponsibilityType><LicensePlateYear>2026</LicensePlateYear><State>TX</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509558547],"tag":"abc1234"}},"from":0,"size":50}

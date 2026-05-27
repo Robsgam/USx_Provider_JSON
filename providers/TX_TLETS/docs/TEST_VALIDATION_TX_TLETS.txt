@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-05-26 14:14
+  Generated: 2026-05-27 12:40
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -10,7 +10,7 @@ TEST MATRIX VALIDATION -- TX_TLETS
 ============================================================
 Source: TX_TLETS.json
 Matrix: TX_TLETS_TEST_MATRIX.txt
-Generated: 2026-05-26
+Generated: 2026-05-27
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
   T1  Person     [PASS] 3 cards, 23 fields, defaults verified
@@ -30,7 +30,7 @@ PHASE 2: PERSON COMBOS (11 tests, 11 combos)
   T14  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
   T15  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
   T16  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
-PHASE 3: VEHICLE COMBOS (9 tests, 9 combos)
+PHASE 3: VEHICLE COMBOS (7 tests, 7 combos)
   T17  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
   T18  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
   T19  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
@@ -38,32 +38,30 @@ PHASE 3: VEHICLE COMBOS (9 tests, 9 combos)
   T21  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
   T22  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
   T23  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
-  T24  Vehicle    [PASS] VehicleStolenQuery fires (QV.P)
-  T25  Vehicle    [PASS] VehicleStolenQuery fires (QV.P)
 PHASE 4: BOAT COMBOS (5 tests, 5 combos)
+  T24  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T25  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
   T26  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
   T27  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T28  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T29  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T30  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T28  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
-  T31  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T32  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T29  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T30  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
-  T33  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T34  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T31  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T32  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
 PHASE 7: ANY[] FIELD TESTS (5 tests)
-  T35  Vehicle    [PASS] any[] fields verified: registrationState, vehicleMakeCode, vehicleYear
-  T36  Boat       [PASS] any[] fields verified: relatedHitSearchIndicator
-  T37  Person     [PASS] any[] fields verified: attentionDH, emailAddress, nameMiddleDH
-  T38  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, relatedHitSearchIndicator
-  T39  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
+  T33  Vehicle    [PASS] any[] fields verified: registrationState, vehicleMakeCode, vehicleYear
+  T34  Boat       [PASS] any[] fields verified: relatedHitSearchIndicator
+  T35  Person     [PASS] any[] fields verified: attentionDH, emailAddress, nameMiddleDH
+  T36  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, relatedHitSearchIndicator
+  T37  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T40  Vehicle    [PASS] queriesToDeselect verified
+  T38  Person     [PASS] queriesToDeselect verified
 PHASE 9: NEGATIVES (empty forms = no send)
-  T41  Person     [PASS] empty form: no combos fire
-  T42  Boat       [PASS] empty form: no combos fire
+  T39  Person     [PASS] empty form: no combos fire
+  T40  Boat       [PASS] empty form: no combos fire
 
-SUMMARY: 42/42 PASS, 0 FAIL
+SUMMARY: 40/40 PASS, 0 FAIL
 
 

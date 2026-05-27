@@ -68,6 +68,19 @@ CHANGED: DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialVal
 RESULT: BASE 72P/0F/0W/0LIM | MC 72P/0F/0W/0LIM
 
 ================================================================================
+v1.7 (2026-05-27) -- Remove unauthorized VehicleStolenQuery
+================================================================================
+CHANGED: Removed VehicleStolenQuery QIDM (2 combos: QV.P plate, QV.V VIN) from
+         both BASE and MC build scripts. Removed queriesToDeselect from
+         VehicleRegistrationQuery QIDM (was pointing to VehicleStolenQuery).
+         QVP/QVV combos in VehicleRegistrationQuery QIDM retained (authorized
+         message keys). 6 QIDMs, combo count reduced by 2 per variant.
+REASON:  Devdoc "Basic Queries Supported" lists 6 queries (ArticleSingle, Boat,
+         DriverHistory, DriverLicense, Gun, VehicleRegistration). VehicleStolenQuery
+         is in the "Expanded" section, not authorized for Phase 1. Cross-provider
+         audit after FL_FCIC v4.4 caught same pattern in TX and HI.
+
+================================================================================
 v1.6 (2026-05-11) -- purposeCodeDH field type fix
 ================================================================================
 CHANGED: purposeCodeDH changed from FormSelect (attributeTypeId=DEX_INQUIRY_PURPOSE_CODE) to FormInput (maxLength=1, initialValue=C) -- cross-provider consistency fix matching FL/NM/OH/TN/TX pattern

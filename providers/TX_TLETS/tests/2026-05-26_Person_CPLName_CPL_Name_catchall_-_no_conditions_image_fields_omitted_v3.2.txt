@@ -1,0 +1,113 @@
+TX_TLETS MC v3.2 -- Test Log
+============================================================
+Date       : 2026-05-26
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : CPLName (CPL Name catchall - no conditions, image fields omitted)
+Test type  : T12 -- CPL Name catchall, conditions FAIL path
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationState         TX                 default
+  imageIndicator            Y                  default
+  reasonCode                C                  default
+  emailAddress              (blank)            not filled
+  nameLast                  DOE                typed
+  nameFirst                 JOHN               typed
+  operatorLicenseNumber     (blank)            --
+  birthDate                 (blank)            --
+  sexCode                   (blank)            --
+  nameMiddle                (blank)            --
+  nameSuffix                (blank)            --
+  raceCode                  (blank)            --
+  expandedBirthDateSearch   (blank)            --
+  regionId                  (blank)            --
+  DH card                   (all blank)        --
+
+  NOTE: Conditions FAIL because email blank (REGEX .+ no match).
+  Image=Y and Reason=C still on form but excluded from serialization pool.
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : (ID lost in context compression -- XML was captured in session)
+  MessageType : DriverLicenseQuery
+  keyReference: CPLName
+
+  Fields sent in XML request:
+    Element              Value
+    -------------------  -------------------
+    State                TX
+    Name                 DOE,JOHN
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: CPLName (catchall -- no conditions)
+  Reason: set[nameLast, nameFirst] populated. No DOB/Sex so DQName skipped.
+          DQNameImg/CPLNameImg conditions failed (EmailAddress REGEX .+ -- blank).
+          CPLName catchall fired.
+
+  3-field conditions evaluation (ImageIndicator EQUALS Y AND ReasonCode EQUALS C AND EmailAddress REGEX .+):
+    ImageIndicator  EQUALS Y    -> PASS  (Y = Y)
+    ReasonCode      EQUALS C    -> PASS  (C = C)
+    EmailAddress    REGEX .+    -> FAIL  (blank -- no match)
+    Overall result: FAIL (AND logic -- one failure kills all)
+    Effect: Image-path combos' fields excluded from serialization pool
+
+  QIDM attribute            Sent?  Value           Note
+  ------------------------  -----  --------------  --------------------------------
+  BirthDate                 NO     --              sourceField empty
+  EmailAddress              NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  ExpandedBirthDateSearch   NO     --              sourceField empty
+  ImageIndicator            NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  Name                      YES    DOE,JOHN        FormatStringRuleHandler
+  OperatorLicenseNumber     NO     --              sourceField empty
+  RaceCode                  NO     --              sourceField empty
+  ReasonCode                NO     --              EXCLUDED -- conditions failed; not in catchall any[]
+  RegionId                  NO     --              sourceField empty
+  SexCode                   NO     --              sourceField empty
+  State                     YES    TX              any[] + default
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: RMS Person Search
+  RMS request fields:
+    lastName                 doe
+    firstName                john
+    registrationStateAttrId  69509558547
+
+================================================================================
+RESULT
+================================================================================
+
+  [PASS]
+
+  Reason: CPLName catchall fires. Image/Reason/Email all absent from XML
+          despite Image=Y and Reason=C on form -- blank email caused conditions FAIL.
+  Detail: Counterpart to T11 (CPLNameImg -- all conditions pass).
+          Confirms conditions pool serialization works on 2-set combos too.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+  XML verified in session -- State=TX and Name=DOE,JOHN only. No ImageIndicator,
+  ReasonCode, or EmailAddress elements. Transaction ID not preserved through
+  context compression. Full XML pattern matches T7 (DQName catchall).
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+  RMS co-fire confirmed in session. lastName/firstName/registrationStateAttrId.
+  Transaction details not preserved through context compression.
