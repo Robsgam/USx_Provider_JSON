@@ -6,7 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC_MC.json | v4.2 | Current | MC multi-card layout. 97P/0F/0W/0LIM. |
+| FL_FCIC.json | v4.4 | Current | 87P/0F/0W. Imported USx FCIC Tenant 2026-05-27. VehStolen+BQ removed. |
 
 ## phases/base/
 
