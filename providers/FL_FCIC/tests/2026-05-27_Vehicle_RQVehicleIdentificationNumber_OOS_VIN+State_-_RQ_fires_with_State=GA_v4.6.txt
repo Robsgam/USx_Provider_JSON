@@ -1,0 +1,87 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : RQVehicleIdentificationNumber (OOS VIN+State - RQ fires with State=GA)
+Test type  : T11 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  vehicleIdentificationNumber 708243ypoui8     typed
+  registrationState         GA                 selected (OOS)
+  imageIndicator            N                  default (initialValue=N)
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  licensePlateYear          2026               default (initialValue=2026)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN833YE2D5VKFPDGYJQW3C8
+  MessageType : VehicleRegistrationQuery
+  keyReference: RQVehicleIdentificationNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    VehicleIdentificationNumber 708243YPOUI8
+    ImageIndicator           N
+    State                    GA
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: RQVehicleIdentificationNumber
+  Reason: set[vehicleIdentificationNumber, registrationState] both populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  VehicleIdentificationNumber    YES    708243YPOUI8    set[] -- typed (uppercased)
+  State                          YES    GA              set[] -- selected OOS
+  ImageIndicator                 YES    N               any[] -- default N
+  LicensePlateNumber             NO     --              sourceField empty
+  LicensePlateTypeCode           NO     --              not in RQ any[] (FRQ only)
+  LicensePlateYear               NO     --              not in RQ any[] (FRQ only)
+  VehicleMakeCode                NO     --              sourceField empty
+  VehicleYear                    NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  TitleLienInformation           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic vehicle query)
+  Fields: vinNumber=708243ypoui8, registrationStateAttrIds=[69510834680]
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: RQVehicleIdentificationNumber fires correctly with VIN+State(GA).
+  Detail: OOS path confirmed — State in set[] promotes FRQ to RQ. VIN uppercased in XML.
+          RMS co-fires with VIN + State attribute ID. No VehicleStolenQuery co-fire.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN833YE2D5VKFPDGYJQW3C8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN833YE2D5VKFPDGYJQW3C8</Id><VehicleIdentificationNumber>708243YPOUI8</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>GA</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69510834680],"vinNumber":"708243ypoui8"}},"from":0,"size":50}
+
+Response: No Returns

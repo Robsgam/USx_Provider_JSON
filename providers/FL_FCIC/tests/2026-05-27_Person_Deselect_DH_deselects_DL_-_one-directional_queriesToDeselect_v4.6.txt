@@ -1,0 +1,101 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : KQOperatorLicenseNumber (Deselect - DH deselects DL)
+Test type  : T37 (co-fire / deselect verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumberDH   2554654            typed (DH card)
+  operatorLicenseNumber     23452345234        typed (DL card)
+  imageIndicator            Y                  default (initialValue=Y)
+
+  DH checkbox: CHECKED (manually toggled ON → DL auto-deselected)
+  DL checkbox: UNCHECKED (deselected by DH queriesToDeselect)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNCW7CCSG5RMNJAH2H4BNCV
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OperatorLicenseNumber    2554654
+
+  NOTE: Only DH query sent. DL suppressed by queriesToDeselect.
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQOperatorLicenseNumber (DH only)
+  Reason: DH checkbox selected, DL deselected by one-directional queriesToDeselect
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber          YES    2554654         set[] -- typed (DH card)
+  State                          NO     --              any[] -- registrationStateDH blank
+  PurposeCode                    NO     --              any[] -- purposeCodeDH blank
+  Attention                      NO     --              any[] -- attentionDH blank
+
+  DL QIDM: NOT SENT (deselected)
+
+================================================================================
+DESELECT BEHAVIOR
+================================================================================
+
+  queriesToDeselect on DH = ['DriverLicenseQuery'] (one-directional)
+
+  Test 1: Filled both DH+DL cards → both auto-selected → BOTH FIRED
+          (auto-select does NOT trigger queriesToDeselect)
+
+  Test 2: Filled DL first, then manually clicked DH checkbox →
+          DL auto-deselected → only DH fired
+          (manual checkbox toggle DOES trigger queriesToDeselect)
+
+  PLATFORM BEHAVIOR: queriesToDeselect only fires on manual checkbox
+  interaction, not on auto-select from filling form fields.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic person query)
+  Fields: dlNumber=23452345234 (from DL card — RMS fires independently of checkbox)
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: One-directional queriesToDeselect works correctly on manual toggle.
+  Detail: DH deselects DL when DH checkbox is manually clicked. DL does NOT
+          deselect DH (one-directional). Auto-select from data entry does not
+          trigger deselect — expected platform behavior.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNCW7CCSG5RMNJAH2H4BNCV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSNCW7CCSG5RMNJAH2H4BNCV</Id><OperatorLicenseNumber>2554654</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"23452345234"},"from":0,"size":50}
+
+Response: No Returns

@@ -1,0 +1,46 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : (none) -- empty form negative test
+Test type  : T38 (negative -- no combo fires)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  imageIndicator            N                  default (initialValue=N)
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  licensePlateYear          2026               default (initialValue=2026)
+  (all other fields empty)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  No Send button displayed. No request generated.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Empty Vehicle form correctly suppresses Send. No set[] fields populated.
+  Detail: Defaults alone (imageIndicator=N, plateType=PC, plateYear=2026) do not
+          satisfy any combo's set[] requirements.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+N/A (no request sent)
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no request sent)

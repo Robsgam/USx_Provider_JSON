@@ -1,0 +1,76 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : KQOperatorLicenseNumber (DH OLN search - KQ fires)
+Test type  : T25 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumberDH   D8979864           typed
+  registrationStateDH       (blank)            no default
+  purposeCodeDH             (blank)            no default
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNA86BKNF0NWN4RQ80SEJF2
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OperatorLicenseNumber    D8979864
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQOperatorLicenseNumber
+  Reason: set[operatorLicenseNumberDH] populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber          YES    D8979864        set[] -- typed (DH-suffix fieldId)
+  State                          NO     --              any[] -- registrationStateDH blank
+  PurposeCode                    NO     --              any[] -- purposeCodeDH blank
+  Attention                      NO     --              any[] -- attentionDH blank
+  Name                           NO     --              sourceFields empty
+  BirthDate                      NO     --              sourceField empty
+  SexCode                        NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS DH search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: KQOperatorLicenseNumber fires correctly with OLN-only input on DH card.
+  Detail: DH-suffix fieldIds map to same XML attributes (OperatorLicenseNumber).
+          No any[] fields sent (all blank, no defaults on DH card).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNA86BKNF0NWN4RQ80SEJF2"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSNA86BKNF0NWN4RQ80SEJF2</Id><OperatorLicenseNumber>D8979864</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS DH search)

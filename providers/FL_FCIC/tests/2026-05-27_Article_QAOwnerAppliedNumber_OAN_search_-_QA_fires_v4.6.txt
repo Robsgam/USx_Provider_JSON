@@ -1,0 +1,75 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Article
+Combo      : QAOwnerAppliedNumber (OAN search - QA fires)
+Test type  : T31 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  articleTypeCode           BSHOCKS            selected
+  ownerAppliedNumber        65767567           typed
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNB56VSFZHCTZYHF18C2EB1
+  MessageType : ArticleSingleQuery
+  keyReference: QAOwnerAppliedNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OwnerAppliedNumber       65767567
+    ArticleTypeCode          BSHOCKS
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QAOwnerAppliedNumber
+  Reason: set[articleTypeCode, ownerAppliedNumber] both populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OwnerAppliedNumber             YES    65767567        set[] -- typed
+  ArticleTypeCode                YES    BSHOCKS         set[] -- selected
+  ImageIndicator                 YES    N               any[] -- default N
+  ArticleSerialNumber            NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS article search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QAOwnerAppliedNumber fires correctly with OAN+type input.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNB56VSFZHCTZYHF18C2EB1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KSNB56VSFZHCTZYHF18C2EB1</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BSHOCKS</ArticleTypeCode><OwnerAppliedNumber>65767567</OwnerAppliedNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS article search)

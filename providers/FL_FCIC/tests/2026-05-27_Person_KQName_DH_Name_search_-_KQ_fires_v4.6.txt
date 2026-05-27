@@ -1,0 +1,79 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : KQName (DH Name search - KQ fires)
+Test type  : T26 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  nameLastDH                DOE                typed
+  nameFirstDH               JOHN               typed
+  birthDateDH               01/01/1985         typed
+  sexCodeDH                 M                  selected
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNABRXMMZVNFETWXYMB7S3R
+  MessageType : DriverHistoryQuery
+  keyReference: KQName
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    Name                     DOE,JOHN
+    BirthDate                19850101
+    SexCode                  M
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQName
+  Reason: set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH] all populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  Name                           YES    DOE,JOHN        set[] -- DH-suffix fields concatenated
+  BirthDate                      YES    19850101        set[] -- typed (yyyyMMdd format)
+  SexCode                        YES    M               set[] -- selected
+  OperatorLicenseNumber          NO     --              sourceField empty
+  State                          NO     --              any[] -- registrationStateDH blank
+  PurposeCode                    NO     --              any[] -- purposeCodeDH blank
+  Attention                      NO     --              any[] -- attentionDH blank
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS DH search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: KQName fires correctly with name+DOB+sex on DH card.
+  Detail: All 6 Person combos confirmed (T21-T26). DH-suffix fieldIds map correctly.
+          Name concatenated, BirthDate→yyyyMMdd, same as DL name combo (T23).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNABRXMMZVNFETWXYMB7S3R"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSNABRXMMZVNFETWXYMB7S3R</Id><SexCode>M</SexCode><BirthDate>19850101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS DH search)

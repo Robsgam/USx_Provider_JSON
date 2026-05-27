@@ -1,0 +1,73 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Firearm
+Combo      : QGProcessControlNumber (PCN search - QG fires)
+Test type  : T29 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  processControlNumber      5W45654            typed
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNAR42V6CM3TT3S3SAR74KD
+  MessageType : GunQuery
+  keyReference: QGProcessControlNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    ProcessControlNumber     5W45654
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QGProcessControlNumber
+  Reason: set[processControlNumber] populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  ProcessControlNumber           YES    5W45654         set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  GunSerialNumber                NO     --              sourceField empty
+  GunMake                        NO     --              any[] -- sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS gun search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QGProcessControlNumber fires correctly with PCN-only input.
+  Detail: All 3 Firearm combos confirmed (T27-T29).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNAR42V6CM3TT3S3SAR74KD"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KSNAR42V6CM3TT3S3SAR74KD</Id><ImageIndicator>N</ImageIndicator><ProcessControlNumber>5W45654</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS gun search)

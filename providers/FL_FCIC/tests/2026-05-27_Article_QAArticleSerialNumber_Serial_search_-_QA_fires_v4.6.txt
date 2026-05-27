@@ -1,0 +1,75 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Article
+Combo      : QAArticleSerialNumber (Serial search - QA fires)
+Test type  : T30 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  articleSerialNumber       4534534            typed
+  articleTypeCode           BSHOCKS            selected
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNASDB5WXAJGVRMSHC82ABJ
+  MessageType : ArticleSingleQuery
+  keyReference: QAArticleSerialNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    ArticleSerialNumber      4534534
+    ArticleTypeCode          BSHOCKS
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QAArticleSerialNumber
+  Reason: set[articleSerialNumber, articleTypeCode] both populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  ArticleSerialNumber            YES    4534534         set[] -- typed
+  ArticleTypeCode                YES    BSHOCKS         set[] -- selected
+  ImageIndicator                 YES    N               any[] -- default N
+  OwnerAppliedNumber             NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS article search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QAArticleSerialNumber fires correctly with serial+type input.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNASDB5WXAJGVRMSHC82ABJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KSNASDB5WXAJGVRMSHC82ABJ</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BSHOCKS</ArticleTypeCode><ArticleSerialNumber>4534534</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS article search)

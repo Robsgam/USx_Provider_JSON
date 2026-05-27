@@ -1,0 +1,80 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Boat
+Combo      : FBQRegistrationNumber (Reg search - FBQ fires)
+Test type  : T13 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationNumber        UHFG80YJ           typed
+  relatedHitSearchIndicator (blank)            no default (routing toggle)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN8R05G52CDPB3A957F91XR
+  MessageType : BoatQuery
+  keyReference: FBQRegistrationNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    RegistrationNumber       UHFG80YJ
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FBQRegistrationNumber
+  Reason: set[registrationNumber] populated; StolenSearch blank = FBQ path
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  RegistrationNumber             YES    UHFG80YJ        set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  RelatedHitSearchIndicator      NO     --              blank (routing toggle, no default)
+  BoatHullIdNumber               NO     --              sourceField empty
+  CoastGuardDocumentNumber       NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+  State                          NO     --              blank (no default)
+  TitleLienInformation           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS boat search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FBQRegistrationNumber fires correctly with reg-only input.
+  Detail: StolenSearch blank — QB conditions (EQUALS Y) not met, FBQ fires.
+          v4.6 conditions routing working as intended.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN8R05G52CDPB3A957F91XR"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KSN8R05G52CDPB3A957F91XR</Id><ImageIndicator>N</ImageIndicator><RegistrationNumber>UHFG80YJ</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS boat search)

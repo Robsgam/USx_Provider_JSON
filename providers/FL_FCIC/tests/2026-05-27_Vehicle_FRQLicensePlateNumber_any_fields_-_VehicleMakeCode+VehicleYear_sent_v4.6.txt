@@ -1,0 +1,90 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : FRQLicensePlateNumber (any[] fields - VehicleMakeCode+VehicleYear sent)
+Test type  : T34 (any[] field verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  licensePlateNumber        TEST123            typed
+  vehicleMakeCode           TRCK_ARRO          selected
+  vehicleYear               2020               typed
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  licensePlateYear          2026               default (initialValue=2026)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNBQ49VZQGGZRRNPKZ8EA86
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQLicensePlateNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    LicensePlateNumber       TEST123
+    VehicleMakeCode          TRCK_ARRO
+    VehicleYear              2020
+    LicensePlateYear         2026
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQLicensePlateNumber
+  Reason: set[licensePlateNumber] populated; any[] fields populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  LicensePlateNumber             YES    TEST123         set[] -- typed
+  VehicleMakeCode                YES    TRCK_ARRO       any[] -- selected (dropdown)
+  VehicleYear                    YES    2020            any[] -- typed
+  LicensePlateYear               YES    2026            any[] -- default 2026
+  ImageIndicator                 YES    N               any[] -- default N
+  LicensePlateTypeCode           NO     --              any[] -- default PC not sent (consistent)
+  State                          NO     --              blank (in-state path)
+  VehicleIdentificationNumber    NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  TitleLienInformation           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic vehicle query)
+  Fields: tag=test123
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: any[] fields VehicleMakeCode and VehicleYear correctly included in XML.
+  Detail: Both optional fields sent when populated by user. FormSelect dropdown
+          for VehicleMakeCode works (TRCK_ARRO = Arrow truck make).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNBQ49VZQGGZRRNPKZ8EA86"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSNBQ49VZQGGZRRNPKZ8EA86</Id><VehicleMakeCode>TRCK_ARRO</VehicleMakeCode><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><VehicleYear>2020</VehicleYear><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"vehicle":{"tag":"test123"}},"from":0,"size":50}
+
+Response: No Returns

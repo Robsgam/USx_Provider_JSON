@@ -1,0 +1,79 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : KQOperatorLicenseNumber (any[] fields - State+PurposeCode+Attention sent)
+Test type  : T36 (any[] field verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumberDH   245234523          typed
+  registrationStateDH       FL                 selected
+  purposeCodeDH             C                  typed
+  attentionDH               C                  typed
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNBVGPPFD8250W4PTKMZT4N
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OperatorLicenseNumber    245234523
+    State                    FL
+    PurposeCode              C
+    Attention                C
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: KQOperatorLicenseNumber
+  Reason: set[operatorLicenseNumberDH] populated; all 3 any[] fields populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber          YES    245234523       set[] -- typed (DH-suffix fieldId)
+  State                          YES    FL              any[] -- registrationStateDH selected
+  PurposeCode                    YES    C               any[] -- purposeCodeDH typed
+  Attention                      YES    C               any[] -- attentionDH typed
+  Name                           NO     --              sourceFields empty
+  BirthDate                      NO     --              sourceField empty
+  SexCode                        NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS DH search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: All 3 DH any[] fields (State, PurposeCode, Attention) correctly sent in XML.
+  Detail: DH-suffix fieldIds map to correct XML attributes. All any[] fields confirmed.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNBVGPPFD8250W4PTKMZT4N"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KSNBVGPPFD8250W4PTKMZT4N</Id><State>FL</State><Attention>C</Attention><OperatorLicenseNumber>245234523</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS DH search)

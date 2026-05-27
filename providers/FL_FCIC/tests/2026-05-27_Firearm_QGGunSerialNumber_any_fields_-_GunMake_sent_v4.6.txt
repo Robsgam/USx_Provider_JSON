@@ -1,0 +1,75 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Firearm
+Combo      : QGGunSerialNumber (any[] field - GunMake sent)
+Test type  : T35 (any[] field verification)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  gunSerialNumber           9786097623         typed
+  gunMake                   AAL                selected
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNBSF13DXD9DBRCZKB981WB
+  MessageType : GunQuery
+  keyReference: QGGunSerialNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    GunSerialNumber          9786097623
+    GunMake                  AAL
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QGGunSerialNumber
+  Reason: set[gunSerialNumber] populated; any[] gunMake populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  GunSerialNumber                YES    9786097623      set[] -- typed
+  GunMake                        YES    AAL             any[] -- selected (dropdown)
+  ImageIndicator                 YES    N               any[] -- default N
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS gun search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: any[] field GunMake correctly included in XML when selected.
+  Detail: FormSelect dropdown for GunMake works (AAL code sent).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNBSF13DXD9DBRCZKB981WB"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KSNBSF13DXD9DBRCZKB981WB</Id><GunSerialNumber>9786097623</GunSerialNumber><ImageIndicator>N</ImageIndicator><GunMake>AAL</GunMake></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS gun search)

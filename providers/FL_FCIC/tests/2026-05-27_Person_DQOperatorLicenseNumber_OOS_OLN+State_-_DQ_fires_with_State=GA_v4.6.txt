@@ -1,0 +1,84 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : DQOperatorLicenseNumber (OOS OLN+State - DQ fires with State=GA)
+Test type  : T22 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumber     739908373          typed
+  registrationState         GA                 selected (OOS)
+  imageIndicator            Y                  default (initialValue=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN93SMXQEVHCP29T1QYZKE3
+  MessageType : DriverLicenseQuery
+  keyReference: DQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OperatorLicenseNumber    739908373
+    State                    GA
+    ImageIndicator           Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQOperatorLicenseNumber
+  Reason: set[operatorLicenseNumber, registrationState] both populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber          YES    739908373       set[] -- typed
+  State                          YES    GA              set[] -- selected OOS
+  ImageIndicator                 YES    Y               any[] -- default Y
+  NameLast                       NO     --              sourceField empty
+  NameFirst                      NO     --              sourceField empty
+  NameMiddle                     NO     --              sourceField empty
+  BirthDate                      NO     --              sourceField empty
+  SexCode                        NO     --              sourceField empty
+  NameSuffix                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic person query)
+  Fields: dlNumber=739908373, registrationStateAttrId=69510834680
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DQOperatorLicenseNumber fires correctly with OLN+State(GA).
+  Detail: OOS path confirmed — State in set[] promotes FDQ to DQ.
+          RMS co-fires with dlNumber + State attribute ID.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN93SMXQEVHCP29T1QYZKE3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KSN93SMXQEVHCP29T1QYZKE3</Id><ImageIndicator>Y</ImageIndicator><State>GA</State><OperatorLicenseNumber>739908373</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"739908373","registrationStateAttrId":"69510834680"},"from":0,"size":50}
+
+Response: No Returns

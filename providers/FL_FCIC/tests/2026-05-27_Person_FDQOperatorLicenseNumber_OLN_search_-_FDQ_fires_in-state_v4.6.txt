@@ -1,0 +1,82 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : FDQOperatorLicenseNumber (OLN search - FDQ fires in-state)
+Test type  : T21 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumber     s775637883         typed
+  imageIndicator            Y                  default (initialValue=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN9289D1306WXK113K3SBKW
+  MessageType : DriverLicenseQuery
+  keyReference: FDQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    OperatorLicenseNumber    S775637883
+    ImageIndicator           Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FDQOperatorLicenseNumber
+  Reason: set[operatorLicenseNumber] populated; State blank = in-state FDQ path
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  OperatorLicenseNumber          YES    S775637883      set[] -- typed (uppercased)
+  ImageIndicator                 YES    Y               any[] -- default Y
+  State                          NO     --              blank (in-state path)
+  NameLast                       NO     --              sourceField empty
+  NameFirst                      NO     --              sourceField empty
+  NameMiddle                     NO     --              sourceField empty
+  BirthDate                      NO     --              sourceField empty
+  SexCode                        NO     --              sourceField empty
+  NameSuffix                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic person query)
+  Fields: dlNumber=s775637883
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FDQOperatorLicenseNumber fires correctly with OLN-only input.
+  Detail: In-state path confirmed — State blank, FDQ fires. OLN uppercased in XML.
+          ImageIndicator=Y (DL default). RMS co-fires with dlNumber.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN9289D1306WXK113K3SBKW"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KSN9289D1306WXK113K3SBKW</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>S775637883</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"dlNumber":"s775637883"},"from":0,"size":50}
+
+Response: No Returns

@@ -1,0 +1,84 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : FRQTitleLienInformation (TitleLien search - FRQ fires in-state)
+Test type  : T9 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  titleLienInformation      ACDB7366           typed
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  licensePlateYear          2026               default (initialValue=2026)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN8P0NFS798EW20GK6H3T1H
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQTitleLienInformation
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    TitleLienInformation     ACDB7366
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQTitleLienInformation
+  Reason: set[titleLienInformation] populated; State blank = in-state FRQ path
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  TitleLienInformation           YES    ACDB7366        set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  LicensePlateYear               NO     --              any[] -- default 2026 not sent
+  LicensePlateTypeCode           NO     --              any[] -- default PC not sent
+  State                          NO     --              blank (in-state path)
+  LicensePlateNumber             NO     --              sourceField empty
+  VehicleIdentificationNumber    NO     --              sourceField empty
+  VehicleMakeCode                NO     --              sourceField empty
+  VehicleYear                    NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+
+  NOTE: LicensePlateYear default NOT sent here (was sent in T6/T8 plate+decal combos).
+  Platform may only send PlateYear when plate-related set[] field is populated.
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS title/lien search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQTitleLienInformation fires correctly with title/lien-only input.
+  Detail: In-state path confirmed. Only ImageIndicator default sent — PlateYear
+          and PlateTypeCode suppressed (neither plate nor decal populated).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN8P0NFS798EW20GK6H3T1H"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN8P0NFS798EW20GK6H3T1H</Id><TitleLienInformation>ACDB7366</TitleLienInformation><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS title/lien search)

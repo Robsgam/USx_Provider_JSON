@@ -1,0 +1,82 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Boat
+Combo      : QBRegistrationNumber (Stolen reg search - QB fires with RelatedHitSearchIndicator=Y)
+Test type  : T17 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  registrationNumber        876UH99            typed
+  relatedHitSearchIndicator Y                  selected (routing toggle)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN8WNWADYM0J9ZSM60PNV77
+  MessageType : BoatQuery
+  keyReference: QBRegistrationNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    RegistrationNumber       876UH99
+    RelatedHitSearchIndicator Y
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QBRegistrationNumber
+  Reason: set[registrationNumber, relatedHitSearchIndicator] both populated
+          + conditions: relatedHitSearchIndicator EQUALS Y → QB path
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  RegistrationNumber             YES    876UH99         set[] -- typed
+  RelatedHitSearchIndicator      YES    Y               set[] -- selected (routing toggle)
+  ImageIndicator                 YES    N               any[] -- default N
+  BoatHullIdNumber               NO     --              sourceField empty
+  CoastGuardDocumentNumber       NO     --              sourceField empty
+  DecalNumber                    NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+  State                          NO     --              blank (no default)
+  TitleLienInformation           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS boat search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QBRegistrationNumber fires correctly with Reg+StolenSearch=Y.
+  Detail: v4.6 conditions routing confirmed — EQUALS Y routes to QB (stolen).
+          Paired with T13 (FBQ+Reg blank) confirms full reg routing path.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN8WNWADYM0J9ZSM60PNV77"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KSN8WNWADYM0J9ZSM60PNV77</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><RegistrationNumber>876UH99</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS boat search)

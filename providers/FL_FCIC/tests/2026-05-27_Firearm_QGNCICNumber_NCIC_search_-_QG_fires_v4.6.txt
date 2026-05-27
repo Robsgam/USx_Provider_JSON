@@ -1,0 +1,72 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Firearm
+Combo      : QGNCICNumber (NCIC search - QG fires)
+Test type  : T28 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  ncicNumber                867907823          typed
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNAFJ7AMD4AC6ZWC4GTRC6K
+  MessageType : GunQuery
+  keyReference: QGNCICNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    NCICNumber               867907823
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QGNCICNumber
+  Reason: set[ncicNumber] populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  NCICNumber                     YES    867907823       set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  GunSerialNumber                NO     --              sourceField empty
+  GunMake                        NO     --              any[] -- sourceField empty
+  ProcessControlNumber           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS gun search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QGNCICNumber fires correctly with NCIC-only input.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNAFJ7AMD4AC6ZWC4GTRC6K"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KSNAFJ7AMD4AC6ZWC4GTRC6K</Id><ImageIndicator>N</ImageIndicator><NCICNumber>867907823</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transitions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS gun search)

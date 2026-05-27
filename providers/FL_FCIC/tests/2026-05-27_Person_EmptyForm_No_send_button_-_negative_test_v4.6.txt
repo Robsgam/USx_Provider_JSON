@@ -1,0 +1,43 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : (none) -- empty form negative test
+Test type  : T39 (negative -- no combo fires)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  imageIndicator            Y                  default (initialValue=Y on DL card)
+  (all other fields empty)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  No Send button displayed. No request generated.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: Empty Person form correctly suppresses Send. No set[] fields populated.
+  Detail: ImageIndicator=Y default alone does not satisfy any combo's set[] requirements.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+N/A (no request sent)
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no request sent)

@@ -1,0 +1,74 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Article
+Combo      : QAProcessControlNumber (PCN search - QA fires)
+Test type  : T33 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  processControlNumber      000011235          typed
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSNBN2FM8NHJ8ZNY8NY3PV98
+  MessageType : ArticleSingleQuery
+  keyReference: QAProcessControlNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    ProcessControlNumber     000011235
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: QAProcessControlNumber
+  Reason: set[processControlNumber] populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  ProcessControlNumber           YES    000011235       set[] -- typed
+  ImageIndicator                 YES    N               any[] -- default N
+  ArticleSerialNumber            NO     --              sourceField empty
+  ArticleTypeCode                NO     --              any[] -- sourceField empty
+  OwnerAppliedNumber             NO     --              sourceField empty
+  NCICNumber                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS article search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: QAProcessControlNumber fires correctly with PCN-only input.
+  Detail: All 4 Article combos confirmed (T30-T33).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSNBN2FM8NHJ8ZNY8NY3PV98"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KSNBN2FM8NHJ8ZNY8NY3PV98</Id><ImageIndicator>N</ImageIndicator><ProcessControlNumber>000011235</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS article search)

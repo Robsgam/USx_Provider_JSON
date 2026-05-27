@@ -1,0 +1,82 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Vehicle
+Combo      : FRQDecalNumber (Decal search - FRQ fires in-state)
+Test type  : T8 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  decalNumber               FL12345698         typed
+  licensePlateTypeCode      PC                 default (initialValue=PC)
+  licensePlateYear          2026               default (initialValue=2026)
+  imageIndicator            N                  default (initialValue=N)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN8EYH53XM49ZRTWKVM1WF5
+  MessageType : VehicleRegistrationQuery
+  keyReference: FRQDecalNumber
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    DecalNumber              FL12345698
+    LicensePlateYear         2026
+    ImageIndicator           N
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: FRQDecalNumber
+  Reason: set[decalNumber] populated; State blank = in-state FRQ path
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  DecalNumber                    YES    FL12345698      set[] -- typed
+  LicensePlateYear               YES    2026            any[] -- default 2026
+  ImageIndicator                 YES    N               any[] -- default N
+  LicensePlateTypeCode           NO     --              any[] -- default PC not sent (same as T6)
+  State                          NO     --              blank (in-state path)
+  LicensePlateNumber             NO     --              sourceField empty
+  VehicleIdentificationNumber    NO     --              sourceField empty
+  VehicleMakeCode                NO     --              sourceField empty
+  VehicleYear                    NO     --              sourceField empty
+  TitleLienInformation           NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: NONE (no RMS decal search configured)
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: FRQDecalNumber fires correctly with decal-only input.
+  Detail: In-state path confirmed. LicensePlateYear default sent, PlateTypeCode
+          default suppressed (consistent with T6). No RMS co-fire for decal search.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN8EYH53XM49ZRTWKVM1WF5"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KSN8EYH53XM49ZRTWKVM1WF5</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><DecalNumber>FL12345698</DecalNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST
+================================================================================
+
+N/A (no RMS decal search)

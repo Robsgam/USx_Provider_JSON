@@ -1,0 +1,88 @@
+FL_FCIC v4.6 -- Test Log
+============================================================
+Date       : 2026-05-27
+JSON       : FL_FCIC.json
+Entity     : Person
+Combo      : DQName (OOS Name+State - DQ fires with State=GA)
+Test type  : T24 (render + basic combo fire)
+
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
+
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  nameLast                  DOE                typed
+  nameFirst                 JOHN               typed
+  birthDate                 01/01/1985         typed
+  sexCode                   F                  selected
+  registrationState         GA                 selected (OOS)
+  imageIndicator            Y                  default (initialValue=Y)
+
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KSN9BJ3NW6CQSD3P8PK26JBW
+  MessageType : DriverLicenseQuery
+  keyReference: DQName
+
+  Fields sent in XML request:
+    Element                  Value
+    -----------------------  -------------------
+    Name                     DOE,JOHN
+    BirthDate                19850101
+    SexCode                  F
+    State                    GA
+    ImageIndicator           Y
+
+================================================================================
+FIELD ANALYSIS
+================================================================================
+
+  Combination fired: DQName
+  Reason: set[birthDate, nameLast, nameFirst, sexCode, registrationState] all populated
+
+  QIDM attribute                 Sent?  Value           Note
+  -----------------------------  -----  --------------  --------------------------------
+  Name                           YES    DOE,JOHN        set[] -- nameLast+nameFirst concatenated
+  BirthDate                      YES    19850101        set[] -- typed (yyyyMMdd format)
+  SexCode                        YES    F               set[] -- selected
+  State                          YES    GA              set[] -- selected OOS
+  ImageIndicator                 YES    Y               any[] -- default Y
+  OperatorLicenseNumber          NO     --              sourceField empty
+  NameMiddle                     NO     --              sourceField empty
+  NameSuffix                     NO     --              sourceField empty
+
+================================================================================
+RMS CO-FIRE
+================================================================================
+
+  RMS combo fired: YES (elastic person query)
+  Fields: lastName=doe, firstName=john, sexAttrId=69510840620, dateOfBirth=1985-01-01, registrationStateAttrId=69510834680
+  Response: No Returns
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: DQName fires correctly with Name+DOB+Sex+State(GA).
+  Detail: OOS path confirmed — State in set[] promotes FDQ to DQ. All 4 DL combos
+          now confirmed (T21-T24). SexCode=F (different from T23=M, both work).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KSN9BJ3NW6CQSD3P8PK26JBW"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KSN9BJ3NW6CQSD3P8PK26JBW</Id><ImageIndicator>Y</ImageIndicator><State>GA</State><SexCode>F</SexCode><BirthDate>19850101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW RMS REQUEST (from server logs)
+================================================================================
+
+{"elasticQuery":{"lastName":"doe","firstName":"john","sexAttrId":"69510840620","dateOfBirth":"1985-01-01","registrationStateAttrId":"69510834680"},"from":0,"size":50}
+
+Response: No Returns
