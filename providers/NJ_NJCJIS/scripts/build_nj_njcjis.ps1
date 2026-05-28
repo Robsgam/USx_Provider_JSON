@@ -13,7 +13,7 @@
 # RMS: from KB specs (no HIDLE dependency)
 
 param(
-    [string]$Version = "3.4"
+    [string]$Version = "3.5"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -467,11 +467,13 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_NAME'
         title = 'NAME SEARCH'
         rows  = @(
-            @{ id = 'ROW_PER_N1'; cols = @('4','4','2','2'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_N1' }
                 @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_N1' }
-                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N1' }
-                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N1' }
+            )}
+            @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N2' }
+                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
             )}
         )
     }

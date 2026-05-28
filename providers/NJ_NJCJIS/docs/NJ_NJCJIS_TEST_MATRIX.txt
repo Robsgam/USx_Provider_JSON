@@ -1,6 +1,6 @@
-NJ_NJCJIS MC v3.4 -- TEST MATRIX
+NJ_NJCJIS MC v3.5 -- TEST MATRIX
 ==================================================
-Generated: 2026-05-21
+Generated: 2026-05-28
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -16,7 +16,8 @@ Vehicle (3 cards, 9 fields):
 
 Person (3 cards, 7 fields):
   CARD_PER_NAME (NAME SEARCH):
-    nameFirst [Inp 30], nameLast [Inp 30], birthDate [FormDate], sexCode [Sel SEX]
+    ROW 1: nameFirst [Inp 30], nameLast [Inp 30]
+    ROW 2: birthDate [FormDate], sexCode [Sel SEX]
   CARD_PER_OLN (LICENSE NUMBER):
     operatorLicenseNumber [Inp 20]
   CARD_PER_OPT (Search Options):
@@ -61,7 +62,8 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               VIN, NCIC Number, Vehicle Make dropdown (no default).
  2  Person      Render form. Verify 3 cards:                        [    ]
               CARD_PER_NAME: titled "NAME SEARCH".
-              First Name, Last Name, Date of Birth, Sex dropdown (no default).
+              First Name, Last Name.
+              Date of Birth, Sex dropdown (no default).
               CARD_PER_OLN: titled "LICENSE NUMBER".
               License Number.
               CARD_PER_OPT: titled "Search Options".

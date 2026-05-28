@@ -30,6 +30,14 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
+v3.5  2026-05-28  Name Search card layout — 2 rows
+  CHANGED
+    - Split CARD_PER_NAME from 1 row (First/Last/DOB/Sex) to 2 rows:
+      ROW_PER_N1: First Name (6), Last Name (6)
+      ROW_PER_N2: Date of Birth (6), Sex (6)
+  REASON
+    - Usability: 4 fields on one row too cramped; DOB+Sex belong on separate line
+
 v3.4  2026-05-21  Single-JSON merge + State defaults
   CHANGED
     - Merged BASE/MC into single build: build_nj_njcjis.ps1 → NJ_NJCJIS.json (no suffix)
