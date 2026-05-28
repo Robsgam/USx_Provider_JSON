@@ -17,7 +17,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
-| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.5 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.4 imported USx Provider Tenant + Newark Foundation Tenant 2026-05-21 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos incl State, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, RMS Vehicle stripped to 3 attrs |
+| NJ_NJCJIS | providers/NJ_NJCJIS/ | v3.5 | 69P/0F/0W/0LIM -- 14/14 PASS full combo coverage -- v3.5 imported USx NJCJIS Tenant + Newark Foundation Tenant 2026-05-28 | conditions routing (RAND/FULL), CAD combo defaults on all 13 combos incl State, autoSelect=false on Stolen, queriesToDeselect VehReg/Stolen, NCIC state, shared RMS module, RMS Vehicle stripped to 3 attrs |
 | HI_HCJDC_OFML | providers/HI_HCJDC_OFML/ | v1.7 | 67P/0F/0W/0LIM (BASE) 67P/0F/0W/0LIM (MC) | 6-transaction build, VehicleTypeCode, ImageIndicator in all Vehicle any[], State no-default |
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v2.1 | 78P/0F/0W/0LIM | 7 cards (Veh 1, Per 3, Gun 1, Art 1, Boat 1), 14 combos, 7 QIDMs, DGRP (DL Name Search), DH-suffix+one-directional queriesToDeselect, CAD defaults all 14 combos, RelatedHitSearchIndicator on Gun/Art/Boat, VehicleMakeCode FormSelect, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |

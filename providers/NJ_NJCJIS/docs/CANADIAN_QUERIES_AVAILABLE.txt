@@ -1,0 +1,193 @@
+CANADIAN QUERIES — CROSS-PROVIDER REFERENCE
+=============================================
+Generated: 2026-05-28
+Status: REFERENCE ONLY — NJ build blocked pending official devdoc + metadata
+
+NJ_NJCJIS has NO Canadian queries in devdoc or metadata XML.
+NLETS AM.CNOLNHELP (received 2026-05-22) confirms CPIC DL capability exists.
+DO NOT BUILD until CommSys delivers updated devdoc + metadata with Canadian transactions.
+
+================================================================================
+SECTION 1 — CROSS-PROVIDER AVAILABILITY MATRIX
+================================================================================
+
+  Query Type                    CA_CLETS  FL_FCIC  OR_LEDS  NY_NYSPIN  NJ_NJCJIS
+  ----------------------------  --------  -------  -------  ---------  ---------
+  Canadian DL (UQ/DLIC)        CBI v7    Can v10  CPIC v3  CBI v1     NLETS confirmed*
+  Canadian VehReg (VQ/RVIN)    CBI v7    Can v11  CPIC v4  CBI v1     --
+  Canadian Boat (CBQ)          CBI v13   Can v9   CPIC v3  --         --
+  Canadian Gun (CGQ/GINQ)      CBI v5    Can v9   CPIC v3  --         --
+  Canadian Article (CAQ)       CBI v5    Can v10  CPIC v3  --         --
+  Canadian Securities (CSQ)    CBI v11   Can v2   --       --         --
+  Canadian Person              --        Can v4   --       --         --
+  Canadian Vehicle (stolen)    --        Can v15  --       --         --
+
+  * NLETS AM.CNOLNHELP only — not in devdoc, not in metadata XML.
+  ZERO providers have built Canadian queries in JSON. All are metadata-only.
+
+  Transaction naming varies by provider:
+    CA_CLETS:  CBI<Query>         (e.g., CBIDriverLicenseQuery)
+    FL_FCIC:   Canadian<Query>    (e.g., CanadianDriverLicenseQuery)
+    OR_LEDS:   CPICBI<Query>      (e.g., CPICBIDriverLicenseQuery)
+    NY_NYSPIN: CBICanada<Query>   (e.g., CBICanadaDriverLicenseQuery)
+
+================================================================================
+SECTION 2 — KEY REFERENCE / MESSAGE TYPE MAPPING
+================================================================================
+
+  KeyRef  Message  Description
+  ------  -------  -----------
+  UQ      UQ       Canadian DL query — name search to live province (6 provinces)
+  WQ      WQ       Canadian DL query — OLN-only to non-live province
+  VQ      VQ       Canadian Vehicle Registration query
+  CBQ     CBQ      Canadian Boat query
+  CAQ     CAQ      Canadian Article query
+  CGQ     CGQ      Canadian Gun query
+  CSQ     CSQ      Canadian Securities query
+  DLIC    --       Alternate DL keyRef used by OR_LEDS and NY_NYSPIN
+  RVIN    --       Alternate VehReg keyRef used by OR_LEDS and NY_NYSPIN
+  GINQ    --       Alternate Gun keyRef used by OR_LEDS
+
+================================================================================
+SECTION 3 — CANADIAN DL (UQ) — FIELD DEFINITIONS
+================================================================================
+
+All Canadian queries share two NLETS-standard routing fields:
+  ReasonCode                      M   maxLen=1   Reason for query
+  PersonPropertyInSightIndicator  M   maxLen=1   Person/Property in sight (Y/N)
+
+Canadian DL core fields (NLETS/CPIC standard — same across all providers):
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  Name                            M    30-80   Last,First composite
+  BirthDate                       M    8-10    DOB (format varies by provider)
+  SexCode                         M    1       M/F/U
+  ReasonCode                      M    1       RSN — reason for query
+  PersonPropertyInSightIndicator  M    1       PPS — Y or N
+  OperatorLicenseNumber           O    20      Optional for UQ; REQUIRED for WQ
+  State / NletsDestination        M    2       Province destination code
+
+Provider-specific wrapper fields (NOT part of NLETS standard):
+  CaRequestPurposeCode            CA_CLETS only    CA-mandated purpose code
+  Requestor                       FL_FCIC only     Requesting user (maxLen=30)
+  NletsDestination                CA_CLETS only    Explicit destination field
+  FormORI                         OR_LEDS only     Form ORI (maxLen=9)
+  ImageIndicator                  NY_NYSPIN only   Image flag
+  MiscellaneousDescriptiveText    NY_NYSPIN only   Free text (maxLen=200)
+
+UQ Combination (standard):
+  set[]: Name, BirthDate, SexCode, ReasonCode, PPS, Province/Destination
+  any[]: OperatorLicenseNumber
+
+WQ Combination (OLN-only, non-live provinces):
+  set[]: OperatorLicenseNumber, ReasonCode, PPS, Province/Destination
+  any[]: (none)
+
+================================================================================
+SECTION 4 — CANADIAN VEHICLE REGISTRATION (VQ) — FIELD DEFINITIONS
+================================================================================
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  VehicleIdentificationNumber     C    17-20   VIN
+  LicensePlateNumber              C    10      Plate
+  ReasonCode                      M    1       RSN
+  PersonPropertyInSightIndicator  M    1       PPS
+  NletsDestination / State        M    2       Province destination
+
+  Available in: CA_CLETS (v7), FL_FCIC (v11), OR_LEDS (v4), NY_NYSPIN (v1)
+
+================================================================================
+SECTION 5 — CANADIAN BOAT (CBQ) — FIELD DEFINITIONS
+================================================================================
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  RegistrationNumber              C    7       Boat registration
+  BoatHullIdNumber                C    12-20   Hull ID
+  BoatName                        C    13      Boat name (FL/CA only)
+  LicensePlateNumber              C    10      Boat plate (FL/CA only)
+  MotorSerialNumber               C    18      Motor serial (FL only)
+  ReasonCode                      M    1       RSN
+  PersonPropertyInSightIndicator  M    1       PPS
+
+  Available in: CA_CLETS (v13), FL_FCIC (v9), OR_LEDS (v3)
+
+================================================================================
+SECTION 6 — CANADIAN GUN (CGQ) — FIELD DEFINITIONS
+================================================================================
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  GunSerialNumber                 M    11-23   Firearm serial (size varies)
+  GunTypeCode                     M    2       Firearm type code
+  ReasonCode                      M    1       RSN
+  PersonPropertyInSightIndicator  M    1       PPS
+
+  Available in: CA_CLETS (v5), FL_FCIC (v9), OR_LEDS (v3)
+
+================================================================================
+SECTION 7 — CANADIAN ARTICLE (CAQ) — FIELD DEFINITIONS
+================================================================================
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  ArticleSerialNumber             M    20-23   Article serial (size varies)
+  ArticleTypeCode                 M    2-7     Article type code (size varies)
+  ReasonCode                      M    1       RSN
+  PersonPropertyInSightIndicator  M    1       PPS
+
+  Available in: CA_CLETS (v5), FL_FCIC (v10), OR_LEDS (v3)
+
+================================================================================
+SECTION 8 — CANADIAN SECURITIES (CSQ) — FIELD DEFINITIONS
+================================================================================
+
+  Field                           M/O  maxLen  Notes
+  ------------------------------  ---  ------  -----
+  SecuritySerialNumber            M    23      Security serial number
+  SecurityTypeCode                M    2       Security type code
+  Name                            M    14      Owner/related name
+  Issuer                          O    30      Issuing entity
+  Owner                           O    30      Owner name
+  ReasonCode                      M    1       RSN
+  PersonPropertyInSightIndicator  M    1       PPS
+
+  Available in: CA_CLETS (v11), FL_FCIC (v2)
+
+================================================================================
+SECTION 9 — PROVINCE CODES AND ROUTING (from NLETS AM.CNOLNHELP)
+================================================================================
+
+Source: NLETS help file received by NJ 2026-05-22 (Canadian DL Help.pdf)
+
+LIVE ONLINE ACCESS (UQ message — Name+DOB search):
+  ON  Ontario                  Control Point: ON4540000
+  BC  British Columbia         Control Point: BC1032600
+  AB  Alberta                  Control Point: AB1012000
+  QC  Quebec                   Control Point: PQ4004700
+  SK  Saskatchewan             Control Point: SN1012600
+  NB  New Brunswick            Control Point: NK1004000
+
+WEEKLY UPLOAD — NON-LIVE (UQ works, data may be up to 1 week old):
+  MB  Manitoba                 Control Point: MB1007000
+  PE  Prince Edward Island     Control Point: PE1000800
+  YT  Yukon                    Control Point: YT1001500
+  NS  Nova Scotia              Control Point: NS1005300
+
+ALL OTHER PROVINCES (WQ message — OLN REQUIRED, search by OLN only):
+  NF  Newfoundland             Control Point: NF1004900
+  NT  Northwest Territories    Control Point: NT1003500
+  NU  Nunavut                  Control Point: NT1005300
+
+INTERPOL OTTAWA CANADA: ON1005900
+  Phone: (613) 843-5034  Fax: (613) 825-4521  Hours: 24/7
+
+UQ response: "WR" message + "** RO/DL TRANSACTION BEING PROCESSED.**"
+DL info returned as "UR" message.
+Non-automated provinces: UR indicates non-automated; send "AM" to control point.
+
+================================================================================
+END OF REFERENCE
+================================================================================
