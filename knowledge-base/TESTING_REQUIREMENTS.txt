@@ -871,3 +871,42 @@ SECTION 17 -- DEPLOYMENT ENVIRONMENTS
     - "Import" not "deploy" — we import JSONs into tenants
     - "Foundation Tenant" not "production" — no live environments yet
     - Never say "DEPLOYED" — use "imported to <tenant name>"
+
+================================================================================
+17. SHARED TOOL CHANGE PROPAGATION
+================================================================================
+
+  When a shared tool in tools/ is changed (test_commsys.ps1, validate.ps1,
+  render_layout.ps1, audit_metadata.ps1, etc.), all providers' reports generated
+  by that tool are immediately stale and must be regenerated.
+
+  STANDARD COMMAND — regenerate all reports without rebuilding JSONs:
+
+    pipeline.ps1 -All -SkipBuild
+
+  This runs build_report.ps1 (all 10 steps) for every provider using the
+  current JSON on disk. No JSON rebuild required. Commits and pushes all
+  updated reports.
+
+  For a single provider:
+    build_report.ps1 -Path providers/<P>/<P>.json
+
+  TOOL → REPORT MAPPING (which report a tool generates):
+    test_commsys.ps1    → QUERY_REPORT_<P>.txt        (step 3)
+    validate.ps1        → VALIDATOR_REPORT_<P>.txt     (step 1)
+    render_layout.ps1   → LAYOUT_REPORT_<P>.txt        (step 2)
+    report_picklists.ps1 → PICKLIST_REPORT_<P>.txt    (step 4)
+    render_html.ps1     → LAYOUT_<P>.html              (step 5)
+    verify_build.ps1    → VERIFY_REPORT_<P>.txt        (step 6)
+    audit_metadata.ps1  → METADATA_AUDIT_<P>.txt       (step 7)
+    audit_cad.ps1       → CAD_AUDIT_<P>.txt            (step 8)
+    generate_test_matrix.ps1 → <P>_TEST_MATRIX.txt    (step 9)
+    run_test_matrix.ps1 → TEST_VALIDATION_<P>.txt      (step 10)
+
+  LEGACY PROVIDERS (still have _MC.json / _BASE.json filename):
+    Run test_commsys.ps1 -Path providers/<P>/<P>_MC.json -OutFile directly,
+    since pipeline.ps1 expects <P>.json. Full rebuild is the proper fix
+    (next scheduled rebuild converts to single-JSON naming).
+
+  RULE: Never let a shared tool change and leave any provider's reports
+  reflecting the old tool behavior. Propagate immediately.
