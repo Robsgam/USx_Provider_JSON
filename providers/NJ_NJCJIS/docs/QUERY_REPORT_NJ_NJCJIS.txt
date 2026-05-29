@@ -1,71 +1,66 @@
-﻿================================================================
-  Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS.json
-  Generated: 2026-05-28 08:38
-================================================================
-QUERY SIMULATION
-================
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:26:15
+JSON: NJ_NJCJIS.json
+========================================================================
 
+QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle]
+Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
+------------------------------------------------------------------------
 
-================================================================
-  CommSys Query Simulator -- NJ_NJCJIS.json
-================================================================
+  [FIRES] QVN
+    REQUIRED (set): [ncicNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: ncicNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>V123456789</NCICNumber>
+      </Transaction>
 
---- QIDM: NJ_NJCJIS_VehicleStolenQuery [Vehicle] ---
-    Query: VehicleStolenQuery  |  Attrs: 6  |  Combos: 3
-
-    [FIRES] QVN
-      set: [ncicNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
+  [FIRES] QVP
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode]
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
-    [FIRES] QVP
-      set: [licensePlateNumber]
-      any: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode] -> matched: [imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode]
-      -- CommSys XML --
+  [FIRES] QVV
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [imageIndicator, vehicleMakeCode]
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: imageIndicator, vehicleMakeCode
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QV</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
-    [FIRES] QVV
-      set: [vehicleIdentificationNumber]
-      any: [imageIndicator, vehicleMakeCode] -> matched: [imageIndicator, vehicleMakeCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <NCICNumber>V123456789</NCICNumber>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
+QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+------------------------------------------------------------------------
 
---- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
-
-    [FIRES] RQ_RAND
-      set: [licensePlateNumber]
-      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
-      -- CommSys XML --
+  [FIRES] RQ_RAND
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+      condition: RandomRequest EQUALS Y
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -75,13 +70,14 @@ QUERY SIMULATION
         <LicensePlateYear>2024</LicensePlateYear>
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
-    [FIRES] RQ
-      set: [licensePlateNumber]
-      any: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear] -> matched: [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
-      -- CommSys XML --
+  [FIRES] RQ
+    REQUIRED (set): [licensePlateNumber]
+    OPTIONAL (any): [randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear]
+    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
+      Defaults/optional: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -91,81 +87,83 @@ QUERY SIMULATION
         <LicensePlateYear>2024</LicensePlateYear>
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
-    [FIRES] RQN_RAND
-      set: [vehicleIdentificationNumber]
-      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
-      -- CommSys XML --
+  [FIRES] RQN_RAND
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [randomRequest, registrationState, imageIndicator]
+      condition: RandomRequest EQUALS Y
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: randomRequest, registrationState, imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
-    [FIRES] RQN
-      set: [vehicleIdentificationNumber]
-      any: [randomRequest, registrationState, imageIndicator] -> matched: [randomRequest, registrationState, imageIndicator]
-      -- CommSys XML --
+  [FIRES] RQN
+    REQUIRED (set): [vehicleIdentificationNumber]
+    OPTIONAL (any): [randomRequest, registrationState, imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
+      Defaults/optional: randomRequest, registrationState, imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
---- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+QIDM: NJ_NJCJIS_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+------------------------------------------------------------------------
 
-    [FIRES] DQ
-      set: [birthDate, nameLast, nameFirst]
-      any: [imageIndicator, sexCode, registrationState] -> matched: [imageIndicator, sexCode, registrationState]
-      -- CommSys XML --
+  [FIRES] DQ
+    REQUIRED (set): [birthDate, nameLast, nameFirst]
+    OPTIONAL (any): [imageIndicator, sexCode, registrationState]
+    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst
+      Defaults/optional: imageIndicator, sexCode, registrationState
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
         <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe, John</Name>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQN
-      set: [operatorLicenseNumber, registrationState]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
+  [FIRES] DQN
+    REQUIRED (set): [operatorLicenseNumber, registrationState]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber + registrationState
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe, John</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
         <State>NJ</State>
       </Transaction>
 
---- QIDM: NJ_NJCJIS_GunQuery [Firearm] ---
-    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+QIDM: NJ_NJCJIS_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 5  |  Combos: 1
+------------------------------------------------------------------------
 
-    [FIRES] QG
-      set: [gunSerialNumber]
-      any: [gunCaliber, gunMake, gunModel, imageIndicator] -> matched: [gunCaliber, gunMake, gunModel, imageIndicator]
-      -- CommSys XML --
+  [FIRES] QG
+    REQUIRED (set): [gunSerialNumber]
+    OPTIONAL (any): [gunCaliber, gunMake, gunModel, imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: gunSerialNumber
+      Defaults/optional: gunCaliber, gunMake, gunModel, imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -176,13 +174,16 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
---- QIDM: NJ_NJCJIS_ArticleSingleQuery [Article] ---
-    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+QIDM: NJ_NJCJIS_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+------------------------------------------------------------------------
 
-    [FIRES] QA
-      set: [articleSerialNumber, articleTypeCode]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
+  [FIRES] QA
+    REQUIRED (set): [articleSerialNumber, articleTypeCode]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: articleSerialNumber + articleTypeCode
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -191,37 +192,34 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
---- QIDM: NJ_NJCJIS_BoatQuery [Boat] ---
-    Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+QIDM: NJ_NJCJIS_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+------------------------------------------------------------------------
 
-    [FIRES] QB
-      set: [registrationNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
+  [FIRES] QB
+    REQUIRED (set): [registrationNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: registrationNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+  [FIRES] QBN
+    REQUIRED (set): [boatHullIdNumber]
+    OPTIONAL (any): [imageIndicator]
+    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
+      Defaults/optional: imageIndicator
+    EXPECTED XML:
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
       </Transaction>
 
-    [FIRES] QBN
-      set: [boatHullIdNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-      </Transaction>
-
-================================================================
-  Filter: -Entity <name>  -Combo <keyRef>
-  Edit testData in script to change form values.
-  Save: -OutFile <path> to save test case reference.
-================================================================
-
-
+========================================================================

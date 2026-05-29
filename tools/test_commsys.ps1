@@ -278,6 +278,8 @@ function Get-FilledRefs($qidm, $formData) {
 }
 
 # ── Build XML ──
+# Only includes attributes whose sourceFields/name are in this combo's set[]+any[].
+# This produces the combo-accurate query — not every field in testData.
 function Build-Xml($qidm, $combo, $formData) {
     $kr = $combo.keyReference
     if (-not $kr) { $kr = $combo.keyRef }
@@ -287,12 +289,31 @@ function Build-Xml($qidm, $combo, $formData) {
         $msgKey = $Matches[1]
     }
 
+    $relevantFields = @()
+    if ($combo.requirements -and $combo.requirements.set) { $relevantFields += @($combo.requirements.set) }
+    if ($combo.requirements -and $combo.requirements.any)  { $relevantFields += @($combo.requirements.any) }
+    $relevantFields = $relevantFields | Select-Object -Unique
+
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.AppendLine('<?xml version="1.0" encoding="UTF-8"?>')
     [void]$sb.AppendLine('<Transaction>')
     [void]$sb.AppendLine("  <MessageKey>$msgKey</MessageKey>")
 
     foreach ($attr in $qidm.attributes) {
+        $sourceFields = @()
+        if ($attr.sourceField -is [System.Array]) { $sourceFields = $attr.sourceField }
+        elseif ($attr.sourceField) { $sourceFields = @($attr.sourceField) }
+
+        if ($sourceFields.Count -gt 0 -and $relevantFields.Count -gt 0) {
+            $relevant = $relevantFields -contains $attr.name
+            if (-not $relevant) {
+                foreach ($sf in $sourceFields) {
+                    if ($relevantFields -contains $sf) { $relevant = $true; break }
+                }
+            }
+            if (-not $relevant) { continue }
+        }
+
         $val = Get-AttrValue $attr $formData
         if (-not $val) { continue }
         $tf = $attr.targetField
