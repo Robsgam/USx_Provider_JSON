@@ -1,0 +1,232 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:12
+JSON: MD_METERS_MC.json
+========================================================================
+
+QIDM: MD_METERS_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] ZLRG.P
+    REQUIRED (set): [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZLRG.P</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] ZLRG.V
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZLRG.V</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [FIRES] ZVEH.V
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): [VehicleMakeCode, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber
+      Defaults/optional: VehicleMakeCode, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZVEH.V</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+  [FIRES] ZVEH.P
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber
+      Defaults/optional: ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZVEH.P</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+      </Transaction>
+
+QIDM: MD_METERS_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 9  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] ZWAR.N
+    REQUIRED (set): [BirthDate, NameLast, NameFirst, RaceCode, SexCode]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: BirthDate + NameLast + NameFirst + RaceCode + SexCode
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZWAR.N</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] ZWAR.O
+    REQUIRED (set): [NameLast, NameFirst, OperatorLicenseNumber, RaceCode, SexCode]
+    OPTIONAL (any): [OperatorLicenseExpirationYear, RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: NameLast + NameFirst + OperatorLicenseNumber + RaceCode + SexCode
+      Defaults/optional: OperatorLicenseExpirationYear, RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZWAR.O</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] ZLDR.N
+    REQUIRED (set): [BirthDate, NameLast, NameFirst, SexCode]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: BirthDate + NameLast + NameFirst + SexCode
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZLDR.N</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] ZLDR.O
+    REQUIRED (set): [OperatorLicenseNumber]
+    OPTIONAL (any): [RegistrationState, ImageIndicator, YearsPastViolationsWanted]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber
+      Defaults/optional: RegistrationState, ImageIndicator, YearsPastViolationsWanted
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZLDR.O</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+QIDM: MD_METERS_DriverHistoryQuery [Person]
+Query: DriverHistoryQuery  |  Attrs: 5  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] ZDRV.N
+    REQUIRED (set): [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+    OPTIONAL (any): [ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: BirthDateDH + NameLastDH + NameFirstDH + SexCodeDH
+      Defaults/optional: ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZDRV.N</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+  [FIRES] ZDRV.O
+    REQUIRED (set): [OperatorLicenseNumberDH]
+    OPTIONAL (any): [ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH
+      Defaults/optional: ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZDRV.O</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+QIDM: MD_METERS_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 3  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] ZGUN
+    REQUIRED (set): [GunCaliber, FirearmMake, SerialNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: GunCaliber + FirearmMake + SerialNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZGUN</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+QIDM: MD_METERS_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 2  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] ZART
+    REQUIRED (set): [SerialNumber, ArticleTypeCode]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: SerialNumber + ArticleTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZART</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+QIDM: MD_METERS_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] ZBOA.H
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [RegistrationNumber, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: BoatHullIdNumber
+      Defaults/optional: RegistrationNumber, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZBOA.H</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+  [FIRES] ZBOA.R
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [BoatHullIdNumber, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: RegistrationNumber
+      Defaults/optional: BoatHullIdNumber, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>ZBOA.R</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+========================================================================

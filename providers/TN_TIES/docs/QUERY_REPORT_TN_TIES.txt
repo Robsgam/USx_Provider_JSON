@@ -1,0 +1,281 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:12
+JSON: TN_TIES_MC.json
+========================================================================
+
+QIDM: TN_TIES_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 13
+------------------------------------------------------------------------
+
+  [SKIP] RV -- no any[] match
+    REQUIRED (set): [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode, RegistrationState]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RQ.P -- no any[] match
+    REQUIRED (set): [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode, RegistrationState]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [FIRES] RQ.V
+    REQUIRED (set): [RegistrationState, VehicleIdentificationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator, VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: RegistrationState + VehicleIdentificationNumber
+      Defaults/optional: InquiryTypeIndicator, VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [SKIP] RQ01 -- no any[] match
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RV01 -- no any[] match
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RQ03 -- no any[] match
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RV03 -- no any[] match
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RQ06 -- missing set: HandicapPlacardNumber
+    REQUIRED (set): [HandicapPlacardNumber]
+    OPTIONAL (any): []
+
+  [SKIP] RQ05 -- missing set: DealerLicensePlateNumber
+    REQUIRED (set): [DealerLicensePlateNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] RQ07 -- missing set: TemporaryLicensePlateNumber
+    REQUIRED (set): [TemporaryLicensePlateNumber]
+    OPTIONAL (any): []
+
+  [FIRES] QV.V
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator, VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber
+      Defaults/optional: InquiryTypeIndicator, VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [FIRES] QV.P
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [InquiryTypeIndicator, LicensePlateTypeCode]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber
+      Defaults/optional: InquiryTypeIndicator, LicensePlateTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      </Transaction>
+
+  [SKIP] QV.D -- missing set: DealerLicensePlateNumber
+    REQUIRED (set): [DealerLicensePlateNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+QIDM: TN_TIES_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 6
+------------------------------------------------------------------------
+
+  [SKIP] DQ.N -- no any[] match
+    REQUIRED (set): [NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [FIRES] QWA
+    REQUIRED (set): [NameLast, NameFirst, BirthDate, SexCode]
+    OPTIONAL (any): [ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RaceCode, RelatedHitSearchIndicator]
+    TEST INSTRUCTIONS: Enter values for: NameLast + NameFirst + BirthDate + SexCode
+      Defaults/optional: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RaceCode, RelatedHitSearchIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <RaceCode>W</RaceCode>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+  [SKIP] DQ02 -- no any[] match
+    REQUIRED (set): [NameLast, NameFirst, BirthDate, SexCode]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [FIRES] DQ.O
+    REQUIRED (set): [OperatorLicenseNumber, RegistrationState]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber + RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DQ01
+    REQUIRED (set): [OperatorLicenseNumber]
+    OPTIONAL (any): [ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RelatedHitSearchIndicator]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber
+      Defaults/optional: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RelatedHitSearchIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+  [FIRES] DQ06
+    REQUIRED (set): [SocialSecurityNumber]
+    OPTIONAL (any): [ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RelatedHitSearchIndicator]
+    TEST INSTRUCTIONS: Enter values for: SocialSecurityNumber
+      Defaults/optional: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, RelatedHitSearchIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <ExpandedNameSearchCode>E</ExpandedNameSearchCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+      </Transaction>
+
+QIDM: TN_TIES_DriverHistoryQuery [Person]
+Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 3
+------------------------------------------------------------------------
+
+  [FIRES] KQ.N
+    REQUIRED (set): [NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH, PurposeCodeDH]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: NameLastDH + NameFirstDH + BirthDateDH + SexCodeDH + PurposeCodeDH
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] KQ.O
+    REQUIRED (set): [OperatorLicenseNumberDH, PurposeCodeDH]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH + PurposeCodeDH
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DQ05
+    REQUIRED (set): [OperatorLicenseNumberDH]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+QIDM: TN_TIES_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 3  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QG
+    REQUIRED (set): [SerialNumber]
+    OPTIONAL (any): [GunCaliber, FirearmMake]
+    TEST INSTRUCTIONS: Enter values for: SerialNumber
+      Defaults/optional: GunCaliber, FirearmMake
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+QIDM: TN_TIES_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 2  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QA
+    REQUIRED (set): [SerialNumber, ArticleTypeCode]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: SerialNumber + ArticleTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+QIDM: TN_TIES_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 4  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] BB.H
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [InquiryTypeIndicator, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: BoatHullIdNumber
+      Defaults/optional: InquiryTypeIndicator, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BB.H</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] BB.R
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: RegistrationNumber
+      Defaults/optional: InquiryTypeIndicator, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BB.R</MessageKey>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+  [SKIP] QB.H -- no any[] match
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+  [SKIP] QB.R -- no any[] match
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [InquiryTypeIndicator]
+
+========================================================================

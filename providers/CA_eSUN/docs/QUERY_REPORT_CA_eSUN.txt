@@ -1,0 +1,283 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:14
+JSON: CA_eSUN_MC.json
+========================================================================
+
+QIDM: CA_eSUN_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QA
+    REQUIRED (set): [CaRequestPurposeCode, SerialNumber]
+    OPTIONAL (any): [ArticleBrand, ArticleCategory, ArticleTypeCode]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + SerialNumber
+      Defaults/optional: ArticleBrand, ArticleCategory, ArticleTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+      </Transaction>
+
+QIDM: CA_eSUN_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] BQ.H
+    REQUIRED (set): [CaRequestPurposeCode, BoatHullIdNumber]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + BoatHullIdNumber
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] BQ.R
+    REQUIRED (set): [CaRequestPurposeCode, RegistrationNumber]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + RegistrationNumber
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+QIDM: CA_eSUN_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] DQ.N
+    REQUIRED (set): [CaRequestPurposeCode, SexCode, BirthDate, NameLast, NameFirst]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + SexCode + BirthDate + NameLast + NameFirst
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] L1.N
+    REQUIRED (set): [CaRequestPurposeCode, NameLast, NameFirst]
+    OPTIONAL (any): [BirthDate]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + NameLast + NameFirst
+      Defaults/optional: BirthDate
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+      </Transaction>
+
+  [FIRES] DQ.O
+    REQUIRED (set): [CaRequestPurposeCode, OperatorLicenseNumber]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + OperatorLicenseNumber
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] L1.O
+    REQUIRED (set): [CaRequestPurposeCode, OperatorLicenseNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + OperatorLicenseNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+QIDM: CA_eSUN_DriverHistoryQuery [Person]
+Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] KQ.N
+    REQUIRED (set): [CaRequestPurposeCode, NameLastDH, NameFirstDH, SexCodeDH, BirthDateDH]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + NameLastDH + NameFirstDH + SexCodeDH + BirthDateDH
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] L1.N.DH
+    REQUIRED (set): [CaRequestPurposeCode, NameLastDH, NameFirstDH]
+    OPTIONAL (any): [BirthDateDH]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + NameLastDH + NameFirstDH
+      Defaults/optional: BirthDateDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N.DH</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>19900115</BirthDate>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <Name>Doe, John</Name>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+  [FIRES] KQ.O
+    REQUIRED (set): [CaRequestPurposeCode, OperatorLicenseNumberDH]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + OperatorLicenseNumberDH
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] L1.O.DH
+    REQUIRED (set): [CaRequestPurposeCode, OperatorLicenseNumberDH]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + OperatorLicenseNumberDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O.DH</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+QIDM: CA_eSUN_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 9  |  Combos: 2
+------------------------------------------------------------------------
+
+  [SKIP] QGH -- missing set: GunNameLast, GunNameFirst
+    REQUIRED (set): [CaRequestPurposeCode, GunNameLast, GunNameFirst]
+    OPTIONAL (any): [GunBirthDate, GunAge]
+
+  [FIRES] QGB
+    REQUIRED (set): [CaRequestPurposeCode, SerialNumber]
+    OPTIONAL (any): [GunCaliber, FirearmMake, GunTypeCode, RelatedSearchHitIndicator]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + SerialNumber
+      Defaults/optional: GunCaliber, FirearmMake, GunTypeCode, RelatedSearchHitIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+QIDM: CA_eSUN_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 12  |  Combos: 6
+------------------------------------------------------------------------
+
+  [FIRES] RQ.P
+    REQUIRED (set): [CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+    OPTIONAL (any): [VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear + RegistrationState
+      Defaults/optional: VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [SKIP] VP.D -- missing set: VehNameLast, VehNameFirst, VehBirthDate
+    REQUIRED (set): [CaRequestPurposeCode, VehNameLast, VehNameFirst, VehBirthDate]
+    OPTIONAL (any): [AddressCity, AddressStreetNumber]
+
+  [FIRES] RQ.V
+    REQUIRED (set): [CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+    OPTIONAL (any): [VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + VehicleIdentificationNumber + RegistrationState
+      Defaults/optional: VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [SKIP] VP.N -- missing set: VehNameLast, VehNameFirst
+    REQUIRED (set): [CaRequestPurposeCode, VehNameLast, VehNameFirst]
+    OPTIONAL (any): [AddressCity, AddressStreetNumber]
+
+  [FIRES] QV.V
+    REQUIRED (set): [CaRequestPurposeCode, VehicleIdentificationNumber]
+    OPTIONAL (any): [VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + VehicleIdentificationNumber
+      Defaults/optional: VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [FIRES] QV.P
+    REQUIRED (set): [CaRequestPurposeCode, LicensePlateNumber]
+    OPTIONAL (any): [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: CaRequestPurposeCode + LicensePlateNumber
+      Defaults/optional: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+========================================================================

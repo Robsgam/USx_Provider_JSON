@@ -1,22 +1,24 @@
-CommSys Query Simulator -- Test Case Reference
-Generated: 2026-05-29 15:26:16
-JSON: TX_TLETS.json
-========================================================================
+================================================================
+  Build Report: TX_TLETS
+  Source: TX_TLETS.json
+  Generated: 2026-05-29 15:38
+================================================================
+QUERY SIMULATION
+================
 
-QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery [Vehicle]
-Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
-------------------------------------------------------------------------
 
-  [SKIP] REGLicensePlateNumber -- missing set: financialResponsibilityType
-    REQUIRED (set): [licensePlateNumber, licensePlateYear, financialResponsibilityType]
-    OPTIONAL (any): [registrationState]
+================================================================
+  CommSys Query Simulator -- TX_TLETS.json
+================================================================
 
-  [FIRES] RQLicensePlateNumber
-    REQUIRED (set): [licensePlateNumber, licensePlateYear, licensePlateTypeCode]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber + licensePlateYear + licensePlateTypeCode
-      Defaults/optional: registrationState
-    EXPECTED XML:
+--- QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery [Vehicle] ---
+    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
+    [SKIP] REGLicensePlateNumber -- missing set: financialResponsibilityType
+
+    [FIRES] RQLicensePlateNumber
+      set: [licensePlateNumber, licensePlateYear, licensePlateTypeCode]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -25,21 +27,13 @@ Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
       </Transaction>
+    [SKIP] VINVehicleIdentificationNumber -- missing set: financialResponsibilityType
+    [SKIP] DPSIStickerNumber -- missing set: stickerNumber
 
-  [SKIP] VINVehicleIdentificationNumber -- missing set: financialResponsibilityType
-    REQUIRED (set): [vehicleIdentificationNumber, financialResponsibilityType]
-    OPTIONAL (any): [registrationState]
-
-  [SKIP] DPSIStickerNumber -- missing set: stickerNumber
-    REQUIRED (set): [stickerNumber]
-    OPTIONAL (any): [registrationState]
-
-  [FIRES] QVLicensePlateNumber
-    REQUIRED (set): [licensePlateNumber]
-    OPTIONAL (any): [regionId, registrationState]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
-      Defaults/optional: regionId, registrationState
-    EXPECTED XML:
+    [FIRES] QVLicensePlateNumber
+      set: [licensePlateNumber]
+      any: [regionId, registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QV</MessageKey>
@@ -47,12 +41,10 @@ Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] RQVehicleIdentificationNumber
-    REQUIRED (set): [vehicleIdentificationNumber]
-    OPTIONAL (any): [registrationState, vehicleMakeCode, vehicleYear]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
-      Defaults/optional: registrationState, vehicleMakeCode, vehicleYear
-    EXPECTED XML:
+    [FIRES] RQVehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [registrationState, vehicleMakeCode, vehicleYear] -> matched: [registrationState, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -61,24 +53,15 @@ Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
+    [SKIP] QVVehicleIdentificationNumber -- no any[] match
 
-  [SKIP] QVVehicleIdentificationNumber -- no any[] match
-    REQUIRED (set): [vehicleIdentificationNumber]
-    OPTIONAL (any): [regionId]
+--- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
 
-QIDM: TX_TLETS_DriverLicenseQuery [Person]
-Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
-------------------------------------------------------------------------
-
-  [FIRES] DQNameImg
-    REQUIRED (set): [sexCode, birthDate, nameLast, nameFirst]
-    OPTIONAL (any): [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState]
-      condition: ImageIndicator EQUALS Y
-      condition: ReasonCode EQUALS C
-      condition: EmailAddress REGEX .+
-    TEST INSTRUCTIONS: Enter values for: sexCode + birthDate + nameLast + nameFirst
-      Defaults/optional: emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState
-    EXPECTED XML:
+    [FIRES] DQNameImg
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -89,12 +72,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] DQName
-    REQUIRED (set): [sexCode, birthDate, nameLast, nameFirst]
-    OPTIONAL (any): [nameMiddle, nameSuffix, registrationState]
-    TEST INSTRUCTIONS: Enter values for: sexCode + birthDate + nameLast + nameFirst
-      Defaults/optional: nameMiddle, nameSuffix, registrationState
-    EXPECTED XML:
+    [FIRES] DQName
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [nameMiddle, nameSuffix, registrationState] -> matched: [nameMiddle, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -104,12 +85,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] QWName
-    REQUIRED (set): [birthDate, nameLast, nameFirst]
-    OPTIONAL (any): [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode]
-    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst
-      Defaults/optional: expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode
-    EXPECTED XML:
+    [FIRES] QWName
+      set: [birthDate, nameLast, nameFirst]
+      any: [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QW</MessageKey>
@@ -120,15 +99,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <SexCode>M</SexCode>
       </Transaction>
 
-  [FIRES] CPLNameImg
-    REQUIRED (set): [nameLast, nameFirst]
-    OPTIONAL (any): [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState]
-      condition: ImageIndicator EQUALS Y
-      condition: ReasonCode EQUALS C
-      condition: EmailAddress REGEX .+
-    TEST INSTRUCTIONS: Enter values for: nameLast + nameFirst
-      Defaults/optional: emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState
-    EXPECTED XML:
+    [FIRES] CPLNameImg
+      set: [nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>CPLNameImg</MessageKey>
@@ -137,12 +111,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] CPLName
-    REQUIRED (set): [nameLast, nameFirst]
-    OPTIONAL (any): [nameMiddle, nameSuffix, registrationState]
-    TEST INSTRUCTIONS: Enter values for: nameLast + nameFirst
-      Defaults/optional: nameMiddle, nameSuffix, registrationState
-    EXPECTED XML:
+    [FIRES] CPLName
+      set: [nameLast, nameFirst]
+      any: [nameMiddle, nameSuffix, registrationState] -> matched: [nameMiddle, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>CPLName</MessageKey>
@@ -150,15 +122,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] DQOLNImg
-    REQUIRED (set): [operatorLicenseNumber]
-    OPTIONAL (any): [emailAddress, imageIndicator, reasonCode, registrationState]
-      condition: ImageIndicator EQUALS Y
-      condition: ReasonCode EQUALS C
-      condition: EmailAddress REGEX .+
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber
-      Defaults/optional: emailAddress, imageIndicator, reasonCode, registrationState
-    EXPECTED XML:
+    [FIRES] DQOLNImg
+      set: [operatorLicenseNumber]
+      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -167,12 +134,10 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] DQOLN
-    REQUIRED (set): [operatorLicenseNumber]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] DQOLN
+      set: [operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -180,19 +145,13 @@ Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
         <State>NJ</State>
       </Transaction>
 
-QIDM: TX_TLETS_DriverHistoryQuery [Person]
-Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
-------------------------------------------------------------------------
+--- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
 
-  [FIRES] KQNameImg
-    REQUIRED (set): [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-    OPTIONAL (any): [attentionDH, emailAddress, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCode, registrationState]
-      condition: ImageIndicator EQUALS Y
-      condition: ReasonCode EQUALS C
-      condition: EmailAddress REGEX .+
-    TEST INSTRUCTIONS: Enter values for: sexCodeDH + birthDateDH + nameLastDH + nameFirstDH
-      Defaults/optional: attentionDH, emailAddress, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCode, registrationState
-    EXPECTED XML:
+    [FIRES] KQNameImg
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, emailAddress, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -204,12 +163,10 @@ Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] KQName
-    REQUIRED (set): [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-    OPTIONAL (any): [attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState]
-    TEST INSTRUCTIONS: Enter values for: sexCodeDH + birthDateDH + nameLastDH + nameFirstDH
-      Defaults/optional: attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState
-    EXPECTED XML:
+    [FIRES] KQName
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -220,15 +177,10 @@ Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] KQOLNImg
-    REQUIRED (set): [operatorLicenseNumberDH]
-    OPTIONAL (any): [attentionDH, emailAddress, imageIndicator, purposeCodeDH, reasonCode, registrationState]
-      condition: ImageIndicator EQUALS Y
-      condition: ReasonCode EQUALS C
-      condition: EmailAddress REGEX .+
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumberDH
-      Defaults/optional: attentionDH, emailAddress, imageIndicator, purposeCodeDH, reasonCode, registrationState
-    EXPECTED XML:
+    [FIRES] KQOLNImg
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, emailAddress, imageIndicator, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -238,12 +190,10 @@ Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] KQOLN
-    REQUIRED (set): [operatorLicenseNumberDH]
-    OPTIONAL (any): [attentionDH, purposeCodeDH, registrationState]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumberDH
-      Defaults/optional: attentionDH, purposeCodeDH, registrationState
-    EXPECTED XML:
+    [FIRES] KQOLN
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -252,16 +202,13 @@ Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-QIDM: TX_TLETS_GunQuery [Firearm]
-Query: GunQuery  |  Attrs: 6  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: TX_TLETS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
 
-  [FIRES] QGGunSerialNumber
-    REQUIRED (set): [gunSerialNumber]
-    OPTIONAL (any): [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: gunSerialNumber
-      Defaults/optional: gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QGGunSerialNumber
+      set: [gunSerialNumber]
+      any: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator] -> matched: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -272,12 +219,10 @@ Query: GunQuery  |  Attrs: 6  |  Combos: 2
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QGNCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QGNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -286,16 +231,13 @@ Query: GunQuery  |  Attrs: 6  |  Combos: 2
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-QIDM: TX_TLETS_ArticleSingleQuery [Article]
-Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: TX_TLETS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
 
-  [FIRES] QAArticleSerialNumber
-    REQUIRED (set): [articleSerialNumber, articleTypeCode]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: articleSerialNumber + articleTypeCode
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QAArticleSerialNumber
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -305,12 +247,10 @@ Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QANCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QANCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -319,16 +259,13 @@ Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-QIDM: TX_TLETS_BoatQuery [Boat]
-Query: BoatQuery  |  Attrs: 6  |  Combos: 5
-------------------------------------------------------------------------
+--- QIDM: TX_TLETS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 6  |  Combos: 5
 
-  [FIRES] BQRegistrationNumber
-    REQUIRED (set): [registrationNumber, registrationState]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber + registrationState
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] BQRegistrationNumber
+      set: [registrationNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
@@ -338,12 +275,10 @@ Query: BoatQuery  |  Attrs: 6  |  Combos: 5
         <State>FL</State>
       </Transaction>
 
-  [FIRES] BQBoatHullIdNumber
-    REQUIRED (set): [boatHullIdNumber, registrationState]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber + registrationState
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] BQBoatHullIdNumber
+      set: [boatHullIdNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
@@ -353,12 +288,10 @@ Query: BoatQuery  |  Attrs: 6  |  Combos: 5
         <State>FL</State>
       </Transaction>
 
-  [FIRES] QBRegistrationNumber
-    REQUIRED (set): [registrationNumber]
-    OPTIONAL (any): [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber
-      Defaults/optional: boatHullIdNumber, imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBRegistrationNumber
+      set: [registrationNumber]
+      any: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -368,12 +301,10 @@ Query: BoatQuery  |  Attrs: 6  |  Combos: 5
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QBBoatHullIdNumber
-    REQUIRED (set): [boatHullIdNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBBoatHullIdNumber
+      set: [boatHullIdNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -382,12 +313,10 @@ Query: BoatQuery  |  Attrs: 6  |  Combos: 5
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QBNCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -396,4 +325,10 @@ Query: BoatQuery  |  Attrs: 6  |  Combos: 5
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-========================================================================
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

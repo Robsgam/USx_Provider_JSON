@@ -1,0 +1,230 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:13
+JSON: NM_NMLETS_OFML_MC.json
+========================================================================
+
+QIDM: NM_NMLETS_OFML_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] RQ.P
+    REQUIRED (set): [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+    OPTIONAL (any): [RegistrationState, VehicleMakeCode, VehicleYear]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear
+      Defaults/optional: RegistrationState, VehicleMakeCode, VehicleYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [FIRES] RQ.V
+    REQUIRED (set): [VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber + VehicleMakeCode + VehicleYear
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [FIRES] QV.V
+    REQUIRED (set): [VehicleIdentificationNumber, VehicleMakeCode]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber + VehicleMakeCode
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+  [FIRES] QV.P
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [RegistrationState, LicensePlateTypeCode, LicensePlateYear]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber
+      Defaults/optional: RegistrationState, LicensePlateTypeCode, LicensePlateYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+
+QIDM: NM_NMLETS_OFML_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] DL.NAME
+    REQUIRED (set): [NameLast, NameFirst, BirthDate, SexCode]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: NameLast + NameFirst + BirthDate + SexCode
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DL.NAME</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DL.OLN
+    REQUIRED (set): [OperatorLicenseNumber]
+    OPTIONAL (any): [RegistrationState, ImageIndicator]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber
+      Defaults/optional: RegistrationState, ImageIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DL.OLN</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+QIDM: NM_NMLETS_OFML_DriverHistoryQuery [Person]
+Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 2
+------------------------------------------------------------------------
+
+  [FIRES] KQ.N
+    REQUIRED (set): [NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+    OPTIONAL (any): [AttentionDH, OperatorLicenseNumberDH, PurposeCodeDH, RaceCodeDH, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: NameLastDH + NameFirstDH + BirthDateDH + SexCodeDH
+      Defaults/optional: AttentionDH, OperatorLicenseNumberDH, PurposeCodeDH, RaceCodeDH, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] KQ.O
+    REQUIRED (set): [OperatorLicenseNumberDH]
+    OPTIONAL (any): [AttentionDH, PurposeCodeDH, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH
+      Defaults/optional: AttentionDH, PurposeCodeDH, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+QIDM: NM_NMLETS_OFML_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 4  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QG
+    REQUIRED (set): [SerialNumber]
+    OPTIONAL (any): [GunCaliber, FirearmMake, GunModel]
+    TEST INSTRUCTIONS: Enter values for: SerialNumber
+      Defaults/optional: GunCaliber, FirearmMake, GunModel
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+QIDM: NM_NMLETS_OFML_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 2  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QA
+    REQUIRED (set): [SerialNumber, ArticleTypeCode]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: SerialNumber + ArticleTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+QIDM: NM_NMLETS_OFML_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 3  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] BQ.H
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: BoatHullIdNumber
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] BQ.R
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [BoatHullIdNumber, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: RegistrationNumber
+      Defaults/optional: BoatHullIdNumber, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] QB.H
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: BoatHullIdNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+      </Transaction>
+
+  [FIRES] QB.R
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [BoatHullIdNumber]
+    TEST INSTRUCTIONS: Enter values for: RegistrationNumber
+      Defaults/optional: BoatHullIdNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+========================================================================

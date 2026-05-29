@@ -1,0 +1,38 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:14
+JSON: CA_CONTRA_COSTA_BASE.json
+========================================================================
+
+QIDM: CA_CONTRA_COSTA_CaContraCostaJawsPersonQuery [Person]
+Query: CaContraCostaJawsPersonQuery  |  Attrs: 10  |  Combos: 5
+------------------------------------------------------------------------
+
+  [SKIP] DQ -- missing set: requestingAgencyId
+    REQUIRED (set): [caRequestPurposeCode, nameLast, nameFirst, birthDate, sexCode, registrationState, requestingAgencyId]
+    OPTIONAL (any): []
+
+  [SKIP] DNQ -- missing set: requestingAgencyId
+    REQUIRED (set): [caRequestPurposeCode, nameLast, nameFirst, registrationState, requestingAgencyId]
+    OPTIONAL (any): [age, addressCity, sexCode]
+
+  [SKIP] INL1 -- missing set: requestingAgencyId
+    REQUIRED (set): [caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
+    OPTIONAL (any): [address, addressCity, birthDate, age]
+
+  [SKIP] IR.QVC -- missing set: requestingAgencyId
+    REQUIRED (set): [caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
+    OPTIONAL (any): [sexCode, raceCode]
+
+  [SKIP] IW.N -- missing set: requestingAgencyId
+    REQUIRED (set): [nameLast, nameFirst, requestingAgencyId]
+    OPTIONAL (any): [birthDate]
+
+QIDM: CA_CONTRA_COSTA_CaContraCostaJawsWarrantQuery [Person]
+Query: CaContraCostaJawsWarrantQuery  |  Attrs: 3  |  Combos: 1
+------------------------------------------------------------------------
+
+  [SKIP] IW.N -- missing set: requestingAgencyId
+    REQUIRED (set): [nameLast, nameFirst, birthDate, requestingAgencyId]
+    OPTIONAL (any): []
+
+========================================================================

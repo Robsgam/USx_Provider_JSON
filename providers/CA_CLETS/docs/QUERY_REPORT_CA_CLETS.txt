@@ -1,19 +1,23 @@
-CommSys Query Simulator -- Test Case Reference
-Generated: 2026-05-29 15:26:16
-JSON: CA_CLETS.json
-========================================================================
+================================================================
+  Build Report: CA_CLETS
+  Source: CA_CLETS.json
+  Generated: 2026-05-29 15:38
+================================================================
+QUERY SIMULATION
+================
 
-QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle]
-Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
-------------------------------------------------------------------------
 
-  [FIRES] NLTS.RQ.P
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-    OPTIONAL (any): [vehicleMakeCode, vehicleYear]
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode + licensePlateYear + registrationState
-      Defaults/optional: vehicleMakeCode, vehicleYear
-    EXPECTED XML:
+================================================================
+  CommSys Query Simulator -- CA_CLETS.json
+================================================================
+
+--- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
+
+    [FIRES] NLTS.RQ.P
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.RQ.P</MessageKey>
@@ -26,13 +30,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-  [FIRES] NLTS.RQ.V
-    REQUIRED (set): [purposeCode, vehicleIdentificationNumber, registrationState]
-    OPTIONAL (any): [vehicleMakeCode, vehicleYear]
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + vehicleIdentificationNumber + registrationState
-      Defaults/optional: vehicleMakeCode, vehicleYear
-    EXPECTED XML:
+    [FIRES] NLTS.RQ.V
+      set: [purposeCode, vehicleIdentificationNumber, registrationState]
+      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.RQ.V</MessageKey>
@@ -43,12 +44,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-  [FIRES] IV.4I
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS AP
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4I
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4I</MessageKey>
@@ -57,12 +55,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4C
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS CO,TK,TR
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4C
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4C</MessageKey>
@@ -71,12 +66,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4M
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS MC
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4M
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4M</MessageKey>
@@ -85,12 +77,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4L
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS RE,PE
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4L
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4L</MessageKey>
@@ -99,12 +88,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4T
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS TL
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4T
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4T</MessageKey>
@@ -113,12 +99,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4F
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS AT
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4F
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4F</MessageKey>
@@ -127,12 +110,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4S
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS DX
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4S
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4S</MessageKey>
@@ -141,12 +121,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4E
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS EX
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4E
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4E</MessageKey>
@@ -155,12 +132,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IL.A1
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS DL
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IL.A1
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IL.A1</MessageKey>
@@ -169,12 +143,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4H
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS AR
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4H
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4H</MessageKey>
@@ -183,12 +154,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4P
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS IP
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4P
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4P</MessageKey>
@@ -197,12 +165,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4K
-    REQUIRED (set): [purposeCode, licensePlateNumber, licensePlateTypeCode]
-    OPTIONAL (any): []
-      condition: LicensePlateTypeCode EQUALS TM
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber + licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4K
+      set: [purposeCode, licensePlateNumber, licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4K</MessageKey>
@@ -211,12 +176,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IN.VP
-    REQUIRED (set): [purposeCode, nameLast, nameFirst]
-    OPTIONAL (any): [addressCity, addressStreetNumber]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst
-      Defaults/optional: addressCity, addressStreetNumber
-    EXPECTED XML:
+    [FIRES] IN.VP
+      set: [purposeCode, nameLast, nameFirst]
+      any: [addressCity, addressStreetNumber] -> matched: [addressCity, addressStreetNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IN.VP</MessageKey>
@@ -226,13 +189,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <Name>Doe, John</Name>
       </Transaction>
 
-  [FIRES] IV.4A
-    REQUIRED (set): [purposeCode, licensePlateNumber]
-    OPTIONAL (any): [licensePlateTypeCode]
-      condition: LicensePlateTypeCode EQUALS PC,AQ
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber
-      Defaults/optional: licensePlateTypeCode
-    EXPECTED XML:
+    [FIRES] IV.4A
+      set: [purposeCode, licensePlateNumber]
+      any: [licensePlateTypeCode] -> matched: [licensePlateTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4A</MessageKey>
@@ -241,11 +201,9 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
       </Transaction>
 
-  [FIRES] IV.4V
-    REQUIRED (set): [purposeCode, vehicleIdentificationNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: purposeCode + vehicleIdentificationNumber
-    EXPECTED XML:
+    [FIRES] IV.4V
+      set: [purposeCode, vehicleIdentificationNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4V</MessageKey>
@@ -253,12 +211,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
-  [FIRES] IA.QVK
-    REQUIRED (set): [purposeCode, vehicleIdentificationNumber]
-    OPTIONAL (any): [vehicleMakeCode, registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + vehicleIdentificationNumber
-      Defaults/optional: vehicleMakeCode, registrationState
-    EXPECTED XML:
+    [FIRES] IA.QVK
+      set: [purposeCode, vehicleIdentificationNumber]
+      any: [vehicleMakeCode, registrationState] -> matched: [vehicleMakeCode, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QVK</MessageKey>
@@ -268,12 +224,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
-  [FIRES] IA.QV
-    REQUIRED (set): [purposeCode, licensePlateNumber]
-    OPTIONAL (any): [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + licensePlateNumber
-      Defaults/optional: registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear
-    EXPECTED XML:
+    [FIRES] IA.QV
+      set: [purposeCode, licensePlateNumber]
+      any: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QV</MessageKey>
@@ -286,17 +240,13 @@ Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 19
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-QIDM: CA_CLETS_DriverLicenseQuery [Person]
-Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
-------------------------------------------------------------------------
+--- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
 
-  [FIRES] NLTS.DQ.N
-    REQUIRED (set): [purposeCode, nameLast, nameFirst, registrationState]
-    OPTIONAL (any): [birthDate]
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst + registrationState
-      Defaults/optional: birthDate
-    EXPECTED XML:
+    [FIRES] NLTS.DQ.N
+      set: [purposeCode, nameLast, nameFirst, registrationState]
+      any: [birthDate] -> matched: [birthDate]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.DQ.N</MessageKey>
@@ -306,12 +256,9 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] NLTS.DQ
-    REQUIRED (set): [purposeCode, operatorLicenseNumber, registrationState]
-    OPTIONAL (any): []
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + operatorLicenseNumber + registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.DQ
+      set: [purposeCode, operatorLicenseNumber, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.DQ</MessageKey>
@@ -320,12 +267,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] IN.L1
-    REQUIRED (set): [purposeCode, nameLast, nameFirst]
-    OPTIONAL (any): [birthDate, registrationState, sexCode, addressCounty, height, raceCode, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst
-      Defaults/optional: birthDate, registrationState, sexCode, addressCounty, height, raceCode, age
-    EXPECTED XML:
+    [FIRES] IN.L1
+      set: [purposeCode, nameLast, nameFirst]
+      any: [birthDate, registrationState, sexCode, addressCounty, height, raceCode, age] -> matched: [birthDate, registrationState, sexCode, height, raceCode, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IN.L1</MessageKey>
@@ -339,12 +284,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] IR.QVC.O
-    REQUIRED (set): [purposeCode, operatorLicenseNumber, criminalIdNumber]
-    OPTIONAL (any): [socialSecurityNumber, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + operatorLicenseNumber + criminalIdNumber
-      Defaults/optional: socialSecurityNumber, age
-    EXPECTED XML:
+    [FIRES] IR.QVC.O
+      set: [purposeCode, operatorLicenseNumber, criminalIdNumber]
+      any: [socialSecurityNumber, age] -> matched: [socialSecurityNumber, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IR.QVC.O</MessageKey>
@@ -355,12 +298,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
       </Transaction>
 
-  [FIRES] IR.QVC.N
-    REQUIRED (set): [purposeCode, nameLast, nameFirst]
-    OPTIONAL (any): [addressCounty, height, raceCode, sexCode, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst
-      Defaults/optional: addressCounty, height, raceCode, sexCode, age
-    EXPECTED XML:
+    [FIRES] IR.QVC.N
+      set: [purposeCode, nameLast, nameFirst]
+      any: [addressCounty, height, raceCode, sexCode, age] -> matched: [height, raceCode, sexCode, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IR.QVC.N</MessageKey>
@@ -372,12 +313,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <SexCode>M</SexCode>
       </Transaction>
 
-  [FIRES] ID.L1
-    REQUIRED (set): [purposeCode, operatorLicenseNumber]
-    OPTIONAL (any): [registrationState, socialSecurityNumber, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + operatorLicenseNumber
-      Defaults/optional: registrationState, socialSecurityNumber, age
-    EXPECTED XML:
+    [FIRES] ID.L1
+      set: [purposeCode, operatorLicenseNumber]
+      any: [registrationState, socialSecurityNumber, age] -> matched: [registrationState, socialSecurityNumber, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>ID.L1</MessageKey>
@@ -388,12 +327,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] IR.QVC.C
-    REQUIRED (set): [purposeCode, criminalIdNumber]
-    OPTIONAL (any): [operatorLicenseNumber, socialSecurityNumber, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + criminalIdNumber
-      Defaults/optional: operatorLicenseNumber, socialSecurityNumber, age
-    EXPECTED XML:
+    [FIRES] IR.QVC.C
+      set: [purposeCode, criminalIdNumber]
+      any: [operatorLicenseNumber, socialSecurityNumber, age] -> matched: [operatorLicenseNumber, socialSecurityNumber, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IR.QVC.C</MessageKey>
@@ -404,12 +341,10 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
       </Transaction>
 
-  [FIRES] IR.QVC.S
-    REQUIRED (set): [purposeCode, socialSecurityNumber]
-    OPTIONAL (any): [criminalIdNumber, operatorLicenseNumber, age]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + socialSecurityNumber
-      Defaults/optional: criminalIdNumber, operatorLicenseNumber, age
-    EXPECTED XML:
+    [FIRES] IR.QVC.S
+      set: [purposeCode, socialSecurityNumber]
+      any: [criminalIdNumber, operatorLicenseNumber, age] -> matched: [criminalIdNumber, operatorLicenseNumber, age]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IR.QVC.S</MessageKey>
@@ -420,16 +355,13 @@ Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
       </Transaction>
 
-QIDM: CA_CLETS_DriverHistoryQuery [Person]
-Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
-  [FIRES] NLTS.KQ.N
-    REQUIRED (set): [purposeCodeDH, birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCodeDH + birthDateDH + nameLastDH + nameFirstDH + sexCodeDH
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.KQ.N
+      set: [purposeCodeDH, birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.KQ.N</MessageKey>
@@ -441,12 +373,10 @@ Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] NLTS.KQ.O
-    REQUIRED (set): [purposeCodeDH, operatorLicenseNumberDH]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCodeDH + operatorLicenseNumberDH
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.KQ.O
+      set: [purposeCodeDH, operatorLicenseNumberDH]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.KQ.O</MessageKey>
@@ -456,15 +386,12 @@ Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-QIDM: CA_CLETS_GunQuery [Firearm]
-Query: GunQuery  |  Attrs: 6  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: CA_CLETS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
 
-  [FIRES] IG.QGH
-    REQUIRED (set): [purposeCode, nameLast, nameFirst]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst
-    EXPECTED XML:
+    [FIRES] IG.QGH
+      set: [purposeCode, nameLast, nameFirst]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IG.QGH</MessageKey>
@@ -472,12 +399,10 @@ Query: GunQuery  |  Attrs: 6  |  Combos: 2
         <Name>Doe, John</Name>
       </Transaction>
 
-  [FIRES] IG.QGB
-    REQUIRED (set): [purposeCode, serialNumber]
-    OPTIONAL (any): [gunCaliber, firearmMake, gunTypeCode]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + serialNumber
-      Defaults/optional: gunCaliber, firearmMake, gunTypeCode
-    EXPECTED XML:
+    [FIRES] IG.QGB
+      set: [purposeCode, serialNumber]
+      any: [gunCaliber, firearmMake, gunTypeCode] -> matched: [gunCaliber, firearmMake]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IG.QGB</MessageKey>
@@ -487,16 +412,13 @@ Query: GunQuery  |  Attrs: 6  |  Combos: 2
         <GunSerialNumber>ABC12345</GunSerialNumber>
       </Transaction>
 
-QIDM: CA_CLETS_ArticleSingleQuery [Article]
-Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: CA_CLETS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
 
-  [FIRES] IP.QA.S
-    REQUIRED (set): [purposeCode, serialNumber]
-    OPTIONAL (any): [articleBrand, articleTypeCode]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + serialNumber
-      Defaults/optional: articleBrand, articleTypeCode
-    EXPECTED XML:
+    [FIRES] IP.QA.S
+      set: [purposeCode, serialNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IP.QA.S</MessageKey>
@@ -505,12 +427,10 @@ Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
       </Transaction>
 
-  [FIRES] IP.QA.O
-    REQUIRED (set): [purposeCode, ownerAppliedNumber]
-    OPTIONAL (any): [articleBrand, articleTypeCode]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + ownerAppliedNumber
-      Defaults/optional: articleBrand, articleTypeCode
-    EXPECTED XML:
+    [FIRES] IP.QA.O
+      set: [purposeCode, ownerAppliedNumber]
+      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IP.QA.O</MessageKey>
@@ -519,16 +439,12 @@ Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
       </Transaction>
 
-QIDM: CA_CLETS_BoatQuery [Boat]
-Query: BoatQuery  |  Attrs: 7  |  Combos: 7
-------------------------------------------------------------------------
+--- QIDM: CA_CLETS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 7  |  Combos: 7
 
-  [FIRES] NLTS.BQ.N
-    REQUIRED (set): [purposeCode, nameLast, nameFirst, birthDate, registrationState]
-    OPTIONAL (any): []
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + nameLast + nameFirst + birthDate + registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.BQ.N
+      set: [purposeCode, nameLast, nameFirst, birthDate, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.N</MessageKey>
@@ -538,12 +454,9 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] NLTS.BQ.H
-    REQUIRED (set): [purposeCode, boatHullIdNumber, registrationState]
-    OPTIONAL (any): []
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + boatHullIdNumber + registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.BQ.H
+      set: [purposeCode, boatHullIdNumber, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.H</MessageKey>
@@ -552,12 +465,9 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] NLTS.BQ.R
-    REQUIRED (set): [purposeCode, registrationNumber, registrationState]
-    OPTIONAL (any): []
-      condition: State NOT_EQUALS CA
-    TEST INSTRUCTIONS: Enter values for: purposeCode + registrationNumber + registrationState
-    EXPECTED XML:
+    [FIRES] NLTS.BQ.R
+      set: [purposeCode, registrationNumber, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>NLTS.BQ.R</MessageKey>
@@ -566,12 +476,10 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] IA.QB.H
-    REQUIRED (set): [purposeCode, boatHullIdNumber]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + boatHullIdNumber
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] IA.QB.H
+      set: [purposeCode, boatHullIdNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.H</MessageKey>
@@ -580,12 +488,10 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] IA.QB.O
-    REQUIRED (set): [purposeCode, ownerAppliedNumber]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + ownerAppliedNumber
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] IA.QB.O
+      set: [purposeCode, ownerAppliedNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.O</MessageKey>
@@ -594,12 +500,10 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] IA.QB.R
-    REQUIRED (set): [purposeCode, registrationNumber]
-    OPTIONAL (any): [registrationState]
-    TEST INSTRUCTIONS: Enter values for: purposeCode + registrationNumber
-      Defaults/optional: registrationState
-    EXPECTED XML:
+    [FIRES] IA.QB.R
+      set: [purposeCode, registrationNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IA.QB.R</MessageKey>
@@ -608,11 +512,9 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <State>FL</State>
       </Transaction>
 
-  [FIRES] IV.4B
-    REQUIRED (set): [purposeCode, registrationNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: purposeCode + registrationNumber
-    EXPECTED XML:
+    [FIRES] IV.4B
+      set: [purposeCode, registrationNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>IV.4B</MessageKey>
@@ -620,4 +522,10 @@ Query: BoatQuery  |  Attrs: 7  |  Combos: 7
         <RegistrationNumber>FL1234AB</RegistrationNumber>
       </Transaction>
 
-========================================================================
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

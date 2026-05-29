@@ -1,0 +1,266 @@
+CommSys Query Simulator -- Test Case Reference
+Generated: 2026-05-29 15:39:13
+JSON: OH_LEADS_MC.json
+========================================================================
+
+QIDM: OH_LEADS_VehicleRegistrationQuery [Vehicle]
+Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 9
+------------------------------------------------------------------------
+
+  [FIRES] RQ.P
+    REQUIRED (set): [RegistrationState, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: RegistrationState + LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+
+  [SKIP] ATDP -- missing set: DealerPlateType
+    REQUIRED (set): [LicensePlateNumber, LicensePlateTypeCode, DealerPlateType]
+    OPTIONAL (any): []
+
+  [FIRES] RQ.V
+    REQUIRED (set): [VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber + VehicleMakeCode + VehicleYear
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+  [FIRES] RP
+    REQUIRED (set): [LicensePlateNumber, LicensePlateTypeCode]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber + LicensePlateTypeCode
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RP</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      </Transaction>
+
+  [SKIP] RN -- missing set: OwnerLastName, OwnerFirstName
+    REQUIRED (set): [OwnerLastName, OwnerFirstName]
+    OPTIONAL (any): [AddressCounty]
+
+  [FIRES] QV.P
+    REQUIRED (set): [LicensePlateNumber]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: LicensePlateNumber
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] RV
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [FIRES] QV.V
+    REQUIRED (set): [VehicleIdentificationNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: VehicleIdentificationNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+  [SKIP] RS -- missing set: OwnerSocialSecurityNumber
+    REQUIRED (set): [OwnerSocialSecurityNumber]
+    OPTIONAL (any): []
+
+QIDM: OH_LEADS_DriverLicenseQuery [Person]
+Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
+------------------------------------------------------------------------
+
+  [FIRES] DQ.N
+    REQUIRED (set): [SexCode, BirthDate, NameLast, NameFirst]
+    OPTIONAL (any): [RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: SexCode + BirthDate + NameLast + NameFirst
+      Defaults/optional: RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DN
+    REQUIRED (set): [NameLast, NameFirst]
+    OPTIONAL (any): [BirthDate]
+    TEST INSTRUCTIONS: Enter values for: NameLast + NameFirst
+      Defaults/optional: BirthDate
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DN</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+      </Transaction>
+
+  [FIRES] DQ.O
+    REQUIRED (set): [OperatorLicenseNumber]
+    OPTIONAL (any): [ImageIndicator, RegistrationState]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber
+      Defaults/optional: ImageIndicator, RegistrationState
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+  [FIRES] DL
+    REQUIRED (set): [OperatorLicenseNumber]
+    OPTIONAL (any): []
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumber
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DL</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+QIDM: OH_LEADS_DriverHistoryQuery [Person]
+Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 3
+------------------------------------------------------------------------
+
+  [FIRES] KQ.N
+    REQUIRED (set): [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+    OPTIONAL (any): [PurposeCodeDH, RegistrationStateDH]
+    TEST INSTRUCTIONS: Enter values for: SexCodeDH + BirthDateDH + NameLastDH + NameFirstDH
+      Defaults/optional: PurposeCodeDH, RegistrationStateDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] KQ.O
+    REQUIRED (set): [OperatorLicenseNumberDH]
+    OPTIONAL (any): [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH
+      Defaults/optional: NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>FL</State>
+      </Transaction>
+
+  [FIRES] BMVIMS
+    REQUIRED (set): [OperatorLicenseNumberDH]
+    OPTIONAL (any): [NameLastDH, NameFirstDH, ReasonCodeDH]
+    TEST INSTRUCTIONS: Enter values for: OperatorLicenseNumberDH
+      Defaults/optional: NameLastDH, NameFirstDH, ReasonCodeDH
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BMVIMS</MessageKey>
+        <Attention>Doe</Attention>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+QIDM: OH_LEADS_GunQuery [Firearm]
+Query: GunQuery  |  Attrs: 4  |  Combos: 1
+------------------------------------------------------------------------
+
+  [FIRES] QG
+    REQUIRED (set): [SerialNumber]
+    OPTIONAL (any): [FirearmMake, GunCaliber, RelatedHitSearchIndicator]
+    TEST INSTRUCTIONS: Enter values for: SerialNumber
+      Defaults/optional: FirearmMake, GunCaliber, RelatedHitSearchIndicator
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+QIDM: OH_LEADS_ArticleSingleQuery [Article]
+Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
+------------------------------------------------------------------------
+
+  [SKIP] QA.S -- no any[] match
+    REQUIRED (set): [ArticleTypeCode, SerialNumber]
+    OPTIONAL (any): [ImageIndicatorArticle, RelatedHitSearchIndicatorArticle]
+
+  [SKIP] QA.N -- no any[] match
+    REQUIRED (set): [NCICNumber]
+    OPTIONAL (any): [ImageIndicatorArticle, RelatedHitSearchIndicatorArticle]
+
+QIDM: OH_LEADS_BoatQuery [Boat]
+Query: BoatQuery  |  Attrs: 5  |  Combos: 4
+------------------------------------------------------------------------
+
+  [SKIP] BQ.R -- no any[] match
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [RegistrationStateBoat]
+
+  [SKIP] BQ.H -- no any[] match
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [RegistrationStateBoat]
+
+  [FIRES] QB.R
+    REQUIRED (set): [RegistrationNumber]
+    OPTIONAL (any): [BoatHullIdNumber, ImageIndicatorBoat, RelatedHitSearchIndicatorBoat]
+    TEST INSTRUCTIONS: Enter values for: RegistrationNumber
+      Defaults/optional: BoatHullIdNumber, ImageIndicatorBoat, RelatedHitSearchIndicatorBoat
+    EXPECTED XML:
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+  [SKIP] QB.H -- no any[] match
+    REQUIRED (set): [BoatHullIdNumber]
+    OPTIONAL (any): [ImageIndicatorBoat, RelatedHitSearchIndicatorBoat]
+
+========================================================================
