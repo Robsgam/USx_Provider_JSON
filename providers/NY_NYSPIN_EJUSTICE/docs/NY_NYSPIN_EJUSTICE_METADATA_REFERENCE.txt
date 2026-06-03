@@ -1,8 +1,8 @@
 ﻿NY_NYSPIN_EJUSTICE METADATA REFERENCE
 ======================================
-Generated: 2026-05-21
-Source: NY_NYSPIN_EJUSTICE.XML (metadata) + NY_NYSPIN_EJUSTICE_MC.json
-Metadata: 30 total transactions, 6 queries built in JSON
+Generated: 2026-06-03
+Source: NY_NYSPIN_EJUSTICE.XML (metadata) + NY_NYSPIN_EJUSTICE.json
+Metadata: 30 total transactions, 7 queries built in JSON
 
 ================================================================================
 1. ArticleSingleQuery (version 1)
@@ -112,7 +112,31 @@ BUILD COVERAGE (1 of 1 built):
   BUILT   GINQ           set[gunSerialNumber]
 
 ================================================================================
-6. VehicleRegistrationQuery (version 1)
+6. NyNyspinDriverLicenseNameQuery (version 1)
+================================================================================
+
+METADATA FIELDS (10):
+  AddressCity                  Alphanumeric  maxLen=15  Address City
+  AddressStateCode             Alphanumeric  maxLen= 2  Address State Code
+  AddressStreet                Alphanumeric  maxLen=20  Address Street
+  AddressZipCode               Alphanumeric  maxLen= 5  Address Zip Code
+  Age                          Alphanumeric  maxLen= 1  Age
+  BirthDate                    Date          maxLen=10  Birth Date
+  MessageContinueKeyCode       Alphanumeric  maxLen=30  Message Continue Key Code
+  MiscellaneousDescriptiveText Alphanumeric  maxLen=200  Miscellaneous Descriptive Text
+  Name                         Name          maxLen=35  Name
+  SexCode                      Alphabetic    maxLen= 1  Sex Code
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DGRP          Name                    Name                                                   AddressCity, AddressStateCo...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   DGRP           set[nameLast, nameFirst]
+
+================================================================================
+7. VehicleRegistrationQuery (version 1)
 ================================================================================
 
 METADATA FIELDS (8):
@@ -148,12 +172,13 @@ BUILD SUMMARY
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         2      2     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
+  NyNyspinDriverLicenseNameQuery             1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   3      3     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   13     13     0  100%
+  TOTAL                                   14     14     0  100%
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (24 of 30 in metadata)
+ALL UNBUILT TRANSACTIONS (23 of 30 in metadata)
 ================================================================================
 
   AlarmExchangeResponse                    v1    1 combos
@@ -168,7 +193,6 @@ ALL UNBUILT TRANSACTIONS (24 of 30 in metadata)
   NyNyspinBoatBINQQuery                    v1    2 combos
   NyNyspinBoatRegistrationNameQuery        v1    1 combos
   NyNyspinDerelictVehicleEntry             v1    1 combos
-  NyNyspinDriverLicenseNameQuery           v1    1 combos
   NyNyspinImpoundedVehicleCancel           v1    2 combos
   NyNyspinImpoundedVehicleClear            v1    2 combos
   NyNyspinImpoundedVehicleEntry            v1    2 combos

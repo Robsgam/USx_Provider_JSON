@@ -1,18 +1,23 @@
-CommSys Query Simulator -- Test Case Reference
-Generated: 2026-05-29 15:38:34
-JSON: NY_NYSPIN_EJUSTICE.json
-========================================================================
+﻿================================================================
+  Build Report: NY_NYSPIN_EJUSTICE
+  Source: NY_NYSPIN_EJUSTICE.json
+  Generated: 2026-06-03 14:12
+================================================================
+QUERY SIMULATION
+================
 
-QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle]
-Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
-------------------------------------------------------------------------
 
-  [FIRES] RVIN
-    REQUIRED (set): [vehicleIdentificationNumber, registrationState]
-    OPTIONAL (any): [imageIndicator, vehicleMakeCode, vehicleYear]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber + registrationState
-      Defaults/optional: imageIndicator, vehicleMakeCode, vehicleYear
-    EXPECTED XML:
+================================================================
+  CommSys Query Simulator -- NY_NYSPIN_EJUSTICE.json
+================================================================
+
+--- QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
+
+    [FIRES] RVIN
+      set: [vehicleIdentificationNumber, registrationState]
+      any: [imageIndicator, vehicleMakeCode, vehicleYear] -> matched: [imageIndicator, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RVIN</MessageKey>
@@ -23,12 +28,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-  [FIRES] RVEH
-    REQUIRED (set): [licensePlateNumber]
-    OPTIONAL (any): [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
-      Defaults/optional: imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState
-    EXPECTED XML:
+    [FIRES] RVEH
+      set: [licensePlateNumber]
+      any: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState] -> matched: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RVEH</MessageKey>
@@ -39,12 +42,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-  [FIRES] RCAR
-    REQUIRED (set): [vehicleIdentificationNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] RCAR
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RCAR</MessageKey>
@@ -52,16 +53,13 @@ Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery [Person]
-Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-  [FIRES] DLICN
-    REQUIRED (set): [birthDate, nameLast, nameFirst, sexCode]
-    OPTIONAL (any): [imageIndicator, registrationState, nameMiddle, nameSuffix]
-    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst + sexCode
-      Defaults/optional: imageIndicator, registrationState, nameMiddle, nameSuffix
-    EXPECTED XML:
+    [FIRES] DLICN
+      set: [birthDate, nameLast, nameFirst, sexCode]
+      any: [imageIndicator, registrationState, nameMiddle, nameSuffix] -> matched: [imageIndicator, registrationState, nameMiddle]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DLICN</MessageKey>
@@ -72,12 +70,10 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] DLIC
-    REQUIRED (set): [operatorLicenseNumber]
-    OPTIONAL (any): [imageIndicator, registrationState]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber
-      Defaults/optional: imageIndicator, registrationState
-    EXPECTED XML:
+    [FIRES] DLIC
+      set: [operatorLicenseNumber]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DLIC</MessageKey>
@@ -86,16 +82,13 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery [Person]
-Query: NyNyspinDriverLicenseNameQuery  |  Attrs: 3  |  Combos: 1
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery [Person] ---
+    Query: NyNyspinDriverLicenseNameQuery  |  Attrs: 3  |  Combos: 1
 
-  [FIRES] DGRP
-    REQUIRED (set): [nameLast, nameFirst]
-    OPTIONAL (any): [nameMiddle, nameSuffix, birthDate, sexCode]
-    TEST INSTRUCTIONS: Enter values for: nameLast + nameFirst
-      Defaults/optional: nameMiddle, nameSuffix, birthDate, sexCode
-    EXPECTED XML:
+    [FIRES] DGRP
+      set: [nameLast, nameFirst]
+      any: [nameMiddle, nameSuffix, birthDate, sexCode] -> matched: [nameMiddle, birthDate, sexCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DGRP</MessageKey>
@@ -104,16 +97,13 @@ Query: NyNyspinDriverLicenseNameQuery  |  Attrs: 3  |  Combos: 1
         <SexCode>M</SexCode>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person]
-Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
 
-  [FIRES] DALH
-    REQUIRED (set): [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-    OPTIONAL (any): [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH]
-    TEST INSTRUCTIONS: Enter values for: birthDateDH + nameLastDH + nameFirstDH + sexCodeDH
-      Defaults/optional: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH
-    EXPECTED XML:
+    [FIRES] DALH
+      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH] -> matched: [imageIndicator, registrationState, nameMiddleDH]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DALH</MessageKey>
@@ -124,12 +114,10 @@ Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] DALL
-    REQUIRED (set): [operatorLicenseNumberDH]
-    OPTIONAL (any): [imageIndicator, registrationState]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumberDH
-      Defaults/optional: imageIndicator, registrationState
-    EXPECTED XML:
+    [FIRES] DALL
+      set: [operatorLicenseNumberDH]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DALL</MessageKey>
@@ -138,16 +126,13 @@ Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
         <State>NJ</State>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm]
-Query: GunQuery  |  Attrs: 5  |  Combos: 1
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
-  [FIRES] GINQ
-    REQUIRED (set): [gunSerialNumber]
-    OPTIONAL (any): [imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: gunSerialNumber
-      Defaults/optional: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] GINQ
+      set: [gunSerialNumber]
+      any: [imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator] -> matched: [imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>GINQ</MessageKey>
@@ -158,16 +143,13 @@ Query: GunQuery  |  Attrs: 5  |  Combos: 1
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_ArticleSingleQuery [Article]
-Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
 
-  [FIRES] AINQ
-    REQUIRED (set): [articleSerialNumber, articleTypeCode]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: articleSerialNumber + articleTypeCode
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] AINQ
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>AINQ</MessageKey>
@@ -177,16 +159,13 @@ Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-QIDM: NY_NYSPIN_EJUSTICE_BoatQuery [Boat]
-Query: BoatQuery  |  Attrs: 5  |  Combos: 4
-------------------------------------------------------------------------
+--- QIDM: NY_NYSPIN_EJUSTICE_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 5  |  Combos: 4
 
-  [FIRES] BVEH
-    REQUIRED (set): [registrationNumber, registrationState]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber + registrationState
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] BVEH
+      set: [registrationNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BVEH</MessageKey>
@@ -196,12 +175,10 @@ Query: BoatQuery  |  Attrs: 5  |  Combos: 4
         <State>FL</State>
       </Transaction>
 
-  [FIRES] BVIN
-    REQUIRED (set): [boatHullIdNumber, registrationState]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber + registrationState
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] BVIN
+      set: [boatHullIdNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BVIN</MessageKey>
@@ -211,12 +188,10 @@ Query: BoatQuery  |  Attrs: 5  |  Combos: 4
         <State>FL</State>
       </Transaction>
 
-  [FIRES] RVEH
-    REQUIRED (set): [registrationNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] RVEH
+      set: [registrationNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RVEH</MessageKey>
@@ -225,12 +200,10 @@ Query: BoatQuery  |  Attrs: 5  |  Combos: 4
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] RCAR
-    REQUIRED (set): [boatHullIdNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] RCAR
+      set: [boatHullIdNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RCAR</MessageKey>
@@ -239,4 +212,10 @@ Query: BoatQuery  |  Attrs: 5  |  Combos: 4
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-========================================================================
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+
