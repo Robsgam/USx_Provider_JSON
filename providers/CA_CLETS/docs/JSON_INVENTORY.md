@@ -16,25 +16,8 @@ All JSON versions produced for this provider.
 | CA_CLETS_v2.4_2026-05-20.json | v2.4 | 2026-05-20 | IV.4* conditions routing. |
 | CA_CLETS.json | -- | -- | Unversioned current copy. |
 
-## phases/base/ (legacy pre-merge)
+## Legacy (deleted, in git history)
 
-| File | Version | Date | Notes |
-|------|---------|------|-------|
-| CA_CLETS_BASE.json | v2.1 | 2026-05-19 | 20-combo single-card BASE. |
-| CA_CLETS_v2.1_2026-05-19.json | v2.1 | 2026-05-19 | Cross-entity Name on Veh/Gun/Boat. |
-| CA_CLETS_v2.0_2026-05-19.json | v2.0 | 2026-05-19 | IR.QVC criminal records. |
-| CA_CLETS_v1.9_2026-05-19.json | v1.9 | 2026-05-19 | CAD purposeCode fieldId fix. |
-| CA_CLETS_BASE_v1.9_FOUNDATION_READY.json | v1.9 | 2026-05-19 | Foundation ready snapshot. |
-| CA_CLETS_v1.8_2026-05-12.json | v1.8 | 2026-05-12 | One-directional deselect. |
-| CA_CLETS_v1.7_2026-05-12.json | v1.7 | 2026-05-12 | camelCase + DH-suffix. |
-
-## phases/mc/ (legacy pre-merge)
-
-| File | Version | Date | Notes |
-|------|---------|------|-------|
-| CA_CLETS_MC.json | v2.1 | 2026-05-19 | MC variant. |
-| CA_CLETS_MC_v2.1_2026-05-19.json | v2.1 | 2026-05-19 | MC variant. |
-| CA_CLETS_MC_v1.9_archived.json | v1.9 | 2026-05-19 | Archived. |
-| CA_CLETS_MC_v1.9_2026-05-19.json | v1.9 | 2026-05-19 | MC variant. |
-| CA_CLETS_MC_v1.8_2026-05-14.json | v1.8 | 2026-05-14 | KB-based RMS. |
-| CA_CLETS_MC_v1.8_2026-05-12.json | v1.8 | 2026-05-12 | One-directional deselect. |
+| Version | Notes |
+|---------|-------|
+| v1.0-v2.1 | Pre-merge BASE/MC snapshots. Deleted 2026-06-03. Available in git history. |
