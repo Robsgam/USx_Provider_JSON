@@ -1,6 +1,6 @@
 ﻿NJ_NJCJIS METADATA REFERENCE
 =============================
-Generated: 2026-05-28
+Generated: 2026-06-03
 Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
@@ -61,8 +61,8 @@ METADATA COMBINATIONS (2 total):
 BUILD COVERAGE (2 of 2 built):
   BUILT   DQ             set[birthDate, nameLast, nameFirst]
   BUILT   DQN            set[operatorLicenseNumber, registrationState]
-  SKIP    FULL           Name -- MC expansion candidate
-  SKIP    FULL           OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT FULL           Name
+  UNBUILT FULL           OperatorLicenseNumber
 
 ================================================================================
 4. GunQuery (version 1)
@@ -109,10 +109,10 @@ BUILD COVERAGE (4 of 4 built):
   BUILT   RQ             set[licensePlateNumber]
   BUILT   RQN_RAND       set[vehicleIdentificationNumber]
   BUILT   RQN            set[vehicleIdentificationNumber]
-  SKIP    RAND           LicensePlateNumber -- MC expansion candidate
-  SKIP    RAND           VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    FULL           LicensePlateNumber -- MC expansion candidate
-  SKIP    FULL           VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT RAND           LicensePlateNumber
+  UNBUILT RAND           VehicleIdentificationNumber
+  UNBUILT FULL           LicensePlateNumber
+  UNBUILT FULL           VehicleIdentificationNumber
 
 ================================================================================
 6. VehicleStolenQuery (version 1)
@@ -137,9 +137,9 @@ BUILD COVERAGE (3 of 3 built):
   BUILT   QVN            set[ncicNumber]
   BUILT   QVP            set[licensePlateNumber]
   BUILT   QVV            set[vehicleIdentificationNumber]
-  SKIP    QV             NCICNumber -- MC expansion candidate
-  SKIP    QV             LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT QV             NCICNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT QV             VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -157,7 +157,7 @@ BUILD SUMMARY
   TOTAL                                   13     13     0  100%
 
 ================================================================================
-MC EXPANSION CANDIDATES (9 combos not in BASE)
+UNBUILT METADATA COMBOS (9 combos in metadata, not in JSON)
 ================================================================================
 
   FULL           Name                     (DriverLicenseQuery)

@@ -885,3 +885,34 @@ See also:
     AUDIT: Compare defaults[] arrays between base and conditions-variant
     combos in the same QIDM. Every default on the base combo should appear
     on the variant unless the field is the routing toggle itself.
+
+================================================================================
+13. POST-REBUILD CLEANUP CHECKLIST
+================================================================================
+
+  After rebuilding any provider to the single-JSON model, verify these legacy
+  artifacts have been removed. Enforce.ps1 catches some but not all.
+
+  FILES TO DELETE:
+    - docs/{PROVIDER}_BASE_TEST_MATRIX.txt (legacy BASE/MC split)
+    - docs/{PROVIDER}_MC_TEST_MATRIX.txt (legacy BASE/MC split)
+    - tests/BASE_SIM_*, tests/MC_SIM_* (legacy simulation logs)
+    - tests/BASE_LIVE_*, tests/MC_LIVE_* (legacy live test logs)
+
+  FILES TO VERIFY:
+    - docs/{PROVIDER}_METADATA_REFERENCE.txt must NOT contain "MC expansion
+      candidate" or "SKIP" labels. Regenerate with extract_metadata_reference.ps1
+      after the tool fix (2026-06-03).
+    - docs/{PROVIDER}_SQVR.txt combo counts must match current JSON.
+    - Provider root must have exactly ONE JSON (no _BASE + _MC pair).
+
+  JSON RENAME:
+    - Legacy providers may still have _MC or _BASE suffix on their JSON filename.
+      On rebuild, output should be {PROVIDER}.json (no suffix).
+      Update JSON_INVENTORY.md accordingly.
+
+  PROVIDERS STILL NEEDING CLEANUP (as of 2026-06-03):
+    - 14 providers: delete BASE/MC test matrices
+    - AZ_AZDPS, NY_NYSPIN_EJUSTICE: delete legacy test logs
+    - 12 providers: rename _MC suffix JSON on rebuild
+    - HI_HCJDC_OFML: consolidate dual JSON (BASE + MC) to single

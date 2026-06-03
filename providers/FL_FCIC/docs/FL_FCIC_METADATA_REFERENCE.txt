@@ -1,6 +1,6 @@
 ﻿FL_FCIC METADATA REFERENCE
 ===========================
-Generated: 2026-05-27
+Generated: 2026-06-03
 Source: FL_FCIC.xml (metadata) + FL_FCIC.json
 Metadata: 177 total transactions, 6 queries built in JSON
 
@@ -31,10 +31,10 @@ BUILD COVERAGE (4 of 4 built):
   BUILT   QAOwnerAppliedNumber set[articleTypeCode, ownerAppliedNumber]
   BUILT   QANCICNumber   set[ncicNumber]
   BUILT   QAProcessControlNumber set[processControlNumber]
-  SKIP    QA             ArticleSerialNumber -- MC expansion candidate
-  SKIP    QA             OwnerAppliedNumber -- MC expansion candidate
-  SKIP    QA             NCICNumber -- MC expansion candidate
-  SKIP    QA             ProcessControlNumber -- MC expansion candidate
+  UNBUILT QA             ArticleSerialNumber
+  UNBUILT QA             OwnerAppliedNumber
+  UNBUILT QA             NCICNumber
+  UNBUILT QA             ProcessControlNumber
 
 ================================================================================
 2. BoatQuery (version 18)
@@ -85,18 +85,18 @@ BUILD COVERAGE (9 of 12 built):
   BUILT   QBCoastGuardDocumentNumber set[coastGuardDocumentNumber]
   BUILT   QBNCICNumber   set[ncicNumber]
   BUILT   QBProcessControlNumber set[processControlNumber]
-  SKIP    FBQ            BoatHullIdNumber -- MC expansion candidate
-  SKIP    FBQ            DecalNumber -- MC expansion candidate
-  SKIP    FBQ            RegistrationNumber -- MC expansion candidate
-  SKIP    FBQ            TitleLienInformation -- MC expansion candidate
-  SKIP    QB             BoatHullIdNumber -- MC expansion candidate
-  SKIP    QB             CoastGuardDocumentNumber -- MC expansion candidate
-  SKIP    QB             NCICNumber -- MC expansion candidate
-  SKIP    QB             ProcessControlNumber -- MC expansion candidate
-  SKIP    QB             RegistrationNumber -- MC expansion candidate
-  SKIP    BQ             Name -- MC expansion candidate
-  SKIP    BQ             BoatHullIdNumber -- MC expansion candidate
-  SKIP    BQ             RegistrationNumber -- MC expansion candidate
+  UNBUILT FBQ            BoatHullIdNumber
+  UNBUILT FBQ            DecalNumber
+  UNBUILT FBQ            RegistrationNumber
+  UNBUILT FBQ            TitleLienInformation
+  UNBUILT QB             BoatHullIdNumber
+  UNBUILT QB             CoastGuardDocumentNumber
+  UNBUILT QB             NCICNumber
+  UNBUILT QB             ProcessControlNumber
+  UNBUILT QB             RegistrationNumber
+  UNBUILT BQ             Name
+  UNBUILT BQ             BoatHullIdNumber
+  UNBUILT BQ             RegistrationNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 15)
@@ -121,8 +121,8 @@ METADATA COMBINATIONS (2 total):
 BUILD COVERAGE (2 of 2 built):
   BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
   BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH]
-  SKIP    KQ             Name -- MC expansion candidate
-  SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT KQ             Name
+  UNBUILT KQ             OperatorLicenseNumber
 
 ================================================================================
 4. DriverLicenseQuery (version 20)
@@ -158,12 +158,12 @@ BUILD COVERAGE (4 of 6 built):
   BUILT   FDQName        set[birthDate, nameLast, nameFirst, sexCode]
   BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, registrationState]
   BUILT   FDQOperatorLicenseNumber set[operatorLicenseNumber]
-  SKIP    FDQ            Name -- MC expansion candidate
-  SKIP    FDQ            OperatorLicenseNumber -- MC expansion candidate
-  SKIP    QW             Name -- MC expansion candidate
-  SKIP    QW             OperatorLicenseNumber -- MC expansion candidate
-  SKIP    DQ             Name -- MC expansion candidate
-  SKIP    DQ             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT FDQ            Name
+  UNBUILT FDQ            OperatorLicenseNumber
+  UNBUILT QW             Name
+  UNBUILT QW             OperatorLicenseNumber
+  UNBUILT DQ             Name
+  UNBUILT DQ             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 11)
@@ -189,9 +189,9 @@ BUILD COVERAGE (3 of 3 built):
   BUILT   QGGunSerialNumber set[gunSerialNumber]
   BUILT   QGNCICNumber   set[ncicNumber]
   BUILT   QGProcessControlNumber set[processControlNumber]
-  SKIP    QG             GunSerialNumber -- MC expansion candidate
-  SKIP    QG             NCICNumber -- MC expansion candidate
-  SKIP    QG             ProcessControlNumber -- MC expansion candidate
+  UNBUILT QG             GunSerialNumber
+  UNBUILT QG             NCICNumber
+  UNBUILT QG             ProcessControlNumber
 
 ================================================================================
 6. VehicleRegistrationQuery (version 15)
@@ -235,14 +235,14 @@ BUILD COVERAGE (6 of 8 built):
   BUILT   FRQLicensePlateNumber set[licensePlateNumber]
   BUILT   FRQVehicleIdentificationNumber set[vehicleIdentificationNumber]
   BUILT   FRQTitleLienInformation set[titleLienInformation]
-  SKIP    FRQ            DecalNumber -- MC expansion candidate
-  SKIP    FRQ            LicensePlateNumber -- MC expansion candidate
-  SKIP    FRQ            TitleLienInformation -- MC expansion candidate
-  SKIP    FRQ            VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    QV             LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    RQ             LicensePlateNumber -- MC expansion candidate
-  SKIP    RQ             VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT FRQ            DecalNumber
+  UNBUILT FRQ            LicensePlateNumber
+  UNBUILT FRQ            TitleLienInformation
+  UNBUILT FRQ            VehicleIdentificationNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT QV             VehicleIdentificationNumber
+  UNBUILT RQ             LicensePlateNumber
+  UNBUILT RQ             VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -260,7 +260,7 @@ BUILD SUMMARY
   TOTAL                                   35     28     7  80%
 
 ================================================================================
-MC EXPANSION CANDIDATES (35 combos not in BASE)
+UNBUILT METADATA COMBOS (35 combos in metadata, not in JSON)
 ================================================================================
 
   QA             ArticleSerialNumber      (ArticleSingleQuery)

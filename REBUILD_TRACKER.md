@@ -183,9 +183,24 @@ audit_cad.ps1 CHECK 6 now validates this automatically. BUILD_RULES.txt Section 
 Fix on next rebuild of each provider. Fields to default are provider-specific — check
 each provider's form initialValues, not a universal list.
 
+## Legacy Artifact Cleanup — Flagged 2026-06-03
+
+On rebuild of each remaining provider, also clean up legacy BASE/MC artifacts.
+See BUILD_RULES.txt Section 13 for full checklist.
+
+| Cleanup Item | Providers Affected |
+|---|---|
+| Delete _BASE_TEST_MATRIX.txt + _MC_TEST_MATRIX.txt | 14 (all except NJ, FL, TX, CA_CLETS — cleaned 2026-06-03) |
+| Delete BASE_SIM/MC_SIM test logs | AZ_AZDPS, NY_NYSPIN_EJUSTICE |
+| Rename _MC suffix JSON to {PROVIDER}.json | 12 (_MC suffix providers) |
+| Consolidate dual JSON (BASE + MC) | HI_HCJDC_OFML (only provider with 2 root JSONs) |
+| Regenerate METADATA_REFERENCE (remove "MC expansion candidate") | 14 (all except NJ, FL, TX, CA_CLETS — fixed 2026-06-03) |
+
 ## Next Actions
-- Live testing per provider work order: TX_TLETS, NY, AZ
+- TX_TLETS v3.3 live testing in progress (imported TLETS USx Tenant 2026-06-03)
+- Provider work order: TX_TLETS (ACTIVE), NY, AZ
 - Merge BASE/MC → single-JSON on each rebuild (16 providers)
 - Fix Attention hidden automation on next rebuild of each flagged provider
 - Fix CAD defaults (142 FAILs) on next rebuild of each provider
+- Legacy cleanup per Section 13 checklist on each rebuild
 - Each provider's first test triggers: merge scripts → build → build_report → verify all checks CLEAN

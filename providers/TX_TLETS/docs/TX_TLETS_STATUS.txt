@@ -1,21 +1,20 @@
 TX_TLETS -- Build Status
 ========================
-Last updated    : 2026-05-27
-Current: v3.3 | 86P/0F/0W/0LIM | Updated 2026-05-27
+Last updated    : 2026-06-03
+Current: v3.3 | 86P/0F/0W/0LIM | Updated 2026-06-03
 Current version : v3.3
 Provider: TX_TLETS
 Phase: Single JSON (multi-card)
 
-BUILD RESULTS (v3.1)
+BUILD RESULTS (v3.3)
 ====================
-  Validator: 85 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+  Validator: 86 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
   Verify:    CLEAN
-  Queries:   14 FIRE / 10 SKIP
-  Test:      37/37 PASS (test conductor)
+  Test:      40/40 test matrix (test conductor)
   Lint:      CLEAN
 
-  Import: v3.1 imported USx Provider Tenant 2026-05-22
-  Live Test: 36/36 PASS (T1-T36) -- 24/24 combos, 7/7 QIDMs -- 2026-05-22
+  Import: v3.3 imported TLETS USx Tenant 2026-06-03
+  Live Test: IN PROGRESS
 
 LIVE TEST FINDINGS (v3.1)
 =========================
@@ -30,40 +29,32 @@ PENDING PLATFORM FEATURES
   When handler is available: wire into EmailAddress (DL) and EmailAddressDH (DH) attributes.
   Until then, officers must manually type their email for DL/DH queries.
 
-ARCHITECTURE (v3.1)
+ARCHITECTURE (v3.3)
 ===================
   Bundles: 3 (ENTITIES first, TX_TLETS second, RMS third)
   Entities: Vehicle, Person, Firearm, Article, Boat
 
-  TX_TLETS Configurations (10):
+  TX_TLETS Configurations (9):
     TX_TLETS                                        AUTHENTICATION
     TX_TLETS_Results                                QUERYRESULTDATAMAPPING
     TX_TLETS_QueryMessageFormat                     QUERYMESSAGEFORMAT
     TX_TLETS_VehicleInsuranceRegistrationQuery      QUERYINPUTDATAMAPPING  (7 combos)
-    TX_TLETS_VehicleStolenQuery                     QUERYINPUTDATAMAPPING  (2 combos)
-    TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (4 combos)
-    TX_TLETS_DriverHistoryQuery                     QUERYINPUTDATAMAPPING  (2 combos)
+    TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (7 combos)
+    TX_TLETS_DriverHistoryQuery                     QUERYINPUTDATAMAPPING  (4 combos)
     TX_TLETS_GunQuery                               QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_ArticleSingleQuery                     QUERYINPUTDATAMAPPING  (2 combos)
     TX_TLETS_BoatQuery                              QUERYINPUTDATAMAPPING  (5 combos)
 
   RMS: Built from KB specs via _build_rms_bundle.ps1 (-SkipRace)
 
-  Total CommSys combos: 24
+  Total CommSys combos: 27
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
 
-WARN/LIMITATION STATUS (v3.1)
+WARN/LIMITATION STATUS (v3.3)
 =============================
   0 WARN / 0 LIMITATION / 0 FAIL
 
-  v3.1 resolved 2 LIMITATIONs from v3.0:
-    - DL combo order: reordered to most-specific first (DQName 5 set → QWName 3 → CPLName 3 → DQOperatorLicenseNumber 2)
-    - DH combo order: reordered to most-specific first (KQName 5 set → KQOperatorLicenseNumber 2)
-
-  Metadata audit notes (expected, not actionable):
-    - VehicleStolenQuery: in JSON but not in XML (invented query)
-
-LAYOUT (v3.1)
+LAYOUT (v3.3)
 =============
   Vehicle: 1 card (VEHICLE QUERY)
   Person:  3 cards (DRIVER HISTORY / DRIVER LICENSE / SEARCH OPTIONS)
@@ -73,11 +64,20 @@ LAYOUT (v3.1)
 
 TEST MATRIX
 ===========
-  See TX_TLETS_TEST_MATRIX.txt (auto-generated, 37 tests, 24/24 combo coverage)
-  All combos [PENDING] — re-import needed for v3.1
+  See TX_TLETS_TEST_MATRIX.txt (auto-generated, 40 tests, 27/27 combo coverage)
+  v3.3 imported TLETS USx Tenant 2026-06-03 -- testing in progress
 
 BUILD LOG (newest first)
 ========================
+  v3.3  2026-05-27  Remove unauthorized VehicleStolenQuery
+    Removed VehicleStolenQuery QIDM (not in devdoc "Basic Queries Supported").
+    86P/0F/0W/0LIM, 6 QIDMs, 27 combos.
+
+  v3.2  2026-05-26  Conditional image/email routing
+    Conditions routing on DL+DH: ImageIndicator EQUALS Y selects image-path combos.
+    Email moved to shared OPTIONS card. DL 4→7 combos, DH 2→4 combos.
+    90P/0F/0W/0LIM.
+
   v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge)
     Merged BASE+MC into single build script + single JSON output
     Added CPL Name combo (DL: 3→4 combos, total 23→24)

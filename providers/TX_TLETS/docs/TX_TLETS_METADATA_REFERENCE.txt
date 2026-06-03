@@ -1,6 +1,6 @@
 ﻿TX_TLETS METADATA REFERENCE
 ============================
-Generated: 2026-05-27
+Generated: 2026-06-03
 Source: TX_TLETS.xml (metadata) + TX_TLETS.json
 Metadata: 113 total transactions, 6 queries built in JSON
 
@@ -23,7 +23,7 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
   BUILT   QANCICNumber   set[ncicNumber]
-  SKIP    QA             ArticleSerialNumber -- MC expansion candidate
+  UNBUILT QA             ArticleSerialNumber
 
 ================================================================================
 2. BoatQuery (version 13)
@@ -52,11 +52,11 @@ BUILD COVERAGE (5 of 5 built):
   BUILT   QBRegistrationNumber set[registrationNumber]
   BUILT   QBBoatHullIdNumber set[boatHullIdNumber]
   BUILT   QBNCICNumber   set[ncicNumber]
-  SKIP    QB             RegistrationNumber -- MC expansion candidate
-  SKIP    QB             BoatHullIdNumber -- MC expansion candidate
-  SKIP    QB             NCICNumber -- MC expansion candidate
-  SKIP    BQ             RegistrationNumber -- MC expansion candidate
-  SKIP    BQ             BoatHullIdNumber -- MC expansion candidate
+  UNBUILT QB             RegistrationNumber
+  UNBUILT QB             BoatHullIdNumber
+  UNBUILT QB             NCICNumber
+  UNBUILT BQ             RegistrationNumber
+  UNBUILT BQ             BoatHullIdNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 12)
@@ -85,8 +85,8 @@ BUILD COVERAGE (4 of 2 built):
   BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
   BUILT   KQOLNImg       set[operatorLicenseNumberDH]
   BUILT   KQOLN          set[operatorLicenseNumberDH]
-  SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
-  SKIP    KQ             Name -- MC expansion candidate
+  UNBUILT KQ             OperatorLicenseNumber
+  UNBUILT KQ             Name
 
 ================================================================================
 4. DriverLicenseQuery (version 15)
@@ -123,11 +123,11 @@ BUILD COVERAGE (7 of 5 built):
   BUILT   CPLName        set[nameLast, nameFirst]
   BUILT   DQOLNImg       set[operatorLicenseNumber]
   BUILT   DQOLN          set[operatorLicenseNumber]
-  SKIP    DQ             Name -- MC expansion candidate
-  SKIP    QW             Name -- MC expansion candidate
-  SKIP    CPL            Name -- MC expansion candidate
-  SKIP    RSDWW          OperatorLicenseNumber -- MC expansion candidate
-  SKIP    DQ             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT DQ             Name
+  UNBUILT QW             Name
+  UNBUILT CPL            Name
+  UNBUILT RSDWW          OperatorLicenseNumber
+  UNBUILT DQ             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 12)
@@ -149,7 +149,7 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QGGunSerialNumber set[gunSerialNumber]
   BUILT   QGNCICNumber   set[ncicNumber]
-  SKIP    QG             GunSerialNumber -- MC expansion candidate
+  UNBUILT QG             GunSerialNumber
 
 ================================================================================
 6. VehicleInsuranceRegistrationQuery (version 14)
@@ -186,13 +186,13 @@ BUILD COVERAGE (7 of 7 built):
   BUILT   QVLicensePlateNumber set[licensePlateNumber]
   BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber]
   BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
-  SKIP    RQ             LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             LicensePlateNumber -- MC expansion candidate
-  SKIP    RQ             VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    DPSI           StickerNumber -- MC expansion candidate
-  SKIP    REG            LicensePlateNumber -- MC expansion candidate
-  SKIP    VIN            VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT RQ             LicensePlateNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT RQ             VehicleIdentificationNumber
+  UNBUILT QV             VehicleIdentificationNumber
+  UNBUILT DPSI           StickerNumber
+  UNBUILT REG            LicensePlateNumber
+  UNBUILT VIN            VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -210,7 +210,7 @@ BUILD SUMMARY
   TOTAL                                   21     27     0  129%
 
 ================================================================================
-MC EXPANSION CANDIDATES (21 combos not in BASE)
+UNBUILT METADATA COMBOS (21 combos in metadata, not in JSON)
 ================================================================================
 
   QA             ArticleSerialNumber      (ArticleSingleQuery)

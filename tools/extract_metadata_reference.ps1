@@ -4,7 +4,7 @@
   the metadata XML (authoritative source) with the built provider JSON.
 
   Output: field definitions, combination requirements, build coverage map,
-  MC expansion candidates, and platform behavior notes.
+  unbuilt combo tracking, and platform behavior notes.
 
   Usage:
     .\extract_metadata_reference.ps1 -XmlPath <metadata.xml> -Path <provider.json>
@@ -196,7 +196,7 @@ if ($hasCaReqPurp) {
 $totalMetaCombos = 0
 $totalBuiltCombos = 0
 $totalSkipped = 0
-$mcCandidates = @()
+$unbuiltCombos = @()
 $sectionNum = 0
 
 foreach ($qName in $includeQueries) {
@@ -292,9 +292,8 @@ foreach ($qName in $includeQueries) {
             }
             if (-not $isComboBuilt) {
                 $totalSkipped++
-                $reason = "MC expansion candidate"
-                [void]$sb.AppendLine("  SKIP    $($c.keyReference.PadRight(14)) $($c.primaryField) -- $reason")
-                $mcCandidates += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }
+                [void]$sb.AppendLine("  UNBUILT $($c.keyReference.PadRight(14)) $($c.primaryField)")
+                $unbuiltCombos += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }
             }
         }
         [void]$sb.AppendLine("")
@@ -302,7 +301,7 @@ foreach ($qName in $includeQueries) {
         $totalSkipped += $metaCombos.Count
         [void]$sb.AppendLine("BUILD COVERAGE: NOT BUILT (0 of $($metaCombos.Count))")
         foreach ($c in $metaCombos) {
-            $mcCandidates += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }
+            $unbuiltCombos += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }
         }
         [void]$sb.AppendLine("")
     }
@@ -345,14 +344,14 @@ $grandPct = if ($grandMeta -gt 0) { [math]::Round(($grandBuilt / $grandMeta) * 1
 [void]$sb.AppendLine("  TOTAL".PadRight(36) + "$($grandMeta.ToString().PadLeft(8))  $($grandBuilt.ToString().PadLeft(5))  $($grandSkip.ToString().PadLeft(4))  $grandPct%")
 [void]$sb.AppendLine("")
 
-# ── MC Expansion Candidates ───────────────────────────────────────────────────
-if ($mcCandidates.Count -gt 0) {
+# ── Unbuilt Combos ────────────────────────────────────────────────────────────
+if ($unbuiltCombos.Count -gt 0) {
     [void]$sb.AppendLine("=" * 80)
-    [void]$sb.AppendLine("MC EXPANSION CANDIDATES ($($mcCandidates.Count) combos not in BASE)")
+    [void]$sb.AppendLine("UNBUILT METADATA COMBOS ($($unbuiltCombos.Count) combos in metadata, not in JSON)")
     [void]$sb.AppendLine("=" * 80)
     [void]$sb.AppendLine("")
-    foreach ($mc in $mcCandidates) {
-        [void]$sb.AppendLine("  $($mc.keyRef.PadRight(14)) $($mc.primaryField.PadRight(24)) ($($mc.query))")
+    foreach ($ub in $unbuiltCombos) {
+        [void]$sb.AppendLine("  $($ub.keyRef.PadRight(14)) $($ub.primaryField.PadRight(24)) ($($ub.query))")
     }
     [void]$sb.AppendLine("")
 }
@@ -382,4 +381,4 @@ if ($OutFile) {
 }
 
 Write-Host ""
-Write-Host "Summary: $grandBuilt of $grandMeta metadata combos built ($grandPct%). $($mcCandidates.Count) MC candidates. $totalTransactions total transactions in metadata." -ForegroundColor Cyan
+Write-Host "Summary: $grandBuilt of $grandMeta metadata combos built ($grandPct%). $($unbuiltCombos.Count) unbuilt. $totalTransactions total transactions in metadata." -ForegroundColor Cyan
