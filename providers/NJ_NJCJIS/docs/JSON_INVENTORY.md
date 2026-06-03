@@ -22,3 +22,9 @@ All JSON versions produced for this provider.
 | v3.0-v3.3 | Pre-merge BASE/MC snapshots. Deleted 2026-06-03. Available in git history. |
 | v3.0 LOCKED | Imported Newark Foundation. 14/14 live tests PASS. |
 | v1.x | Pre-v2.0 rebuild (2026-04-28). |
+
+## v3.5 (2026-06-03)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS.json | v3.5 | Current | 69P/0F/0W/0LIM. |

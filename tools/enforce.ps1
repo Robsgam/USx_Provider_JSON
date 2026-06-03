@@ -337,6 +337,30 @@ foreach ($pd in $providers) {
         if ($notesText -match '\[describe change here\]') {
             Fail "$provName -- BUILD_NOTES.txt has placeholder text '[describe change here]'"
         }
+        # Check 3f3: BUILD_NOTES date checksum -- proves pipeline ran completely
+        $jsonFile = Join-Path $pd.FullName "${provName}.json"
+        if (-not (Test-Path $jsonFile)) {
+            $jsonFile = Get-ChildItem $pd.FullName -Filter "*.json" -File | Select-Object -First 1 -ExpandProperty FullName
+        }
+        if ($jsonFile -and (Test-Path $jsonFile)) {
+            $jsonDate = (Get-Item $jsonFile).LastWriteTime.ToString('yyyy-MM-dd')
+            $notesDate = $null
+            $vEscDate = [regex]::Escape($version)
+            if ($notesText -match "(?m)^v${vEscDate}\s+(\d{4}-\d{2}-\d{2})") {
+                $notesDate = $Matches[1]
+            } elseif ($notesText -match "(?m)^v${vEscDate}\s+\((\d{4}-\d{2}-\d{2})\)") {
+                $notesDate = $Matches[1]
+            }
+            if ($notesDate) {
+                if ($notesDate -eq $jsonDate) {
+                    Pass "$provName -- BUILD_NOTES date matches JSON ($jsonDate)"
+                } else {
+                    Fail "$provName -- BUILD_NOTES date ($notesDate) != JSON date ($jsonDate) -- pipeline incomplete"
+                }
+            } else {
+                Warn "$provName -- BUILD_NOTES v${version} has no parseable date for checksum"
+            }
+        }
     } else {
         Fail "$provName -- BUILD_NOTES.txt not found"
     }

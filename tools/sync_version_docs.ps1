@@ -1,10 +1,11 @@
 <#
   sync_version_docs.ps1 -- Auto-update version-dependent docs after a build
-  Updates 4 files to match the current build script version and validator scores:
+  Updates 5 files to match the current build script version and validator scores:
     1. STATUS.txt       -- header version + validator scores
     2. SQVR.txt         -- header version + validator scores
     3. JSON_INVENTORY.md -- root entry + new version section
     4. REBUILD_TRACKER.md -- provider row version + scores
+    5. BUILD_NOTES.txt  -- version entry date synced to today (build checksum)
 
   Reads version from build script, scores from validator reports.
   Run AFTER build_report.ps1 generates reports, BEFORE enforce.ps1.
@@ -343,6 +344,57 @@ if (Test-Path $tracker) {
     }
 } else {
     Skipped "REBUILD_TRACKER.md -- not found"
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  5. BUILD_NOTES.txt -- date checksum (must match JSON file date)
+# ══════════════════════════════════════════════════════════════════════════════
+$notesFile = Join-Path $provDir "docs\${Provider}_BUILD_NOTES.txt"
+$jsonFile = Join-Path $provDir "${Provider}.json"
+if (-not (Test-Path $jsonFile)) {
+    $jsonFile = Get-ChildItem $provDir -Filter "*.json" -File | Select-Object -First 1 -ExpandProperty FullName
+}
+$jsonDate = if ($jsonFile -and (Test-Path $jsonFile)) { (Get-Item $jsonFile).LastWriteTime.ToString('yyyy-MM-dd') } else { $today }
+
+if (Test-Path $notesFile) {
+    $text = [System.IO.File]::ReadAllText($notesFile)
+    $vEsc = [regex]::Escape($version)
+    $changed = $false
+
+    if ($text -match "(?m)^(v${vEsc}\s+)(\d{4}-\d{2}-\d{2})(\s+.*)") {
+        if ($Matches[2] -ne $jsonDate) {
+            $text = $text -replace "(?m)^(v${vEsc}\s+)\d{4}-\d{2}-\d{2}(\s+.*)", "`${1}${jsonDate}`$2"
+            $changed = $true
+        }
+    } elseif ($text -match "(?m)^(v${vEsc}\s+\()(\d{4}-\d{2}-\d{2})(\)\s+--.*)") {
+        if ($Matches[2] -ne $jsonDate) {
+            $text = $text -replace "(?m)^(v${vEsc}\s+\()\d{4}-\d{2}-\d{2}(\)\s+--.*)", "`${1}${jsonDate}`$2"
+            $changed = $true
+        }
+    } elseif ($text -notmatch "(?m)^v${vEsc}\b") {
+        $headerEnd = 0
+        $lines = $text -split "`n"
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^\s*$' -and $i -gt 2) { $headerEnd = $i; break }
+            if ($lines[$i] -match '^v\d+\.\d+') { $headerEnd = $i; break }
+            if ($lines[$i] -match '^-{10,}') { $headerEnd = $i + 1; break }
+        }
+        $stub = "v${version}  ${jsonDate}  Pipeline rebuild`n  CHANGED: Rebuilt via pipeline.ps1`n  REASON: Scheduled rebuild`n`n"
+        $text = ($lines[0..($headerEnd-1)] -join "`n") + "`n" + $stub + ($lines[$headerEnd..($lines.Count-1)] -join "`n")
+        $changed = $true
+    }
+
+    if ($changed -and -not $DryRun) {
+        $enc = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllText($notesFile, $text, $enc)
+        Updated "BUILD_NOTES.txt -- v${version} date → $jsonDate (matches JSON)"
+    } elseif ($changed) {
+        Updated "(dry) BUILD_NOTES.txt -- v${version} date → $jsonDate"
+    } else {
+        Skipped "BUILD_NOTES.txt -- v${version} date already matches JSON ($jsonDate)"
+    }
+} else {
+    Skipped "BUILD_NOTES.txt -- not found"
 }
 
 # ── Summary ──────────────────────────────────────────────────────────────────
