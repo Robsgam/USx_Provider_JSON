@@ -1,5 +1,6 @@
 <#
   sync_version_docs.ps1 -- Auto-update version-dependent docs after a build
+  DESCRIBED IN: CLAUDE.md (tools table + Workflow section), README.txt (line ~317 + pipeline step 7)
   Updates 5 files to match the current build script version and validator scores:
     1. STATUS.txt       -- header version + validator scores
     2. SQVR.txt         -- header version + validator scores

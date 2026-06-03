@@ -315,13 +315,14 @@ TOOLS
     Usage: .\sync_provider_table.ps1 [-DryRun] [-OutFile <path>]
 
   tools/sync_version_docs.ps1
-    Auto-updates version-dependent docs after a build. Updates 4 files to
+    Auto-updates version-dependent docs after a build. Updates 5 files to
     match the current build script version and validator scores:
       1. STATUS.txt (header, version, date, validator scores)
       2. SQVR.txt (header, version, date, validator scores)
       3. JSON_INVENTORY.md (root section + new version entry)
       4. REBUILD_TRACKER.md (provider row version + scores)
-    Called automatically by pipeline.ps1 as step 7.
+      5. BUILD_NOTES.txt (version entry date synced to JSON file date — build checksum)
+    Called automatically by pipeline.ps1 as step 5.
     Usage: .\sync_version_docs.ps1 -Provider <name> [-DryRun]
 
   tools/enforce.ps1
@@ -355,7 +356,7 @@ TOOLS
       4. Build report on MC (10 tools via build_report.ps1)
       5. Extract metadata reference (METADATA_REFERENCE.txt)
       6. Sync CLAUDE.md provider table (sync_provider_table.ps1)
-      7. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)
+      7. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES)
       8. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
       9. Repo audit (audit_repo.ps1 — full monorepo)
      10. Enforce (enforce.ps1 — final gate)

@@ -1,11 +1,13 @@
 <#
   enforce.ps1 -- Mandatory post-build enforcement gate
+  DESCRIBED IN: CLAUDE.md (tools table + Workflow section), README.txt (line ~327)
   Single command that runs ALL verification. Nothing is done until this passes.
 
   5 phases:
     1. Build freshness    -- reports exist and are newer than JSONs
     2. Validator scores   -- 0 FAIL / 0 WARN on every provider
-    3. Doc version sync   -- build script version matches all 7 doc locations
+    3. Doc version sync   -- build script version matches 6 doc locations
+       (CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER)
     4. Cross-provider     -- field types, defaults, code types consistent
     5. Repo integrity     -- audit_repo.ps1 passes, git status clean
 

@@ -318,7 +318,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
 | `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
 | `sync_provider_table.ps1` | Auto-updates CLAUDE.md provider table scores from validator reports | `-DryRun` `-OutFile` |
-| `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md, REBUILD_TRACKER.md with current version and scores | `-Provider <name>` `-DryRun` |
+| `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md, REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum) with current version and scores | `-Provider <name>` `-DryRun` |
 | `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
 
 ### Metadata & Extraction
@@ -411,7 +411,7 @@ Three commands run everything. No manual checklists.
 
 `build_report.ps1` runs 10 tools. Steps 1-9 execute in parallel (all read-only on the JSON), step 10 (test conductor) runs after step 9 completes.
 
-`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (7 locations per provider), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
+`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (6 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 
 **If enforce.ps1 passes, the work is done. If it doesn't, fix what it flags.**
 

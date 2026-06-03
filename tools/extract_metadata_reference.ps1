@@ -1,5 +1,6 @@
 <#
   extract_metadata_reference.ps1
+  DESCRIBED IN: CLAUDE.md (tools table), README.txt (line ~248)
   Generates a METADATA_REFERENCE.txt for any provider by cross-referencing
   the metadata XML (authoritative source) with the built provider JSON.
 
