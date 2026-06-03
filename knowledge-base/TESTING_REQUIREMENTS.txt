@@ -24,12 +24,11 @@ SECTION 1 -- BUILD PHASE MODEL
     This is the only baseline that isolates QIDM/combination problems
     from layout problems.
     Complete 100% of query path testing before leaving Phase 1.
-    Output: <PROVIDER>_BASE.json (save a copy -- this is the Phase 1
-    reference forever)
+    Output: <PROVIDER>.json (single JSON, multi-card from start)
 
   PHASE 2 -- MULTI-CARD
     Goal: improve operator UX by separating search paths onto distinct cards.
-    Start from the confirmed Phase 1 BASE.json. Build multi-card layout for
+    Start from the confirmed Phase 1 JSON. Build multi-card layout for
     entities that have 2+ search paths (Vehicle: Plate vs VIN; Person: OLN
     vs Name).
     QIDM does not change. Only the form layout changes.
@@ -82,7 +81,7 @@ SECTION 2 -- PRE-BUILD CHECKLIST
   METADATA VERIFICATION (do this THIRD):
   [ ] Run extract_metadata_reference.ps1 to generate METADATA_REFERENCE.txt:
       powershell.exe -ExecutionPolicy Bypass -File tools/extract_metadata_reference.ps1
-        -XmlPath source/<PROVIDER>.xml -Path <PROVIDER>_BASE.json
+        -XmlPath source/<PROVIDER>.xml -Path <PROVIDER>.json
         -OutFile docs/<PROVIDER>_METADATA_REFERENCE.txt
       This maps ALL metadata transactions, fields, and combination requirements
       (Set/Any/Choice) for the provider. Use it to verify combo requirements
@@ -610,7 +609,7 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   GATE 2 -- BEFORE EACH TEST:
   [GATE] Run shared new_test_log.ps1 to create a stub log in tests/
          powershell.exe -ExecutionPolicy Bypass -File tools/new_test_log.ps1
-           -Provider <NAME> -Variant BASE -Version <ver> -Entity <entity>
+           -Provider <NAME> -Version <ver> -Entity <entity>
            -Combo <combo> -Description "<desc>"
   [GATE] User opens F12 > Network before submitting query
   [GATE] CANNOT execute the test without a stub log on disk
@@ -801,11 +800,11 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
   PHASE B -- BUILDS (one provider at a time or batched):
 
     1. For each provider, create build script in scripts/:
-       build_<provider>.ps1 (BASE) and build_<provider>_mc.ps1 (MC)
-    2. Build scripts MUST include: post-build validator call, RMS patches
-       (1, 2, 3, 6)
+       build_<provider>.ps1 (single script, single JSON output)
+    2. Build scripts use shared modules (_build_rms_bundle.ps1,
+       _build_layout_helpers.ps1, _build_provider_helpers.ps1)
     3. Run build_report.ps1 after each build
-    4. Commit JSON + 8 reports per variant
+    4. Commit JSON + reports
     5. Update STATUS.txt, SQVR.txt, JSON_INVENTORY.md
     6. Push after each provider completes
 
@@ -903,10 +902,9 @@ SECTION 17 -- DEPLOYMENT ENVIRONMENTS
     generate_test_matrix.ps1 → <P>_TEST_MATRIX.txt    (step 9)
     run_test_matrix.ps1 → TEST_VALIDATION_<P>.txt      (step 10)
 
-  LEGACY PROVIDERS (still have _MC.json / _BASE.json filename):
-    Run test_commsys.ps1 -Path providers/<P>/<P>_MC.json -OutFile directly,
-    since pipeline.ps1 expects <P>.json. Full rebuild is the proper fix
-    (next scheduled rebuild converts to single-JSON naming).
+  LEGACY PROVIDERS (still have _MC.json or _BASE.json filename):
+    Pipeline.ps1 falls back to _MC.json / _BASE.json if <P>.json not found.
+    Full rebuild converts to single-JSON naming (<P>.json, no suffix).
 
   RULE: Never let a shared tool change and leave any provider's reports
   reflecting the old tool behavior. Propagate immediately.

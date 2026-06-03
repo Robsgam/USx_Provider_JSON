@@ -1,18 +1,21 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
-Last updated: 2026-05-27
+Last updated: 2026-06-03
 JSON version: v4.6
-Validator: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (BASE) | 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION (MC)
-Live test: BASE v3.1 21 PASS / MC v3.1 60 PASS / MC v4.1 44 PASS / 0 FAIL (2026-05-15)
-v4.2 change: Removed WantedPersonQuery QIDM (CommSys auto-sends QW). 7 QIDMs, 33 combos.
-v4.1 change: MC 2-card Vehicle+Boat (Options+Search), State label hints, Boat name/DOB exception
-v4.0 change: Attention field now visible FormInput (was hidden handler-only)
-QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8)
+Validator: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: v4.3 imported USx FCIC Tenant 2026-05-27. 28/28 combos, 6 QIDMs.
 
-ARCHITECTURE: v4.2 uses 7 merged QIDMs (1 per entity+query pair) with invented
-keyReferences per LIMITATION #21. This replaces v2.x's 25 split QIDMs.
-VehicleStolenQuery uses separate platform query type to solve LIMITATION #2.
-WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW queries.
+v4.6: QB routing fix + conditions (StolenSearch EQUALS Y).
+v4.5: Removed BQ Name combo (not in metadata).
+v4.4: Removed VehicleStolenQuery (not in devdoc). Removed BQ combos.
+v4.3: Single JSON merge (BASE/MC eliminated). 101P→97P (cleanup).
+v4.2: Removed WantedPersonQuery QIDM (CommSys auto-sends QW).
+v4.1: MC 2-card Vehicle+Boat (Options+Search), State label hints.
+v4.0: Attention field now visible FormInput (was hidden handler-only).
+QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8).
+
+ARCHITECTURE: 6 QIDMs, 28 combos. Single JSON, multi-card layout.
+2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search).
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity

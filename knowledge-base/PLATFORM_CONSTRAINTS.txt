@@ -579,7 +579,7 @@ AP #23: autoSelect conflicts on single-form entities
   Correct approach: Only ONE QIDM per entity should have autoSelect=true.
     Others should be autoSelect=false (user manually selects). Match BASE
     export pattern.
-  Confirmed pattern: FL_FCIC_BASE.json has DL autoSelect=true, DH
+  Confirmed pattern: FL_FCIC has DL autoSelect=true, DH
     autoSelect=false.
   Detection: Run tools/validate.ps1 -- catches this as FAIL.
 
@@ -684,7 +684,7 @@ AP #19: Building multi-card or split-entity layout before Phase 1 confirmed
     Phase 2: promote to multi-card only after Phase 1 standup passes 100%.
     Phase 3: split entity only if Phase 2 reveals a genuine state model
     conflict.
-    Save <PROVIDER>_BASE.json after Phase 1 completes. This is the reference.
+    Save <PROVIDER>.json after Phase 1 completes. This is the reference.
 
 --------------------------------------------------------------------------------
 

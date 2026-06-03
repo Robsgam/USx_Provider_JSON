@@ -161,7 +161,7 @@ TOOLS
 
   tools/new_test_log.ps1
     Creates a stub test log in tests/. Required by GATE 2 before every test.
-    Usage: -Provider <name> -Variant BASE -Version <ver> -Entity <entity> -Combo <combo>
+    Usage: -Provider <name> -Version <ver> -Entity <entity> -Combo <combo>
 
   tools/test_layout.ps1
     QIF layout tree validator. Checks parent-child relationships and generates
@@ -210,7 +210,7 @@ TOOLS
       9. Provider canonical structure (dirs, docs)
       10. Report file completeness (all 10 reports per variant)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
-      12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md, BASE vs MC)
+      12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md)
       13. BUILD_NOTES version coverage (current version has an entry)
       14. JSON_INVENTORY version coverage (current version has an entry)
       15. STATUS.txt score accuracy (PASS count matches validator report)
@@ -274,7 +274,7 @@ TOOLS
 
   tools/map_cad_fields.ps1
     Maps CAD field names to provider JSON fieldIds. Reports MATCH,
-    CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects BASE vs MC variant.
+    CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects variant.
     Generates Patch 8 rename map code snippet.
     Usage: .\map_cad_fields.ps1 -Path <json> -CadFields <comma-separated|file> [-OutFile <path>] [-GeneratePatch]
 
@@ -293,7 +293,7 @@ TOOLS
 
   tools/score_all.ps1
     Provider scorecard. Runs validator on all providers (or parses existing
-    reports in -Quick mode), outputs a sorted table with version, BASE/MC
+    reports in -Quick mode), outputs a sorted table with version, score
     scores, and rebuild flags. The go-to dashboard for project status.
     Usage: .\score_all.ps1 [-Quick] [-OutFile <path>]
 
@@ -409,7 +409,7 @@ AUTHORITATIVE SOURCE FILES (read-only)
   tools/_build_provider_helpers.ps1
     Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
 
-  providers/FL_FCIC/FL_FCIC_MC.json
+  providers/FL_FCIC/FL_FCIC.json
     Reference for multi-query person forms (autoSelect, queriesToDeselect,
     DH-suffix pattern, GunQuery sourceField naming).
 

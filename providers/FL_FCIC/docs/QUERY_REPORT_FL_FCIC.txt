@@ -1,18 +1,23 @@
-CommSys Query Simulator -- Test Case Reference
-Generated: 2026-05-29 15:26:15
-JSON: FL_FCIC.json
-========================================================================
+﻿================================================================
+  Build Report: FL_FCIC
+  Source: FL_FCIC.json
+  Generated: 2026-06-03 14:10
+================================================================
+QUERY SIMULATION
+================
 
-QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle]
-Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
-------------------------------------------------------------------------
 
-  [FIRES] RQLicensePlateNumber
-    REQUIRED (set): [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber + licensePlateTypeCode + licensePlateYear + registrationState
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+================================================================
+  CommSys Query Simulator -- FL_FCIC.json
+================================================================
+
+--- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
+
+    [FIRES] RQLicensePlateNumber
+      set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -23,12 +28,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] RQVehicleIdentificationNumber
-    REQUIRED (set): [vehicleIdentificationNumber, registrationState]
-    OPTIONAL (any): [vehicleMakeCode, vehicleYear, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber + registrationState
-      Defaults/optional: vehicleMakeCode, vehicleYear, imageIndicator
-    EXPECTED XML:
+    [FIRES] RQVehicleIdentificationNumber
+      set: [vehicleIdentificationNumber, registrationState]
+      any: [vehicleMakeCode, vehicleYear, imageIndicator] -> matched: [vehicleMakeCode, vehicleYear, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -39,12 +42,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-  [FIRES] FRQDecalNumber
-    REQUIRED (set): [decalNumber, licensePlateYear]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: decalNumber + licensePlateYear
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] FRQDecalNumber
+      set: [decalNumber, licensePlateYear]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FRQ</MessageKey>
@@ -53,12 +54,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <LicensePlateYear>2024</LicensePlateYear>
       </Transaction>
 
-  [FIRES] FRQLicensePlateNumber
-    REQUIRED (set): [licensePlateNumber]
-    OPTIONAL (any): [licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber
-      Defaults/optional: licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator
-    EXPECTED XML:
+    [FIRES] FRQLicensePlateNumber
+      set: [licensePlateNumber]
+      any: [licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator] -> matched: [licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FRQ</MessageKey>
@@ -69,12 +68,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-  [FIRES] FRQVehicleIdentificationNumber
-    REQUIRED (set): [vehicleIdentificationNumber]
-    OPTIONAL (any): [vehicleMakeCode, vehicleYear, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
-      Defaults/optional: vehicleMakeCode, vehicleYear, imageIndicator
-    EXPECTED XML:
+    [FIRES] FRQVehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [vehicleMakeCode, vehicleYear, imageIndicator] -> matched: [vehicleMakeCode, vehicleYear, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FRQ</MessageKey>
@@ -84,12 +81,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-  [FIRES] FRQTitleLienInformation
-    REQUIRED (set): [titleLienInformation]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: titleLienInformation
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] FRQTitleLienInformation
+      set: [titleLienInformation]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FRQ</MessageKey>
@@ -97,16 +92,13 @@ Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
         <TitleLienInformation>ABCD1234</TitleLienInformation>
       </Transaction>
 
-QIDM: FL_FCIC_DriverLicenseQuery [Person]
-Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
-------------------------------------------------------------------------
+--- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
 
-  [FIRES] DQName
-    REQUIRED (set): [birthDate, nameLast, nameFirst, sexCode, registrationState]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst + sexCode + registrationState
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] DQName
+      set: [birthDate, nameLast, nameFirst, sexCode, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -117,12 +109,10 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] FDQName
-    REQUIRED (set): [birthDate, nameLast, nameFirst, sexCode]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst + sexCode
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] FDQName
+      set: [birthDate, nameLast, nameFirst, sexCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FDQ</MessageKey>
@@ -132,12 +122,10 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
         <SexCode>M</SexCode>
       </Transaction>
 
-  [FIRES] DQOperatorLicenseNumber
-    REQUIRED (set): [operatorLicenseNumber, registrationState]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber + registrationState
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] DQOperatorLicenseNumber
+      set: [operatorLicenseNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -146,12 +134,10 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] FDQOperatorLicenseNumber
-    REQUIRED (set): [operatorLicenseNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] FDQOperatorLicenseNumber
+      set: [operatorLicenseNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FDQ</MessageKey>
@@ -159,16 +145,13 @@ Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
       </Transaction>
 
-QIDM: FL_FCIC_DriverHistoryQuery [Person]
-Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-------------------------------------------------------------------------
+--- QIDM: FL_FCIC_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
-  [FIRES] KQName
-    REQUIRED (set): [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-    OPTIONAL (any): [registrationStateDH, purposeCodeDH, attentionDH]
-    TEST INSTRUCTIONS: Enter values for: birthDateDH + nameLastDH + nameFirstDH + sexCodeDH
-      Defaults/optional: registrationStateDH, purposeCodeDH, attentionDH
-    EXPECTED XML:
+    [FIRES] KQName
+      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+      any: [registrationStateDH, purposeCodeDH, attentionDH] -> matched: [registrationStateDH, purposeCodeDH]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -179,12 +162,10 @@ Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
         <State>FL</State>
       </Transaction>
 
-  [FIRES] KQOperatorLicenseNumber
-    REQUIRED (set): [operatorLicenseNumberDH]
-    OPTIONAL (any): [registrationStateDH, purposeCodeDH, attentionDH]
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumberDH
-      Defaults/optional: registrationStateDH, purposeCodeDH, attentionDH
-    EXPECTED XML:
+    [FIRES] KQOperatorLicenseNumber
+      set: [operatorLicenseNumberDH]
+      any: [registrationStateDH, purposeCodeDH, attentionDH] -> matched: [registrationStateDH, purposeCodeDH]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -193,16 +174,13 @@ Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
         <State>FL</State>
       </Transaction>
 
-QIDM: FL_FCIC_GunQuery [Firearm]
-Query: GunQuery  |  Attrs: 5  |  Combos: 3
-------------------------------------------------------------------------
+--- QIDM: FL_FCIC_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 3
 
-  [FIRES] QGGunSerialNumber
-    REQUIRED (set): [gunSerialNumber]
-    OPTIONAL (any): [gunMake, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: gunSerialNumber
-      Defaults/optional: gunMake, imageIndicator
-    EXPECTED XML:
+    [FIRES] QGGunSerialNumber
+      set: [gunSerialNumber]
+      any: [gunMake, imageIndicator] -> matched: [gunMake, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -211,12 +189,10 @@ Query: GunQuery  |  Attrs: 5  |  Combos: 3
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-  [FIRES] QGNCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [gunMake, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: gunMake, imageIndicator
-    EXPECTED XML:
+    [FIRES] QGNCICNumber
+      set: [ncicNumber]
+      any: [gunMake, imageIndicator] -> matched: [gunMake, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -225,12 +201,10 @@ Query: GunQuery  |  Attrs: 5  |  Combos: 3
         <NCICNumber>G123456789</NCICNumber>
       </Transaction>
 
-  [FIRES] QGProcessControlNumber
-    REQUIRED (set): [processControlNumber]
-    OPTIONAL (any): [gunMake, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: processControlNumber
-      Defaults/optional: gunMake, imageIndicator
-    EXPECTED XML:
+    [FIRES] QGProcessControlNumber
+      set: [processControlNumber]
+      any: [gunMake, imageIndicator] -> matched: [gunMake, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
@@ -239,16 +213,13 @@ Query: GunQuery  |  Attrs: 5  |  Combos: 3
         <ProcessControlNumber>0000012345</ProcessControlNumber>
       </Transaction>
 
-QIDM: FL_FCIC_ArticleSingleQuery [Article]
-Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
-------------------------------------------------------------------------
+--- QIDM: FL_FCIC_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
 
-  [FIRES] QAArticleSerialNumber
-    REQUIRED (set): [articleSerialNumber, articleTypeCode]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: articleSerialNumber + articleTypeCode
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] QAArticleSerialNumber
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -257,12 +228,10 @@ Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-  [FIRES] QAOwnerAppliedNumber
-    REQUIRED (set): [articleTypeCode, ownerAppliedNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: articleTypeCode + ownerAppliedNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] QAOwnerAppliedNumber
+      set: [articleTypeCode, ownerAppliedNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -271,12 +240,10 @@ Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
       </Transaction>
 
-  [FIRES] QANCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] QANCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -284,12 +251,10 @@ Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
         <NCICNumber>A123456789</NCICNumber>
       </Transaction>
 
-  [FIRES] QAProcessControlNumber
-    REQUIRED (set): [processControlNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: processControlNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES] QAProcessControlNumber
+      set: [processControlNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -297,16 +262,13 @@ Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 4
         <ProcessControlNumber>0000012345</ProcessControlNumber>
       </Transaction>
 
-QIDM: FL_FCIC_BoatQuery [Boat]
-Query: BoatQuery  |  Attrs: 9  |  Combos: 9
-------------------------------------------------------------------------
+--- QIDM: FL_FCIC_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 9  |  Combos: 9
 
-  [FIRES] QBBoatHullIdNumber
-    REQUIRED (set): [boatHullIdNumber, relatedHitSearchIndicator]
-    OPTIONAL (any): [imageIndicator, registrationNumber]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber + relatedHitSearchIndicator
-      Defaults/optional: imageIndicator, registrationNumber
-    EXPECTED XML:
+    [FIRES] QBBoatHullIdNumber
+      set: [boatHullIdNumber, relatedHitSearchIndicator]
+      any: [imageIndicator, registrationNumber] -> matched: [imageIndicator, registrationNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -316,12 +278,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QBRegistrationNumber
-    REQUIRED (set): [registrationNumber, relatedHitSearchIndicator]
-    OPTIONAL (any): [imageIndicator, boatHullIdNumber]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber + relatedHitSearchIndicator
-      Defaults/optional: imageIndicator, boatHullIdNumber
-    EXPECTED XML:
+    [FIRES] QBRegistrationNumber
+      set: [registrationNumber, relatedHitSearchIndicator]
+      any: [imageIndicator, boatHullIdNumber] -> matched: [imageIndicator, boatHullIdNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -331,12 +291,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] FBQBoatHullIdNumber
-    REQUIRED (set): [boatHullIdNumber]
-    OPTIONAL (any): [decalNumber, registrationNumber, titleLienInformation, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
-      Defaults/optional: decalNumber, registrationNumber, titleLienInformation, imageIndicator
-    EXPECTED XML:
+    [FIRES] FBQBoatHullIdNumber
+      set: [boatHullIdNumber]
+      any: [decalNumber, registrationNumber, titleLienInformation, imageIndicator] -> matched: [decalNumber, registrationNumber, titleLienInformation, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
@@ -347,12 +305,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <TitleLienInformation>ABCD1234</TitleLienInformation>
       </Transaction>
 
-  [FIRES] FBQRegistrationNumber
-    REQUIRED (set): [registrationNumber]
-    OPTIONAL (any): [boatHullIdNumber, decalNumber, titleLienInformation, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: registrationNumber
-      Defaults/optional: boatHullIdNumber, decalNumber, titleLienInformation, imageIndicator
-    EXPECTED XML:
+    [FIRES] FBQRegistrationNumber
+      set: [registrationNumber]
+      any: [boatHullIdNumber, decalNumber, titleLienInformation, imageIndicator] -> matched: [boatHullIdNumber, decalNumber, titleLienInformation, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
@@ -363,12 +319,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <TitleLienInformation>ABCD1234</TitleLienInformation>
       </Transaction>
 
-  [FIRES] FBQDecalNumber
-    REQUIRED (set): [decalNumber]
-    OPTIONAL (any): [boatHullIdNumber, registrationNumber, titleLienInformation, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: decalNumber
-      Defaults/optional: boatHullIdNumber, registrationNumber, titleLienInformation, imageIndicator
-    EXPECTED XML:
+    [FIRES] FBQDecalNumber
+      set: [decalNumber]
+      any: [boatHullIdNumber, registrationNumber, titleLienInformation, imageIndicator] -> matched: [boatHullIdNumber, registrationNumber, titleLienInformation, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
@@ -379,12 +333,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <TitleLienInformation>ABCD1234</TitleLienInformation>
       </Transaction>
 
-  [FIRES] FBQTitleLienInformation
-    REQUIRED (set): [titleLienInformation]
-    OPTIONAL (any): [boatHullIdNumber, decalNumber, registrationNumber, imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: titleLienInformation
-      Defaults/optional: boatHullIdNumber, decalNumber, registrationNumber, imageIndicator
-    EXPECTED XML:
+    [FIRES] FBQTitleLienInformation
+      set: [titleLienInformation]
+      any: [boatHullIdNumber, decalNumber, registrationNumber, imageIndicator] -> matched: [boatHullIdNumber, decalNumber, registrationNumber, imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>FBQ</MessageKey>
@@ -395,12 +347,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <TitleLienInformation>ABCD1234</TitleLienInformation>
       </Transaction>
 
-  [FIRES] QBCoastGuardDocumentNumber
-    REQUIRED (set): [coastGuardDocumentNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: coastGuardDocumentNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBCoastGuardDocumentNumber
+      set: [coastGuardDocumentNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -409,12 +359,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QBNCICNumber
-    REQUIRED (set): [ncicNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: ncicNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -423,12 +371,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-  [FIRES] QBProcessControlNumber
-    REQUIRED (set): [processControlNumber]
-    OPTIONAL (any): [imageIndicator, relatedHitSearchIndicator]
-    TEST INSTRUCTIONS: Enter values for: processControlNumber
-      Defaults/optional: imageIndicator, relatedHitSearchIndicator
-    EXPECTED XML:
+    [FIRES] QBProcessControlNumber
+      set: [processControlNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
@@ -437,4 +383,10 @@ Query: BoatQuery  |  Attrs: 9  |  Combos: 9
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-========================================================================
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

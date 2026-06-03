@@ -1,4 +1,4 @@
-# JSON Inventory -- NJ_NJCJIS
+# JSON Inventory - NJ_NJCJIS
 
 All JSON versions produced for this provider.
 
@@ -6,59 +6,42 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_BASE.json | v3.2 | CURRENT | CAD defaults on all 13 combos; 69P/0F/0W/0LIM |
-| NJ_NJCJIS_MC.json | v3.2 | CURRENT | CAD defaults on all 13 combos; 69P/0F/0W/0LIM |
-| NJ_NJCJIS_v3.0_LOCKED.json | v3.0 | LOCKED | 37P/1F/0W/1LIM. 14/14 live tests PASS. Imported Newark Foundation Tenant. |
+| NJ_NJCJIS.json | v3.5 | Current | 69P/0F/0W/0LIM. 5 QIDMs, 13 combos. Imported USx NJCJIS Tenant + Newark Foundation 2026-05-28. |
 
-## phases/base/
+## phases/current/
 
 | File | Version | Date | Notes |
 |------|---------|------|-------|
-| NJ_NJCJIS_v3.0_2026-05-08.json | v3.0 | 2026-05-08 | LOCKED. 14/14 live tests PASS. Full combo coverage. |
-| NJ_NJCJIS_v2.3_2026-05-06.json | v2.3 | 2026-05-06 | Monorepo rebuild with latest tools |
-| NJ_NJCJIS_v2.2_2026-05-05.json | v2.2 | 2026-05-05 | camelCase fieldId rename |
-| NJ_NJCJIS_v2.1_2026-05-05.json | v2.1 | 2026-05-05 | Patch 7+8 + AUTH keyRef |
-| NJ_NJCJIS_v2.0_2026-05-06.json | v2.0 | 2026-05-06 | Monorepo re-export |
-| NJ_NJCJIS_v2.0_2026-05-05.json | v2.0 | 2026-05-05 | Pre-camelCase rebuild |
-| NJ_NJCJIS_v2.0_2026-05-04.json | v2.0 | 2026-05-04 | Monorepo migration |
-| NJ_NJCJIS_v2.0_2026-05-01.json | v2.0 | 2026-05-01 | Cross-ref rebuild |
-| NJ_NJCJIS_v2.0_2026-04-28.json | v2.0 | 2026-04-28 | Original v2.0. Live tested 17/17 PASS (2026-04-29). |
-| NJ_NJCJIS_v2.0-plate-test_2026-04-30.json | v2.0-plate-test | 2026-04-30 | Plate field investigation |
+| NJ_NJCJIS_v3.5_2026-05-28.json | v3.5 | 2026-05-28 | Name Search card layout — 2 rows. |
+| NJ_NJCJIS_v3.4_2026-05-21.json | v3.4 | 2026-05-21 | Single JSON merge (BASE/MC eliminated). |
 
-## phases/mc/
+## phases/base/ (legacy pre-merge)
 
 | File | Version | Date | Notes |
 |------|---------|------|-------|
-| NJ_NJCJIS_v2.3_2026-05-06.json | v2.3 | 2026-05-06 | Monorepo rebuild with latest tools |
-| NJ_NJCJIS_v2.1-mc_2026-05-06.json | v2.1-mc | 2026-05-06 | Patch 7+8 MC rebuild |
-| NJ_NJCJIS_v2.0-mc_2026-05-05.json | v2.0-mc | 2026-05-05 | Pre-patch rebuild |
-| NJ_NJCJIS_v2.0-mc_2026-05-04.json | v2.0-mc | 2026-05-04 | Monorepo migration |
-| NJ_NJCJIS_v2.0-mc_2026-05-01.json | v2.0-mc | 2026-05-01 | Cross-ref rebuild |
-| NJ_NJCJIS_v2.0-mc_2026-04-28.json | v2.0-mc | 2026-04-28 | Original v2.0-mc. Live tested 57/57 PASS (2026-04-29). |
+| NJ_NJCJIS_BASE.json | v3.2 | 2026-05-19 | CAD defaults on all 13 combos. |
+| NJ_NJCJIS_v3.3_2026-05-19.json | v3.3 | 2026-05-19 | State defaults. |
+| NJ_NJCJIS_v3.2_2026-05-21.json | v3.2 | 2026-05-21 | CAD defaults. |
+| NJ_NJCJIS_v3.2_2026-05-19.json | v3.2 | 2026-05-19 | CAD defaults. |
+| NJ_NJCJIS_v3.2_2026-05-18.json | v3.2 | 2026-05-18 | CAD defaults. |
+| NJ_NJCJIS_v3.1_2026-05-11.json | v3.1 | 2026-05-11 | DL combo reorder. |
+| NJ_NJCJIS_v3.0_2026-05-08.json | v3.0 | 2026-05-08 | LOCKED. 14/14 live tests PASS. |
 
-## v1/ (archived)
+## phases/mc/ (legacy pre-merge)
 
-| File | Version | Status | Notes |
-|------|---------|--------|-------|
-| v1/NJ_NJCJIS_BASE.json | v1.x | Archived | Previous BASE before v2.0 rebuild (2026-04-28). |
-| v1/NJ_NJCJIS_MC.json | v1.x | Archived | Previous MC before v2.0 rebuild (2026-04-28). |
+| File | Version | Date | Notes |
+|------|---------|------|-------|
+| NJ_NJCJIS_v3.4_2026-05-21.json | v3.4 | 2026-05-21 | Single JSON merge. |
+| NJ_NJCJIS_v3.3_2026-05-21.json | v3.3 | 2026-05-21 | State defaults. |
+| NJ_NJCJIS_v3.3_2026-05-20.json | v3.3 | 2026-05-20 | State defaults. |
+| NJ_NJCJIS_v3.2_2026-05-19.json | v3.2 | 2026-05-19 | CAD defaults. |
+| NJ_NJCJIS_v3.2_2026-05-18.json | v3.2 | 2026-05-18 | CAD defaults. |
+| NJ_NJCJIS_v3.1_2026-05-14.json | v3.1 | 2026-05-14 | KB-based RMS. |
+| NJ_NJCJIS_v3.1_2026-05-11.json | v3.1 | 2026-05-11 | DL combo reorder. |
 
-
-
-## v3.5 (2026-05-28)
-
-| File | Version | Status | Notes |
-|------|---------|--------|-------|
-| NJ_NJCJIS.json | v3.5 | Current | 69P/0F/0W/0LIM. |
-## v3.4 (2026-05-21)
-
-| File | Version | Status | Notes |
-|------|---------|--------|-------|
-| NJ_NJCJIS.json | v3.4 | Current | 69P/0F/0W/0LIM. |
-## v3.1 (2026-05-11)
+## Legacy
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_BASE.json | v3.1 | Current | 69P/0F/0W/0LIM. DL combo reorder (Name before OLN). |
-| NJ_NJCJIS_MC.json | v3.1 | Current | 69P/0F/0W/0LIM. MC variant. |
-
+| NJ_NJCJIS_v3.0_LOCKED.json | v3.0 | LOCKED | Imported Newark Foundation. 14/14 live tests PASS. |
+| v1/ folder | v1.x | Archived | Pre-v2.0 rebuild (2026-04-28). |

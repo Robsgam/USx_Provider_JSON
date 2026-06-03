@@ -710,10 +710,10 @@ See also:
   Always run validator after build script execution.
 
 ================================================================================
-11. MC MULTI-CARD DESIGN RULES
+11. MULTI-CARD LAYOUT RULES
 ================================================================================
 
-  Multi-card is the standard build model. Single-card (BASE) is eliminated.
+  Multi-card is the standard build model.
   Multi-card isolates routing fields onto a separate OPTIONS card so officers
   cannot accidentally trigger the wrong query type.
 
@@ -757,11 +757,6 @@ See also:
     This is safe on MC because DH uses its own registrationStateDH field
     (DH-suffix pattern). DL State does NOT affect DH queries.
 
-    On BASE (single-card): DO NOT use the label on Person.
-    Before DH-suffix existed, "leave blank" prevented officers from filling
-    State for DH KQ combos that NEED State in set[]. On BASE, Person State
-    label stays neutral ("State") because DL and DH share the same form.
-
     CONSISTENCY RULE: If one entity has the hint, ALL entities with
     in-state vs OOS routing must have it. Officers expect uniform labeling.
     FL_FCIC v4.1 confirmed: inconsistent labels confused the workflow.
@@ -791,9 +786,9 @@ See also:
     DH card: OLN_DH, StateDH, PurposeCode, Name_DH, DOB_DH, Sex_DH, Attention
     queriesToDeselect isolates DL from DH (one-directional: DH deselects DL).
 
-  QIDMS DO NOT CHANGE BETWEEN BASE AND MC:
-    MC is layout-only. All QIDM combinations, attributes, and keyReferences
-    are identical between BASE and MC. Only the QIF card structure differs.
+  QIDMS ARE INDEPENDENT OF LAYOUT:
+    All QIDM combinations, attributes, and keyReferences are defined
+    independently of the card structure. Layout changes do not affect QIDMs.
 
   CONFIRMED PROVIDERS USING THIS PATTERN:
     FL_FCIC v4.1: Vehicle(2 cards), Person(2 cards), Boat(2 cards)
