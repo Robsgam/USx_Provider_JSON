@@ -348,13 +348,12 @@ Write-Host ""
 Write-Host "  [11/$stepCount] Running response simulator..." -ForegroundColor Yellow
 $respSimPath = Join-Path $toolDir "simulate_response.ps1"
 if (Test-Path $respSimPath) {
-    $respSimOut = & powershell -ExecutionPolicy Bypass -File $respSimPath -Path $resolvedStr -TestMissing 2>&1 | Out-String
+    $respSimOut = & powershell -ExecutionPolicy Bypass -File $respSimPath -Path $resolvedStr -RunEdgeCases 2>&1 | Out-String
     ($header + "RESPONSE SIMULATION`n==================`n`n" + $respSimOut) | Out-File -FilePath $respSimFile -Encoding utf8
     $mapped   = ([regex]::Matches($respSimOut, '\[MAPPED\]')).Count
     $missing  = ([regex]::Matches($respSimOut, '\[MISSING\]')).Count
-    $unreached= ([regex]::Matches($respSimOut, '\[UNREACHED\]')).Count
-    $orphan   = ([regex]::Matches($respSimOut, '\[ORPHAN\]')).Count
-    Write-Host "  [11/$stepCount] Saved: $respSimFile  (MAPPED=$mapped  MISSING=$missing  UNREACHED=$unreached  ORPHAN=$orphan)" -ForegroundColor Green
+    $unmapped = ([regex]::Matches($respSimOut, '\[UNMAPPED\]')).Count
+    Write-Host "  [11/$stepCount] Saved: $respSimFile  (MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped)" -ForegroundColor Green
 } else {
     Write-Host "  [11/$stepCount] SKIPPED (simulate_response.ps1 not found)" -ForegroundColor Gray
 }
@@ -373,7 +372,7 @@ Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } e
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
-Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($missing -gt 0) { "Cyan" } else { "Green" })
+Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
 Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
