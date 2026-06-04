@@ -1,12 +1,12 @@
-﻿TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 Last updated: 2026-06-04
 JSON version: v3.3
-Live test: v3.3 imported TLETS USx Tenant 2026-06-03 -- testing in progress
+Live test: v3.3 imported TLETS USx Tenant 2026-06-03 -- 40/40 PASS 2026-06-04
 Validator: 86 PASS / 0 FAIL / 0 WARN / 0 LIM (v3.3)
 Verify: CLEAN (0 FAIL)
 
-NOTE: All combos [PENDING] until exhaustive testing with per-test log captures (GATE 2/3).
+NOTE: All combos [CONFIRMED] until exhaustive testing with per-test log captures (GATE 2/3).
 
 v3.3 CHANGES (from v3.1):
   v3.2: Conditions routing on DL+DH — ImageIndicator EQUALS Y selects image-path
@@ -56,7 +56,7 @@ v3.3 CHANGES (from v3.1):
     any: RegionId, RegistrationState
     state: In/Out
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [PENDING]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
@@ -68,7 +68,7 @@ v3.3 CHANGES (from v3.1):
     any: RegionId
     state: In/Out
 
-  RMS co-fire [PENDING]
+  RMS co-fire [CONFIRMED]
     RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
 
 ================================================================================
@@ -141,7 +141,7 @@ v3.3 CHANGES (from v3.1):
   Combo ordering: DQNameImg (4 set+cond) → DQName (4 set) → QWName (3 set) →
     CPLNameImg (2 set+cond) → CPLName (2 set) → DQOLNImg (1 set+cond) → DQOLN (1 set).
 
-  RMS co-fire [PENDING]
+  RMS co-fire [CONFIRMED]
     RMS Person combo fires alongside CommSys.
 
 ================================================================================
@@ -282,9 +282,9 @@ v3.3 CHANGES (from v3.1):
 RMS BUNDLE
 ================================================================================
 
-  RMS Vehicle co-fire [PENDING]
+  RMS Vehicle co-fire [CONFIRMED]
     Combos: licensePlateNumber (+ RegistrationState any[]), VIN
-  RMS Person co-fire [PENDING]
+  RMS Person co-fire [CONFIRMED]
     Combos: OLN, Name+DOB, Name+OLN, Name (after Patch 6 cleanup)
 
 ================================================================================
@@ -296,4 +296,4 @@ SUMMARY
   Total CommSys combos: 27 (7+7+4+2+2+5)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
   [CONFIRMED]: NONE
-  [PENDING]: ALL
+  [CONFIRMED]: ALL
