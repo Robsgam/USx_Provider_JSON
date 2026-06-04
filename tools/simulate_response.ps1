@@ -9,8 +9,13 @@
     .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json
     .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -Entity Vehicle
     .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -Entity Person
-    .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -OutFile docs\RESULT_SIM_TX_TLETS.txt
+    .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -TestMissing
+    .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -OutFile docs\RESPONSE_SIMULATION_TX_TLETS.txt
     .\simulate_response.ps1 -Path providers\TX_TLETS\TX_TLETS.json -ResultXml "<root><Name>DOE,JOHN</Name>...</root>"
+
+  -TestMissing: Run a second pass per entity with primary identifier fields deliberately
+    omitted. Shows which QRDM attrs go UNREACHED (blank in UI) on a partial result --
+    tests graceful degradation when CJIS returns incomplete or missing field elements.
 #>
 
 param(
@@ -19,7 +24,8 @@ param(
     [string]$Entity = 'All',
     [string]$ResultType,    # e.g. VehicleRegistration, DriverLicense, StolenVehicle
     [string]$ResultXml,     # optional: supply your own result XML from a live capture
-    [string]$OutFile
+    [string]$OutFile,
+    [switch]$TestMissing    # run missing-field test pass per entity
 )
 
 $ErrorActionPreference = 'Stop'
@@ -215,11 +221,22 @@ function Show($text, $clr = 'White') {
     Write-Host $text -ForegroundColor $clr
 }
 
+$today = Get-Date -Format 'yyyy-MM-dd HH:mm'
+# Get version from build script
+$scriptVer = ''
+$scriptFile = Get-ChildItem (Join-Path (Split-Path $jsonPath) 'scripts') -Filter 'build_*.ps1' -File -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($scriptFile) {
+    $scriptText = [System.IO.File]::ReadAllText($scriptFile.FullName)
+    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') { $scriptVer = " v$($Matches[1])" }
+}
+
 $div = '=' * 72
 Show ""
 Show $div Cyan
-Show "  simulate_result -- $provName" Cyan
-Show "  QRDM: $($qrdm.name)  |  $($qrdm.attributes.Count) attrs  |  $($qrdm.combinations.Count) combos" Cyan
+Show "  RESPONSE SIMULATION -- $provName$scriptVer" Cyan
+Show "  Generated: $today" Cyan
+Show "  QRDM: $($qrdm.name)  |  $($qrdm.attributes.Count) attrs  |  $($qrdm.combinations.Count) entity combos" Cyan
+if ($TestMissing) { Show "  Mode: Standard + Missing-Field Test" Cyan }
 Show $div Cyan
 
 $entitiesToRun = if ($Entity -ne 'All') { @($Entity) } else { @('Vehicle','Person','Firearm','Article','Boat') }
@@ -273,6 +290,58 @@ foreach ($ent in $entitiesToRun) {
     $mc = $result.Mapped.Count; $uc = $result.Unreached.Count; $oc = @($result.Orphans).Count
     $sc = if ($uc -gt 0) { 'Yellow' } else { 'Green' }
     Show "  Summary: $mc MAPPED / $uc UNREACHED / $oc ORPHAN" $sc
+
+    # ── Missing-field test pass ───────────────────────────────────────────────
+    if ($TestMissing -and -not $ResultXml) {
+        # Define primary identifiers to omit per entity
+        $dropFields = switch ($ent) {
+            'Vehicle' { @('VehicleIdentificationNumber','LicensePlateNumber','LicensePlateStateCode','ImpliedLicensePlateStateCode','RegistrationState') }
+            'Person'  { @('Name','NormalizedNameLast','NormalizedNameFirst','NormalizedNameMiddle','BirthDate','OperatorLicenseNumber') }
+            'Firearm' { @('GunSerialNumber','SerialNumber','GunMake') }
+            'Article' { @('ArticleSerialNumber','SerialNumber','ArticleTypeCode','ArticleBrand') }
+            'Boat'    { @('BoatHullIdNumber','BoatSerialNumber','RegistrationState') }
+        }
+        $missingFlds = [ordered]@{}
+        foreach ($k in $flds.Keys) {
+            if ($k -notin $dropFields) { $missingFlds[$k] = $flds[$k] }
+        }
+        $missingXml = Build-XmlStr $missingFlds
+        $missingTbl = Parse-XmlStr $missingXml
+        $missingResult = Invoke-Mapping $qrdm.attributes $missingTbl
+
+        Show ""
+        Show "  --- $ent  |  MISSING FIELD TEST (primary identifiers omitted) ---" Red
+        Show "  Fields deliberately absent: $($dropFields -join ', ')" DarkRed
+        Show "  Tests graceful degradation: which attrs go blank in UI when CJIS" DarkRed
+        Show "  returns partial/incomplete result elements." DarkRed
+        Show ""
+        Show "  MAPPING (with missing fields):" White
+        Show "  $('-'*70)" DarkGray
+
+        foreach ($m in $missingResult.Mapped | Sort-Object AttrName) {
+            $rule = if ($m.Rule) { "  [$($m.Rule)]" } else { '' }
+            Show ("  [MAPPED]    {0,-34} {1,-22} -> {2}{3}" -f $m.AttrName, $m.Val, $m.Tgt, $rule) Green
+        }
+        # Highlight attrs that were mapped in standard but now unreached due to missing fields
+        $prevMappedNames = $result.Mapped | ForEach-Object { $_.AttrName }
+        foreach ($u in $missingResult.Unreached | Sort-Object AttrName) {
+            $wasPresent = $u.AttrName -in $prevMappedNames
+            if ($wasPresent) {
+                Show ("  [MISSING]   {0,-34} ** ABSENT from result -- {1} blank in UI **" -f $u.AttrName, $u.Tgt) Red
+            } else {
+                Show ("  [UNREACHED] {0,-34} (not in result -> {1} blank in UI)" -f $u.AttrName, $u.Tgt) DarkYellow
+            }
+        }
+        foreach ($o in $missingResult.Orphans) {
+            Show ("  [ORPHAN]    {0,-34} (result field not in QRDM -- ignored by platform)" -f $o) DarkGray
+        }
+
+        Show ""
+        $mm = $missingResult.Mapped.Count
+        $mu = $missingResult.Unreached.Count
+        $missing = ($missingResult.Unreached | Where-Object { $_.AttrName -in $prevMappedNames }).Count
+        Show "  Missing-field summary: $mm MAPPED / $mu UNREACHED ($missing newly blank due to absent fields)" Red
+    }
 }
 
 Show ""

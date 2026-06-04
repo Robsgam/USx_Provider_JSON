@@ -44,7 +44,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 10
+$stepCount = 11
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -126,7 +126,8 @@ $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
 $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
 $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
 
-$validatorFile = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
+$validatorFile  = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
+$respSimFile    = Join-Path $DocsDir "RESPONSE_SIMULATION_$jsonName.txt"
 $layoutFile    = Join-Path $DocsDir "LAYOUT_REPORT_$jsonName.txt"
 $queryFile     = Join-Path $DocsDir "QUERY_REPORT_$jsonName.txt"
 $picklistFile  = Join-Path $DocsDir "PICKLIST_REPORT_$jsonName.txt"
@@ -339,6 +340,25 @@ if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
     Write-Host "  [10/$stepCount] SKIPPED (run_test_matrix.ps1 or matrix not found)" -ForegroundColor Gray
 }
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  STEP 11: Response Simulator (sequential -- QRDM inbound path + missing-field test)
+# ══════════════════════════════════════════════════════════════════════════════
+
+Write-Host ""
+Write-Host "  [11/$stepCount] Running response simulator..." -ForegroundColor Yellow
+$respSimPath = Join-Path $toolDir "simulate_response.ps1"
+if (Test-Path $respSimPath) {
+    $respSimOut = & powershell -ExecutionPolicy Bypass -File $respSimPath -Path $resolvedStr -TestMissing 2>&1 | Out-String
+    ($header + "RESPONSE SIMULATION`n==================`n`n" + $respSimOut) | Out-File -FilePath $respSimFile -Encoding utf8
+    $mapped   = ([regex]::Matches($respSimOut, '\[MAPPED\]')).Count
+    $missing  = ([regex]::Matches($respSimOut, '\[MISSING\]')).Count
+    $unreached= ([regex]::Matches($respSimOut, '\[UNREACHED\]')).Count
+    $orphan   = ([regex]::Matches($respSimOut, '\[ORPHAN\]')).Count
+    Write-Host "  [11/$stepCount] Saved: $respSimFile  (MAPPED=$mapped  MISSING=$missing  UNREACHED=$unreached  ORPHAN=$orphan)" -ForegroundColor Green
+} else {
+    Write-Host "  [11/$stepCount] SKIPPED (simulate_response.ps1 not found)" -ForegroundColor Gray
+}
+
 # --- Summary ---
 $fires = ([regex]::Matches($queryOut, '\[FIRES\]')).Count
 $skips = ([regex]::Matches($queryOut, '\[SKIP\]')).Count
@@ -353,6 +373,7 @@ Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } e
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
+Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($missing -gt 0) { "Cyan" } else { "Green" })
 Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""

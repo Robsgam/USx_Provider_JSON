@@ -303,6 +303,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
 | 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
+| 11 | `simulate_response.ps1` | CJIS inbound path simulator: synthetic result XML → CommSys QRDM → MAPPED/UNREACHED/ORPHAN per entity + missing-field test | `-Path <json>` `-Entity` `-TestMissing` `-ResultXml` `-OutFile` |
 | -- | `build_report.ps1` | **Master orchestrator** — runs all 10 above + saves reports to docs/ | `-Path <json>` |
 
 ### Auditors (repo-wide checks)
@@ -349,7 +350,6 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
 | `Apply-CadFieldAlignment.ps1` | CAD field alignment function for MC builds (PascalCase → camelCase rename) | dot-source; `-QidmList` `-FormList` `-RmsBundle` `-ProviderRenames` |
 | `generate_build_script.ps1` | Generates build script from metadata XML (field mapping, QIDM generation, layout) | `-XmlPath <xml>` `-DevdocPath` `-OutDir` |
-| `simulate_response.ps1` | Inbound path simulator: synthetic CJIS result XML → CommSys QRDM → shows MAPPED/UNREACHED/ORPHAN fields per entity | `-Path <json>` `-Entity` `-ResultType` `-ResultXml` `-OutFile` |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 
@@ -382,7 +382,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **What field type** (FormInput/FormSelect/FormDate) should a field use? | `METADATA_REFERENCE.txt` field definitions + `audit_cross_provider.ps1` for consistency | Manual XML inspection, guessing from field name |
 | **What combos fire** for a given entity/field set? | `test_commsys.ps1 -Path <json> -Entity <entity>` | Manual build script reading, mental combo matching |
 | **What does the layout look like?** | `render_layout.ps1 -Path <json> -Summary` | Reading raw Craft.js node tree in JSON |
-| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 10 tools) | Spot-reading JSON sections |
+| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 11 tools) | Spot-reading JSON sections |
 | **Is this field consistent across providers?** | `audit_cross_provider.ps1 -Path providers/` | Manual grep across provider folders |
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
 | **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs) | Memory, training data |
@@ -410,7 +410,7 @@ Three commands run everything. No manual checklists.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 
-`build_report.ps1` runs 10 tools. Steps 1-9 execute in parallel (all read-only on the JSON), step 10 (test conductor) runs after step 9 completes.
+`build_report.ps1` runs 11 tools. Steps 1-9 execute in parallel (all read-only on the JSON), step 10 (test conductor) runs after step 9, step 11 (response simulator + missing-field test) runs last.
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (6 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 
