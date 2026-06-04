@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: RQVehicleIdentificationNumber (any[] fields: State, VehicleMakeCode, VehicleYear)
+Variant: BASE
+Date: 2026-06-04
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+VIN=1HGCM82633A004352, State=FL, VehicleMake=BOAT_BOT (selected), VehicleYear=2020
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KT9FN0PXVJXAQPDC7ETX0DG6"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleInsuranceRegistrationQuery</MessageType><Id>01KT9FN0PXVJXAQPDC7ETX0DG6</Id><VehicleMakeCode>BOAT_BOT</VehicleMakeCode><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber><State>FL</State><VehicleYear>2020</VehicleYear></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+No Returns
+
+FIELD ANALYSIS
+--------------
+  MessageType                    VehicleInsuranceRegistrationQuery
+  VehicleIdentificationNumber    1HGCM82633A004352  (set[])
+  State                          FL                 (any[] - changed from TX default)
+  VehicleMakeCode                BOAT_BOT           (any[] - from dropdown)
+  VehicleYear                    2020               (any[] - manually entered)
+
+NOTES
+-----
+All 3 any[] fields present in XML. RMS co-fired (VIN + State=FL).
+
+RESULT: PASS

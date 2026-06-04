@@ -1,0 +1,36 @@
+﻿================================================================
+TEST LOG: TX_TLETS Article ArticleSingleQuery
+Combo: QANCICNumber (QA NCIC - 1 set v3.3)
+Variant: BASE
+Date: 2026-06-04 10:10:47
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KT9FG3HSJ6XH3NVJY3MFKE59"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><NCICNumber>X123456789</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+
+
+RESULT: PASS
