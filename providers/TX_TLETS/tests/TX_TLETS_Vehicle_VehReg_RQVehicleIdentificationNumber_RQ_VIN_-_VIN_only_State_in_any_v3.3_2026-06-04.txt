@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: RQVehicleIdentificationNumber (RQ VIN - VIN only State in any[] v3.3)
+Variant: BASE
+Date: 2026-06-04
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+VIN=1HGCM82633A004352, PlateType=PC (default), PlateYear=2026 (default), State=TX (default)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KT9BENRDHK35WMMYESMACVXN"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleInsuranceRegistrationQuery</MessageType><Id>01KT9BENRDHK35WMMYESMACVXN</Id><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber><State>TX</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+No Returns
+
+FIELD ANALYSIS
+--------------
+  MessageType                    VehicleInsuranceRegistrationQuery
+  VehicleIdentificationNumber    1HGCM82633A004352
+  State                          TX (any[] default)
+
+NOTES
+-----
+RQ VIN combo fired (1 set: VIN). State from any[] default.
+RMS co-fired (VIN search).
+
+RESULT: PASS

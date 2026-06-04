@@ -1,6 +1,6 @@
-TX_TLETS -- Build Status
+﻿TX_TLETS -- Build Status
 ========================
-Last updated    : 2026-06-03
+Last updated    : 2026-06-04
 Current: v3.3 | 86P/0F/0W/0LIM | Updated 2026-06-03
 Current version : v3.3
 Provider: TX_TLETS
@@ -124,6 +124,35 @@ BUILD LOG (newest first)
     Reports: docs/base/ (6 files)
     Fixes from v1.0: ENTITIES first, NCIC state pattern, NIBRS sex+race,
       3 layout variants, RMS patches 1/3/6/7/8, CAD_DISPATCH fix,
+  ---   2026-06-04 Person     Render:RENDER        PASS     Render verification - 3 cards DH+DL+Options v3.3
+  ---   2026-06-04 Vehicle    Render:RENDER        PASS     Render verification - 1 card VEHICLE QUERY v3.3
+  ---   2026-06-04 Boat       Render:RENDER        PASS     Render verification - 1 card BOAT QUERY v3.3
+  ---   2026-06-04 Firearm    Render:RENDER        PASS     Render verification - 1 card FIREARM QUERY v3.3
+  ---   2026-06-04 Article    Render:RENDER        PASS     Render verification - 1 card ARTICLE QUERY v3.3
+  ---   2026-06-04 Person     DL:DQNameImg         PASS     DQ Name image path - conditions ImageIndicator=Y v3.3
+  ---   2026-06-04 Person     DL:DQName            PASS     DQ Name catchall - Image=N conditions omit email+image+reason v3.3
+  ---   2026-06-04 Person     DL:QWName            PASS     QW Name - NCIC Wanted no Sex no Image v3.3
+  ---   2026-06-04 Person     DL:DQOLNImg          PASS     DQ OLN image path - conditions ImageIndicator=Y v3.3
+  ---   2026-06-04 Person     DL:DQOLN             PASS     DQ OLN catchall - Image=N conditions omit email+image+reason v3.3
+  ---   2026-06-04 Person     DL:CPLNameImg        PASS     CPL Name image path - conditions ImageIndicator=Y v3.3
+  ---   2026-06-04 Person     DL:CPLName           PASS     CPL Name catchall - Image=N conditions omit email+image+reason v3.3
+  ---   2026-06-04 Person     DH:KQNameImg         PASS     KQ Name image path - conditions ImageIndicator=Y v3.3
+  ---   2026-06-04 Person     DH:KQName            PASS     KQ Name catchall - Image=N omits email+image+reason PurposeCode present v3.3
+  ---   2026-06-04 Person     DH:KQOLNImg          PASS     KQ OLN image path - conditions ImageIndicator=Y v3.3
+  ---   2026-06-04 Person     DH:KQOLN             PASS     KQ OLN catchall - Image=N omits email+image+reason PurposeCode present v3.3
+  ---   2026-06-04 Vehicle    VehReg:RQLicensePlateNumber PASS     RQ Plate+Year+PlateType - 3 set v3.3
+  ---   2026-06-04 Vehicle    VehReg:QVLicensePlateNumber PASS     QV Plate only - plate cleared year+type v3.3
+  ---   2026-06-04 Vehicle    VehReg:REGLicensePlateNumber PASS     REG Plate+Year+FRT - 3 set no PlateType v3.3
+  ---   2026-06-04 Vehicle    VehReg:QVVehicleIdentificationNumber PASS     QV VIN - VIN only no State v3.3
+  ---   2026-06-04 Vehicle    VehReg:VINVehicleIdentificationNumber PASS     VIN+FRT - 2 set VIN+FinancialResponsibilityType v3.3
+  ---   2026-06-04 Vehicle    VehReg:DPSIStickerNumber PASS     DPSI Sticker - 1 set StickerNumber v3.3
+  ---   2026-06-04 Boat       Boat:BQBoatHullIdNumber PASS     BQ Hull+State OOS - 2 set v3.3
+  ---   2026-06-04 Boat       Boat:QBBoatHullIdNumber PASS     QB Hull - 1 set no State v3.3
+  ---   2026-06-04 Boat       Boat:BQRegistrationNumber PASS     BQ Reg+State OOS - 2 set v3.3
+  ---   2026-06-04 Boat       Boat:QBRegistrationNumber PASS     QB Reg - 1 set no State v3.3
+  ---   2026-06-04 Boat       Boat:QBNCICNumber    PASS     QB NCIC - 1 set v3.3
+  ---   2026-06-04 Firearm    Gun:QGGunSerialNumber PASS     QG Serial - 1 set v3.3
+  ---   2026-06-04 Firearm    Gun:QGNCICNumber     PASS     QG NCIC - 1 set v3.3
       AP #11 race fix, EmailAddress QIDM-only field
 
   v1.0  2026-04-23  queryLabel standardization

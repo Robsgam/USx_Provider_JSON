@@ -1,0 +1,35 @@
+﻿================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: QVVehicleIdentificationNumber (QV VIN - VIN only no State v3.3)
+Variant: BASE
+Date: 2026-06-04 09:19:34
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version=1.0 encoding=UTF-8?><api:ConnectCicApi xmlns:api=http://schema.commsys.com/xml/ConnectCic/Api><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id=01KT9BGCX1FYEBM659SN7WF46N><LawEnforcementTransaction version=1.0><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleInsuranceRegistrationQuery</MessageType><Id>01KT9BGCX1FYEBM659SN7WF46N</Id><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KT9BGCX1FYEBM659SN7WF46N
+  VehicleIdentificationNumber    1HGCM82633A004352
+
+NOTES
+-----
+
+
+RESULT: PASS
