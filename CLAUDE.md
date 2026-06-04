@@ -349,6 +349,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |
 | `Apply-CadFieldAlignment.ps1` | CAD field alignment function for MC builds (PascalCase → camelCase rename) | dot-source; `-QidmList` `-FormList` `-RmsBundle` `-ProviderRenames` |
 | `generate_build_script.ps1` | Generates build script from metadata XML (field mapping, QIDM generation, layout) | `-XmlPath <xml>` `-DevdocPath` `-OutDir` |
+| `simulate_response.ps1` | Inbound path simulator: synthetic CJIS result XML → CommSys QRDM → shows MAPPED/UNREACHED/ORPHAN fields per entity | `-Path <json>` `-Entity` `-ResultType` `-ResultXml` `-OutFile` |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 
