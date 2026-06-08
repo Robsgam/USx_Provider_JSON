@@ -234,7 +234,8 @@ function Audit-Provider {
     # Filter to query transactions (name ends with Query)
     $xmlQueryTxns = @()
     foreach ($txn in $xmlTransactions) {
-        if ($txn.name -match 'Query$') {
+        # Include transactions ending in Query or Inquiry (e.g. AZ WMPIMissingPersonInquiry)
+        if ($txn.name -match '(Query|Inquiry)$') {
             $xmlQueryTxns += $txn
         }
     }

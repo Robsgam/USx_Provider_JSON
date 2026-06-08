@@ -12,7 +12,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v3.5 |  | 69P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation |
-| 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
+| 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. GAP (2026-06-08): DL SexCode-primary combo missing (metadata DQ primaryFieldReference=SexCode has no JSON combo -- add on rebuild) |
 | 3 | NY_NYSPIN_EJUSTICE | v2.2 |  | 80P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
 | 5 | FL_FCIC | v4.6 |  | 87P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
@@ -24,7 +24,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | |
 | 12 | CA_SAN_LUIS_OBISPO | v1.3 |  | 65P/0F/0W/0LIM | 0 | |
 | 13 | IL_LEADS_OFML | v1.1 |  | 61P/0F/0W/0LIM | 0 | |
-| 14 | MD_METERS | v1.3 |  | 69P/0F/0W/0LIM | 0 | State no-default |
+| 14 | MD_METERS | v1.3 |  | 69P/0F/0W/0LIM | 0 | State no-default. GAP (2026-06-08): Gun GunMake-primary combo missing (metadata ZGUN primaryFieldReference=GunMake has no JSON combo -- add on rebuild) |
 | 15 | OH_LEADS | v1.3 |  | 77P/0F/0W/0LIM | 0 | |
 | 16 | NM_NMLETS_OFML | v1.3 |  | 66P/0F/0W/0LIM | 0 | |
 | 17 | OR_LEDS | v1.3 |  | 58P/0F/0W/0LIM | 0 | |
