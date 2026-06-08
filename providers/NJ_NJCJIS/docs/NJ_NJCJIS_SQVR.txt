@@ -1,6 +1,6 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-03
+Last updated: 2026-06-08
 JSON version: v3.5
 Validator: 69 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v3.5 imported USx NJCJIS Tenant + Newark Foundation 2026-05-28. 14/14 combos, 5 QIDMs.
@@ -19,33 +19,33 @@ KNOWN LIMITATIONS (2):
   queriesToDeselect: NONE (avoids bidirectional deadlock)
   Combos: RQ_RAND (plate RAND), RQ (plate FULL), RQN_RAND (VIN RAND), RQN (VIN FULL)
 
-  RQ_RAND -- Plate search, RandomRequest=Y [CONFIRMED T3]
+  RQ_RAND -- Plate search, RandomRequest=Y [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     conditions: randomRequest EQUALS Y
     keyReference: RQ_RAND
     T3: Plate + all defaults + RandomRequest=Y. Conditions routing accepted.
 
-  RQ -- Plate search, FULL (default) [CONFIRMED T2]
+  RQ -- Plate search, FULL (default) [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
     T2: Plate + all defaults + RandomRequest=N. Fallback combo (no conditions).
 
-  RQN_RAND -- VIN search, RandomRequest=Y [CONFIRMED T11]
+  RQN_RAND -- VIN search, RandomRequest=Y [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     conditions: randomRequest EQUALS Y
     keyReference: RQN_RAND
     T11: VIN + RandomRequest=Y. No plate fields sent.
 
-  RQN -- VIN search, FULL (default) [CONFIRMED T4]
+  RQN -- VIN search, FULL (default) [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
     T4: VIN + State + RandomRequest=N + ImageIndicator sent. No plate fields.
 
-  RMS co-fire [CONFIRMED T2, T3, T4, T11]
+  RMS co-fire CONFIRMED
     licensePlateIn: tag + registrationStateAttrIds
     vehicleIdentificationNumber: vinNumber + registrationStateAttrIds
 
@@ -59,25 +59,25 @@ KNOWN LIMITATIONS (2):
   queriesToDeselect: VehicleRegistrationQuery (checking Stolen unchecks Reg)
   Combos: QVN (NCIC#), QVP (plate), QVV (VIN)
 
-  QVN -- NCIC Number [CONFIRMED T12]
+  QVN -- NCIC Number [CONFIRMED]
     set: ncicNumber
     any: imageIndicator
     keyReference: QVN
     T12: NCICNumber + ImageIndicator sent. No State, no plate, no VIN.
 
-  QVP -- Plate search [CONFIRMED T5]
+  QVP -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
     keyReference: QVP
     T5: Plate + State + ImageIndicator. queriesToDeselect confirmed (Reg unchecked).
 
-  QVV -- VIN search [CONFIRMED T13]
+  QVV -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: imageIndicator, vehicleMakeCode
     keyReference: QVV
     T13: VIN + ImageIndicator sent. No State. RMS co-fired with vinNumber.
 
-  RMS co-fire [CONFIRMED T5, T13]
+  RMS co-fire CONFIRMED
     licensePlateIn: tag + registrationStateAttrIds
     vehicleIdentificationNumber: vinNumber + registrationStateAttrIds
 
@@ -90,19 +90,19 @@ KNOWN LIMITATIONS (2):
   autoSelect: true
   Combos: DQN (OLN), DQ (Name+DOB)
 
-  DQN -- OLN + State [CONFIRMED T6]
+  DQN -- OLN + State [CONFIRMED]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
     T6: OLN + State + ImageIndicator sent. RMS co-fired with dlNumber.
 
-  DQ -- Name + DOB [CONFIRMED T7]
+  DQ -- Name + DOB [CONFIRMED]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ
     T7: Name=DOE, JOHN (FormatStringRuleHandler). BirthDate=01011985 (CommsysParseDateRuleHandler).
 
-  RMS co-fire [CONFIRMED T6, T7]
+  RMS co-fire CONFIRMED
     licenseNumber: dlNumber + registrationStateAttrId
     firstAndLastName: lastName + firstName + dateOfBirth + registrationStateAttrId
 
@@ -114,7 +114,7 @@ KNOWN LIMITATIONS (2):
   QIF:  Firearm
   Combos: QG
 
-  QG -- Serial Number [CONFIRMED T8]
+  QG -- Serial Number [CONFIRMED]
     set: serialNumber
     any: gunCaliber, firearmMake, gunModel, imageIndicator
     keyReference: QG
@@ -128,7 +128,7 @@ KNOWN LIMITATIONS (2):
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [CONFIRMED T9]
+  QA -- Serial + ArticleType [CONFIRMED]
     set: serialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
@@ -143,13 +143,13 @@ KNOWN LIMITATIONS (2):
   Combos: QB (Registration), QBN (Hull ID)
   No State field on Boat (removed in v2 metadata)
 
-  QB -- Registration Number [CONFIRMED T10]
+  QB -- Registration Number [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
     T10: RegistrationNumber + ImageIndicator sent.
 
-  QBN -- Hull ID [CONFIRMED T14]
+  QBN -- Hull ID [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
@@ -159,7 +159,7 @@ KNOWN LIMITATIONS (2):
 UI BEHAVIOR
 ================================================================================
 
-  autoSelect [CONFIRMED T1]
+  autoSelect (confirmed T1 2026-05-15)
     VehicleRegistrationQuery (autoSelect=true): checkbox activates when set[] fields entered
     VehicleStolenQuery (autoSelect=false): checkbox stays unchecked, requires manual check
     Note: autoSelect triggers on field entry, NOT on form load (engineering doc misleading)
@@ -176,8 +176,8 @@ SUMMARY
 ================================================================================
 
   Total combos: 13 CommSys + RMS
-  [CONFIRMED]: ALL 13 combos + UI behavior
-  [PENDING]: NONE
+  CONFIRMED: ALL 13 combos + UI behavior
+  PENDING: NONE
   Live tests: 14/14 PASS (2026-05-08) -- full combo coverage
   Test logs: 14 files in tests/ with XML captures
   Test reference: docs/NJ_NJCJIS_TEST_REFERENCE.txt (simulator output)
