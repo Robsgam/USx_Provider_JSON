@@ -1,6 +1,6 @@
 ﻿NY_NYSPIN_EJUSTICE METADATA REFERENCE
 ======================================
-Generated: 2026-06-03
+Generated: 2026-06-08
 Source: NY_NYSPIN_EJUSTICE.XML (metadata) + NY_NYSPIN_EJUSTICE.json
 Metadata: 30 total transactions, 7 queries built in JSON
 
@@ -67,8 +67,10 @@ METADATA COMBINATIONS (2 total):
   DALL          OperatorLicenseNumber                                                          ImageIndicator, NyNyspinTra...
   DALL          Name                                                                           ImageIndicator, NyNyspinTra...
 
-BUILD COVERAGE (2 of 2 built):
+BUILD COVERAGE (4 of 2 built):
+  BUILT   DALHOUT        set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]
   BUILT   DALH           set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+  BUILT   DALLOUT        set[operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]
   BUILT   DALL           set[operatorLicenseNumberDH]
 
 ================================================================================
@@ -169,13 +171,13 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  4      4     0  100% (COMPLETE)
-  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      4     0  200%
   DriverLicenseQuery                         2      2     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
   NyNyspinDriverLicenseNameQuery             1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   3      3     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   14     14     0  100%
+  TOTAL                                   14     16     0  114%
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (23 of 30 in metadata)

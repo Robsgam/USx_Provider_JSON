@@ -24,6 +24,12 @@ All JSON versions produced for this provider.
 | v1.0 release | Release bundles (BASE + MC). Imported 2026-04-24. |
 | pre-v1.0 | Prior build history (v1.0-v1.21). |
 
+
+## v2.2 (2026-06-08)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NY_NYSPIN_EJUSTICE.json | v2.2 | Current | 80P/0F/0W/0LIM. |
 ## v2.1 (2026-06-03)
 
 | File | Version | Status | Notes |

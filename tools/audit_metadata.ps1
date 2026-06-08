@@ -798,6 +798,127 @@ function Audit-Provider {
     }
 
     # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 4b: Choice-Set Option Coverage
+    # Metadata combinations can have a Choice structure: two Set options, where
+    # Option A is the minimal in-state path and Option B adds PurposeCode,
+    # Requestor, State for OOS queries. Both options must have a corresponding
+    # build combo. Missing the OOS option leaves OOS queries broken.
+    # XML structure: Requirements/Set/Choice containing two Set children.
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 4b: Choice-Set Option Coverage ---"
+
+    foreach ($txn in $xmlQueryTxns) {
+        $qName = $txn.name
+        if (-not $qidmByQuery.ContainsKey($qName)) { continue }
+        if (-not $txn.Combinations -or -not $txn.Combinations.Combination) { continue }
+
+        $jsonQidms = $qidmByQuery[$qName]
+
+        # Build sourceField->targetField map for this query
+        $src2tgt4b = @{}
+        foreach ($qidm in $jsonQidms) {
+            if (-not $qidm.attributes) { continue }
+            foreach ($attr in @($qidm.attributes)) {
+                if ($attr.sourceField -and $attr.targetField) {
+                    foreach ($sf in @($attr.sourceField)) {
+                        $src2tgt4b[$sf.ToLower()] = $attr.targetField
+                    }
+                }
+            }
+        }
+
+        # Collect all set[] fields across all JSON combos for this query
+        $allJsonSetFields = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        $allJsonAnyFields = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($qidm in $jsonQidms) {
+            if (-not $qidm.combinations) { continue }
+            foreach ($jc in @($qidm.combinations)) {
+                if ($jc.requirements) {
+                    if ($jc.requirements.set) {
+                        foreach ($f in @($jc.requirements.set)) { [void]$allJsonSetFields.Add($f) }
+                    }
+                    if ($jc.requirements.any) {
+                        foreach ($f in @($jc.requirements.any)) { [void]$allJsonAnyFields.Add($f) }
+                    }
+                }
+            }
+        }
+
+        foreach ($xmlCombo in @($txn.Combinations.Combination)) {
+            $kr = $xmlCombo.keyReference
+            if (-not $kr) { try { $kr = $xmlCombo.GetAttribute('keyReference') } catch { $kr = '?' } }
+
+            # Look for Choice element inside Requirements/Set
+            $choiceNode = $null
+            try {
+                if ($xmlCombo.Requirements -and $xmlCombo.Requirements.Set) {
+                    foreach ($child in $xmlCombo.Requirements.Set.ChildNodes) {
+                        if ($child.LocalName -eq 'Choice') { $choiceNode = $child; break }
+                    }
+                }
+            } catch { }
+
+            if (-not $choiceNode) { continue }
+
+            # Extract each Set option within the Choice
+            $choiceOptions = @()
+            foreach ($optNode in $choiceNode.ChildNodes) {
+                if ($optNode.LocalName -eq 'Set') {
+                    $optFields = @()
+                    foreach ($fNode in $optNode.ChildNodes) {
+                        if ($fNode.LocalName -eq 'Field') {
+                            $ref = $fNode.GetAttribute('reference')
+                            if (-not $ref) { $ref = $fNode.GetAttribute('name') }
+                            if ($ref) { $optFields += $ref }
+                        }
+                    }
+                    if ($optFields.Count -gt 0) { $choiceOptions += ,@($optFields) }
+                }
+            }
+
+            if ($choiceOptions.Count -lt 2) { continue }
+
+            # The option with MORE fields is the extended (OOS) path
+            $minimalOption = $choiceOptions | Sort-Object Count | Select-Object -First 1
+            $extendedOptions = $choiceOptions | Where-Object { $_.Count -gt $minimalOption.Count }
+
+            foreach ($extOpt in $extendedOptions) {
+                # Find fields in the extended option that are NOT in the minimal option
+                $oosOnlyFields = @($extOpt | Where-Object { $_ -notin $minimalOption })
+
+                # Check each OOS-only field is covered by some JSON combo set[] or any[]
+                $missingFields = @()
+                foreach ($xf in $oosOnlyFields) {
+                    $isFormOnly = $formOnlyFields -contains $xf
+                    if ($isFormOnly) { continue }  # form-only fields (ImageIndicator, State) are expected
+
+                    $covered = $false
+                    # Check direct match in set[] or any[]
+                    if ($allJsonSetFields.Contains($xf) -or $allJsonAnyFields.Contains($xf)) { $covered = $true }
+
+                    if (-not $covered) {
+                        # Check via sourceField->targetField reverse mapping
+                        foreach ($sf in $src2tgt4b.Keys) {
+                            if (Test-FieldEquiv $src2tgt4b[$sf] $xf) {
+                                if ($allJsonSetFields.Contains($sf) -or $allJsonAnyFields.Contains($sf)) { $covered = $true; break }
+                            }
+                        }
+                    }
+
+                    if (-not $covered) { $missingFields += $xf }
+                }
+
+                if ($missingFields.Count -eq 0) {
+                    Out-Pass "$qName keyRef $kr`: OOS Choice option covered (fields: $($oosOnlyFields -join ', '))"
+                } else {
+                    Out-Fail "$qName keyRef $kr`: OOS Choice option missing fields: $($missingFields -join ', ') -- add OOS combo with these in set[]"
+                }
+            }
+        }
+    }
+
+    # ══════════════════════════════════════════════════════════════════════════
     # CHECK 5: Primary Field Coverage (HARD GATE)
     # For each built query, every unique primaryFieldReference in the metadata
     # must have at least one matching combo in the JSON. If a metadata search

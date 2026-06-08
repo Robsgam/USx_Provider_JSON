@@ -15,11 +15,11 @@
 #   Article:  1 card
 #   Boat:     1 card -- BOAT QUERY (Reg + Hull + State + Image + RelatedHit)
 #
-# QIDMs (7, 14 combos):
+# QIDMs (7, 16 combos):
 #   VehicleRegistrationQuery             RVIN, RVEH, RCAR
 #   DriverLicenseQuery                   DLICN, DLIC
 #   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=true, co-fires with DL on name)
-#   DriverHistoryQuery                   DALH, DALL
+#   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL
 #   GunQuery                             GINQ
 #   ArticleSingleQuery                   AINQ
 #   BoatQuery                            BVEH, BVIN, RVEH, RCAR
@@ -32,7 +32,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.1"
+    [string]$Version = "2.2"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -223,15 +223,18 @@ $dgrpQuery = [PSCustomObject]@{
 # XML: DriverHistoryQuery v3
 #   DALL (OLN): Choice(set[OLN], set[OLN,PurposeCode,Requestor,State])
 #               any[ImageIndicator, NyNyspinTransactionName]
-#               -> Flatten: set[OLN-DH], any[ImageIndicator, State]
+#               -> in-state: set[OLN-DH], any[ImageIndicator, purposeCodeDH, requestorDH, nyNyspinTransactionName]
+#               -> OOS:      set[OLN-DH, purposeCodeDH, requestorDH, registrationState], any[imageIndicator, nyNyspinTransactionName]
 #   DALL (Name): Choice(set[DOB,Name,Sex], set[DOB,Name,PurposeCode,Requestor,Sex,State])
 #                any[ImageIndicator, NyNyspinTransactionName]
-#                -> Flatten: set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH], any[Image, State, Middle-DH, Suffix-DH]
-# Duplicate DALL keyRef -> invent DALH for Name path (confirmed NY v1.19)
-# PurposeCode, Requestor, NyNyspinTransactionName: not needed for basic queries.
+#               -> in-state: set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH], any[image,purpose,requestor,txname,state,middle,suffix]
+#               -> OOS:      set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH,purposeCodeDH,requestorDH,registrationState], any[...]
+# Duplicate DALL keyRef -> invent DALH (Name in-state), DALHOUT (Name OOS), DALLOUT (OLN OOS)
+# PurposeCode + Requestor required for OOS DH (State filled).
+# NyNyspinTransactionName omitted -- platform defaults to DALL when absent.
 # DH-suffix fieldIds isolate DH from DL field pool (AP #14 / LIM #24-25)
 # queriesToDeselect=DriverLicenseQuery -- one-directional (DH deselects DL)
-# Combo order: DALH (4 set) before DALL (1 set) per LIMITATION #3
+# Combo order: DALHOUT (7 set) > DALH (4 set) > DALLOUT (4 set) > DALL (1 set) per LIMITATION #3
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
@@ -248,23 +251,37 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State';                size = 2;  sourceField = @('registrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'PurposeCode';          size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
+        [PSCustomObject]@{ name = 'Requestor';            size = 35; sourceField = @('requestorDH');              targetField = 'Requestor' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'Name'
-            keyReference          = 'DALH'
-            state                 = 'In/Out'
+            keyReference          = 'DALHOUT'
+            state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DALH'
+            state                 = 'In'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DALLOUT'
+            state                 = 'Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALL'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
     )
-    description     = 'Mapping for DriverHistoryQuery -- DALH (Name+DOB+Sex), DALL (OLN). DH-suffix fields. queriesToDeselect=DL.'
+    description     = 'Mapping for DriverHistoryQuery -- DALHOUT/DALH (Name OOS/in-state), DALLOUT/DALL (OLN OOS/in-state). DH-suffix fields. queriesToDeselect=DL.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -510,6 +527,10 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)'                                                         'ROW_PER_DH_4' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_4' }
+            )}
+            @{ id = 'ROW_PER_DH_5'; cols = @('6','6'); fields = @(
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' }
+                @{ id = 'RequestorDH_Input';   node = Inp 'requestorDH'   'Requestor (DH)'    '35' 'ROW_PER_DH_5' }
             )}
         )
     }

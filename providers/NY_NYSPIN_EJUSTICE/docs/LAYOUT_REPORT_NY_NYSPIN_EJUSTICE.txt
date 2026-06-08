@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-04 15:30
+  Generated: 2026-06-08 10:54
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === NY_NYSPIN_EJUSTICE.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=3 fields=10
+  Person | entity=Person | qidm= | cards=3 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -17,7 +17,7 @@ QIDMs: 7
   NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery | attrs=8 combos=3 autoSelect=
   NY_NYSPIN_EJUSTICE_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
   NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery | attrs=3 combos=1 autoSelect=True
-  NY_NYSPIN_EJUSTICE_DriverHistoryQuery | attrs=6 combos=2 autoSelect=True
+  NY_NYSPIN_EJUSTICE_DriverHistoryQuery | attrs=8 combos=4 autoSelect=True
   NY_NYSPIN_EJUSTICE_GunQuery | attrs=5 combos=1 autoSelect=
   NY_NYSPIN_EJUSTICE_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
   NY_NYSPIN_EJUSTICE_BoatQuery | attrs=5 combos=4 autoSelect=
@@ -74,6 +74,9 @@ LAYOUT DETAIL
       ROW ROW_PER_DH_4 [6 6]
         birthDateDH (FormDate)
         sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DH_5 [6 6]
+        purposeCodeDH (Text | maxLen=1)
+        requestorDH (Text | maxLen=35)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

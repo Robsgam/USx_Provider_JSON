@@ -55,6 +55,20 @@ SECTION 1 -- BUILD PHASE MODEL
 SECTION 2 -- PRE-BUILD CHECKLIST
 ================================================================================
 
+  BEFORE STARTING ANY TASK (GATE 0 -- declare before first tool call):
+
+  MODEL DECLARATION (MANDATORY -- not optional memory):
+  [ ] State model tier at start of response: "Model: [HAIKU/SONNET/OPUS] -- [reason]"
+      HAIKU: bulk/mechanical work (test logs, repetitive audits, filling data across providers)
+      SONNET: standard builds, reports, single-provider fixes, known patterns
+      OPUS: new patterns, architecture decisions, ambiguous requirements, cross-provider
+            implications, audit tool changes, any task involving plan mode
+  [ ] For OPUS-tier tasks: enter plan mode BEFORE writing any code
+      Triggers: new combo pattern, new form field type, audit tool change, KB structural
+      change, anything that could affect multiple providers if wrong
+  Not declaring = not starting. This gate exists because build cycles cost 10x what
+  a 30-second declaration costs.
+
   BEFORE STARTING A NEW PROVIDER:
 
   SOURCE MATERIAL VERIFICATION (do this FIRST):

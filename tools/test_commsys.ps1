@@ -56,6 +56,7 @@ $testData["Person"] = @{
     SexCodeDH                  = "M"
     RegistrationStateDH        = "FL"
     purposeCodeDH              = "C"
+    requestorDH                = "DISPATCHER JONES"
     PurposeCode                = "D"
     Attention                  = "DISPATCHER JONES"
     Requestor                  = "DISPATCHER JONES"

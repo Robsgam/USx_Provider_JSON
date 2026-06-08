@@ -705,6 +705,31 @@ LIMITATION #34: DH-suffix fields unreachable from CAD dispatch
 
 --------------------------------------------------------------------------------
 
+LIMITATION #36: Metadata Choice-set — OOS combo path not implemented
+  CONFIRMED: NY_NYSPIN_EJUSTICE v2.1 (2026-06-08) -- DH OOS combos missing
+  Behavior: Metadata XML can define combinations with a Choice structure:
+    <Requirements><Set><Choice><Set>..minimal..</Set><Set>..+OOS fields..</Set></Choice></Set></Requirements>
+    The first (shorter) Set is the in-state path; the second adds PurposeCode,
+    Requestor, State for OOS queries. Implementing only the in-state path (the
+    common case) means OOS DH queries silently go out without required OOS fields,
+    producing errors or wrong routing at the CommSys endpoint.
+  Detection: audit_metadata.ps1 CHECK 4b ("Choice-Set Option Coverage") flags this.
+  Fix: Build a second OOS combo for each Choice path. The OOS combo puts the extra
+    fields (PurposeCode, requestorDH, registrationState) in set[], ensuring the
+    combo only fires when all OOS fields are present. Ordering: OOS combo first
+    (more set[] fields = higher priority), in-state combo as fallback.
+  Canonical example -- NY DH (4 combos):
+    DALHOUT set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]
+    DALH    set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
+    DALLOUT set[operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]
+    DALL    set[operatorLicenseNumberDH]
+  Scope: Check all providers with DriverHistoryQuery + OOS capability. Also check
+    other queries with Choice structure in metadata XML.
+  Related: LIMITATION #35 (OOS State misroutes CAD) -- add NOT_EQUALS conditions
+    on DALHOUT/DALLOUT if the provider has a home-state CAD risk.
+
+--------------------------------------------------------------------------------
+
 LIMITATION #35: OOS combos with home state in set[] misroute CAD queries
   CONFIRMED: CA_CLETS v2.3 (2026-05-21), NJ_NJCJIS v3.2 (2026-05-15)
   Behavior: When a provider has separate in-state vs OOS (out-of-state) combos
@@ -798,3 +823,4 @@ CROSS-REFERENCE INDEX
   AP #27 -> Section 7 (RMS-Specific)
   LIMITATION #34 -> Section 10 (Build Process) -- DH-suffix CAD unreachable
   LIMITATION #35 -> Section 5 (Combo Routing) -- OOS home-state misroute
+  LIMITATION #36 -> Section 5 (Combo Routing) -- Choice-set OOS combos missing

@@ -459,28 +459,32 @@ SECTION 6 -- KNOWN QUERY/TRANSACTION PATTERNS
     query='DriverLicenseQuery'  keyRef=DQ  targetEntity='Person'
     Uses DH-suffix pattern to separate from OLN path in same merged QIDM.
 
-  DriverHistoryQuery (OLN)
-    query='DriverHistoryQuery'  keyRef=DALL  targetEntity='Person'
-    set=['OperatorLicenseNumberDH']  (DH-suffix fieldId for isolation)
-    any=['PurposeCode','Requestor','NyNyspinTransactionName'] (NY)
-    any=['Attention','PurposeCode'] (AZ -- KQ keyRef)
+  DriverHistoryQuery (OLN) -- STANDARD PATTERN: 2 combos per OLN path
+    query='DriverHistoryQuery'  targetEntity='Person'
+    REQUIRED: Both in-state and OOS combos (see LIMITATION #32 Choice-set).
+    In-state: keyRef=DALL,  set=[operatorLicenseNumberDH],
+              any=[imageIndicator, registrationState, purposeCodeDH, requestorDH, nyNyspinTransactionName]
+    OOS:      keyRef=DALLOUT, set=[operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState],
+              any=[imageIndicator, nyNyspinTransactionName]
+    any=[...'Attention','PurposeCode'] (AZ -- KQ keyRef pattern, no OOS split needed)
 
-  DriverHistoryQuery (Name) -- RESOLVED via invented keyRef
+  DriverHistoryQuery (Name) -- RESOLVED via invented keyRef + 2 combos per path
     (CONFIRMED NY v1.19, AZ v1.0)
     Both OLN and Name paths share keyRef in MetaData XML. Resolution: INVENT a
       distinct keyRef for the second combination (e.g., DALH for NY, KQH for AZ).
-      The provider does NOT validate keyRef -- it routes by field content in the
-      XML.
-    NY: DALL (OLN path, set=[OperatorLicenseNumberDH])
-        + DALH (Name path, set=[NameLastDH,NameFirstDH])
-    AZ: KQ (OLN path, set=[OperatorLicenseNumberDH,StateDH])
-        + KQH (Name path, set=[NameLastDH,NameFirstDH,...])
-    CONFIRMED WORKING: NY_NYSPIN v1.19 (DALL+DALH), AZ_AZDPS v1.0 (KQ+KQH).
-    NOTE: DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH etc.) are
-      required to isolate DH QIDM from the DL field pool (LIMITATION #26 shared
-      field pool).
-    Prior status "NOT IMPLEMENTABLE" was WRONG -- invented keyRef resolves it.
-      See AP #17.
+      The provider does NOT validate keyRef -- it routes by field content in the XML.
+    NY FULL PATTERN (4 DH combos):
+      DALHOUT: set=[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]  -- OOS Name
+      DALH:    set=[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]                                                 -- in-state Name
+      DALLOUT: set=[operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]                          -- OOS OLN
+      DALL:    set=[operatorLicenseNumberDH]                                                                          -- in-state OLN
+    Ordering: DALHOUT (7 set) > DALH (4 set) > DALLOUT (4 set) > DALL (1 set)
+    AZ 2-combo pattern (KQ+KQH) remains valid if provider has no OOS DH requirement.
+    NOTE: DH-suffix fieldIds (operatorLicenseNumberDH, nameFirstDH etc.) are
+      required to isolate DH QIDM from the DL field pool (LIMITATION #26 shared field pool).
+    Prior status "NOT IMPLEMENTABLE" was WRONG -- invented keyRef resolves it. See AP #17.
+    PurposeCode+Requestor: required for OOS DH only (see LIMITATION #32).
+    NyNyspinTransactionName: in any[], defaults to DALL if absent -- no form field needed.
 
   VehicleRegistrationQuery (merged -- confirmed pattern)
     query='VehicleRegistrationQuery'  targetEntity='Vehicle'
