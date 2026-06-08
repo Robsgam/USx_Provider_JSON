@@ -386,10 +386,13 @@ TOOLS
 
   tools/simulate_response.ps1
     CJIS response handler simulator. Executes all QRDM handler transformations
-    (Height, Name, VehicleYear, truncate, AttributeMapping) showing raw->transformed->UI
-    per attribute. Edge cases per handler. Use -LiveXml to test real server response XML.
+    (Height, Name, VehicleYear, truncate, AttributeMapping) against comprehensive
+    synthetic test data per entity. Target result: 0 MISSING / 0 UNMAPPED across all
+    entities. No live data required. MISSING = attribute sourceField present in entity
+    test data but absent from response (real gap). UNMAPPED = code value not in handler
+    lookup table (real gap). Both must be 0.
     Called automatically by build_report.ps1 as step 11.
-    Usage: .\simulate_response.ps1 -Path <json> [-Entity <name>] [-RunEdgeCases] [-LiveXml <xml>] [-OutFile <path>]
+    Usage: .\simulate_response.ps1 -Path <json> [-Entity <name>] [-RunEdgeCases] [-OutFile <path>]
 
 ================================================================================
 PREREQUISITES

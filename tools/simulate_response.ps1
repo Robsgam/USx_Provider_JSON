@@ -1,27 +1,29 @@
 <#
-  simulate_response.ps1 -- NJ_NJCJIS CJIS response handler simulator
+  simulate_response.ps1 -- CommSys QRDM response handler simulator
   DESCRIBED IN: CLAUDE.md (tools table, Core Build Pipeline step 11), README.txt
 
-  Executes all CommSys QRDM handler transformations against synthetic (or live-captured)
-  CJIS response XML, showing: raw CJIS value -> handler logic -> transformed output -> UI display.
+  Executes all CommSys QRDM handler transformations against comprehensive synthetic test data,
+  showing: raw CJIS value -> handler logic -> transformed output -> UI display.
+  All handlers are exercised using synthetic data only. No live data required.
 
-  This is a REAL simulator: it implements the handler transformation logic, not just field mapping.
   Handlers implemented: PassThrough, HeightParserRuleHandler, ParseCommsysNameRuleHandler,
-  ParseCommsysVehicleYearRuleHandler, truncate, CommsysResultAttributeMappingRuleHandler (NJ tables).
+  ParseCommsysVehicleYearRuleHandler, truncate, CommsysResultAttributeMappingRuleHandler (NCIC tables).
+
+  Target results: 0 MISSING / 0 UNMAPPED across all entities. MISSING = attribute with
+  a sourceField present in this entity's test data but absent from the response -- a real gap.
+  Attributes for other entities are excluded from the count (not a gap, not applicable).
 
   Usage:
-    .\simulate_response.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS.json
-    .\simulate_response.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS.json -Entity Vehicle
-    .\simulate_response.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS.json -Entity Person -RunEdgeCases
-    .\simulate_response.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS.json -LiveXml "<CjisResult>...</CjisResult>"
-    .\simulate_response.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS.json -OutFile docs\RESPONSE_SIMULATION_NJ_NJCJIS.txt
+    .\simulate_response.ps1 -Path providers\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json
+    .\simulate_response.ps1 -Path providers\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json -Entity Vehicle
+    .\simulate_response.ps1 -Path providers\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json -Entity Person -RunEdgeCases
+    .\simulate_response.ps1 -Path providers\NY_NYSPIN_EJUSTICE\NY_NYSPIN_EJUSTICE.json -OutFile docs\RESPONSE_SIMULATION_NY_NYSPIN_EJUSTICE.txt
 #>
 
 param(
     [Parameter(Mandatory=$true)][string]$Path,
     [ValidateSet('Vehicle','Person','Firearm','Article','Boat','All')]
     [string]$Entity = 'All',
-    [string]$LiveXml,       # paste actual server response XML to simulate real result
     [switch]$RunEdgeCases,  # run edge-case inputs per handler after standard pass
     [string]$OutFile
 )
@@ -45,7 +47,7 @@ if ($sf) { $t = [System.IO.File]::ReadAllText($sf.FullName); if ($t -match '\$Ve
 #  HANDLER IMPLEMENTATIONS
 # ════════════════════════════════════════════════════════════════════════════════
 
-# ── CommsysResultAttributeMappingRuleHandler code tables (NJ-specific) ────────
+# ── CommsysResultAttributeMappingRuleHandler code tables (NCIC standard) ─────
 $codeTables = @{
     'SexCode' = @{
         'M' = 'Male'
@@ -390,80 +392,130 @@ function Invoke-Attr($attr, $fields) {
 
 $standardData = @{
     'Vehicle' = @{
-        LicensePlateNumber          = 'NJD1234'
-        LicensePlateStateCode       = 'NJ'
-        ImpliedLicensePlateStateCode= 'NJ'
-        RegistrationState           = 'NJ'
-        VehicleIdentificationNumber = '1HGCM82633A004352'
-        VehicleMakeCode             = 'HOND'
-        VehicleModelCode            = 'CIV'
-        VehicleYear                 = '2022'
-        VehicleColorCode            = 'SLV'
-        VehicleStyleCode            = '4D'
-        VehicleTypeCode             = 'PA'
-        AutoInsuranceCarrier        = 'GEICO'
-        ExpirationDate              = '20261231'
-        Hit                         = 'Y'
-        IntSystemName               = 'NJMVC'
+        # Identity
+        LicensePlateNumber           = 'NJD1234'
+        LicensePlateStateCode        = 'NJ'
+        ImpliedLicensePlateStateCode = 'NJ'
+        RegistrationState            = 'NJ'
+        VehicleIdentificationNumber  = '1HGCM82633A004352'
+        # Vehicle attributes
+        VehicleMakeCode              = 'HOND'
+        VehicleModelCode             = 'CIV'
+        VehicleYear                  = '2022'
+        VehicleColorCode             = 'SLV'
+        VehicleStyleCode             = '4D'
+        VehicleTypeCode              = 'PA'
+        Weight                       = '3200'
+        AutoInsuranceCarrier         = 'GEICO'
+        ExpirationDate               = '20261231'
+        # Cross-entity
+        Hit                          = 'Y'
+        Image                        = 'N'
+        ImageId                      = 'VEH001'
+        IntSystemName                = 'NJMVC'
+        IntInterfaceName             = 'NJ Motor Vehicle Commission'
+        System                       = 'Vehicle Registration Query Result'
+        SecondaryRequests            = 'N'
+        RelatedSearchHitIndicator    = 'N'
     }
     'Person' = @{
-        NormalizedNameLast          = 'DOE'
-        NormalizedNameFirst         = 'JOHN'
-        NormalizedNameMiddle        = 'ALAN'
-        Name                        = 'DOE,JOHN ALAN'
-        BirthDate                   = '19900115'
-        SexCode                     = 'M'
-        RaceCode                    = 'W'
-        EyeColorCode                = 'BRO'
-        HairColorCode               = 'BLK'
-        Height                      = '511'
-        HeightFeet                  = '5'
-        HeightInches                = '11'
-        Weight                      = '180'
-        EthnicityCode               = 'N'
-        AddressStreetNumber         = '123'
-        AddressStreetName           = 'MAIN ST'
-        AddressStreet               = '123 MAIN ST'
-        AddressCity                 = 'TRENTON'
-        AddressStateCode            = 'NJ'
-        AddressZipCode              = '08601'
-        SocialSecurityNumber        = '123-45-6789'
-        OperatorLicenseNumber       = 'D999888777'
-        OperatorLicenseStateCode    = 'NJ'
-        OperatorLicenseStatusCode   = 'VALID'
-        OperatorLicenseRestrictions = 'NONE'
-        OrganDonor                  = 'Y'
-        Image                       = 'Y'
-        Hit                         = 'Y'
-        IntSystemName               = 'NJDMV'
+        # Name
+        NormalizedNameLast           = 'DOE'
+        NormalizedNameFirst          = 'JOHN'
+        NormalizedNameMiddle         = 'ALAN'
+        Name                         = 'DOE,JOHN ALAN'
+        # Demographics
+        BirthDate                    = '19900115'
+        SexCode                      = 'M'
+        RaceCode                     = 'W'
+        EthnicityCode                = 'N'
+        EyeColorCode                 = 'BRO'
+        EyeColor                     = 'BRO'
+        HairColorCode                = 'BLK'
+        HairColor                    = 'BLK'
+        Height                       = '511'
+        HeightFeet                   = '5'
+        HeightInches                 = '11'
+        Weight                       = '180'
+        # Address
+        AddressStreetNumber          = '123'
+        AddressStreetName            = 'MAIN ST'
+        AddressStreet                = '123 MAIN ST'
+        AddressCity                  = 'TRENTON'
+        AddressStateCode             = 'NJ'
+        AddressZipCode               = '08601'
+        # License
+        OperatorLicenseNumber        = 'D999888777'
+        OperatorLicenseStateCode     = 'NJ'
+        OperatorLicenseStatusCode    = 'VALID'
+        OperatorLicenseRestrictions  = 'NONE'
+        OperatorLicenseClassCode     = 'D'
+        ExpirationDate               = '20281201'
+        # Identifiers
+        SocialSecurityNumber         = '123-45-6789'
+        OrganDonor                   = 'Y'
+        AutoInsuranceCarrier         = 'GEICO'
+        SecondaryRequests            = 'N'
+        # Cross-entity
+        Hit                          = 'Y'
+        Image                        = 'Y'
+        ImageId                      = 'PER001'
+        IntSystemName                = 'NJDMV'
+        IntInterfaceName             = 'NJ Division of Motor Vehicles'
+        System                       = 'Driver License Query Result'
+        RelatedSearchHitIndicator    = 'N'
     }
     'Firearm' = @{
-        GunSerialNumber = 'SN12345678'
-        GunMake         = 'COLT'
-        GunModel        = 'M1911'
-        GunCaliber      = '45'
-        GunTypeCode     = 'PI'
-        SerialNumber    = 'SN12345678'
-        Hit             = 'Y'
-        IntSystemName   = 'NCIC'
+        # Firearm attributes
+        GunSerialNumber              = 'SN12345678'
+        GunMake                      = 'COLT'
+        GunModel                     = 'M1911'
+        GunCaliber                   = '45'
+        GunTypeCode                  = 'PI'
+        SerialNumber                 = 'SN12345678'
+        # Cross-entity
+        Hit                          = 'Y'
+        Image                        = 'N'
+        ImageId                      = 'GUN001'
+        IntSystemName                = 'NCIC'
+        IntInterfaceName             = 'NCIC Firearm File'
+        System                       = 'Firearm Query Result'
+        RelatedSearchHitIndicator    = 'N'
+        SecondaryRequests            = 'N'
     }
     'Article' = @{
-        ArticleSerialNumber = 'ART99999'
-        ArticleTypeCode     = 'BICY'
-        ArticleBrand        = 'TREK'
-        ArticleModel        = 'FX3'
-        SerialNumber        = 'ART99999'
-        Hit                 = 'Y'
-        IntSystemName       = 'NCIC'
+        # Article attributes
+        ArticleSerialNumber          = 'ART99999'
+        ArticleTypeCode              = 'BICY'
+        ArticleBrand                 = 'TREK'
+        ArticleModel                 = 'FX3'
+        SerialNumber                 = 'ART99999'
+        # Cross-entity
+        Hit                          = 'Y'
+        Image                        = 'N'
+        ImageId                      = 'ART001'
+        IntSystemName                = 'NCIC'
+        IntInterfaceName             = 'NCIC Article File'
+        System                       = 'Article Query Result'
+        RelatedSearchHitIndicator    = 'N'
+        SecondaryRequests            = 'N'
     }
     'Boat' = @{
-        BoatHullIdNumber = 'NJ1234AB56H7'
-        BoatSerialNumber = 'NJ1234AB56H7'
-        BoatMakeCode     = 'YAMA'
-        BoatBrand        = 'YAMAHA'
-        BoatName         = 'WAVE RUNNER'
-        Hit              = 'Y'
-        IntSystemName    = 'NJSP'
+        # Boat attributes
+        BoatHullIdNumber             = 'NJ1234AB56H7'
+        BoatSerialNumber             = 'NJ1234AB56H7'
+        BoatMakeCode                 = 'YAMA'
+        BoatBrand                    = 'YAMAHA'
+        BoatName                     = 'WAVE RUNNER'
+        # Cross-entity
+        Hit                          = 'Y'
+        Image                        = 'N'
+        ImageId                      = 'BOT001'
+        IntSystemName                = 'NJSP'
+        IntInterfaceName             = 'NCIC Boat File'
+        System                       = 'Boat Query Result'
+        RelatedSearchHitIndicator    = 'N'
+        SecondaryRequests            = 'N'
     }
 }
 
@@ -550,18 +602,8 @@ $totalMapped = 0; $totalMissing = 0; $totalUnmapped = 0
 
 foreach ($ent in $entitiesToRun) {
 
-    if ($LiveXml) {
-        # Parse live-captured XML
-        [xml]$doc = $LiveXml
-        $fields = @{}
-        foreach ($node in $doc.DocumentElement.ChildNodes) {
-            if ($node.NodeType -eq [System.Xml.XmlNodeType]::Element) { $fields[$node.LocalName] = $node.InnerText }
-        }
-        $dataLabel = 'Live-captured XML'
-    } else {
-        $fields = $standardData[$ent]
-        $dataLabel = 'Synthetic standard'
-    }
+    $fields    = $standardData[$ent]
+    $dataLabel = 'Synthetic standard'
 
     Show ""
     Show "  $('=' * 68)" DarkGray
@@ -585,8 +627,12 @@ foreach ($ent in $entitiesToRun) {
         if ($relevant) { Show-AttrResult $r }
     }
 
+    # Only count MISSING for attributes whose sourceField is in this entity's test data.
+    # Attributes for other entities are excluded — their absence is not a gap.
+    $entityKeys = [System.Collections.Generic.HashSet[string]]::new(
+        [string[]]@($fields.Keys), [System.StringComparer]::OrdinalIgnoreCase)
     $mapped   = @($results | Where-Object { $_.Status -eq 'MAPPED' }).Count
-    $missing  = @($results | Where-Object { $_.Status -eq 'MISSING' }).Count
+    $missing  = @($results | Where-Object { $_.Status -eq 'MISSING' -and $entityKeys.Contains($_.Src) }).Count
     $unmapped = @($results | Where-Object { $_.Status -eq 'UNMAPPED' }).Count
     $totalMapped += $mapped; $totalMissing += $missing; $totalUnmapped += $unmapped
 
@@ -595,7 +641,7 @@ foreach ($ent in $entitiesToRun) {
     Show ("  Summary: {0} MAPPED / {1} MISSING / {2} UNMAPPED codes" -f $mapped, $missing, $unmapped) $sc
 
     # ── Edge cases ────────────────────────────────────────────────────────────
-    if ($RunEdgeCases -and $edgeCases[$ent] -and -not $LiveXml) {
+    if ($RunEdgeCases -and $edgeCases[$ent]) {
         Show ""
         Show "  EDGE CASES:" Yellow
 

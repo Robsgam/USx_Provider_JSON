@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-08 10:54
+  Generated: 2026-06-08 11:15
 ================================================================
 QUERY SIMULATION
 ================
@@ -99,11 +99,26 @@ QUERY SIMULATION
 
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 4
-    [SKIP] DALHOUT -- missing set: requestorDH
+
+    [FIRES] DALHOUT
+      set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]
+      any: [imageIndicator, nameMiddleDH, nameSuffixDH] -> matched: [imageIndicator, nameMiddleDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DALHOUT</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe, John A</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>DISPATCHER JONES</Requestor>
+      </Transaction>
 
     [FIRES] DALH
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, nameMiddleDH, purposeCodeDH]
+      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, nameMiddleDH, purposeCodeDH, requestorDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -114,12 +129,26 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
         <State>NJ</State>
         <PurposeCode>C</PurposeCode>
+        <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
-    [SKIP] DALLOUT -- missing set: requestorDH
+
+    [FIRES] DALLOUT
+      set: [operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DALLOUT</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>DISPATCHER JONES</Requestor>
+      </Transaction>
 
     [FIRES] DALL
       set: [operatorLicenseNumberDH]
-      any: [imageIndicator, registrationState, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, purposeCodeDH]
+      any: [imageIndicator, registrationState, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, purposeCodeDH, requestorDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -128,6 +157,7 @@ QUERY SIMULATION
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
         <PurposeCode>C</PurposeCode>
+        <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
 
 --- QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm] ---
