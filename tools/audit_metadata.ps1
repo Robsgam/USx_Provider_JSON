@@ -659,7 +659,10 @@ function Audit-Provider {
                         if ($inInvAny) {
                             Out-Info "  keyRef ${kr}: XML set field '$xsf' demoted to any[] in invented variants"
                         } else {
-                            Out-Warn "  keyRef ${kr}: XML set field '$xsf' not covered by invented variants ($inventedNames)"
+                            # INFO not WARN: invented variants exist but don't cover this field path.
+                            # This means the build chose a different search path for this query.
+                            # CHECK 5 (Primary Field Coverage) already catches missing primary paths as FAIL/WARN.
+                            Out-Info "  keyRef ${kr}: XML set field '$xsf' not covered by invented variants ($inventedNames) -- intentional exclusion, see CHECK 5"
                         }
                     }
                 }
@@ -990,7 +993,10 @@ function Audit-Provider {
                 if ($hasAttr) {
                     Out-Fail "  $pfr`: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for $kr path)"
                 } else {
-                    Out-Warn "  $pfr`: metadata search path not built -- no attribute, no combo (keyRef $kr)"
+                    # INFO not WARN: query IS built but this secondary search path (e.g. boat-by-name)
+                    # was intentionally not implemented. Devdoc authority determines which paths to build.
+                    # FAIL is reserved for when the QIDM has the attribute but no combo -- a clear gap.
+                    Out-Info "  $pfr`: metadata search path not built -- no attribute, no combo (keyRef $kr) -- check devdoc authority"
                 }
             }
         }

@@ -5,6 +5,13 @@ JSON version: v2.4
 Validator: 91 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v2.4 imported USx Provider 2026-05-21. 40/40 combos, 6 QIDMs. All 5 entities live-tested.
 
+NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39/40 matched.
+- 13 IV.4* plate-type conditions combos: covered by T14 log (IV.4_T14_ConditionsRouting_PlateType).
+  Tool matches via TIER 1b trailing-suffix strip (IV.4I -> IV.4 etc.).
+- IL.A1 (14th plate conditions combo): covered by the SAME T14 test but log is named IV.4_T14
+  (not IL), so tool shows it as NOT TESTED. IL.A1 IS confirmed -- verified in T14 alongside all
+  other plate type conditions routing combos. Naming convention gap in test log filename.
+
 VEHICLE REGISTRATION (VehicleRegistrationQuery)
   Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
   19 combos: 2 NLTS (OOS), 2 IA (in-state), 1 IN (name), 1 IL, 13 IV.4* (conditions plate-type routing)

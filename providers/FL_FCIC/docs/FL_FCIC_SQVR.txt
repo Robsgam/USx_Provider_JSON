@@ -202,27 +202,26 @@ ARCHITECTURE: 6 QIDMs, 28 combos. Single JSON, multi-card layout.
 8. BoatQuery -- Boat Entity
 ================================================================================
 
-  QIDM: FL_FCIC_BoatQuery (12 combos)
+  QIDM: FL_FCIC_BoatQuery (9 active combos; 3 Nlets BQ combos removed v4.4-v4.5)
   QIF:  Boat
   Fields: RegNumber, HullId, RegistrationState(no default), Decal, TitleLien,
           CoastGuardDocumentNumber, NCICNumber, PCN, ImageIndicator(N),
-          RelatedHitSearchIndicator (Stolen Search, Y=NCIC stolen),
-          NameLast, NameFirst, BirthDate
+          RelatedHitSearchIndicator (Stolen Search, Y=NCIC stolen)
 
-  BQ+Name -- Nlets Boat (Name+DOB+State) [CONFIRMED]
+  BQ+Name -- Nlets Boat (Name+DOB+State) [REMOVED v4.5]
     keyReference: BQName
-    set: [BirthDate, NameLast, NameFirst, RegistrationState]
-    any: [BoatHullIdNumber, RegistrationNumber]
+    Reason: Not in devdoc "Basic Queries Supported". XML metadata has this combo
+    but devdoc authority excludes it. audit_metadata CHECK 4 shows INFO for
+    BirthDate/Name/State not covered (expected -- intentional exclusion).
+    LIMITATION: metadata defines this path; devdoc does not authorize it.
 
-  BQ+Hull -- Nlets Boat (Hull+State) [CONFIRMED]
+  BQ+Hull -- Nlets Boat (Hull+State) [REMOVED v4.4]
     keyReference: BQBoatHullIdNumber
-    set: [BoatHullIdNumber, RegistrationState]
-    any: [RegistrationNumber]
+    Reason: Replaced by FBQ+Hull (FL-only) + QB+Hull routing via RelatedHitSearchIndicator.
 
-  BQ+Reg -- Nlets Boat (Registration+State) [CONFIRMED]
+  BQ+Reg -- Nlets Boat (Registration+State) [REMOVED v4.4]
     keyReference: BQRegistrationNumber
-    set: [RegistrationNumber, RegistrationState]
-    any: [BoatHullIdNumber]
+    Reason: Replaced by FBQ+Reg (FL-only) + QB+Reg routing via RelatedHitSearchIndicator.
 
   FBQ+Hull -- FL FCIC Boat (Hull ID) [CONFIRMED]
     keyReference: FBQBoatHullIdNumber
@@ -274,8 +273,8 @@ ARCHITECTURE: 6 QIDMs, 28 combos. Single JSON, multi-card layout.
     set: [ProcessControlNumber]
     any: [ImageIndicator]
 
-  Combo priority: BQ (state-required) > QB+Hull/Reg (stolen flag) > FBQ (FL-only) > QB unique fields.
-  All 12 combos reachable. RelatedHitSearchIndicator routing (FL-8) resolved
+  Combo priority: QB+Hull/Reg (stolen flag via RelatedHitSearchIndicator) > FBQ (FL-only) > QB unique fields.
+  All 9 active combos reachable. BQ Nlets combos removed v4.4-v4.5. RelatedHitSearchIndicator routing (FL-8) resolved
   the QB+Hull/QB+Reg unreachable limitation. Officer types Y in "Stolen Search"
   to route to NCIC stolen; blank defaults to FL registration (FBQ).
   Co-fire not possible (single BoatQuery QIDM). Two submissions needed for
@@ -299,12 +298,14 @@ RMS BUNDLE (Patched from HIDLE)
 SUMMARY
 ================================================================================
 
-  Architecture: 7 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
-  Total CommSys combos: 33 (6+2+4+2+3+4+12)
+  Architecture: 6 CommSys QIDMs + 2 RMS QIDMs
+  Total CommSys combos: 28 (6+2+4+2+3+4+7)  -- 3 Nlets BQ removed v4.4-v4.5; 2 WantedPerson removed v4.2
   Total RMS combos: ~8 (after Patch 6 cleanup)
-  CONFIRMED: 33 CommSys + 2 RMS (all combos reachable)
+  CONFIRMED: 28 CommSys + 2 RMS (all active combos confirmed)
   [REMOVED]: WantedPersonQuery (2 combos) -- CommSys auto-sends QW (v4.2)
-  [LIMITATION]: 0 (QB+Hull/QB+Reg RESOLVED via FL-8 routing, 2026-05-05)
+  [REMOVED]: BQ+Name, BQ+Hull, BQ+Reg (3 Nlets boat combos) -- v4.4-v4.5 (see Boat section)
+  [LIMITATION]: BQ+Name in XML metadata but excluded per devdoc (Basic Queries Supported does not list boat-name search for FL)
+  [LIMITATION]: QB+Hull/QB+Reg routing RESOLVED via FL-8 (RelatedHitSearchIndicator in set[], 2026-05-05)
   PENDING: 0
   Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL (2026-05-05)
 

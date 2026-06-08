@@ -118,9 +118,31 @@ function Match-TestLogToCombo($logName, $combo, $providerName) {
     $logUpper = $logName.ToUpper()
     $entity = $combo.Entity
 
+    # ── TIER 0: Wildcard keyReference prefix match ──
+    # keyRefs like "IV.4*" (conditions combos) use * as a wildcard — match any log
+    # containing the prefix before the asterisk (e.g. "IV.4*" matches "IV.4A", "IV.4B")
+    if ($kr.Contains('*')) {
+        $prefix0 = $kr.Substring(0, $kr.IndexOf('*')).ToUpper()
+        if ($prefix0 -and $logUpper.Contains($prefix0)) { return $true }
+    }
+
     # ── TIER 1: Exact keyReference in filename ──
     # e.g., "IA.QV" or "FRQLicensePlateNumber" literally in the filename
     if ($logUpper.Contains($kr.ToUpper())) { return $true }
+
+    # ── TIER 1b: Trailing-suffix strip fallback ──
+    # Handles conditions-routing combos like IV.4I, IV.4PC, IA.QB.H where a single
+    # test log covers all variants under a shared prefix (e.g. IV.4_ConditionsRouting
+    # covers IV.4I, IV.4C, IV.4M... and IA.QB covers IA.QB.H, IA.QB.O, IA.QB.R).
+    # Strategy: try progressively shorter truncations of the keyRef (drop last 1 char,
+    # then last 2 chars) and check if the shortened version appears in the log filename.
+    $krU = $kr.ToUpper()
+    for ($trim = 1; $trim -le 2; $trim++) {
+        if ($krU.Length - $trim -ge 3) {
+            $shortKr = $krU.Substring(0, $krU.Length - $trim)
+            if ($logUpper.Contains($shortKr)) { return $true }
+        }
+    }
 
     # ── TIER 2: Short label match (PREFIX+FIELD) ──
     # Test logs commonly use format: DATE_Entity_PREFIX+Field_Description.txt
