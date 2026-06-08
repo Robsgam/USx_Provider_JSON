@@ -123,7 +123,7 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 10 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor).
+    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator).
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
 
@@ -383,6 +383,13 @@ TOOLS
     synthetic test data fallback for provider-specific fields.
     Called automatically by build_report.ps1 as step 10.
     Usage: .\run_test_matrix.ps1 -Path <json> [-Matrix <file>] [-OutFile <path>]
+
+  tools/simulate_response.ps1
+    CJIS response handler simulator. Executes all QRDM handler transformations
+    (Height, Name, VehicleYear, truncate, AttributeMapping) showing raw->transformed->UI
+    per attribute. Edge cases per handler. Use -LiveXml to test real server response XML.
+    Called automatically by build_report.ps1 as step 11.
+    Usage: .\simulate_response.ps1 -Path <json> [-Entity <name>] [-RunEdgeCases] [-LiveXml <xml>] [-OutFile <path>]
 
 ================================================================================
 PREREQUISITES

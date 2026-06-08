@@ -304,7 +304,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
 | 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
 | 11 | `simulate_response.ps1` | CJIS response handler simulator: executes all QRDM handler transformations (Height, Name, VehicleYear, truncate, AttributeMapping) showing raw→transformed→UI per attribute. Edge cases per handler. NJ_NJCJIS-specific code tables. | `-Path <json>` `-Entity` `-RunEdgeCases` `-LiveXml` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — runs all 10 above + saves reports to docs/ | `-Path <json>` |
+| -- | `build_report.ps1` | **Master orchestrator** — runs all 11 above + saves reports to docs/ | `-Path <json>` |
 
 ### Auditors (repo-wide checks)
 
