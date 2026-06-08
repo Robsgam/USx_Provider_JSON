@@ -728,6 +728,37 @@ LIMITATION #36: Metadata Choice-set — OOS combo path not implemented
   Related: LIMITATION #35 (OOS State misroutes CAD) -- add NOT_EQUALS conditions
     on DALHOUT/DALLOUT if the provider has a home-state CAD risk.
 
+  *** DECISION RULE -- <Any> vs <Choice>-extended-<Set> (added 2026-06-08) ***
+  The metadata expresses the in-state/OOS distinction in TWO different ways. They
+  require DIFFERENT JSON treatment. Read the XML structure, do not guess:
+
+  (A) State (and OOS fields) appear inside <Any> of the combination:
+        <Set><Field reference="OperatorLicenseNumber"/><Any><Field reference="State"/></Any></Set>
+      -> Build ONE combo with State in any[]. The metadata says State is OPTIONAL.
+         Example: NY DriverLicenseQuery (DLIC, DLICN) -- State in any[] is CORRECT.
+         Do NOT invent an OOS combo. This is not a gap.
+
+  (B) State (and OOS fields) appear inside a second <Set> under a <Choice>:
+        <Choice><Set>minimal</Set><Set>...,State (all required)</Set></Choice>
+      -> Build a DEDICATED OOS combo with the non-defaulted discriminator (State)
+         in set[]. Keep DEFAULTED fields (PlateType=PC, PlateYear=$currentYear) in
+         any[] -- per LIMITATION #31 defaulted fields cannot gate combo firing, so
+         they must NOT go in set[].
+         Examples: NY VehicleReg plate (RVEH in-state / RVEHOUT set[plate,State] OOS),
+         NY VehicleReg VIN (RCAR / RVIN set[VIN,State]), NY DH (DALL/DALLOUT, DALH/DALHOUT).
+
+  WHY: a <Choice> extended Set means those fields are REQUIRED TOGETHER for the OOS
+  query. Demoting State to any[] lets an officer submit an incomplete OOS query and
+  removes the form-level enforcement the metadata intends. CHECK 4b emits a [NOTE]
+  when a Choice OOS option needs State but no combo (sharing that primaryFieldReference)
+  has State in set[].
+
+  CONFIRMED EXTENSIONS:
+    NY DH OOS combos added v2.2 (2026-06-08).
+    NY VehicleReg RVEHOUT (plate OOS) added v2.3 (2026-06-08) -- swept after the DH
+    fix revealed the plate Choice had the same pattern. Lesson: when one Choice-set
+    gap is found, sweep EVERY <Choice> in that provider's metadata before declaring done.
+
 --------------------------------------------------------------------------------
 
 LIMITATION #35: OOS combos with home state in set[] misroute CAD queries

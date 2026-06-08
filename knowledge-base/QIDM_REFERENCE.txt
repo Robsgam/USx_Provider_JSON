@@ -461,7 +461,7 @@ SECTION 6 -- KNOWN QUERY/TRANSACTION PATTERNS
 
   DriverHistoryQuery (OLN) -- STANDARD PATTERN: 2 combos per OLN path
     query='DriverHistoryQuery'  targetEntity='Person'
-    REQUIRED: Both in-state and OOS combos (see LIMITATION #32 Choice-set).
+    REQUIRED: Both in-state and OOS combos (see LIMITATION #36 Choice-set).
     In-state: keyRef=DALL,  set=[operatorLicenseNumberDH],
               any=[imageIndicator, registrationState, purposeCodeDH, requestorDH, nyNyspinTransactionName]
     OOS:      keyRef=DALLOUT, set=[operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState],
@@ -483,14 +483,27 @@ SECTION 6 -- KNOWN QUERY/TRANSACTION PATTERNS
     NOTE: DH-suffix fieldIds (operatorLicenseNumberDH, nameFirstDH etc.) are
       required to isolate DH QIDM from the DL field pool (LIMITATION #26 shared field pool).
     Prior status "NOT IMPLEMENTABLE" was WRONG -- invented keyRef resolves it. See AP #17.
-    PurposeCode+Requestor: required for OOS DH only (see LIMITATION #32).
+    PurposeCode+Requestor: required for OOS DH only (see LIMITATION #36).
     NyNyspinTransactionName: in any[], defaults to DALL if absent -- no form field needed.
 
   VehicleRegistrationQuery (merged -- confirmed pattern)
     query='VehicleRegistrationQuery'  targetEntity='Vehicle'
-    Combinations: RVEH (plate), RCAR (VIN, no state), RVIN (VIN + OOS state)
-    All three keyRefs are distinct -- safe to merge.
-    Confirmed: NY v1.11 T1-T4 all PASS.
+    NY FULL PATTERN (4 combos, v2.3+):
+      RVIN:    set=[vehicleIdentificationNumber, registrationState]  -- OOS VIN
+      RVEHOUT: set=[licensePlateNumber, registrationState]           -- OOS plate (added v2.3)
+      RVEH:    set=[licensePlateNumber]                              -- in-state plate
+      RCAR:    set=[vehicleIdentificationNumber]                     -- in-state VIN (NY DMV)
+    Ordering: RVIN (2) > RVEHOUT (2) > RVEH (1) > RCAR (1)
+    The plate path has a metadata <Choice> (in-state plate vs OOS plate+type+year+state);
+    RVEHOUT is the OOS combo with State (non-defaulted discriminator) in set[].
+    PlateType/PlateYear stay in any[] (defaulted -- LIMITATION #31). Mirrors RVIN/RCAR.
+    Confirmed: NY v1.11 T1-T4 (RVEH/RCAR/RVIN). RVEHOUT [PENDING] live test (v2.3).
+
+  *** OOS Choice decision rule (see PLATFORM_CONSTRAINTS LIMITATION #36) ***
+    Metadata <Any>State</Any>  -> ONE combo, State in any[] (NY DriverLicenseQuery). Not a gap.
+    Metadata <Choice><Set>min</Set><Set>...State</Set></Choice> -> dedicated OOS combo,
+      State in set[] (NY RVEHOUT, RVIN, DH DALLOUT/DALHOUT). Defaulted fields stay in any[].
+    When you find ONE Choice-set OOS gap, sweep EVERY <Choice> in the provider metadata.
 
   VehicleStolenQuery (NJ-specific)
     query='VehicleStolenQuery'  targetEntity='Vehicle'

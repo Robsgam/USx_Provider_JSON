@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-08 16:16
 ================================================================
 QUERY SIMULATION
 ================
@@ -12,7 +12,7 @@ QUERY SIMULATION
 ================================================================
 
 --- QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 3
+    Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 4
 
     [FIRES] RVIN
       set: [vehicleIdentificationNumber, registrationState]
@@ -25,6 +25,20 @@ QUERY SIMULATION
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
+        <ImageIndicator>Y</ImageIndicator>
+      </Transaction>
+
+    [FIRES] RVEHOUT
+      set: [licensePlateNumber, registrationState]
+      any: [imageIndicator, licensePlateTypeCode, licensePlateYear] -> matched: [imageIndicator, licensePlateTypeCode, licensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RVEHOUT</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 

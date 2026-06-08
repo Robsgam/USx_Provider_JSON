@@ -15,8 +15,8 @@
 #   Article:  1 card
 #   Boat:     1 card -- BOAT QUERY (Reg + Hull + State + Image + RelatedHit)
 #
-# QIDMs (7, 16 combos):
-#   VehicleRegistrationQuery             RVIN, RVEH, RCAR
+# QIDMs (7, 17 combos):
+#   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
 #   DriverLicenseQuery                   DLICN, DLIC
 #   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=true, co-fires with DL on name)
 #   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL
@@ -32,7 +32,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.2"
+    [string]$Version = "2.3"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -68,10 +68,15 @@ $qmf = Build-Qmf -ProviderName 'NY_NYSPIN_EJUSTICE'
 # 1d. VehicleRegistrationQuery
 # XML: VehicleRegistrationQuery v1
 #   RVEH: Choice(set[Plate,any[PlateType]], set[Plate,PlateType,PlateYear,State]), any[Image]
-#         -> Flatten: set[LicensePlateNumber], any[PlateType, PlateYear, State]
-#   RCAR: set[VIN], any[Image]
-#   RVIN: set[VIN, State], any[Image, VehicleMakeCode, VehicleYear]
-# Order: RVIN (most specific) > RVEH > RCAR (least specific)
+#     -> in-state RVEH: set[LicensePlateNumber], any[PlateType, PlateYear, State]
+#     -> OOS RVEHOUT:   set[LicensePlateNumber, registrationState], any[Image, PlateType, PlateYear]
+#        (State is the non-defaulted OOS discriminator -> set[]; PlateType/Year are
+#         defaulted (PC/$currentYear) so stay in any[] per LIMITATION #31. Mirrors RVIN.)
+#   RCAR: set[VIN], any[Image]                          (in-state VIN, NY DMV)
+#   RVIN: set[VIN, State], any[Image, VehicleMakeCode, VehicleYear]   (OOS VIN)
+# Choice OOS rule (LIMITATION #36): metadata Choice extended-Set with State =>
+#   build a dedicated OOS combo with State in set[]. See KB QIDM_REFERENCE.
+# Order: RVIN (2 set) > RVEHOUT (2 set) > RVEH (1 set) > RCAR (1 set)
 # =====================================================================
 $vehQuery = [PSCustomObject]@{
     attributes = @(
@@ -89,13 +94,19 @@ $vehQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','registrationState'); any = @('imageIndicator','vehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RVIN'
-            state                 = 'In/Out'
+            state                 = 'Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','registrationState'); any = @('imageIndicator','licensePlateTypeCode','licensePlateYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RVEHOUT'
+            state                 = 'Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('imageIndicator','licensePlateTypeCode','licensePlateYear','registrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEH'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
@@ -104,7 +115,7 @@ $vehQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'Mapping for VehicleRegistrationQuery -- RVIN (VIN+State OOS), RVEH (plate), RCAR (VIN NY DMV)'
+    description     = 'Mapping for VehicleRegistrationQuery -- RVIN (VIN+State OOS), RVEHOUT (plate+State OOS), RVEH (plate in-state), RCAR (VIN NY DMV)'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -121,9 +132,8 @@ $vehQuery = [PSCustomObject]@{
 #   DLIC (OLN): set[OLN], any[ImageIndicator, State]
 #   DLIC (Name): set[BirthDate, Name, SexCode], any[ImageIndicator, State]
 # Duplicate DLIC keyRef -> invent DLICN for Name path (LIMITATION #21)
-# NyNyspinDriverLicenseNameQuery (DGRP) REMOVED -- devdoc combos 1-4 all
-# under DriverLicenseQuery; DGRP created duplicate checkbox. Name searches
-# handled by DLICN instead. DGRP can be re-added as separate QIDM if needed.
+# NyNyspinDriverLicenseNameQuery (DGRP) is a SEPARATE active QIDM (see 1e2 below) --
+# a distinct DMV name-search transaction, complements DLICN. Both fire on name entry.
 # autoSelect=true, NO queriesToDeselect (DL is default query -- AP #14)
 # SexCode: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
 # State: codeTypeProvider=NCIC (reverse-lookup attr ID -> 2-letter code)

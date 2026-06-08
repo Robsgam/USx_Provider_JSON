@@ -53,6 +53,8 @@ function Out-Pass([string]$msg)  { $lines.Add("  [PASS] $msg"); $script:passCoun
 function Out-Fail([string]$msg)  { $lines.Add("  [FAIL] $msg"); $script:failCount++ }
 function Out-Warn([string]$msg)  { $lines.Add("  [WARN] $msg"); $script:warnCount++ }
 function Out-Info([string]$msg)  { }
+# Out-Note: visible advisory that does NOT count as PASS/FAIL/WARN (won't break enforce 0-WARN gate)
+function Out-Note([string]$msg)  { $lines.Add("  [NOTE] $msg") }
 
 # ── Discover providers to audit ───────────────────────────────────────────────
 $targets = @()
@@ -852,6 +854,8 @@ function Audit-Provider {
         foreach ($xmlCombo in @($txn.Combinations.Combination)) {
             $kr = $xmlCombo.keyReference
             if (-not $kr) { try { $kr = $xmlCombo.GetAttribute('keyReference') } catch { $kr = '?' } }
+            $pfr4b = $xmlCombo.primaryFieldReference
+            if (-not $pfr4b) { try { $pfr4b = $xmlCombo.GetAttribute('primaryFieldReference') } catch { } }
 
             # Look for Choice element inside Requirements/Set
             $choiceNode = $null
@@ -917,6 +921,34 @@ function Audit-Provider {
                     Out-Pass "$qName keyRef $kr`: OOS Choice option covered (fields: $($oosOnlyFields -join ', '))"
                 } else {
                     Out-Fail "$qName keyRef $kr`: OOS Choice option missing fields: $($missingFields -join ', ') -- add OOS combo with these in set[]"
+                }
+
+                # Discriminator check: if the OOS option requires State, a JSON combo sharing
+                # this primaryFieldReference must enforce State in set[] -- otherwise the OOS path
+                # is only reachable via any[] on an in-state combo (not a distinct firing combo).
+                # This catches the NY RVEH-plate pattern that field-coverage alone passes silently.
+                $oosHasState = @($extOpt | Where-Object { $_ -ieq 'State' -or $_ -ieq 'RegistrationState' }).Count -gt 0
+                if ($oosHasState -and $pfr4b) {
+                    $stateInSetForPrimary = $false
+                    foreach ($qidm in $jsonQidms) {
+                        if (-not $qidm.combinations) { continue }
+                        foreach ($jc in @($qidm.combinations)) {
+                            if ($jc.primaryFieldReference -ine $pfr4b) { continue }
+                            if (-not ($jc.requirements -and $jc.requirements.set)) { continue }
+                            foreach ($f in @($jc.requirements.set)) {
+                                if ($f -ieq 'State' -or $f -ieq 'RegistrationState') { $stateInSetForPrimary = $true; break }
+                                if ($src2tgt4b.ContainsKey($f.ToLower())) {
+                                    $t4b = $src2tgt4b[$f.ToLower()]
+                                    if ($t4b -ieq 'State' -or $t4b -ieq 'RegistrationState') { $stateInSetForPrimary = $true; break }
+                                }
+                            }
+                            if ($stateInSetForPrimary) { break }
+                        }
+                        if ($stateInSetForPrimary) { break }
+                    }
+                    if (-not $stateInSetForPrimary) {
+                        Out-Note "$qName keyRef $kr (primary ${pfr4b}): OOS Choice requires State but no combo with this primary has State in set[] -- OOS path not a distinct firing combo; add an OOS combo with State in set[] (LIMITATION #36) or verify any[] routing on live test"
+                    }
                 }
             }
         }
