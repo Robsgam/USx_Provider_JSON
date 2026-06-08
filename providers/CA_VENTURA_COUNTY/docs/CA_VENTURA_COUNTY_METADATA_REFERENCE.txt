@@ -1,6 +1,6 @@
 ﻿CA_VENTURA_COUNTY METADATA REFERENCE
 =====================================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_MC.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
@@ -61,7 +61,7 @@ BUILD COVERAGE (6 of 7 built):
   BUILT   IA.QB.H        set[CaRequestPurposeCode, BoatHullIdNumber]
   BUILT   IA.QB.O        set[CaRequestPurposeCode, OwnerAppliedNumber]
   BUILT   IA.QB.R        set[CaRequestPurposeCode, RegistrationNumber]
-  SKIP    IV.4B          RegistrationNumber -- MC expansion candidate
+  UNBUILT IV.4B          RegistrationNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 1)
@@ -125,10 +125,10 @@ BUILD COVERAGE (3 of 8 built):
   BUILT   IN.L1          set[CaRequestPurposeCode, NameLast, NameFirst]
   BUILT   NLTS.DQ        set[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
   BUILT   ID.L1          set[CaRequestPurposeCode, OperatorLicenseNumber]
-  SKIP    IR.QVC         Name -- MC expansion candidate
-  SKIP    IR.QVC         OperatorLicenseNumber -- MC expansion candidate
-  SKIP    IR.QVC         CriminalIdNumber -- MC expansion candidate
-  SKIP    IR.QVC         SocialSecurityNumber -- MC expansion candidate
+  UNBUILT IR.QVC         Name
+  UNBUILT IR.QVC         OperatorLicenseNumber
+  UNBUILT IR.QVC         CriminalIdNumber
+  UNBUILT IR.QVC         SocialSecurityNumber
 
 ================================================================================
 5. GunQuery (version 1)
@@ -201,21 +201,21 @@ BUILD COVERAGE (5 of 20 built):
   BUILT   IN.VP          set[CaRequestPurposeCode, NameLast, NameFirst]
   BUILT   IA.QV          set[CaRequestPurposeCode, LicensePlateNumber]
   BUILT   IA.QVK         set[CaRequestPurposeCode, VehicleIdentificationNumber]
-  SKIP    IV.4I          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4C          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4M          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4L          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4T          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4A          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4F          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4S          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4E          LicensePlateNumber -- MC expansion candidate
-  SKIP    IL.A1          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4H          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4P          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4K          LicensePlateNumber -- MC expansion candidate
-  SKIP    IV.4V          VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    IV.4           LicensePlateNumber -- MC expansion candidate
+  UNBUILT IV.4I          LicensePlateNumber
+  UNBUILT IV.4C          LicensePlateNumber
+  UNBUILT IV.4M          LicensePlateNumber
+  UNBUILT IV.4L          LicensePlateNumber
+  UNBUILT IV.4T          LicensePlateNumber
+  UNBUILT IV.4A          LicensePlateNumber
+  UNBUILT IV.4F          LicensePlateNumber
+  UNBUILT IV.4S          LicensePlateNumber
+  UNBUILT IV.4E          LicensePlateNumber
+  UNBUILT IL.A1          LicensePlateNumber
+  UNBUILT IV.4H          LicensePlateNumber
+  UNBUILT IV.4P          LicensePlateNumber
+  UNBUILT IV.4K          LicensePlateNumber
+  UNBUILT IV.4V          VehicleIdentificationNumber
+  UNBUILT IV.4           LicensePlateNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -233,7 +233,7 @@ BUILD SUMMARY
   TOTAL                                   43     22    21  51%
 
 ================================================================================
-MC EXPANSION CANDIDATES (20 combos not in BASE)
+UNBUILT METADATA COMBOS (20 combos in metadata, not in JSON)
 ================================================================================
 
   IV.4B          RegistrationNumber       (BoatQuery)

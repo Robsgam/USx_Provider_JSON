@@ -1,6 +1,6 @@
 ﻿OH_LEADS METADATA REFERENCE
 ============================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: OH_LEADS.xml (metadata) + OH_LEADS_MC.json
 Metadata: 188 total transactions, 6 queries built in JSON
 
@@ -108,9 +108,9 @@ BUILD COVERAGE (4 of 7 built):
   BUILT   DN             set[NameLast, NameFirst]
   BUILT   DQ.O           set[OperatorLicenseNumber]
   BUILT   DL             set[OperatorLicenseNumber]
-  SKIP    QWA            Name -- MC expansion candidate
-  SKIP    BMVIMS         OperatorLicenseNumber -- MC expansion candidate
-  SKIP    BMVIMS         SocialSecurityNumber -- MC expansion candidate
+  UNBUILT QWA            Name
+  UNBUILT BMVIMS         OperatorLicenseNumber
+  UNBUILT BMVIMS         SocialSecurityNumber
 
 ================================================================================
 5. GunQuery (version 6)
@@ -187,7 +187,7 @@ BUILD SUMMARY
   TOTAL                                   26     23     3  88%
 
 ================================================================================
-MC EXPANSION CANDIDATES (3 combos not in BASE)
+UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)
 ================================================================================
 
   QWA            Name                     (DriverLicenseQuery)

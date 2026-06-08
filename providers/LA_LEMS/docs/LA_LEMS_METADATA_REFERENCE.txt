@@ -1,6 +1,6 @@
 ﻿LA_LEMS METADATA REFERENCE
 ===========================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: LA_LEMS.xml (metadata) + LA_LEMS_MC.json
 Metadata: 84 total transactions, 6 queries built in JSON
 
@@ -64,8 +64,8 @@ METADATA COMBINATIONS (2 total):
 BUILD COVERAGE (2 of 2 built):
   BUILT   KQName         set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, PurposeCodeDH]
   BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, PurposeCodeDH]
-  SKIP    KQ             Name -- MC expansion candidate
-  SKIP    KQ             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT KQ             Name
+  UNBUILT KQ             OperatorLicenseNumber
 
 ================================================================================
 4. DriverLicenseQuery (version 8)
@@ -144,8 +144,8 @@ METADATA COMBINATIONS (2 total):
 BUILD COVERAGE (2 of 2 built):
   BUILT   RQSLicensePlateNumber set[LicensePlateNumber, RegistrationState]
   BUILT   RQSVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
-  SKIP    RQS            LicensePlateNumber -- MC expansion candidate
-  SKIP    RQS            VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT RQS            LicensePlateNumber
+  UNBUILT RQS            VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -163,7 +163,7 @@ BUILD SUMMARY
   TOTAL                                   16     12     4  75%
 
 ================================================================================
-MC EXPANSION CANDIDATES (4 combos not in BASE)
+UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
 ================================================================================
 
   KQ             Name                     (DriverHistoryQuery)

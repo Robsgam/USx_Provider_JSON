@@ -1,0 +1,197 @@
+﻿================================================================
+  Build Report: HI_HCJDC_OFML_MC
+  Source: HI_HCJDC_OFML_MC.json
+  Generated: 2026-06-08 14:35
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- HI_HCJDC_OFML_MC.json
+================================================================
+
+--- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
+
+    [FIRES] RQ
+      set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+      </Transaction>
+
+    [FIRES] M55L
+      set: [vehicleTypeCode, licensePlateNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>M55L</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <VehicleTypeCode>1</VehicleTypeCode>
+      </Transaction>
+
+    [FIRES] QVP
+      set: [licensePlateNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] M55S
+      set: [vehicleTypeCode, vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>M55S</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleTypeCode>1</VehicleTypeCode>
+      </Transaction>
+
+    [FIRES] QVV
+      set: [vehicleIdentificationNumber, vehicleMakeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+      </Transaction>
+
+    [FIRES] RQV
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+
+    [FIRES] DQ
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>John Doe A</Name>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES] QW
+      set: [birthDate, nameLast, nameFirst]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>John Doe A</Name>
+      </Transaction>
+
+    [FIRES] DQN
+      set: [operatorLicenseNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES] KQ
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>John Doe A</Name>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES] KQN
+      set: [operatorLicenseNumberDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+
+    [FIRES] QG
+      set: [gunSerialNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES] QA
+      set: [articleSerialNumber, articleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+--- QIDM: HI_HCJDC_OFML_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+
+    [FIRES] BQ
+      set: [registrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+
+    [FIRES] QB
+      set: [boatHullIdNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

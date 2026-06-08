@@ -1,6 +1,6 @@
 ﻿CA_SAN_LUIS_OBISPO METADATA REFERENCE
 ======================================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: CA_SAN_LUIS_OBISPO.xml (metadata) + CA_SAN_LUIS_OBISPO_MC.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
@@ -93,8 +93,8 @@ BUILD COVERAGE (3 of 6 built):
   BUILT   L1.N           set[NameLast, NameFirst]
   BUILT   DQ.O           set[OperatorLicenseNumber, RegistrationState]
   BUILT   L1.O           set[OperatorLicenseNumber]
-  SKIP    QVC            Name -- MC expansion candidate
-  SKIP    QVC            OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT QVC            Name
+  UNBUILT QVC            OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 1)
@@ -142,8 +142,8 @@ BUILD COVERAGE (4 of 6 built):
   BUILT   RQ.V           set[RegistrationState, VehicleIdentificationNumber]
   BUILT   QV.P           set[LicensePlateNumber]
   BUILT   QV.V           set[VehicleIdentificationNumber]
-  SKIP    4#             LicensePlateNumber -- MC expansion candidate
-  SKIP    4V             VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT 4#             LicensePlateNumber
+  UNBUILT 4V             VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -161,7 +161,7 @@ BUILD SUMMARY
   TOTAL                                   20     15     5  75%
 
 ================================================================================
-MC EXPANSION CANDIDATES (4 combos not in BASE)
+UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
 ================================================================================
 
   QVC            Name                     (DriverLicenseQuery)

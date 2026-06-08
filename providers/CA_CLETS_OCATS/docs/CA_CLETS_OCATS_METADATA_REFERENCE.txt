@@ -1,6 +1,6 @@
 ﻿CA_CLETS_OCATS METADATA REFERENCE
 ==================================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_MC.json
 Metadata: 110 total transactions, 5 queries built in JSON
 
@@ -88,7 +88,7 @@ BUILD COVERAGE (4 of 5 built):
   BUILT   DQ.O           set[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
   BUILT   L1.N           set[CaRequestPurposeCode, NameLast, NameFirst]
   BUILT   L1.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
-  SKIP    OCNAMQ         Name -- MC expansion candidate
+  UNBUILT OCNAMQ         Name
 
 ================================================================================
 4. GunQuery (version 18)
@@ -150,11 +150,11 @@ BUILD COVERAGE (5 of 10 built):
   BUILT   VP             set[CaRequestPurposeCode, NameLast, NameFirst]
   BUILT   4V             set[CaRequestPurposeCode, VehicleIdentificationNumber]
   BUILT   4              set[CaRequestPurposeCode, LicensePlateNumber]
-  SKIP    4K             LicensePlateNumber -- MC expansion candidate
-  SKIP    AWVEHQ         LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             LicensePlateNumber -- MC expansion candidate
-  SKIP    QV             VehicleIdentificationNumber -- MC expansion candidate
-  SKIP    VC             Name -- MC expansion candidate
+  UNBUILT 4K             LicensePlateNumber
+  UNBUILT AWVEHQ         LicensePlateNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT QV             VehicleIdentificationNumber
+  UNBUILT VC             Name
 
 ================================================================================
 BUILD SUMMARY
@@ -171,7 +171,7 @@ BUILD SUMMARY
   TOTAL                                   25     19     6  76%
 
 ================================================================================
-MC EXPANSION CANDIDATES (6 combos not in BASE)
+UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
 ================================================================================
 
   OCNAMQ         Name                     (DriverLicenseQuery)

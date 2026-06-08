@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TN_TIES_MC - Layout Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.5; padding: 20px; }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header { background: #1a1a2e; color: #fff; padding: 24px 32px; border-radius: 8px 8px 0 0; }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header .meta { color: #aaa; font-size: 13px; margin-top: 6px; }
+  .content { background: #fff; padding: 24px 32px; border-radius: 0 0 8px 8px; border: 1px solid #ddd; border-top: none; }
+  .summary-grid { display: flex; gap: 16px; margin-bottom: 28px; }
+  .summary-item { flex: 1; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; text-align: center; }
+  .summary-num { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+  .summary-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+  .entity-section { margin-bottom: 32px; border-bottom: 2px solid #eee; padding-bottom: 24px; }
+  .entity-section:last-child { border-bottom: none; }
+  h2 { font-size: 18px; color: #1a1a2e; margin-bottom: 16px; border-left: 4px solid #4361ee; padding-left: 12px; }
+  h2 .entity-meta { font-size: 13px; color: #888; font-weight: 400; }
+  h3 { font-size: 14px; color: #555; margin: 12px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
+  .card-header { background: #e9ecef; padding: 8px 14px; font-weight: 600; font-size: 13px; color: #495057; border-bottom: 1px solid #dee2e6; }
+  .card-body { padding: 10px 14px; }
+  .row-container { margin-bottom: 6px; }
+  .row-cols { display: block; font-size: 11px; color: #999; margin-bottom: 2px; }
+  .field { padding: 8px 12px; margin: 4px 0; border-radius: 4px; border-left: 3px solid #ccc; background: #fff; }
+  .field-header { display: flex; justify-content: space-between; align-items: center; }
+  .field-id { font-family: 'Consolas', 'Monaco', monospace; font-weight: 600; font-size: 13px; }
+  .field-type { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #eee; color: #555; }
+  .field-tags { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; font-family: 'Consolas', 'Monaco', monospace; }
+  .tag-attr { background: #dbeafe; color: #1e40af; }
+  .tag-code { background: #fef3c7; color: #92400e; }
+  .tag-prov { background: #d1fae5; color: #065f46; }
+  .tag-default { background: #ede9fe; color: #5b21b6; }
+  .tag-meta { background: #f3f4f6; color: #4b5563; }
+  .tag-warn { background: #fee2e2; color: #991b1b; }
+  .tag-rule { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; }
+  .field-dropdown { border-left-color: #4361ee; }
+  .field-text { border-left-color: #10b981; }
+  .field-date { border-left-color: #f59e0b; }
+  .field-check { border-left-color: #8b5cf6; }
+  .field-hidden { border-left-color: #ef4444; opacity: 0.7; }
+  .field-other { border-left-color: #6b7280; }
+  .qidm { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 6px; margin: 12px 0; padding: 14px; }
+  .qidm-header { font-weight: 600; font-size: 14px; color: #1a1a2e; margin-bottom: 10px; }
+  .qidm-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+  .qidm-table th { background: #f3f4f6; text-align: left; padding: 6px 10px; border-bottom: 2px solid #d1d5db; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; color: #6b7280; }
+  .qidm-table td { padding: 5px 10px; border-bottom: 1px solid #e5e7eb; }
+  .mono { font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; }
+  .combo-header { font-weight: 600; font-size: 13px; margin: 8px 0 6px; color: #374151; }
+  .combo-list { }
+  .combo { background: #fff; border: 1px solid #e5e7eb; border-radius: 4px; padding: 8px 12px; margin-bottom: 6px; }
+  .combo-idx { display: inline-block; background: #4361ee; color: #fff; font-size: 11px; font-weight: 700; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; margin-right: 6px; }
+  .combo-detail { font-size: 12px; color: #555; margin-top: 4px; margin-left: 28px; }
+  .combo-field { display: inline-block; font-family: 'Consolas', monospace; font-size: 11px; padding: 1px 6px; border-radius: 3px; margin: 1px 2px; }
+  .combo-set { background: #dbeafe; color: #1e40af; }
+  .combo-any { background: #f3f4f6; color: #4b5563; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; padding: 12px 16px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e0e0e0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 3px; border-left: 3px solid; }
+  .footer { text-align: center; font-size: 11px; color: #999; margin-top: 20px; padding-top: 12px; border-top: 1px solid #eee; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>TN_TIES_MC</h1>
+    <div class="meta">Source: TN_TIES_MC.json | Generated: 2026-06-08 14:37</div>
+  </div>
+  <div class="content">
+    <div class='summary-grid'>
+  <div class='summary-item'><div class='summary-num'>5</div><div class='summary-label'>QIFs (Entities)</div></div>
+  <div class='summary-item'><div class='summary-num'>6</div><div class='summary-label'>CommSys QIDMs</div></div>
+  <div class='summary-item'><div class='summary-num'>28</div><div class='summary-label'>Query Combinations</div></div>
+</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="border-left-color:#4361ee; background:#f0f4ff;"></div> Dropdown</div>
+      <div class="legend-item"><div class="legend-swatch" style="border-left-color:#10b981; background:#f0fdf4;"></div> Text</div>
+      <div class="legend-item"><div class="legend-swatch" style="border-left-color:#f59e0b; background:#fffbeb;"></div> Date</div>
+      <div class="legend-item"><div class="legend-swatch" style="border-left-color:#8b5cf6; background:#f5f3ff;"></div> Checkbox</div>
+      <div class="legend-item"><div class="legend-swatch" style="border-left-color:#ef4444; background:#fef2f2;"></div> Hidden</div>
+      <div class="legend-item"><span class="tag tag-attr">attributeTypeId</span></div>
+      <div class="legend-item"><span class="tag tag-code">codeType</span></div>
+      <div class="legend-item"><span class="tag tag-prov">codeTypeProvider</span></div>
+      <div class="legend-item"><span class="tag tag-default">default</span></div>
+      <div class="legend-item"><span class="tag tag-rule">ruleHandler</span></div>
+    </div>
+    <div class='entity-section'><h2>Vehicle <span class='entity-meta'>4 card(s), 11 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_VEH_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>RegistrationState</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>InquiryTypeIndicator</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>LicensePlateYear</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span> <span class='tag tag-default'>default=2026</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>LicensePlateTypeCode</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_LICENSE_PLATE_TYPE</span> <span class='tag tag-code'>codeTypeSource=NCIC</span> <span class='tag tag-default'>default=PC</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_VEH_PLATE</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>LicensePlateNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=10</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_VEH_VIN</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>VehicleIdentificationNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>VehicleMakeCode</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>VehicleYear</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_VEH_SPEC</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>DealerLicensePlateNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=10</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>HandicapPlacardNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=10</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>TemporaryLicensePlateNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=10</span></div>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_VehicleRegistrationQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>DealerLicensePlateNumber</td><td class='mono'>DealerLicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>HandicapPlacardNumber</td><td class='mono'>HandicapPlacardNumber</td><td>-</td></tr><tr><td class='mono'>InquiryTypeIndicator</td><td class='mono'>InquiryTypeIndicator</td><td>-</td></tr><tr><td class='mono'>LicensePlateNumber</td><td class='mono'>LicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>LicensePlateTypeCode</td><td class='mono'>LicensePlateTypeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateYear</td><td class='mono'>LicensePlateYear</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr><tr><td class='mono'>TemporaryLicensePlateNumber</td><td class='mono'>TemporaryLicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>VehicleIdentificationNumber</td><td>-</td></tr><tr><td class='mono'>VehicleMakeCode</td><td class='mono'>VehicleMakeCode</td><td>-</td></tr><tr><td class='mono'>VehicleYear</td><td class='mono'>VehicleYear</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>RV</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateYear</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>RQ.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateYear</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>RQ.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>RegistrationState</span> <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>VehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>RQ01</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>RV01</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#6</span> <strong>RQ03</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#7</span> <strong>RV03</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#8</span> <strong>RQ06</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>HandicapPlacardNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#9</span> <strong>RQ05</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>DealerLicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#10</span> <strong>RQ07</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>TemporaryLicensePlateNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#11</span> <strong>QV.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>VehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#12</span> <strong>QV.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>LicensePlateTypeCode</span></div></div><div class='combo'><span class='combo-idx'>#13</span> <strong>QV.D</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>DealerLicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div></div></div></div><div class='entity-section'><h2>Person <span class='entity-meta'>3 card(s), 16 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_PER_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>RegistrationState</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>ImageIndicator</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=YES_NO_UNKNOWN</span> <span class='tag tag-code'>codeTypeSource=NCIC</span> <span class='tag tag-default'>default=Y</span></div>
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>RaceCode</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=RACE</span> <span class='tag tag-prov'>codeTypeProvider=NIBRS</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>InquiryTypeIndicator</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>ExpandedNameSearchCode</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>RelatedHitSearchIndicator</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_PER_OLN</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>OperatorLicenseNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>SocialSecurityNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>OperatorLicenseNumberDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>PurposeCodeDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_PER_NAME</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>NameFirst</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>NameLast</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-other'>
+  <div class='field-header'>
+    <span class='field-id'>BirthDate</span>
+    <span class='field-type'>FormDate</span>
+  </div>
+  
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>SexCode</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=SEX</span> <span class='tag tag-prov'>codeTypeProvider=NIBRS</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>NameFirstDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>NameLastDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-other'>
+  <div class='field-header'>
+    <span class='field-id'>BirthDateDH</span>
+    <span class='field-type'>FormDate</span>
+  </div>
+  
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>SexCodeDH</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=SEX</span> <span class='tag tag-prov'>codeTypeProvider=NIBRS</span></div>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_DriverLicenseQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>BirthDate</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, yyyyMMdd)</span></td></tr><tr><td class='mono'>ExpandedNameSearchCode</td><td class='mono'>ExpandedNameSearchCode</td><td>-</td></tr><tr><td class='mono'>ImageIndicator</td><td class='mono'>ImageIndicator</td><td>-</td></tr><tr><td class='mono'>InquiryTypeIndicator</td><td class='mono'>InquiryTypeIndicator</td><td>-</td></tr><tr><td class='mono'>NameLast, NameFirst</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, )</span></td></tr><tr><td class='mono'>OperatorLicenseNumber</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>RaceCode</td><td class='mono'>RaceCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>RelatedHitSearchIndicator</td><td class='mono'>RelatedHitSearchIndicator</td><td>-</td></tr><tr><td class='mono'>SexCode</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>SocialSecurityNumber</td><td class='mono'>SocialSecurityNumber</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>DQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>BirthDate</span> <span class='combo-field combo-set'>SexCode</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>QWA</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>BirthDate</span> <span class='combo-field combo-set'>SexCode</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ExpandedNameSearchCode</span> <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>RaceCode</span> <span class='combo-field combo-any'>RelatedHitSearchIndicator</span></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>DQ02</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>BirthDate</span> <span class='combo-field combo-set'>SexCode</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>DQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>OperatorLicenseNumber</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>DQ01</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>OperatorLicenseNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ExpandedNameSearchCode</span> <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>RelatedHitSearchIndicator</span></div></div><div class='combo'><span class='combo-idx'>#6</span> <strong>DQ06</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>SocialSecurityNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ExpandedNameSearchCode</span> <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>RelatedHitSearchIndicator</span></div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_DriverHistoryQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>NameLast, NameFirst</td><td class='mono'>Attention</td><td><span class='tag tag-rule'>CommsysGetLastNameFirstNameInitialRuleHandler</span></td></tr><tr><td class='mono'>BirthDateDH</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, yyyyMMdd)</span></td></tr><tr><td class='mono'>NameLastDH, NameFirstDH</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, )</span></td></tr><tr><td class='mono'>OperatorLicenseNumberDH</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>PurposeCodeDH</td><td class='mono'>PurposeCode</td><td>-</td></tr><tr><td class='mono'>SexCodeDH</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>KQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>NameLastDH</span> <span class='combo-field combo-set'>NameFirstDH</span> <span class='combo-field combo-set'>BirthDateDH</span> <span class='combo-field combo-set'>SexCodeDH</span> <span class='combo-field combo-set'>PurposeCodeDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>KQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>OperatorLicenseNumberDH</span> <span class='combo-field combo-set'>PurposeCodeDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>DQ05</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>OperatorLicenseNumberDH</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div></div></div></div><div class='entity-section'><h2>Firearm <span class='entity-meta'>1 card(s), 3 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_GUN</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>SerialNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>FirearmMake</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_FIREARM_MAKE</span> <span class='tag tag-code'>codeTypeSource=NCIC</span></div>
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>GunCaliber</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_FIREARM_CALIBER</span> <span class='tag tag-code'>codeTypeSource=NCIC</span></div>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_GunQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>GunCaliber</td><td class='mono'>GunCaliber</td><td>-</td></tr><tr><td class='mono'>FirearmMake</td><td class='mono'>GunMake</td><td>-</td></tr><tr><td class='mono'>SerialNumber</td><td class='mono'>GunSerialNumber</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QG</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>SerialNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>GunCaliber</span> <span class='combo-field combo-any'>FirearmMake</span></div></div></div></div></div><div class='entity-section'><h2>Article <span class='entity-meta'>1 card(s), 2 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_ART</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>SerialNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>ArticleTypeCode</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_ARTICLE_TYPE</span> <span class='tag tag-code'>codeTypeSource=CA_CLETS</span></div>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_ArticleSingleQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>SerialNumber</td><td class='mono'>ArticleSerialNumber</td><td>-</td></tr><tr><td class='mono'>ArticleTypeCode</td><td class='mono'>ArticleTypeCode</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QA</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>SerialNumber</span> <span class='combo-field combo-set'>ArticleTypeCode</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div></div></div></div><div class='entity-section'><h2>Boat <span class='entity-meta'>3 card(s), 4 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_BOA_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>RegistrationState</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>InquiryTypeIndicator</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_BOA_HULL</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>BoatHullIdNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
+</div></div></div></div><div class='card'><div class='card-header'>CARD_BOA_REG</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>RegistrationNumber</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=8</span></div>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: TN_TIES_BoatQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>BoatHullIdNumber</td><td class='mono'>BoatHullIdNumber</td><td>-</td></tr><tr><td class='mono'>InquiryTypeIndicator</td><td class='mono'>InquiryTypeIndicator</td><td>-</td></tr><tr><td class='mono'>RegistrationNumber</td><td class='mono'>RegistrationNumber</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>BB.H</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>BoatHullIdNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>BB.R</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>RegistrationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span> <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>QB.H</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>BoatHullIdNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>QB.R</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>RegistrationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>InquiryTypeIndicator</span></div></div></div></div></div><div class='entity-section'><h2>RMS QIDMs</h2><div class='qidm'><div class='qidm-header'>RMS Person Search query</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>NameFirst</td><td class='mono'>firstName</td><td>-</td></tr><tr><td class='mono'>NameLast</td><td class='mono'>lastName</td><td>-</td></tr><tr><td class='mono'>SocialSecurityNumber</td><td class='mono'>ssn</td><td>-</td></tr><tr><td class='mono'>OperatorLicenseNumber</td><td class='mono'>dlNumber</td><td>-</td></tr><tr><td class='mono'>BirthDate</td><td class='mono'>dateOfBirth</td><td>-</td></tr><tr><td class='mono'>RaceCode</td><td class='mono'>raceAttrIds</td><td><span class='tag tag-attr'>useAttributeId</span> <span class='tag tag-rule'>AttributeArrayWrapperRuleHandler</span></td></tr><tr><td class='mono'>SexCode</td><td class='mono'>sexAttrId</td><td><span class='tag tag-attr'>useAttributeId</span></td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>registrationStateAttrId</td><td><span class='tag tag-attr'>useAttributeId</span></td></tr></tbody></table></div><div class='qidm'><div class='qidm-header'>RMS Vehicle search query</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>VehicleYear</td><td class='mono'>vehicle.yearOfManufacture</td><td>-</td></tr><tr><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>vehicle.vinNumber</td><td>-</td></tr><tr><td class='mono'>VehicleMakeCode</td><td class='mono'>vehicle.makeNcicCode</td><td>-</td></tr><tr><td class='mono'>VehicleModelCode</td><td class='mono'>vehicle.modelNcicCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateNumber</td><td class='mono'>vehicle.tag</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>vehicle.registrationStateAttrIds</td><td><span class='tag tag-attr'>useAttributeId</span> <span class='tag tag-rule'>AttributeArrayWrapperRuleHandler</span></td></tr></tbody></table></div></div><div class='entity-section'><h2>Handler Summary</h2><p style='font-size:13px;color:#555;margin-bottom:12px;'>All handlers found across 4 property paths: <code>handlerFunction</code>, <code>rule.function</code>, <code>fallbackRule.function</code>, <code>ParallelQuery.function</code></p><table class='qidm-table'><thead><tr><th>Handler</th><th>Path</th><th>Bundle</th><th>Config</th><th>Config Type</th><th>Target Field</th><th>Arguments</th></tr></thead><tbody><tr><td class='mono' rowspan='2'><span class='tag tag-rule'>AttributeArrayWrapperRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS Person Search query</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>raceAttrIds</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS Vehicle search query</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>vehicle.registrationStateAttrIds</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>CommsysGetDexStateUserIdRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES</td><td class='mono'>AUTHENTICATION</td><td class='mono'>UserName</td><td class='mono'>true</td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>CommsysGetLastNameFirstNameInitialRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverHistoryQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>Attention</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>CommsysOriAuthenticationHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES</td><td class='mono'>AUTHENTICATION</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='2'><span class='tag tag-rule'>CommsysParseDateRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverLicenseQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>BirthDate</td><td class='mono'>yyyy-MM-dd, yyyyMMdd</td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverHistoryQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>BirthDate</td><td class='mono'>yyyy-MM-dd, yyyyMMdd</td></tr><tr><td class='mono' rowspan='9'><span class='tag tag-rule'>CommsysResultAttributeMappingRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>AddressStateCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>EyeColorCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HairColorCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>RaceCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>SexCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleColorCode</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleMakeName</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>BodyStyle</td><td class='mono'></td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleModelName</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>CommsysResultsHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='6'><span class='tag tag-rule'>CommsysTransactionRequestHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_VehicleRegistrationQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverLicenseQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverHistoryQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_GunQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_ArticleSingleQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_BoatQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>CommsysWsiOutgoingMessageHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_QueryMessageFormat</td><td class='mono'>QUERYMESSAGEFORMAT</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='16'><span class='tag tag-rule'>CommysResultFallbackRegexRuleHandler</span></td><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>BirthDate</td><td class='mono'>regex:DOB\s(\d{8}), trim</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>EyeColorCode</td><td class='mono'>regex:EYE/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightDisplay</td><td class='mono'>regex:HGT/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Height</td><td class='mono'>regex:HGT/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>LicensePlateNumber</td><td class='mono'>regex:LIC/\s*([^\s]+), regex:LIC/([^\s]+), trim</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>OperatorLicenseNumber</td><td class='mono'>regex:OLN/\s*([^\s]+), regex:OLN/([^\s]+), trim</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>RaceCode</td><td class='mono'>regex:RAC/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>SexCode</td><td class='mono'>regex:SEX/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>SocialSecurityNumber</td><td class='mono'>regex:SSN/([^\s]+), regex:SSN ([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleColorCode</td><td class='mono'>regex:VCO/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>regex:VIN/([^\s]+), trim</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleMakeName</td><td class='mono'>regex:VMA/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>BodyStyle</td><td class='mono'>regex:VST/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleModelName</td><td class='mono'>regex:VMO/([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleYear</td><td class='mono'>regex:VYR/([^\s]+), regex:YRMD:([^\s]+), trim, rule</td></tr><tr><td class='mono'>fallback</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Weight</td><td class='mono'>regex:WGT/([^\s]+), trim</td></tr><tr><td class='mono' rowspan='5'><span class='tag tag-rule'>FormatArrayRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Cautions</td><td class='mono'>entityType/nameId/nameAttrDetail.id/nameAttrDetail.displayValue/nameAttrDetail.type, entityType/id/attributeId/displayValue/type</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>WarrantDetails</td><td class='mono'>warrantId/warrantNumber/warrantTypeAttrDetail.displayValue/warrantStatusAttrDetail.displayValue/warrantIssuedDateUtc/warrantCharges[chargeName,chargeCount,offenseClassificationAttrDetail.displayValue,offenseDateUtc], Id/Number/Type/Status/IssuedDateUtc/Charges[Name,Count,OffenseClassification,OffenseDateUtc]</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Cautions</td><td class='mono'>entityType/itemProfileId/itemAttrDetail.id/itemAttrDetail.displayValue/itemAttrDetail.type, entityType/id/attributeId/displayValue/type</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Addresses</td><td class='mono'>type/id/locationAddress.streetAddress/locationAddress.streetNumber/locationAddress.locality/locationAddress.country/locationAddress.postalCode, type/attributeId/streetAddress/streetNumber/locality/country/postalCode</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>IdentifyingMarks</td><td class='mono'>id/description/bodyPartAttrDetail.displayValue/identifyingMarkTypeAttrDetail.displayValue, attributeId/description/bodyPart/identifyingMarkType</td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>FormatNameRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Name</td><td class='mono'>firstName/lastName/middleNameAnalyzed, , / / </td></tr><tr><td class='mono' rowspan='2'><span class='tag tag-rule'>FormatStringRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverLicenseQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>Name</td><td class='mono'>, </td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_DriverHistoryQuery</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>Name</td><td class='mono'>, </td></tr><tr><td class='mono' rowspan='8'><span class='tag tag-rule'>HeightParserRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightDisplay</td><td class='mono'>Height, height</td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightFeet</td><td class='mono'>Height, feet</td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightInches</td><td class='mono'>Height, inches</td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Height</td><td class='mono'>Height, total</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightDisplay</td><td class='mono'>heightFeet/heightInches, height</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightFeet</td><td class='mono'>heightFeet/heightInches, feet</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>HeightInches</td><td class='mono'>heightFeet/heightInches, inches</td></tr><tr><td class='mono'>rule</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Height</td><td class='mono'>heightFeet/heightInches, total</td></tr><tr><td class='mono' rowspan='4'><span class='tag tag-rule'>ParseCommsysNameRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>NameLast</td><td class='mono'>NormalizedNameLast/NormalizedNameFirst/NormalizedNameMiddle, NormalizedName, Name, , / / </td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>NameFirst</td><td class='mono'>NormalizedNameLast/NormalizedNameFirst/NormalizedNameMiddle, NormalizedName, Name, , / / </td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>NameMiddle</td><td class='mono'>NormalizedNameLast/NormalizedNameFirst/NormalizedNameMiddle, NormalizedName, Name, , / / </td></tr><tr><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>Name</td><td class='mono'>NormalizedNameLast/NormalizedNameFirst/NormalizedNameMiddle, NormalizedName, Name, , / / </td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>ParseCommsysVehicleYearRuleHandler</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>VehicleYear</td><td class='mono'>50</td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>QueryResultsLayoutHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS_ResultsLayout</td><td class='mono'>QUERYRESULTSLAYOUT</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>RestAuthenticationHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS</td><td class='mono'>AUTHENTICATION</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>RestRequestHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS_QueryMessageFormat</td><td class='mono'>QUERYMESSAGEFORMAT</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='2'><span class='tag tag-rule'>RmsRestPayloadHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS Person Search query</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS Vehicle search query</td><td class='mono'>QUERYINPUTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>RmsRestResultsHandler</span></td><td class='mono'>handlerFunction</td><td class='mono'>RMS</td><td class='mono'>RMS_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>-</td><td class='mono'></td></tr><tr><td class='mono' rowspan='1'><span class='tag tag-rule'>truncate</span></td><td class='mono'>rule</td><td class='mono'>TN_TIES</td><td class='mono'>TN_TIES_Results</td><td class='mono'>QUERYRESULTDATAMAPPING</td><td class='mono'>SocialSecurityNumber</td><td class='mono'></td></tr></tbody></table><div style='margin-top:12px;font-size:13px;color:#555;'><strong>22</strong> unique handlers, <strong>68</strong> total usages</div></div>
+  </div>
+  <div class="footer">ConnectCIC Layout Report - Generated by render_html.ps1</div>
+</div>
+</body>
+</html>

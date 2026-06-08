@@ -12,23 +12,23 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v3.5 |  | 69P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation |
-| 2 | HI_HCJDC_OFML | v1.7 | 72P/0F/0W/0LIM | 72P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
+| 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 3 | NY_NYSPIN_EJUSTICE | v2.2 |  | 80P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
-| 4 | AZ_AZDPS | v2.3 | 71P/0F/0W/0LIM | 71P/0F/0W/0LIM | 0 | |
+| 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
 | 5 | FL_FCIC | v4.6 |  | 87P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
 | 6 | TX_TLETS | v3.3 |  | 86P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
-| 7 | LA_LEMS | v2.5 | 63P/0F/0W/0LIM | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
+| 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
-| 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W/0LIM | 72P/0F/0W/0LIM | 0 | |
-| 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W/0LIM | 63P/0F/0W/0LIM | 0 | |
-| 11 | CA_eSUN | v1.5 | 71P/0F/0W/0LIM | 71P/0F/0W/0LIM | 0 | |
-| 12 | CA_SAN_LUIS_OBISPO | v1.3 | 65P/0F/0W/0LIM | 65P/0F/0W/0LIM | 0 | |
-| 13 | IL_LEADS_OFML | v1.1 | 61P/0F/0W/0LIM | 61P/0F/0W/0LIM | 0 | |
-| 14 | MD_METERS | v1.3 | 69P/0F/0W/0LIM | 69P/0F/0W/0LIM | 0 | State no-default |
-| 15 | OH_LEADS | v1.3 | 77P/0F/0W/0LIM | 77P/0F/0W/0LIM | 0 | |
-| 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W/0LIM | 66P/0F/0W/0LIM | 0 | |
-| 17 | OR_LEDS | v1.3 | 58P/0F/0W/0LIM | 58P/0F/0W/0LIM | 0 | |
-| 18 | TN_TIES | v1.4 | 80P/0F/0W/0LIM | 80P/0F/0W/0LIM | 0 | |
+| 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
+| 10 | CA_CLETS_OCATS | v1.2 |  | 63P/0F/0W/0LIM | 0 | |
+| 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | |
+| 12 | CA_SAN_LUIS_OBISPO | v1.3 |  | 65P/0F/0W/0LIM | 0 | |
+| 13 | IL_LEADS_OFML | v1.1 |  | 61P/0F/0W/0LIM | 0 | |
+| 14 | MD_METERS | v1.3 |  | 69P/0F/0W/0LIM | 0 | State no-default |
+| 15 | OH_LEADS | v1.3 |  | 77P/0F/0W/0LIM | 0 | |
+| 16 | NM_NMLETS_OFML | v1.3 |  | 66P/0F/0W/0LIM | 0 | |
+| 17 | OR_LEDS | v1.3 |  | 58P/0F/0W/0LIM | 0 | |
+| 18 | TN_TIES | v1.4 |  | 80P/0F/0W/0LIM | 0 | |
 
 **CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). Incomplete — awaiting updated devdoc/metadata decision.
 
@@ -76,7 +76,7 @@ add visible FormInput for Attention (DH-suffix where applicable), update sourceF
 
 | # | Provider | QIDMs affected | Scope | Fix |
 |---|---|---|---|---|
-| 1 | LA_LEMS | v2.5 | 63P/0F/0W/0LIM | 63P/0F/0W/0LIM |
+| 1 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM |
 | 2 | HI_HCJDC_OFML | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
 | 3 | TX_TLETS | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
 | 4 | CA_eSUN | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |

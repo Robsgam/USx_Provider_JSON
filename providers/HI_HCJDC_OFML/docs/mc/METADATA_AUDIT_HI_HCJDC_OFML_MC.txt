@@ -1,0 +1,168 @@
+﻿================================================================
+  Build Report: HI_HCJDC_OFML_MC
+  Source: HI_HCJDC_OFML_MC.json
+  Generated: 2026-06-08 14:35
+================================================================
+METADATA AUDIT
+==============
+
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-06-08 14:35
+============================================================
+
+============================================================
+ METADATA AUDIT: HI_HCJDC_OFML
+============================================================
+  XML: HI_HCJDC_OFML.xml
+  JSON: HI_HCJDC_OFML_MC.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverHistoryQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+
+--- CHECK 2: KeyReference Validation ---
+  [PASS] RQ: exists in XML VehicleRegistrationQuery
+  [PASS] M55L: exists in XML VehicleRegistrationQuery
+  [PASS] M55S: exists in XML VehicleRegistrationQuery
+  [PASS] DQ: exists in XML DriverLicenseQuery
+  [PASS] QW: exists in XML DriverLicenseQuery
+  [PASS] KQ: exists in XML DriverHistoryQuery
+  [PASS] QG: exists in XML GunQuery
+  [PASS] QA: exists in XML ArticleSingleQuery
+  [PASS] BQ: exists in XML BoatQuery
+  [PASS] QB: exists in XML BoatQuery
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [PASS]   RelatedSearchHitIndicator: in XML and QIDM
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  [PASS]   RelatedSearchHitIndicator: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  CCHCriminalHistoryAQQuery: (not built in JSON -- see CHECK 1)
+  CCHCriminalHistoryFQQuery: (not built in JSON -- see CHECK 1)
+  CCHCriminalHistoryIQQuery: (not built in JSON -- see CHECK 1)
+  CCHCriminalHistoryQHQuery: (not built in JSON -- see CHECK 1)
+  CCHCriminalHistoryQRQuery: (not built in JSON -- see CHECK 1)
+  CCHCriminalHistoryZRQuery: (not built in JSON -- see CHECK 1)
+  DriverHistoryQuery:
+  [PASS]   Attention: in XML and QIDM
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   PurposeCode: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunModel: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [PASS]   RelatedSearchHitIndicator: in XML and QIDM
+  SecuritiesStolenQuery: (not built in JSON -- see CHECK 1)
+  StolenVehicleQuery: (not built in JSON -- see CHECK 1)
+  VehicleRegistrationQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
+  [PASS]   VehicleTypeCode: in XML and QIDM
+  [PASS]   VehicleYear: in XML and QIDM
+  WantedPersonQuery: (not built in JSON -- see CHECK 1)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef QA: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef QA: set field 'ArticleTypeCode' present
+  BoatQuery:
+  DriverHistoryQuery:
+  [PASS]   keyRef KQ: set field 'SexCode' present
+  [PASS]   keyRef KQ: set field 'BirthDate' present
+  [PASS]   keyRef KQ: set field 'Name' present
+  DriverLicenseQuery:
+  [PASS]   keyRef DQ: set field 'SexCode' present
+  [PASS]   keyRef DQ: set field 'BirthDate' present
+  [PASS]   keyRef DQ: set field 'Name' present
+  [PASS]   keyRef QW: set field 'BirthDate' present
+  [PASS]   keyRef QW: set field 'Name' present
+  GunQuery:
+  [PASS]   keyRef QG: set field 'GunSerialNumber' present
+  VehicleRegistrationQuery:
+  [PASS]   keyRef RQ: set field 'LicensePlateNumber' present
+  [PASS]   keyRef RQ: set field 'LicensePlateTypeCode' present
+  [PASS]   keyRef RQ: set field 'LicensePlateYear' present
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by invented variants (QVP,QVV,RQV)
+  [PASS]   keyRef QV: set field 'State' covered by invented variants (QVP,QVV,RQV)
+  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by invented variants (QVP,QVV,RQV)
+  [PASS]   keyRef QV: set field 'VehicleMakeCode' covered by invented variants (QVP,QVV,RQV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVP,QVV,RQV)
+  [PASS]   keyRef M55L: set field 'VehicleTypeCode' present
+  [PASS]   keyRef M55L: set field 'LicensePlateNumber' present
+  [PASS]   keyRef M55S: set field 'VehicleTypeCode' present
+  [PASS]   keyRef M55S: set field 'VehicleIdentificationNumber' present
+
+--- CHECK 4b: Choice-Set Option Coverage ---
+
+--- CHECK 5: Primary Field Coverage (HARD GATE) ---
+  ArticleSingleQuery: 0 metadata search paths
+  BoatQuery: 1 metadata search paths
+  [PASS]   RegistrationNumber: at least one combo built (e.g. BQ)
+  DriverHistoryQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. KQ)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. KQ)
+  DriverLicenseQuery: 3 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. QW)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. DQ)
+  [FAIL]   SexCode: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for DQ path)
+  GunQuery: 1 metadata search paths
+  [PASS]   GunSerialNumber: at least one combo built (e.g. QG)
+  VehicleRegistrationQuery: 2 metadata search paths
+  [PASS]   LicensePlateNumber: at least one combo built (e.g. RQ)
+  [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. RQ)
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] registrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] nameFirstDH: maxLength 30 matches XML (Name)
+  [PASS] nameLastDH: maxLength 30 matches XML (Name)
+  [PASS] NameMiddleDH: maxLength 30 matches XML (Name)
+  [PASS] NameSuffixDH: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameMiddle: maxLength 30 matches XML (Name)
+  [PASS] nameSuffix: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] gunModel: maxLength 20 matches XML (GunModel)
+  [PASS] gunSerialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] vehicleTypeCode: maxLength 1 matches XML (VehicleTypeCode)
+  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 100 PASS / 1 FAIL / 0 WARN
+============================================================
+

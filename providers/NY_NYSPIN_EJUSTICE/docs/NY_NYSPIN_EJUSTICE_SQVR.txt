@@ -2,14 +2,20 @@ NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 Last updated: 2026-06-08
 JSON version: v2.2
-Validator: 78 PASS / 0 FAIL / 0 WARN / 0 LIM
-Simulation: 14/14 combos FIRE, 27/27 test conductor PASS
-Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP combo new, untested
+Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM
+Simulation: 16/16 combos FIRE, 29/29 test conductor PASS
+Prior live test: All 13 original combos CONFIRMED (2026-04-24, v1.0)
+New in v2.2: DALHOUT/DALLOUT (DH OOS) -- (pending live test)
+New in v2.1: DGRP (DL Name Search) -- (pending live test)
 
 NOTE: Live tests were performed without per-test XML log captures.
-All [CONFIRMED] markers below are based on test summary results, not
+All CONFIRMED markers below are based on test summary results, not
 individual XML logs. Retroactive XML capture is not possible.
 Future tests must follow GATE 2/3 (per-test log with XML capture).
+Test log files in tests/ are BASE_SIM_v1.1_* simulation outputs from
+pre-restructure era -- they are not live test records and do not count
+toward coverage metrics. Coverage will show 0% until proper GATE 2/3
+logs are captured on next import.
 
 v2.1 changes from v2.0:
   - Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, DL Name Search, 1 combo)
@@ -104,26 +110,42 @@ v2.1 changes from v2.0:
 
   QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery (autoSelect=true, queriesToDeselect=DL)
   QIF:  Person (shared DRIVER HISTORY card -- DH-suffix fieldIds isolate DH fields)
-  Combos: DALH (Name), DALL (OLN)
+  Combos: DALHOUT (Name OOS), DALH (Name in-state), DALLOUT (OLN OOS), DALL (OLN in-state)
   DH-suffix fieldIds: operatorLicenseNumberDH, nameLastDH, nameFirstDH,
-    nameMiddleDH, nameSuffixDH, birthDateDH, sexCodeDH
+    nameMiddleDH, nameSuffixDH, birthDateDH, sexCodeDH, purposeCodeDH, requestorDH
   Defaults: ImageIndicator=Y
-  CAD defaults: ImageIndicator=Y on DALH and DALL
+  CAD defaults: ImageIndicator=Y on all 4 DH combos
   Deselect: One-directional -- DH deselects DL (DL has no deselect)
+  OOS fields: purposeCodeDH (Inp, size=1), requestorDH (Inp, size=35) -- required for OOS queries
+  See LIMITATION #36 (Choice-set OOS combos)
 
-  DALH -- Name + DOB (invented keyRef) [CONFIRMED]
+  DALHOUT -- Name + DOB + OOS fields [PENDING]
+    set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState
+    any: imageIndicator, nameMiddleDH, nameSuffixDH
+    defaults: ImageIndicator=Y
+    keyReference: DALHOUT
+    Fires when: all name fields + purposeCodeDH + requestorDH + State filled
+
+  DALH -- Name + DOB (in-state) [CONFIRMED]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH
-    any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH
+    any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
     keyReference: DALH
 
-  DALL -- OLN [CONFIRMED]
+  DALLOUT -- OLN + OOS fields [PENDING]
+    set: operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState
+    any: imageIndicator
+    defaults: ImageIndicator=Y
+    keyReference: DALLOUT
+    Fires when: OLN + purposeCodeDH + requestorDH + State all filled
+
+  DALL -- OLN (in-state) [CONFIRMED]
     set: operatorLicenseNumberDH
-    any: imageIndicator, registrationState
+    any: imageIndicator, registrationState, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
     keyReference: DALL
 
-  Priority: DALH (4 set) > DALL (1 set)
+  Priority: DALHOUT (7 set) > DALH (4 set) > DALLOUT (4 set) > DALL (1 set)
 
 ================================================================================
 4. GunQuery -- Firearm Entity
@@ -199,7 +221,7 @@ v2.1 changes from v2.0:
 RMS BUNDLE
 ================================================================================
 
-  RMS co-fire tested on Vehicle (plate, VIN) and Person (OLN, Name) [CONFIRMED]
+  RMS co-fire tested on Vehicle (plate, VIN) and Person (OLN, Name) (confirmed v1.0)
   Both RMS QIDMs autoSelect=true
   Built from KB specs via _build_rms_bundle.ps1
 
@@ -216,8 +238,9 @@ SUMMARY
   Entities: 5 QIFs (Vehicle, Person, Firearm, Article, Boat)
   Cards: 7 (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1)
   QIDMs: 7 (VehicleReg, DL, DGRP, DH, Gun, Article, Boat)
-  Total combos: 14 CommSys + 2 RMS
-  CAD defaults: All 14 combos covered
-  [CONFIRMED]: 13 combos (v1.0 live test 2026-04-24)
-  [PENDING]: 1 combo (DGRP -- new in v2.1)
+  Total combos: 16 CommSys + 2 RMS
+  CAD defaults: All 16 combos covered
+  CONFIRMED: 13 combos (v1.0 live test 2026-04-24)
+  PENDING: 3 combos (DGRP new v2.1, DALHOUT/DALLOUT new v2.2)
   Missing: Per-test XML logs (retroactive capture not possible)
+  Coverage: 0% from audit tool (test logs are pre-restructure BASE_SIM files)

@@ -652,6 +652,37 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   [GATE] CANNOT declare PASS/DONE if any gate fails -- fix first
 
 ================================================================================
+SECTION 11b -- SQVR FORMAT STANDARD
+================================================================================
+
+  SQVR files use bracket markers as machine-readable status indicators.
+  audit_test_coverage.ps1 counts [CONFIRMED] occurrences to verify alignment.
+  Consistent format is required for the count to match tested combo count.
+
+  COMBO STATUS MARKERS (one per combo, on the combo header line):
+    keyRef -- Description [CONFIRMED]   <- live-tested, XML captured
+    keyRef -- Description [PENDING]     <- not yet tested live
+
+  Test reference goes in the BODY TEXT, not in the bracket:
+    RQ -- Plate FULL [CONFIRMED]
+      T2 2026-05-15: Plate + State + RandomRequest=N. RMS co-fired.   <- T-ref here
+
+  NON-COMBO LINES (RMS, summary, UI behavior, policy notes):
+    Use parentheses or plain text instead of brackets:
+      RMS Vehicle QIDM (confirmed)          <- NOT [CONFIRMED]
+      CONFIRMED: ALL 13 combos              <- NOT [CONFIRMED]: ALL
+      autoSelect (confirmed T1 2026-05-15)  <- NOT [CONFIRMED]
+      RMS co-fire (confirmed T2/T3)         <- NOT [CONFIRMED]
+
+  RULE: [CONFIRMED] and [PENDING] in square brackets are ONLY used on
+  per-combo status lines. One occurrence per combo. Total [CONFIRMED]
+  count must equal the number of live-tested combos.
+
+  ALIGNMENT CHECK: Run audit_test_coverage.ps1 before every commit.
+  Target: Coverage=100%, Alignment=YES, [CONFIRMED]=tested combo count,
+  [PENDING]=untested combo count.
+
+================================================================================
 SECTION 12 -- STANDARD TEST SEQUENCE
 ================================================================================
 

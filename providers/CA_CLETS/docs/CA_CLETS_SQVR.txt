@@ -1,6 +1,6 @@
 CA_CLETS -- Supported Query Validation Report
 ===============================================
-Last updated: 2026-06-03
+Last updated: 2026-06-08
 JSON version: v2.4
 Validator: 91 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v2.4 imported USx Provider 2026-05-21. 40/40 combos, 6 QIDMs. All 5 entities live-tested.
@@ -12,97 +12,97 @@ VEHICLE REGISTRATION (VehicleRegistrationQuery)
   NLTS.RQ.P -- OOS Plate query (Nlets)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.RQ.V -- OOS VIN query (Nlets)
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IA.QV -- In-state Plate query (catchall)
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IA.QVK -- In-state VIN query
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IN.VP -- Owner Name query (cross-entity)
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4P -- DMV Plate (PlateType=PC passenger)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4K -- DMV Plate (PlateType=KK)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IL.A1 -- DMV Plate (PlateType=A1)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4H -- DMV Plate (PlateType=HH)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4A -- DMV Plate (general, PlateType in any[])
     set: PurposeCode, LicensePlateNumber
     any: LicensePlateTypeCode
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4V -- DMV VIN query
     set: PurposeCode, VehicleIdentificationNumber
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4C -- DMV Plate (PlateType=CC)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4I -- DMV Plate (PlateType=II)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4M -- DMV Plate (PlateType=MM)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4L -- DMV Plate (PlateType=LL)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4T -- DMV Plate (PlateType=TT)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4F -- DMV Plate (PlateType=FF)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4S -- DMV Plate (PlateType=SS)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4E -- DMV Plate (PlateType=EE)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 DRIVER LICENSE (DriverLicenseQuery)
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
@@ -111,42 +111,42 @@ DRIVER LICENSE (DriverLicenseQuery)
   ID.L1 -- In-state OLN query
     set: PurposeCode, OperatorLicenseNumber
     any: BirthDate, RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IN.L1 -- In-state Name query
     set: PurposeCode, NameLast, NameFirst
     any: BirthDate, RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.DQ -- OOS OLN query (Nlets)
     set: PurposeCode, OperatorLicenseNumber, RegistrationState
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.DQ.N -- OOS Name query (Nlets)
     set: PurposeCode, NameLast, NameFirst, RegistrationState
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IR.QVC.O -- Criminal records by OLN
     set: PurposeCode, OperatorLicenseNumber, CriminalIdNumber
     any: SocialSecurityNumber
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IR.QVC.C -- Criminal records by CII
     set: PurposeCode, CriminalIdNumber
     any: OperatorLicenseNumber, SocialSecurityNumber
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IR.QVC.S -- Criminal records by SSN
     set: PurposeCode, SocialSecurityNumber
     any: CriminalIdNumber, OperatorLicenseNumber
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IR.QVC.N -- Criminal records by Name
     set: PurposeCode, NameLast, NameFirst
     any: AddressCounty, Height, RaceCode, SexCode, Age, BirthDate
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 DRIVER HISTORY (DriverHistoryQuery)
   Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true | queriesToDeselect: DriverLicenseQuery
@@ -155,12 +155,12 @@ DRIVER HISTORY (DriverHistoryQuery)
   NLTS.KQ.N -- Name+DOB+Sex query
     set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.KQ.O -- OLN query
     set: PurposeCodeDH, OperatorLicenseNumberDH
     any: BirthDateDH, RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 GUN QUERY (GunQuery)
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
@@ -169,12 +169,12 @@ GUN QUERY (GunQuery)
   IG.QGH -- Owner Name query (cross-entity)
     set: PurposeCode, NameLast, NameFirst
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IG.QGB -- Serial Number query
     set: PurposeCode, SerialNumber
     any: FirearmMake, GunCaliber, GunTypeCode
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 ARTICLE QUERY (ArticleSingleQuery)
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
@@ -183,12 +183,12 @@ ARTICLE QUERY (ArticleSingleQuery)
   IP.QA.S -- Serial Number query
     set: PurposeCode, SerialNumber
     any: ArticleTypeCode, ArticleBrand
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IP.QA.O -- OAN query
     set: PurposeCode, OwnerAppliedNumber
     any: ArticleTypeCode, ArticleBrand
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 BOAT QUERY (BoatQuery)
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
@@ -197,37 +197,37 @@ BOAT QUERY (BoatQuery)
   NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity)
     set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.BQ.H -- OOS Hull ID query
     set: PurposeCode, BoatHullIdNumber, RegistrationState
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   NLTS.BQ.R -- OOS Registration query
     set: PurposeCode, RegistrationNumber, RegistrationState
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IA.QB.H -- In-state Hull ID query
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IA.QB.O -- In-state OAN query
     set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IA.QB.R -- In-state Registration query
     set: PurposeCode, RegistrationNumber
     any: RegistrationState
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
   IV.4B -- DMV Vessel Registration query
     set: PurposeCode, RegistrationNumber
     any: (none)
-    Status: [PASS v2.4]
+    Status: [CONFIRMED]
 
 SUMMARY
 -------
@@ -240,4 +240,4 @@ Total combos: 40
   BoatQuery: 7 (3 NLTS + 3 IA + 1 IV.4B)
 
 Tested (v2.4): 40/40
-Status: [PASS v2.4] 38/38 PASS, 40/40 combo coverage (2026-05-22)
+Status: confirmed, 38/38 PASS, 40/40 combo coverage (2026-05-22)

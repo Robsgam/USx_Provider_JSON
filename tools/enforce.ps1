@@ -160,10 +160,17 @@ foreach ($pd in $providers) {
     $baseJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}_BASE.json" -File -ErrorAction SilentlyContinue
     $mcJson   = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json" -File -ErrorAction SilentlyContinue
 
-    # ONE JSON IN ROOT
+    # ONE JSON IN ROOT (legacy _BASE/_MC providers exempt -- convert on scheduled rebuild)
+    $legacyProviders = @('AZ_AZDPS','CA_CLETS_OCATS','CA_eSUN','CA_SAN_LUIS_OBISPO',
+        'CA_VENTURA_COUNTY','HI_HCJDC_OFML','IL_LEADS_OFML','LA_LEMS','MD_METERS',
+        'NM_NMLETS_OFML','OH_LEADS','OR_LEDS','TN_TIES')
     $jsonCount = @($provJson, $baseJson, $mcJson | Where-Object { $_ }).Count
     if ($jsonCount -gt 1) {
-        Fail "$provName -- multiple JSONs in root (one-JSON-in-root rule)"
+        if ($provName -in $legacyProviders) {
+            Info "$provName -- multiple JSONs in root (legacy, convert on rebuild)"
+        } else {
+            Fail "$provName -- multiple JSONs in root (one-JSON-in-root rule)"
+        }
     }
     if ($jsonCount -eq 0) {
         Info "$provName -- no JSON found in root"

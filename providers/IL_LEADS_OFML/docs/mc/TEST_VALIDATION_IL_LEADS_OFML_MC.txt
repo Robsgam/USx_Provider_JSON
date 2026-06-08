@@ -1,0 +1,47 @@
+﻿================================================================
+  Build Report: IL_LEADS_OFML_MC
+  Source: IL_LEADS_OFML_MC.json
+  Generated: 2026-06-08 14:35
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX VALIDATION -- IL_LEADS_OFML_MC
+============================================================
+Source: IL_LEADS_OFML_MC.json
+Matrix: IL_LEADS_OFML_TEST_MATRIX.txt
+Generated: 2026-06-08
+
+PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+  T1  Boat       [PASS] 3 cards, 5 fields, defaults verified
+  T2  Vehicle    [PASS] 3 cards, 9 fields, defaults verified
+  T3  Person     [PASS] 3 cards, 9 fields, defaults verified
+  T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T5  Article    [PASS] 1 cards, 3 fields, defaults verified
+PHASE 2: BOAT COMBOS (2 tests, 2 combos)
+  T6  Boat       [PASS] BoatQuery fires (BQ.H)
+  T7  Boat       [PASS] BoatQuery fires (BQ.H)
+PHASE 3: VEHICLE COMBOS (3 tests, 3 combos)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (Z5)
+  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (Z2.P)
+  T10  Vehicle    [PASS] VehicleRegistrationQuery fires (Z2.P)
+PHASE 4: PERSON COMBOS (2 tests, 2 combos)
+  T11  Person     [PASS] DriverLicenseQuery fires (Z2.N)
+  T12  Person     [PASS] DriverLicenseQuery fires (Z2.N)
+PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
+  T13  Firearm    [PASS] GunQuery fires (QG)
+PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
+  T14  Article    [PASS] ArticleSingleQuery fires (QA)
+PHASE 7: ANY[] FIELD TESTS (5 tests)
+  T15  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, RelatedHitSearchIndicator
+  T16  Boat       [PASS] any[] fields verified: RelatedHitSearchIndicator, RegistrationState
+  T17  Person     [PASS] any[] fields verified: RelatedHitSearchIndicator, RegistrationState
+  T18  Firearm    [PASS] any[] fields verified: GunCaliber, FirearmMake, RelatedHitSearchIndicator
+  T19  Article    [PASS] any[] fields verified: OwnerAppliedNumber
+PHASE 8: NEGATIVES (empty forms = no send)
+  T20  Boat       [PASS] co-fire/deselect verified (structural)
+  T21  Person     [PASS] co-fire/deselect verified (structural)
+
+SUMMARY: 21/21 PASS, 0 FAIL
+
+

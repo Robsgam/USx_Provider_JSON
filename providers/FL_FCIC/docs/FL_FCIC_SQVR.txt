@@ -1,6 +1,6 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
-Last updated: 2026-06-03
+Last updated: 2026-06-08
 JSON version: v4.6
 Validator: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v4.3 imported USx FCIC Tenant 2026-05-27. 28/28 combos, 6 QIDMs.
@@ -285,12 +285,12 @@ ARCHITECTURE: 6 QIDMs, 28 combos. Single JSON, multi-card layout.
 RMS BUNDLE (Patched from HIDLE)
 ================================================================================
 
-  RMS Vehicle QIDM [CONFIRMED]
+  RMS Vehicle QIDM (confirmed)
     Patch 1: RegistrationState in licensePlateIn any[]
     Patch 6: Removed OOS + Owner attrs/combos
     Patch 7: autoSelect=true
 
-  RMS Person QIDM [CONFIRMED]
+  RMS Person QIDM (confirmed)
     Patch 3: registrationState attr (useAttributeId=true)
     Patch 6: Removed SSN + OOS attrs/combos
     Patch 7: autoSelect=true (confirmed)
@@ -302,10 +302,10 @@ SUMMARY
   Architecture: 7 CommSys QIDMs (1 per entity+query pair) + 2 RMS QIDMs
   Total CommSys combos: 33 (6+2+4+2+3+4+12)
   Total RMS combos: ~8 (after Patch 6 cleanup)
-  [CONFIRMED]: 33 CommSys + 2 RMS (all combos reachable)
+  CONFIRMED: 33 CommSys + 2 RMS (all combos reachable)
   [REMOVED]: WantedPersonQuery (2 combos) -- CommSys auto-sends QW (v4.2)
   [LIMITATION]: 0 (QB+Hull/QB+Reg RESOLVED via FL-8 routing, 2026-05-05)
-  [PENDING]: 0
+  PENDING: 0
   Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL (2026-05-05)
 
   v3.0 resolved:

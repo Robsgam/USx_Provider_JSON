@@ -1,0 +1,220 @@
+﻿================================================================
+  Build Report: OH_LEADS_MC
+  Source: OH_LEADS_MC.json
+  Generated: 2026-06-08 14:36
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- OH_LEADS_MC.json
+================================================================
+
+--- QIDM: OH_LEADS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 9
+
+    [FIRES] RQ.P
+      set: [RegistrationState, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+    [SKIP] ATDP -- missing set: DealerPlateType
+
+    [FIRES] RQ.V
+      set: [VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RP
+      set: [LicensePlateNumber, LicensePlateTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RP</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      </Transaction>
+    [SKIP] RN -- missing set: OwnerLastName, OwnerFirstName
+
+    [FIRES] QV.P
+      set: [LicensePlateNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] RV
+      set: [VehicleIdentificationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES] QV.V
+      set: [VehicleIdentificationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+    [SKIP] RS -- missing set: OwnerSocialSecurityNumber
+
+--- QIDM: OH_LEADS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
+
+    [FIRES] DQ.N
+      set: [SexCode, BirthDate, NameLast, NameFirst]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DN
+      set: [NameLast, NameFirst]
+      any: [BirthDate] -> matched: [BirthDate]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DN</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+      </Transaction>
+
+    [FIRES] DQ.O
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DL
+      set: [OperatorLicenseNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DL</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: OH_LEADS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 3
+
+    [FIRES] KQ.N
+      set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+      any: [PurposeCodeDH, RegistrationStateDH] -> matched: [PurposeCodeDH, RegistrationStateDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe, John</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [OperatorLicenseNumberDH]
+      any: [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH] -> matched: [NameLastDH, NameFirstDH, PurposeCodeDH, RegistrationStateDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <Attention>Doe</Attention>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BMVIMS
+      set: [OperatorLicenseNumberDH]
+      any: [NameLastDH, NameFirstDH, ReasonCodeDH] -> matched: [NameLastDH, NameFirstDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BMVIMS</MessageKey>
+        <Attention>Doe</Attention>
+        <Name>Doe, John</Name>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: OH_LEADS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 4  |  Combos: 1
+
+    [FIRES] QG
+      set: [SerialNumber]
+      any: [FirearmMake, GunCaliber, RelatedHitSearchIndicator] -> matched: [FirearmMake, GunCaliber, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: OH_LEADS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
+    [SKIP] QA.S -- no any[] match
+    [SKIP] QA.N -- no any[] match
+
+--- QIDM: OH_LEADS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 5  |  Combos: 4
+    [SKIP] BQ.R -- no any[] match
+    [SKIP] BQ.H -- no any[] match
+
+    [FIRES] QB.R
+      set: [RegistrationNumber]
+      any: [BoatHullIdNumber, ImageIndicatorBoat, RelatedHitSearchIndicatorBoat] -> matched: [BoatHullIdNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+      </Transaction>
+    [SKIP] QB.H -- no any[] match
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

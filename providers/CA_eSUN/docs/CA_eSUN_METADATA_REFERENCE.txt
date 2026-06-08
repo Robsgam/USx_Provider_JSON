@@ -1,6 +1,6 @@
 ﻿CA_eSUN METADATA REFERENCE
 ===========================
-Generated: 2026-05-21
+Generated: 2026-06-08
 Source: CA_eSUN.xml (metadata) + CA_eSUN_MC.json
 Metadata: 64 total transactions, 6 queries built in JSON
 
@@ -50,10 +50,10 @@ METADATA COMBINATIONS (6 total):
 BUILD COVERAGE (2 of 6 built):
   BUILT   BQ.H           set[CaRequestPurposeCode, BoatHullIdNumber]
   BUILT   BQ.R           set[CaRequestPurposeCode, RegistrationNumber]
-  SKIP    4B             RegistrationNumber -- MC expansion candidate
-  SKIP    4V             BoatHullIdNumber -- MC expansion candidate
-  SKIP    QB             RegistrationNumber -- MC expansion candidate
-  SKIP    QB             BoatHullIdNumber -- MC expansion candidate
+  UNBUILT 4B             RegistrationNumber
+  UNBUILT 4V             BoatHullIdNumber
+  UNBUILT QB             RegistrationNumber
+  UNBUILT QB             BoatHullIdNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 8)
@@ -82,8 +82,8 @@ BUILD COVERAGE (4 of 4 built):
   BUILT   L1.N.DH        set[CaRequestPurposeCode, NameLastDH, NameFirstDH]
   BUILT   KQ.O           set[CaRequestPurposeCode, OperatorLicenseNumberDH]
   BUILT   L1.O.DH        set[CaRequestPurposeCode, OperatorLicenseNumberDH]
-  SKIP    L1             Name -- MC expansion candidate
-  SKIP    L1             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT L1             Name
+  UNBUILT L1             OperatorLicenseNumber
 
 ================================================================================
 4. DriverLicenseQuery (version 11)
@@ -112,8 +112,8 @@ BUILD COVERAGE (4 of 6 built):
   BUILT   L1.N           set[CaRequestPurposeCode, NameLast, NameFirst]
   BUILT   DQ.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
   BUILT   L1.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
-  SKIP    QW             Name -- MC expansion candidate
-  SKIP    QW             OperatorLicenseNumber -- MC expansion candidate
+  UNBUILT QW             Name
+  UNBUILT QW             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 10)
@@ -177,8 +177,8 @@ BUILD COVERAGE (6 of 8 built):
   BUILT   VP.N           set[CaRequestPurposeCode, VehNameLast, VehNameFirst]
   BUILT   QV.V           set[CaRequestPurposeCode, VehicleIdentificationNumber]
   BUILT   QV.P           set[CaRequestPurposeCode, LicensePlateNumber]
-  SKIP    4              LicensePlateNumber -- MC expansion candidate
-  SKIP    4V             VehicleIdentificationNumber -- MC expansion candidate
+  UNBUILT 4              LicensePlateNumber
+  UNBUILT 4V             VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -196,7 +196,7 @@ BUILD SUMMARY
   TOTAL                                   27     19     8  70%
 
 ================================================================================
-MC EXPANSION CANDIDATES (10 combos not in BASE)
+UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)
 ================================================================================
 
   4B             RegistrationNumber       (BoatQuery)

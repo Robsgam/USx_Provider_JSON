@@ -1,0 +1,125 @@
+﻿================================================================
+  Build Report: IL_LEADS_OFML_MC
+  Source: IL_LEADS_OFML_MC.json
+  Generated: 2026-06-08 14:35
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== IL_LEADS_OFML_MC.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=3 fields=6
+  Person | entity=Person | qidm= | cards=3 fields=4
+  Firearm | entity=Firearm | qidm= | cards=1 fields=2
+  Article | entity=Article | qidm= | cards=1 fields=2
+  Boat | entity=Boat | qidm= | cards=3 fields=2
+QIDMs: 5
+  IL_LEADS_OFML_VehicleRegistrationQuery | attrs=9 combos=3 autoSelect=True
+  IL_LEADS_OFML_DriverLicenseQuery | attrs=7 combos=2 autoSelect=True
+  IL_LEADS_OFML_GunQuery | attrs=5 combos=1 autoSelect=
+  IL_LEADS_OFML_ArticleSingleQuery | attrs=3 combos=1 autoSelect=
+  IL_LEADS_OFML_BoatQuery | attrs=5 combos=2 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH_OPT"
+      ROW ROW_VEH_OPT_1 [4 4 4]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=IL)
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2026)
+      ROW ROW_VEH_OPT_2 [4]
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+      ROW ROW_VEH_OPT_H [12]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+    CARD "CARD_VEH_PLATE"
+      ROW ROW_VEH_PLATE_1 [12]
+        LicensePlateNumber (Text | maxLen=10)
+    CARD "CARD_VEH_VIN"
+      ROW ROW_VEH_VIN_1 [12]
+        VehicleIdentificationNumber (Text | maxLen=20)
+      ROW ROW_VEH_VIN_2 [6 6]
+        VehicleMakeCode (Text | maxLen=4)
+        VehicleYear (Text | maxLen=4)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER_OPT"
+      ROW ROW_PER_OPT_1 [4 4 4]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=IL)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_PER_OPT_2 [4]
+        RaceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_OPT_H [12]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+    CARD "CARD_PER_OLN"
+      ROW ROW_PER_OLN_1 [12]
+        OperatorLicenseNumber (Text | maxLen=20)
+    CARD "CARD_PER_NAME"
+      ROW ROW_PER_NAME_1 [6 6]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+      ROW ROW_PER_NAME_2 [12]
+        BirthDate (FormDate)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [4 4 4]
+        SerialNumber (Text | maxLen=20)
+        FirearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+      ROW ROW_GUN_2 [12]
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+      ROW ROW_GUN_H [12]
+        RelatedHitSearchIndicator (Text | maxLen=1)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [4 4 4]
+        SerialNumber (Text | maxLen=20)
+        OwnerAppliedNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA_OPT"
+      ROW ROW_BOA_OPT_1 [4 4 4]
+        RegistrationState (Dropdown | attributeTypeId=STATE | default=IL)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        RelatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+    CARD "CARD_BOA_HULL"
+      ROW ROW_BOA_HULL_1 [12]
+        BoatHullIdNumber (Text | maxLen=20)
+    CARD "CARD_BOA_REG"
+      ROW ROW_BOA_REG_1 [12]
+        RegistrationNumber (Text | maxLen=20)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    RaceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    SexCode -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleYear -> vehicle.yearOfManufacture
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    VehicleMakeCode -> vehicle.makeNcicCode
+    VehicleModelCode -> vehicle.modelNcicCode
+    LicensePlateNumber -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

@@ -1,0 +1,111 @@
+﻿================================================================
+  Build Report: TN_TIES_MC
+  Source: TN_TIES_MC.json
+  Generated: 2026-06-08 14:37
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'TN_TIES': 9 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 14 fieldIds
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 21 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 13 combos
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' -> Person : 11 attrs, 6 combos
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' ImageIndicator size=1
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' -> Person : 7 attrs, 3 combos
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TN_TIES_GunQuery' -> Firearm : 3 attrs, 1 combos
+  [PASS] QIDM 'TN_TIES_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [PASS] QIDM 'TN_TIES_BoatQuery' -> Boat : 4 attrs, 4 combos
+  [PASS] QIDM 'TN_TIES_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         TN_TIES_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         TN_TIES_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
+  [PASS] Person : 2 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ01': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV01': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ03': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV03': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ06': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ05': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ07': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.D': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'QWA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ02': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ01': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ06': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'DQ05': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_GunQuery' combo 'QG': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'BB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'BB.R': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
+
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 80 PASS / 0 FAIL / 0 WARN
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  Ready for import.
+

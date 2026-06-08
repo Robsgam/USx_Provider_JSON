@@ -1,12 +1,12 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-04
+Last updated: 2026-06-08
 JSON version: v3.3
 Live test: v3.3 imported TLETS USx Tenant 2026-06-03 -- 40/40 PASS 2026-06-04
 Validator: 86 PASS / 0 FAIL / 0 WARN / 0 LIM (v3.3)
 Verify: CLEAN (0 FAIL)
 
-NOTE: All combos [CONFIRMED] until exhaustive testing with per-test log captures (GATE 2/3).
+NOTE: All combos confirmed until exhaustive testing with per-test log captures (GATE 2/3).
 
 v3.3 CHANGES (from v3.1):
   v3.2: Conditions routing on DL+DH — ImageIndicator EQUALS Y selects image-path
@@ -68,7 +68,7 @@ v3.3 CHANGES (from v3.1):
     any: RegionId
     state: In/Out
 
-  RMS co-fire [CONFIRMED]
+  RMS co-fire (confirmed)
     RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
 
 ================================================================================
@@ -141,7 +141,7 @@ v3.3 CHANGES (from v3.1):
   Combo ordering: DQNameImg (4 set+cond) → DQName (4 set) → QWName (3 set) →
     CPLNameImg (2 set+cond) → CPLName (2 set) → DQOLNImg (1 set+cond) → DQOLN (1 set).
 
-  RMS co-fire [CONFIRMED]
+  RMS co-fire (confirmed)
     RMS Person combo fires alongside CommSys.
 
 ================================================================================
@@ -282,9 +282,9 @@ v3.3 CHANGES (from v3.1):
 RMS BUNDLE
 ================================================================================
 
-  RMS Vehicle co-fire [CONFIRMED]
+  RMS Vehicle co-fire (confirmed)
     Combos: licensePlateNumber (+ RegistrationState any[]), VIN
-  RMS Person co-fire [CONFIRMED]
+  RMS Person co-fire (confirmed)
     Combos: OLN, Name+DOB, Name+OLN, Name (after Patch 6 cleanup)
 
 ================================================================================
@@ -295,5 +295,5 @@ SUMMARY
                      GunQuery, ArticleSingle, BoatQuery)
   Total CommSys combos: 27 (7+7+4+2+2+5)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
-  [CONFIRMED]: NONE
-  [CONFIRMED]: ALL
+  CONFIRMED: NONE
+  CONFIRMED: ALL

@@ -1,0 +1,212 @@
+﻿================================================================
+  Build Report: CA_SAN_LUIS_OBISPO_MC
+  Source: CA_SAN_LUIS_OBISPO_MC.json
+  Generated: 2026-06-08 14:34
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- CA_SAN_LUIS_OBISPO_MC.json
+================================================================
+
+--- QIDM: CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+
+    [FIRES] RQ.P
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      any: [VehicleMakeCode, VehicleYear] -> matched: [VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] RQ.V
+      set: [RegistrationState, VehicleIdentificationNumber]
+      any: [VehicleMakeCode, VehicleYear] -> matched: [VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+    [FIRES] QV.P
+      set: [LicensePlateNumber]
+      any: [LicensePlateTypeCode, LicensePlateYear] -> matched: [LicensePlateTypeCode, LicensePlateYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+      </Transaction>
+
+    [FIRES] QV.V
+      set: [VehicleIdentificationNumber]
+      any: [VehicleMakeCode, VehicleYear] -> matched: [VehicleMakeCode, VehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+
+    [FIRES] L1.N
+      set: [NameLast, NameFirst]
+      any: [BirthDate] -> matched: [BirthDate]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+      </Transaction>
+
+    [FIRES] DQ.O
+      set: [OperatorLicenseNumber, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] L1.O
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>L1.O</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 4
+
+    [FIRES] KQ.N
+      set: [NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] B2.N
+      set: [BirthDateDH, NameLastDH, NameFirstDH]
+      any: [SexCodeDH] -> matched: [SexCodeDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>B2.N</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <Name>Doe, John</Name>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES] KQ.O
+      set: [OperatorLicenseNumberDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] B2.O
+      set: [OperatorLicenseNumberDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>B2.O</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 4  |  Combos: 1
+
+    [FIRES] QGB
+      set: [SerialNumber]
+      any: [GunCaliber, FirearmMake, GunTypeCode] -> matched: [GunCaliber, FirearmMake]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+      </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
+
+    [FIRES] QA
+      set: [SerialNumber]
+      any: [ArticleBrand, ArticleCategory, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+--- QIDM: CA_SAN_LUIS_OBISPO_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+
+    [FIRES] BQ
+      set: [BoatHullIdNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QB
+      set: [RegistrationNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+
