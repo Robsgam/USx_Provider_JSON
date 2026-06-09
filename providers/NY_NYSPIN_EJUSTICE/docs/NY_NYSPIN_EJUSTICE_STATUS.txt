@@ -7,11 +7,11 @@ Phase: Single JSON (multi-card)
 
 CURRENT VERSION
 ---------------
-v2.4  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+v3.0  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
 CAD audit: 68 PASS / 0 FAIL / 0 WARN / 71 INFO
 Simulation: 17/17 combos FIRE, 30/30 test conductor PASS
-Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP, DALHOUT/DALLOUT, RVEHOUT, NyNyspinTransactionName new, untested
-Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.4
+Live test: ALL combos PENDING -- full matrix restarted at Test 1 for v3.0 (rebuild restarts testing)
+Import: re-import v3.0 to USx Provider Tenant required before live testing
 
 ARCHITECTURE
 ------------
@@ -19,8 +19,9 @@ Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs)
 Layout: Multi-card (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1) = 7 cards
 QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RVEHOUT/RCAR) -- 4 combos (RVEHOUT = plate OOS)
           DriverLicenseQuery (DLICN/DLIC) -- 2 combos, autoSelect=true, no deselect
-          NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=true, DL Name Search
+          NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=FALSE (manual select; avoids co-fire), DL Name Search
           DriverHistoryQuery (DALH/DALL/DALHOUT/DALLOUT) -- 4 combos, autoSelect=true, queriesToDeselect=DL (OUT = OOS)
+                     State conditions (v3.0): in-state IN(NY,null), OOS NOT_EQUALS NY -- checkbox unlit for OOS until Requestor entered
                      NyNyspinTransactionName visible FormInput, default DALL (officer can override, e.g. DLIC); any[]+defaults all 4 DH combos
           GunQuery (GINQ) -- 1 combo
           ArticleSingleQuery (AINQ) -- 1 combo
@@ -34,7 +35,6 @@ Standard patterns:
   - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
   - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
   - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
-  ---   2026-06-09 Person     DL:DLIC              PASS     DL by OLN fires DriverLicenseQuery alone (v2.9)
   - PlateType=PC, PlateYear=2026 defaults + CAD defaults on RVEH
   - VehicleMakeCode as FormSelect (VEHICLE_MAKE/NCIC dropdown)
   - All fieldIds camelCase
@@ -97,7 +97,4 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  ---   2026-06-09 Person     DL:DLIC              PASS     Person DLIC OLN
-  ---   2026-06-09 Person     DL:DLICN             PASS     Person DLICN Name+DOB (DGRP co-fired)
-  ---   2026-06-09 Person     NyNyspinDriverLicenseName:DGRP PASS     DGRP fires alone when manually selected (v2.9)
-  ---   2026-06-09 Person     DH:DALL              PASS     DH OLN in-state (DALL) -- PurposeCode+TransactionName defaults applied
+  (none yet -- v3.0 live testing restarted from Test 1; prior-version logs archived to tests/_archive_pre_v3.0/)
