@@ -143,6 +143,16 @@ if (-not $batchMode) {
                 $files.Json = Join-Path $files.Dir "${provName}.json"
                 if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_MC.json" }
                 if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_BASE.json" }
+
+                # Rebuild restarts testing: a version bump invalidates prior live logs.
+                # Archive them + reset SQVR/STATUS so all logs line up with the new JSON.
+                $resetOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\reset_test_package.ps1" -Provider $provName 2>&1 | Out-String
+                if ($resetOut -match 'RESET:') {
+                    Write-Host "  [TESTS] Version changed -- live test package restarted from Test 1:" -ForegroundColor Yellow
+                    $resetOut -split "`n" | Where-Object { $_ -match '^\s+- ' } | ForEach-Object { Write-Host "       $($_.Trim())" -ForegroundColor DarkYellow }
+                } elseif ($resetOut -match 'ALIGNED:') {
+                    Write-Host "  [TESTS] Test package already aligned to current version" -ForegroundColor DarkGray
+                }
             } else {
                 StepFail "Build had failures"
                 Write-Host $output
@@ -337,6 +347,12 @@ foreach ($provName in $providerList) {
                 $files.Json = Join-Path $files.Dir "${provName}.json"
                 if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_MC.json" }
                 if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_BASE.json" }
+
+                # Rebuild restarts testing (see reset_test_package.ps1)
+                $resetOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\reset_test_package.ps1" -Provider $provName 2>&1 | Out-String
+                if ($resetOut -match 'RESET:') {
+                    Write-Host "  [TESTS] $provName version changed -- test package restarted from Test 1" -ForegroundColor Yellow
+                }
             } else {
                 StepFail "Build failed"
                 $provFailed = 'Build'

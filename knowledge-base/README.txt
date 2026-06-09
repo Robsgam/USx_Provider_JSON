@@ -276,6 +276,17 @@ TOOLS
     XML capture and form state documentation.
     Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
 
+  tools/reset_test_package.ps1
+    Restarts the live test package when a JSON is rebuilt. A version bump
+    invalidates prior logs (routing/conditions/defaults may have changed), so
+    all logs must restart from Test 1 to line up with the shipped JSON.
+    Reads the build-script version, compares to tests/.test_version, and if
+    changed: archives tests/*.txt -> tests/_archive_pre_v<ver>/, resets SQVR
+    markers [CONFIRMED]/[FAILED] -> [PENDING], clears STATUS live-test rows,
+    stamps tests/.test_version. Idempotent (no-op when already aligned).
+    Called automatically by pipeline.ps1 after a successful build.
+    Usage: .\reset_test_package.ps1 -Provider <name> [-Force]
+
   tools/map_cad_fields.ps1
     Maps CAD field names to provider JSON fieldIds. Reports MATCH,
     CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects variant.
@@ -346,24 +357,25 @@ TOOLS
            .\enforce.ps1 -OutFile <path>          # save full report
 
   tools/pipeline.ps1
-    Complete build-to-verify pipeline for one provider.
+    Complete build-to-verify pipeline (single JSON, multi-card model).
     ONE command. Runs EVERYTHING. No manual steps.
     Usage:
       .\pipeline.ps1 -Provider HI_HCJDC_OFML
-      .\pipeline.ps1 -Provider HI_HCJDC_OFML -BaseOnly    # skip MC
       .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipBuild   # reports + audit only
       .\pipeline.ps1 -Provider HI_HCJDC_OFML -SkipEnforce # stop before enforce
-    Steps (10):
-      1. Build BASE JSON (run build script)
-      2. Build MC JSON (run MC build script)
-      3. Build report on BASE (10 tools via build_report.ps1)
-      4. Build report on MC (10 tools via build_report.ps1)
-      5. Extract metadata reference (METADATA_REFERENCE.txt)
-      6. Sync CLAUDE.md provider table (sync_provider_table.ps1)
-      7. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES)
-      8. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
-      9. Repo audit (audit_repo.ps1 — full monorepo)
-     10. Enforce (enforce.ps1 — final gate)
+      .\pipeline.ps1 -Providers TX_TLETS,HI_HCJDC_OFML    # batch
+      .\pipeline.ps1 -All                                   # all active providers
+    Steps (8):
+      1. Build JSON (run build script). On a version change, automatically
+         runs reset_test_package.ps1 -- rebuild restarts testing so logs
+         line up with the new JSON.
+      2. Build report (11 tools via build_report.ps1)
+      3. Extract metadata reference (METADATA_REFERENCE.txt)
+      4. Sync CLAUDE.md provider table (sync_provider_table.ps1)
+      5. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES)
+      6. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
+      7. Repo audit (audit_repo.ps1 — full monorepo)
+      8. Enforce (enforce.ps1 — final gate)
     Stops on first failure with specific error reporting.
     Replaces manual multi-step workflow with one command.
 

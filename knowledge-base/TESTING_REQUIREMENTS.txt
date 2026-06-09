@@ -624,6 +624,22 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   These are BLOCKING gates. Cannot proceed to next step without
   completing current.
 
+  GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
+  [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package
+         from Test 1. Combo routing, set[]/any[], conditions, or defaults may
+         have changed; logs from a prior version DO NOT line up with the
+         shipped JSON and are NOT valid evidence.
+  [GATE] pipeline.ps1 does this automatically after a successful build, via
+         reset_test_package.ps1: archives tests/*.txt to
+         tests/_archive_pre_v<ver>/, resets SQVR markers [CONFIRMED]/[FAILED]
+         -> [PENDING], clears STATUS live-test rows, stamps tests/.test_version.
+  [GATE] If you rebuilt OUTSIDE pipeline (ran the build script directly), run:
+         powershell.exe -ExecutionPolicy Bypass -File tools/reset_test_package.ps1 -Provider <NAME>
+  [GATE] Re-present the FULL test matrix before Test 1. Do NOT resume
+         mid-matrix from where the prior version left off.
+  [GATE] tests/.test_version MUST equal the current JSON version before any
+         [CONFIRMED] marker is set. (See feedback: rebuild restarts testing.)
+
   GATE 2 -- BEFORE EACH TEST:
   [GATE] Run shared new_test_log.ps1 to create a stub log in tests/
          powershell.exe -ExecutionPolicy Bypass -File tools/new_test_log.ps1
@@ -685,6 +701,11 @@ SECTION 11b -- SQVR FORMAT STANDARD
   ALIGNMENT CHECK: Run audit_test_coverage.ps1 before every commit.
   Target: Coverage=100%, Alignment=YES, [CONFIRMED]=tested combo count,
   [PENDING]=untested combo count.
+
+  VERSION ALIGNMENT: tests/.test_version records the JSON version the current
+  logs and [CONFIRMED] markers belong to. It must equal the current JSON
+  version. A rebuild resets it (reset_test_package.ps1) so all [CONFIRMED]
+  markers go back to [PENDING] -- a rebuild can never leave a stale CONFIRMED.
 
 ================================================================================
 SECTION 12 -- STANDARD TEST SEQUENCE

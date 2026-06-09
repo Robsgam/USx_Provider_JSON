@@ -337,6 +337,7 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 | `new_provider.ps1` | Scaffolds new provider (canonical structure, build scripts, doc templates, tool registrations) | `-XmlPath <xml>` `-PdfPath` `-Force` |
 | `new_test_log.ps1` | Creates stub test log in tests/ (GATE 2 requirement) | `-Provider` `-Variant` `-Version` `-Entity` `-Combo` `-Description` |
 | `post_test.ps1` | Instant-save after test (artifacts, STATUS, SQVR, commit, push) | `-Provider` `-Entity` `-Query` `-Combo` `-Result` `-Description` |
+| `reset_test_package.ps1` | Rebuild restarts testing: on version change, archives prior logs, resets SQVR→PENDING, clears STATUS rows, stamps tests/.test_version. Auto-run by pipeline after build. | `-Provider` `-Force` |
 
 ### Utilities
 
@@ -407,6 +408,8 @@ Three commands run everything. No manual checklists.
 | **New provider setup** | `new_provider.ps1 -XmlPath <xml>` |
 
 `pipeline.ps1` chains 8 steps: build JSON → build report (steps 1-9 parallel) → extract metadata → sync CLAUDE.md → sync version docs → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-SkipEnforce` (mid-work), `-DeferAudit` (skip steps 6-7 for mid-work iterations).
+
+**Rebuild restarts testing.** Step 1 calls `reset_test_package.ps1` after a successful build: when the JSON version changes, prior live test logs no longer line up with the shipped JSON, so they are archived to `tests/_archive_pre_v<ver>/`, all SQVR markers reset `[CONFIRMED]→[PENDING]`, STATUS live rows cleared, and `tests/.test_version` stamped. The full test matrix re-runs from Test 1 — never resume mid-matrix across a rebuild. See `knowledge-base/TESTING_REQUIREMENTS.txt` Section 11 GATE 1.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 

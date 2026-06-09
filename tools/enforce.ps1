@@ -383,6 +383,18 @@ foreach ($pd in $providers) {
             Warn "$provName -- REBUILD_TRACKER.md missing v${version}"
         }
     }
+
+    # Check 3h: test package aligned to current version (rebuild restarts testing).
+    # Guarded -- only providers that have adopted the .test_version stamp are checked.
+    $testVerFile = Join-Path $pd.FullName "tests\.test_version"
+    if (Test-Path $testVerFile) {
+        $testVer = ((Get-Content $testVerFile -Raw) -replace "^﻿", '').Trim()
+        if ($testVer -eq $version) {
+            Pass "$provName -- test package aligned to v${version}"
+        } else {
+            Warn "$provName -- tests/.test_version (v${testVer}) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
+        }
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

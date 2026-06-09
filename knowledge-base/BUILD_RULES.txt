@@ -885,6 +885,17 @@ See also:
 13. POST-REBUILD CLEANUP CHECKLIST
 ================================================================================
 
+  REBUILD RESTARTS TESTING (MANDATORY):
+    A version bump invalidates prior live test logs -- routing, set[]/any[],
+    conditions, or defaults may have changed, so old logs no longer line up
+    with the shipped JSON. pipeline.ps1 runs reset_test_package.ps1 after a
+    successful build: archives tests/*.txt -> tests/_archive_pre_v<ver>/,
+    resets SQVR markers [CONFIRMED]/[FAILED] -> [PENDING], clears STATUS live
+    rows, stamps tests/.test_version. Re-run the FULL test matrix from Test 1;
+    never resume mid-matrix across a rebuild. If you ran the build script
+    directly (not pipeline), run reset_test_package.ps1 -Provider <NAME>
+    manually. See TESTING_REQUIREMENTS.txt Section 11 GATE 1.
+
   After rebuilding any provider to the single-JSON model, verify these legacy
   artifacts have been removed. Enforce.ps1 catches some but not all.
 
