@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-09 12:53
+  Generated: 2026-06-09 14:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -132,7 +132,7 @@ QUERY SIMULATION
 
     [FIRES] DALH
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, registrationState, nameMiddleDH, purposeCodeDH, requestorDH]
+      any: [imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, nameMiddleDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -141,9 +141,6 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <Name>Doe, John A</Name>
         <SexCode>M</SexCode>
-        <State>NJ</State>
-        <PurposeCode>C</PurposeCode>
-        <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
 
     [FIRES] DALLOUT
@@ -162,16 +159,13 @@ QUERY SIMULATION
 
     [FIRES] DALL
       set: [operatorLicenseNumberDH]
-      any: [imageIndicator, registrationState, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, registrationState, purposeCodeDH, requestorDH]
+      any: [imageIndicator, nyNyspinTransactionNameDH] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DALL</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <State>NJ</State>
-        <PurposeCode>C</PurposeCode>
-        <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
 
 --- QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm] ---

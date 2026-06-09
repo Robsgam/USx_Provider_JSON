@@ -19,7 +19,7 @@
 #   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
 #   DriverLicenseQuery                   DLICN (Name+DOB), DLIC (OLN)  [metadata: both keyRef=DLIC; DLICN is synthetic -- platform requires unique keyRefs per QIDM]
 #   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=FALSE -- manual select for name-only DMV search; avoids co-fire with DL)
-#   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL
+#   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL  [State conditions: In=IN(NY,null), Out=NOT_EQUALS NY -- LIMITATION #35 routing]
 #   GunQuery                             GINQ
 #   ArticleSingleQuery                   AINQ
 #   BoatQuery                            BVEH, BVIN, RVEH, RCAR
@@ -33,7 +33,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.9"
+    [string]$Version = "3.0"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -255,7 +255,15 @@ $dgrpQuery = [PSCustomObject]@{
 # Metadata uses keyRef 'DALL' for all 4 DH combos; synthetic labels DALH (Name in-state),
 # DALHOUT (Name OOS), DALLOUT (OLN OOS) invented for platform routing only.
 # NOT real NYSPIN transaction codes. See PLATFORM_CONSTRAINTS.txt.
-# PurposeCode + Requestor required for OOS DH (State filled).
+# PurposeCode + Requestor required for OOS DH (State filled) -- per metadata OOS Set.
+# In-state any[] = ONLY imageIndicator + nyNyspinTransactionName (matches metadata <Any>);
+#   State/PurposeCode/Requestor are OOS-only -- NOT in in-state combos (DALH/DALL).
+# STATE ROUTING (LIMITATION #35): metadata routes In/Out by field presence via <Choice>;
+#   ConnectCIC must split Choice into separate keyRefs, which makes the bare in-state combo
+#   match greedily on OLN/Name alone. State-value conditions restore the metadata routing:
+#     in-state (DALH/DALL): State IN ('NY','null')  -- fires only when State is NY or blank
+#     OOS (DALHOUT/DALLOUT): State NOT_EQUALS 'NY'   -- fires only when State present and != NY
+#   This keeps the DH checkbox unlit for OOS until State + Requestor (full OOS set) are entered.
 # NyNyspinTransactionName: visible FormInput on DH card, initialValue=DALL (officer can
 #   override, e.g. DLIC). In any[] of all 4 DH combos + defaults[]=DALL. Per Visible-First
 #   Mandate (BUILD_RULES Section 14) -- exposed rather than omitted. See NYSPIN op manual.
@@ -285,25 +293,25 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('NY') }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DALHOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'IN'; value = @('NY','null') }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DALH'
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('NY') }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALLOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'IN'; value = @('NY','null') }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALL'
             state                 = 'In'
