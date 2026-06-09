@@ -1022,3 +1022,50 @@ See also:
 
   STATUS (2026-06-09): NJ, FL, CA_CLETS, TX, NY all CLEAN (CHECK 9 PASS).
   Remaining 14 providers: add comment blocks on next scheduled rebuild.
+
+================================================================================
+16. ADDING AN OVERLAPPING QUERY FAMILY (SUFFIX-ISOLATION)
+================================================================================
+
+  When you add a NEW family of queries to an entity that ALREADY has cards
+  (e.g., CCH criminal-history queries onto the Person form that already hosts
+  DL/DH/OPTIONS), the new queries almost always reuse field NAMES that the
+  existing cards use (Name, BirthDate, SexCode, RaceCode, ImageIndicator,
+  State, etc.). A fieldId may appear on only ONE card per entity QIF --
+  duplicate fieldId across cards = Internal Server Error (AP: no_duplicate_fieldid).
+
+  RULE -- SUFFIX-ISOLATION (generalizes the DH-suffix pattern):
+    Give EVERY form field of the new family a family suffix on the fieldId /
+    sourceField (e.g. nameLastCCH, birthDateCCH, sexCodeCCH, imageIndicatorCCH).
+    Keep the XML-facing targetField as the metadata name (BirthDate, Name, ...).
+    This guarantees zero collision with the existing cards. Put the new family
+    on its own card(s); a shared "<FAMILY> OPTIONS" card holds the fields used
+    by nearly every combo (the OPTIONS pattern).
+
+  AUTOSELECT FOR OPT-IN / RESTRICTED FAMILIES:
+    Set autoSelect=false on the new family's QIDMs and expose each as a named
+    checkbox via queryLabel = the transaction. The officer explicitly picks the
+    query. This prevents co-fire with the base autoSelect queries and removes
+    any need to share/reuse base fields (reuse couples inputs and risks co-fire;
+    full isolation is cleaner -- confirmed TX_TLETS_CCH 2026-06-09).
+
+  CHOICE SPLITS: a metadata <Choice> of multiple <Set>s (e.g. CCH QH name path
+  with SSN-or-Misc, QWI with DOB|Misc|SSN) becomes one combo PER inner <Set>,
+  each with a synthetic keyRef (QH.NAME.SSN, QH.NAME.MISC, QWI.DOB, ...) and the
+  Section 15 LIMITATION #21/#36 comment.
+
+  ADDING NEW queryLabels (MANDATORY pair-update):
+    A new query family needs new queryLabel values. You MUST add them in BOTH:
+      1. tools/verify_build.ps1  -> $validLabels array
+      2. CLAUDE.md  -> "### queryLabel Standard" table
+    audit_repo.ps1 CATEGORY 3 fails unless the two match exactly. queryLabels
+    MAY contain parentheses (e.g. "CCH Criminal History (QH)") -- the
+    Get-ValidLabels parser is paren-safe as of 2026-06-09.
+
+  NEW-PROVIDER ONBOARDING FRICTION (new_provider.ps1):
+    The scaffolder emits a legacy BASE+MC stub pair and stub docs. For the
+    single-JSON model: delete the build_*_mc.ps1 stub, and populate the three
+    stub docs so repo audit passes -- JSON_INVENTORY.md must NOT contain
+    "(no builds yet)" and must cite the version; STATUS.txt must carry the
+    validator score (NNP/0F) not "Not built"; SQVR.txt must mention the version.
+    sync_version_docs does not fully de-stub a brand-new provider.
