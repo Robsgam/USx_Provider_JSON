@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-09 12:44
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -40,8 +40,12 @@ POST-BUILD VERIFICATION
 --- CHECK 8: Visible-First Mandate ---
   [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
 
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'DLICN' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment before keyRef 'BVEH' -- add synthetic keyRef block (BUILD_RULES Section 15)
+
 ========================================
- VERIFICATION PASSED: 7 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED (with warnings): 7 PASS / 2 WARN / 0 FAIL
 ========================================
 
 
