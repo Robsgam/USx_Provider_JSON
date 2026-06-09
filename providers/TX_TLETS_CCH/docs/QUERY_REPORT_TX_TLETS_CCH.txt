@@ -1,0 +1,374 @@
+﻿================================================================
+  Build Report: TX_TLETS_CCH
+  Source: TX_TLETS_CCH.json
+  Generated: 2026-06-09 16:18
+================================================================
+QUERY SIMULATION
+================
+
+
+================================================================
+  CommSys Query Simulator -- TX_TLETS_CCH.json
+================================================================
+
+--- QIDM: TX_TLETS_CCH_VehicleInsuranceRegistrationQuery [Vehicle] ---
+    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
+    [SKIP] REGLicensePlateNumber -- missing set: financialResponsibilityType
+
+    [FIRES] RQLicensePlateNumber
+      set: [licensePlateNumber, licensePlateYear, licensePlateTypeCode]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+    [SKIP] VINVehicleIdentificationNumber -- missing set: financialResponsibilityType
+    [SKIP] DPSIStickerNumber -- missing set: stickerNumber
+
+    [FIRES] QVLicensePlateNumber
+      set: [licensePlateNumber]
+      any: [regionId, registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QV</MessageKey>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] RQVehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [registrationState, vehicleMakeCode, vehicleYear] -> matched: [registrationState, vehicleMakeCode, vehicleYear]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <VehicleYear>2023</VehicleYear>
+      </Transaction>
+    [SKIP] QVVehicleIdentificationNumber -- no any[] match
+
+--- QIDM: TX_TLETS_CCH_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 7
+
+    [FIRES] DQNameImg
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John A</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQName
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [nameMiddle, nameSuffix, registrationState] -> matched: [nameMiddle, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe,John A</Name>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] QWName
+      set: [birthDate, nameLast, nameFirst]
+      any: [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QW</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
+        <Name>Doe,John A</Name>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES] CPLNameImg
+      set: [nameLast, nameFirst]
+      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>CPLNameImg</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John A</Name>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] CPLName
+      set: [nameLast, nameFirst]
+      any: [nameMiddle, nameSuffix, registrationState] -> matched: [nameMiddle, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>CPLName</MessageKey>
+        <Name>Doe,John A</Name>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQOLNImg
+      set: [operatorLicenseNumber]
+      any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] DQOLN
+      set: [operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>DQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: TX_TLETS_CCH_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
+
+    [FIRES] KQNameImg
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, emailAddress, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
+        <Name>Doe,John A</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQName
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe,John A</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQOLNImg
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, emailAddress, imageIndicator, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES] KQOLN
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+--- QIDM: TX_TLETS_CCH_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES] QGGunSerialNumber
+      set: [gunSerialNumber]
+      any: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator] -> matched: [gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QGNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QG</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>G123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: TX_TLETS_CCH_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
+
+    [FIRES] QAArticleSerialNumber
+      set: [articleSerialNumber, articleTypeCode]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QANCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QA</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>A123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: TX_TLETS_CCH_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 6  |  Combos: 5
+
+    [FIRES] BQRegistrationNumber
+      set: [registrationNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] BQBoatHullIdNumber
+      set: [boatHullIdNumber, registrationState]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES] QBRegistrationNumber
+      set: [registrationNumber]
+      any: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QBBoatHullIdNumber
+      set: [boatHullIdNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES] QBNCICNumber
+      set: [ncicNumber]
+      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>QB</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <NCICNumber>B123456789</NCICNumber>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryAQQuery [Person] ---
+    Query: CCHCriminalHistoryAQQuery  |  Attrs: 9  |  Combos: 1
+    [SKIP] AQ -- missing set: attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryARQuery [Person] ---
+    Query: CCHCriminalHistoryARQuery  |  Attrs: 5  |  Combos: 1
+    [SKIP] AR -- missing set: attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryFQQuery [Person] ---
+    Query: CCHCriminalHistoryFQQuery  |  Attrs: 11  |  Combos: 1
+    [SKIP] FQ -- missing set: attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryIQQuery [Person] ---
+    Query: CCHCriminalHistoryIQQuery  |  Attrs: 15  |  Combos: 1
+    [SKIP] IQ -- missing set: attentionCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQHQuery [Person] ---
+    Query: CCHCriminalHistoryQHQuery  |  Attrs: 12  |  Combos: 5
+    [SKIP] QH.BDOB -- missing set: requestorCCH, operatorCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH, raceCodeCCH
+    [SKIP] QH.NAME.SSN -- missing set: requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, socialSecurityNumberCCH
+    [SKIP] QH.NAME.MISC -- missing set: requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, miscellaneousNumberCCH
+    [SKIP] QH.SID -- missing set: inquiryReasonCCH, requestorCCH, operatorCCH, stateIdNumberCCH, purposeCodeCCH
+    [SKIP] QH.FBI -- missing set: inquiryReasonCCH, requestorCCH, operatorCCH, fbiNumberCCH, purposeCodeCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQRQuery [Person] ---
+    Query: CCHCriminalHistoryQRQuery  |  Attrs: 11  |  Combos: 2
+    [SKIP] QR.FBI -- missing set: attentionCCH, fbiNumberCCH, inquiryReasonCCH, purposeCodeCCH
+    [SKIP] QR.SID -- missing set: attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQWIQuery [Person] ---
+    Query: CCHCriminalHistoryQWIQuery  |  Attrs: 14  |  Combos: 3
+    [SKIP] QWI.DOB -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, birthDateCCH, raceCodeCCH, sexCodeCCH
+    [SKIP] QWI.MISC -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, miscellaneousNumberCCH
+    [SKIP] QWI.SSN -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, socialSecurityNumberCCH
+
+--- QIDM: TX_TLETS_CCH_CCHCriminalHistoryZRQuery [Person] ---
+    Query: CCHCriminalHistoryZRQuery  |  Attrs: 4  |  Combos: 2
+    [SKIP] ZR.FBI -- missing set: fbiNumberCCH, inquiryReasonCCH
+    [SKIP] ZR.SID -- missing set: stateIdNumberCCH, inquiryReasonCCH
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

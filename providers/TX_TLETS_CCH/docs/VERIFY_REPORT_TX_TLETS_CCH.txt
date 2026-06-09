@@ -1,0 +1,48 @@
+﻿================================================================
+  Build Report: TX_TLETS_CCH
+  Source: TX_TLETS_CCH.json
+  Generated: 2026-06-09 16:18
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: TX_TLETS_CCH
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [PASS] No banned pattern 'LicensePlateNumberIn'
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 64 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber, attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, purposeCodeCCH, addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, stateCCH, stateIdNumberCCH, birthDateCCH, miscellaneousNumberCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH, raceCodeCCH, sexCodeCCH, socialSecurityNumberCCH, fbiNumberCCH, operatorCCH, requestorCCH, expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH]
+  [PASS] Cross-bundle fieldId consistency checked
+
+--- CHECK 5: camelCase Enforcement ---
+  [INFO] camelCase check skipped (use -CamelCase to enable)
+
+--- CHECK 6: Reference Pattern Check ---
+  [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+  [PASS] All 2 RMS QIDMs have autoSelect=true
+
+--- CHECK 7: Cross-Variant Consistency ---
+  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+
+--- CHECK 8: Visible-First Mandate ---
+  [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [PASS] All 10 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+
+========================================
+ VERIFICATION PASSED: 8 PASS / 0 WARN / 0 FAIL
+========================================
+
+

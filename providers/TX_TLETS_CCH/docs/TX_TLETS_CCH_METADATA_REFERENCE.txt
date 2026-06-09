@@ -1,0 +1,556 @@
+﻿TX_TLETS_CCH METADATA REFERENCE
+================================
+Generated: 2026-06-09
+Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH.json
+Metadata: 113 total transactions, 14 queries built in JSON
+
+================================================================================
+1. ArticleSingleQuery (version 12)
+================================================================================
+
+METADATA FIELDS (5):
+  ArticleSerialNumber       Alphanumeric  maxLen=20  Article Serial Number
+  ArticleTypeCode           Alphanumeric  maxLen= 7  Article Type Code
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Request Indicator
+  NCICNumber                Alphanumeric  maxLen=10  NCIC Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Request Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QA            ArticleSerialNumber                                                            ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (2 of 1 built):
+  BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
+  BUILT   QANCICNumber   set[ncicNumber]
+  UNBUILT QA             ArticleSerialNumber
+
+================================================================================
+2. BoatQuery (version 13)
+================================================================================
+
+METADATA FIELDS (6):
+  BoatHullIdNumber          Alphanumeric  maxLen=20  Boat Hull Number
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Request Indicator
+  NCICNumber                Alphanumeric  maxLen=10  NCIC Number
+  RegistrationNumber        Alphanumeric  maxLen=11  Boat Registration Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  State
+  State                     Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (5 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QB            RegistrationNumber      RegistrationNumber                                     BoatHullIdNumber, ImageIndi...
+  QB            BoatHullIdNumber        BoatHullIdNumber                                       ImageIndicator, RelatedHitS...
+  QB            NCICNumber              NCICNumber                                             ImageIndicator, RelatedHitS...
+  BQ            RegistrationNumber      RegistrationNumber                                     State
+  BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
+
+BUILD COVERAGE (5 of 5 built):
+  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
+  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
+  BUILT   QBRegistrationNumber set[registrationNumber]
+  BUILT   QBBoatHullIdNumber set[boatHullIdNumber]
+  BUILT   QBNCICNumber   set[ncicNumber]
+  UNBUILT QB             RegistrationNumber
+  UNBUILT QB             BoatHullIdNumber
+  UNBUILT QB             NCICNumber
+  UNBUILT BQ             RegistrationNumber
+  UNBUILT BQ             BoatHullIdNumber
+
+================================================================================
+3. CCHCriminalHistoryAQQuery (version 5)
+================================================================================
+
+METADATA FIELDS (9):
+  Attention         Alphanumeric  maxLen=30  Attention
+  FreeText          Alphanumeric  maxLen=14400  FreeText
+  InquiryReason     Alphanumeric  maxLen=75  InquiryReason
+  NletsDestination  Alphanumeric  maxLen= 9  NletsDestination
+  NletsDestination2 Alphanumeric  maxLen= 9  NletsDestination2
+  NletsDestination3 Alphanumeric  maxLen= 9  NletsDestination3
+  NletsDestination4 Alphanumeric  maxLen= 9  NletsDestination4
+  NletsDestination5 Alphanumeric  maxLen= 9  NletsDestination5
+  PurposeCode       Alphabetic    maxLen= 1  PurposeCode
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  AQ            FreeText                Attention, FreeText, InquiryReason, NletsDestinati...  NletsDestination2, NletsDes...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   AQ             set[attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH]
+
+================================================================================
+4. CCHCriminalHistoryARQuery (version 5)
+================================================================================
+
+METADATA FIELDS (5):
+  Attention        Alphanumeric  maxLen=30  Attention
+  FreeText         Alphanumeric  maxLen=14400  FreeText
+  InquiryReason    Alphanumeric  maxLen=75  InquiryReason
+  NletsDestination Alphanumeric  maxLen= 9  NletsDestination
+  PurposeCode      Alphabetic    maxLen= 1  PurposeCode
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  AR            FreeText                Attention, FreeText, InquiryReason, NletsDestinati...  --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   AR             set[attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH]
+
+================================================================================
+5. CCHCriminalHistoryFQQuery (version 5)
+================================================================================
+
+METADATA FIELDS (11):
+  AddressCityState Alphanumeric  maxLen=30  Address City State
+  AddressStreet    Alphanumeric  maxLen=30  Address Street
+  AddressZipCode   Alphanumeric  maxLen= 9  Address Zip Code
+  Attention        Alphanumeric  maxLen=30  Attention
+  BuildingName     Alphanumeric  maxLen=30  Building Name
+  DepartmentName   Alphanumeric  maxLen=30  DepartmentName
+  InquiryReason    Alphanumeric  maxLen=75  InquiryReason
+  NletsDestination Alphanumeric  maxLen= 2  Nlets Destination
+  PurposeCode      Alphabetic    maxLen= 1  PurposeCode
+  State            Alphanumeric  maxLen= 2  State
+  StateIdNumber    Alphanumeric  maxLen=10  StateIdNumber
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  FQ            StateIdNumber           Attention, InquiryReason, PurposeCode, StateIdNumber   AddressCityState, AddressSt...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   FQ             set[attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH]
+
+================================================================================
+6. CCHCriminalHistoryIQQuery (version 5)
+================================================================================
+
+METADATA FIELDS (15):
+  Attention            Alphanumeric  maxLen=30  Attention
+  BirthDate            Alphanumeric  maxLen= 8  BirthDate
+  InquiryReason        Alphabetic    maxLen=75  InquiryReason
+  MiscellaneousNumber  Alphanumeric  maxLen=15  MiscellaneousNumber
+  Name                 Alphanumeric  maxLen=30  Name
+  NletsDestination     Alphanumeric  maxLen= 2  Nlets Destination
+  NletsDestination2    Alphanumeric  maxLen= 2  Nlets Destination 2
+  NletsDestination3    Alphanumeric  maxLen= 2  Nlets Destination 3
+  NletsDestination4    Alphanumeric  maxLen= 2  Nlets Destination 4
+  NletsDestination5    Alphanumeric  maxLen= 2  Nlets Destination 5
+  PurposeCode          Alphabetic    maxLen= 1  PurposeCode
+  RaceCode             Alphanumeric  maxLen= 1  RaceCode
+  SexCode              Alphanumeric  maxLen= 1  SexCode
+  SocialSecurityNumber Numeric       maxLen= 9  SocialSecurityNumber
+  State                Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IQ            Name                    Attention, BirthDate, InquiryReason, Name, Purpose...  MiscellaneousNumber, NletsD...
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   IQ             set[attentionCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH]
+
+================================================================================
+7. CCHCriminalHistoryQHQuery (version 6)
+================================================================================
+
+METADATA FIELDS (12):
+  BirthDate            Date          maxLen= 8  BirthDate
+  FBINumber            Alphanumeric  maxLen= 9  FBINumber
+  InquiryReason        Alphabetic    maxLen=75  InquiryReason
+  MiscellaneousNumber  Alphanumeric  maxLen=15  MiscellaneousNumber
+  Name                 Name          maxLen=30  Name
+  Operator             Alphanumeric  maxLen=30  Operator
+  PurposeCode          Alphabetic    maxLen= 1  PurposeCode
+  RaceCode             Alphabetic    maxLen= 1  RaceCode
+  Requestor            Alphanumeric  maxLen=30  Requestor
+  SexCode              Alphabetic    maxLen= 1  SexCode
+  SocialSecurityNumber Numeric       maxLen= 9  SocialSecurityNumber
+  StateIdNumber        Alphanumeric  maxLen=10  StateIdNumber
+
+METADATA COMBINATIONS (4 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QH            BirthDate               Requestor, Operator, BirthDate, InquiryReason, Nam...  MiscellaneousNumber, Social...
+  QH            Name                    Requestor, Operator, InquiryReason, Name, PurposeCode  --
+  QH            StateIdNumber           InquiryReason, Requestor, Operator, StateIdNumber,...  Name
+  QH            FBINumber               InquiryReason, Requestor, Operator, FBINumber, Pur...  Name
+
+BUILD COVERAGE (5 of 4 built):
+  BUILT   QH.BDOB        set[requestorCCH, operatorCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH, raceCodeCCH]
+  BUILT   QH.NAME.SSN    set[requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, socialSecurityNumberCCH]
+  BUILT   QH.NAME.MISC   set[requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, miscellaneousNumberCCH]
+  BUILT   QH.SID         set[inquiryReasonCCH, requestorCCH, operatorCCH, stateIdNumberCCH, purposeCodeCCH]
+  BUILT   QH.FBI         set[inquiryReasonCCH, requestorCCH, operatorCCH, fbiNumberCCH, purposeCodeCCH]
+
+================================================================================
+8. CCHCriminalHistoryQRQuery (version 5)
+================================================================================
+
+METADATA FIELDS (11):
+  AddressCityState Alphanumeric  maxLen=30  Address City State
+  AddressStreet    Alphanumeric  maxLen=30  Address Street
+  AddressZipCode   Alphanumeric  maxLen= 9  Address Zip Code
+  Attention        Alphanumeric  maxLen=30  Attention
+  BuildingName     Alphanumeric  maxLen=30  Building Name
+  DepartmentName   Alphanumeric  maxLen=30  Department Name
+  FBINumber        Alphanumeric  maxLen= 9  FBINumber
+  InquiryReason    Alphanumeric  maxLen=75  InquiryReason
+  Name             Name          maxLen=30  Name
+  PurposeCode      Alphabetic    maxLen= 1  PurposeCode
+  StateIdNumber    Alphanumeric  maxLen=10  StateIdNumber
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QR            FBINumber               Attention, FBINumber, InquiryReason, PurposeCode       AddressCityState, AddressSt...
+  QR            StateIdNumber           Attention, InquiryReason, PurposeCode, StateIdNumber   AddressCityState, AddressSt...
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   QR.FBI         set[attentionCCH, fbiNumberCCH, inquiryReasonCCH, purposeCodeCCH]
+  BUILT   QR.SID         set[attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH]
+
+================================================================================
+9. CCHCriminalHistoryQWIQuery (version 7)
+================================================================================
+
+METADATA FIELDS (14):
+  Attention                   Alphanumeric  maxLen=30  Attention
+  BirthDate                   Alphanumeric  maxLen= 8  BirthDate
+  ExpandedBirthDateSearchCode Alphanumeric  maxLen= 1  Expanded Birth Date Search Code
+  ExpandedNameSearchIndicator Alphanumeric  maxLen= 1  Expanded Name Search Indicator
+  ImageIndicator              Alphanumeric  maxLen= 1  ImageIndicator
+  InquiryReason               Alphabetic    maxLen=75  InquiryReason
+  MiscellaneousNumber         Alphanumeric  maxLen=15  MiscellaneousNumber
+  Name                        Alphanumeric  maxLen=30  Name
+  Operator                    Alphanumeric  maxLen=30  Operator
+  PurposeCode                 Alphanumeric  maxLen= 1  PurposeCode
+  RaceCode                    Alphanumeric  maxLen= 1  RaceCode
+  RelatedHitSearchIndicator   Alphanumeric  maxLen= 1  RelatedHitSearchIndicator
+  SexCode                     Alphanumeric  maxLen= 1  SexCode
+  SocialSecurityNumber        Alphanumeric  maxLen= 9  SocialSecurityNumber
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QWI           Name                    InquiryReason, Name, PurposeCode, Attention, Operator  ExpandedNameSearchIndicator...
+
+BUILD COVERAGE (3 of 1 built):
+  BUILT   QWI.DOB        set[inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, birthDateCCH, raceCodeCCH, sexCodeCCH]
+  BUILT   QWI.MISC       set[inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, miscellaneousNumberCCH]
+  BUILT   QWI.SSN        set[inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, socialSecurityNumberCCH]
+
+================================================================================
+10. CCHCriminalHistoryZRQuery (version 5)
+================================================================================
+
+METADATA FIELDS (4):
+  FBINumber     Alphanumeric  maxLen= 9  FBINumber
+  InquiryReason Alphabetic    maxLen=75  InquiryReason
+  PurposeCode   Alphabetic    maxLen= 1  PurposeCode
+  StateIdNumber Alphanumeric  maxLen=10  StateIdNumber
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  ZR            FBINumber               FBINumber, InquiryReason                               PurposeCode
+  ZR            StateIdNumber           StateIdNumber, InquiryReason                           PurposeCode
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   ZR.FBI         set[fbiNumberCCH, inquiryReasonCCH]
+  BUILT   ZR.SID         set[stateIdNumberCCH, inquiryReasonCCH]
+
+================================================================================
+11. DriverHistoryQuery (version 12)
+================================================================================
+
+METADATA FIELDS (10):
+  Attention             Alphanumeric  maxLen=30  Attention
+  BirthDate             Date          maxLen= 8  Birth Date
+  EmailAddress          Alphanumeric  maxLen=80  Email Address
+  ImageIndicator        Alphanumeric  maxLen= 1  Image Indicator
+  Name                  Name          maxLen=30  Name
+  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
+  PurposeCode           Alphanumeric  maxLen= 1  Purpose Code
+  ReasonCode            Alphanumeric  maxLen= 1  Reason Code
+  SexCode               Alphanumeric  maxLen= 1  Sex Code
+  State                 Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  KQ            OperatorLicenseNumber   OperatorLicenseNumber + Choice[ImageIndicator + Re...  Attention, PurposeCode, State
+  KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
+
+BUILD COVERAGE (4 of 2 built):
+  BUILT   KQNameImg      set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   KQOLNImg       set[operatorLicenseNumberDH]
+  BUILT   KQOLN          set[operatorLicenseNumberDH]
+  UNBUILT KQ             OperatorLicenseNumber
+  UNBUILT KQ             Name
+
+================================================================================
+12. DriverLicenseQuery (version 15)
+================================================================================
+
+METADATA FIELDS (12):
+  BirthDate                   Date          maxLen= 8  Birth Date
+  EmailAddress                Alphanumeric  maxLen=80  E-mail Address
+  ExpandedBirthDateSearchCode Alphanumeric  maxLen= 1  Expanded Birth Date Search Code
+  ImageIndicator              Alphanumeric  maxLen= 1  Image Request Indicator
+  MessageKey                  Alphanumeric  maxLen= 3  Message Key
+  Name                        Alphanumeric  maxLen=30  Name
+  OperatorLicenseNumber       Alphanumeric  maxLen=20  Operator License NUmber
+  RaceCode                    Alphanumeric  maxLen= 1  Race Code
+  ReasonCode                  Alphanumeric  maxLen= 1  Reason Code
+  RegionId                    Alphanumeric  maxLen= 4  Region Identifier
+  SexCode                     Alphanumeric  maxLen= 1  Sex Code
+  State                       Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (5 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  DQ            Name                    SexCode, BirthDate, Name                               EmailAddress, ImageIndicato...
+  QW            Name                    BirthDate, Name                                        ExpandedBirthDateSearchCode...
+  CPL           Name                    Name                                                   EmailAddress, ImageIndicato...
+  RSDWW         OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
+  DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
+
+BUILD COVERAGE (7 of 5 built):
+  BUILT   DQNameImg      set[sexCode, birthDate, nameLast, nameFirst]
+  BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst]
+  BUILT   QWName         set[birthDate, nameLast, nameFirst]
+  BUILT   CPLNameImg     set[nameLast, nameFirst]
+  BUILT   CPLName        set[nameLast, nameFirst]
+  BUILT   DQOLNImg       set[operatorLicenseNumber]
+  BUILT   DQOLN          set[operatorLicenseNumber]
+  UNBUILT DQ             Name
+  UNBUILT QW             Name
+  UNBUILT CPL            Name
+  UNBUILT RSDWW          OperatorLicenseNumber
+  UNBUILT DQ             OperatorLicenseNumber
+
+================================================================================
+13. GunQuery (version 12)
+================================================================================
+
+METADATA FIELDS (6):
+  GunCaliber                Alphanumeric  maxLen= 4  Gun Caliber
+  GunMake                   Alphanumeric  maxLen=23  Gun Make
+  GunSerialNumber           Alphanumeric  maxLen=20  Gun Serial Number
+  ImageIndicator            Alphanumeric  maxLen= 1  Image Request Indicator
+  NCICNumber                Alphanumeric  maxLen=10  NCIC Number
+  RelatedHitSearchIndicator Alphanumeric  maxLen= 1  Related Hit Search Request Indicator
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  QG            GunSerialNumber                                                                ImageIndicator, RelatedHitS...
+
+BUILD COVERAGE (2 of 1 built):
+  BUILT   QGGunSerialNumber set[gunSerialNumber]
+  BUILT   QGNCICNumber   set[ncicNumber]
+  UNBUILT QG             GunSerialNumber
+
+================================================================================
+14. VehicleInsuranceRegistrationQuery (version 14)
+================================================================================
+
+METADATA FIELDS (10):
+  FinancialResponsibilityType Alphanumeric  maxLen= 1  Financial Responsibility Type
+  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
+  LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
+  LicensePlateYear            Year          maxLen= 4  License Plate Year
+  RegionId                    Alphanumeric  maxLen= 4  Region Identifier
+  State                       Alphanumeric  maxLen= 2  State
+  StickerNumber               Alphanumeric  maxLen=10  Sticker Number
+  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
+  VehicleMakeCode             Alphanumeric  maxLen= 4  Vehicle Make Code
+  VehicleYear                 Year          maxLen= 4  Vehicle Year
+
+METADATA COMBINATIONS (7 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  RQ            LicensePlateNumber      LicensePlateNumber, LicensePlateYear, LicensePlate...  State
+  QV            LicensePlateNumber      LicensePlateNumber                                     RegionId, State
+  RQ            VehicleIdentificationNumber  VehicleIdentificationNumber                            State, VehicleMakeCode, Veh...
+  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            RegionId
+  DPSI          StickerNumber           StickerNumber                                          State
+  REG           LicensePlateNumber      LicensePlateNumber, LicensePlateYear, FinancialRes...  State
+  VIN           VehicleIdentificationNumber  VehicleIdentificationNumber, FinancialResponsibili...  State
+
+BUILD COVERAGE (7 of 7 built):
+  BUILT   REGLicensePlateNumber set[licensePlateNumber, licensePlateYear, financialResponsibilityType]
+  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateYear, licensePlateTypeCode]
+  BUILT   VINVehicleIdentificationNumber set[vehicleIdentificationNumber, financialResponsibilityType]
+  BUILT   DPSIStickerNumber set[stickerNumber]
+  BUILT   QVLicensePlateNumber set[licensePlateNumber]
+  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  UNBUILT RQ             LicensePlateNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT RQ             VehicleIdentificationNumber
+  UNBUILT QV             VehicleIdentificationNumber
+  UNBUILT DPSI           StickerNumber
+  UNBUILT REG            LicensePlateNumber
+  UNBUILT VIN            VehicleIdentificationNumber
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  ArticleSingleQuery                         1      2     0  200%
+  BoatQuery                                  5      5     0  100% (COMPLETE)
+  CCHCriminalHistoryAQQuery                  1      1     0  100% (COMPLETE)
+  CCHCriminalHistoryARQuery                  1      1     0  100% (COMPLETE)
+  CCHCriminalHistoryFQQuery                  1      1     0  100% (COMPLETE)
+  CCHCriminalHistoryIQQuery                  1      1     0  100% (COMPLETE)
+  CCHCriminalHistoryQHQuery                  4      5     0  125%
+  CCHCriminalHistoryQRQuery                  2      2     0  100% (COMPLETE)
+  CCHCriminalHistoryQWIQuery                 1      3     0  300%
+  CCHCriminalHistoryZRQuery                  2      2     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      4     0  200%
+  DriverLicenseQuery                         5      7     0  140%
+  GunQuery                                   1      2     0  200%
+  VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                   34     43     0  126%
+
+================================================================================
+UNBUILT METADATA COMBOS (21 combos in metadata, not in JSON)
+================================================================================
+
+  QA             ArticleSerialNumber      (ArticleSingleQuery)
+  QB             RegistrationNumber       (BoatQuery)
+  QB             BoatHullIdNumber         (BoatQuery)
+  QB             NCICNumber               (BoatQuery)
+  BQ             RegistrationNumber       (BoatQuery)
+  BQ             BoatHullIdNumber         (BoatQuery)
+  KQ             OperatorLicenseNumber    (DriverHistoryQuery)
+  KQ             Name                     (DriverHistoryQuery)
+  DQ             Name                     (DriverLicenseQuery)
+  QW             Name                     (DriverLicenseQuery)
+  CPL            Name                     (DriverLicenseQuery)
+  RSDWW          OperatorLicenseNumber    (DriverLicenseQuery)
+  DQ             OperatorLicenseNumber    (DriverLicenseQuery)
+  QG             GunSerialNumber          (GunQuery)
+  RQ             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
+  QV             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
+  RQ             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
+  QV             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
+  DPSI           StickerNumber            (VehicleInsuranceRegistrationQuery)
+  REG            LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
+  VIN            VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (99 of 113 in metadata)
+================================================================================
+
+  BEPStolenArticleCancel                   v2    4 combos
+  BEPStolenArticleClear                    v2    4 combos
+  BEPStolenArticleEntry                    v2    5 combos
+  BEPStolenArticleLocate                   v2    5 combos
+  BEPStolenArticleModify                   v2    4 combos
+  BEPStolenBoatCancel                      v2    1 combos
+  BEPStolenBoatClear                       v2    1 combos
+  BEPStolenBoatEntry                       v2    4 combos
+  BEPStolenBoatLocate                      v2    4 combos
+  BEPStolenBoatModify                      v2    1 combos
+  BEPStolenGunCancel                       v2    4 combos
+  BEPStolenGunClear                        v3    4 combos
+  BEPStolenGunEntry                        v2    6 combos
+  BEPStolenGunLocate                       v2    5 combos
+  BEPStolenGunModify                       v2    4 combos
+  BEPStolenPlateCancel                     v2    1 combos
+  BEPStolenPlateClear                      v2    1 combos
+  BEPStolenPlateEntry                      v2    4 combos
+  BEPStolenPlateLocate                     v2    4 combos
+  BEPStolenPlateModify                     v2    1 combos
+  BEPStolenVehicleCancel                   v2    5 combos
+  BEPStolenVehicleClear                    v2    2 combos
+  BEPStolenVehicleEntry                    v2    11 combos
+  BEPStolenVehicleLocate                   v2    8 combos
+  BEPStolenVehicleModify                   v2    2 combos
+  ProtectiveOrderQuery                     v3    1 combos
+  SexOffenderQuery                         v3    1 combos
+  StolenSecuritiesCancel                   v3    1 combos
+  StolenSecuritiesClear                    v3    1 combos
+  StolenSecuritiesEntry                    v3    1 combos
+  StolenSecuritiesLocate                   v3    1 combos
+  StolenSecuritiesModify                   v3    1 combos
+  StolenSecuritiesQuery                    v3    1 combos
+  StolenVehicleQuery                       v12   2 combos
+  TxDriverHistoryQuery                     v4    1 combos
+  TxDriverMultiQuery                       v5    1 combos
+  TxRSDWMultiQuery                         v5    2 combos
+  TxTletsQfa                               v2    1 combos
+  TxVehicleRegistrationQuery               v4    2 combos
+  VehicleRegistrationQuery                 v13   7 combos
+  WantedPersonQuery                        v3    1 combos
+  WMPEDentalDataCancel                     v4    1 combos
+  WMPEDentalDataEntry                      v4    1 combos
+  WMPEDentalDataModify                     v4    1 combos
+  WMPEMissingPersonCancel                  v4    2 combos
+  WMPEMissingPersonClear                   v4    2 combos
+  WMPEMissingPersonEntry                   v4    2 combos
+  WMPEMissingPersonLocate                  v4    2 combos
+  WMPEMissingPersonModify                  v4    2 combos
+  WMPEMissingPersonPersonWithInformationCancel v4    1 combos
+  WMPEMissingPersonPersonWithInformationEntry v4    1 combos
+  WMPEMissingPersonPersonWithInformationModify v4    1 combos
+  WMPEMissingPersonPWISupplementalCancel   v4    1 combos
+  WMPEMissingPersonPWISupplementalEntry    v4    1 combos
+  WMPEMissingPersonSupplementalCancel      v4    2 combos
+  WMPEMissingPersonSupplementalEntry       v4    2 combos
+  WMPEProtectionOrderCancel                v4    2 combos
+  WMPEProtectionOrderClear                 v4    2 combos
+  WMPEProtectionOrderEntry                 v4    1 combos
+  WMPEProtectionOrderModify                v4    4 combos
+  WMPEProtectionOrderSupplementalCancel    v4    4 combos
+  WMPEProtectionOrderSupplementalEntry     v4    4 combos
+  WMPESexOffenderCancel                    v4    3 combos
+  WMPESexOffenderClear                     v4    3 combos
+  WMPESexOffenderEntry                     v4    1 combos
+  WMPESexOffenderModify                    v4    1 combos
+  WMPESexOffenderSupplementalCancel        v4    1 combos
+  WMPESexOffenderSupplementalEntry         v4    1 combos
+  WMPESupervisedReleaseCancel              v3    1 combos
+  WMPESupervisedReleaseClear               v3    1 combos
+  WMPESupervisedReleaseEntry               v4    1 combos
+  WMPESupervisedReleaseFraudulentDataCancel v4    1 combos
+  WMPESupervisedReleaseFraudulentDataEntry v4    1 combos
+  WMPESupervisedReleaseModify              v4    1 combos
+  WMPESupervisedReleaseSupplementalCancel  v4    1 combos
+  WMPESupervisedReleaseSupplementalEntry   v4    1 combos
+  WMPEUnidentifiedPersonCancel             v4    1 combos
+  WMPEUnidentifiedPersonClear              v4    1 combos
+  WMPEUnidentifiedPersonEntry              v4    1 combos
+  WMPEUnidentifiedPersonModify             v4    1 combos
+  WMPEUnidentifiedPersonSupplementalCancel v4    1 combos
+  WMPEUnidentifiedPersonSupplementalEntry  v4    1 combos
+  WMPEWantedPersonCancel                   v4    1 combos
+  WMPEWantedPersonClear                    v4    1 combos
+  WMPEWantedPersonDetainerCancel           v4    1 combos
+  WMPEWantedPersonDetainerEntry            v4    1 combos
+  WMPEWantedPersonDetainerModify           v4    1 combos
+  WMPEWantedPersonEntry                    v4    2 combos
+  WMPEWantedPersonFraudulentDataCancel     v4    1 combos
+  WMPEWantedPersonFraudulentDataEntry      v4    1 combos
+  WMPEWantedPersonLocate                   v4    1 combos
+  WMPEWantedPersonModify                   v4    1 combos
+  WMPEWantedPersonSupplementalCancel       v4    1 combos
+  WMPEWantedPersonSupplementalEntry        v4    1 combos
+  WMPIMissingPersonQuery                   v12   1 combos
+  WMPIProtectionOrderQuery                 v12   6 combos
+  WMPISexOffenderQuery                     v12   5 combos
+  WMPIUnidentifiedPersonQuery              v12   4 combos
+  WMPIWantedPersonQuery                    v13   4 combos
+
+

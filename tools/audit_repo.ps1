@@ -50,7 +50,7 @@ function Get-StepCount {
 
 function Get-ValidLabels {
     $content = [System.IO.File]::ReadAllText("$repoRoot\tools\verify_build.ps1")
-    if ($content -match '\$validLabels\s*=\s*@\(([^)]+)\)') {
+    if ($content -match '\$validLabels\s*=\s*@\((.+)\)') {
         $raw = $Matches[1]
         return @($raw -split "'" | Where-Object { $_ -match '\S' -and $_ -notmatch '^[\s,]+$' })
     }

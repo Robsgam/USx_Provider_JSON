@@ -8,7 +8,7 @@ Consolidated: 2026-05-04
 ## Repo Structure
 
 ```
-providers/{PROVIDER}/     -- 19 providers (8 active + 11 new)
+providers/{PROVIDER}/     -- 20 providers (8 active + 11 new + 1 CCH stub)
 knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
@@ -22,6 +22,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | NY_NYSPIN_EJUSTICE | providers/NY_NYSPIN_EJUSTICE/ | v3.0 | 81P/0F/0W/0LIM | 7 cards (Veh 1, Per 3+2 fields, Gun 1, Art 1, Boat 1), 17 combos, 7 QIDMs, DGRP (DL Name Search), DH OOS combos (DALHOUT/DALLOUT), Vehicle plate OOS combo (RVEHOUT), NyNyspinTransactionName visible on DH (default DALL), PurposeCode default C on DH in-state combos, Choice-set OOS pattern (LIMIT #36), DH-suffix+one-directional queriesToDeselect, CAD defaults all 17 combos, State no-default (LIMIT #30) |
 | AZ_AZDPS | providers/AZ_AZDPS/ | v2.3 | 71P/0F/0W/0LIM (BASE) 71P/0F/0W/0LIM (MC) | dexStateUserId, DH-suffix, WMPI queries, hidden badge |
 | FL_FCIC | providers/FL_FCIC/ | v4.6 | 87P/0F/0W/0LIM -- 28/28 combos, 6 QIDMs | 2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search). QB routing (FL-8) + conditions (StolenSearch EQUALS Y), one-directional queriesToDeselect, RegistrationStateDH, Attention visible, RMS Vehicle stripped to 3 attrs |
+| TX_TLETS_CCH | providers/TX_TLETS_CCH/ | v1.0 | 119P/0F/0W -- STUB: 14 QIDMs (6 base + 8 CCH) | Separate CCH-gated provider. Base 6 QIDMs ported from TX_TLETS. All 8 CCH transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) on Person, autoSelect=false (named-checkbox via queryLabel), every CCH field CCH-suffixed (full isolation, zero collision), 3 CCH cards. Synthetic keyRefs (QH/QR/QWI/ZR) + Choice splits. FreeText capped display. CCH response QRDM out of scope. NOT live-tested |
 | TX_TLETS | providers/TX_TLETS/ | v3.3 | 86P/0F/0W/0LIM | 6 cards (Veh 1, Per 3 DH+DL+Options, Gun 1, Art 1, Boat 1), 27 combos, 6 QIDMs, conditions routing (ImageIndicator EQUALS Y), email→shared OPTIONS card, CPL Name combo, DH-suffix+one-directional queriesToDeselect, TX-specific (DPSI/REG/VIN+FRT), CAD defaults, -SkipRace on RMS |
 | LA_LEMS | providers/LA_LEMS/ | v2.5 | 63P/0F/0W/0LIM (BASE) 63P/0F/0W/0LIM (MC) | DH-suffix+queriesToDeselect, Attention handler (AP #27), DP/DQ routing toggle, State in set[], State no-default |
 | CA_CLETS | providers/CA_CLETS/ | v2.4 | 91P/0F/0W -- 40/40 combos (100%), MC active, 6 QIDMs, live-tested all 5 entities | purposeCode (CAD-aligned fieldId), State routing (blank=in-state), DH-suffix fieldIds, cross-entity Name on Veh/Gun/Boat, no ImageIndicator, 6 basic queries, yyyyMMdd dates, CAD defaults on IA.QV, IV.4* plate-type conditions routing, IR.QVC criminal records (CII/SSN promoted from any[] to set[]), -SkipRace on RMS, RMS Vehicle stripped to 3 attrs (VIN/plate/state) |
@@ -167,6 +168,14 @@ Every QIDM must have a `queryLabel` property. Use these standard values:
 | WMPIPersonWINQQuery | Wanted Person |
 | WMPIPersonMINQQuery | Missing Person |
 | CAISupervisedReleaseQuery | Supervised Release |
+| CCHCriminalHistoryQHQuery | CCH Criminal History (QH) |
+| CCHCriminalHistoryIQQuery | CCH Name Inquiry (IQ) |
+| CCHCriminalHistoryQWIQuery | CCH Wanted/III (QWI) |
+| CCHCriminalHistoryQRQuery | CCH Record Request (QR) |
+| CCHCriminalHistoryZRQuery | CCH Record Request (ZR) |
+| CCHCriminalHistoryFQQuery | CCH SID Query (FQ) |
+| CCHCriminalHistoryAQQuery | CCH Admin Query (AQ) |
+| CCHCriminalHistoryARQuery | CCH Admin Response (AR) |
 | RMS (all) | RMS |
 
 Label by what the officer is searching for, not by backend system name. Do not use entity names ("Person"), system names ("NCIC", "DMV"), or append "Query".

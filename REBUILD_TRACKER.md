@@ -29,6 +29,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 16 | NM_NMLETS_OFML | v1.3 |  | 66P/0F/0W/0LIM | 0 | |
 | 17 | OR_LEDS | v1.3 |  | 58P/0F/0W/0LIM | 0 | |
 | 18 | TN_TIES | v1.4 |  | 80P/0F/0W/0LIM | 0 | |
+| 19 | TX_TLETS_CCH | v1.0 |  | 119P/0F/0W/0LIM | 0 | STUB 2026-06-09: separate CCH-gated provider, 6 base QIDMs (ported TX_TLETS) + 8 CCH transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR), CCH-suffixed fields, autoSelect=false named-checkbox, FreeText capped, CCH response QRDM out of scope, NOT live-tested |
 
 **CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). Incomplete — awaiting updated devdoc/metadata decision.
 

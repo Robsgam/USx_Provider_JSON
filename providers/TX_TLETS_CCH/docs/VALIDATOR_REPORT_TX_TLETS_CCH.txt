@@ -1,0 +1,150 @@
+﻿================================================================
+  Build Report: TX_TLETS_CCH
+  Source: TX_TLETS_CCH.json
+  Generated: 2026-06-09 16:18
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'TX_TLETS_CCH': 17 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 58 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='N' for Firearm
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
+  [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
+  [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
+  [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 9 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' -> Person : 11 attrs, 7 combos
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' -> Person : 10 attrs, 4 combos
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TX_TLETS_CCH_GunQuery' -> Firearm : 6 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_CCH_GunQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_CCH_ArticleSingleQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' -> Boat : 6 attrs, 5 combos
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryAQQuery' -> Person : 9 attrs, 1 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryARQuery' -> Person : 5 attrs, 1 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' -> Person : 11 attrs, 1 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' -> Person : 15 attrs, 1 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' -> Person : 12 attrs, 5 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' -> Person : 11 attrs, 2 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' -> Person : 14 attrs, 3 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' ImageIndicator size=1
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery' -> Person : 4 attrs, 2 combos
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         TX_TLETS_CCH_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
+         TX_TLETS_CCH_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
+  [PASS] Person : 10 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'REGLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'VINVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'DPSIStickerNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQNameImg': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'QWName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLNameImg': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLNImg': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQNameImg': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLNImg': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_ArticleSingleQuery' combo 'QAArticleSerialNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_ArticleSingleQuery' combo 'QANCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' combo 'BQRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' combo 'BQBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' combo 'QBRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' combo 'QBBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryAQQuery' combo 'AQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryARQuery' combo 'AR': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' combo 'FQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' combo 'IQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.BDOB': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.NAME.SSN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.NAME.MISC': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.SID': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.FBI': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' combo 'QR.FBI': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' combo 'QR.SID': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' combo 'QWI.DOB': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' combo 'QWI.MISC': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' combo 'QWI.SSN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery' combo 'ZR.FBI': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery' combo 'ZR.SID': all set[]/any[] fields resolvable
+
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 119 PASS / 0 FAIL / 0 WARN
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  Ready for import.
+
