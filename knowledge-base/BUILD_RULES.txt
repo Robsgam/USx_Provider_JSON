@@ -911,3 +911,57 @@ See also:
     - AZ_AZDPS, NY_NYSPIN_EJUSTICE: delete legacy test logs
     - 12 providers: rename _MC suffix JSON on rebuild
     - HI_HCJDC_OFML: consolidate dual JSON (BASE + MC) to single
+
+================================================================================
+14. VISIBLE-FIRST MANDATE  (MAJOR DIRECTIVE)
+================================================================================
+
+  RULE: Every officer-facing query field MUST be built as a VISIBLE form field
+  (hidden=false) by default. Do NOT hide a field, and do NOT auto-populate a
+  field via a rule handler in place of a visible input, WITHOUT explicit user
+  approval or live-test evidence that the platform requires it.
+
+  WHY: Hidden/auto-populated fields silently change what the officer can enter
+  and what the query sends. When a field is hidden "for convenience" the officer
+  loses the ability to correct or override it, and the behavior is invisible in
+  the form. FL_FCIC v3.9 testing caught an Attention field that had been hidden
+  behind CommsysGetLastNameFirstNameInitialRuleHandler -- exposing it as a
+  visible field both restored officer control AND improved form load/submit
+  performance. Expose first; automate only when proven necessary and approved.
+
+  HOW TO APPLY:
+    - Build all query fields as Inp (FormInput) / Sel (FormSelect) / Dt
+      (FormDate), hidden=false. Use the field's natural fieldId.
+    - Do NOT reach for InpH/SelH (hidden helpers) or an auto-populate rule
+      handler as a first move. If you believe a field should be hidden or
+      auto-filled, STOP and get user approval first, or wait for live-test
+      evidence that the visible field breaks something.
+    - The Attention auto-populate handler (LIMITATION #29) is NOT a default.
+      Build Attention as a visible field first. Add the handler only with
+      approval -- and document the approval in the provider's BUILD_NOTES.
+
+  APPROVED EXCEPTIONS (the ONLY fields that may be hidden without case-by-case
+  approval -- all are documented platform requirements, not conveniences):
+    1. RMS dual-field State -- SelH 'RegistrationState' (RMS) + InpH outbound
+       state field -- ONLY when the NCIC single-visible-State pattern is
+       unavailable for the provider. See Section 7. Prefer the single visible
+       RegistrationState (NCIC) pattern, which has NO hidden fields.
+    2. dexStateUserId -- auto-populated from the officer's RMS profile (AUTH).
+    3. CAD / First-Responder dispatch context fields (CadUnit, CadEvent,
+       LinkToEvent) -- injected by the CAD_DISPATCH / FIRST_RESPONDER variants.
+
+  ENFORCEMENT: verify_build.ps1 CHECK 8 ("Visible-First Mandate") scans every
+  build. It WARNs on any hidden form field or auto-populate handler not on the
+  whitelist above. The check is non-blocking (WARN, not FAIL) so it does not
+  break legacy providers mid-flight, but every WARN must be resolved or have a
+  documented approval before a build is declared DONE (0 WARN target, per the
+  zero-WARN gate). The whitelist in CHECK 8 must stay in sync with the APPROVED
+  EXCEPTIONS list above.
+
+  PROVIDERS WITH OUTSTANDING VIOLATIONS (flagged for rebuild -- expose Attention):
+    LA_LEMS (all QIDMs), HI_HCJDC_OFML, CA_eSUN/CA_VENTURA/OH/TN (DH).
+    See project memory "7 providers flagged for Attention rebuild". Run
+    verify_build.ps1 CHECK 8 on any provider to get its current WARN list.
+    The 5 priority providers (NJ, FL, CA_CLETS, TX, NY) are CLEAN: 0 hidden
+    fields, 0 auto-populate handlers (verified 2026-06-09). TX_TLETS already
+    exposed Attention as a visible field (v3.x).

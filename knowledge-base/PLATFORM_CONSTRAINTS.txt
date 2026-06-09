@@ -277,11 +277,17 @@ LIMITATION #29: Attention field overridden by platform with user session data
   Behavior: User types a value in Attention field, but platform substitutes
     logged-in user's name (LASTNAME FIRSTINITIAL) in outbound XML <Attention>
     element. Override happens AFTER form submit and BEFORE XML generation.
-  Workaround: CommsysGetLastNameFirstNameInitialRuleHandler on QIDM Attention
-    attribute (CA_eSUN, LA_LEMS pattern). Do NOT add visible FormInput
-    for Attention.
-  Open: Whether this applies to all providers or only FL_FCIC; whether this
-    applies to all queries or only DriverHistoryQuery.
+  Resolution (SUPERSEDES earlier guidance): per the VISIBLE-FIRST MANDATE
+    (BUILD_RULES.txt Section 14), Attention is built as a VISIBLE FormInput
+    by default -- the officer keeps control and form load/submit is faster
+    (confirmed FL_FCIC v4.0). The platform may still override the value
+    server-side; that is acceptable. The hidden auto-populate workaround
+    (CommsysGetLastNameFirstNameInitialRuleHandler, CA_eSUN/LA_LEMS legacy
+    pattern) is NOT the default and must NOT be added without explicit user
+    approval. verify_build.ps1 CHECK 8 WARNs on the hidden-handler case.
+    EARLIER NOTE ("Do NOT add visible FormInput for Attention") is OBSOLETE.
+  Open: Whether the server-side override applies to all providers or only
+    FL_FCIC; whether it applies to all queries or only DriverHistoryQuery.
 
 --------------------------------------------------------------------------------
 

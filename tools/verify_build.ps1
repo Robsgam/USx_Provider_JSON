@@ -30,9 +30,11 @@ $json = $rawText | ConvertFrom-Json
 
 $failCount = 0
 $passCount = 0
+$warnCount = 0
 
 function Fail($msg) { Write-Host "  [FAIL] $msg" -ForegroundColor Red; $script:failCount++ }
 function Pass($msg) { Write-Host "  [PASS] $msg" -ForegroundColor Green; $script:passCount++ }
+function Warn($msg) { Write-Host "  [WARN] $msg" -ForegroundColor Yellow; $script:warnCount++ }
 function Info($msg) { Write-Host "  [INFO] $msg" -ForegroundColor Gray }
 
 Write-Host ""
@@ -89,7 +91,9 @@ if ($providerBundle) {
         $entityFields = if ($formFieldIds.ContainsKey($entity)) { $formFieldIds[$entity] } else { $null }
 
         foreach ($attr in $cfg.attributes) {
-            # Attention uses handler auto-populate (no form field needed)
+            # Attention auto-populate handler: skip the sourceField/QIF check here
+            # (the handler supplies the value). CHECK 8 (Visible-First Mandate) flags
+            # the hidden-auto-populate case where no visible form field backs it.
             if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') { continue }
             foreach ($sf in $attr.sourceField) {
                 if ($entityFields -and -not $entityFields.Contains($sf)) {
@@ -353,13 +357,93 @@ if ($otherPath -and (Test-Path $otherPath)) {
     Info "Not a BASE/MC variant -- skipping cross-variant check"
 }
 
+# ── CHECK 8: Visible-First Mandate (no hidden/auto-populated fields) ──────────
+# KB: BUILD_RULES.txt "Visible-First Mandate". All officer-facing query fields
+# MUST be visible (hidden=false). Do NOT hide or auto-populate a field without
+# explicit user approval or live-test evidence. Documented exceptions are
+# whitelisted below; anything else is a WARN requiring justification.
+Write-Host ""
+Write-Host "--- CHECK 8: Visible-First Mandate ---" -ForegroundColor Yellow
+
+# Whitelist of fieldId patterns that may be legitimately hidden (see BUILD_RULES.txt):
+#   - RMS dual-field State (SelH for RMS + InpH for outbound XML) when NCIC single-visible unavailable
+#   - dexStateUserId auto-populated from the officer's RMS profile
+#   - CAD / First-Responder dispatch context fields
+$hiddenFieldWhitelist = @(
+    '(?i)state',                         # RMS dual-field State exception
+    '(?i)dexStateUserId',                # AUTH user id from RMS profile
+    '(?i)cadUnit|cadEvent|linkToEvent'   # CAD / First-Responder context
+)
+
+# Recursively collect hidden form-field nodes (hidden=true + props.fieldId + Form* type)
+$hiddenFields = [System.Collections.Generic.List[object]]::new()
+function Find-HiddenFields($node) {
+    if ($null -eq $node) { return }
+    if ($node -is [System.Collections.IEnumerable] -and $node -isnot [string]) {
+        foreach ($item in $node) { Find-HiddenFields $item }
+        return
+    }
+    if ($node -is [psobject]) {
+        $props = $node.PSObject.Properties
+        $hiddenProp = $props | Where-Object { $_.Name -eq 'hidden' }
+        if ($hiddenProp -and $hiddenProp.Value -eq $true -and $node.props -and $node.props.fieldId) {
+            $rn = if ($node.type -and $node.type.resolvedName) { $node.type.resolvedName } else { '' }
+            if ($rn -match '^Form') {
+                $hiddenFields.Add([pscustomobject]@{ fieldId = $node.props.fieldId; type = $rn })
+            }
+        }
+        foreach ($p in $props) { Find-HiddenFields $p.Value }
+    }
+}
+if ($entitiesBundle) { Find-HiddenFields $entitiesBundle }
+
+$flaggedHidden = 0
+$uniqueHidden = $hiddenFields | Sort-Object fieldId -Unique
+foreach ($hf in $uniqueHidden) {
+    $isWhitelisted = $false
+    foreach ($pat in $hiddenFieldWhitelist) { if ($hf.fieldId -match $pat) { $isWhitelisted = $true; break } }
+    if ($isWhitelisted) {
+        Info "Hidden field '$($hf.fieldId)' ($($hf.type)) -- documented exception, allowed"
+    } else {
+        Warn "Hidden field '$($hf.fieldId)' ($($hf.type)) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)"
+        $flaggedHidden++
+    }
+}
+
+# Auto-populate handlers that replace a visible field (Attention / LastNameFirstNameInitial)
+$autoPopHandlers = 0
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        foreach ($attr in $cfg.attributes) {
+            if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') {
+                $entity = $cfg.targetEntity
+                $hasVisibleField = $false
+                if ($formFieldIds.ContainsKey($entity)) {
+                    foreach ($sf in $attr.sourceField) { if ($formFieldIds[$entity].Contains($sf)) { $hasVisibleField = $true } }
+                }
+                if (-not $hasVisibleField) {
+                    Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses CommsysGetLastNameFirstNameInitialRuleHandler (auto-populate) with no visible form field -- expose field first per Visible-First Mandate; add handler only with approval"
+                    $autoPopHandlers++
+                }
+            }
+        }
+    }
+}
+
+if ($flaggedHidden -eq 0 -and $autoPopHandlers -eq 0) {
+    Pass "Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 if ($failCount -gt 0) {
-    Write-Host " VERIFICATION FAILED: $failCount FAIL / $passCount PASS" -ForegroundColor Red
+    Write-Host " VERIFICATION FAILED: $failCount FAIL / $warnCount WARN / $passCount PASS" -ForegroundColor Red
+} elseif ($warnCount -gt 0) {
+    Write-Host " VERIFICATION PASSED (with warnings): $passCount PASS / $warnCount WARN / 0 FAIL" -ForegroundColor Yellow
 } else {
-    Write-Host " VERIFICATION PASSED: $passCount PASS / 0 FAIL" -ForegroundColor Green
+    Write-Host " VERIFICATION PASSED: $passCount PASS / 0 WARN / 0 FAIL" -ForegroundColor Green
 }
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""

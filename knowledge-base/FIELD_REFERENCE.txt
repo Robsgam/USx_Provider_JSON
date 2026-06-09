@@ -31,6 +31,12 @@ SECTION 1 -- FIELD TYPE SELECTION
 
   Hidden field - state for RMS                 ->  SelH
     attributeTypeId=STATE, initialValue=<state code>
+    NOTE: SelH/InpH are HIDDEN fields. Per the VISIBLE-FIRST MANDATE
+    (BUILD_RULES.txt Section 14) hidden fields are NOT the default. The RMS
+    dual-field State pattern is a WHITELISTED exception, used ONLY when the
+    NCIC single-visible-State pattern is unavailable. Prefer single visible
+    RegistrationState (NCIC) -- it has no hidden fields. Do NOT use SelH/InpH
+    for other fields without approval.
 
   Hidden field - state for outbound XML        ->  InpH
     initialValue=<state code> (plain text, no attributeTypeId)

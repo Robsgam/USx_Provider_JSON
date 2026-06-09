@@ -567,8 +567,12 @@ SECTION 8 -- INSTANCE-SPECIFIC BEHAVIORS (TEST ON FIRST IMPORT)
       officer's badge from session.
     Confirmed: AZ (2026-04-20)
     Unconfirmed: NJ, FL, NY, HI, TX, LA
-    If auto-populates: hide BadgeNumber field (not needed on form).
-    If not: keep visible for manual entry.
+    Default (VISIBLE-FIRST MANDATE, BUILD_RULES.txt Section 14): build
+      BadgeNumber VISIBLE for manual entry. Hide it ONLY after live-test
+      evidence confirms it auto-populates from session -- that test result
+      is the "live-test evidence" the mandate requires. Do NOT hide it
+      pre-emptively. (dexStateUserId itself is a whitelisted exception in
+      verify_build.ps1 CHECK 8.)
 
   VEHICLE_BODY_STYLE / VEHICLE_TYPE:
     What to test: Import and check dropdown populates.
