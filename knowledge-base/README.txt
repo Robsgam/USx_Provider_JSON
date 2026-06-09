@@ -1,7 +1,7 @@
 CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
-Last updated: 2026-05-08
+Last updated: 2026-06-09
 Covers: 19 providers in consolidated monorepo
   Active (8): NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS
   New (11): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_CLETS_OCATS/CA_eSUN/CA_SAN_LUIS_OBISPO/
@@ -135,6 +135,10 @@ TOOLS
       4. Cross-bundle fieldId consistency
       5. camelCase enforcement (opt-in via -CamelCase flag)
       6. Standard pattern comparison (queryLabel, ImageIndicator, keyReference, state)
+      7. Cross-variant consistency (BASE vs MC field type mismatches)
+      8. Visible-First Mandate (no hidden/auto-populated fields outside approved exceptions)
+      9. Synthetic keyRef documentation -- WARNs on multi-combo QIDMs missing LIMITATION
+         #21/#36 comment block in build script (BUILD_RULES.txt Section 15)
     Called automatically by build_report.ps1 as step 6. Can also run standalone.
     Usage: -Path <json> [-CamelCase]
     FAILS the build (exit 1) if any check fails.
