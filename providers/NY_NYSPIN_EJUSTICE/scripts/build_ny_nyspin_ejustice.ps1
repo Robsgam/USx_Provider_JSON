@@ -32,7 +32,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.4"
+    [string]$Version = "2.5"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -276,7 +276,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DALH'
             state                 = 'In'
@@ -288,7 +288,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALL'
             state                 = 'In'
@@ -542,7 +542,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_4' }
             )}
             @{ id = 'ROW_PER_DH_5'; cols = @('6','6'); fields = @(
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' @{ initialValue = 'C' } }
                 @{ id = 'RequestorDH_Input';   node = Inp 'requestorDH'   'Requestor (DH)'    '35' 'ROW_PER_DH_5' }
             )}
             @{ id = 'ROW_PER_DH_6'; cols = @('12'); fields = @(

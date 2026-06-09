@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE MC v2.4 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE MC v2.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-09
 Variant: MC (multi-card per entity)
@@ -18,7 +18,7 @@ Person (3 cards, 19 fields):
     ROW 2: nameLastDH [Inp 35], nameFirstDH [Inp 35]
     ROW 3: nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
     ROW 4: birthDateDH [FormDate], sexCodeDH [Sel SEX]
-    ROW 5: purposeCodeDH [Inp 1], requestorDH [Inp 35]
+    ROW 5: purposeCodeDH [Inp C, 1], requestorDH [Inp 35]
     ROW 6: nyNyspinTransactionNameDH [Inp DALL, 4]
   CARD_PER_DL (DRIVER LICENSE):
     ROW 1: operatorLicenseNumber [Inp 20]
@@ -67,7 +67,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Last Name (DH), First Name (DH).
               Middle Name (DH), Suffix (DH).
               DOB (DH), Sex (DH) dropdown (no default).
-              Purpose Code (DH), Requestor (DH).
+              Purpose Code (DH)=C, Requestor (DH).
               Transaction Type=DALL.
               CARD_PER_DL: titled "DRIVER LICENSE".
               License Number.
