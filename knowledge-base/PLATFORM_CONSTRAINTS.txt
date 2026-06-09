@@ -107,6 +107,20 @@ LIMITATION #2: ONE QIDM per (targetEntity, query) pair
     Provider does not validate keyRef -- routes by field content.
     Confirmed working: DALL+DALH single QIDM (v1.19).
 
+    SYNTHETIC KEYREF NAMING CONVENTION (applies to all providers):
+    When metadata XML uses the same keyReference for multiple combos in a transaction,
+    ConnectCIC requires a unique keyRef per combo. Invent a synthetic label by appending
+    a suffix to the metadata keyRef. These synthetic keyRefs do NOT exist in the
+    provider's metadata -- they are ConnectCIC-internal routing labels only.
+    Standard suffixes:
+      - DH Name path:   DALL -> DALH  (H = history/name path)
+      - DH OOS:         DALL -> DALLOUT, DALH -> DALHOUT  (OUT = out-of-state)
+      - DL Name path:   DLIC -> DLICN  (N = name path)
+    Build scripts MUST include a comment on any synthetic keyRef explaining:
+      "synthetic -- metadata uses [REAL_KEYREF] for both combos; platform requires
+       unique keyRefs per QIDM (LIMITATION #21)"
+    Confirmed working on NYSPIN: DLICN (NY v2.7, 2026-06-09 live test).
+
 --------------------------------------------------------------------------------
 
 LIMITATION #3: First matching combination fires -- all populated fields sent

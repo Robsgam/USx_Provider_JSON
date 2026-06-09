@@ -17,7 +17,7 @@
 #
 # QIDMs (7, 17 combos):
 #   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
-#   DriverLicenseQuery                   DLICN, DLIC
+#   DriverLicenseQuery                   DLICN (Name+DOB), DLIC (OLN)  [metadata: both keyRef=DLIC; DLICN is synthetic -- platform requires unique keyRefs per QIDM]
 #   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=true, co-fires with DL on name)
 #   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL
 #   GunQuery                             GINQ
@@ -32,7 +32,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.6"
+    [string]$Version = "2.7"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -131,9 +131,13 @@ $vehQuery = [PSCustomObject]@{
 # XML: DriverLicenseQuery v2
 #   DLIC (OLN): set[OLN], any[ImageIndicator, State]
 #   DLIC (Name): set[BirthDate, Name, SexCode], any[ImageIndicator, State]
-# Duplicate DLIC keyRef -> invent DLICN for Name path (LIMITATION #21)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs within a QIDM.
+# Metadata XML uses keyReference="DLIC" for BOTH combos (OLN and Name+DOB).
+# Synthetic keyRef "DLICN" used for the Name combo to satisfy platform uniqueness.
+# DLICN is not a real NYSPIN transaction code -- it is a ConnectCIC internal label only.
+# See PLATFORM_CONSTRAINTS.txt -- duplicate-keyRef constraint.
 # NyNyspinDriverLicenseNameQuery (DGRP) is a SEPARATE active QIDM (see 1e2 below) --
-# a distinct DMV name-search transaction, complements DLICN. Both fire on name entry.
+# a distinct DMV name-search transaction, co-fires with DL on name entry.
 # autoSelect=true, NO queriesToDeselect (DL is default query -- AP #14)
 # SexCode: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
 # State: codeTypeProvider=NCIC (reverse-lookup attr ID -> 2-letter code)
@@ -171,7 +175,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'Mapping for DriverLicenseQuery -- DLICN (Name+DOB+Sex), DLIC (OLN). Default query, no deselect.'
+    description     = 'Mapping for DriverLicenseQuery -- DLICN (Name+DOB+Sex, synthetic keyRef) and DLIC (OLN). Platform requires unique keyRefs; metadata uses DLIC for both. Default query, no deselect.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
