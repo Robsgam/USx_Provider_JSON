@@ -1,0 +1,38 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverLicenseQuery
+Combo: DLICN (DL Name+DOB+Sex fires DriverLicenseQuery alone (v2.9 co-fire fix))
+Variant: BASE
+Date: 2026-06-09 12:57:35
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameLast=DOE, NameFirst=JON, BirthDate=1985-01-01, Sex=M, OLN=blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTPMZKNRGKFK48JAJ4SHQ02Z"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTPMZKNRGKFK48JAJ4SHQ02Z</Id><ImageIndicator>Y</ImageIndicator><SexCode>M</SexCode><BirthDate>01011985</BirthDate><Name>DOE, JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+No Returns
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTPMZKNRGKFK48JAJ4SHQ02Z
+  ImageIndicator                 Y
+  SexCode                        M
+  BirthDate                      01011985
+  Name                           DOE, JON
+
+NOTES
+-----
+v2.9: DGRP autoSelect=false. Only DriverLicenseQuery (DLICN) sent. No NyNyspinDriverLicenseNameQuery co-fire. ImageIndicator=Y default applied.
+
+RESULT: PASS

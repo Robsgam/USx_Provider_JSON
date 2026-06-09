@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE -- BUILD STATUS
+﻿NY_NYSPIN_EJUSTICE -- BUILD STATUS
 ====================================
 Last updated    : 2026-06-09
 Current: v2.9 | 81P/0F/0W/0LIM | Updated 2026-06-09
@@ -34,7 +34,7 @@ Standard patterns:
   - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
   - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
   - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
-  ---   2026-06-09 Person     NyNyspinDriverLicenseName:DGRP PASS     Person DGRP co-fired with DLICN
+  ---   2026-06-09 Person     DL:DLIC              PASS     DL by OLN fires DriverLicenseQuery alone (v2.9)
   - PlateType=PC, PlateYear=2026 defaults + CAD defaults on RVEH
   - VehicleMakeCode as FormSelect (VEHICLE_MAKE/NCIC dropdown)
   - All fieldIds camelCase
@@ -99,3 +99,4 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   ---   ----------  ----------  -------------------  --------  -----
   ---   2026-06-09 Person     DL:DLIC              PASS     Person DLIC OLN
   ---   2026-06-09 Person     DL:DLICN             PASS     Person DLICN Name+DOB (DGRP co-fired)
+  ---   2026-06-09 Person     NyNyspinDriverLicenseName:DGRP PASS     DGRP fires alone when manually selected (v2.9)
