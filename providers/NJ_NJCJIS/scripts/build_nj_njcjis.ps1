@@ -50,6 +50,10 @@ $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
 #     Defaulted fields in any[] per LIMITATION #31.
 #     4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
 #     RAND combos first (more specific via conditions), default combos as fallback.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'RQ' (plate) and 'RQN' (VIN); RandomRequest routing splits each
+# into 2 combos. RQ_RAND and RQN_RAND are synthetic -- NOT real NJCJIS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -140,6 +144,10 @@ $vehRegQuery = [PSCustomObject]@{
 #     NO autoSelect -- officer manually checks when needed.
 #     queriesToDeselect=[VehicleRegistrationQuery] -- checking Stolen
 #     unchecks Registration.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QV' for all stolen-vehicle combos; synthetic labels QVN (NCIC#),
+# QVP (plate), QVV (VIN) invented to differentiate routing. NOT real NJCJIS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 # =====================================================================
 $vehStolenQuery = [PSCustomObject]@{
     attributes = @(
@@ -203,7 +211,12 @@ $vehStolenQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1f. DriverLicenseQuery # =====================================================================
+# 1f. DriverLicenseQuery
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'DQ' for both combos (Name+DOB and OLN); synthetic label 'DQN'
+# (N=OLN path) invented for platform routing only. NOT a real NJCJIS transaction code.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+# =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -329,7 +342,12 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1i. BoatQuery # =====================================================================
+# 1i. BoatQuery
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QB' for both combos (Reg# and Hull ID); synthetic label 'QBN'
+# (N=Hull path) invented for platform routing only. NOT a real NJCJIS transaction code.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+# =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BoatHullIdNumber';   size = 20; sourceField = @('boatHullIdNumber');    targetField = 'BoatHullIdNumber' }

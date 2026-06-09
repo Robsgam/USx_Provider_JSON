@@ -1,7 +1,7 @@
 CONNECTCIC BUILD RULES -- PROVIDER JSON STRUCTURE
 ====================================================
 How to structure a provider JSON from scratch.
-Last updated: 2026-05-06
+Last updated: 2026-06-09
 Source: NJ_NJCJIS (v2.3), NY_NYSPIN_EJUSTICE (v1.1), AZ_AZDPS (v2.0),
         FL_FCIC (v3.0), HI_HCJDC_OFML (v1.1), TX_TLETS (v2.1),
         LA_LEMS (v2.0), CA_CLETS (v1.5)
@@ -965,3 +965,49 @@ See also:
     The 5 priority providers (NJ, FL, CA_CLETS, TX, NY) are CLEAN: 0 hidden
     fields, 0 auto-populate handlers (verified 2026-06-09). TX_TLETS already
     exposed Attention as a visible field (v3.x).
+
+================================================================================
+15. SYNTHETIC KEYREF DOCUMENTATION (MANDATORY)
+================================================================================
+
+  RULE: Every QIDM in a build script that has more than one combo MUST include
+  a LIMITATION comment block immediately before the $...Query = [PSCustomObject]@{
+  line. This is mandatory on every new build and on every rebuild.
+
+  WHY: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21). Provider
+  metadata XML often uses the same keyReference for multiple transactions. Build
+  scripts invent synthetic keyRef labels (e.g., DLICN, DALH, KQName) to satisfy
+  the platform constraint. Without documentation, these invented names appear to be
+  real provider transaction codes and cause confusion during debugging, auditing,
+  and operator training. NY_NYSPIN testing found DLICN with no explanation --
+  this standard was created 2026-06-09 to prevent recurrence.
+
+  STANDARD COMMENT BLOCK FORMAT (insert before every $...Query definition
+  whose QIDM has >1 combo):
+
+    # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+    # Metadata uses keyRef '<BASE>' for all <N> combos; synthetic labels (<LIST>) are
+    # invented for platform routing only. NOT real <PROVIDER> transaction codes.
+    # See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+
+  For OOS-split combos (LIMITATION #36 Choice OOS rule), use instead:
+    # PLATFORM CONSTRAINT: <KEYREF> is a synthetic keyRef (NOT a real <PROVIDER> code).
+    # Metadata uses a Choice combo with State in extended-Set; LIMITATION #36 requires a
+    # dedicated OOS combo with State in set[]. <IN_STATE_KEYREF> stays in-state only.
+    # See PLATFORM_CONSTRAINTS.txt -- Choice OOS rule (LIMITATION #36).
+
+  SYNTHETIC KEYREF NAMING CONVENTIONS (from PLATFORM_CONSTRAINTS.txt):
+    - DH Name path:   DALL → DALH   (H = history/name path)
+    - DH OOS:         DALL → DALLOUT, DALH → DALHOUT  (OUT = out-of-state)
+    - DL Name path:   DLIC → DLICN  (N = name path)
+    - FL/TX pattern:  Base_FieldName (e.g., KQName, FRQLicensePlateNumber)
+    - CA pattern:     Base.suffix  (e.g., NLTS.DQ.N, IR.QVC.O)
+    - NJ VehReg:      RQ_RAND, RQN_RAND  (_RAND = RandomRequest=Y routing split)
+
+  ENFORCEMENT: verify_build.ps1 CHECK 9 ("Synthetic keyRef Documentation")
+  WARNs on any multi-combo QIDM that lacks a LIMITATION #21/#36 comment within
+  40 lines of the first keyReference in the build script. 0 WARN is required
+  before declaring any build DONE.
+
+  STATUS (2026-06-09): NJ, FL, CA_CLETS, TX, NY all CLEAN (CHECK 9 PASS).
+  Remaining 14 providers: add comment blocks on next scheduled rebuild.

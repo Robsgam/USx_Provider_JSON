@@ -35,6 +35,10 @@ $qmf     = Build-Qmf -ProviderName 'TX_TLETS'
 # Combo order: most-specific first (3 set > 2 set > 1 set)
 # REG/RQ plate need Year+FRT/PlateType; VIN+FRT needs FRT; DPSI isolated; QV catchalls last
 # QV VIN unreachable after RQ VIN (same set[VIN]) -- LIMITATION
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'REG', 'RQ', 'VIN', 'DPSI', 'QV' for multiple combos each;
+# field-name suffixes (REGLicensePlateNumber, RQLicensePlateNumber, etc.) are synthetic.
+# NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'FinancialResponsibilityType'; size = 1;  sourceField = @('financialResponsibilityType'); targetField = 'FinancialResponsibilityType' }
@@ -64,6 +68,10 @@ $vehRegQuery = [PSCustomObject]@{
 # v3.2: conditions routing — all 3 image fields must be present for image-path combos;
 # catchall combos (no conditions) omit them. Email on shared OPTIONS card.
 # Order: image-path before catchall at each specificity level.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'DQ', 'QW', 'CPL' for multiple combos each; field-name and
+# condition suffixes (DQNameImg, DQName, DQOLNImg, DQOLN, etc.) are synthetic routing labels.
+# NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $imgCond = @(
     [PSCustomObject]@{ field = @('ImageIndicator'); operator = 'EQUALS'; value = @('Y') }
     [PSCustomObject]@{ field = @('ReasonCode');     operator = 'EQUALS'; value = @('C') }
@@ -106,6 +114,9 @@ $dlQuery = [PSCustomObject]@{
 
 # --- DriverHistoryQuery (4 combos) ---
 # v3.2: EmailAddress sourceField→emailAddress (shared OPTIONS card). Conditions routing same as DL.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'KQ' for all 4 combos; synthetic labels KQNameImg, KQName, KQOLNImg,
+# KQOLN differentiate routing. NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefsDH = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
@@ -135,6 +146,10 @@ $dhQuery = [PSCustomObject]@{
 }
 
 # --- GunQuery (2 combos) ---
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QG' for both combos; synthetic labels QGGunSerialNumber and
+# QGNCICNumber differentiate routing. NOT real TX TLETS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunCaliber'; size = 4; sourceField = @('gunCaliber'); targetField = 'GunCaliber' }
@@ -152,6 +167,10 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # --- ArticleSingleQuery (2 combos) ---
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QA' for both combos; synthetic labels QAArticleSerialNumber and
+# QANCICNumber differentiate routing. NOT real TX TLETS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('articleSerialNumber'); targetField = 'ArticleSerialNumber' }
@@ -170,6 +189,10 @@ $artQuery = [PSCustomObject]@{
 # --- BoatQuery (5 combos) ---
 # BQ combos: State promoted to set[] (routing toggle: State filled → OOS Nlets, blank → NCIC)
 # QB combos: no State required (NCIC in-state/any)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'BQ' and 'QB' for multiple combos each; field-name suffixes
+# (BQRegistrationNumber, QBBoatHullIdNumber, etc.) are synthetic routing labels.
+# NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BoatHullIdNumber'; size = 20; sourceField = @('boatHullIdNumber'); targetField = 'BoatHullIdNumber' }

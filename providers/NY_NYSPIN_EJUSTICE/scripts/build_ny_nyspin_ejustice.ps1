@@ -76,6 +76,9 @@ $qmf = Build-Qmf -ProviderName 'NY_NYSPIN_EJUSTICE'
 #   RVIN: set[VIN, State], any[Image, VehicleMakeCode, VehicleYear]   (OOS VIN)
 # Choice OOS rule (LIMITATION #36): metadata Choice extended-Set with State =>
 #   build a dedicated OOS combo with State in set[]. See KB QIDM_REFERENCE.
+# RVEHOUT is a synthetic keyRef (NOT a real NYSPIN transaction code). Metadata RVEH uses
+# a Choice combo with State in extended-Set; LIMITATION #36 requires a dedicated OOS combo.
+# RVEH narrowed to in-state only; RVEHOUT handles OOS plate queries.
 # Order: RVIN (2 set) > RVEHOUT (2 set) > RVEH (1 set) > RCAR (1 set)
 # =====================================================================
 $vehQuery = [PSCustomObject]@{
@@ -243,7 +246,10 @@ $dgrpQuery = [PSCustomObject]@{
 #                any[ImageIndicator, NyNyspinTransactionName]
 #               -> in-state: set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH], any[image,purpose,requestor,txname,state,middle,suffix]
 #               -> OOS:      set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH,purposeCodeDH,requestorDH,registrationState], any[...]
-# Duplicate DALL keyRef -> invent DALH (Name in-state), DALHOUT (Name OOS), DALLOUT (OLN OOS)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'DALL' for all 4 DH combos; synthetic labels DALH (Name in-state),
+# DALHOUT (Name OOS), DALLOUT (OLN OOS) invented for platform routing only.
+# NOT real NYSPIN transaction codes. See PLATFORM_CONSTRAINTS.txt.
 # PurposeCode + Requestor required for OOS DH (State filled).
 # NyNyspinTransactionName: visible FormInput on DH card, initialValue=DALL (officer can
 #   override, e.g. DLIC). In any[] of all 4 DH combos + defaults[]=DALL. Per Visible-First

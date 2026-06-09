@@ -71,6 +71,10 @@ $qmf = Build-Qmf -ProviderName 'FL_FCIC'
 # --- 1. VehicleRegistrationQuery (FRQ + RQ) -- 6 combos ---
 # XML: FRQ (plate/VIN/Decal/TitleLien) + RQ (plate+state/VIN+state)
 # FRQ = FCIC-only (no NCIC/Nlets), RQ = with state routing
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'FRQ' and 'RQ' for multiple combos each; field-name suffixes
+# (FRQLicensePlateNumber, RQLicensePlateNumber, etc.) are synthetic routing labels.
+# NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'DecalNumber';                  size = 10; sourceField = @('decalNumber');                  targetField = 'DecalNumber' }
@@ -167,6 +171,10 @@ $vehRegQuery = [PSCustomObject]@{
 # --- 3. DriverLicenseQuery (FDQ + DQ) -- 4 combos, autoSelect ---
 # XML: FDQ by OLN, FDQ by Name+DOB+Sex (FCIC), DQ by OLN+State, DQ by Name+DOB+Sex+State (NCIC/Nlets)
 # Priority: OLN combos before Name combos (operational priority)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'FDQ' and 'DQ' for 2 combos each; synthetic labels
+# (FDQName, FDQOperatorLicenseNumber, DQName, DQOperatorLicenseNumber) differentiate routing.
+# NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -227,6 +235,9 @@ $dlQuery = [PSCustomObject]@{
 # XML: KQ by OLN+State+Purpose, KQ by Name+DOB+Sex+State+Purpose
 # DH-suffix fields isolate from DL field pool (AP #14)
 # Attention: visible FormInput (AttentionDH), NOT in combo requirements
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName and KQOperatorLicenseNumber
+# differentiate routing. NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention' }
@@ -272,6 +283,10 @@ $dhQuery = [PSCustomObject]@{
 
 # --- 6. GunQuery (QG) -- 3 combos ---
 # XML: QG by serial, QG by NCIC#, QG by PCN
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QG' for all 3 combos; synthetic labels QGGunSerialNumber,
+# QGNCICNumber, QGProcessControlNumber differentiate routing. NOT real FCIC transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunMake';               size = 23; sourceField = @('gunMake');               targetField = 'GunMake' }
@@ -313,6 +328,10 @@ $gunQuery = [PSCustomObject]@{
 
 # --- 7. ArticleSingleQuery (QA) -- 4 combos ---
 # XML: QA by serial+type, QA by OAN+type, QA by NCIC#, QA by PCN
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'QA' for all 4 combos; synthetic labels QAArticleSerialNumber,
+# QAOwnerAppliedNumber, QANCICNumber, QAProcessControlNumber differentiate routing.
+# NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleSerialNumber';   size = 20; sourceField = @('articleSerialNumber');   targetField = 'ArticleSerialNumber' }
@@ -363,6 +382,10 @@ $artQuery = [PSCustomObject]@{
 # XML: FBQ (hull/reg/decal/title), QB (CG/NCIC/PCN/hull/reg)
 # BQ (Nlets OOS) REMOVED -- not in devdoc "Basic Queries Supported" key list (FBQ + QB only)
 # RelatedHitSearchIndicator routes QB+Hull/QB+Reg vs FBQ: officer types Y to get NCIC stolen
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'FBQ' and 'QB' for multiple combos each; field-name suffixes
+# (FBQBoatHullIdNumber, QBRegistrationNumber, etc.) are synthetic routing labels.
+# NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BoatHullIdNumber';          size = 62; sourceField = @('boatHullIdNumber');          targetField = 'BoatHullIdNumber' }

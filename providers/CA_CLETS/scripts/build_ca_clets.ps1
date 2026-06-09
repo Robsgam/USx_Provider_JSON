@@ -48,6 +48,10 @@ $qmf = Build-Qmf -ProviderName 'CA_CLETS'
 # + IN.VP (name) + IV.4V (VIN) + IA.QVK (VIN+make) + IA.QV (plate catchall)
 # IV.4* combos use conditions on LicensePlateTypeCode to route by plate type.
 # IV.4V: same set[] as IA.QVK — ordered after, documented as covered by IA routing superset.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'NLTS.RQ' for OOS plate and VIN; dot-suffixes .P (plate) and .V (VIN)
+# are synthetic. IV.4* are real CLETS transaction codes (no suffix needed).
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'AddressCity';                  size = 13; sourceField = @('addressCity');                  targetField = 'AddressCity' }
@@ -274,6 +278,11 @@ $vehRegQuery = [PSCustomObject]@{
 # IR.QVC OLN: criminalIdNumber promoted from any[] to set[] — differentiates from ID.L1.
 #   OLN alone → ID.L1 (DL lookup). OLN + CII → IR.QVC.O (criminal records).
 # IR.QVC.Name: broadest fallback (set=[purposeCode] only), fires when no specific combo matches.
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'NLTS.DQ' for OOS combos (synthetic: NLTS.DQ.N=name, NLTS.DQ=OLN)
+# and 'IR.QVC' for criminal records combos (synthetic: IR.QVC.O/.N/.C/.S per field path).
+# IN.L1, ID.L1 are real CLETS codes. NOT real CA CLETS transaction codes where synthetic.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'AddressCounty';        size = 3;  sourceField = @('addressCounty');        targetField = 'AddressCounty' }
@@ -377,6 +386,10 @@ $dlQuery = [PSCustomObject]@{
 
 # DriverHistoryQuery -- PascalCase + DH-suffix fieldIds (AP #14 / LIMITATION #24-25)
 # PurposeCode: DH attr maps from CaRequestPurposeCodeDH (DH-suffix form field)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'NLTS.KQ' for both combos; synthetic labels NLTS.KQ.N (name path)
+# and NLTS.KQ.O (OLN path) differentiate routing. NOT real CA CLETS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -462,6 +475,10 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # ArticleSingleQuery -- PascalCase
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'IP.QA' for both combos; synthetic labels IP.QA.S (serial) and
+# IP.QA.O (owner-applied) differentiate routing. NOT real CA CLETS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleBrand';        size = 6;  sourceField = @('articleBrand');        targetField = 'ArticleBrand' }
@@ -496,6 +513,10 @@ $artQuery = [PSCustomObject]@{
 }
 
 # BoatQuery -- PascalCase + cross-entity (Name+DOB for NLTS.BQ Name combo)
+# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+# Metadata uses keyRef 'NLTS.BQ' and 'IA.QB' for multiple combos each; dot-suffixes
+# (.N/.H/.R) are synthetic routing labels. NOT real CA CLETS transaction codes.
+# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $boatQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{

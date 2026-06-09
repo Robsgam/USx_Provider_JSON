@@ -435,6 +435,61 @@ if ($flaggedHidden -eq 0 -and $autoPopHandlers -eq 0) {
     Pass "Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions"
 }
 
+# ── CHECK 9: Synthetic keyRef documentation in build script ──────────────────
+# KB: BUILD_RULES.txt Section 15. Every QIDM with >1 combo uses synthetic keyRefs
+# (LIMITATION #21 or #36). The build script MUST have a LIMITATION comment block
+# immediately before the $...Query definition for each such QIDM.
+Write-Host ""
+Write-Host "--- CHECK 9: Synthetic keyRef Documentation ---" -ForegroundColor Yellow
+
+$providerDir   = Split-Path $resolved -Parent
+$providerName  = Split-Path $providerDir -Leaf
+$scriptName    = "build_$($providerName.ToLower()).ps1"
+$scriptPath    = Join-Path $providerDir "scripts\$scriptName"
+
+if (-not (Test-Path $scriptPath)) {
+    Info "Build script '$scriptName' not found -- skipping synthetic keyRef documentation check"
+} elseif ($providerBundle) {
+    $scriptLines   = Get-Content $scriptPath
+    $multiComboQIDMs = @($providerBundle.configurations | Where-Object {
+        $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.combinations.Count -gt 1
+    })
+
+    $missingDocs = 0
+    foreach ($cfg in $multiComboQIDMs) {
+        $firstKeyRef    = $cfg.combinations[0].keyReference
+        $keyRefLineIdx  = -1
+        for ($i = 0; $i -lt $scriptLines.Count; $i++) {
+            if ($scriptLines[$i] -match [regex]::Escape("'$firstKeyRef'")) {
+                $keyRefLineIdx = $i
+                break
+            }
+        }
+        if ($keyRefLineIdx -lt 0) {
+            Info "QIDM '$($cfg.name)': keyRef '$firstKeyRef' not found in build script -- skipping"
+            continue
+        }
+        # Search the 40 lines before the first keyRef occurrence for LIMITATION #21 or #36
+        $searchStart = [Math]::Max(0, $keyRefLineIdx - 40)
+        $window      = $scriptLines[$searchStart..($keyRefLineIdx - 1)]
+        $hasDoc      = $window | Where-Object { $_ -match 'LIMITATION #21|LIMITATION #36' }
+        if (-not $hasDoc) {
+            Warn "QIDM '$($cfg.name)' has $($cfg.combinations.Count) combos but build script has no LIMITATION #21/#36 comment before keyRef '$firstKeyRef' -- add synthetic keyRef block (BUILD_RULES Section 15)"
+            $missingDocs++
+        }
+    }
+
+    if ($missingDocs -eq 0) {
+        if ($multiComboQIDMs.Count -gt 0) {
+            Pass "All $($multiComboQIDMs.Count) multi-combo QIDMs have LIMITATION #21/#36 documentation in build script"
+        } else {
+            Info "No multi-combo QIDMs -- synthetic keyRef documentation not required"
+        }
+    }
+} else {
+    Info "No provider bundle -- skipping synthetic keyRef documentation check"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
