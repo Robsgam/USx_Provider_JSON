@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-08 16:16
+  Generated: 2026-06-09 10:27
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -10,10 +10,10 @@ TEST MATRIX VALIDATION -- NY_NYSPIN_EJUSTICE
 ============================================================
 Source: NY_NYSPIN_EJUSTICE.json
 Matrix: NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt
-Generated: 2026-06-08
+Generated: 2026-06-09
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
-  T1  Person     [PASS] 3 cards, 18 fields, defaults verified
+  T1  Person     [PASS] 3 cards, 19 fields, defaults verified
   T2  Vehicle    [PASS] 1 cards, 8 fields, defaults verified
   T3  Boat       [PASS] 1 cards, 5 fields, defaults verified
   T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
@@ -42,9 +42,9 @@ PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
   T22  Article    [PASS] ArticleSingleQuery fires (AINQ)
 PHASE 7: ANY[] FIELD TESTS (5 tests)
   T23  Boat       [PASS] any[] fields verified: relatedHitSearchIndicator
-  T24  Vehicle    [PASS] any[] fields verified: licensePlateTypeCode, licensePlateYear
-  T25  Firearm    [PASS] any[] fields verified: gunMake, gunCaliber, relatedHitSearchIndicator
-  T26  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix
+  T24  Person     [PASS] any[] fields verified: nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH
+  T25  Vehicle    [PASS] any[] fields verified: licensePlateTypeCode, licensePlateYear
+  T26  Firearm    [PASS] any[] fields verified: gunMake, gunCaliber, relatedHitSearchIndicator
   T27  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
   T28  Person     [PASS] queriesToDeselect verified

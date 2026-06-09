@@ -32,7 +32,7 @@
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.3"
+    [string]$Version = "2.4"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -241,7 +241,9 @@ $dgrpQuery = [PSCustomObject]@{
 #               -> OOS:      set[DOB-DH,NameLast-DH,NameFirst-DH,SexCode-DH,purposeCodeDH,requestorDH,registrationState], any[...]
 # Duplicate DALL keyRef -> invent DALH (Name in-state), DALHOUT (Name OOS), DALLOUT (OLN OOS)
 # PurposeCode + Requestor required for OOS DH (State filled).
-# NyNyspinTransactionName omitted -- platform defaults to DALL when absent.
+# NyNyspinTransactionName: visible FormInput on DH card, initialValue=DALL (officer can
+#   override, e.g. DLIC). In any[] of all 4 DH combos + defaults[]=DALL. Per Visible-First
+#   Mandate (BUILD_RULES Section 14) -- exposed rather than omitted. See NYSPIN op manual.
 # DH-suffix fieldIds isolate DH from DL field pool (AP #14 / LIM #24-25)
 # queriesToDeselect=DriverLicenseQuery -- one-directional (DH deselects DL)
 # Combo order: DALHOUT (7 set) > DALH (4 set) > DALLOUT (4 set) > DALL (1 set) per LIMITATION #3
@@ -264,34 +266,35 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State';                size = 2;  sourceField = @('registrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'PurposeCode';          size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'Requestor';            size = 35; sourceField = @('requestorDH');              targetField = 'Requestor' }
+        [PSCustomObject]@{ name = 'NyNyspinTransactionName'; size = 4; sourceField = @('nyNyspinTransactionNameDH'); targetField = 'NyNyspinTransactionName' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DALHOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH'); any = @('imageIndicator','registrationState','nameMiddleDH','nameSuffixDH','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DALH'
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','purposeCodeDH','requestorDH','registrationState'); any = @('imageIndicator','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALLOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('imageIndicator','registrationState','purposeCodeDH','requestorDH','nyNyspinTransactionNameDH'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALL'
             state                 = 'In'
         }
     )
-    description     = 'Mapping for DriverHistoryQuery -- DALHOUT/DALH (Name OOS/in-state), DALLOUT/DALL (OLN OOS/in-state). DH-suffix fields. queriesToDeselect=DL.'
+    description     = 'Mapping for DriverHistoryQuery -- DALHOUT/DALH (Name OOS/in-state), DALLOUT/DALL (OLN OOS/in-state). DH-suffix fields. NyNyspinTransactionName visible, default DALL. queriesToDeselect=DL.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -541,6 +544,9 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH_5'; cols = @('6','6'); fields = @(
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' }
                 @{ id = 'RequestorDH_Input';   node = Inp 'requestorDH'   'Requestor (DH)'    '35' 'ROW_PER_DH_5' }
+            )}
+            @{ id = 'ROW_PER_DH_6'; cols = @('12'); fields = @(
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_6' @{ initialValue = 'DALL' } }
             )}
         )
     }

@@ -1,17 +1,17 @@
 NY_NYSPIN_EJUSTICE -- BUILD STATUS
 ====================================
 Last updated    : 2026-06-09
-Current: v2.3 | 81P/0F/0W/0LIM | Updated 2026-06-09
+Current: v2.4 | 81P/0F/0W/0LIM | Updated 2026-06-09
 Provider: NY_NYSPIN_EJUSTICE
 Phase: Single JSON (multi-card)
 
 CURRENT VERSION
 ---------------
-v2.3  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+v2.4  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
 CAD audit: 68 PASS / 0 FAIL / 0 WARN / 71 INFO
 Simulation: 17/17 combos FIRE, 30/30 test conductor PASS
-Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP, DALHOUT/DALLOUT, RVEHOUT new, untested
-Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.3
+Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP, DALHOUT/DALLOUT, RVEHOUT, NyNyspinTransactionName new, untested
+Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.4
 
 ARCHITECTURE
 ------------
@@ -21,6 +21,7 @@ QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RVEHOUT/RCAR) -- 4 combos (RVEHOUT
           DriverLicenseQuery (DLICN/DLIC) -- 2 combos, autoSelect=true, no deselect
           NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=true, DL Name Search
           DriverHistoryQuery (DALH/DALL/DALHOUT/DALLOUT) -- 4 combos, autoSelect=true, queriesToDeselect=DL (OUT = OOS)
+                     NyNyspinTransactionName visible FormInput, default DALL (officer can override, e.g. DLIC); any[]+defaults all 4 DH combos
           GunQuery (GINQ) -- 1 combo
           ArticleSingleQuery (AINQ) -- 1 combo
           BoatQuery (BVEH/BVIN/RVEH/RCAR) -- 4 combos
@@ -45,9 +46,18 @@ LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS routing
 TEST MATRIX
 -----------
 See docs/NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt (auto-generated, 17 combos, 30 tests).
-v2.3 re-import needed -- tenant has v1.1; pending live tests: DGRP, DALHOUT/DALLOUT, RVEHOUT.
+v2.4 re-import needed -- tenant has v1.1; pending live tests: DGRP, DALHOUT/DALLOUT, RVEHOUT,
+NyNyspinTransactionName (default DALL + officer override e.g. DLIC).
 
 BUILD LOG  (newest first)
+  v2.4  2026-06-09  build_ny_nyspin_ejustice.ps1 (NyNyspinTransactionName field)
+    81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+    Added NyNyspinTransactionName as visible FormInput on DH card (fieldId
+    nyNyspinTransactionNameDH, maxLength 4, initialValue=DALL). Added to any[] +
+    defaults[]=DALL on all 4 DH combos. Per Visible-First Mandate (BUILD_RULES Section 14) --
+    exposes the driver-history transaction selector instead of omitting it. 7 QIDMs, 17 combos.
+    Pending live test.
+
   v2.3  2026-06-08  build_ny_nyspin_ejustice.ps1 (RVEHOUT plate-OOS combo)
     81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
     Added RVEHOUT (Vehicle plate OOS Choice combo, set=[licensePlateNumber, registrationState]).

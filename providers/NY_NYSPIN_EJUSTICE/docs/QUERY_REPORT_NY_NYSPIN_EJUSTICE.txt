@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-08 16:16
+  Generated: 2026-06-09 10:27
 ================================================================
 QUERY SIMULATION
 ================
@@ -112,11 +112,11 @@ QUERY SIMULATION
       </Transaction>
 
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 4
+    Query: DriverHistoryQuery  |  Attrs: 9  |  Combos: 4
 
     [FIRES] DALHOUT
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]
-      any: [imageIndicator, nameMiddleDH, nameSuffixDH] -> matched: [imageIndicator, nameMiddleDH]
+      any: [imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, nameMiddleDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -132,7 +132,7 @@ QUERY SIMULATION
 
     [FIRES] DALH
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, nameMiddleDH, purposeCodeDH, requestorDH]
+      any: [imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, registrationState, nameMiddleDH, purposeCodeDH, requestorDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -148,7 +148,7 @@ QUERY SIMULATION
 
     [FIRES] DALLOUT
       set: [operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      any: [imageIndicator, nyNyspinTransactionNameDH] -> matched: [imageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -162,7 +162,7 @@ QUERY SIMULATION
 
     [FIRES] DALL
       set: [operatorLicenseNumberDH]
-      any: [imageIndicator, registrationState, purposeCodeDH, requestorDH] -> matched: [imageIndicator, registrationState, purposeCodeDH, requestorDH]
+      any: [imageIndicator, registrationState, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, registrationState, purposeCodeDH, requestorDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

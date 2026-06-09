@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-08 16:16
+  Generated: 2026-06-09 10:27
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 24 [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator, nameMiddle, nameSuffix, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, sexCodeDH, purposeCodeDH, requestorDH, gunCaliber, gunMake, gunSerialNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 25 [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator, nameMiddle, nameSuffix, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, sexCodeDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH, gunCaliber, gunMake, gunSerialNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -37,8 +37,11 @@ POST-BUILD VERIFICATION
 --- CHECK 7: Cross-Variant Consistency ---
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
+--- CHECK 8: Visible-First Mandate ---
+  [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION PASSED: 7 PASS / 0 WARN / 0 FAIL
 ========================================
 
 
