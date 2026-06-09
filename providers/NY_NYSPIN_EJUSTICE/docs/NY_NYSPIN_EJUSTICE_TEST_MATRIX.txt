@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE MC v2.5 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE MC v2.6 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-09
 Variant: MC (multi-card per entity)
@@ -10,7 +10,7 @@ Vehicle (1 card, 8 fields):
   CARD_VEH (VEHICLE QUERY - Leave State blank for NY):
     ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 2: vehicleIdentificationNumber [Inp 20], vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 3: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Person (3 cards, 19 fields):
   CARD_PER_DH (DRIVER HISTORY):
@@ -31,17 +31,17 @@ Person (3 cards, 19 fields):
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM QUERY):
     ROW 1: gunSerialNumber [Inp 20], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE QUERY):
     ROW 1: articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT QUERY - Leave State blank for NY):
     ROW 1: registrationNumber [Inp 10], boatHullIdNumber [Inp 20]
-    ROW 2: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
@@ -80,19 +80,19 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_VEH: titled "VEHICLE QUERY - Leave State blank for NY".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
               VIN, Vehicle Make dropdown (no default), Vehicle Year.
-              State dropdown (no default), Image dropdown=N.
+              State dropdown (no default), Image dropdown=Y.
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT QUERY - Leave State blank for NY".
               Registration Number, Hull ID Number.
-              State dropdown (no default), Image dropdown=N, Related Hit Search dropdown=Y.
+              State dropdown (no default), Image dropdown=Y, Related Hit Search dropdown=Y.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM QUERY".
               Serial Number, Make dropdown (no default).
-              Caliber dropdown (no default), Image dropdown=N, Related Hit Search dropdown=Y.
+              Caliber dropdown (no default), Image dropdown=Y, Related Hit Search dropdown=Y.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE QUERY".
               Serial Number, Article Type dropdown (no default).
-              Image dropdown=N, Related Hit Search dropdown=Y.
+              Image dropdown=Y, Related Hit Search dropdown=Y.
 
 PHASE 2: PERSON COMBOS (7 tests, 7 combos)
 ------------------------------------------------------------------------

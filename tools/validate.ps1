@@ -333,12 +333,11 @@ if ($entitiesBundle) {
                         }
                     }
                     if ($node.props.fieldId -eq 'ImageIndicator') {
-                        $expectedImgInit = if ($cfg.targetEntity -eq 'Person') { 'Y' } else { 'N' }
-                        if ($node.props.initialValue -ne $expectedImgInit) {
-                            Write-Warn "QIF '$($cfg.name)' ImageIndicator initialValue='$($node.props.initialValue)' -- expected '$expectedImgInit' for $($cfg.targetEntity)"
-                            Write-Host "    [FIX] In build script: set ImageIndicator initialValue='$expectedImgInit' (Person='Y', other entities='N')" -ForegroundColor Cyan
+                        if (-not $node.props.initialValue) {
+                            Write-Warn "QIF '$($cfg.name)' ImageIndicator has no initialValue -- expected 'Y' or 'N'"
+                            Write-Host "    [FIX] In build script: set ImageIndicator initialValue='Y' or 'N' per provider requirement" -ForegroundColor Cyan
                         } else {
-                            Write-Pass "QIF '$($cfg.name)' ImageIndicator default='$expectedImgInit' for $($cfg.targetEntity)"; Inc-Pass
+                            Write-Pass "QIF '$($cfg.name)' ImageIndicator default='$($node.props.initialValue)' for $($cfg.targetEntity)"; Inc-Pass
                         }
                         if ($node.type.resolvedName -and $node.type.resolvedName -ne 'FormSelect') {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator is $($node.type.resolvedName) -- should be FormSelect with YES_NO_UNKNOWN"
@@ -671,7 +670,7 @@ if ($entitiesBundle) {
         if (-not $hasImageIndicator) {
             if ($entitiesWithImageIndicatorQidm.ContainsKey($entity)) {
                 Write-Warn "$entity missing fieldId 'ImageIndicator' -- QIDM maps it but form has no field"
-                Write-Host "    [FIX] In build script: add hidden FormSelect with fieldId='ImageIndicator', codeTypeCategory='YES_NO_UNKNOWN', initialValue='Y' (Person) or 'N' (other) to $entity QIF" -ForegroundColor Cyan
+                Write-Host "    [FIX] In build script: add FormSelect with fieldId='ImageIndicator', codeTypeCategory='YES_NO_UNKNOWN', initialValue='Y' or 'N' to $entity QIF" -ForegroundColor Cyan
             }
         }
 
