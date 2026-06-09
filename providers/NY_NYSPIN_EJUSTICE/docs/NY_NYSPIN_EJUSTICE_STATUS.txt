@@ -34,7 +34,7 @@ Standard patterns:
   - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
   - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
   - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
-  - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS on Person DL+DH+DGRP)
+  ---   2026-06-09 Person     NyNyspinDriverLicenseName:DGRP PASS     Person DGRP co-fired with DLICN
   - PlateType=PC, PlateYear=2026 defaults + CAD defaults on RVEH
   - VehicleMakeCode as FormSelect (VEHICLE_MAKE/NCIC dropdown)
   - All fieldIds camelCase
@@ -98,3 +98,4 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
   ---   2026-06-09 Person     DL:DLIC              PASS     Person DLIC OLN
+  ---   2026-06-09 Person     DL:DLICN             PASS     Person DLICN Name+DOB (DGRP co-fired)
