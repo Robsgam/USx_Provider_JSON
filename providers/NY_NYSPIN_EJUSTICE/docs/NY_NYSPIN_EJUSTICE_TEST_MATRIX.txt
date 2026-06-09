@@ -1,6 +1,6 @@
 NY_NYSPIN_EJUSTICE MC v2.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-08
+Generated: 2026-06-09
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -44,13 +44,13 @@ Boat (1 card, 5 fields):
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 4 combos (RVEH x1, RCAR x1, RVIN x1, RVEHOU x1)
-  DriverLicenseQuery: 2 combos (DLIC x1, DLICN x1), autoSelect=true
+  VehicleRegistrationQuery: 4 combos (RVIN x1, RVEHOU x1, RVEH x1, RCAR x1)
+  DriverLicenseQuery: 2 combos (DLICN x1, DLIC x1), autoSelect=true
   NyNyspinDriverLicenseNameQuery: 1 combos (DGRP x1), autoSelect=true
-  DriverHistoryQuery: 4 combos (DALL x2, DALH x2), autoSelect=true, deselects: [DL]
+  DriverHistoryQuery: 4 combos (DALH x2, DALL x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (GINQ x1)
   ArticleSingleQuery: 1 combos (AINQ x1)
-  BoatQuery: 4 combos (RVEH x1, RCAR x1, BVEH x1, BVIN x1)
+  BoatQuery: 4 combos (BVEH x1, BVIN x1, RVEH x1, RCAR x1)
 
 ================================================================================
 TEST MATRIX
@@ -96,46 +96,46 @@ PHASE 2: PERSON COMBOS (7 tests, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Person      DLIC+DLIC          operatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DLIC)
- 7  Person      DLICN+DLICN        birthDate=01/15/1990, nameLast=DOE, n... [    ]
+ 6  Person      DLICN+DLICN        birthDate=01/15/1990, nameLast=DOE, n... [    ]
               Expected: DriverLicenseQuery fires (DLICN)
+ 7  Person      DLIC+DLIC          operatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (DLIC)
  8  Person      DGRP+DGRP          nameLast=DOE, nameFirst=JOHN     [    ]
               Expected: NyNyspinDriverLicenseNameQuery fires (DGRP)
- 9  Person      DALL+OUT+State     operatorLicenseNumberDH=D999888777, p... [    ]
-              Expected: DriverHistoryQuery fires (DALL)
-10  Person      DALL+OLN           operatorLicenseNumberDH=D999888777 [    ]
-              Expected: DriverHistoryQuery fires (DALL)
-11  Person      DALH+OUT+State     birthDateDH=01/15/1990, nameLastDH=DO... [    ]
+ 9  Person      DALH+OUT+State     birthDateDH=01/15/1990, nameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (DALH)
-12  Person      DALH+birthDateDH   birthDateDH=01/15/1990, nameLastDH=DO... [    ]
+10  Person      DALH+birthDateDH   birthDateDH=01/15/1990, nameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (DALH)
+11  Person      DALL+OUT+State     operatorLicenseNumberDH=D999888777, p... [    ]
+              Expected: DriverHistoryQuery fires (DALL)
+12  Person      DALL+OLN           operatorLicenseNumberDH=D999888777 [    ]
+              Expected: DriverHistoryQuery fires (DALL)
 
 PHASE 3: VEHICLE COMBOS (4 tests, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-13  Vehicle     RVEH+RVEH          licensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (RVEH)
-14  Vehicle     RCAR+VIN           vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RCAR)
-15  Vehicle     RVIN+VIN+State     vehicleIdentificationNumber=1HGCM8263... [    ]
+13  Vehicle     RVIN+VIN+State     vehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RVIN)
-16  Vehicle     RVEHOU+RVEHOUT+State  licensePlateNumber=TEST123, registrat... [    ]
+14  Vehicle     RVEHOU+RVEHOUT+State  licensePlateNumber=TEST123, registrat... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOU)
+15  Vehicle     RVEH+RVEH          licensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (RVEH)
+16  Vehicle     RCAR+VIN           vehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RCAR)
 
 PHASE 4: BOAT COMBOS (4 tests, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-17  Boat        RVEH+RVEH          registrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (RVEH)
-18  Boat        RCAR+Hull          boatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (RCAR)
-19  Boat        BVEH+BVEH+State    registrationNumber=FL1234AB, registra... [    ]
+17  Boat        BVEH+BVEH+State    registrationNumber=FL1234AB, registra... [    ]
               Expected: BoatQuery fires (BVEH)
-20  Boat        BVIN+BVIN+State    boatHullIdNumber=FL1234AB56H7, regist... [    ]
+18  Boat        BVIN+BVIN+State    boatHullIdNumber=FL1234AB56H7, regist... [    ]
               Expected: BoatQuery fires (BVIN)
+19  Boat        RVEH+RVEH          registrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (RVEH)
+20  Boat        RCAR+Hull          boatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (RCAR)
 
 PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
 ------------------------------------------------------------------------
@@ -155,15 +155,15 @@ PHASE 7: ANY[] FIELD TESTS (5 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-23  Boat        RVEH+RVEH          + relatedHitSearchIndicator     [    ]
+23  Vehicle     RVEH+RVEH          + licensePlateTypeCode, licensePlateYear [    ]
               Expected: any[] fields present in XML output.
-24  Vehicle     RVEH+RVEH          + licensePlateTypeCode, licensePlateYear [    ]
+24  Boat        RVEH+RVEH          + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
 25  Firearm     GINQ+GINQ          + gunMake, gunCaliber, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-26  Person      DGRP+DGRP          + nameMiddle, nameSuffix        [    ]
+26  Article     AINQ+AINQ          + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
-27  Article     AINQ+AINQ          + relatedHitSearchIndicator     [    ]
+27  Person      DGRP+DGRP          + nameMiddle, nameSuffix        [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
@@ -184,12 +184,12 @@ PHASE 9: NEGATIVES (empty forms = no send)
 TOTAL: 30 tests
 
 COMBO COVERAGE (17/17):
-  VehicleRegistrationQuery: 4/4 -- T13(RVEH+RVEH), T14(RCAR+VIN), T15(RVIN+VIN), T16(RVEHOU+RVEHOUT)
-  DriverLicenseQuery: 2/2 -- T6(DLIC+DLIC), T7(DLICN+DLICN)
+  VehicleRegistrationQuery: 4/4 -- T13(RVIN+VIN), T14(RVEHOU+RVEHOUT), T15(RVEH+RVEH), T16(RCAR+VIN)
+  DriverLicenseQuery: 2/2 -- T6(DLICN+DLICN), T7(DLIC+DLIC)
   NyNyspinDriverLicenseNameQuery: 1/1 -- T8(DGRP)
-  DriverHistoryQuery: 4/4 -- T9(DALL+OUT), T10(DALL+OLN), T11(DALH+OUT), T12(DALH+birthDateDH)
+  DriverHistoryQuery: 4/4 -- T9(DALH+OUT), T10(DALH+birthDateDH), T11(DALL+OUT), T12(DALL+OLN)
   GunQuery: 1/1 -- T21(GINQ)
   ArticleSingleQuery: 1/1 -- T22(AINQ)
-  BoatQuery: 4/4 -- T17(RVEH+RVEH), T18(RCAR+Hull), T19(BVEH+BVEH), T20(BVIN+BVIN)
+  BoatQuery: 4/4 -- T17(BVEH+BVEH), T18(BVIN+BVIN), T19(RVEH+RVEH), T20(RCAR+Hull)
 
 IMPORT FILE: NY_NYSPIN_EJUSTICE.json

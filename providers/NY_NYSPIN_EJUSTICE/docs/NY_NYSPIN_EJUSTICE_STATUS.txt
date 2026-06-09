@@ -1,34 +1,34 @@
 NY_NYSPIN_EJUSTICE -- BUILD STATUS
 ====================================
-Last updated    : 2026-06-08
-Current: v2.3 | 81P/0F/0W/0LIM | Updated 2026-06-08
+Last updated    : 2026-06-09
+Current: v2.3 | 81P/0F/0W/0LIM | Updated 2026-06-09
 Provider: NY_NYSPIN_EJUSTICE
 Phase: Single JSON (multi-card)
 
 CURRENT VERSION
 ---------------
-v2.1  78 PASS / 0 FAIL / 0 WARN / 0 LIM / 14 FIRE / 0 SKIP
+v2.3  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
 CAD audit: 68 PASS / 0 FAIL / 0 WARN / 71 INFO
-Simulation: 14/14 combos FIRE, 27/27 test conductor PASS
-Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP combo new, untested
-Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.1
+Simulation: 17/17 combos FIRE, 30/30 test conductor PASS
+Prior live test: All 13 combos CONFIRMED (2026-04-24, v1.0) -- DGRP, DALHOUT/DALLOUT, RVEHOUT new, untested
+Import: v1.1 imported USx Provider Tenant 2026-05-06 -- re-import needed for v2.3
 
 ARCHITECTURE
 ------------
 Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs)
 Layout: Multi-card (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1) = 7 cards
-QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RCAR) -- 3 combos
+QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RVEHOUT/RCAR) -- 4 combos (RVEHOUT = plate OOS)
           DriverLicenseQuery (DLICN/DLIC) -- 2 combos, autoSelect=true, no deselect
           NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=true, DL Name Search
-          DriverHistoryQuery (DALH/DALL) -- 2 combos, autoSelect=true, queriesToDeselect=DL
+          DriverHistoryQuery (DALH/DALL/DALHOUT/DALLOUT) -- 4 combos, autoSelect=true, queriesToDeselect=DL (OUT = OOS)
           GunQuery (GINQ) -- 1 combo
           ArticleSingleQuery (AINQ) -- 1 combo
           BoatQuery (BVEH/BVIN/RVEH/RCAR) -- 4 combos
 RMS:      Vehicle + Person QIDMs, both autoSelect=true
-Total combos: 14 CommSys + 2 RMS
+Total combos: 17 CommSys + 2 RMS
 
 Standard patterns:
-  - ImageIndicator on ALL entities (Person=Y, others=N) + CAD defaults on all 14 combos
+  - ImageIndicator on ALL entities (Person=Y, others=N) + CAD defaults on all 17 combos
   - RelatedHitSearchIndicator on Gun/Article/Boat (Y default) + CAD defaults
   - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
   - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
@@ -44,10 +44,20 @@ LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS routing
 
 TEST MATRIX
 -----------
-See docs/NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt (auto-generated, 14 combos).
-v2.1 re-import needed -- DGRP added, layout tightened, VehicleMakeCode corrected to FormSelect.
+See docs/NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt (auto-generated, 17 combos, 30 tests).
+v2.3 re-import needed -- tenant has v1.1; pending live tests: DGRP, DALHOUT/DALLOUT, RVEHOUT.
 
 BUILD LOG  (newest first)
+  v2.3  2026-06-08  build_ny_nyspin_ejustice.ps1 (RVEHOUT plate-OOS combo)
+    81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+    Added RVEHOUT (Vehicle plate OOS Choice combo, set=[licensePlateNumber, registrationState]).
+    RVEH narrowed to in-state only; OOS plate now routes to RVEHOUT (Choice-set OOS, LIMIT #36).
+    7 QIDMs, 17 combos. Pending live test.
+
+  v2.2  2026-06-08  build_ny_nyspin_ejustice.ps1 (DH OOS combos)
+    80 PASS / 0 FAIL / 0 WARN / 0 LIM / 16 FIRE / 0 SKIP
+    Added DALHOUT/DALLOUT (DriverHistory OOS combos). 7 QIDMs, 16 combos. Pending live test.
+
   v2.1  2026-05-22  build_ny_nyspin_ejustice.ps1 (layout tightening + DGRP)
     78 PASS / 0 FAIL / 0 WARN / 0 LIM / 14 FIRE / 0 SKIP
     Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, DL Name Search, 1 combo).
