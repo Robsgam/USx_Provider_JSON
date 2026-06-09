@@ -17,8 +17,8 @@
 #
 # QIDMs (7, 17 combos):
 #   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
-#   DriverLicenseQuery                   DLICN (Name+DOB), DLIC (OLN)  [metadata: both keyRef=DLIC; DLICN is synthetic -- platform requires unique keyRefs per QIDM] queriesToDeselect=[DGRP]
-#   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=true, fires on Name-only; deselected by DL when Name+DOB+Sex filled)
+#   DriverLicenseQuery                   DLICN (Name+DOB), DLIC (OLN)  [metadata: both keyRef=DLIC; DLICN is synthetic -- platform requires unique keyRefs per QIDM]
+#   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=FALSE -- manual select for name-only DMV search; avoids co-fire with DL)
 #   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL
 #   GunQuery                             GINQ
 #   ArticleSingleQuery                   AINQ
@@ -27,12 +27,13 @@
 # STATE: NCIC pattern CONFIRMED on NY (no initialValue -- blank default).
 #   See LIMITATION #30.
 # SEX: Full 3-layer NIBRS pattern CONFIRMED
-# DL+DH: DH-suffix fieldIds + one-directional queriesToDeselect (DH deselects DL; DL deselects DGRP)
+# DL+DH: DH-suffix fieldIds + one-directional queriesToDeselect (DH deselects DL)
+# DL+DGRP: DGRP autoSelect=false (manual) -- prevents NyNyspin co-fire on Name+DOB+Sex
 # Combo order: most set[] fields first
 # CAD defaults on all CommSys combos with initialValues
 
 param(
-    [string]$Version = "2.8"
+    [string]$Version = "2.9"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -139,9 +140,9 @@ $vehQuery = [PSCustomObject]@{
 # Synthetic keyRef "DLICN" used for the Name combo to satisfy platform uniqueness.
 # DLICN is not a real NYSPIN transaction code -- it is a ConnectCIC internal label only.
 # See PLATFORM_CONSTRAINTS.txt -- duplicate-keyRef constraint.
-# NyNyspinDriverLicenseNameQuery (DGRP) is a SEPARATE active QIDM (see 1e2 below) --
-# a distinct DMV name-search transaction, co-fires with DL on name entry.
-# autoSelect=true, queriesToDeselect=[DGRP] (DL fires before DGRP when Name+DOB+Sex all filled; Name-only goes to DGRP alone)
+# NyNyspinDriverLicenseNameQuery (DGRP) is a SEPARATE QIDM (see 1e2 below) --
+# a distinct DMV name-search transaction (autoSelect=false, manual select).
+# DL is the autoSelect default query (AP #14); DGRP is opt-in for name-only search.
 # SexCode: codeTypeProvider=NIBRS (reverse-lookup attr ID -> M/F/U)
 # State: codeTypeProvider=NCIC (reverse-lookup attr ID -> 2-letter code)
 # Name: 4-field FormatStringRuleHandler -> "LAST, FIRST MIDDLE SUFFIX"
@@ -178,13 +179,12 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description       = 'Mapping for DriverLicenseQuery -- DLICN (Name+DOB+Sex, synthetic keyRef) and DLIC (OLN). Platform requires unique keyRefs; metadata uses DLIC for both. DL deselects DGRP (one-directional).'
-    handlerFunction   = 'CommsysTransactionRequestHandler'
-    name              = 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery'
-    type              = 'QUERYINPUTDATAMAPPING'
-    autoSelect        = $true
-    queriesToDeselect = @('NyNyspinDriverLicenseNameQuery')
-    provider          = 'NY_NYSPIN_EJUSTICE'
+    description     = 'Mapping for DriverLicenseQuery -- DLICN (Name+DOB+Sex, synthetic keyRef) and DLIC (OLN). Platform requires unique keyRefs; metadata uses DLIC for both. autoSelect default query.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery'
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = 'NY_NYSPIN_EJUSTICE'
     providerType    = 'Commsys'
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
@@ -198,8 +198,12 @@ $dlQuery = [PSCustomObject]@{
 #         AddressZipCode, Age, BirthDate, MessageContinueKeyCode,
 #         MiscellaneousDescriptiveText, SexCode]
 # Name composite -> set[nameLast, nameFirst], any[nameMiddle, nameSuffix]
-# Uses DL name fields (not DH-suffix) -- fires alongside DL when name entered.
-# autoSelect=true, no queriesToDeselect (complements DL, doesn't conflict).
+# Uses DL name fields (not DH-suffix) -- shares name pool with DL.
+# autoSelect=FALSE: DGRP (set=2) would otherwise auto-fire whenever Name is
+#   entered and send BEFORE DriverLicenseQuery's deselect could intercept,
+#   producing a dual NyNyspinDriverLicenseNameQuery co-fire (confirmed v2.8
+#   live test). With autoSelect=false the officer manually selects DGRP for a
+#   name-only DMV search; Name+DOB+Sex auto-routes to DL (DLICN) alone.
 # No ImageIndicator or State in this transaction's metadata.
 # =====================================================================
 $dgrpQuery = [PSCustomObject]@{
@@ -224,11 +228,11 @@ $dgrpQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'Mapping for NyNyspinDriverLicenseNameQuery -- DGRP (Name search). Co-fires with DL when name fields filled.'
+    description     = 'Mapping for NyNyspinDriverLicenseNameQuery -- DGRP (Name search). Manual select (autoSelect=false) so it does not co-fire with DL on Name+DOB+Sex.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
+    autoSelect      = $false
     provider        = 'NY_NYSPIN_EJUSTICE'
     providerType    = 'Commsys'
     query           = 'NyNyspinDriverLicenseNameQuery'
