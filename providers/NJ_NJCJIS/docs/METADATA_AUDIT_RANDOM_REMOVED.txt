@@ -1,0 +1,137 @@
+============================================================
+ CONNECTCIC METADATA AUDIT
+ Generated: 2026-06-10 19:10
+============================================================
+
+============================================================
+ METADATA AUDIT: NJ_NJCJIS_RANDOM_REMOVED
+============================================================
+  XML: NJ_NJCJIS.xml
+  JSON: NJ_NJCJIS_RANDOM_REMOVED.json
+
+--- CHECK 1: Query Coverage ---
+  [PASS] ArticleSingleQuery: in XML and JSON
+  [PASS] BoatQuery: in XML and JSON
+  [PASS] DriverLicenseQuery: in XML and JSON
+  [PASS] GunQuery: in XML and JSON
+  [PASS] VehicleRegistrationQuery: in XML and JSON
+
+--- CHECK 2: KeyReference Validation ---
+  [PASS] QG: exists in XML GunQuery
+  [PASS] QA: exists in XML ArticleSingleQuery
+  [PASS] QB: exists in XML BoatQuery
+
+--- CHECK 3: Field Coverage ---
+  ArticleSingleQuery:
+  [PASS]   ArticleSerialNumber: in XML and QIDM
+  [PASS]   ArticleTypeCode: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  BoatQuery:
+  [PASS]   BoatHullIdNumber: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   RegistrationNumber: in XML and QIDM
+  DriverLicenseQuery:
+  [PASS]   BirthDate: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   Name: in XML and QIDM
+  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   SexCode: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  GunQuery:
+  [PASS]   GunCaliber: in XML and QIDM
+  [PASS]   GunMake: in XML and QIDM
+  [PASS]   GunModel: in XML and QIDM
+  [PASS]   GunSerialNumber: in XML and QIDM
+  [PASS]   ImageIndicator: in XML and QIDM
+  VehicleRegistrationQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateTypeCode: in XML and QIDM
+  [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   RandomRequest: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  VehicleStolenQuery: (not built in JSON -- see CHECK 1)
+
+--- CHECK 4: Combination Field Requirements ---
+  ArticleSingleQuery:
+  [PASS]   keyRef QA: set field 'ArticleSerialNumber' present
+  [PASS]   keyRef QA: set field 'ArticleTypeCode' present
+  [PASS]   keyRef QA: any field 'ImageIndicator' present
+  BoatQuery:
+  [PASS]   keyRef QB: set field 'RegistrationNumber' present
+  [PASS]   keyRef QB: any field 'ImageIndicator' present
+  [PASS]   keyRef QB: any field 'ImageIndicator' present
+  DriverLicenseQuery:
+  [PASS]   keyRef FULL: set field 'BirthDate' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: set field 'Name' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'SexCode' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'State' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: set field 'OperatorLicenseNumber' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (DQ,DQN)
+  [PASS]   keyRef FULL: any field 'State' covered by invented variants (DQ,DQN)
+  GunQuery:
+  [PASS]   keyRef QG: set field 'GunSerialNumber' present
+  [PASS]   keyRef QG: any field 'GunCaliber' present
+  [PASS]   keyRef QG: any field 'GunMake' present
+  [PASS]   keyRef QG: any field 'GunModel' present
+  [PASS]   keyRef QG: any field 'ImageIndicator' present
+  VehicleRegistrationQuery:
+  [PASS]   keyRef RAND: set field 'LicensePlateNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'LicensePlateTypeCode' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'LicensePlateYear' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'VehicleIdentificationNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef RAND: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'LicensePlateNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'LicensePlateTypeCode' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'LicensePlateYear' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'VehicleIdentificationNumber' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+
+--- CHECK 4b: Choice-Set Option Coverage ---
+
+--- CHECK 5: Primary Field Coverage (HARD GATE) ---
+  ArticleSingleQuery: 1 metadata search paths
+  [PASS]   ArticleSerialNumber: at least one combo built (e.g. QA)
+  BoatQuery: 2 metadata search paths
+  [PASS]   BoatHullIdNumber: at least one combo built (e.g. QB)
+  [PASS]   RegistrationNumber: at least one combo built (e.g. QB)
+  DriverLicenseQuery: 2 metadata search paths
+  [PASS]   Name: at least one combo built (e.g. FULL)
+  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. FULL)
+  GunQuery: 1 metadata search paths
+  [PASS]   GunSerialNumber: at least one combo built (e.g. QG)
+  VehicleRegistrationQuery: 2 metadata search paths
+  [PASS]   LicensePlateNumber: at least one combo built (e.g. RAND)
+  [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. RAND)
+
+--- CHECK 5: Field maxLength Alignment ---
+  [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
+  [PASS] boatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
+  [PASS] registrationNumber: maxLength 20 matches XML (RegistrationNumber)
+  [PASS] nameLast: maxLength 30 matches XML (Name)
+  [PASS] nameFirst: maxLength 30 matches XML (Name)
+  [PASS] operatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] gunModel: maxLength 20 matches XML (GunModel)
+  [PASS] gunSerialNumber: maxLength 11 matches XML (GunSerialNumber)
+  [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+
+============================================================
+ METADATA AUDIT SUMMARY
+============================================================
+Providers checked: 1
+Total: 90 PASS / 0 FAIL / 0 WARN
+============================================================

@@ -1,0 +1,411 @@
+
+========================================================================
+  CJIS RESPONSE HANDLER SIMULATION -- NJ_NJCJIS_RANDOM_COLLAPSED v3.6-COLLAPSED
+  Generated: 2026-06-10 19:10
+  QRDM: NJ_NJCJIS_Results  |  67 attributes  |  5 entity combos
+========================================================================
+
+  ====================================================================
+  ENTITY: Vehicle  |  Synthetic standard
+  ====================================================================
+
+  Raw CJIS result fields:
+    <AutoInsuranceCarrier>GEICO</AutoInsuranceCarrier>
+    <ExpirationDate>20261231</ExpirationDate>
+    <Hit>Y</Hit>
+    <Image>N</Image>
+    <ImageId>VEH001</ImageId>
+    <ImpliedLicensePlateStateCode>NJ</ImpliedLicensePlateStateCode>
+    <IntInterfaceName>NJ Motor Vehicle Commission</IntInterfaceName>
+    <IntSystemName>NJMVC</IntSystemName>
+    <LicensePlateNumber>NJD1234</LicensePlateNumber>
+    <LicensePlateStateCode>NJ</LicensePlateStateCode>
+    <RegistrationState>NJ</RegistrationState>
+    <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+    <SecondaryRequests>N</SecondaryRequests>
+    <System>Vehicle Registration Query Result</System>
+    <VehicleColorCode>SLV</VehicleColorCode>
+    <VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber>
+    <VehicleMakeCode>HOND</VehicleMakeCode>
+    <VehicleModelCode>CIV</VehicleModelCode>
+    <VehicleStyleCode>4D</VehicleStyleCode>
+    <VehicleTypeCode>PA</VehicleTypeCode>
+    <VehicleYear>2022</VehicleYear>
+    <Weight>3200</Weight>
+
+  Handler Transformations:
+  --------------------------------------------------------------------
+  [MAPPED]    AutoInsuranceCarrier               Raw: GEICO
+              Target: AutoInsuranceCarrier -> UI: GEICO
+  [MAPPED]    ExpirationDate                     Raw: 20261231
+              Target: ExpirationDate -> UI: 20261231
+  [MAPPED]    Hit                                Raw: Y
+              Target: hit -> UI: Y
+  [MAPPED]    Image                              Raw: N
+              Target: ImageIndicator -> UI: N
+  [MAPPED]    ImageId                            Raw: VEH001
+              Target: imageId -> UI: VEH001
+  [MAPPED]    ImpliedLicensePlateStateCode       Raw: NJ
+              Target: LicensePlateStateCode -> UI: NJ
+  [MAPPED]    IntInterfaceName                   Raw: NJ Motor Vehicle Commission
+              Target: IntInterfaceName -> UI: NJ Motor Vehicle Commission
+  [MAPPED]    IntSystemName                      Raw: NJMVC
+              Target: IntSystemName -> UI: NJMVC
+  [MAPPED]    LicensePlateNumber                 Raw: NJD1234
+              Target: LicensePlateNumber -> UI: NJD1234
+  [MAPPED]    LicensePlateStateCode              Raw: NJ
+              Target: LicensePlateStateCode -> UI: NJ
+  [MAPPED]    RegistrationStateCode              Raw: NJ
+              Target: RegistrationStateCode -> UI: NJ
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
+  [MAPPED]    SecondaryRequests                  Raw: N
+              Target: SecondaryRequests -> UI: N
+  [MAPPED]    System                             Raw: Vehicle Registration Query Result
+              Target: System -> UI: Vehicle Registration Query Result
+  [MAPPED]    VehicleColorCode                   Raw: SLV
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleColorCode: 'SLV' -> 'Silver'
+              Target: VehicleColorCode -> UI: Silver
+  [MAPPED]    VehicleIdentificationNumber        Raw: 1HGCM82633A004352
+              Target: VehicleIdentificationNumber -> UI: 1HGCM82633A004352
+  [MAPPED]    VehicleMakeCode                    Raw: HOND
+              Target: VehicleMakeCode -> UI: HOND
+  [MAPPED]    VehicleMakeName                    Raw: HOND
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'HOND' -> 'Honda'
+              Target: VehicleMakeName -> UI: Honda
+  [MAPPED]    VehicleModelCode                   Raw: CIV
+              Target: VehicleModelCode -> UI: CIV
+  [MAPPED]    VehicleModelName                   Raw: CIV
+              Handler: CommsysResultAttributeMappingRuleHandler
+              VehicleModelName: model lookup requires platform attr tables -- returned as-is
+              Target: VehicleModelName -> UI: CIV
+  [MAPPED]    VehicleStyleCode                   Raw: 4D
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleStyleCode: '4D' -> '4-Door'
+              Target: BodyStyle -> UI: 4-Door
+  [MAPPED]    VehicleTypeCode                    Raw: PA
+              Target: VehicleTypeCode -> UI: PA
+  [MAPPED]    VehicleYear                        Raw: 2022
+              Handler: ParseCommsysVehicleYearRuleHandler
+              4-digit year: 2022 (passthrough)
+              Target: VehicleYear -> UI: 2022
+  [MAPPED]    Weight                             Raw: 3200
+              Target: Weight -> UI: 3200
+
+  Summary: 24 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  ====================================================================
+  ENTITY: Person  |  Synthetic standard
+  ====================================================================
+
+  Raw CJIS result fields:
+    <AddressCity>TRENTON</AddressCity>
+    <AddressStateCode>NJ</AddressStateCode>
+    <AddressStreet>123 MAIN ST</AddressStreet>
+    <AddressStreetName>MAIN ST</AddressStreetName>
+    <AddressStreetNumber>123</AddressStreetNumber>
+    <AddressZipCode>08601</AddressZipCode>
+    <AutoInsuranceCarrier>GEICO</AutoInsuranceCarrier>
+    <BirthDate>19900115</BirthDate>
+    <EthnicityCode>N</EthnicityCode>
+    <ExpirationDate>20281201</ExpirationDate>
+    <EyeColor>BRO</EyeColor>
+    <EyeColorCode>BRO</EyeColorCode>
+    <HairColor>BLK</HairColor>
+    <HairColorCode>BLK</HairColorCode>
+    <Height>511</Height>
+    <HeightFeet>5</HeightFeet>
+    <HeightInches>11</HeightInches>
+    <Hit>Y</Hit>
+    <Image>Y</Image>
+    <ImageId>PER001</ImageId>
+    <IntInterfaceName>NJ Division of Motor Vehicles</IntInterfaceName>
+    <IntSystemName>NJDMV</IntSystemName>
+    <Name>DOE,JOHN ALAN</Name>
+    <NormalizedNameFirst>JOHN</NormalizedNameFirst>
+    <NormalizedNameLast>DOE</NormalizedNameLast>
+    <NormalizedNameMiddle>ALAN</NormalizedNameMiddle>
+    <OperatorLicenseClassCode>D</OperatorLicenseClassCode>
+    <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+    <OperatorLicenseRestrictions>NONE</OperatorLicenseRestrictions>
+    <OperatorLicenseStateCode>NJ</OperatorLicenseStateCode>
+    <OperatorLicenseStatusCode>VALID</OperatorLicenseStatusCode>
+    <OrganDonor>Y</OrganDonor>
+    <RaceCode>W</RaceCode>
+    <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+    <SecondaryRequests>N</SecondaryRequests>
+    <SexCode>M</SexCode>
+    <SocialSecurityNumber>123-45-6789</SocialSecurityNumber>
+    <System>Driver License Query Result</System>
+    <Weight>180</Weight>
+
+  Handler Transformations:
+  --------------------------------------------------------------------
+  [MAPPED]    AddressCity                        Raw: TRENTON
+              Target: AddressCity -> UI: TRENTON
+  [MAPPED]    AddressStateCode                   Raw: NJ
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=AddressStateCode: 'NJ' -> 'New Jersey'
+              Target: AddressStateCode -> UI: New Jersey
+  [MAPPED]    AddressStreet                      Raw: 123 MAIN ST
+              Target: AddressStreet -> UI: 123 MAIN ST
+  [MAPPED]    AddressStreetName                  Raw: MAIN ST
+              Target: AddressStreetName -> UI: MAIN ST
+  [MAPPED]    AddressStreetNumber                Raw: 123
+              Target: AddressStreetNumber -> UI: 123
+  [MAPPED]    AddressZipCode                     Raw: 08601
+              Target: AddressZipCode -> UI: 08601
+  [MAPPED]    AutoInsuranceCarrier               Raw: GEICO
+              Target: AutoInsuranceCarrier -> UI: GEICO
+  [MAPPED]    BirthDate                          Raw: 19900115
+              Target: BirthDate -> UI: 19900115
+  [MAPPED]    EthnicityCode                      Raw: N
+              Target: EthnicityCode -> UI: N
+  [MAPPED]    ExpirationDate                     Raw: 20281201
+              Target: ExpirationDate -> UI: 20281201
+  [MAPPED]    EyeColor                           Raw: BRO
+              Target: EyeColorCode -> UI: BRO
+  [MAPPED]    EyeColorCode                       Raw: BRO
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=EyeColorCode: 'BRO' -> 'Brown'
+              Target: EyeColorCode -> UI: Brown
+  [MAPPED]    HairColor                          Raw: BLK
+              Target: HairColorCode -> UI: BLK
+  [MAPPED]    HairColorCode                      Raw: BLK
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=HairColorCode: 'BLK' -> 'Black'
+              Target: HairColorCode -> UI: Black
+  [MAPPED]    Height                             Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
+  [MAPPED]    HeightFeet                         Raw: 5
+              Handler: HeightParserRuleHandler
+              Feet value: 5
+              Target: HeightFeet -> UI: 5
+  [MAPPED]    HeightInches                       Raw: 11
+              Handler: HeightParserRuleHandler
+              Inches value: 11
+              Target: HeightInches -> UI: 11
+  [MAPPED]    Hit                                Raw: Y
+              Target: hit -> UI: Y
+  [MAPPED]    Image                              Raw: Y
+              Target: ImageIndicator -> UI: Y
+  [MAPPED]    ImageId                            Raw: PER001
+              Target: imageId -> UI: PER001
+  [MAPPED]    IntInterfaceName                   Raw: NJ Division of Motor Vehicles
+              Target: IntInterfaceName -> UI: NJ Division of Motor Vehicles
+  [MAPPED]    IntSystemName                      Raw: NJDMV
+              Target: IntSystemName -> UI: NJDMV
+  [MAPPED]    Name                               Raw: DOE,JOHN ALAN
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='ALAN')
+              Target: Name -> UI: DOE,JOHN ALAN
+  [MAPPED]    NameFirst                          Raw: JOHN
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='ALAN')
+              Target: NameFirst -> UI: JOHN
+  [MAPPED]    NameLast                           Raw: DOE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='ALAN')
+              Target: NameLast -> UI: DOE
+  [MAPPED]    NameMiddle                         Raw: ALAN
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='ALAN')
+              Target: NameMiddle -> UI: ALAN
+  [MAPPED]    OperatorLicenseNumber              Raw: D999888777
+              Target: OperatorLicenseNumber -> UI: D999888777
+  [MAPPED]    OperatorLicenseRestrictions        Raw: NONE
+              Target: OperatorLicenseRestrictions -> UI: NONE
+  [MAPPED]    OperatorLicenseStateCode           Raw: NJ
+              Target: OperatorLicenseStateCode -> UI: NJ
+  [MAPPED]    OperatorLicenseStatusCode          Raw: VALID
+              Target: OperatorLicenseStatusCode -> UI: VALID
+  [MAPPED]    OrganDonor                         Raw: Y
+              Target: OrganDonor -> UI: Y
+  [MAPPED]    RaceCode                           Raw: W
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=RaceCode: 'W' -> 'White'
+              Target: RaceCode -> UI: White
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
+  [MAPPED]    SecondaryRequests                  Raw: N
+              Target: SecondaryRequests -> UI: N
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+  [MAPPED]    SocialSecurityNumber               Raw: 123-45-6789
+              Handler: truncate
+              Length 11 <= 11 (no truncation needed)
+              Target: SocialSecurityNumber -> UI: 123-45-6789
+  [MAPPED]    System                             Raw: Driver License Query Result
+              Target: System -> UI: Driver License Query Result
+  [MAPPED]    Weight                             Raw: 180
+              Target: Weight -> UI: 180
+
+  Summary: 39 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  ====================================================================
+  ENTITY: Firearm  |  Synthetic standard
+  ====================================================================
+
+  Raw CJIS result fields:
+    <GunCaliber>45</GunCaliber>
+    <GunMake>COLT</GunMake>
+    <GunModel>M1911</GunModel>
+    <GunSerialNumber>SN12345678</GunSerialNumber>
+    <GunTypeCode>PI</GunTypeCode>
+    <Hit>Y</Hit>
+    <Image>N</Image>
+    <ImageId>GUN001</ImageId>
+    <IntInterfaceName>NCIC Firearm File</IntInterfaceName>
+    <IntSystemName>NCIC</IntSystemName>
+    <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+    <SecondaryRequests>N</SecondaryRequests>
+    <SerialNumber>SN12345678</SerialNumber>
+    <System>Firearm Query Result</System>
+
+  Handler Transformations:
+  --------------------------------------------------------------------
+  [MAPPED]    GunCaliber                         Raw: 45
+              Target: Caliber -> UI: 45
+  [MAPPED]    GunMake                            Raw: COLT
+              Target: FirearmMake -> UI: COLT
+  [MAPPED]    GunModel                           Raw: M1911
+              Target: GunModel -> UI: M1911
+  [MAPPED]    GunSerialNumber                    Raw: SN12345678
+              Target: GunSerialNumber -> UI: SN12345678
+  [MAPPED]    GunTypeCode                        Raw: PI
+              Target: GunTypeCode -> UI: PI
+  [MAPPED]    Hit                                Raw: Y
+              Target: hit -> UI: Y
+  [MAPPED]    Image                              Raw: N
+              Target: ImageIndicator -> UI: N
+  [MAPPED]    ImageId                            Raw: GUN001
+              Target: imageId -> UI: GUN001
+  [MAPPED]    IntInterfaceName                   Raw: NCIC Firearm File
+              Target: IntInterfaceName -> UI: NCIC Firearm File
+  [MAPPED]    IntSystemName                      Raw: NCIC
+              Target: IntSystemName -> UI: NCIC
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
+  [MAPPED]    SecondaryRequests                  Raw: N
+              Target: SecondaryRequests -> UI: N
+  [MAPPED]    SerialNumber                       Raw: SN12345678
+              Target: SerialNumber -> UI: SN12345678
+  [MAPPED]    System                             Raw: Firearm Query Result
+              Target: System -> UI: Firearm Query Result
+
+  Summary: 14 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  ====================================================================
+  ENTITY: Article  |  Synthetic standard
+  ====================================================================
+
+  Raw CJIS result fields:
+    <ArticleBrand>TREK</ArticleBrand>
+    <ArticleModel>FX3</ArticleModel>
+    <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+    <ArticleTypeCode>BICY</ArticleTypeCode>
+    <Hit>Y</Hit>
+    <Image>N</Image>
+    <ImageId>ART001</ImageId>
+    <IntInterfaceName>NCIC Article File</IntInterfaceName>
+    <IntSystemName>NCIC</IntSystemName>
+    <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+    <SecondaryRequests>N</SecondaryRequests>
+    <SerialNumber>ART99999</SerialNumber>
+    <System>Article Query Result</System>
+
+  Handler Transformations:
+  --------------------------------------------------------------------
+  [MAPPED]    ArticleBrand                       Raw: TREK
+              Target: ArticleBrand -> UI: TREK
+  [MAPPED]    ArticleModel                       Raw: FX3
+              Target: ArticleModel -> UI: FX3
+  [MAPPED]    ArticleSerialNumber                Raw: ART99999
+              Target: ArticleSerialNumber -> UI: ART99999
+  [MAPPED]    ArticleTypeCode                    Raw: BICY
+              Target: ArticleTypeCode -> UI: BICY
+  [MAPPED]    Hit                                Raw: Y
+              Target: hit -> UI: Y
+  [MAPPED]    Image                              Raw: N
+              Target: ImageIndicator -> UI: N
+  [MAPPED]    ImageId                            Raw: ART001
+              Target: imageId -> UI: ART001
+  [MAPPED]    IntInterfaceName                   Raw: NCIC Article File
+              Target: IntInterfaceName -> UI: NCIC Article File
+  [MAPPED]    IntSystemName                      Raw: NCIC
+              Target: IntSystemName -> UI: NCIC
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
+  [MAPPED]    SecondaryRequests                  Raw: N
+              Target: SecondaryRequests -> UI: N
+  [MAPPED]    SerialNumber                       Raw: ART99999
+              Target: SerialNumber -> UI: ART99999
+  [MAPPED]    System                             Raw: Article Query Result
+              Target: System -> UI: Article Query Result
+
+  Summary: 13 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  ====================================================================
+  ENTITY: Boat  |  Synthetic standard
+  ====================================================================
+
+  Raw CJIS result fields:
+    <BoatBrand>YAMAHA</BoatBrand>
+    <BoatHullIdNumber>NJ1234AB56H7</BoatHullIdNumber>
+    <BoatMakeCode>YAMA</BoatMakeCode>
+    <BoatName>WAVE RUNNER</BoatName>
+    <BoatSerialNumber>NJ1234AB56H7</BoatSerialNumber>
+    <Hit>Y</Hit>
+    <Image>N</Image>
+    <ImageId>BOT001</ImageId>
+    <IntInterfaceName>NCIC Boat File</IntInterfaceName>
+    <IntSystemName>NJSP</IntSystemName>
+    <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+    <SecondaryRequests>N</SecondaryRequests>
+    <System>Boat Query Result</System>
+
+  Handler Transformations:
+  --------------------------------------------------------------------
+  [MAPPED]    BoatBrand                          Raw: YAMAHA
+              Target: BoatBrand -> UI: YAMAHA
+  [MAPPED]    BoatHullIdNumber                   Raw: NJ1234AB56H7
+              Target: BoatHullIdNumber -> UI: NJ1234AB56H7
+  [MAPPED]    BoatMakeCode                       Raw: YAMA
+              Target: BoatMakeCode -> UI: YAMA
+  [MAPPED]    BoatName                           Raw: WAVE RUNNER
+              Target: BoatName -> UI: WAVE RUNNER
+  [MAPPED]    BoatSerialNumber                   Raw: NJ1234AB56H7
+              Target: BoatSerialNumber -> UI: NJ1234AB56H7
+  [MAPPED]    Hit                                Raw: Y
+              Target: hit -> UI: Y
+  [MAPPED]    Image                              Raw: N
+              Target: ImageIndicator -> UI: N
+  [MAPPED]    ImageId                            Raw: BOT001
+              Target: imageId -> UI: BOT001
+  [MAPPED]    IntInterfaceName                   Raw: NCIC Boat File
+              Target: IntInterfaceName -> UI: NCIC Boat File
+  [MAPPED]    IntSystemName                      Raw: NJSP
+              Target: IntSystemName -> UI: NJSP
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
+  [MAPPED]    SecondaryRequests                  Raw: N
+              Target: SecondaryRequests -> UI: N
+  [MAPPED]    System                             Raw: Boat Query Result
+              Target: System -> UI: Boat Query Result
+
+  Summary: 13 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+========================================================================
+  TOTAL: 103 MAPPED / 0 MISSING / 0 UNMAPPED
+========================================================================
+
