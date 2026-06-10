@@ -1652,10 +1652,36 @@ foreach ($entity in $entityQidms.Keys) {
         foreach ($asq in $autoSelectQidms) {
             if ($asq.queriesToDeselect -and $asq.queriesToDeselect.Count -gt 0) { $hasCoFireDeselect = $true; break }
         }
+        # Suffix-isolation refinement: if every pair of autoSelect QIDMs has fully
+        # disjoint set[] trigger pools, neither can arm from the other's field entry --
+        # toggle control exists structurally (separate cards). Pattern precedent:
+        # TX_TLETS_CCH (CCH-suffix), NJ RANDOM-COLLAPSED branch (Rand-suffix).
+        $setPools = @()
+        foreach ($asq in $autoSelectQidms) {
+            $pool = [System.Collections.Generic.HashSet[string]]::new()
+            foreach ($c in $asq.combinations) {
+                if ($c.requirements.set) { foreach ($f in $c.requirements.set) { [void]$pool.Add($f) } }
+            }
+            $setPools += ,$pool
+        }
+        $poolsDisjoint = $true
+        for ($i = 0; $i -lt $setPools.Count -and $poolsDisjoint; $i++) {
+            for ($j = $i + 1; $j -lt $setPools.Count; $j++) {
+                foreach ($f in $setPools[$i]) {
+                    if ($setPools[$j].Contains($f)) { $poolsDisjoint = $false; break }
+                }
+                if (-not $poolsDisjoint) { break }
+            }
+        }
         if ($hasCoFireDeselect) {
             Write-Pass "${entity}: $($autoSelectQidms.Count) QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF"; Inc-Pass
             foreach ($asq in $autoSelectQidms) {
                 Write-Host "         $($asq.name) (query=$($asq.query), deselect=$($asq.queriesToDeselect -join ','))" -ForegroundColor DarkGreen
+            }
+        } elseif ($poolsDisjoint) {
+            Write-Pass "${entity}: $($autoSelectQidms.Count) autoSelect QIDMs on SINGLE QIF with DISJOINT set[] pools (suffix-isolated) -- no uncontrolled co-arm possible"; Inc-Pass
+            foreach ($asq in $autoSelectQidms) {
+                Write-Host "         $($asq.name) (query=$($asq.query))" -ForegroundColor DarkGreen
             }
         } else {
             Write-Limitation "${entity}: $($autoSelectQidms.Count) QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control"

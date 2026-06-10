@@ -30,6 +30,31 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
+v3.6-COLLAPSED + v3.6-REMOVED  2026-06-10  EXPERIMENTAL BRANCHES -- Vehicle Stolen redesign evaluation
+  CHANGED
+    - TWO new JSONs built alongside untouched mainline v3.5 (one-JSON-in-root rule
+      SUSPENDED by user directive until a winner is chosen):
+    - NJ_NJCJIS_RANDOM_COLLAPSED.json (build_nj_njcjis_random_collapsed.ps1):
+      New CARD_VEH_RAND ("RANDOM") with suffixed Stolen triggers licensePlateNumberRand +
+      vehicleIdentificationNumberRand; ncicNumber + vehicleMakeCode MOVED there from VIN
+      card (both stolen-only); VIN card shrinks to VIN alone; Stolen QIDM rewired to
+      suffixed fields, autoSelect=true, queriesToDeselect removed. 70P/0F/0W/0LIM.
+    - NJ_NJCJIS_RANDOM_REMOVED.json (build_nj_njcjis_random_removed.ps1):
+      VehicleStolenQuery QIDM deleted (QVN/QVP/QVV = user-approved skip of the 3
+      metadata QV combos); ncicNumber + vehicleMakeCode removed from layout. 63P/0F/0W/0LIM.
+    - validate.ps1 Phase 4 refined: multi-autoSelect on single QIF now PASSES when
+      set[] trigger pools are fully disjoint (suffix-isolation); LIMITATION otherwise.
+      DH-suffix providers (deselect path) unaffected.
+    - test_commsys.ps1 testData: added licensePlateNumberRand + vehicleIdentificationNumberRand.
+  REASON
+    - Request: remove the Vehicle Stolen opt-in checkbox. Direction undecided between
+      (a) isolating Stolen as a deliberate search on its own RANDOM card (NJ A-134-97)
+      and (b) eliminating QV entirely on the premise NJCJIS auto-runs the stolen check
+      with registration queries (premise NOT confirmed by metadata/devdoc -- they define
+      QV as an independent transaction; needs state-side confirmation or live response
+      XML). Both candidates built for evaluation; either may be promoted to mainline.
+      NEITHER LIVE-TESTED. Losers + suspension note removed at decision time.
+
 v3.5  2026-06-09  Name Search card layout — 2 rows
   CHANGED
     - Split CARD_PER_NAME from 1 row (First/Last/DOB/Sex) to 2 rows:
