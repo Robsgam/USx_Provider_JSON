@@ -81,3 +81,19 @@ FINDINGS:
    NCIC-code-vs-UUID defaults issue (Cringer); (b) experimental: default value
    = NJ STATE attr ID (69509884952) instead of literal 'NJ' so reverse-lookup
    resolves it -- may fix the RMS 400 too. Controlled test required.
+
+================================================================================
+ADDENDUM 3 (2026-06-11) -- RECLASSIFIED: ACCEPTED CONDITION (user decision)
+================================================================================
+The State-default non-injection is ACCEPTED as matching real workflow, not a
+fix item:
+  - CAD dispatchers always enter state unless it is genuinely unknown; an
+    unknown-state plate query legitimately goes out stateless.
+  - Empirically tolerated: this P2 stateless query drew 'No Returns', not a
+    rejection (devdoc State=M is soft in practice on this path).
+  - Known related history: State defaults injecting literals is the documented
+    Cringer condition (RMS 400 / NCIC-code-vs-UUID); previously accepted under
+    'CommSys priority over CAD bugs'.
+Status: condition documented; defaults-through-codeTypeProvider behavior noted
+for the KB on next NJ doc pass. FAIL marker retained for history; treat as
+KNOWN CONDITION, not regression.
