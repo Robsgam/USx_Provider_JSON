@@ -1,0 +1,152 @@
+================================================================================
+NJ_NJCJIS RANDOM-REMOVED BRANCH -- VEHICLE-ONLY LIVE TEST PACKAGE
+================================================================================
+JSON        : NJ_NJCJIS_RANDOM_REMOVED.json (v3.6-REMOVED, built 2026-06-10)
+Build script: scripts/build_nj_njcjis_random_removed.ps1
+Scope       : Vehicle entity ONLY -- usability, checkbox behavior, query
+              triggering, CAD-related shortcomings. Other entities unchanged
+              from mainline v3.5 (already live-confirmed).
+Design      : VehicleStolenQuery (QV) ELIMINATED from the JSON. ncicNumber and
+              vehicleMakeCode removed from layout (stolen-only fields).
+              PREMISE UNDER TEST: NJCJIS runs the QV stolen check automatically
+              state-side with registration queries. NOT confirmed by metadata
+              or devdoc -- both define QV as an independent transaction.
+Status      : 11 tests, all PENDING.
+              *** RUN Q4 (PREMISE TEST) FIRST. If it fails, this branch loses
+              stolen-check capability entirely and the remaining tests are
+              academic -- escalate before continuing. ***
+
+GROUND RULES (apply to every test)
+--------------------------------------------------------------------------------
+1. FULL PAGE RELOAD between every test (clear-form platform bug).
+2. Server-log REQUEST + RESPONSE XML capture MANDATORY per query test (from
+   server logs, NOT browser F12). post_test.ps1 -XmlRequest blocks PASS
+   without it. "Not captured" = UNTESTED.
+3. Per-test stub:
+     tools/new_test_log.ps1 -Provider NJ_NJCJIS -Variant MC -Version 3.6-REMOVED
+       -Entity Vehicle -Combo <TestID> -Description "<short description>"
+4. Instant save after each test via post_test.ps1 (-XmlRequest required).
+5. Field types: Plate Number / VIN / Plate Year are TEXT. Plate Type / State /
+   Random / Image are DROPDOWNS.
+6. Mainline v3.5 test package state is NOT reset -- branch logs are additive.
+
+================================================================================
+PHASE Q4 FIRST -- THE PREMISE TEST (decisive for this branch)
+================================================================================
+
+Q4  Does the FULL registration response include the stolen check?       [    ]
+    Steps : Random dropdown=N (default). Plate of a KNOWN-STOLEN test record
+            on the state TEST system (coordinate with NJCJIS/CommSys for a
+            test plate; a clean plate proves nothing). Submit. Capture the
+            COMPLETE RESPONSE XML from server logs.
+    Expect (premise TRUE) : Response contains NCIC stolen-vehicle data
+            (QV-type segments / stolen hit) alongside DMV registration data.
+            Devdoc data-mining line ("NCIC (QA, QB, QG, QV, QW)") suggests
+            QV tags are parseable if present.
+    Expect (premise FALSE): Response contains registration data only --
+            NO stolen-file check occurred. THIS VARIANT THEN LOSES STOLEN
+            CAPABILITY ENTIRELY (no QV query exists in the JSON, no NCIC#
+            search path). STOP and escalate before further testing.
+    PASS  : Premise confirmed with response XML evidence attached.
+    NOTE  : Also verify the platform DISPLAYS the stolen segment of the
+            response (QRDM was kept intact for exactly this case).
+
+================================================================================
+PHASE U -- USABILITY / RENDER (2 tests)
+================================================================================
+
+U1  Render + defaults                                                   [    ]
+    Steps : Open Vehicle tab (default layout). No data entry.
+    Expect: EXACTLY 3 cards:
+              1. "Search Options" -- State (NJ), Random (N), Image (N) dropdowns
+              2. "PLATE SEARCH"   -- Plate Number (text), Plate Type dropdown
+                 (PC), Plate Year (text, 2026)
+              3. "VIN SEARCH"     -- VIN (text, full width)
+            NO NCIC Number field and NO Vehicle Make dropdown anywhere on the
+            Vehicle tab.
+    PASS  : 3 cards, stolen-only fields absent, defaults intact.
+
+U2  CAD_DISPATCH + FIRST_RESPONDER variants render                      [    ]
+    Steps : Open the Vehicle form in CAD dispatch context, then First Responder.
+    Expect: Context card first; same 3 cards; no stolen-only fields.
+    PASS  : Both variants correct.
+
+================================================================================
+PHASE X -- CHECKBOX BEHAVIOR (2 tests; FULL RELOAD between each)
+================================================================================
+
+X1  HEADLINE -- Vehicle Stolen checkbox is GONE                         [    ]
+    Steps : Fresh load. Inspect the query selector.
+    Expect: Selector lists ONLY: Vehicle Registration, RMS. NO "Vehicle
+            Stolen" entry exists at all (the QIDM is deleted -- this is the
+            literal "remove the checkbox" outcome).
+    PASS  : Stolen absent from selector.
+
+X2  Plate arms VehReg only                                              [    ]
+    Steps : Type plate ABC1234 on PLATE SEARCH card.
+    Expect: "Vehicle Registration" auto-checks. Nothing else to arm.
+    PASS  : Reg checked; selector otherwise unchanged.
+
+================================================================================
+PHASE Q -- QUERY TRIGGERING + XML (3 tests; request+response XML each)
+================================================================================
+
+Q1  Plate -> RQ alone                                                   [    ]
+    Steps : Plate ABC1234. Submit.
+    Expect: ONE transaction: VehicleRegistrationQuery / RQ with defaults
+            (RandomRequest=N, ImageIndicator=N, PlateType=PC, PlateYear=2026,
+            State=NJ). NO QV transaction in the server log (none exists).
+            RMS fires.
+    PASS  : RQ only + defaults.
+
+Q2  VIN -> RQN alone                                                    [    ]
+    Steps : VIN 1HGCM82633A123456. Submit.
+    Expect: RQN with RandomRequest=N + ImageIndicator=N + State=NJ. RMS fires.
+    PASS  : RQN only.
+
+Q3  Random=Y -> RQ_RAND routing                                         [    ]
+    Steps : Random dropdown=Y + plate ABC1234. Submit.
+    Expect: RQ_RAND conditions combo fires; RandomRequest=Y in XML. Response
+            should be stolen-only data (RAND mode) -- capture and compare
+            with Q4's FULL response.
+    PASS  : RandomRequest=Y in request XML.
+
+================================================================================
+PHASE C -- CAD-RELATED (2 tests)
+================================================================================
+
+C1  CAD dispatch -> VehReg with combo defaults                          [    ]
+    Steps : CAD vehicle event with plate; open Vehicle query from CAD context;
+            submit.
+    Expect: CAD populates licensePlateNumber; RQ fires; XML carries all five
+            defaults (RandomRequest=N, ImageIndicator=N, PC, 2026, NJ) via
+            combo defaults[] (CAD ignores form initialValues).
+    PASS  : Defaults present in CAD-dispatched XML.
+
+C2  EXPECTED SHORTCOMING -- no stolen path anywhere                     [    ]
+    Steps : Review C1 + the form generally.
+    Expect: No stolen query can be run from CAD or from the form, by anyone,
+            by any path (no QIDM, no NCIC# field). Acceptable ONLY if Q4
+            confirmed the auto-QV premise.
+    Record: CONFIRMED DESIGN CONSEQUENCE -- tie verdict directly to Q4 result
+            in the merge-decision ledger.
+
+================================================================================
+PHASE N -- NEGATIVE (1 test)
+================================================================================
+
+N1  Empty submit                                                        [    ]
+    Steps : Submit completely empty form.
+    Expect: Nothing fires / platform blocks.
+    PASS  : Zero transactions in server log.
+
+================================================================================
+MERGE-DECISION LEDGER (filled at completion)
+================================================================================
+  Q4 premise (state auto-runs QV)        : ____  << decides everything
+  Stolen data visible in response (Q4)   : ____
+  Checkbox literally gone (X1)           : ____
+  Reg paths unaffected (Q1-Q3)           : ____
+  CAD defaults intact (C1)               : ____
+  Loss of NCIC# search path acceptable   : ____
+================================================================================
