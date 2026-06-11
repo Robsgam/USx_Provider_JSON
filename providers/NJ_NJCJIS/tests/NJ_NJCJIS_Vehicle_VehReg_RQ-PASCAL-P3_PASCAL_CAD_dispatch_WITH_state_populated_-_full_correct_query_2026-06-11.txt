@@ -1,0 +1,40 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ-PASCAL-P3 (PASCAL CAD dispatch WITH state populated - full correct query)
+Variant: MC
+Date: 2026-06-11 13:20:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTVV3PQ30TVHCCNW5ZPWAC7Y"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KTVV3PQ30TVHCCNW5ZPWAC7Y</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><RandomRequest>N</RandomRequest><LicensePlateNumber>CADPLATE</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTVV3PQ30TVHCCNW5ZPWAC7Y
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  LicensePlateTypeCode           PC
+  RandomRequest                  N
+  LicensePlateNumber             CADPLATE
+
+NOTES
+-----
+JSON: NJ_NJCJIS_PASCAL.json. CAD inbound: {"LicensePlateNumber":"cadplate","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","PurposeCode":"C","RegistrationState":"New Jersey"}. CONFIRMS: (1) CAD emits PascalCase (5th key: RegistrationState); (2) CAD sends DISPLAY VALUE 'New Jersey' and platform resolves BOTH ways -- State=NJ (NCIC code) in CommSys XML AND registrationStateAttrIds=[69509884952] in RMS. Full chain works on PASCAL when CAD supplies state. (3) P2's missing State re-attributed: CAD state field was BLANK (operator-missed). REMAINING DEFECT (P2 stands as evidence): combo default State=NJ does NOT inject when CAD state is blank -- defaults fail through codeTypeProvider=NCIC; mandatory-State query goes out silently incomplete. Fix candidates unchanged: attrId-valued default (69509884952) or platform report w/ Cringer RMS-400 family. Response: No Returns (synthetic plate, expected).
+
+RESULT: PASS
