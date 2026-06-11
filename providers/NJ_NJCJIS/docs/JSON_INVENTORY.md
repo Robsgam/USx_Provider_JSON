@@ -14,6 +14,7 @@ All JSON versions produced for this provider.
 | NJ_NJCJIS.json | v3.5 | Current (mainline) | 69P/0F/0W/0LIM. 5 QIDMs, 13 combos. Imported USx NJCJIS Tenant + Newark Foundation 2026-05-28. |
 | NJ_NJCJIS_RANDOM_COLLAPSED.json | v3.6-COLLAPSED | Experimental branch | 70P/0F/0W/0LIM. Stolen suffix-isolated on dedicated RANDOM card (licensePlateNumberRand/vehicleIdentificationNumberRand + ncicNumber/vehicleMakeCode moved); Stolen autoSelect=true, no queriesToDeselect. Built by build_nj_njcjis_random_collapsed.ps1. NOT live-tested. |
 | NJ_NJCJIS_RANDOM_REMOVED.json | v3.6-REMOVED | Experimental branch | 63P/0F/0W/0LIM. VehicleStolenQuery (QVN/QVP/QVV) eliminated — USER-APPROVED SKIP of 3 metadata QV combos (premise: state auto-runs QV with reg queries). ncicNumber/vehicleMakeCode removed from layout. Built by build_nj_njcjis_random_removed.ps1. NOT live-tested. |
+| NJ_NJCJIS_PASCAL.json | v3.5-PASCAL | TESTING ONLY | 69P/0F/0W. Mainline v3.5 with form-side layer recased to PascalCase (fieldIds, CommSys+RMS sourceFields, combo set[]/any[]; targetFields/defaults/AUTH untouched — NJCJIS XML identical). For manual CAD (camel, expected to FAIL populate) + OnScene (Pascal, expected to work) casing probe. Generated from mainline by build_nj_njcjis_pascal.ps1; no build-process changes. Watch: GunSerialNumber/ArticleSerialNumber vs OnScene's generic 'SerialNumber'. |
 
 ## phases/current/
 
