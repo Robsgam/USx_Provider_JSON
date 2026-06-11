@@ -54,3 +54,30 @@ NCIC codeTypeProvider reverse-lookup failed on a non-attrId value, omitting
 the element -- and the State default did not apply because the field was not
 absent. Discriminator: the CAD outbound payload field names + values from
 platform logs.
+
+================================================================================
+ADDENDUM 2 (2026-06-11) -- CAD INBOUND PAYLOAD OBTAINED
+================================================================================
+{"LicensePlateNumber":"cadplate","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","PurposeCode":"C"}
+
+FINDINGS:
+1. CAD EMITS PASCALCASE on this tenant. The camelCase contract
+   (tools/config/cad_field_mapping.json, eng statement 2026-05-05) is stale here.
+   P2 fired because CAD's names matched the PASCAL fieldIds exactly -- no
+   case-insensitive matching involved. Implication: camelCase mainline v3.5 CAD
+   auto-populate is PREDICTED BROKEN on this tenant (A/B test re-purposed to
+   confirm).
+2. CAD sent NO state field. Re-attribution of the outbound XML:
+   from CAD: LicensePlateNumber, LicensePlateTypeCode=PC, LicensePlateYear=2026
+   from combo defaults: RandomRequest=N, ImageIndicator=N  (2 of 3 injected)
+   FAILED: State=NJ default -- field genuinely absent, default did not survive.
+   PurposeCode=C: ignored (no such attribute in NJ QIDM -- expected).
+3. State failure mechanism NARROWED: the only failed default belongs to the only
+   codeTypeProvider='NCIC' attribute. [Likely] injected literal 'NJ' is consumed
+   by the NCIC reverse-lookup stage (expects attr ID) and dropped.
+   Cheap confirmation WITHOUT CAD: typed query with State dropdown cleared ->
+   if State absent from XML, defaults-through-codeTypeProvider is confirmed.
+   Candidate fixes: (a) platform report -- same family as the RMS 400
+   NCIC-code-vs-UUID defaults issue (Cringer); (b) experimental: default value
+   = NJ STATE attr ID (69509884952) instead of literal 'NJ' so reverse-lookup
+   resolves it -- may fix the RMS 400 too. Controlled test required.
