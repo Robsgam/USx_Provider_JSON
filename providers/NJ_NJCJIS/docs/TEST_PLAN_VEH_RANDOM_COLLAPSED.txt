@@ -10,7 +10,12 @@ Design      : VehicleStolenQuery suffix-isolated on dedicated RANDOM card
               (licensePlateNumberRand / vehicleIdentificationNumberRand
               triggers; ncicNumber + vehicleMakeCode moved from VIN card);
               Stolen autoSelect=true, NO queriesToDeselect.
-Status      : 20 tests, all PENDING.
+Status      : 22 tests, all PENDING.
+Scope note  : Reg-side any[] riders (State OOS, Image=Y on RQ/RQN) are NOT
+              re-tested here -- the VehicleRegistrationQuery QIDM is byte-
+              identical to mainline v3.5, which live-confirmed them (v2.9
+              OOS plate test, v3.2 any[] coverage). Stolen-side riders ARE
+              tested (Q8/Q9) because the QIDM was rewired.
 
 GROUND RULES (apply to every test)
 --------------------------------------------------------------------------------
@@ -104,7 +109,7 @@ X5  Officer override persists                                           [    ]
     PASS  : No RQ transaction in server log.
 
 ================================================================================
-PHASE Q -- QUERY TRIGGERING + XML (7 tests; request+response XML each)
+PHASE Q -- QUERY TRIGGERING + XML (9 tests; request+response XML each)
 ================================================================================
 
 Q1  Reg plate -> RQ alone, NO QV                                        [    ]
@@ -156,6 +161,22 @@ Q7  Dual search -> BOTH transactions                                    [    ]
             AND QV (with stolen defaults). This is the deliberate two-query
             workflow the design enables.
     PASS  : Both request XMLs captured from one submission.
+
+Q8  Shared State serves the RANDOM card (incl. OOS)                     [    ]
+    Steps : Change State dropdown (OPTIONS card) to NY; plate ABC1234 in
+            RANDOM card plate. Submit.
+    Expect: QVP fires with State=NY in the XML -- proves the shared OPTIONS
+            State field (registrationState, in QVP any[]) reaches the
+            suffix-isolated query, and the officer-set value overrides the
+            NJ default. (QVP is the only stolen combo with State in any[].)
+    PASS  : State=NY in QV request XML.
+
+Q9  ImageIndicator override beats the combo default                     [    ]
+    Steps : Set Image dropdown (OPTIONS card) to Y; plate ABC1234 in RANDOM
+            card plate. Submit.
+    Expect: QVP fires with ImageIndicator=Y (officer value), NOT the combo
+            default N. Confirms any[] rider behavior on the isolated query.
+    PASS  : ImageIndicator=Y in QV request XML.
 
 ================================================================================
 PHASE C -- CAD-RELATED SHORTCOMINGS (4 tests)

@@ -9,6 +9,17 @@ KNOWN LIMITATIONS (2):
   1. DL combo order: DQN(2 set) before DQ(3 set) -- correct by operational priority (OLN before Name)
   2. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
 
+EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
+  NJ_NJCJIS_RANDOM_COLLAPSED.json (v3.6-COLLAPSED): all 13 combos built; QVN/QVP/QVV
+    triggers suffix-isolated on RANDOM card. Live status: PENDING
+    (docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt).
+  NJ_NJCJIS_RANDOM_REMOVED.json (v3.6-REMOVED): VehicleStolenQuery NOT BUILT --
+    QVN/QVP/QVV (metadata keyRef QV, 3 combos) are a USER-APPROVED SKIP
+    (directive 2026-06-10; premise: state auto-runs QV with registration queries --
+    premise verification is test Q4a/Q4b in docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt).
+    All other combos built. Live status: PENDING.
+  One-JSON-in-root rule suspended by user directive until a winner merges to mainline.
+
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================

@@ -12,6 +12,10 @@ Design      : VehicleStolenQuery (QV) ELIMINATED from the JSON. ncicNumber and
               state-side with registration queries. NOT confirmed by metadata
               or devdoc -- both define QV as an independent transaction.
 Status      : 12 tests, all PENDING.
+Scope note  : Reg-side any[] riders (State OOS, Image=Y on RQ/RQN) are NOT
+              re-tested here -- the VehicleRegistrationQuery QIDM is byte-
+              identical to mainline v3.5, which live-confirmed them (v2.9
+              OOS plate test, v3.2 any[] coverage).
               *** RUN Q4a/Q4b (PREMISE TEST) FIRST. Uses any ordinary plate --
               structural comparison of RAND vs FULL responses; NO special or
               live data required. If the premise fails, this branch loses
