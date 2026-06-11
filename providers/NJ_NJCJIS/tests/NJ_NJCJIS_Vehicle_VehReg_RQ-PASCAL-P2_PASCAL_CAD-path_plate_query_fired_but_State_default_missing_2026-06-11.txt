@@ -37,3 +37,20 @@ NOTES
 JSON: NJ_NJCJIS_PASCAL.json (v3.5-PASCAL, testing-only). Plate CADPLATE (CAD-path probe). TWO FINDINGS: (1) RQ FIRED despite camelCase-CAD vs PascalCase-fieldId prediction of total failure -- either CAD matching is case-INSENSITIVE (contradicts eng 2026-05-05 case-sensitive claim), CAD emits Pascal, or plate was manually typed -- mechanism unconfirmed. (2) REGRESSION: State element ABSENT from CommSys XML -- 4 of 5 combo defaults injected (ImageIndicator=N, PlateYear=2026, PlateType=PC, RandomRequest=N) but State=NJ default did NOT; mainline v3.2 CAD tests showed State=NJ injected. RMS request also lacked registrationStateAttrIds: {"elasticQuery":{"vehicle":{"tag":"cadplate"}},"from":0,"size":50}. State is MANDATORY (M) per NJ devdoc on VehicleRegistrationQuery -- 'No Returns' may mask state-side rejection. Response XML not captured. FOLLOW-UPS: confirm entry path (genuine CAD dispatch vs typed); capture full response XML; investigate why attribute-level State default skips on PASCAL CAD path.
 
 RESULT: FAIL
+
+================================================================================
+ADDENDUM (2026-06-11, user confirmation)
+================================================================================
+Entry path CONFIRMED: genuine CAD dispatch ("from cad"). Not manually typed.
+Therefore: CAD reached PascalCase fieldIds and the RQ combo fired. The
+documented case-sensitive camelCase requirement (Patch 8 rationale,
+cad_field_mapping.json header, engineering statement 2026-05-05) is
+CONTRADICTED by this live capture. Mechanism still undetermined:
+  (a) platform field matching is case-insensitive, or
+  (b) CAD emits PascalCase on this tenant.
+State-absence theory (unconfirmed): if CAD sent registrationState as a literal
+code, the State attribute may have picked it up case-insensitively and the
+NCIC codeTypeProvider reverse-lookup failed on a non-attrId value, omitting
+the element -- and the State default did not apply because the field was not
+absent. Discriminator: the CAD outbound payload field names + values from
+platform logs.
