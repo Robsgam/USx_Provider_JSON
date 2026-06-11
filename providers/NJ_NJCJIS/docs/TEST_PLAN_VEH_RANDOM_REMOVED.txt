@@ -11,8 +11,10 @@ Design      : VehicleStolenQuery (QV) ELIMINATED from the JSON. ncicNumber and
               PREMISE UNDER TEST: NJCJIS runs the QV stolen check automatically
               state-side with registration queries. NOT confirmed by metadata
               or devdoc -- both define QV as an independent transaction.
-Status      : 11 tests, all PENDING.
-              *** RUN Q4 (PREMISE TEST) FIRST. If it fails, this branch loses
+Status      : 12 tests, all PENDING.
+              *** RUN Q4a/Q4b (PREMISE TEST) FIRST. Uses any ordinary plate --
+              structural comparison of RAND vs FULL responses; NO special or
+              live data required. If the premise fails, this branch loses
               stolen-check capability entirely and the remaining tests are
               academic -- escalate before continuing. ***
 
@@ -33,23 +35,38 @@ GROUND RULES (apply to every test)
 ================================================================================
 PHASE Q4 FIRST -- THE PREMISE TEST (decisive for this branch)
 ================================================================================
+Uses ANY ordinary plate -- no special records required. The evidence is the
+STRUCTURE of the responses, not a stolen hit. RAND mode (RandomRequest=Y) is
+documented as stolen-only data, so its response shows exactly what NJCJIS's
+stolen-check output looks like; the question is whether the FULL response
+carries the same check.
 
-Q4  Does the FULL registration response include the stolen check?       [    ]
-    Steps : Random dropdown=N (default). Plate of a KNOWN-STOLEN test record
-            on the state TEST system (coordinate with NJCJIS/CommSys for a
-            test plate; a clean plate proves nothing). Submit. Capture the
+Q4a RAND baseline -- what a stolen-check response looks like            [    ]
+    Steps : Random dropdown=Y, any plate (e.g. ABC1234). Submit. Capture the
             COMPLETE RESPONSE XML from server logs.
-    Expect (premise TRUE) : Response contains NCIC stolen-vehicle data
-            (QV-type segments / stolen hit) alongside DMV registration data.
-            Devdoc data-mining line ("NCIC (QA, QB, QG, QV, QW)") suggests
-            QV tags are parseable if present.
-    Expect (premise FALSE): Response contains registration data only --
-            NO stolen-file check occurred. THIS VARIANT THEN LOSES STOLEN
-            CAPABILITY ENTIRELY (no QV query exists in the JSON, no NCIC#
-            search path). STOP and escalate before further testing.
-    PASS  : Premise confirmed with response XML evidence attached.
-    NOTE  : Also verify the platform DISPLAYS the stolen segment of the
-            response (QRDM was kept intact for exactly this case).
+    Expect: Stolen-only response (per RAND documentation) -- note its
+            structure: segment names, NCIC markers, and what a NEGATIVE
+            stolen result looks like (e.g. "NO RECORD" block vs nothing).
+    PASS  : Response captured; stolen-check response structure documented.
+
+Q4b FULL comparison -- does FULL carry the same check?                  [    ]
+    Steps : FULL RELOAD. Random dropdown=N (default), SAME plate. Submit.
+            Capture the COMPLETE RESPONSE XML.
+    Compare against Q4a:
+      - FULL response CONTAINS the Q4a-style stolen-check segment (even as a
+        negative/"NO RECORD" block) alongside DMV data -> premise SUPPORTED.
+      - FULL response has ONLY registration data, none of the Q4a stolen
+        markers -> premise NOT SUPPORTED: this variant loses stolen-check
+        capability entirely (no QV query in JSON, no NCIC# path). STOP and
+        escalate before further testing.
+      - AMBIGUOUS (e.g. Q4a negative produces no visible segment either) ->
+        structure comparison cannot decide; escalate the documentation
+        question to CommSys/NJCJIS ("does a FULL VehicleRegistrationQuery
+        include the NCIC stolen check?") and HOLD this branch. Do NOT plan
+        around acquiring special records to force a hit.
+    PASS  : Verdict reached (or escalated) with both response XMLs attached.
+    NOTE  : If premise supported, also verify the platform DISPLAYS the
+            stolen segment of the FULL response (QRDM kept intact for this).
 
 ================================================================================
 PHASE U -- USABILITY / RENDER (2 tests)
@@ -106,9 +123,9 @@ Q2  VIN -> RQN alone                                                    [    ]
 
 Q3  Random=Y -> RQ_RAND routing                                         [    ]
     Steps : Random dropdown=Y + plate ABC1234. Submit.
-    Expect: RQ_RAND conditions combo fires; RandomRequest=Y in XML. Response
-            should be stolen-only data (RAND mode) -- capture and compare
-            with Q4's FULL response.
+    Expect: RQ_RAND conditions combo fires; RandomRequest=Y in XML.
+            (Response structure already characterized in Q4a -- this test is
+            about the request-side conditions routing.)
     PASS  : RandomRequest=Y in request XML.
 
 ================================================================================
@@ -126,9 +143,9 @@ C1  CAD dispatch -> VehReg with combo defaults                          [    ]
 C2  EXPECTED SHORTCOMING -- no stolen path anywhere                     [    ]
     Steps : Review C1 + the form generally.
     Expect: No stolen query can be run from CAD or from the form, by anyone,
-            by any path (no QIDM, no NCIC# field). Acceptable ONLY if Q4
-            confirmed the auto-QV premise.
-    Record: CONFIRMED DESIGN CONSEQUENCE -- tie verdict directly to Q4 result
+            by any path (no QIDM, no NCIC# field). Acceptable ONLY if Q4b
+            supported the auto-QV premise.
+    Record: CONFIRMED DESIGN CONSEQUENCE -- tie verdict directly to Q4b result
             in the merge-decision ledger.
 
 ================================================================================
@@ -143,8 +160,8 @@ N1  Empty submit                                                        [    ]
 ================================================================================
 MERGE-DECISION LEDGER (filled at completion)
 ================================================================================
-  Q4 premise (state auto-runs QV)        : ____  << decides everything
-  Stolen data visible in response (Q4)   : ____
+  Q4a/Q4b premise (state auto-runs QV)   : ____  << decides everything
+  Stolen segment visible in FULL (Q4b)   : ____
   Checkbox literally gone (X1)           : ____
   Reg paths unaffected (Q1-Q3)           : ____
   CAD defaults intact (C1)               : ____
