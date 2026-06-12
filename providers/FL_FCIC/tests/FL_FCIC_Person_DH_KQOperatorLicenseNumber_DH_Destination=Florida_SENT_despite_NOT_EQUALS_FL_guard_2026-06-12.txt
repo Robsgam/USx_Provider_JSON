@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQOperatorLicenseNumber (DH Destination=Florida SENT despite NOT_EQUALS FL guard)
+Variant: BASE
+Date: 2026-06-12 14:51:16
+Result: FAIL
+================================================================
+
+FORM STATE
+----------
+{"imageIndicator":"Y","operatorLicenseNumberDH":"278698634","registrationStateDH":"Florida"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYJP12PC59XT964Y941R9GZ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KTYJP12PC59XT964Y941R9GZ</Id><State>FL</State><OperatorLicenseNumber>278698634</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYJP12PC59XT964Y941R9GZ
+  State                          FL
+  OperatorLicenseNumber          278698634
+
+NOTES
+-----
+NEGATIVE TEST FAILED: KQ fired and sent State=FL -- the registrationStateDH NOT_EQUALS FL condition did not block. ROOT CAUSE [Likely]: conditions evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup. STATE fields are attributeTypeId FormSelects whose raw value is a tenant attribute UUID (cf. RMS elastic registrationStateAttrId=69510844092), so NOT_EQUALS FL compares FL vs a UUID -> never equal -> always passes. Consistent evidence: NOT_EXISTS works on the same field (existence is value-independent, 4 DL PASSes today); CA_CLETS EQUALS conditions that work live are on CODE-TYPE dropdowns (LicensePlateTypeCode = literal codes), and its State NOT_EQUALS CA was validated in CAD context where literal 2-letter codes are injected. IMPLICATION: value-comparison conditions (EQUALS/NOT_EQUALS/IN) are unreliable on attributeTypeId-sourced fields on OnScene forms -- portfolio-wide (NY DH OOS NOT_EQUALS NY, CA State guards likely also inert on OnScene). FCIC response not captured -- whether the state switch rejects a State=FL KQ is the key open question.
+
+RESULT: FAIL
