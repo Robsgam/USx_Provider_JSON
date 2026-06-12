@@ -191,6 +191,25 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   guards are presumed equally inert on OnScene -- verify at their rebuilds.
   test_commsys + run_test_matrix simulate this rule and flag [!] INERT CONDITION.
 
+  OPEN -- NOT_EQUALS MAY BE WHOLLY NON-FUNCTIONAL ON ONSCENE (FL v4.9 live FAIL,
+  2026-06-12, log: ...DH_negative_lowercase_fl_SENT_+_union_pool_over-send...):
+  DH destination changed to a literal-value FormInput; officer typed "fl"; KQ was
+  SENT (State=FL after serializer uppercasing) AND the XML pooled Name+DOB+Sex --
+  fields belonging only to KQName, whose 'OperatorLicenseNumber NOT_EXISTS' should
+  have failed (OLN present) and excluded it, the mechanism live-PROVEN on DL (v4.8
+  T1). Two candidate explanations:
+    (a) case-sensitivity only: "fl" != "FL" passed the guard (does not explain the
+        pooled KQName fields);
+    (b) [Likely] any VALUE-COMPARISON condition disables that combo's ENTIRE
+        conditions array on the OnScene path -- KQName matched as unconditioned,
+        fired first, pool = union of both KQ combos. Also explains the v4.8 DH
+        FAIL without invoking raw-value mismatch; consistent with T1 (DL conditions
+        are pure NOT_EXISTS); CA's "working" NOT_EQUALS was CAD-context only.
+  DISCRIMINATOR (run before any further NOT_EQUALS design): exact uppercase "FL"
+  typed in DH destination + OLN. BLOCKED -> (a), fix is case normalization.
+  SENT -> (b), NOT_EQUALS unusable on OnScene; presence-based design only.
+  NOT_EXISTS pool isolation remains live-proven either way.
+
   RMS QIDMs FOLLOW THE SAME UNION-POOL SERIALIZATION MODEL (live evidence,
   FL v4.8 USx Tenant 2026-06-12): a full DL card produced an RMS elastic query
   containing dlNumber + lastName + firstName + dateOfBirth + sexAttrId. All
