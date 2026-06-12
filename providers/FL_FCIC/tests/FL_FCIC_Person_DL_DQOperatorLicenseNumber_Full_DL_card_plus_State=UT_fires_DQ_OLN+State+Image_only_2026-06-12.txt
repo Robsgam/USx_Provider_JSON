@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DQOperatorLicenseNumber (Full DL card plus State=UT fires DQ OLN+State+Image only)
+Variant: BASE
+Date: 2026-06-12 14:47:07
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"birthDate":"1990-01-01","imageIndicator":"Y","nameFirst":"first","nameLast":"last","nameMiddle":"m","nameSuffix":"Jr","operatorLicenseNumber":"123456","registrationState":"Utah","sexCode":"Female"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYJG47XM6CGKTT75V9YBBCT"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTYJG47XM6CGKTT75V9YBBCT</Id><ImageIndicator>Y</ImageIndicator><State>UT</State><OperatorLicenseNumber>123456</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYJG47XM6CGKTT75V9YBBCT
+  ImageIndicator                 Y
+  State                          UT
+  OperatorLicenseNumber          123456
+
+NOTES
+-----
+Priority test 2 PASS. Full DL card + State=Utah -> DQ path: XML = OperatorLicenseNumber + State=UT + ImageIndicator ONLY. Proves: (a) FDQ combos defer when State present (State NOT_EXISTS negative direction live-proven), (b) DQName excluded via OperatorLicenseNumber NOT_EXISTS (Name/DOB/Sex not serialized), (c) NCIC codeTypeProvider reverse-lookup Utah->UT working. RMS co-fire included registrationStateAttrId (union-pool behavior, known/gated). CommSys response not captured.
+
+RESULT: PASS
