@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DQName (Name+DOB+Sex+State=UT no OLN fires DQ Name)
+Variant: BASE
+Date: 2026-06-12 14:48:27
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"birthDate":"1990-01-01","imageIndicator":"Y","nameFirst":"first","nameLast":"last","nameMiddle":"m","nameSuffix":"Jr","registrationState":"Utah","sexCode":"Female"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYJHT531S7JS7KRY0BYANK0"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTYJHT531S7JS7KRY0BYANK0</Id><ImageIndicator>Y</ImageIndicator><State>UT</State><SexCode>F</SexCode><BirthDate>19900101</BirthDate><Name>LAST,FIRST</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYJHT531S7JS7KRY0BYANK0
+  ImageIndicator                 Y
+  State                          UT
+  SexCode                        F
+  BirthDate                      19900101
+  Name                           LAST,FIRST
+
+NOTES
+-----
+Priority test PASS. Name card + State=Utah, no OLN -> DQ Name path: XML = Name(LAST,FIRST) + BirthDate(19900101 yyyyMMdd) + SexCode(F) + State(UT) + Image. OperatorLicenseNumber NOT_EXISTS passed (OLN blank); FDQ combos deferred (State present). Reverse-lookups OK (Utah->UT, Female->F). Middle/suffix correctly not serialized. CommSys response not captured.
+
+RESULT: PASS
