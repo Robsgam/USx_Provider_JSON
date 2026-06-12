@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-12 14:10
+  Generated: 2026-06-12 15:20
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -16,8 +16,6 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Boat
     imageIndicator [Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    registrationState [Destination State]
-      Config: attributeTypeId=STATE
     relatedHitSearchIndicator [Stolen Search]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
@@ -31,8 +29,6 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
     imageIndicator [Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     registrationState [State (leave blank for FL)]
-      Config: attributeTypeId=STATE
-    registrationStateDH [Destination State]
       Config: attributeTypeId=STATE
     sexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
@@ -64,11 +60,6 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
     Config: FL_FCIC_DriverHistoryQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
-      State -> State
-        codeTypeProvider=NCIC
-    Config: FL_FCIC_BoatQuery
-      State -> State
-        codeTypeProvider=NCIC
 
   Config Type: QUERYRESULTDATAMAPPING
     Config: FL_FCIC_Results
@@ -106,14 +97,8 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: FL_FCIC_DriverHistoryQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
-  QIDM: FL_FCIC_DriverHistoryQuery
-    State -> targetField=State, codeTypeProvider=NCIC
-
-  QIDM: FL_FCIC_BoatQuery
-    State -> targetField=State, codeTypeProvider=NCIC
-
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 16
-  QRDM code type attrs: 15
+  Form dropdowns: 14
+  QRDM code type attrs: 13

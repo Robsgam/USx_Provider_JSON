@@ -47,14 +47,19 @@
 #   Attention:   Visible FormInput (AttentionDH) on DH card
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue anywhere (LIMITATION #30 -- in-state vs OOS routing;
-#                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted)
+#                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted).
+#                DH + Boat destination state = blank 2-char FormInput, no codeTypeProvider
+#                (v4.9): NOT_EQUALS FL guards need literal values -- attributeTypeId
+#                dropdowns carry UUIDs and make value guards inert (INERT-CONDITION RULE,
+#                live FAIL v4.8 2026-06-12). Vehicle/Person-DL State stays NCIC dropdown
+#                (presence-only NOT_EXISTS conditions, unaffected; 4 live PASSes).
 #   Conditions:  NESTED inside requirements, field = @(AttributeName), value = @(...)
 #                (CA_CLETS/NY live-proven wire format). v4.7's combo-level camelCase
 #                scalar conditions were SILENTLY IGNORED by the platform (live XML
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "4.8"
+    [string]$Version = "4.9"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -305,7 +310,11 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # No codeTypeProvider: registrationStateDH is a blank 2-char FormInput -- the officer
+        # types the literal destination code, so the NOT_EQUALS FL gate evaluates a real value
+        # (INERT-CONDITION RULE, QIDM_REFERENCE Sec 2a: attributeTypeId dropdowns carry UUIDs
+        # and make value guards inert -- live FAIL v4.8 2026-06-12).
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State' }
     )
     combinations = @(
         [PSCustomObject]@{
@@ -477,7 +486,9 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'NCICNumber';                size = 10; sourceField = @('ncicNumber');                targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('registrationNumber');        targetField = 'RegistrationNumber' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # No codeTypeProvider: registrationState is a blank 2-char FormInput (literal code) so
+        # the BQ NOT_EQUALS FL guards evaluate a real value (INERT-CONDITION RULE, same as DH).
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State' }
         [PSCustomObject]@{ name = 'TitleLienInformation';      size = 8;  sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
@@ -704,7 +715,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'registrationStateDH' 'Destination State' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Inp 'registrationStateDH' 'Destination State (2-letter, not FL)' '2' 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
@@ -792,7 +803,7 @@ $boaLayout = MakeLayouts @(
         title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_BOA_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'registrationState' 'Destination State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_O1' }
+                @{ id = 'RegistrationState_Input';         node = Inp 'registrationState' 'Destination State (2-letter, blank for FL)' '2' 'ROW_BOA_O1' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
             )}

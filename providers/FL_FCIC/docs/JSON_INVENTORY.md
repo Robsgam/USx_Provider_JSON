@@ -27,6 +27,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.9 (2026-06-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC.json | v4.9 | Current | 90P/0F/0W/0LIM. |
 ## v4.8 (2026-06-12)
 
 | File | Version | Status | Notes |

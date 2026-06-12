@@ -4,6 +4,28 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.9 (2026-06-12) -- DH + Boat destination state: blank 2-char FormInput (kills inert FL guard)
+  CHANGED: 1) DH card: registrationStateDH FormSelect (attributeTypeId=STATE) -> blank
+              FormInput maxLen=2, label "Destination State (2-letter, not FL)". Officer
+              must type the literal 2-letter destination code.
+           2) Boat Options card: registrationState same change, label "Destination State
+              (2-letter, blank for FL)".
+           3) DH QIDM + Boat QIDM State attributes: codeTypeProvider='NCIC' REMOVED
+              (FormInput supplies the literal code directly -- no UUID reverse-lookup).
+           4) Vehicle + Person-DL State fields UNCHANGED (NCIC dropdown pattern): their
+              conditions are presence-based NOT_EXISTS only, unaffected by the inert rule
+              (4 live PASSes v4.8).
+  REASON:  LIVE FAIL (v4.8, 2026-06-12): DH KQOperatorLicenseNumber with Destination=
+           Florida SENT despite NOT_EQUALS FL guard. INERT-CONDITION RULE (QIDM_REFERENCE
+           Sec 2a): conditions evaluate the RAW pre-reverse-lookup value; attributeTypeId
+           dropdowns carry tenant attrId UUIDs, so EQUALS/NOT_EQUALS never see the code.
+           A FormInput carries the literal value the officer typed, so NOT_EQUALS FL is
+           evaluated against a real 2-letter code. Boat BQ combos carry the same
+           NOT_EQUALS FL guards and the same dropdown -- fixed in the same pass.
+           CAUTION: guard comparison is presumed case-sensitive -- a lowercase "fl" may
+           slip past NOT_EQUALS 'FL'. Verify in live testing; if it slips, add an
+           uppercase rule handler or accept as LIMITATION.
+
 v4.8 (2026-06-12) -- Conditions migrated to live-proven format (v4.7 conditions were inert)
   CHANGED: ALL conditions (DL FDQ/DQ, DH KQ, Vehicle FRQ, Boat FBQ/QB/BQ) migrated from
            combo-level camelCase-fieldId scalar style to the CA_CLETS/NY live-proven wire
