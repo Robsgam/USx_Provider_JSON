@@ -166,6 +166,28 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   ONLY. Zero RmsRestPayloadHandler combos portfolio-wide use conditions --
   whether the RMS handler honors them is UNVERIFIED.
 
+  INERT-CONDITION RULE (live-proven FL v4.8 DH FAIL, USx Tenant 2026-06-12):
+  conditions evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup.
+  On attributeTypeId dropdowns (State, Sex, ...) the raw value is a tenant
+  attribute UUID, so VALUE-COMPARISON operators are INERT:
+    EQUALS / IN / REGEX   -> never match (combo unreachable via that condition)
+    NOT_EQUALS / NOT_IN   -> always pass (the guard does nothing)
+    EXISTS / NOT_EXISTS   -> UNAFFECTED (presence-based; 4 live PASSes same day)
+  Evidence: FL DH 'registrationStateDH NOT_EQUALS FL' did not block an explicit
+  Florida destination -- KQ fired and serialized State=FL (reverse-lookup ran at
+  serialization, AFTER the condition). CA_CLETS's working EQUALS conditions are
+  on CODE-TYPE dropdowns (codeTypeCategory -> literal values like PlateType 'AP'),
+  which compare normally. CAD differs: combo defaults[] inject literal codes, so
+  CAD-path comparisons can work where OnScene-form ones do not (this is how
+  CA's 'State NOT_EQUALS CA' was validated).
+  RULE: never put a value-comparison condition on a codeTypeProvider or
+  useAttributeId attribute for OnScene routing. Presence-based design
+  (set[] membership + EXISTS/NOT_EXISTS) or a literal-value field (FormInput,
+  codeTypeCategory dropdown) are the working alternatives.
+  CROSS-PROVIDER: NY DH OOS 'State NOT_EQUALS NY' and CA State NOT_EQUALS
+  guards are presumed equally inert on OnScene -- verify at their rebuilds.
+  test_commsys + run_test_matrix simulate this rule and flag [!] INERT CONDITION.
+
   RMS QIDMs FOLLOW THE SAME UNION-POOL SERIALIZATION MODEL (live evidence,
   FL v4.8 USx Tenant 2026-06-12): a full DL card produced an RMS elastic query
   containing dlNumber + lastName + firstName + dateOfBirth + sexAttrId. All

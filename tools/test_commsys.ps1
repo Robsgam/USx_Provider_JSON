@@ -310,7 +310,7 @@ function Test-ComboConditions($qidm, $combo, $formData) {
     $conds = @()
     if ($combo.conditions) { $conds += @($combo.conditions) }
     if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
-    $result = @{ ok = $true; failures = @() }
+    $result = @{ ok = $true; failures = @(); warnings = @() }
     if ($conds.Count -eq 0) { return $result }
 
     foreach ($cond in $conds) {
@@ -333,15 +333,36 @@ function Test-ComboConditions($qidm, $combo, $formData) {
             elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
 
-            $pass = switch ($op) {
-                'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
-                'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
-                'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
-                'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
-                'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
-                'EXISTS'     { $present }
-                'NOT_EXISTS' { -not $present }
-                default      { $true }
+            # PLATFORM REALITY (live-proven FL v4.8 DH FAIL, 2026-06-12): conditions
+            # evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup.
+            # attributeTypeId dropdowns (State/Sex etc.) carry tenant attrId UUIDs, so
+            # value-comparison operators NEVER match the code: EQUALS/IN/REGEX always
+            # fail, NOT_EQUALS/NOT_IN always pass (the guard is INERT). EXISTS/NOT_EXISTS
+            # are presence-based and unaffected (4 live PASSes same day). Code-type
+            # dropdowns (codeTypeCategory, literal values) compare normally (CA PlateType
+            # live-proven). CAD differs: combo defaults[] inject literal codes there.
+            $rawIsAttrId = $attr -and ($attr.codeTypeProvider -or $attr.useAttributeId)
+            $valueComparison = $op -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
+
+            if ($rawIsAttrId -and $valueComparison) {
+                $pass = switch ($op) {
+                    'NOT_EQUALS' { $true }
+                    'NOT_IN'     { $true }
+                    default      { $false }
+                }
+                $result.warnings += "INERT CONDITION: $f $op $($values -join ',') -- attr '$($attr.name)' uses reverse-lookup (codeTypeProvider/useAttributeId); platform compares the raw attrId, so this $op $(if ($pass) { 'ALWAYS PASSES (guard is inert)' } else { 'NEVER MATCHES (combo unreachable via this condition)' }). Live-proven FL v4.8 DH 2026-06-12."
+            }
+            else {
+                $pass = switch ($op) {
+                    'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
+                    'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
+                    'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
+                    'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
+                    'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
+                    'EXISTS'     { $present }
+                    'NOT_EXISTS' { -not $present }
+                    default      { $true }
+                }
             }
             if (-not $pass) {
                 $result.ok = $false
@@ -512,6 +533,9 @@ foreach ($qidm in $qidms) {
             if ($anyFields.Count -gt 0) {
                 Write-Host "      any: [$($anyFields -join ', ')] -> matched: [$($matched -join ', ')]" -ForegroundColor Gray
             }
+            foreach ($w in $condResult.warnings) {
+                Write-Host "      [!] $w" -ForegroundColor Yellow
+            }
 
             if ($qidm.handlerFunction -eq 'RmsRestPayloadHandler') {
                 Write-Host "      -- RMS elastic payload (combo-scoped) --" -ForegroundColor Cyan
@@ -615,6 +639,9 @@ if ($OutFile) {
                 elseif (-not $anyOk) { $reason = "no any[] match" }
                 else { $reason = "conditions failed: $($condResult.failures -join '; ')" }
                 [void]$sb.AppendLine("  [SKIP] $kr -- $reason")
+            }
+            foreach ($w in $condResult.warnings) {
+                [void]$sb.AppendLine("    [!] $w")
             }
             [void]$sb.AppendLine("    REQUIRED (set): [$($setFields -join ', ')]")
             [void]$sb.AppendLine("    OPTIONAL (any): [$($anyFields -join ', ')]")

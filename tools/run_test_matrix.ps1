@@ -139,15 +139,27 @@ function Test-ComboConditionsPass($qidm, $combo, $formData) {
             }
             elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
-            $pass = switch ($op) {
-                'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
-                'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
-                'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
-                'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
-                'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
-                'EXISTS'     { $present }
-                'NOT_EXISTS' { -not $present }
-                default      { $true }
+
+            # PLATFORM REALITY (live-proven FL v4.8 DH FAIL, 2026-06-12): conditions see
+            # the RAW pre-reverse-lookup value. On codeTypeProvider/useAttributeId attrs
+            # the raw value is a tenant attrId UUID -> value comparisons are INERT:
+            # EQUALS/IN/REGEX never match, NOT_EQUALS/NOT_IN always pass.
+            # EXISTS/NOT_EXISTS unaffected (presence-based).
+            $rawIsAttrId = $attr -and ($attr.codeTypeProvider -or $attr.useAttributeId)
+            if ($rawIsAttrId -and $op -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')) {
+                $pass = ($op -in @('NOT_EQUALS','NOT_IN'))
+            }
+            else {
+                $pass = switch ($op) {
+                    'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
+                    'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
+                    'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
+                    'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
+                    'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
+                    'EXISTS'     { $present }
+                    'NOT_EXISTS' { -not $present }
+                    default      { $true }
+                }
             }
             if (-not $pass) { return $false }
         }
