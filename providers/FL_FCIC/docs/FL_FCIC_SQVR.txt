@@ -3,13 +3,12 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 Last updated: 2026-06-12
 JSON version: v4.8
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: v4.8 PENDING IMPORT. v4.7 was imported to USx Tenant 2026-06-12 but its
-first live test FAILED (full DL card over-sent all fields -- combo-level conditions
-were silently ignored by the platform); v4.8 migrates all conditions to the
-CA/NY live-proven requirements-nested format. Re-import v4.8 and run the full
-matrix from T1. Previous import: v4.3 to the USx FCIC Tenant 2026-05-27.
-PRIORITY LIVE CHECK: NOT_EXISTS operator is live-unproven by any provider --
-T1-priority test is "full DL card -> XML contains OLN+Image ONLY".
+Live test: v4.8 IMPORTED to USx Tenant 2026-06-12. T1-priority NOT_EXISTS check
+PASSED: full DL card -> XML contained ONLY OLN+ImageIndicator (FDQ+OLN CONFIRMED;
+pool isolation live-proven). Earlier same day: v4.7 import FAILED this test
+(combo-level conditions inert) -- v4.8 requirements-nested format is the fix.
+Remaining matrix continues from the generated TEST_MATRIX; capture response XML
+on subsequent tests. Previous import: v4.3 to USx FCIC Tenant 2026-05-27.
 
 v4.7: DH out-of-state-only (FCIC-confirmed), devdoc combo order in all QIDMs +
       routing conditions (pool isolation), BQ x3 RESTORED, labels (OLN (DH),

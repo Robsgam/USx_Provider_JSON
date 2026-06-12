@@ -156,10 +156,12 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
       "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["CA"] } ] }
 
   OPERATOR LIVE-VERIFICATION STATUS (2026-06-12): EQUALS and NOT_EQUALS are
-  live-proven (CA_CLETS). EXISTS / NOT_EXISTS / IN / NOT_IN / REGEX are
-  documented but NOT yet live-proven by any provider -- the first build relying
-  on one of them must verify it live before declaring the path working (FL v4.8
-  DL pool isolation is the pending NOT_EXISTS testbed).
+  live-proven (CA_CLETS). NOT_EXISTS is LIVE-PROVEN (FL v4.8, USx Tenant
+  2026-06-12): full DL card sent ONLY OLN+ImageIndicator -- the failing
+  NOT_EXISTS on the Name combos both blocked firing AND excluded Name/DOB/Sex
+  from the serialization pool, and the passing NOT_EXISTS (State blank) let
+  FDQ fire. EXISTS / IN / NOT_IN / REGEX remain documented but not yet
+  live-proven -- the first build relying on one must verify it live.
 
   Each condition object:
     operator    String        REQUIRED  The type of check (see table below)
