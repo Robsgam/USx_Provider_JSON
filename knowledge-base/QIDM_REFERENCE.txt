@@ -269,11 +269,21 @@ SECTION 3 -- COMBINATION ROUTING
 
   The first combination whose set[] fields are ALL present fires.
   Order matters -- put the most specific combination first.
-  When the first combination fires: ALL populated attributes in the QIDM are sent
-    (not just set[] + any[] fields). Extra fields are ignored by the server.
 
-  LIMITATION #3: First matching combination fires; all populated fields sent.
-    Put most-specific combination first in the array.
+  SERIALIZATION SCOPE (corrected 2026-06-12, live-proven): the serializer sends the
+  UNION of set[]/any[] fields across ALL MATCHING combinations -- NOT "all populated
+  attributes". A populated attribute whose field appears only in NON-matching combos
+  is EXCLUDED from the XML.
+    Live proof: NJ v3.5-PASCAL VehicleStolenQuery, NCIC# + VIN entered with State=MS
+    on the form. QVN (set=NCICNumber) fired as primary, QVV (set=VIN) also matched;
+    XML carried NCICNumber + VIN + ImageIndicator (union of QVN+QVV). State was
+    provably populated (RMS payload carried the MS attrId) yet EXCLUDED -- only the
+    non-matching QVP lists registrationState in any[].
+    Test log: providers/NJ_NJCJIS/tests/..._QVN-PASCAL-P4_Union_serialization_proof...
+  Extra fields beyond the metadata-legal combination are ignored by the server.
+
+  LIMITATION #3: First matching combination fires (primary); union of matching
+    combos' fields serialized. Put most-specific combination first in the array.
 
   Example order (Vehicle merged QIDM):
     1. RVIN (VehicleIdentificationNumber + RegistrationStateOOS) -- most specific

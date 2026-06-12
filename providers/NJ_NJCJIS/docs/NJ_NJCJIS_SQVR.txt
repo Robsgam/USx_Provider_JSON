@@ -19,6 +19,12 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
     premise verification is test Q4a/Q4b in docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt).
     All other combos built. Live status: PENDING.
   One-JSON-in-root rule suspended by user directive until a winner merges to mainline.
+  NJ_NJCJIS_PASCAL.json (v3.5-PASCAL, 2026-06-11): TESTING-ONLY -- mainline recased to
+    PascalCase form params (platform convention change; OnScene/Forge + CAD both emit
+    Pascal). Same 13 combos as mainline; NJCJIS XML identical. Live on USx: typed PASS,
+    CAD-with-state PASS, union-semantics proof (P1/P3/P4); P2 = accepted known condition
+    (State default not surviving codeTypeProvider on blank CAD state). Imported Newark
+    Foundation 2026-06-11 -- hands-off third-party testing, REPORTED status only.
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity

@@ -2,14 +2,38 @@ NJ_NJCJIS STATUS
 =================
 Last updated    : 2026-06-12
 
-  *** v3.4 imported USx Provider Tenant + Newark Foundation Tenant ***
-Current: v3.5 | 69P/0F/0W/0LIM | Updated 2026-06-09
+  *** TENANT STATE: USx NJCJIS Tenant = v3.5-PASCAL; Newark Foundation = v3.5-PASCAL
+      (imported 2026-06-11). Mainline camelCase v3.5 not currently deployed anywhere. ***
+Current mainline: v3.5 | 69P/0F/0W/0LIM | Updated 2026-06-09
+
+PASCALCASE MIGRATION (2026-06-11) -- DRIVER: platform naming convention is now
+PascalCase for ALL form params (eng analysis). OnScene (Forge entity config) submits
+Pascal attribute params validated against config fieldIds by exact match; camelCase
+config keys -> params SILENTLY IGNORED (the original Newark OnScene issue). CAD data
+payloads CONFIRMED PascalCase on USx tenant (P2/P3 inbound captures). CAD context
+tokens (CAD_UNIT_SELECT_VALUE etc.) stay uppercase.
+  NJ_NJCJIS_PASCAL.json | v3.5-PASCAL | 69P/0F/0W | TESTING-ONLY artifact, generated
+    from mainline by scripts/build_nj_njcjis_pascal.ps1 (form-side recase only;
+    NJCJIS XML identical; RMS elastic API keys untouched -- they are the RMS contract).
+  Live results (USx): P1 typed PASS; P2 CAD-no-state (KNOWN CONDITION: State default
+    does not survive codeTypeProvider when CAD state blank -- ACCEPTED, matches real
+    workflow); P3 CAD-with-state PASS (CAD sends RegistrationState:"New Jersey" display
+    value, platform resolves both ways); P4 union-serialization semantics proof;
+    8-log spot-check all paths identified clean.
+  Newark Foundation: imported 2026-06-11; tested hands-off by others (yes/no report
+    expected, no logs). WATCH: Newark CAD emission casing unverified; OnScene
+    Firearm/Article serial spelling (GunSerialNumber/ArticleSerialNumber vs Forge
+    'SerialNumber').
+  OPEN: A/B mainline-vs-PascalCAD on USx (are camelCase providers CAD-broken on
+    flipped tenants? stub RQ-AB-MAINLINE ready); OnScene probe result; portfolio
+    migration EARMARKED (one provider at a time).
 
 EXPERIMENTAL BRANCH EVALUATION (2026-06-10) -- one-JSON-in-root rule suspended by
-user directive until a winner is chosen; mainline v3.5 untouched:
+user directive until a winner is chosen; mainline v3.5 untouched. PAUSED 2026-06-11
+(superseded in priority by the PascalCase work):
   NJ_NJCJIS_RANDOM_COLLAPSED.json | v3.6-COLLAPSED | 70P/0F/0W/0LIM | NOT live-tested
     Stolen suffix-isolated on RANDOM card; autoSelect=true; no deselect.
-    Test package: docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt (PENDING)
+    Test package: docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt (PENDING; 22 stubs created)
   NJ_NJCJIS_RANDOM_REMOVED.json   | v3.6-REMOVED   | 63P/0F/0W/0LIM | NOT live-tested
     VehicleStolenQuery eliminated (user-approved QV skip; premise unverified).
     Test package: docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt (PENDING -- run Q4a/Q4b FIRST)
@@ -19,6 +43,9 @@ user directive until a winner is chosen; mainline v3.5 untouched:
   v2.3  -- 67 PASS / 0 FAIL / 0 WARN / 1 LIMITATION / 11 FIRE / 0 SKIP -- 57/57 PASS (2026-04-29)
 
 IMPORT HISTORY:
+  v3.5-PASCAL -- imported 2026-06-11 -- Newark Foundation Tenant (PascalCase migration; replaces camelCase v3.5)
+  v3.5-PASCAL -- imported 2026-06-11 -- USx NJCJIS Tenant (casing probe; P1-P4 results)
+  v3.5  -- imported 2026-05-28 -- USx NJCJIS Tenant + Newark Foundation Tenant
   v3.4  -- imported 2026-05-21 -- USx Provider Tenant + Newark Foundation Tenant
   v3.3  -- imported 2026-05-21 -- USx Provider Tenant + Newark Foundation Tenant
   v3.0  -- imported 2026-05-11 -- Newark Foundation Tenant (first import)

@@ -30,6 +30,27 @@ PDF vs XML DISCREPANCIES (metadata wins):
 
 ================================================================================
 VERSION HISTORY  (newest first)
+v3.5-PASCAL  2026-06-11  TESTING-ONLY PascalCase variant (NJ_NJCJIS_PASCAL.json)
+  CHANGED
+    - Generated FROM mainline v3.5 by new standalone scripts/build_nj_njcjis_pascal.ps1
+      (transform of the built JSON; ZERO changes to mainline build script or shared tools)
+    - Form-side layer recased camelCase -> PascalCase: all 22 QIF fieldIds, CommSys +
+      RMS QIDM sourceFields, combo set[]/any[] (ncicNumber -> NCICNumber special case)
+    - UNCHANGED: QIDM attribute names/targetFields (NJCJIS XML identical), defaults[].field,
+      conditions, keyReferences, AUTH, CAD context tokens, RMS elastic API keys
+  REASON
+    - Platform naming convention now PascalCase for all form params (eng analysis).
+      OnScene (Forge) attribute params were silently ignored against camelCase config
+      keys -- the original Newark OnScene issue. CAD data payloads confirmed PascalCase
+      on USx tenant (P2/P3 inbound captures): CAD + OnScene agree, no dual-casing needed.
+    - Live: P1 typed PASS, P3 CAD-with-state PASS, P2 known condition (State default
+      not surviving codeTypeProvider when CAD state blank -- accepted), P4 union-
+      serialization semantics proof. Imported USx + Newark Foundation 2026-06-11.
+    - HISTORY NOTE: prior camelCase was DELIBERATE Patch 8 alignment to the CAD contract
+      as stated 2026-05-05 ("CAD emits camelCase, case-sensitive"); the platform
+      convention inverted -- this is a contract change, not a config mistake.
+      Portfolio migration (19 providers + tooling) EARMARKED, one provider at a time.
+
 v3.6-COLLAPSED + v3.6-REMOVED  2026-06-10  EXPERIMENTAL BRANCHES -- Vehicle Stolen redesign evaluation
   CHANGED
     - TWO new JSONs built alongside untouched mainline v3.5 (one-JSON-in-root rule
