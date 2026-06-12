@@ -50,8 +50,9 @@
 #                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted).
 #                DH + Boat destination state = blank 2-char FormInput, no codeTypeProvider
 #                (v4.9): NOT_EQUALS FL guards need literal values -- attributeTypeId
-#                dropdowns carry UUIDs and make value guards inert (INERT-CONDITION RULE,
-#                live FAIL v4.8 2026-06-12). Vehicle/Person-DL State stays NCIC dropdown
+#                dropdowns never carry the literal code (live capture: "Florida"), making
+#                value guards inert (INERT-CONDITION RULE, live FAIL v4.8 2026-06-12).
+#                Vehicle/Person-DL State stays NCIC dropdown
 #                (presence-only NOT_EXISTS conditions, unaffected; 4 live PASSes).
 #   Conditions:  NESTED inside requirements, field = @(AttributeName), value = @(...)
 #                (CA_CLETS/NY live-proven wire format). v4.7's combo-level camelCase
@@ -312,8 +313,9 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         # No codeTypeProvider: registrationStateDH is a blank 2-char FormInput -- the officer
         # types the literal destination code, so the NOT_EQUALS FL gate evaluates a real value
-        # (INERT-CONDITION RULE, QIDM_REFERENCE Sec 2a: attributeTypeId dropdowns carry UUIDs
-        # and make value guards inert -- live FAIL v4.8 2026-06-12).
+        # (INERT-CONDITION RULE, QIDM_REFERENCE Sec 2a: attributeTypeId dropdowns never carry
+        # the literal code -- live capture showed "Florida" -- making value guards inert;
+        # live FAIL v4.8 2026-06-12).
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State' }
     )
     combinations = @(

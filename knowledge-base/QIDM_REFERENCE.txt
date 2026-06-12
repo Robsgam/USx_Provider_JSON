@@ -168,8 +168,11 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
 
   INERT-CONDITION RULE (live-proven FL v4.8 DH FAIL, USx Tenant 2026-06-12):
   conditions evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup.
-  On attributeTypeId dropdowns (State, Sex, ...) the raw value is a tenant
-  attribute UUID, so VALUE-COMPARISON operators are INERT:
+  On attributeTypeId dropdowns (State, Sex, ...) the raw form value is NOT the
+  2-letter/short code -- FL live form-state capture showed the display label
+  ("registrationStateDH":"Florida"), while the RMS payload carried a numeric
+  attrId for the same field. Whichever representation the condition sees, it is
+  never the code the guard names, so VALUE-COMPARISON operators are INERT:
     EQUALS / IN / REGEX   -> never match (combo unreachable via that condition)
     NOT_EQUALS / NOT_IN   -> always pass (the guard does nothing)
     EXISTS / NOT_EXISTS   -> UNAFFECTED (presence-based; 4 live PASSes same day)

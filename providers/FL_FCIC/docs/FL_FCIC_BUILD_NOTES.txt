@@ -17,8 +17,10 @@ v4.9 (2026-06-12) -- DH + Boat destination state: blank 2-char FormInput (kills 
               (4 live PASSes v4.8).
   REASON:  LIVE FAIL (v4.8, 2026-06-12): DH KQOperatorLicenseNumber with Destination=
            Florida SENT despite NOT_EQUALS FL guard. INERT-CONDITION RULE (QIDM_REFERENCE
-           Sec 2a): conditions evaluate the RAW pre-reverse-lookup value; attributeTypeId
-           dropdowns carry tenant attrId UUIDs, so EQUALS/NOT_EQUALS never see the code.
+           Sec 2a): conditions evaluate the RAW pre-reverse-lookup value; the live form-
+           state capture showed registrationStateDH="Florida" (display label, not the
+           2-letter code; XML still serialized State=FL), so EQUALS/NOT_EQUALS never see
+           the code the guard names.
            A FormInput carries the literal value the officer typed, so NOT_EQUALS FL is
            evaluated against a real 2-letter code. Boat BQ combos carry the same
            NOT_EQUALS FL guards and the same dropdown -- fixed in the same pass.
