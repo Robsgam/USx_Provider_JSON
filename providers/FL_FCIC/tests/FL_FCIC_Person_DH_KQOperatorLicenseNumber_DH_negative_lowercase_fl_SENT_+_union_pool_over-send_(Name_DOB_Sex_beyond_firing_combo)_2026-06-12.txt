@@ -1,0 +1,66 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQOperatorLicenseNumber (DH negative lowercase fl SENT + union pool over-send (Name/DOB/Sex beyond firing combo))
+Variant: BASE
+Date: 2026-06-12 15:35:15
+Result: FAIL
+================================================================
+
+FORM STATE
+----------
+{"attentionDH":"attetion","birthDateDH":"1985-01-01","imageIndicator":"Y","nameFirstDH":"first","nameLastDH":"last","operatorLicenseNumberDH":"123456","purposeCodeDH":"c","registrationStateDH":"fl","sexCodeDH":"Female"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYMZPBCE54PBBZWD7N3H38N"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KTYMZPBCE54PBBZWD7N3H38N</Id><State>FL</State><Attention>ATTETION</Attention><OperatorLicenseNumber>123456</OperatorLicenseNumber><SexCode>F</SexCode><PurposeCode>C</PurposeCode><BirthDate>19850101</BirthDate><Name>LAST,FIRST</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYMZPBCE54PBBZWD7N3H38N
+  State                          FL
+  Attention                      ATTETION
+  OperatorLicenseNumber          123456
+  SexCode                        F
+  PurposeCode                    C
+  BirthDate                      19850101
+  Name                           LAST,FIRST
+
+NOTES
+-----
+NEGATIVE TEST FAILED, TWO FINDINGS (v4.9 FormInput destination state):
+
+FINDING 1 [Certain] -- lowercase bypass: officer typed "fl"; NOT_EQUALS 'FL' guard
+compared "fl" vs "FL" (case-sensitive) and passed; KQ SENT with State=FL. The
+serializer uppercases at output ("fl"->FL, "attetion"->ATTETION, "c"->C,
+"last,first"->LAST,FIRST) but conditions ran BEFORE uppercasing. This was the
+documented v4.9 caution -- now live-confirmed.
+
+FINDING 2 [Certain] -- pool over-send: XML contains Name+BirthDate+SexCode, which are
+in NO set[]/any[] of KQOperatorLicenseNumber. Those fields belong only to KQName,
+whose 'OperatorLicenseNumber NOT_EXISTS' condition should have FAILED (OLN=123456
+present) and excluded it from the pool -- the exact mechanism that PASSED live on DL
+(v4.8 T1: full DL card sent OLN+Image only). Live pool here = union of BOTH KQ combos.
+
+HYPOTHESIS [Likely]: a combo containing any VALUE-COMPARISON condition (NOT_EQUALS)
+has its ENTIRE conditions array ignored on the OnScene path -- KQName matched as if
+uncondiitoned (set satisfied: full DH card) and fired first; union pool = both combos.
+This single rule also explains the v4.8 DH FAIL (no case issue needed) and does NOT
+contradict T1 (DL conditions are pure NOT_EXISTS). CA's "working" NOT_EQUALS was
+validated in CAD context (defaults inject literal codes), never on OnScene forms.
+
+DISCRIMINATING TEST (next): type exact uppercase FL in DH destination + OLN only.
+  - BLOCKED  -> guards work, problem is case only -> normalize case or accept LIMITATION
+  - SENT     -> NOT_EQUALS wholly non-functional on OnScene -> FL-gate not buildable
+                with conditions; redesign or platform escalation. Pool isolation via
+                NOT_EXISTS remains intact either way (T1).
+
+RESULT: FAIL
