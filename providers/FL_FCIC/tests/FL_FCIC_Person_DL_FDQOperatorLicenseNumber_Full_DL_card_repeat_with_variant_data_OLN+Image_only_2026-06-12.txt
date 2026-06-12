@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber (Full DL card repeat with variant data OLN+Image only)
+Variant: BASE
+Date: 2026-06-12 14:45:26
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"birthDate":"1990-01-01","imageIndicator":"Y","nameFirst":"first","nameLast":"last","nameMiddle":"m","nameSuffix":"Jr","operatorLicenseNumber":"123456","sexCode":"Female"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYJCS5W076R4NPEWQZ6X8SZ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTYJCS5W076R4NPEWQZ6X8SZ</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>123456</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYJCS5W076R4NPEWQZ6X8SZ
+  ImageIndicator                 Y
+  OperatorLicenseNumber          123456
+
+NOTES
+-----
+Second independent confirmation of NOT_EXISTS pool isolation, variant data (sexCode=Female, DOB 1990-01-01, OLN=123456, suffix Jr). XML again contains ONLY OperatorLicenseNumber + ImageIndicator -- Name/DOB/Sex/Middle/Suffix excluded. RMS elastic co-fire sent dlNumber+name+DOB+sexAttrId per known union-pool behavior (documented BUILD_RULES Sec 4, gated fix). No Returns = synthetic data, expected. CommSys response not captured.
+
+RESULT: PASS
