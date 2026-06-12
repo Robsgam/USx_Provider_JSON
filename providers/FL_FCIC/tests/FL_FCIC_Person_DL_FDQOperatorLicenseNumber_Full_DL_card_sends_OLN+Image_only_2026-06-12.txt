@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber (Full DL card sends OLN+Image only)
+Variant: BASE
+Date: 2026-06-12 14:18:25
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"birthDate":"1985-01-01","imageIndicator":"Y","nameFirst":"first","nameLast":"last","nameMiddle":"m","nameSuffix":"jr","operatorLicenseNumber":"12345","sexCode":"Male"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYGS816ZHC4CNAC8SFJSSWR"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTYGS816ZHC4CNAC8SFJSSWR</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>12345</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTYGS816ZHC4CNAC8SFJSSWR
+  ImageIndicator                 Y
+  OperatorLicenseNumber          12345
+
+NOTES
+-----
+T1-priority NOT_EXISTS verification PASS. Full DL card (OLN+Name+DOB+Sex+Middle+Suffix, State blank) -> XML contains ONLY OperatorLicenseNumber + ImageIndicator. First live proof of NOT_EXISTS platform-wide, both directions: OperatorLicenseNumber NOT_EXISTS failed on Name combos (Name/DOB/Sex excluded from serialization pool), State NOT_EXISTS passed on FDQ combos (State blank). Fixes v4.7 over-send (combo-level conditions were inert; v4.8 = requirements-nested attribute-name format). RMS co-fire returned No Returns (synthetic data, expected). CommSys XML response not captured -- request-side assertion conclusive for serialization; capture responses on subsequent matrix tests.
+
+RESULT: PASS
