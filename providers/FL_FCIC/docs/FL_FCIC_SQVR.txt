@@ -1,11 +1,15 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 Last updated: 2026-06-12
-JSON version: v4.7
+JSON version: v4.8
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: v4.7 IMPORTED to USx Tenant 2026-06-12. Full test matrix runs from T1
-(rebuild restarts testing; prior logs archived to tests/_archive_pre_v4.7/).
-Previous import: v4.3 to the USx FCIC Tenant 2026-05-27.
+Live test: v4.8 PENDING IMPORT. v4.7 was imported to USx Tenant 2026-06-12 but its
+first live test FAILED (full DL card over-sent all fields -- combo-level conditions
+were silently ignored by the platform); v4.8 migrates all conditions to the
+CA/NY live-proven requirements-nested format. Re-import v4.8 and run the full
+matrix from T1. Previous import: v4.3 to the USx FCIC Tenant 2026-05-27.
+PRIORITY LIVE CHECK: NOT_EXISTS operator is live-unproven by any provider --
+T1-priority test is "full DL card -> XML contains OLN+Image ONLY".
 
 v4.7: DH out-of-state-only (FCIC-confirmed), devdoc combo order in all QIDMs +
       routing conditions (pool isolation), BQ x3 RESTORED, labels (OLN (DH),
@@ -20,7 +24,9 @@ ARCHITECTURE: 6 QIDMs, 31 combos. Single JSON, multi-card layout.
 Boat(Options+Search). Combo array order = devdoc "Possible Combinations" order;
 routing conditions keep later OOS/stolen combos reachable under first-match AND
 isolate the serialization pool (only the firing path's fields are sent).
-Conditions style: camelCase fieldIds + scalar values (FL live-tested, QB v4.6).
+Conditions style (v4.8): nested in requirements, field = ["AttributeName"],
+value = ["..."] arrays -- the CA_CLETS/NY live-proven wire format. (v4.7's
+combo-level camelCase scalar style was inert on the platform.)
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity

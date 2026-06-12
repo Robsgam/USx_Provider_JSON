@@ -323,13 +323,13 @@ function Test-ComboConditions($qidm, $combo, $formData) {
         if ($null -ne $cond.value) { $values = @($cond.value) }
 
         foreach ($f in $fields) {
-            # Resolve field value: direct fieldId, else attribute name -> sourceFields
+            # Resolve field value: QIDM attribute name FIRST (platform/KB canonical --
+            # e.g. 'State' must resolve via the attr's sourceField like registrationStateDH,
+            # not a same-named form field), then direct fieldId fallback.
             $val = $null
-            if ($formData.ContainsKey($f)) { $val = $formData[$f] }
-            else {
-                $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
-                if ($attr) { $val = Get-AttrValue $attr $formData }
-            }
+            $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
+            if ($attr) { $val = Get-AttrValue $attr $formData }
+            elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
 
             $pass = switch ($op) {

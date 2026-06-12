@@ -4,6 +4,32 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.8 (2026-06-12) -- Conditions migrated to live-proven format (v4.7 conditions were inert)
+  CHANGED: ALL conditions (DL FDQ/DQ, DH KQ, Vehicle FRQ, Boat FBQ/QB/BQ) migrated from
+           combo-level camelCase-fieldId scalar style to the CA_CLETS/NY live-proven wire
+           format: nested INSIDE requirements, field = ["AttributeName"], value = ["..."]:
+             "requirements": { "set": [...], "any": [...],
+               "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["FL"] } ] }
+           Field references changed to QIDM attribute names (State, OperatorLicenseNumber,
+           RelatedHitSearchIndicator). test_commsys + run_test_matrix condition resolution
+           updated to attribute-name-first precedence. No combo/set/any/order changes.
+  REASON:  LIVE EVIDENCE (v4.7 imported to USx Tenant 2026-06-12, first DL test): full DL
+           card produced XML containing OLN + Name + DOB + Sex + Image -- the v4.7
+           NOT_EXISTS conditions had NO effect (neither routing nor pool filtering).
+           Test log: tests/_archive_pre_v4.8/2026-06-12_Person_DL-FullCard_FAIL_*.txt.
+           v4.7 conditions sat at COMBO level (sibling of requirements) with camelCase
+           fieldIds and scalar values -- a format never live-verified. The platform reads
+           conditions from requirements.conditions (CA_CLETS production JSON has 20 such
+           conditions, live-tested NOT_EQUALS State routing; NY DALHOUT/DALLOUT same).
+           IMPLICATION: FL v4.6's QB combo-level conditions (Stolen EQUALS Y) were
+           likely ALSO inert -- the Stolen=N fall-through was never live-tested. Now
+           migrated and must be live-verified.
+           CAUTION: NOT_EXISTS is KB-documented server-side but not yet live-proven by
+           any provider (CA uses EQUALS/NOT_EQUALS only). v4.8 live test must explicitly
+           verify it: full DL card -> expect OLN+Image only. If NOT_EXISTS turns out
+           unsupported, the devdoc-order + pool-isolation design needs a rethink (escalate
+           to platform team before inventing workarounds).
+
 v4.7 (2026-06-12) -- DH out-of-state-only correction, devdoc combo order, pool isolation, BQ restore
   CHANGED: 1) DriverHistoryQuery: registrationStateDH moved any[]->set[] on both KQ combos;
               conditions registrationStateDH NOT_EQUALS FL added to both; combos reordered

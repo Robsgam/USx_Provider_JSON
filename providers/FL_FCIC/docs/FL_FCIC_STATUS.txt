@@ -1,7 +1,7 @@
 FL_FCIC Build Status
 ====================
-Current: v4.7 | 92P/0F/0W/0LIM | Updated 2026-06-12
-Current version : v4.7
+Current: v4.8 | 92P/0F/0W/0LIM | Updated 2026-06-12
+Current version : v4.8
 Last updated    : 2026-06-12
 Output file     : FL_FCIC.json
 Build script    : scripts/build_fl_fcic.ps1
@@ -45,10 +45,10 @@ KEY REFERENCE LEGEND
   FDQ  FL DHSMV Driver License Query
   DQ   Nlets Driver License Query (out-of-state; requires State)
   QW   NCIC Wanted Person Query (REMOVED v4.2 -- CommSys auto-sends)
-  KQ   FL Driver History Query (FL-specific; requires State + PurposeCode)
+  KQ   Driver History Query (Nlets OUT-OF-STATE ONLY; destination State mandatory, non-FL)
   FBQ  FL FCIC Boat Query (DMVR)
   QB   NCIC Stolen Boat Query
-  BQ   Nlets Boat Query (REMOVED v4.4 -- not in devdoc key list)
+  BQ   Nlets Boat Query (out-of-state; RESTORED v4.7, destination State mandatory)
   QG   NCIC Gun Query
   QA   NCIC Article Query
 
@@ -118,7 +118,7 @@ LIVE TEST STATUS -- BASE v3.1
   Notes:
   - DH autoSelect=false: checkbox available but doesn't auto-check. Flag for MC testing.
   - PurposeCode: changed from FormSelect (DEX_INQUIRY_PURPOSE_CODE) to FormInput w/ initialValue=C
-  - GunMake: fixed from FormInput to FormSelect (NCIC_FIREARM_MAKE/NCIC) — cross-provider consistency
+  - GunMake: fixed from FormInput to FormSelect (NCIC_FIREARM_MAKE/NCIC) â€” cross-provider consistency
 
 LIVE TEST STATUS -- MC v3.1
 -------------------------------
@@ -135,7 +135,7 @@ LIVE TEST STATUS -- MC v3.1
    5  Basic     Person    FDQ+OLN            PASS    DL by OLN, no QW co-fire (no Name)
    6  Co-fire   Person    FDQ+Name+QW        PASS    DL Name + QW co-fire. SexCode required in set[]
    7  Co-fire   Person    FDQ+OLN+Name+QW    PASS    OLN priority, QW co-fires with OLN+Name
-   8  DH        Person    KQ+OLN             PASS    autoSelect=true — checkbox auto-lit correctly
+   8  DH        Person    KQ+OLN             PASS    autoSelect=true â€” checkbox auto-lit correctly
    9  Negative  Person    NEGATIVE           PASS    No send button with empty form
   10  Basic     Firearm   QG+Serial          PASS    Serial only, GunMake not required (any[])
   11  Alternate Firearm   QG+NCIC            PASS    NCIC number only
@@ -178,19 +178,19 @@ LIVE TEST STATUS -- MC v3.1
   46  Any[]     Vehicle   RQ+VIN+State+Year  PASS    VehicleYear=2020 in RQ XML; QV+RMS co-fire
   47  Any[]     Person    QW+Name+OLN        PASS    OLN=OLN99999 in QW XML (any[]); FDQ+RMS co-fire
 
-  LIMITATIONS (2 — RESOLVED + CONFIRMED 2026-05-05):
-  - QB+Hull: was UNREACHABLE — FIXED via RelatedHitSearchIndicator routing (FL-8).
+  LIMITATIONS (2 â€” RESOLVED + CONFIRMED 2026-05-05):
+  - QB+Hull: was UNREACHABLE â€” FIXED via RelatedHitSearchIndicator routing (FL-8).
     Officer types Y in "Stolen Search" to route hull query to NCIC stolen (QB).
     LIVE TESTED: 13/13 PASS (all 12 combos + priority edge case).
-  - QB+Reg: was UNREACHABLE — same fix. All 12 boat combos now reachable.
+  - QB+Reg: was UNREACHABLE â€” same fix. All 12 boat combos now reachable.
     Fallback: git tag FL_FCIC_PRE_QB_ROUTING (revert if server rejects field).
 
   Notes:
-  - DH autoSelect=true: checkbox auto-lights when DH fields populated (safe — separate card)
+  - DH autoSelect=true: checkbox auto-lights when DH fields populated (safe â€” separate card)
   - Slow JSON performance: checkbox populate delay and long send time observed
-  - MC JSON rebuilt mid-testing: VehicleMakeCode FormInput→FormSelect (cross-provider fix)
-  - VehicleMakeCode DOES serialize to XML (contradicts KB FIELD_RULES — KB update needed)
-  - FBQ combos: ImageIndicator not in any[] — absent from XML on FBQ+Decal/FBQ+Title
+  - MC JSON rebuilt mid-testing: VehicleMakeCode FormInputâ†’FormSelect (cross-provider fix)
+  - VehicleMakeCode DOES serialize to XML (contradicts KB FIELD_RULES â€” KB update needed)
+  - FBQ combos: ImageIndicator not in any[] â€” absent from XML on FBQ+Decal/FBQ+Title
   - All co-fire paths confirmed: QV (Vehicle), QW (Person), RMS (Vehicle+Person)
   - All any[] fields explicitly tested: VehicleMakeCode, VehicleYear, GunMake, OLN(QW), ImageIndicator
   - All 5 entities have negative tests (empty form = no send button)
@@ -291,13 +291,13 @@ LIVE TEST STATUS -- MC v4.1
   - DH one-directional deselect: DH check->DL off, DH uncheck->both off (officer re-clicks DL)
   - All date formats yyyyMMdd, all name formats Last,First (no space)
 
-LIVE TEST STATUS -- v4.3 (was MC v4.4 — relabeled after VehStolen removal)
+LIVE TEST STATUS -- v4.3 (was MC v4.4 â€” relabeled after VehStolen removal)
 -------------------------------
   Date: 2026-05-20
   Result: 7 PASS / 0 FAIL (delta tests; v4.1 44/44 baseline)
   Combo coverage: 37/37 (pre-removal count)
 
-  Test Matrix (delta from v4.1 — 4 new QV combos + render + 2 regression):
+  Test Matrix (delta from v4.1 â€” 4 new QV combos + render + 2 regression):
   #   Phase       Entity    Combo                Result  Notes
   --  ----------  --------  -------------------  ------  -----
    1  Render      Vehicle   RENDER               PASS    2 new fields: ownerAppliedNumber, partSerialNumber (Row 5)
@@ -320,7 +320,7 @@ LIVE TEST STATUS -- v4.4
   Result: 1 PASS / 0 FAIL (regression test after VehStolen+BQ removal)
   Combo coverage: 28/28
 
-  Test Matrix (regression — VehicleStolenQuery removed, BQ combos removed):
+  Test Matrix (regression â€” VehicleStolenQuery removed, BQ combos removed):
   #   Phase       Entity    Combo                Result  Notes
   --  ----------  --------  -------------------  ------  -----
    1  Regression  Vehicle   FRQ+Plate            PASS    FRQ fires alone, NO VehicleStolenQuery co-fire (removed)

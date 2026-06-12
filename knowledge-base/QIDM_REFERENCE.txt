@@ -143,9 +143,27 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   All conditions in the list must pass (AND logic). They restrict which combos
   apply based on field VALUES, not just field presence.
 
+  REQUIRED WIRE FORMAT (live-proven; violations are SILENTLY IGNORED):
+    - conditions MUST be nested INSIDE requirements (sibling of set/any/defaults),
+      NOT at combo level. FL v4.7 placed them at combo level and the platform
+      ignored them entirely (live XML evidence 2026-06-12: full DL card over-sent
+      every populated field despite NOT_EXISTS conditions).
+    - field MUST be a List<String> of QIDM ATTRIBUTE names (e.g. ["State"]),
+      not form fieldIds. value MUST be a List<String> (e.g. ["CA"]).
+    - Live-proven references: CA_CLETS.json (20 conditions: NOT_EQUALS State
+      routing + EQUALS LicensePlateTypeCode), NY DALHOUT/DALLOUT.
+    "requirements": { "set": [...], "any": [...],
+      "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["CA"] } ] }
+
+  OPERATOR LIVE-VERIFICATION STATUS (2026-06-12): EQUALS and NOT_EQUALS are
+  live-proven (CA_CLETS). EXISTS / NOT_EXISTS / IN / NOT_IN / REGEX are
+  documented but NOT yet live-proven by any provider -- the first build relying
+  on one of them must verify it live before declaring the path working (FL v4.8
+  DL pool isolation is the pending NOT_EXISTS testbed).
+
   Each condition object:
     operator    String        REQUIRED  The type of check (see table below)
-    field       List<String>  REQUIRED  Field(s) the condition applies to
+    field       List<String>  REQUIRED  QIDM attribute name(s) the condition applies to
     value       List<String>  depends   Value(s) to compare against
 
   -----------------------------------------------------------------------

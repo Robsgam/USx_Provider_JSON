@@ -809,10 +809,13 @@ See also:
         (the over-send fix: a fired combo serializes the union pool of all
         condition-matched combos -- LIMITATION #1 -- so failing the Name combos'
         conditions when OLN is filled removes Name/DOB/Sex from the XML)
-    Conditions both route firing AND filter the serialization pool. Verified via
-    test_commsys scenario sweep (conditions-aware since 2026-06-12) on FL v4.7.
+    Conditions both route firing AND filter the serialization pool. Simulator-
+    verified on FL v4.7/v4.8; live verification of NOT_EXISTS pending (FL v4.8).
     Validator G-16 understands this: it only flags an earlier UNCONDITIONED combo
     whose set[] is a subset of a later combo's set[] (true shadowing).
+    WIRE FORMAT IS MANDATORY: conditions nested in requirements, attribute-name
+    arrays, value arrays (QIDM_REFERENCE Section 2a) -- combo-level conditions
+    are silently ignored (FL v4.7 live failure 2026-06-12).
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a

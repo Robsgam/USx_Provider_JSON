@@ -1,0 +1,27 @@
+FL_FCIC v4.7 -- TEST LOG
+Date: 2026-06-12
+Entity: Person
+Test: DL card completely filled (OLN + Name + DOB + Sex; State blank), expect
+      FDQ+OLN to fire and send ONLY OperatorLicenseNumber + ImageIndicator
+      (Name combos excluded from pool via OperatorLicenseNumber NOT_EXISTS).
+Result: FAIL -- over-send persists. All populated DL fields serialized.
+
+XML Request (server log):
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYFW1QZSG2J729EKADDBTHS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KTYFW1QZSG2J729EKADDBTHS</Id><ImageIndicator>Y</ImageIndicator><SexCode>M</SexCode><OperatorLicenseNumber>12345</OperatorLicenseNumber><BirthDate>19850101</BirthDate><Name>LAST,FIRST</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML Response: not captured (request-side failure already conclusive)
+
+ANALYSIS:
+- Request contains OLN AND Name+DOB+Sex -> the v4.7 NOT_EXISTS conditions had
+  NO effect on the platform (neither routing nor pool filtering).
+- Root cause [Likely]: v4.7 conditions are at COMBO level with camelCase
+  fieldIds and scalar values. The live-proven format (CA_CLETS NOT_EQUALS State
+  fix, 20 conditions in production JSON; NY DALHOUT/DALLOUT) nests conditions
+  INSIDE requirements with field = [AttributeName] and value = [...] arrays:
+    "requirements": { "set": [...], "any": [...],
+      "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["CA"] } ] }
+- Consequence: FL v4.6's QB combo-level conditions (Stolen Search EQUALS Y)
+  were likely ALSO inert -- the Stolen=N fall-through was never live-tested.
+- FIX: v4.8 migrates all FL conditions to the CA/NY requirements-nested
+  attribute-name array format. NOT_EXISTS remains live-unproven by any
+  provider -- v4.8 retest must explicitly verify it (DL full card test).

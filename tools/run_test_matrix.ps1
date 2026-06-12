@@ -128,17 +128,16 @@ function Test-ComboConditionsPass($qidm, $combo, $formData) {
         if ($null -ne $cond.value) { $values = @($cond.value) }
 
         foreach ($f in $fields) {
+            # Attribute-name resolution FIRST (platform/KB canonical), fieldId fallback.
             $val = $null
-            if ($formData.ContainsKey($f)) { $val = $formData[$f] }
-            else {
-                $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
-                if ($attr) {
-                    $sfs = @($attr.sourceField)
-                    foreach ($sf in $sfs) {
-                        if ($formData.ContainsKey($sf) -and $formData[$sf]) { $val = $formData[$sf]; break }
-                    }
+            $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
+            if ($attr) {
+                $sfs = @($attr.sourceField)
+                foreach ($sf in $sfs) {
+                    if ($formData.ContainsKey($sf) -and $formData[$sf]) { $val = $formData[$sf]; break }
                 }
             }
+            elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
             $pass = switch ($op) {
                 'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }

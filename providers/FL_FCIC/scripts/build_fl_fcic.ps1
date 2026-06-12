@@ -48,10 +48,13 @@
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue anywhere (LIMITATION #30 -- in-state vs OOS routing;
 #                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted)
-#   Conditions:  camelCase fieldIds + scalar values (FL live-tested style, QB v4.6)
+#   Conditions:  NESTED inside requirements, field = @(AttributeName), value = @(...)
+#                (CA_CLETS/NY live-proven wire format). v4.7's combo-level camelCase
+#                scalar conditions were SILENTLY IGNORED by the platform (live XML
+#                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "4.7"
+    [string]$Version = "4.8"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -105,47 +108,47 @@ $vehRegQuery = [PSCustomObject]@{
         # query must fall through to RQ; the condition also keeps State out of the FRQ pool.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('decalNumber','licensePlateYear')
-                any      = @('imageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                set        = @('decalNumber','licensePlateYear')
+                any        = @('imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FRQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('licensePlateNumber')
-                any      = @('licensePlateYear','vehicleMakeCode','vehicleYear','imageIndicator')
-                defaults = @(
+                set        = @('licensePlateNumber')
+                any        = @('licensePlateYear','vehicleMakeCode','vehicleYear','imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @(
                     [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }
                     [PSCustomObject]@{ field = 'ImageIndicator';   value = 'N' }
                 )
             }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'FRQLicensePlateNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('titleLienInformation')
-                any      = @('imageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                set        = @('titleLienInformation')
+                any        = @('imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FRQTitleLienInformation'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('vehicleIdentificationNumber')
-                any      = @('vehicleMakeCode','vehicleYear','imageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                set        = @('vehicleIdentificationNumber')
+                any        = @('vehicleMakeCode','vehicleYear','imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'FRQVehicleIdentificationNumber'
             state                 = 'In/Out'
@@ -217,25 +220,37 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            conditions            = @(
-                [PSCustomObject]@{ field = 'registrationState';     operator = 'NOT_EXISTS' }
-                [PSCustomObject]@{ field = 'operatorLicenseNumber'; operator = 'NOT_EXISTS' }
-            )
+            requirements          = [PSCustomObject]@{
+                set        = @('birthDate','nameLast','nameFirst','sexCode')
+                any        = @('imageIndicator')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('State');                 operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'FDQName'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
+            requirements          = [PSCustomObject]@{
+                set        = @('operatorLicenseNumber')
+                any        = @('imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'FDQOperatorLicenseNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','sexCode','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            conditions            = @([PSCustomObject]@{ field = 'operatorLicenseNumber'; operator = 'NOT_EXISTS' })
+            requirements          = [PSCustomObject]@{
+                set        = @('birthDate','nameLast','nameFirst','sexCode','registrationState')
+                any        = @('imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'DQName'
             state                 = 'In/Out'
@@ -294,18 +309,24 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
-            conditions            = @(
-                [PSCustomObject]@{ field = 'registrationStateDH';     operator = 'NOT_EQUALS'; value = 'FL' }
-                [PSCustomObject]@{ field = 'operatorLicenseNumberDH'; operator = 'NOT_EXISTS' }
-            )
+            requirements          = [PSCustomObject]@{
+                set        = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH')
+                any        = @('purposeCodeDH','attentionDH')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('State');                 operator = 'NOT_EQUALS'; value = @('FL') }
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'KQName'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','registrationStateDH'); any = @('purposeCodeDH','attentionDH') }
-            conditions            = @([PSCustomObject]@{ field = 'registrationStateDH'; operator = 'NOT_EQUALS'; value = 'FL' })
+            requirements          = [PSCustomObject]@{
+                set        = @('operatorLicenseNumberDH','registrationStateDH')
+                any        = @('purposeCodeDH','attentionDH')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'Out'
@@ -464,43 +485,63 @@ $boatQuery = [PSCustomObject]@{
         # FBQ combos -- devdoc 1-4 (FCIC registration; State NOT_EXISTS defers to BQ,
         # Hull/Reg additionally NOT_EQUALS Y defers to QB)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('decalNumber','registrationNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @(
-                [PSCustomObject]@{ field = 'registrationState';          operator = 'NOT_EXISTS' }
-                [PSCustomObject]@{ field = 'relatedHitSearchIndicator';  operator = 'NOT_EQUALS'; value = 'Y' }
-            )
+            requirements          = [PSCustomObject]@{
+                set        = @('boatHullIdNumber')
+                any        = @('decalNumber','registrationNumber','titleLienInformation','imageIndicator')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EQUALS'; value = @('Y') }
+                )
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'FBQBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('decalNumber'); any = @('boatHullIdNumber','registrationNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
+            requirements          = [PSCustomObject]@{
+                set        = @('decalNumber')
+                any        = @('boatHullIdNumber','registrationNumber','titleLienInformation','imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FBQDecalNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('boatHullIdNumber','decalNumber','titleLienInformation','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @(
-                [PSCustomObject]@{ field = 'registrationState';          operator = 'NOT_EXISTS' }
-                [PSCustomObject]@{ field = 'relatedHitSearchIndicator';  operator = 'NOT_EQUALS'; value = 'Y' }
-            )
+            requirements          = [PSCustomObject]@{
+                set        = @('registrationNumber')
+                any        = @('boatHullIdNumber','decalNumber','titleLienInformation','imageIndicator')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EQUALS'; value = @('Y') }
+                )
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'FBQRegistrationNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('titleLienInformation'); any = @('boatHullIdNumber','decalNumber','registrationNumber','imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EXISTS' })
+            requirements          = [PSCustomObject]@{
+                set        = @('titleLienInformation')
+                any        = @('boatHullIdNumber','decalNumber','registrationNumber','imageIndicator')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'
         }
         # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by Stolen Search EQUALS Y)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','relatedHitSearchIndicator'); any = @('imageIndicator','registrationNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @([PSCustomObject]@{ field = 'relatedHitSearchIndicator'; operator = 'EQUALS'; value = 'Y' })
+            requirements          = [PSCustomObject]@{
+                set        = @('boatHullIdNumber','relatedHitSearchIndicator')
+                any        = @('imageIndicator','registrationNumber')
+                conditions = @([PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'EQUALS'; value = @('Y') })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QBBoatHullIdNumber'
             state                 = 'In/Out'
@@ -524,30 +565,43 @@ $boatQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber','relatedHitSearchIndicator'); any = @('imageIndicator','boatHullIdNumber'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            conditions            = @([PSCustomObject]@{ field = 'relatedHitSearchIndicator'; operator = 'EQUALS'; value = 'Y' })
+            requirements          = [PSCustomObject]@{
+                set        = @('registrationNumber','relatedHitSearchIndicator')
+                any        = @('imageIndicator','boatHullIdNumber')
+                conditions = @([PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'EQUALS'; value = @('Y') })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QBRegistrationNumber'
             state                 = 'In/Out'
         }
         # BQ combos -- devdoc 10-12 (Nlets OOS; destination state in set[], non-FL assumed)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst','registrationState'); any = @('boatHullIdNumber','registrationNumber') }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EQUALS'; value = 'FL' })
+            requirements          = [PSCustomObject]@{
+                set        = @('birthDate','nameLast','nameFirst','registrationState')
+                any        = @('boatHullIdNumber','registrationNumber')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'BQName'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber','registrationState'); any = @('registrationNumber') }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EQUALS'; value = 'FL' })
+            requirements          = [PSCustomObject]@{
+                set        = @('boatHullIdNumber','registrationState')
+                any        = @('registrationNumber')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQBoatHullIdNumber'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber','registrationState'); any = @('boatHullIdNumber') }
-            conditions            = @([PSCustomObject]@{ field = 'registrationState'; operator = 'NOT_EQUALS'; value = 'FL' })
+            requirements          = [PSCustomObject]@{
+                set        = @('registrationNumber','registrationState')
+                any        = @('boatHullIdNumber')
+                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
             state                 = 'Out'
