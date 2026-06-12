@@ -9,7 +9,7 @@ Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
 
 VALIDATOR RESULTS
 -----------------
-  87 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+  92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 
 BUNDLE SUMMARY
 --------------
@@ -26,17 +26,21 @@ FL_FCIC BUNDLE -- 6 QUERYINPUTDATAMAPPING CONFIGURATIONS
   FL_FCIC_DriverHistoryQuery          DriverHistoryQuery         2       Person
   FL_FCIC_GunQuery                    GunQuery                   3       Firearm
   FL_FCIC_ArticleSingleQuery          ArticleSingleQuery         4       Article
-  FL_FCIC_BoatQuery                   BoatQuery                  9       Boat
+  FL_FCIC_BoatQuery                   BoatQuery                  12      Boat
 
-  Total: 6 QIDMs, 28 combos (26 CommSys + 2 RMS)
-  WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW
-  VehicleStolenQuery REMOVED v4.4 -- not in devdoc "Basic Queries Supported"
-  BQ combos REMOVED v4.4 -- BQ not in devdoc key list (FBQ + QB only)
+  Total: 6 QIDMs, 31 CommSys combos (+2 RMS QIDMs)
+  Combo order = devdoc "Possible Combinations" order + routing conditions (v4.7)
+  WantedPersonQuery REMOVED v4.2 -- CommSys auto-sends QW (platform-confirmed)
+  VehicleStolenQuery REMOVED v4.4 -- separate transaction not in devdoc
+  BQ combos RESTORED v4.7 -- devdoc Boat combos 10-12 (v4.4 removal cited a
+    nonexistent devdoc key list)
+  QV combos NOT BUILT -- devdoc Data-Mined list = likely CommSys auto-send
+    secondaries; PENDING platform confirmation
 
 KEY REFERENCE LEGEND
 --------------------
   FRQ  FL FCIC Vehicle Registration (DHSMV/DMVR -- FL-only)
-  QV   NCIC Stolen Vehicle Query (REMOVED v4.4 -- not authorized by devdoc)
+  QV   NCIC Stolen Vehicle Query (NOT BUILT -- likely CommSys auto-send, pending confirmation)
   RQ   Nlets Vehicle Registration Query (out-of-state; requires State)
   FDQ  FL DHSMV Driver License Query
   DQ   Nlets Driver License Query (out-of-state; requires State)
@@ -328,6 +332,16 @@ LIVE TEST STATUS -- v4.4
   - Boat form: removed nameLast, nameFirst, birthDate, registrationState
 
 IMPORT: IMPORTED 2026-05-27 to USx FCIC Tenant
+
+LIVE TEST -- v4.7 (2026-06-12)
+------------------------------
+  Build: DH out-of-state-only (FCIC-confirmed), devdoc combo order in all
+  QIDMs + routing conditions (pool isolation), BQ x3 restored, 31 combos.
+  Test package reset to T1 (133 prior logs archived to tests/_archive_pre_v4.7/).
+  Requirements: response XML capture MANDATORY; KQ/BQ destination tests use a
+  real non-FL state; negative test: DH with State=FL must not send.
+
+IMPORT: IMPORTED 2026-06-12 to USx Tenant (v4.7)
 
 PENDING
 -------
