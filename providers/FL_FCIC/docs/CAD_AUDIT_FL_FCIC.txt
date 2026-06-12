@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-12 13:40
 ================================================================
 CAD AUDIT
 =========
@@ -109,13 +109,13 @@ CAD AUDIT
   Boat:
     [PASS] boatHullIdNumber: in QIF and CAD list
     [PASS] registrationNumber: in QIF and CAD list
-    [INFO] registrationState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] registrationState: in QIF and CAD list
     [PASS] imageIndicator: in QIF and CAD list
-    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameFirst: in QIF and CAD list
+    [PASS] nameLast: in QIF and CAD list
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] birthDate: in QIF and CAD list
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -156,16 +156,16 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 6: CAD Defaults Coverage ---
-    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQLicensePlateNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQDecalNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQLicensePlateNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQTitleLienInformation -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQLicensePlateNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_GunQuery' combo QGGunSerialNumber -- defaults cover all initialValue any[] fields
@@ -175,15 +175,18 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAOwnerAppliedNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QANCICNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo QAProcessControlNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBBoatHullIdNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQBoatHullIdNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQDecalNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo FBQTitleLienInformation -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBBoatHullIdNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBCoastGuardDocumentNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBNCICNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBProcessControlNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo QBRegistrationNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQBoatHullIdNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'FL_FCIC_BoatQuery' combo BQRegistrationNumber -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -191,6 +194,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 75 PASS / 0 FAIL / 0 WARN / 84 INFO
+Total: 82 PASS / 0 FAIL / 0 WARN / 80 INFO
 
 

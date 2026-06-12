@@ -50,7 +50,7 @@ $testData["Person"] = @{
     NameMiddle="A"; NameSuffix=""; BirthDate="1990-01-15"; SexCode="M"; ImageIndicator="Y"
     OperatorLicenseNumberDH="D123456789"; NameFirstDH="John"; NameLastDH="Doe"
     NameMiddleDH="A"; NameSuffixDH=""; BirthDateDH="1990-01-15"; SexCodeDH="M"
-    RegistrationStateDH="FL"; PurposeCodeDH="C"; PurposeCode="D"
+    RegistrationStateDH="GA"; PurposeCodeDH="C"; PurposeCode="D"
     caRequestPurposeCodeDH="C"
     Attention="DISPATCHER JONES"; Requestor="DISPATCHER JONES"
     NyNyspinTransactionName="DALL"; dexStateUserId="BADGE"; StateDH="AZ"
@@ -88,7 +88,7 @@ $testData["Boat"] = @{
     caRequestPurposeCode="C"; BoatHullIdNumber="FL1234AB56H7"; RegistrationNumber="FL1234AB"
     DecalNumber="FL12345678"; TitleLienInformation="ABCD1234"
     BoatMakeCode="BOST"; BoatLength="0200"; BoatTypeCode="MO"; BoatYear="2022"
-    BoatColor="WHI"; BoatPropulsionType="IO"; RegistrationState="FL"; State="FL"
+    BoatColor="WHI"; BoatPropulsionType="IO"; RegistrationState="GA"; State="GA"
     CoastGuardDocumentNumber="CG123456"; OwnerAppliedNumber="OAN12345"
     NCICNumber="B123456789"; ProcessControlNumber="0000012345"
     NameFirst="John"; NameLast="Doe"; BirthDate="1990-01-15"; SexCode="M"
@@ -111,6 +111,51 @@ function Get-FilledRefs($qidm, $formData) {
     return ($filled | Select-Object -Unique)
 }
 
+function Test-ComboConditionsPass($qidm, $combo, $formData) {
+    # Server-side conditions, AND logic (QIDM_REFERENCE Section 2a). Conditions may live at
+    # combo level (FL style) or inside requirements (NY/CA style); fields may be fieldIds or
+    # attribute names. EXCLUSIVE is UI-only -- always passes.
+    $conds = @()
+    if ($combo.conditions) { $conds += @($combo.conditions) }
+    if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
+    if ($conds.Count -eq 0) { return $true }
+
+    foreach ($cond in $conds) {
+        $op = "$($cond.operator)".ToUpperInvariant()
+        if ($op -eq 'EXCLUSIVE') { continue }
+        $fields = @($cond.field)
+        $values = @()
+        if ($null -ne $cond.value) { $values = @($cond.value) }
+
+        foreach ($f in $fields) {
+            $val = $null
+            if ($formData.ContainsKey($f)) { $val = $formData[$f] }
+            else {
+                $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
+                if ($attr) {
+                    $sfs = @($attr.sourceField)
+                    foreach ($sf in $sfs) {
+                        if ($formData.ContainsKey($sf) -and $formData[$sf]) { $val = $formData[$sf]; break }
+                    }
+                }
+            }
+            $present = -not [string]::IsNullOrWhiteSpace("$val")
+            $pass = switch ($op) {
+                'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
+                'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
+                'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
+                'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
+                'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
+                'EXISTS'     { $present }
+                'NOT_EXISTS' { -not $present }
+                default      { $true }
+            }
+            if (-not $pass) { return $false }
+        }
+    }
+    return $true
+}
+
 function Test-ComboFires($qidm, $combo, $formData) {
     $filledNames = Get-FilledRefs $qidm $formData
     $setFields = @()
@@ -119,12 +164,16 @@ function Test-ComboFires($qidm, $combo, $formData) {
     if ($combo.requirements -and $combo.requirements.any) { $anyFields = @($combo.requirements.any) }
     $setOk = $true
     foreach ($f in $setFields) { if ($filledNames -notcontains $f) { $setOk = $false } }
+    # any[] does NOT gate firing (QIDM_REFERENCE Section 3; live-confirmed FL v4.6 KQ fired
+    # with zero any[] filled) -- serialization scope only. Exception: empty set[] still
+    # needs >=1 any[] filled, else the combo would fire on a blank form.
     $anyOk = $true
-    if ($anyFields.Count -gt 0) {
+    if ($setFields.Count -eq 0 -and $anyFields.Count -gt 0) {
         $anyOk = $false
         foreach ($f in $anyFields) { if ($filledNames -contains $f) { $anyOk = $true; break } }
     }
-    return ($setOk -and $anyOk)
+    if (-not ($setOk -and $anyOk)) { return $false }
+    return (Test-ComboConditionsPass $qidm $combo $formData)
 }
 
 function Get-FiringCombo($qidm, $formData) {

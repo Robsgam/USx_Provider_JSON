@@ -1027,18 +1027,37 @@ foreach ($bundle in $providerBundles) {
                 }
             }
 
-            # G-16: Combination ordering -- operational priority determines order, not set[] count
+            # G-16: Combination ordering -- shadowing check. A later combo is unreachable when an
+            # EARLIER combo's set[] is a subset of its set[] (first match fires) UNLESS the earlier
+            # combo carries routing conditions (NOT_EXISTS/NOT_EQUALS defer to later combos --
+            # devdoc-order standard, FL v4.7). Conditions may live at combo level (FL style) or
+            # inside requirements (NY style).
             if ($cfg.combinations.Count -gt 1) {
-                $prevSetCount = [int]::MaxValue
-                $orderOk = $true
-                foreach ($combo in $cfg.combinations) {
-                    $setCount = 0
-                    if ($combo.requirements -and $combo.requirements.set) { $setCount = $combo.requirements.set.Count }
-                    if ($setCount -gt $prevSetCount) { $orderOk = $false; break }
-                    $prevSetCount = $setCount
+                $shadowed = $null
+                for ($oi = 0; $oi -lt $cfg.combinations.Count -and -not $shadowed; $oi++) {
+                    $earlier = $cfg.combinations[$oi]
+                    $eSet = @()
+                    if ($earlier.requirements -and $earlier.requirements.set) { $eSet = @($earlier.requirements.set) }
+                    $eConds = @()
+                    if ($earlier.conditions) { $eConds += $earlier.conditions }
+                    if ($earlier.requirements -and $earlier.requirements.conditions) { $eConds += $earlier.requirements.conditions }
+                    if ($eConds.Count -gt 0 -or $eSet.Count -eq 0) { continue }
+                    for ($oj = $oi + 1; $oj -lt $cfg.combinations.Count; $oj++) {
+                        $later = $cfg.combinations[$oj]
+                        $lSet = @()
+                        if ($later.requirements -and $later.requirements.set) { $lSet = @($later.requirements.set) }
+                        $isSubset = $true
+                        foreach ($f in $eSet) { if ($lSet -notcontains $f) { $isSubset = $false; break } }
+                        if ($isSubset) {
+                            $eKr = if ($earlier.keyReference) { $earlier.keyReference } else { "(combo $oi)" }
+                            $lKr = if ($later.keyReference) { $later.keyReference } else { "(combo $oj)" }
+                            $shadowed = "QIDM '$($cfg.name)' combo '$lKr' is unreachable: earlier unconditioned combo '$eKr' set[] is a subset of its set[] (first match fires; add routing conditions to '$eKr' or reorder)"
+                            break
+                        }
+                    }
                 }
-                if (-not $orderOk) {
-                    Write-Limitation "QIDM '$($cfg.name)' combo order has fewer set[] fields before more -- verify operational priority is correct (first match fires)"
+                if ($shadowed) {
+                    Write-Limitation $shadowed
                 }
             }
 

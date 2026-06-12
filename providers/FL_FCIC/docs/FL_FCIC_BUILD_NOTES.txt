@@ -4,6 +4,64 @@ Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
 
+v4.7 (2026-06-12) -- DH out-of-state-only correction, devdoc combo order, pool isolation, BQ restore
+  CHANGED: 1) DriverHistoryQuery: registrationStateDH moved any[]->set[] on both KQ combos;
+              conditions registrationStateDH NOT_EQUALS FL added to both; combos reordered
+              to devdoc order (KQName first); operatorLicenseNumberDH NOT_EXISTS added to
+              KQName; combo state property In/Out -> Out; NO initialValue, NO CAD defaults
+              on State. DH card title 'Driver History' -> 'Driver History (Out-of-State Only)';
+              registrationStateDH label 'State (leave blank for FL)' -> 'Destination State';
+              operatorLicenseNumberDH label 'License Number (DH)' -> 'OLN (DH)'.
+           2) DriverLicenseQuery: combos reordered to devdoc order (FDQName, FDQOLN, DQName,
+              DQOLN); conditions registrationState NOT_EXISTS on both FDQ combos;
+              operatorLicenseNumber NOT_EXISTS on both Name combos.
+           3) VehicleRegistrationQuery: combos reordered to devdoc order (FRQ Decal/Plate/
+              Title/VIN, then RQ Plate/VIN); conditions registrationState NOT_EXISTS on all
+              four FRQ combos.
+           4) BoatQuery: combos reordered to devdoc order (FBQ 1-4, QB 5-9, BQ 10-12);
+              conditions registrationState NOT_EXISTS on all FBQ combos, plus
+              relatedHitSearchIndicator NOT_EQUALS Y on FBQ Hull/Reg (replaces the v4.6
+              QB-first ordering; QB EQUALS Y conditions unchanged). RESTORED BQ x3
+              (BQName, BQBoatHullIdNumber, BQRegistrationNumber -- removed v4.4 in error)
+              with registrationState in set[] and NOT_EQUALS FL conditions; restored Boat
+              form fields nameLast/nameFirst/birthDate (search card, owner OOS row) and
+              registrationState ('Destination State' on Options card); restored Boat QIDM
+              attributes Name (FormatStringRuleHandler), BirthDate (date handler), State (NCIC).
+           5) Gun + Article combos already match devdoc order -- unchanged.
+           CommSys combos: 28 -> 31. QIDMs: 6 (unchanged).
+  REASON:  a) FCIC documentation (relayed 2026-06-12): "Since the KQ is out of state and
+              <XX> which denotes the destination is required, yes DriverHistoryQuery can
+              only be used out of state and would require the destination to be something
+              other than FL." Devdoc: State is the only Mandatory field; both KQ combos (Out).
+              The v3.8 initialValue=FL design was invalid (FL is not a legal destination);
+              the v4.3 single-JSON merge silently dropped that initialValue (undocumented
+              regression) which left State omittable entirely -- v4.6 KQ test XML shipped
+              with no State element. Destination must be an explicit officer choice: set[],
+              no default. CAD-dispatched DH cannot supply a destination and will not
+              auto-fire -- correct behavior.
+           b) USER DIRECTIVE (new standard): combo array order follows the devdoc
+              "Possible Combinations" listing order in every QIDM. Because devdoc lists
+              in-state combos first, routing conditions (State NOT_EXISTS / RelatedHit
+              NOT_EQUALS Y / OLN NOT_EXISTS) keep later OOS/stolen combos reachable under
+              first-match evaluation AND isolate the serialization pool (LIMITATION #1) so
+              a fully-filled card sends only the firing path's fields (fixes DL over-send).
+           c) BQ restore: devdoc Boat "Possible Combinations" 10-12 ARE the BQ paths and BQ
+              is not in the data-mined list. The v4.4 removal cited a devdoc "key list
+              (FBQ + QB only)" that does not exist -- the devdoc contains no key mnemonics
+              (zero occurrences of FBQ/BQ/KQ/FDQ/RQ/DQ); metadata MessageKey definitions
+              are the only key source, and combos are the build authority.
+           ASSUMPTION: BQ destination state NOT_EQUALS FL mirrors the FCIC KQ rule
+              (Out-routed Nlets). Pending FCIC confirmation; guard trivially removable.
+           PENDING: QV x2 (devdoc Vehicle combos 5-6) NOT built -- QV is in the devdoc
+              "Data-Mined Transactions" list (QA, QB, QG, QV, QW), believed to be CommSys
+              auto-sent secondary queries (QW precedent: platform-confirmed auto-send,
+              v4.2). Awaiting platform confirmation; if refuted, build QV via Stolen Search
+              toggle (Boat QB pattern) in v4.8.
+           APPROVED SKIP: ImageQuery is in devdoc Basic Queries Supported but excluded by
+              user PHASE 2 scope (6-query build).
+           NOTE: conditions in this build use camelCase fieldIds + scalar values (FL
+              live-tested style, QB v4.6), not KB attribute-name style.
+
 v4.6 (2026-06-09) -- Boat QB conditions routing (Stolen Search EQUALS Y)
   CHANGED: Added conditions on QB+Hull and QB+Reg combos:
            relatedHitSearchIndicator EQUALS Y. Stolen Search = N or blank

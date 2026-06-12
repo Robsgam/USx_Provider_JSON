@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-12 13:40
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -33,7 +33,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
   [PASS] QIF 'ENTITY_Article' -> Article : 9 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
-  [PASS] QIF 'ENTITY_Boat' -> Boat : 12 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 16 fieldIds
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' -> Vehicle : 10 attrs, 6 combos
@@ -52,8 +52,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_GunQuery' ImageIndicator size=1
   [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' -> Article : 6 attrs, 4 combos
   [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' ImageIndicator size=1
-  [PASS] QIDM 'FL_FCIC_BoatQuery' -> Boat : 9 attrs, 9 combos
+  [PASS] QIDM 'FL_FCIC_BoatQuery' -> Boat : 12 attrs, 12 combos
+  [PASS] QIDM 'FL_FCIC_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'FL_FCIC_BoatQuery' ImageIndicator size=1
+  [PASS] QIDM 'FL_FCIC_BoatQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
 
@@ -81,16 +83,16 @@ VALIDATOR RESULTS
   [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
-  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQDecalNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQLicensePlateNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQTitleLienInformation': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'FRQVehicleIdentificationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'FDQOperatorLicenseNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo 'DQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo 'KQOperatorLicenseNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
@@ -100,18 +102,21 @@ VALIDATOR RESULTS
   [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo 'QAOwnerAppliedNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo 'QANCICNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_ArticleSingleQuery' combo 'QAProcessControlNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBBoatHullIdNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBRegistrationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'FBQBoatHullIdNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'FBQRegistrationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'FBQDecalNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'FBQRegistrationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'FBQTitleLienInformation': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBBoatHullIdNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBCoastGuardDocumentNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBProcessControlNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'QBRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'BQName': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'BQBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'FL_FCIC_BoatQuery' combo 'BQRegistrationNumber': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 87 PASS / 0 FAIL / 0 WARN
+  RESULTS: 92 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

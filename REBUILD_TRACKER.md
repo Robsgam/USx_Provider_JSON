@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. GAP (2026-06-08): DL SexCode-primary combo missing (metadata DQ primaryFieldReference=SexCode has no JSON combo -- add on rebuild) |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v4.6 |  | 87P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible. GAP (2026-06-12): QV x2 (VehicleRegistrationQuery combos 5-6) and BQ x3 (BoatQuery combos 10-12) are in devdoc Basic Queries Supported but unbuilt -- v4.4 removed them citing a devdoc key list that does not exist (devdoc has no key mnemonics; combos are the authority). Restore in v4.7 |
+| 5 | FL_FCIC | v4.7 |  | 92P/0F/0W/0LIM | 0 | v4.7 (2026-06-12): DH out-of-state-only (FCIC-confirmed; State in set[], NOT_EQUALS FL, no default), devdoc combo order all QIDMs + routing conditions (pool isolation), BQ x3 RESTORED (v4.4 removal cited nonexistent devdoc key list), 31 combos. QV x2 PENDING platform confirmation (devdoc Data-Mined list = likely auto-sent secondaries; if refuted build Stolen Search toggle v4.8). ImageQuery = user-approved scope skip |
 | 6 | TX_TLETS | v3.3 |  | 86P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
@@ -53,7 +53,7 @@ REAL-GAP (build it). One provider at a time — do not mass-sweep.
 | CA_VENTURA_COUNTY | 20 |
 | CA_eSUN | 10 (re-check against NEW 2026-06-12 source) |
 | NJ_NJCJIS | 9 (4 expected: LIMITATION #21 RandomRequest collapse) |
-| FL_FCIC | 7 (verified 2026-06-12: QV x2 + BQ x3 REAL GAPS; QW x2 approved skip) |
+| FL_FCIC | 7 -> 4 after v4.7 (BQ x3 restored; QV x2 pending platform confirmation of data-mined auto-send; QW x2 approved skip) |
 | CA_CLETS_OCATS | 6 |
 | CA_SAN_LUIS_OBISPO | 4 |
 | OH_LEADS | 3 |
@@ -63,6 +63,25 @@ REAL-GAP (build it). One provider at a time — do not mass-sweep.
 | MD_METERS | 1 (known: Gun GunMake-primary combo, see row 14) |
 | NM_NMLETS_OFML | 1 |
 | AZ, CA_CLETS, CA_CONTRA_COSTA, IL, LA, NY, OR, TN | 0 |
+
+## Shadowed Combo Findings (G-16 subset check, 2026-06-12)
+
+validate.ps1 G-16 upgraded from consecutive-count heuristic to true subset-shadowing
+detection (an earlier UNCONDITIONED combo whose set[] is a subset of a later combo's
+set[] makes the later combo unreachable under first-match). FL v4.7 clean. Latent
+findings in other providers (verify/fix at each provider's next rebuild -- add routing
+conditions or reorder; cross-check CA_CLETS IV.4* redundancy note):
+
+| Provider | Shadowed combo | Shadowing combo |
+|---|---|---|
+| CA_CLETS | IA.QVK (VehicleRegistrationQuery) | IV.4V |
+| CA_CLETS | IR.QVC.N (DriverLicenseQuery) | IN.L1 |
+| CA_CLETS | IV.4B (BoatQuery) | IA.QB.R |
+| TX_TLETS | QVVehicleIdentificationNumber (VehicleInsuranceRegistrationQuery) | RQVehicleIdentificationNumber |
+| TX_TLETS_CCH | QVVehicleIdentificationNumber (VehicleInsuranceRegistrationQuery) | RQVehicleIdentificationNumber |
+
+NY/NJ/FL and all 13 other providers: 0 findings (existing docs/ validator reports
+predate the G-16 upgrade; scores refresh at each provider's next rebuild).
 
 ## What Was Fixed (2026-05-08 through 2026-05-11)
 
@@ -162,7 +181,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v3.5 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.4 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v4.6 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
+| FL_FCIC | v4.7 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
 ### Flagged for Full Rebuild on Next Test (16)
 

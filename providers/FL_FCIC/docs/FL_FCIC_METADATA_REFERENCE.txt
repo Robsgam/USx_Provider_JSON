@@ -71,19 +71,19 @@ METADATA COMBINATIONS (12 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber, State                                RegistrationNumber, Request...
   BQ            RegistrationNumber      RegistrationNumber, State                              BoatHullIdNumber, Requestor...
 
-BUILD COVERAGE (9 of 12 built):
-  BUILT   QBBoatHullIdNumber set[boatHullIdNumber, relatedHitSearchIndicator]
-  BUILT   QBRegistrationNumber set[registrationNumber, relatedHitSearchIndicator]
+BUILD COVERAGE (12 of 12 built):
   BUILT   FBQBoatHullIdNumber set[boatHullIdNumber]
-  BUILT   FBQRegistrationNumber set[registrationNumber]
   BUILT   FBQDecalNumber set[decalNumber]
+  BUILT   FBQRegistrationNumber set[registrationNumber]
   BUILT   FBQTitleLienInformation set[titleLienInformation]
+  BUILT   QBBoatHullIdNumber set[boatHullIdNumber, relatedHitSearchIndicator]
   BUILT   QBCoastGuardDocumentNumber set[coastGuardDocumentNumber]
   BUILT   QBNCICNumber   set[ncicNumber]
   BUILT   QBProcessControlNumber set[processControlNumber]
-  UNBUILT BQ             Name
-  UNBUILT BQ             BoatHullIdNumber
-  UNBUILT BQ             RegistrationNumber
+  BUILT   QBRegistrationNumber set[registrationNumber, relatedHitSearchIndicator]
+  BUILT   BQName         set[birthDate, nameLast, nameFirst, registrationState]
+  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
+  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
 
 ================================================================================
 3. DriverHistoryQuery (version 15)
@@ -106,8 +106,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           Attention, PurposeCode, Req...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH]
+  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationStateDH]
+  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, registrationStateDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 20)
@@ -139,10 +139,10 @@ METADATA COMBINATIONS (6 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           State2, State3, State4, Sta...
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   DQName         set[birthDate, nameLast, nameFirst, sexCode, registrationState]
   BUILT   FDQName        set[birthDate, nameLast, nameFirst, sexCode]
-  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, registrationState]
   BUILT   FDQOperatorLicenseNumber set[operatorLicenseNumber]
+  BUILT   DQName         set[birthDate, nameLast, nameFirst, sexCode, registrationState]
+  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, registrationState]
   UNBUILT QW             Name
   UNBUILT QW             OperatorLicenseNumber
 
@@ -207,12 +207,12 @@ METADATA COMBINATIONS (8 total):
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Requestor, State2, State3, ...
 
 BUILD COVERAGE (6 of 8 built):
-  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber, registrationState]
   BUILT   FRQDecalNumber set[decalNumber, licensePlateYear]
   BUILT   FRQLicensePlateNumber set[licensePlateNumber]
-  BUILT   FRQVehicleIdentificationNumber set[vehicleIdentificationNumber]
   BUILT   FRQTitleLienInformation set[titleLienInformation]
+  BUILT   FRQVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
+  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber, registrationState]
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
 
@@ -223,21 +223,18 @@ BUILD SUMMARY
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         4      4     0  100% (COMPLETE)
-  BoatQuery                                 12      9     3  75%
+  BoatQuery                                 12     12     0  100% (COMPLETE)
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         6      4     2  67%
   GunQuery                                   3      3     0  100% (COMPLETE)
   VehicleRegistrationQuery                   8      6     2  75%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   35     28     7  80%
+  TOTAL                                   35     31     4  89%
 
 ================================================================================
-UNBUILT METADATA COMBOS (7 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
 ================================================================================
 
-  BQ             Name                     (BoatQuery)
-  BQ             BoatHullIdNumber         (BoatQuery)
-  BQ             RegistrationNumber       (BoatQuery)
   QW             Name                     (DriverLicenseQuery)
   QW             OperatorLicenseNumber    (DriverLicenseQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)

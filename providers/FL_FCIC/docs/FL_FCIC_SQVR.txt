@@ -1,317 +1,248 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
-Last updated: 2026-06-09
-JSON version: v4.6
-Validator: 97 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: v4.3 imported USx FCIC Tenant 2026-05-27. 28/28 combos, 6 QIDMs.
+Last updated: 2026-06-12
+JSON version: v4.7
+Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: v4.7 NOT YET IMPORTED. Full test matrix re-runs from T1 (rebuild restarts
+testing; prior logs archived to tests/_archive_pre_v4.7/). v4.3 was imported to the
+USx FCIC Tenant 2026-05-27.
 
+v4.7: DH out-of-state-only (FCIC-confirmed), devdoc combo order in all QIDMs +
+      routing conditions (pool isolation), BQ x3 RESTORED, labels (OLN (DH),
+      Destination State), 31 combos.
 v4.6: QB routing fix + conditions (StolenSearch EQUALS Y).
-v4.5: Removed BQ Name combo (not in metadata).
-v4.4: Removed VehicleStolenQuery (not in devdoc). Removed BQ combos.
-v4.3: Single JSON merge (BASE/MC eliminated). 101P→97P (cleanup).
-v4.2: Removed WantedPersonQuery QIDM (CommSys auto-sends QW).
-v4.1: MC 2-card Vehicle+Boat (Options+Search), State label hints.
-v4.0: Attention field now visible FormInput (was hidden handler-only).
-QB routing fix: RelatedHitSearchIndicator promoted to set[] on QB+Hull/QB+Reg (FL-8).
+v4.4: Removed VehicleStolenQuery QIDM (separate transaction not in devdoc).
+v4.2: Removed WantedPersonQuery QIDM (CommSys auto-sends QW; platform-confirmed).
+v4.0: Attention field visible FormInput (was hidden handler-only).
 
-ARCHITECTURE: 6 QIDMs, 28 combos. Single JSON, multi-card layout.
-2-card: Vehicle(Options+Search), Person(DL+DH), Boat(Options+Search).
+ARCHITECTURE: 6 QIDMs, 31 combos. Single JSON, multi-card layout.
+2-card: Vehicle(Options+Search), Person(DL + DH Out-of-State Only),
+Boat(Options+Search). Combo array order = devdoc "Possible Combinations" order;
+routing conditions keep later OOS/stolen combos reachable under first-match AND
+isolate the serialization pool (only the firing path's fields are sent).
+Conditions style: camelCase fieldIds + scalar values (FL live-tested, QB v4.6).
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================
 
-  QIDM: FL_FCIC_VehicleRegistrationQuery (6 combos)
+  QIDM: FL_FCIC_VehicleRegistrationQuery (6 combos, devdoc order)
   QIF:  Vehicle
-  Fields: Plate, PlateType(PC), PlateYear(2026), VehicleYear, VIN, Make,
+  Fields: Plate, PlateType(PC), PlateYear(current year), VehicleYear, VIN, Make,
           Decal, TitleLien, RegistrationState(no default), ImageIndicator(N)
 
-  RQ+Plate -- Nlets OOS Registration (Plate) [CONFIRMED]
+  FRQ+Decal -- FL DHSMV (Decal Number) [PENDING]
+    keyReference: FRQDecalNumber
+    set: [DecalNumber, LicensePlateYear]   any: [ImageIndicator]
+    conditions: registrationState NOT_EXISTS
+
+  FRQ+Plate -- FL DHSMV Registration (Plate) [PENDING]
+    keyReference: FRQLicensePlateNumber
+    set: [LicensePlateNumber]   any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
+    conditions: registrationState NOT_EXISTS
+
+  FRQ+TitleLien -- FL DHSMV (Title/Lien) [PENDING]
+    keyReference: FRQTitleLienInformation
+    set: [TitleLienInformation]   any: [ImageIndicator]
+    conditions: registrationState NOT_EXISTS
+
+  FRQ+VIN -- FL DHSMV Registration (VIN) [PENDING]
+    keyReference: FRQVehicleIdentificationNumber
+    set: [VehicleIdentificationNumber]   any: [VehicleMakeCode, VehicleYear, ImageIndicator]
+    conditions: registrationState NOT_EXISTS
+
+  RQ+Plate -- Nlets OOS Registration (Plate) [PENDING]
     keyReference: RQLicensePlateNumber
     set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
     any: [ImageIndicator]
 
-  RQ+VIN -- Nlets OOS Registration (VIN) [CONFIRMED]
+  RQ+VIN -- Nlets OOS Registration (VIN) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber, RegistrationState]
     any: [VehicleMakeCode, VehicleYear, ImageIndicator]
 
-  FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
-    keyReference: FRQLicensePlateNumber
-    set: [LicensePlateNumber]
-    any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
+  Routing: State blank -> FRQ (devdoc combos 1-4, listed first); State filled ->
+  FRQ conditions fail, falls through to RQ. State never serializes on FRQ queries.
 
-  FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
-    keyReference: FRQVehicleIdentificationNumber
-    set: [VehicleIdentificationNumber]
-    any: [VehicleMakeCode, VehicleYear, ImageIndicator]
-
-  FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
-    keyReference: FRQDecalNumber
-    set: [DecalNumber, LicensePlateYear]
-    any: [ImageIndicator]
-
-  FRQ+TitleLien -- FL DHSMV (Title/Lien) [CONFIRMED]
-    keyReference: FRQTitleLienInformation
-    set: [TitleLienInformation]
-    any: [ImageIndicator]
-
-  Combo priority: RQ combos first (more fields = narrower match), then FRQ.
-  Co-fire: VehicleStolenQuery (QV) fires alongside when Plate or VIN populated.
+  QV+Plate / QV+VIN (devdoc combos 5-6) -- [PENDING-CONFIRMATION, NOT BUILT]
+    QV is in the devdoc "Data-Mined Transactions" list (QA, QB, QG, QV, QW),
+    believed to be CommSys auto-sent secondary queries (QW precedent: platform-
+    confirmed auto-send, v4.2). Awaiting platform confirmation. If refuted,
+    build QV via a Stolen Search toggle (Boat QB pattern) in v4.8.
 
 ================================================================================
-2. VehicleStolenQuery -- Vehicle Entity
+2. DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  QIDM: FL_FCIC_VehicleStolenQuery (2 combos)
-  QIF:  Vehicle (shared with VehicleRegistrationQuery)
-
-  QV+Plate -- NCIC Stolen Vehicle (Plate) [CONFIRMED]
-    keyReference: QVLicensePlateNumber
-    set: [LicensePlateNumber]
-    any: [ImageIndicator, RegistrationState, VehicleMakeCode]
-
-  QV+VIN -- NCIC Stolen Vehicle (VIN) [CONFIRMED]
-    keyReference: QVVehicleIdentificationNumber
-    set: [VehicleIdentificationNumber]
-    any: [ImageIndicator, RegistrationState, VehicleMakeCode]
-
-  Co-fire: Always co-fires with VehicleRegistrationQuery on shared fields.
-  No queriesToDeselect (LIMITATION #24 -- both fire together).
-
-================================================================================
-3. DriverLicenseQuery -- Person Entity
-================================================================================
-
-  QIDM: FL_FCIC_DriverLicenseQuery (4 combos, autoSelect=true)
-  QIF:  Person
+  QIDM: FL_FCIC_DriverLicenseQuery (4 combos, autoSelect=true, devdoc order)
+  QIF:  Person (DL card)
   Fields: OLN, Last, First, Middle, Suffix, DOB, Sex,
           RegistrationState(no default), ImageIndicator(Y)
-  queriesToDeselect: [DriverHistoryQuery]
 
-  DQ+OLN -- Nlets OOS Driver License (OLN) [CONFIRMED]
-    keyReference: DQOperatorLicenseNumber
-    set: [OperatorLicenseNumber, RegistrationState]
-    any: [ImageIndicator]
-
-  FDQ+OLN -- FL DHSMV Driver License (OLN) [CONFIRMED]
-    keyReference: FDQOperatorLicenseNumber
-    set: [OperatorLicenseNumber]
-    any: [ImageIndicator]
-
-  DQ+Name -- Nlets OOS Driver License (Name) [CONFIRMED]
-    keyReference: DQName
-    set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
-    any: [ImageIndicator]
-
-  FDQ+Name -- FL DHSMV Driver License (Name) [CONFIRMED]
+  FDQ+Name -- FL DHSMV Driver License (Name) [PENDING]
     keyReference: FDQName
-    set: [BirthDate, NameLast, NameFirst, SexCode]
-    any: [ImageIndicator]
+    set: [BirthDate, NameLast, NameFirst, SexCode]   any: [ImageIndicator]
+    conditions: registrationState NOT_EXISTS, operatorLicenseNumber NOT_EXISTS
 
-  Combo priority: OLN combos before Name combos (operational priority).
-  DQ (with State) before FDQ (without State) within each group.
+  FDQ+OLN -- FL DHSMV Driver License (OLN) [PENDING]
+    keyReference: FDQOperatorLicenseNumber
+    set: [OperatorLicenseNumber]   any: [ImageIndicator]
+    conditions: registrationState NOT_EXISTS
+
+  DQ+Name -- Nlets Driver License (Name, In/Out) [PENDING]
+    keyReference: DQName
+    set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]   any: [ImageIndicator]
+    conditions: operatorLicenseNumber NOT_EXISTS
+
+  DQ+OLN -- Nlets Driver License (OLN, In/Out) [PENDING]
+    keyReference: DQOperatorLicenseNumber
+    set: [OperatorLicenseNumber, RegistrationState]   any: [ImageIndicator]
+
+  Routing (fixes full-card over-send): OLN filled -> Name combos' conditions fail,
+  OLN path fires and Name/DOB/Sex are excluded from the serialization pool. State
+  filled -> FDQ conditions fail, DQ fires. Fully-filled card + State sends ONLY
+  OLN + State + Image (verified via test_commsys scenario sweep 2026-06-12).
+  DQ is devdoc (In/Out): State=FL on DQ is legal (no NOT_EQUALS guard, deliberate).
 
 ================================================================================
-4. WantedPersonQuery -- REMOVED v4.2
+3. WantedPersonQuery -- REMOVED v4.2 [APPROVED SKIP]
 ================================================================================
 
-  REMOVED: CommSys automatically sends QW queries when Person fields are populated.
-  No JSON-side QIDM needed. Confirmed by platform team 2026-05-19.
-  Previous: 2 combos (QWOperatorLicenseNumber, QWName) -- see v4.1 SQVR for details.
+  CommSys automatically sends QW (devdoc Data-Mined Transactions list).
+  Confirmed by platform team 2026-05-19. No JSON-side QIDM needed.
 
 ================================================================================
-5. DriverHistoryQuery -- Person Entity
+4. DriverHistoryQuery -- Person Entity (OUT-OF-STATE ONLY)
 ================================================================================
 
-  QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=true)
-  QIF:  Person (shared, DH card with DH-suffix fields)
-  DH fields: OperatorLicenseNumberDH, RegistrationStateDH (default=FL), NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
-  DH-only: PurposeCode (no default)
-  Handler-only: Attention (CommsysGetLastNameFirstNameInitialRuleHandler)
-  queriesToDeselect: [DriverLicenseQuery]
+  QIDM: FL_FCIC_DriverHistoryQuery (2 combos, autoSelect=true, devdoc order)
+  QIF:  Person (DH card "Driver History (Out-of-State Only)", DH-suffix fields)
+  Fields: OLN (DH), Destination State (no default), Purpose Code, Last/First (DH),
+          DOB (DH), Sex (DH), Attention (DH) -- all visible
+  queriesToDeselect: [DriverLicenseQuery] (one-directional)
 
-  KQ+OLN -- FL Driver History (OLN) [CONFIRMED]
-    keyReference: KQOperatorLicenseNumber
-    set: [OperatorLicenseNumberDH, RegistrationStateDH]
-    any: [PurposeCodeDH]
+  AUTHORITY (FCIC, 2026-06-12): "Since the KQ is out of state and <XX> which
+  denotes the destination is required, yes DriverHistoryQuery can only be used
+  out of state and would require the destination to be something other than FL."
+  Devdoc: State is the only Mandatory field; both combos (Out).
 
-  KQ+Name -- FL Driver History (Name) [CONFIRMED]
+  KQ+Name -- Nlets OOS Driver History (Name) [PENDING]
     keyReference: KQName
     set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH]
-    any: [PurposeCodeDH]
+    any: [PurposeCodeDH, AttentionDH]
+    conditions: registrationStateDH NOT_EQUALS FL, operatorLicenseNumberDH NOT_EXISTS
 
-  KQ is FL-specific (not NCIC/Nlets). Requires State. PurposeCode optional (any[]).
-  v3.8: RegistrationStateDH (initialValue=FL) on DH card isolates from DL State routing.
-  Attention auto-filled by CommsysGetLastNameFirstNameInitialRuleHandler (not in combos).
-  autoSelect=true on both BASE and MC. queriesToDeselect deselects DL when DH selected.
+  KQ+OLN -- Nlets OOS Driver History (OLN) [PENDING]
+    keyReference: KQOperatorLicenseNumber
+    set: [OperatorLicenseNumberDH, RegistrationStateDH]
+    any: [PurposeCodeDH, AttentionDH]
+    conditions: registrationStateDH NOT_EQUALS FL
+
+  KQ cannot fire without an explicit non-FL destination (verified: State blank or
+  =FL -> no combo fires). No State default possible (destination is an officer
+  choice). CAD dispatch cannot supply a destination -> DH never auto-fires from
+  CAD (correct). History: v3.8's initialValue=FL was INVALID per FCIC; the v4.3
+  merge dropped it silently; v4.6 could send KQ with no State at all. v4.7 is the
+  corrected design (NY DH-OOS pattern).
 
 ================================================================================
-6. GunQuery -- Firearm Entity
+5. GunQuery -- Firearm Entity
 ================================================================================
 
-  QIDM: FL_FCIC_GunQuery (3 combos)
+  QIDM: FL_FCIC_GunQuery (3 combos, already devdoc order)
   QIF:  Firearm
-  Fields: SerialNumber, GunMake (FormSelect NCIC_FIREARM_MAKE/NCIC), NCICNumber, PCN, ImageIndicator(N)
+  Fields: SerialNumber, GunMake (FormSelect NCIC_FIREARM_MAKE/NCIC), NCICNumber,
+          PCN, ImageIndicator(N)
 
-  QG+Serial -- NCIC Gun (Serial Number) [CONFIRMED]
-    keyReference: QGGunSerialNumber
-    set: [GunSerialNumber]
-    any: [GunMake, ImageIndicator]
-
-  QG+NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
-    keyReference: QGNCICNumber
-    set: [NCICNumber]
-    any: [GunMake, ImageIndicator]
-
-  QG+PCN -- NCIC Gun (Process Control Number) [CONFIRMED]
-    keyReference: QGProcessControlNumber
-    set: [ProcessControlNumber]
-    any: [GunMake, ImageIndicator]
+  QG+Serial [PENDING]  keyReference: QGGunSerialNumber  set: [GunSerialNumber]  any: [GunMake, ImageIndicator]
+  QG+NCIC   [PENDING]  keyReference: QGNCICNumber       set: [NCICNumber]       any: [GunMake, ImageIndicator]
+  QG+PCN    [PENDING]  keyReference: QGProcessControlNumber  set: [ProcessControlNumber]  any: [GunMake, ImageIndicator]
 
 ================================================================================
-7. ArticleSingleQuery -- Article Entity
+6. ArticleSingleQuery -- Article Entity
 ================================================================================
 
-  QIDM: FL_FCIC_ArticleSingleQuery (4 combos)
+  QIDM: FL_FCIC_ArticleSingleQuery (4 combos, already devdoc order)
   QIF:  Article
-  Fields: SerialNumber, ArticleTypeCode (CA_CLETS), OwnerAppliedNumber,
+  Fields: SerialNumber, ArticleTypeCode (CA_CLETS source), OwnerAppliedNumber,
           NCICNumber, PCN, ImageIndicator(N)
 
-  QA+Serial -- NCIC Article (Serial + Type) [CONFIRMED]
-    keyReference: QAArticleSerialNumber
-    set: [ArticleSerialNumber, ArticleTypeCode]
-    any: [ImageIndicator]
-
-  QA+Owner -- NCIC Article (Owner Applied Number) [CONFIRMED]
-    keyReference: QAOwnerAppliedNumber
-    set: [ArticleTypeCode, OwnerAppliedNumber]
-    any: [ImageIndicator]
-
-  QA+NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
-    keyReference: QANCICNumber
-    set: [NCICNumber]
-    any: [ImageIndicator]
-
-  QA+PCN -- NCIC Article (Process Control Number) [CONFIRMED]
-    keyReference: QAProcessControlNumber
-    set: [ProcessControlNumber]
-    any: [ImageIndicator]
+  QA+Serial [PENDING]  keyReference: QAArticleSerialNumber  set: [ArticleSerialNumber, ArticleTypeCode]  any: [ImageIndicator]
+  QA+Owner  [PENDING]  keyReference: QAOwnerAppliedNumber   set: [ArticleTypeCode, OwnerAppliedNumber]   any: [ImageIndicator]
+  QA+NCIC   [PENDING]  keyReference: QANCICNumber           set: [NCICNumber]                            any: [ImageIndicator]
+  QA+PCN    [PENDING]  keyReference: QAProcessControlNumber set: [ProcessControlNumber]                  any: [ImageIndicator]
 
 ================================================================================
-8. BoatQuery -- Boat Entity
+7. BoatQuery -- Boat Entity
 ================================================================================
 
-  QIDM: FL_FCIC_BoatQuery (9 active combos; 3 Nlets BQ combos removed v4.4-v4.5)
+  QIDM: FL_FCIC_BoatQuery (12 combos, devdoc order; BQ x3 RESTORED v4.7)
   QIF:  Boat
-  Fields: RegNumber, HullId, RegistrationState(no default), Decal, TitleLien,
-          CoastGuardDocumentNumber, NCICNumber, PCN, ImageIndicator(N),
-          RelatedHitSearchIndicator (Stolen Search, Y=NCIC stolen)
+  Fields: HullId, RegNumber, CoastGuardDoc#, Decal, TitleLien, NCICNumber, PCN,
+          Owner Last/First (OOS), Owner DOB (OOS), Destination State (no default),
+          Stolen Search (no default), ImageIndicator(N)
 
-  BQ+Name -- Nlets Boat (Name+DOB+State) [REMOVED v4.5]
-    keyReference: BQName
-    Reason: Not in devdoc "Basic Queries Supported". XML metadata has this combo
-    but devdoc authority excludes it. audit_metadata CHECK 4 shows INFO for
-    BirthDate/Name/State not covered (expected -- intentional exclusion).
-    LIMITATION: metadata defines this path; devdoc does not authorize it.
+  FBQ+Hull  [PENDING]  keyReference: FBQBoatHullIdNumber
+    set: [BoatHullIdNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EQUALS Y
+  FBQ+Decal [PENDING]  keyReference: FBQDecalNumber
+    set: [DecalNumber]  conditions: registrationState NOT_EXISTS
+  FBQ+Reg   [PENDING]  keyReference: FBQRegistrationNumber
+    set: [RegistrationNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EQUALS Y
+  FBQ+TitleLien [PENDING]  keyReference: FBQTitleLienInformation
+    set: [TitleLienInformation]  conditions: registrationState NOT_EXISTS
 
-  BQ+Hull -- Nlets Boat (Hull+State) [REMOVED v4.4]
-    keyReference: BQBoatHullIdNumber
-    Reason: Replaced by FBQ+Hull (FL-only) + QB+Hull routing via RelatedHitSearchIndicator.
+  QB+Hull   [PENDING]  keyReference: QBBoatHullIdNumber
+    set: [BoatHullIdNumber, RelatedHitSearchIndicator]  conditions: relatedHitSearchIndicator EQUALS Y
+  QB+CoastGuard [PENDING]  keyReference: QBCoastGuardDocumentNumber  set: [CoastGuardDocumentNumber]
+  QB+NCIC   [PENDING]  keyReference: QBNCICNumber  set: [NCICNumber]
+  QB+PCN    [PENDING]  keyReference: QBProcessControlNumber  set: [ProcessControlNumber]
+  QB+Reg    [PENDING]  keyReference: QBRegistrationNumber
+    set: [RegistrationNumber, RelatedHitSearchIndicator]  conditions: relatedHitSearchIndicator EQUALS Y
 
-  BQ+Reg -- Nlets Boat (Registration+State) [REMOVED v4.4]
-    keyReference: BQRegistrationNumber
-    Reason: Replaced by FBQ+Reg (FL-only) + QB+Reg routing via RelatedHitSearchIndicator.
+  BQ+Name   [PENDING]  keyReference: BQName  -- RESTORED v4.7
+    set: [BirthDate, NameLast, NameFirst, RegistrationState]  any: [BoatHullIdNumber, RegistrationNumber]
+    conditions: registrationState NOT_EQUALS FL
+  BQ+Hull   [PENDING]  keyReference: BQBoatHullIdNumber  -- RESTORED v4.7
+    set: [BoatHullIdNumber, RegistrationState]  any: [RegistrationNumber]
+    conditions: registrationState NOT_EQUALS FL
+  BQ+Reg    [PENDING]  keyReference: BQRegistrationNumber  -- RESTORED v4.7
+    set: [RegistrationNumber, RegistrationState]  any: [BoatHullIdNumber]
+    conditions: registrationState NOT_EQUALS FL
 
-  FBQ+Hull -- FL FCIC Boat (Hull ID) [CONFIRMED]
-    keyReference: FBQBoatHullIdNumber
-    set: [BoatHullIdNumber]
-    any: [DecalNumber, RegistrationNumber, TitleLienInformation]
-
-  FBQ+Reg -- FL FCIC Boat (Registration) [CONFIRMED]
-    keyReference: FBQRegistrationNumber
-    set: [RegistrationNumber]
-    any: [BoatHullIdNumber, DecalNumber, TitleLienInformation]
-
-  FBQ+Decal -- FL FCIC Boat (Decal) [CONFIRMED]
-    keyReference: FBQDecalNumber
-    set: [DecalNumber]
-    any: [BoatHullIdNumber, RegistrationNumber, TitleLienInformation]
-
-  FBQ+TitleLien -- FL FCIC Boat (Title/Lien) [CONFIRMED]
-    keyReference: FBQTitleLienInformation
-    set: [TitleLienInformation]
-    any: [BoatHullIdNumber, DecalNumber, RegistrationNumber]
-
-  QB+CoastGuard -- NCIC Boat (Coast Guard Document) [CONFIRMED]
-    keyReference: QBCoastGuardDocumentNumber
-    set: [CoastGuardDocumentNumber]
-    any: [ImageIndicator]
-
-  QB+Hull -- NCIC Stolen Boat (Hull) [CONFIRMED]
-    keyReference: QBBoatHullIdNumber
-    set: [BoatHullIdNumber, RelatedHitSearchIndicator]
-    any: [ImageIndicator, RegistrationNumber]
-    Routing: Officer types Y in "Stolen Search" to route to NCIC stolen.
-    Ordered BEFORE FBQ+Hull so RelatedHitSearchIndicator in set[] differentiates.
-    Fixed 2026-05-05 via FL-8 (RelatedHitSearchIndicator routing).
-
-  QB+Reg -- NCIC Stolen Boat (Registration) [CONFIRMED]
-    keyReference: QBRegistrationNumber
-    set: [RegistrationNumber, RelatedHitSearchIndicator]
-    any: [ImageIndicator, BoatHullIdNumber]
-    Routing: Same as QB+Hull. Stolen Search=Y routes to NCIC stolen.
-    Fixed 2026-05-05 via FL-8.
-
-  QB+NCIC -- NCIC Boat (NCIC Number) [CONFIRMED]
-    keyReference: QBNCICNumber
-    set: [NCICNumber]
-    any: [ImageIndicator]
-
-  QB+PCN -- NCIC Boat (Process Control Number) [CONFIRMED]
-    keyReference: QBProcessControlNumber
-    set: [ProcessControlNumber]
-    any: [ImageIndicator]
-
-  Combo priority: QB+Hull/Reg (stolen flag via RelatedHitSearchIndicator) > FBQ (FL-only) > QB unique fields.
-  All 9 active combos reachable. BQ Nlets combos removed v4.4-v4.5. RelatedHitSearchIndicator routing (FL-8) resolved
-  the QB+Hull/QB+Reg unreachable limitation. Officer types Y in "Stolen Search"
-  to route to NCIC stolen; blank defaults to FL registration (FBQ).
-  Co-fire not possible (single BoatQuery QIDM). Two submissions needed for
-  both registration and stolen results.
+  Routing: blank State + blank Stolen -> FBQ (devdoc 1-4). Stolen=Y -> QB
+  (devdoc 5-9). State filled (non-FL) -> BQ Nlets OOS (devdoc 10-12).
+  RESTORE RATIONALE: devdoc Boat "Possible Combinations" 10-12 ARE the BQ paths
+  and BQ is not data-mined; the v4.4 removal cited a devdoc key list that does
+  not exist. ASSUMPTION: BQ destination must be non-FL (mirrors FCIC KQ rule) --
+  pending FCIC confirmation; guard trivially removable.
 
 ================================================================================
-RMS BUNDLE (Patched from HIDLE)
+8. ImageQuery -- [APPROVED SKIP]
 ================================================================================
 
-  RMS Vehicle QIDM (confirmed)
-    Patch 1: RegistrationState in licensePlateIn any[]
-    Patch 6: Removed OOS + Owner attrs/combos
-    Patch 7: autoSelect=true
+  In devdoc Basic Queries Supported (6 combos) but excluded by user PHASE 2
+  scope (6-query build). Recorded 2026-06-12.
 
-  RMS Person QIDM (confirmed)
-    Patch 3: registrationState attr (useAttributeId=true)
-    Patch 6: Removed SSN + OOS attrs/combos
-    Patch 7: autoSelect=true (confirmed)
+================================================================================
+RMS BUNDLE (KB specs via _build_rms_bundle.ps1)
+================================================================================
+
+  RMS Vehicle QIDM: stripped to 3 attrs (VIN/plate/state), autoSelect=true
+  RMS Person QIDM:  registrationState attr (useAttributeId=true), autoSelect=true
 
 ================================================================================
 SUMMARY
 ================================================================================
 
   Architecture: 6 CommSys QIDMs + 2 RMS QIDMs
-  Total CommSys combos: 28 (6+2+4+2+3+4+7)  -- 3 Nlets BQ removed v4.4-v4.5; 2 WantedPerson removed v4.2
-  Total RMS combos: ~8 (after Patch 6 cleanup)
-  CONFIRMED: 28 CommSys + 2 RMS (all active combos confirmed)
-  [REMOVED]: WantedPersonQuery (2 combos) -- CommSys auto-sends QW (v4.2)
-  [REMOVED]: BQ+Name, BQ+Hull, BQ+Reg (3 Nlets boat combos) -- v4.4-v4.5 (see Boat section)
-  [LIMITATION]: BQ+Name in XML metadata but excluded per devdoc (Basic Queries Supported does not list boat-name search for FL)
-  [LIMITATION]: QB+Hull/QB+Reg routing RESOLVED via FL-8 (RelatedHitSearchIndicator in set[], 2026-05-05)
-  PENDING: 0
-  Live test: BASE 21 PASS / MC 47+13 PASS / 0 FAIL (2026-05-05)
-
-  v3.0 resolved:
-  - LIMITATION #2: Separate query types (VehicleStolenQuery, WantedPersonQuery)
-  - 7 validator failures from v2.x: BOM, bundle order, QIDM splits
-  - Split QIDM design: 25 QIDMs -> 8 merged QIDMs with invented keyReferences
-  - Attention in combos: removed from any[] (handler-only)
-  - RMS Vehicle autoSelect: added (Patch 7)
+  Total CommSys combos: 31 (6+4+2+3+4+12)
+  [PENDING]: all 31 -- v4.7 rebuild restarts live testing from T1
+  [PENDING-CONFIRMATION]: QV x2 (data-mined auto-send hypothesis)
+  [APPROVED SKIP]: WantedPersonQuery (QW, CommSys auto-send, platform-confirmed)
+  [APPROVED SKIP]: ImageQuery (user PHASE 2 scope)
+  [ASSUMPTION]: BQ destination NOT_EQUALS FL (pending FCIC confirmation)
+  Simulator verification (2026-06-12): full scenario sweep PASS -- DL over-send
+  fixed, DH OOS-only enforced, Vehicle/Boat devdoc-order routing correct,
+  negatives (DH State=FL/blank, Boat State=FL) fire nothing. Conductor 42/42.
+  Live test requirements: response XML capture MANDATORY; KQ/BQ tests use a real
+  non-FL destination; negative test DH State=FL must not send.

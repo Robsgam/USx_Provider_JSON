@@ -797,6 +797,50 @@ See also:
     TX_TLETS v2.5: Vehicle(3 cards), Person(2 cards)
     HI_HCJDC_OFML v1.6: Vehicle(3 cards), Person(2 cards)
 
+  DEVDOC-ORDER COMBOS + ROUTING CONDITIONS (standard as of FL v4.7, 2026-06-12):
+    USER DIRECTIVE: combo array order follows the devdoc "Possible Combinations"
+    listing order in EVERY QIDM. Devdocs list in-state combos first, so under
+    first-match evaluation the in-state combos must carry routing conditions or
+    later OOS/stolen combos become unreachable:
+      - In-state (FRQ/FBQ/FDQ-style) combos: conditions State NOT_EXISTS
+      - Stolen-toggle counterparts (FBQ Hull/Reg vs QB): additionally
+        RelatedHitSearchIndicator NOT_EQUALS Y
+      - Name combos in OLN+Name families: OperatorLicenseNumber NOT_EXISTS
+        (the over-send fix: a fired combo serializes the union pool of all
+        condition-matched combos -- LIMITATION #1 -- so failing the Name combos'
+        conditions when OLN is filled removes Name/DOB/Sex from the XML)
+    Conditions both route firing AND filter the serialization pool. Verified via
+    test_commsys scenario sweep (conditions-aware since 2026-06-12) on FL v4.7.
+    Validator G-16 understands this: it only flags an earlier UNCONDITIONED combo
+    whose set[] is a subset of a later combo's set[] (true shadowing).
+
+  OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
+    When the provider/state switch documents a query as out-of-state only with a
+    required destination (FL KQ per FCIC: "destination ... must be something
+    other than FL"):
+      - Destination state goes in set[] (mandatory, officer must pick)
+      - NO initialValue and NO CAD combo defaults (a destination cannot be
+        defaulted; home state is an INVALID value)
+      - conditions State NOT_EQUALS <home state> on every combo in the family
+      - Card title hint ("... (Out-of-State Only)") + field label
+        "Destination State"
+      - CAD dispatch cannot supply a destination -> the family never auto-fires
+        from CAD. This is correct, not a gap.
+
+  DEVDOC "Data-Mined Transactions" SECTION (PROVISIONAL, pending platform
+  confirmation 2026-06): the page-1 list (FL: "NCIC (QA, QB, QG, QV, QW) and DMV
+  (Person and Vehicle)") is believed to enumerate CommSys auto-sent SECONDARY
+  queries. Precedent: FL QW removal v4.2 was platform-confirmed ("CommSys
+  auto-sends QW") and QW is in that list. Implication: a key appearing in this
+  list may not need a JSON-side QIDM even when devdoc Basic combos exist for it
+  (FL QV pending). Do NOT treat the list as build scope in either direction
+  until the platform confirms the semantics.
+
+  DEVDOCS CONTAIN NO KEY MNEMONICS: never justify building/skipping by a devdoc
+  "key list" -- FL's devdoc has ZERO occurrences of FBQ/BQ/KQ/FDQ/RQ/DQ. Key
+  mnemonics exist only in metadata MessageKey definitions. The devdoc "Possible
+  Combinations" are the build authority (FL v4.4 misread cost 5 combos).
+
 ================================================================================
 12. CAD DEFAULTS -- COMBINATION-LEVEL DEFAULT VALUES
 ================================================================================

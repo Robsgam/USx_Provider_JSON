@@ -25,6 +25,12 @@ All JSON versions produced for this provider.
 | v3.1-v4.2 | Pre-merge BASE/MC snapshots. Deleted 2026-06-03. Available in git history. |
 | v1.0-v2.6 | Pre-v3.0 rebuild iterations. Archive folder deleted 2026-06-03. |
 
+
+## v4.7 (2026-06-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC.json | v4.7 | Current | 92P/0F/0W/3LIM. |
 ## v4.6 (2026-06-03)
 
 | File | Version | Status | Notes |

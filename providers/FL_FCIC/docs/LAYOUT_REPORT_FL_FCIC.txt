@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-12 13:40
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -12,14 +12,14 @@ QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=2 fields=6
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
-  Boat | entity=Boat | qidm= | cards=2 fields=7
+  Boat | entity=Boat | qidm= | cards=2 fields=9
 QIDMs: 6
   FL_FCIC_VehicleRegistrationQuery | attrs=10 combos=6 autoSelect=
   FL_FCIC_DriverLicenseQuery | attrs=6 combos=4 autoSelect=True
   FL_FCIC_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   FL_FCIC_GunQuery | attrs=5 combos=3 autoSelect=
   FL_FCIC_ArticleSingleQuery | attrs=6 combos=4 autoSelect=
-  FL_FCIC_BoatQuery | attrs=9 combos=9 autoSelect=
+  FL_FCIC_BoatQuery | attrs=12 combos=12 autoSelect=
 
 
 LAYOUT DETAIL
@@ -104,7 +104,8 @@ LAYOUT DETAIL
   name=ENTITY_Boat | entity=Boat | qidm=
   [default]
     CARD "CARD_BOA_OPT"
-      ROW ROW_BOA_O1 [6 6]
+      ROW ROW_BOA_O1 [4 4 4]
+        registrationState (Dropdown | attributeTypeId=STATE)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
         imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
     CARD "CARD_BOA_SEARCH"
@@ -117,6 +118,10 @@ LAYOUT DETAIL
         titleLienInformation (Text | maxLen=8)
         ncicNumber (Text | maxLen=10)
         processControlNumber (Text | maxLen=10)
+      ROW ROW_BOA_3 [4 4 4]
+        nameLast (Text | maxLen=30)
+        nameFirst (Text | maxLen=30)
+        birthDate (FormDate)
 
 === RMS QIDMs ===
   RMS Person Search query

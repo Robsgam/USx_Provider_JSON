@@ -4,6 +4,9 @@
   and shows the XML that would be sent to CommSys for each query path.
 
   Usage: .\test_commsys.ps1 -Path <provider.json> [-Entity <name>] [-Combo <keyRef>]
+                            [-Override @{ FieldId='value'; OtherField='' }]
+  -Override: scenario data overlay applied to every entity's test data.
+             Empty string value REMOVES the field (simulates blank form field).
 #>
 
 param(
@@ -11,7 +14,8 @@ param(
     [string]$Path,
     [string]$Entity,
     [string]$Combo,
-    [string]$OutFile
+    [string]$OutFile,
+    [hashtable]$Override
 )
 
 $ErrorActionPreference = "Stop"
@@ -170,6 +174,23 @@ $testData["Boat"] = @{
     dexStateUserId                = "BADGE"
 }
 
+# ── Apply -Override scenario overlay (empty string removes the field) ──
+if ($Override) {
+    foreach ($entKey in @($testData.Keys)) {
+        foreach ($k in $Override.Keys) {
+            if ([string]::IsNullOrEmpty([string]$Override[$k])) {
+                $testData[$entKey].Remove($k)
+            } else {
+                $testData[$entKey][$k] = $Override[$k]
+            }
+        }
+    }
+    $ovDesc = ($Override.GetEnumerator() | ForEach-Object {
+        if ([string]::IsNullOrEmpty([string]$_.Value)) { "$($_.Key)=(removed)" } else { "$($_.Key)=$($_.Value)" }
+    }) -join ', '
+    Write-Host "  Override applied: $ovDesc" -ForegroundColor DarkYellow
+}
+
 # ── Rule handler simulation ──
 function Invoke-RuleHandler($ruleFunction, $ruleArgs, $val, $allValues) {
     switch ($ruleFunction) {
@@ -280,6 +301,57 @@ function Get-FilledRefs($qidm, $formData) {
     return ($filled | Select-Object -Unique)
 }
 
+# ── Evaluate combo conditions (server-side AND logic) ──
+# Conditions may live at combo level (FL style) or inside requirements (NY/CA style).
+# Condition fields may be fieldIds (FL) or QIDM attribute names (NY/CA/KB) -- both resolved.
+# Operators per QIDM_REFERENCE Section 2a. EXCLUSIVE is UI-only -- always passes here.
+function Test-ComboConditions($qidm, $combo, $formData) {
+    $conds = @()
+    if ($combo.conditions) { $conds += @($combo.conditions) }
+    if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
+    $result = @{ ok = $true; failures = @() }
+    if ($conds.Count -eq 0) { return $result }
+
+    foreach ($cond in $conds) {
+        $op = "$($cond.operator)".ToUpperInvariant()
+        if ($op -eq 'EXCLUSIVE') { continue }
+
+        # @() wraps scalars AND preserves arrays; assigning from an if-expression would
+        # unroll a single-element array to a scalar (then [0] indexes a char) -- avoid.
+        $fields = @($cond.field)
+        $values = @()
+        if ($null -ne $cond.value) { $values = @($cond.value) }
+
+        foreach ($f in $fields) {
+            # Resolve field value: direct fieldId, else attribute name -> sourceFields
+            $val = $null
+            if ($formData.ContainsKey($f)) { $val = $formData[$f] }
+            else {
+                $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
+                if ($attr) { $val = Get-AttrValue $attr $formData }
+            }
+            $present = -not [string]::IsNullOrWhiteSpace("$val")
+
+            $pass = switch ($op) {
+                'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
+                'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
+                'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
+                'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
+                'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
+                'EXISTS'     { $present }
+                'NOT_EXISTS' { -not $present }
+                default      { $true }
+            }
+            if (-not $pass) {
+                $result.ok = $false
+                $shown = if ($present) { "'$val'" } else { '(blank)' }
+                $result.failures += "$f $op $($values -join ',') [value=$shown]"
+            }
+        }
+    }
+    return $result
+}
+
 # ── Build XML ──
 # Only includes attributes whose sourceFields/name are in this combo's set[]+any[].
 # This produces the combo-accurate query — not every field in testData.
@@ -348,6 +420,7 @@ foreach ($qidm in $qidms) {
     }
 
     $filledNames = Get-FilledRefs $qidm $formData
+    $firstMatch = $null
 
     foreach ($c in $qidm.combinations) {
         $kr = $c.keyReference
@@ -365,20 +438,24 @@ foreach ($qidm in $qidms) {
             if ($filledNames -notcontains $f) { $setOk = $false; $missing += $f }
         }
 
-        $anyOk = $true
+        # any[] does NOT gate firing (QIDM_REFERENCE Section 3; live-confirmed FL v4.6 KQ
+        # fired with zero any[] filled) -- it scopes serialization only. Matched list is
+        # informational. Sole exception: a combo with EMPTY set[] still needs >=1 any[]
+        # filled, else it would fire on a blank form.
         $matched = @()
-        if ($anyFields.Count -gt 0) {
-            $anyOk = $false
-            foreach ($f in $anyFields) {
-                if ($filledNames -contains $f) { $anyOk = $true; $matched += $f }
-            }
+        foreach ($f in $anyFields) {
+            if ($filledNames -contains $f) { $matched += $f }
         }
+        $anyOk = $true
+        if ($setFields.Count -eq 0 -and $anyFields.Count -gt 0) { $anyOk = ($matched.Count -gt 0) }
 
-        $fires = $setOk -and $anyOk
+        $condResult = Test-ComboConditions $qidm $c $formData
+        $fires = $setOk -and $anyOk -and $condResult.ok
 
         if ($fires) {
+            $marker = if (-not $firstMatch) { $firstMatch = $kr; '[FIRES first-match]' } else { '[FIRES shadowed -- first match above wins]' }
             Write-Host ""
-            Write-Host "    [FIRES] $kr" -ForegroundColor Green
+            Write-Host "    $marker $kr" -ForegroundColor Green
             Write-Host "      set: [$($setFields -join ', ')]" -ForegroundColor Gray
             if ($anyFields.Count -gt 0) {
                 Write-Host "      any: [$($anyFields -join ', ')] -> matched: [$($matched -join ', ')]" -ForegroundColor Gray
@@ -394,8 +471,13 @@ foreach ($qidm in $qidms) {
             $reason = ""
             if (-not $setOk) { $reason = "missing set: $($missing -join ', ')" }
             elseif (-not $anyOk) { $reason = "no any[] match" }
+            else { $reason = "conditions failed: $($condResult.failures -join '; ')" }
             Write-Host "    [SKIP] $kr -- $reason" -ForegroundColor DarkGray
         }
+    }
+    if ($firstMatch) {
+        Write-Host ""
+        Write-Host "    >> PLATFORM FIRES: $firstMatch (first matching combo)" -ForegroundColor Magenta
     }
 }
 
@@ -434,13 +516,14 @@ if ($OutFile) {
             $anyFields = @()
             if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
 
+            $allConds = @()
+            if ($c.conditions) { $allConds += @($c.conditions) }
+            if ($c.requirements -and $c.requirements.conditions) { $allConds += @($c.requirements.conditions) }
             $condFields = @()
-            if ($c.requirements -and $c.requirements.conditions) {
-                foreach ($cond in $c.requirements.conditions) {
-                    $flds = if ($cond.field -is [System.Array]) { $cond.field -join ',' } else { $cond.field }
-                    $vals = if ($cond.value -is [System.Array]) { $cond.value -join ',' } else { $cond.value }
-                    $condFields += "  condition: $flds $($cond.operator) $vals"
-                }
+            foreach ($cond in $allConds) {
+                $flds = if ($cond.field -is [System.Array]) { $cond.field -join ',' } else { $cond.field }
+                $vals = if ($cond.value -is [System.Array]) { $cond.value -join ',' } else { $cond.value }
+                $condFields += "  condition: $flds $($cond.operator) $vals"
             }
 
             $setOk = $true
@@ -449,16 +532,16 @@ if ($OutFile) {
                 if ($filledNames -notcontains $f) { $setOk = $false; $missing += $f }
             }
 
-            $anyOk = $true
+            # any[] does NOT gate firing (QIDM_REFERENCE Section 3) -- serialization scope only.
             $matched = @()
-            if ($anyFields.Count -gt 0) {
-                $anyOk = $false
-                foreach ($f in $anyFields) {
-                    if ($filledNames -contains $f) { $anyOk = $true; $matched += $f }
-                }
+            foreach ($f in $anyFields) {
+                if ($filledNames -contains $f) { $matched += $f }
             }
+            $anyOk = $true
+            if ($setFields.Count -eq 0 -and $anyFields.Count -gt 0) { $anyOk = ($matched.Count -gt 0) }
 
-            $fires = $setOk -and $anyOk
+            $condResult = Test-ComboConditions $qidm $c $formData
+            $fires = $setOk -and $anyOk -and $condResult.ok
 
             [void]$sb.AppendLine("")
             if ($fires) {
@@ -467,6 +550,7 @@ if ($OutFile) {
                 $reason = ""
                 if (-not $setOk) { $reason = "missing set: $($missing -join ', ')" }
                 elseif (-not $anyOk) { $reason = "no any[] match" }
+                else { $reason = "conditions failed: $($condResult.failures -join '; ')" }
                 [void]$sb.AppendLine("  [SKIP] $kr -- $reason")
             }
             [void]$sb.AppendLine("    REQUIRED (set): [$($setFields -join ', ')]")
