@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. GAP (2026-06-08): DL SexCode-primary combo missing (metadata DQ primaryFieldReference=SexCode has no JSON combo -- add on rebuild) |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v4.6 |  | 87P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible |
+| 5 | FL_FCIC | v4.6 |  | 87P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, QW removed, 7 QIDMs/33 combos, Attention visible. GAP (2026-06-12): QV x2 (VehicleRegistrationQuery combos 5-6) and BQ x3 (BoatQuery combos 10-12) are in devdoc Basic Queries Supported but unbuilt -- v4.4 removed them citing a devdoc key list that does not exist (devdoc has no key mnemonics; combos are the authority). Restore in v4.7 |
 | 6 | TX_TLETS | v3.3 |  | 86P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
@@ -32,6 +32,37 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 19 | TX_TLETS_CCH | v1.0 |  | 119P/0F/0W/0LIM | 0 | STUB 2026-06-09: separate CCH-gated provider, 6 base QIDMs (ported TX_TLETS) + 8 CCH transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR), CCH-suffixed fields, autoSelect=false named-checkbox, FreeText capped, CCH response QRDM out of scope, NOT live-tested |
 
 **CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). Incomplete — awaiting updated devdoc/metadata decision.
+
+## Residual UNBUILT Verification (2026-06-12)
+
+extract_metadata_reference.ps1 phantom-UNBUILT bug fixed 2026-06-12 (synthetic
+keyRef matching). Remaining UNBUILT rows in each METADATA_REFERENCE.txt are now
+genuine non-matches: a mix of documented approved skips, LIMITATION #21/#36
+collapses, and possible real gaps. FL_FCIC verification found 5 of its 7 were
+REAL GAPS misclassified as skips (QV x2, BQ x3 — see FL row above), so treat
+every residual row as a gap until proven otherwise against the devdoc
+"Basic Queries Supported" combos (NOT key mnemonics — devdocs may not contain
+key lists; the v4.4 FL misread cited one that does not exist).
+
+ACTION at each provider's next rebuild: classify every UNBUILT row in its
+METADATA_REFERENCE as BUILT-VARIANT / APPROVED-SKIP (cite devdoc+BUILD_NOTES) /
+REAL-GAP (build it). One provider at a time — do not mass-sweep.
+
+| Provider | Residual UNBUILT rows |
+|---|---|
+| CA_VENTURA_COUNTY | 20 |
+| CA_eSUN | 10 (re-check against NEW 2026-06-12 source) |
+| NJ_NJCJIS | 9 (4 expected: LIMITATION #21 RandomRequest collapse) |
+| FL_FCIC | 7 (verified 2026-06-12: QV x2 + BQ x3 REAL GAPS; QW x2 approved skip) |
+| CA_CLETS_OCATS | 6 |
+| CA_SAN_LUIS_OBISPO | 4 |
+| OH_LEADS | 3 |
+| TX_TLETS | 3 |
+| TX_TLETS_CCH | 3 |
+| HI_HCJDC_OFML | 2 (1 known: DL SexCode-primary combo, see row 2) |
+| MD_METERS | 1 (known: Gun GunMake-primary combo, see row 14) |
+| NM_NMLETS_OFML | 1 |
+| AZ, CA_CLETS, CA_CONTRA_COSTA, IL, LA, NY, OR, TN | 0 |
 
 ## What Was Fixed (2026-05-08 through 2026-05-11)
 
