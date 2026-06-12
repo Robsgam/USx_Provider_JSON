@@ -389,3 +389,4 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   ----------  ----------  -------------------  --------  -----
   ---   2026-06-12 Person     DH:KQOperatorLicenseNumber FAIL     DH negative lowercase fl SENT + union pool over-send (Name/DOB/Sex beyond firing combo)
   ---   2026-06-12 Person     DH:KQOperatorLicenseNumber FAIL     T-A: DH OLN + State=FL EXACT UPPERCASE -> SENT. Case-sensitivity eliminated; value-comparison conditions wholly inert on USx RMS client. FL-gate not buildable with conditions.
+  ---   2026-06-12 Person     DH:KQName-pooling    FAIL     T-B: full DH card + State=GA -> KQ sent (legal) but Name/DOB/Sex POOLED despite KQName OLN NOT_EXISTS. Confirms value-comparison poisons entire conditions array incl NOT_EXISTS members.
