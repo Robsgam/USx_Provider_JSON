@@ -1,7 +1,7 @@
-﻿NJ_NJCJIS METADATA REFERENCE
-=============================
-Generated: 2026-06-09
-Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS.json
+﻿NJ_NJCJIS_PASCAL METADATA REFERENCE
+====================================
+Generated: 2026-06-12
+Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_PASCAL.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -19,7 +19,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   ImageIndicator
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[articleSerialNumber, articleTypeCode]
+  BUILT   QA             set[ArticleSerialNumber, ArticleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 1)
@@ -37,8 +37,8 @@ METADATA COMBINATIONS (2 total):
   QB            BoatHullIdNumber        BoatHullIdNumber                                       ImageIndicator
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   QB             set[registrationNumber]
-  BUILT   QBN            set[boatHullIdNumber]
+  BUILT   QB             set[RegistrationNumber]
+  BUILT   QBN            set[BoatHullIdNumber]
 
 ================================================================================
 3. DriverLicenseQuery (version 1)
@@ -59,8 +59,8 @@ METADATA COMBINATIONS (2 total):
   FULL          OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   DQ             set[birthDate, nameLast, nameFirst]
-  BUILT   DQN            set[operatorLicenseNumber, registrationState]
+  BUILT   DQ             set[BirthDate, NameLast, NameFirst]
+  BUILT   DQN            set[OperatorLicenseNumber, RegistrationState]
   UNBUILT FULL           Name
   UNBUILT FULL           OperatorLicenseNumber
 
@@ -81,7 +81,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake, GunMod...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[gunSerialNumber]
+  BUILT   QG             set[GunSerialNumber]
 
 ================================================================================
 5. VehicleRegistrationQuery (version 1)
@@ -105,10 +105,10 @@ METADATA COMBINATIONS (4 total):
   FULL          VehicleIdentificationNumber  VehicleIdentificationNumber, State, RandomRequest      ImageIndicator
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   RQ_RAND        set[licensePlateNumber]
-  BUILT   RQ             set[licensePlateNumber]
-  BUILT   RQN_RAND       set[vehicleIdentificationNumber]
-  BUILT   RQN            set[vehicleIdentificationNumber]
+  BUILT   RQ_RAND        set[LicensePlateNumber]
+  BUILT   RQ             set[LicensePlateNumber]
+  BUILT   RQN_RAND       set[VehicleIdentificationNumber]
+  BUILT   RQN            set[VehicleIdentificationNumber]
   UNBUILT RAND           LicensePlateNumber
   UNBUILT RAND           VehicleIdentificationNumber
   UNBUILT FULL           LicensePlateNumber
@@ -134,9 +134,9 @@ METADATA COMBINATIONS (3 total):
   QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, VehicleMake...
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   QVN            set[ncicNumber]
-  BUILT   QVP            set[licensePlateNumber]
-  BUILT   QVV            set[vehicleIdentificationNumber]
+  BUILT   QVN            set[NCICNumber]
+  BUILT   QVP            set[LicensePlateNumber]
+  BUILT   QVV            set[VehicleIdentificationNumber]
   UNBUILT QV             NCICNumber
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber

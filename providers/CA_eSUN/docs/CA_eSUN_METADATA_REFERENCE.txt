@@ -1,8 +1,8 @@
 ﻿CA_eSUN METADATA REFERENCE
 ===========================
-Generated: 2026-06-08
+Generated: 2026-06-12
 Source: CA_eSUN.xml (metadata) + CA_eSUN_MC.json
-Metadata: 64 total transactions, 6 queries built in JSON
+Metadata: 63 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
   Values: C (Criminal Justice), I (Immigration Enforcement), U (Title 8 violations)
@@ -89,7 +89,8 @@ BUILD COVERAGE (4 of 4 built):
 4. DriverLicenseQuery (version 11)
 ================================================================================
 
-METADATA FIELDS (6):
+METADATA FIELDS (7):
+  Age                   Alphabetic    maxLen= 2  Age
   BirthDate             Date          maxLen=10  Birth Date
   CaRequestPurposeCode  Alphabetic    maxLen= 1  CA Request Purpose Code
   Name                  Name          maxLen=30  Name
@@ -104,7 +105,7 @@ METADATA COMBINATIONS (6 total):
   L1            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
   DQ            Name                    CaRequestPurposeCode, SexCode, BirthDate, Name         State
   DQ            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            State
-  QW            Name                    CaRequestPurposeCode, BirthDate, Name                  SexCode
+  QW            Name                    CaRequestPurposeCode, BirthDate, Name                  Age, SexCode
   QW            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
 
 BUILD COVERAGE (4 of 6 built):
@@ -144,10 +145,9 @@ BUILD COVERAGE (2 of 2 built):
 6. VehicleRegistrationQuery (version 13)
 ================================================================================
 
-METADATA FIELDS (12):
+METADATA FIELDS (11):
   AddressCity                 Alphanumeric  maxLen=13  Address City
   AddressStreetNumber         Alphanumeric  maxLen= 3  Address Street Number
-  BirthDate                   Date          maxLen=10  Birth Date
   CaRequestPurposeCode        Alphabetic    maxLen= 1  CA Request Purpose Code
   LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
   LicensePlateTypeCode        Alphanumeric  maxLen= 2  License Plate Type Code
@@ -158,7 +158,7 @@ METADATA FIELDS (12):
   VehicleMakeCode             Alphanumeric  maxLen= 4  Vehicle Make Code
   VehicleYear                 Year          maxLen= 4  Vehicle Year
 
-METADATA COMBINATIONS (8 total):
+METADATA COMBINATIONS (7 total):
   KeyRef      Primary                 Set                                                    Any
   ------------  ----------------------  -----------------------------------------------------  ------------------------------
   QV            LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               --
@@ -167,10 +167,9 @@ METADATA COMBINATIONS (8 total):
   4V            VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      VehicleMakeCode, VehicleYear
   RQ            LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  State
   RQ            VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      State, VehicleMakeCode, Veh...
-  VP            BirthDate               CaRequestPurposeCode, Name, BirthDate                  --
   VP            Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
-BUILD COVERAGE (6 of 8 built):
+BUILD COVERAGE (6 of 7 built):
   BUILT   RQ.P           set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
   BUILT   VP.D           set[CaRequestPurposeCode, VehNameLast, VehNameFirst, VehBirthDate]
   BUILT   RQ.V           set[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
@@ -191,9 +190,9 @@ BUILD SUMMARY
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
   DriverLicenseQuery                         6      4     2  67%
   GunQuery                                   2      2     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   8      6     2  75%
+  VehicleRegistrationQuery                   7      6     1  86%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   27     19     8  70%
+  TOTAL                                   26     19     7  73%
 
 ================================================================================
 UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)
@@ -211,7 +210,7 @@ UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)
   4V             VehicleIdentificationNumber (VehicleRegistrationQuery)
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (58 of 64 in metadata)
+ALL UNBUILT TRANSACTIONS (57 of 63 in metadata)
 ================================================================================
 
   BELicensePlateEntry                      v9    1 combos
@@ -239,7 +238,6 @@ ALL UNBUILT TRANSACTIONS (58 of 64 in metadata)
   CCHCriminalHistoryQRQuery                v8    2 combos
   CCHCriminalHistoryZRQuery                v7    2 combos
   DriverLicenseOnlyQuery                   v7    4 combos
-  eSunSuperPersonQuery                     v3    10 combos
   WMPEMissingPersonCancel                  v9    1 combos
   WMPEMissingPersonClear                   v9    3 combos
   WMPEMissingPersonDentalEntry             v9    1 combos

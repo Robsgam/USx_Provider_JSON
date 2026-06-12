@@ -281,12 +281,16 @@ foreach ($qName in $includeQueries) {
             [void]$sb.AppendLine("  BUILT   $($kr.PadRight(14)) $setStr")
         }
 
-        $builtBaseKrs = @($builtKrs | ForEach-Object { $_ -replace '\.[A-Z0-9]+$', '' } | Select-Object -Unique)
         foreach ($c in $metaCombos) {
             $isComboBuilt = $false
+            $syntheticKr = "$($c.keyReference)$($c.primaryField)"
             foreach ($bkr in $builtKrs) {
                 $bBase = $bkr -replace '\.[A-Z0-9]+$', ''
-                if ($bBase -eq $c.keyReference -or $bkr -eq $c.keyReference) {
+                # Match exact keyRef, dotted-variant base, or synthetic keyRef
+                # (built combos use keyRef + primaryField, e.g. KQ + Name -> KQName,
+                #  per LIMITATION #21 invented-keyRef pattern)
+                if ($bBase -eq $c.keyReference -or $bkr -eq $c.keyReference -or
+                    $bkr -eq $syntheticKr -or $bkr.StartsWith($syntheticKr)) {
                     $isComboBuilt = $true
                     break
                 }

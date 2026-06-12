@@ -1,0 +1,71 @@
+﻿CA_CONTRA_COSTA METADATA REFERENCE
+===================================
+Generated: 2026-06-12
+Source: CA_CONTRA_COSTA.xml (metadata) + CA_CONTRA_COSTA_BASE.json
+Metadata: 2 total transactions, 2 queries built in JSON
+
+CaRequestPurposeCode: Mandatory on ALL transactions.
+  Values: C (Criminal Justice), I (Immigration Enforcement), U (Title 8 violations)
+  Default: C
+
+================================================================================
+1. CaContraCostaJawsPersonQuery (version 9)
+================================================================================
+
+METADATA FIELDS (10):
+  Address              Alphanumeric  maxLen= 3  Address
+  AddressCity          Alphanumeric  maxLen=13  Address City
+  Age                  Alphanumeric  maxLen= 2  Age
+  BirthDate            Date          maxLen= 8  Birth Date
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  Name                 Name          maxLen=30  Name
+  RaceCode             Alphanumeric  maxLen= 1  Race Code
+  RequestingAgencyId   Alphabetic    maxLen= 2  Requesting Agency Identifier
+  SexCode              Alphanumeric  maxLen= 1  Sex Code
+  State                Alphanumeric  maxLen= 2  State
+
+METADATA COMBINATIONS (5 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IR.QVC        Name                    CaRequestPurposeCode, Name, RequestingAgencyId         SexCode, RaceCode
+  IW.N          Name                    Name, RequestingAgencyId                               BirthDate
+  INL1          Name                    CaRequestPurposeCode, Name, RequestingAgencyId         Address, AddressCity, Birth...
+  DQ            Name                    CaRequestPurposeCode, Name, BirthDate, SexCode, St...  --
+  DNQ           Name                    CaRequestPurposeCode, Name, State, RequestingAgencyId  Age, AddressCity, SexCode
+
+BUILD COVERAGE (5 of 5 built):
+  BUILT   DQ             set[caRequestPurposeCode, nameLast, nameFirst, birthDate, sexCode, registrationState, requestingAgencyId]
+  BUILT   DNQ            set[caRequestPurposeCode, nameLast, nameFirst, registrationState, requestingAgencyId]
+  BUILT   INL1           set[caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
+  BUILT   IR.QVC         set[caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
+  BUILT   IW.N           set[nameLast, nameFirst, birthDate, requestingAgencyId]
+
+================================================================================
+2. CaContraCostaJawsWarrantQuery (version 4)
+================================================================================
+
+METADATA FIELDS (3):
+  BirthDate          Date          maxLen= 8  Birth Date
+  Name               Name          maxLen=30  Name
+  RequestingAgencyId Alphabetic    maxLen= 2  Requesting Agency Identifier
+
+METADATA COMBINATIONS (1 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IW.N          Name                    Name, BirthDate, RequestingAgencyId                    --
+
+BUILD COVERAGE (1 of 1 built):
+  BUILT   IW.N           set[nameLast, nameFirst, birthDate, requestingAgencyId]
+
+================================================================================
+BUILD SUMMARY
+================================================================================
+
+  Query                             Metadata  Built  Skip  Coverage
+  ----------------------------------  --------  -----  ----  --------
+  CaContraCostaJawsPersonQuery               5      5     0  100% (COMPLETE)
+  CaContraCostaJawsWarrantQuery              1      1     0  100% (COMPLETE)
+  ----------------------------------  --------  -----  ----  --------
+  TOTAL                                    6      6     0  100%
+
+

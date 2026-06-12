@@ -1,6 +1,6 @@
 ﻿TX_TLETS_CCH METADATA REFERENCE
 ================================
-Generated: 2026-06-09
+Generated: 2026-06-12
 Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH.json
 Metadata: 113 total transactions, 14 queries built in JSON
 
@@ -23,7 +23,6 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
   BUILT   QANCICNumber   set[ncicNumber]
-  UNBUILT QA             ArticleSerialNumber
 
 ================================================================================
 2. BoatQuery (version 13)
@@ -52,11 +51,6 @@ BUILD COVERAGE (5 of 5 built):
   BUILT   QBRegistrationNumber set[registrationNumber]
   BUILT   QBBoatHullIdNumber set[boatHullIdNumber]
   BUILT   QBNCICNumber   set[ncicNumber]
-  UNBUILT QB             RegistrationNumber
-  UNBUILT QB             BoatHullIdNumber
-  UNBUILT QB             NCICNumber
-  UNBUILT BQ             RegistrationNumber
-  UNBUILT BQ             BoatHullIdNumber
 
 ================================================================================
 3. CCHCriminalHistoryAQQuery (version 5)
@@ -292,7 +286,6 @@ BUILD COVERAGE (4 of 2 built):
   BUILT   KQOLNImg       set[operatorLicenseNumberDH]
   BUILT   KQOLN          set[operatorLicenseNumberDH]
   UNBUILT KQ             OperatorLicenseNumber
-  UNBUILT KQ             Name
 
 ================================================================================
 12. DriverLicenseQuery (version 15)
@@ -329,9 +322,6 @@ BUILD COVERAGE (7 of 5 built):
   BUILT   CPLName        set[nameLast, nameFirst]
   BUILT   DQOLNImg       set[operatorLicenseNumber]
   BUILT   DQOLN          set[operatorLicenseNumber]
-  UNBUILT DQ             Name
-  UNBUILT QW             Name
-  UNBUILT CPL            Name
   UNBUILT RSDWW          OperatorLicenseNumber
   UNBUILT DQ             OperatorLicenseNumber
 
@@ -355,7 +345,6 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QGGunSerialNumber set[gunSerialNumber]
   BUILT   QGNCICNumber   set[ncicNumber]
-  UNBUILT QG             GunSerialNumber
 
 ================================================================================
 14. VehicleInsuranceRegistrationQuery (version 14)
@@ -392,13 +381,6 @@ BUILD COVERAGE (7 of 7 built):
   BUILT   QVLicensePlateNumber set[licensePlateNumber]
   BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber]
   BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
-  UNBUILT RQ             LicensePlateNumber
-  UNBUILT QV             LicensePlateNumber
-  UNBUILT RQ             VehicleIdentificationNumber
-  UNBUILT QV             VehicleIdentificationNumber
-  UNBUILT DPSI           StickerNumber
-  UNBUILT REG            LicensePlateNumber
-  UNBUILT VIN            VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -424,30 +406,12 @@ BUILD SUMMARY
   TOTAL                                   34     43     0  126%
 
 ================================================================================
-UNBUILT METADATA COMBOS (21 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)
 ================================================================================
 
-  QA             ArticleSerialNumber      (ArticleSingleQuery)
-  QB             RegistrationNumber       (BoatQuery)
-  QB             BoatHullIdNumber         (BoatQuery)
-  QB             NCICNumber               (BoatQuery)
-  BQ             RegistrationNumber       (BoatQuery)
-  BQ             BoatHullIdNumber         (BoatQuery)
   KQ             OperatorLicenseNumber    (DriverHistoryQuery)
-  KQ             Name                     (DriverHistoryQuery)
-  DQ             Name                     (DriverLicenseQuery)
-  QW             Name                     (DriverLicenseQuery)
-  CPL            Name                     (DriverLicenseQuery)
   RSDWW          OperatorLicenseNumber    (DriverLicenseQuery)
   DQ             OperatorLicenseNumber    (DriverLicenseQuery)
-  QG             GunSerialNumber          (GunQuery)
-  RQ             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
-  QV             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
-  RQ             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
-  QV             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
-  DPSI           StickerNumber            (VehicleInsuranceRegistrationQuery)
-  REG            LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
-  VIN            VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (99 of 113 in metadata)
