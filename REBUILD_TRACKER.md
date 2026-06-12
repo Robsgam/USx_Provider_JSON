@@ -21,7 +21,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
 | 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 |  | 63P/0F/0W/0LIM | 0 | |
-| 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | |
+| 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | NEW SOURCE (2026-06-12): updated metadata XML + devdoc PDF received (old CA_eSUN.4.17.26.pdf removed). v1.5 build predates new source. On next rebuild: regen DEVDOC text, re-run extract_metadata_reference + extract_queries, diff_docs vs KB, rebuild against new XML |
 | 12 | CA_SAN_LUIS_OBISPO | v1.3 |  | 65P/0F/0W/0LIM | 0 | |
 | 13 | IL_LEADS_OFML | v1.1 |  | 61P/0F/0W/0LIM | 0 | |
 | 14 | MD_METERS | v1.3 |  | 69P/0F/0W/0LIM | 0 | State no-default. GAP (2026-06-08): Gun GunMake-primary combo missing (metadata ZGUN primaryFieldReference=GunMake has no JSON combo -- add on rebuild) |
