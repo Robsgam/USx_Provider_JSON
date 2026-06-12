@@ -384,6 +384,36 @@ See also:
     PATCH 5 (KEEP): sex retained in RMS (NIBRS confirmed AZ);
                autoSelect=true applied
 
+  RMS POOL ISOLATION -- KNOWN OVER-SEND, FIX DESIGNED BUT GATED (2026-06-12):
+    OBSERVED (FL v4.8 live, USx Tenant): full DL card -> RMS elastic query sent
+    dlNumber + lastName + firstName + dateOfBirth + sexAttrId. Cause: RMS QIDMs
+    follow the same union-pool serialization model as CommSys (LIMITATION #1) --
+    all four Person combos' set[] are satisfied simultaneously, none have
+    conditions, so the pool is the union of every combo's fields. The handler
+    is not broken; the config has no pool isolation. Risk (UNVERIFIED): if the
+    elastic search ANDs criteria, full-card searches over-constrain and can
+    miss records an OLN-only search would find.
+
+    FIX DESIGN (mirror CommSys FL v4.8 pattern, in _build_rms_bundle.ps1):
+      1. driversLicenseNumber       set [operatorLicenseNumber]; any []
+      2. firstNameLastNameDateOfBirth  set [first,last,dob];
+         any [race,sex,state]; conditions [ field:["licenseNumber"], NOT_EXISTS ]
+      3. firstNameLastName          set [first,last]; any [race,sex,state];
+         same NOT_EXISTS condition
+      Drop firstNameLastNameDriversLicenseNumber (unreachable under OLN-first).
+      KeepSsn providers (AZ, TN): same treatment for the SSN combo at their rebuild.
+      Effect: OLN filled -> dlNumber-only elastic query; name searches unchanged.
+      Propagates to all 19 providers on rebuild (shared module).
+
+    DO NOT APPLY UNTIL BOTH GATES CLEAR:
+      G1 (impact): live RMS test with a record whose OLN matches but name
+          differs -- compare OLN-only vs full-card results. If elastic ORs
+          criteria there is no harm and the fix may be unnecessary.
+      G2 (mechanism): conditions are live-proven ONLY on
+          CommsysTransactionRequestHandler. Zero RmsRestPayloadHandler combos
+          portfolio-wide use conditions -- verify the RMS handler honors them
+          (or ask platform team) before relying on this fix.
+
 ================================================================================
 5. QIF LAYOUT STRUCTURE
 ================================================================================

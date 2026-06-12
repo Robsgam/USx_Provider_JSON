@@ -162,6 +162,19 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   from the serialization pool, and the passing NOT_EXISTS (State blank) let
   FDQ fire. EXISTS / IN / NOT_IN / REGEX remain documented but not yet
   live-proven -- the first build relying on one must verify it live.
+  HANDLER SCOPE: all of the above is proven for CommsysTransactionRequestHandler
+  ONLY. Zero RmsRestPayloadHandler combos portfolio-wide use conditions --
+  whether the RMS handler honors them is UNVERIFIED.
+
+  RMS QIDMs FOLLOW THE SAME UNION-POOL SERIALIZATION MODEL (live evidence,
+  FL v4.8 USx Tenant 2026-06-12): a full DL card produced an RMS elastic query
+  containing dlNumber + lastName + firstName + dateOfBirth + sexAttrId. All
+  four RMS Person combos' set[] were simultaneously satisfied and none have
+  conditions, so the pool = union of every combo's set[]+any[] -- exactly the
+  observed payload. RMS QIDMs currently have NO pool isolation anywhere in the
+  portfolio: a full-card person search ANDs OLN+name+DOB+sex criteria into one
+  elastic query. Fix design + verification gates: BUILD_RULES.txt Section 4
+  ("RMS POOL ISOLATION").
 
   Each condition object:
     operator    String        REQUIRED  The type of check (see table below)

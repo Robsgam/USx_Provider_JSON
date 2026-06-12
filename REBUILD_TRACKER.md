@@ -64,6 +64,20 @@ REAL-GAP (build it). One provider at a time — do not mass-sweep.
 | NM_NMLETS_OFML | 1 |
 | AZ, CA_CLETS, CA_CONTRA_COSTA, IL, LA, NY, OR, TN | 0 |
 
+## RMS Person QIDM Pool Isolation (2026-06-12) -- ALL 19 PROVIDERS, GATED
+
+FL v4.8 live evidence: RMS follows the union-pool serialization model -- a full
+DL card sends dlNumber+name+DOB+sex in ONE elastic query (all four Person combos
+match, no conditions, pool = union). Fix designed in BUILD_RULES Section 4
+("RMS POOL ISOLATION"): OLN-first combos + licenseNumber NOT_EXISTS conditions
+in _build_rms_bundle.ps1. DO NOT APPLY until gates clear:
+- G1: live impact test (does the elastic search AND criteria? OLN-match/name-
+  mismatch record: OLN-only vs full-card results)
+- G2: verify RmsRestPayloadHandler honors conditions (zero RMS conditions exist
+  portfolio-wide; conditions only proven on the CommSys handler)
+When applied, propagates to every provider at its rebuild (shared module).
+test_commsys now simulates RMS QIDMs + prints a UNION POOL line per QIDM.
+
 ## Shadowed Combo Findings (G-16 subset check, 2026-06-12)
 
 validate.ps1 G-16 upgraded from consecutive-count heuristic to true subset-shadowing

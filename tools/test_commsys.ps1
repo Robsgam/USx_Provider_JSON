@@ -26,7 +26,8 @@ $json = $raw | ConvertFrom-Json
 $qidms = @()
 foreach ($bundle in $json.bundles) {
     foreach ($cfg in $bundle.configurations) {
-        if ($cfg.type -eq "QUERYINPUTDATAMAPPING" -and $cfg.handlerFunction -eq "CommsysTransactionRequestHandler") {
+        if ($cfg.type -eq "QUERYINPUTDATAMAPPING" -and
+            $cfg.handlerFunction -in @("CommsysTransactionRequestHandler","RmsRestPayloadHandler")) {
             $qidms += $cfg
         }
     }
@@ -352,6 +353,57 @@ function Test-ComboConditions($qidm, $combo, $formData) {
     return $result
 }
 
+# ── Build RMS elastic payload preview (RmsRestPayloadHandler QIDMs) ──
+# Combo-scoped: targetField:value pairs for this combo's set[]+any[].
+function Build-RmsPayload($qidm, $combo, $formData) {
+    $relevantFields = @()
+    if ($combo.requirements -and $combo.requirements.set) { $relevantFields += @($combo.requirements.set) }
+    if ($combo.requirements -and $combo.requirements.any) { $relevantFields += @($combo.requirements.any) }
+    $pairs = @()
+    foreach ($attr in $qidm.attributes) {
+        $sourceFields = @($attr.sourceField)
+        $relevant = ($relevantFields -contains $attr.name)
+        if (-not $relevant) {
+            foreach ($sf in $sourceFields) { if ($relevantFields -contains $sf) { $relevant = $true; break } }
+        }
+        if (-not $relevant) { continue }
+        $val = Get-AttrValue $attr $formData
+        if ($val) { $pairs += "`"$($attr.targetField)`":`"$val`"" }
+    }
+    return "{`"elasticQuery`":{$($pairs -join ',')}}"
+}
+
+# ── Union serialization pool (LIMITATION #1 -- the platform model) ──
+# Pool = union of set[]+any[] across ALL combos whose set[] AND conditions pass
+# (any[] does not gate). Populated pool fields are what actually serializes.
+# Live-proven for CommSys (FL v4.8) AND RMS (FL v4.8 elastic over-send).
+function Get-UnionPool($qidm, $formData, $filledNames) {
+    $pool = @()
+    foreach ($c in $qidm.combinations) {
+        $setFields = @()
+        if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
+        $setOk = $true
+        foreach ($f in $setFields) { if ($filledNames -notcontains $f) { $setOk = $false; break } }
+        if (-not $setOk) { continue }
+        if (-not (Test-ComboConditions $qidm $c $formData).ok) { continue }
+        $pool += $setFields
+        if ($c.requirements -and $c.requirements.any) { $pool += @($c.requirements.any) }
+    }
+    $pool = @($pool | Select-Object -Unique)
+    $serialized = @()
+    foreach ($attr in $qidm.attributes) {
+        $sourceFields = @($attr.sourceField)
+        $inPool = ($pool -contains $attr.name)
+        if (-not $inPool) {
+            foreach ($sf in $sourceFields) { if ($pool -contains $sf) { $inPool = $true; break } }
+        }
+        if (-not $inPool) { continue }
+        $val = Get-AttrValue $attr $formData
+        if ($val) { $serialized += "$($attr.targetField)=$val" }
+    }
+    return $serialized
+}
+
 # ── Build XML ──
 # Only includes attributes whose sourceFields/name are in this combo's set[]+any[].
 # This produces the combo-accurate query — not every field in testData.
@@ -461,10 +513,15 @@ foreach ($qidm in $qidms) {
                 Write-Host "      any: [$($anyFields -join ', ')] -> matched: [$($matched -join ', ')]" -ForegroundColor Gray
             }
 
-            $xml = Build-Xml $qidm $c $formData
-            Write-Host "      -- CommSys XML --" -ForegroundColor Cyan
-            foreach ($line in $xml.Split([Environment]::NewLine)) {
-                if ($line.Trim()) { Write-Host "      $line" -ForegroundColor White }
+            if ($qidm.handlerFunction -eq 'RmsRestPayloadHandler') {
+                Write-Host "      -- RMS elastic payload (combo-scoped) --" -ForegroundColor Cyan
+                Write-Host "      $(Build-RmsPayload $qidm $c $formData)" -ForegroundColor White
+            } else {
+                $xml = Build-Xml $qidm $c $formData
+                Write-Host "      -- CommSys XML --" -ForegroundColor Cyan
+                foreach ($line in $xml.Split([Environment]::NewLine)) {
+                    if ($line.Trim()) { Write-Host "      $line" -ForegroundColor White }
+                }
             }
         }
         else {
@@ -478,6 +535,12 @@ foreach ($qidm in $qidms) {
     if ($firstMatch) {
         Write-Host ""
         Write-Host "    >> PLATFORM FIRES: $firstMatch (first matching combo)" -ForegroundColor Magenta
+        $unionPool = Get-UnionPool $qidm $formData $filledNames
+        Write-Host "    >> UNION POOL (platform serializes): $($unionPool -join ', ')" -ForegroundColor Magenta
+        if ($unionPool.Count -gt 0) {
+            Write-Host "       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;" -ForegroundColor DarkGray
+            Write-Host "        if this exceeds the first-match combo's fields, the platform OVER-SENDS)" -ForegroundColor DarkGray
+        }
     }
 }
 
@@ -563,10 +626,15 @@ if ($OutFile) {
                     [void]$sb.AppendLine("      Defaults/optional: $($anyFields -join ', ')")
                 }
 
-                $xml = Build-Xml $qidm $c $formData
-                [void]$sb.AppendLine("    EXPECTED XML:")
-                foreach ($line in $xml.Split([Environment]::NewLine)) {
-                    if ($line.Trim()) { [void]$sb.AppendLine("      $line") }
+                if ($qidm.handlerFunction -eq 'RmsRestPayloadHandler') {
+                    [void]$sb.AppendLine("    EXPECTED RMS PAYLOAD (combo-scoped):")
+                    [void]$sb.AppendLine("      $(Build-RmsPayload $qidm $c $formData)")
+                } else {
+                    $xml = Build-Xml $qidm $c $formData
+                    [void]$sb.AppendLine("    EXPECTED XML:")
+                    foreach ($line in $xml.Split([Environment]::NewLine)) {
+                        if ($line.Trim()) { [void]$sb.AppendLine("      $line") }
+                    }
                 }
             }
         }
