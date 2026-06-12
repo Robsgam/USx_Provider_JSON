@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-12 15:24
+  Generated: 2026-06-12 16:42
 ================================================================
 QUERY SIMULATION
 ================
@@ -13,10 +13,10 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 10  |  Combos: 6
-    [SKIP] FRQDecalNumber -- conditions failed: State NOT_EXISTS  [value='NJ']
-    [SKIP] FRQLicensePlateNumber -- conditions failed: State NOT_EXISTS  [value='NJ']
-    [SKIP] FRQTitleLienInformation -- conditions failed: State NOT_EXISTS  [value='NJ']
-    [SKIP] FRQVehicleIdentificationNumber -- conditions failed: State NOT_EXISTS  [value='NJ']
+    [SKIP] FRQDecalNumber -- conditions failed: State NOT_EXISTS [value='NJ']
+    [SKIP] FRQLicensePlateNumber -- conditions failed: State NOT_EXISTS [value='NJ']
+    [SKIP] FRQTitleLienInformation -- conditions failed: State NOT_EXISTS [value='NJ']
+    [SKIP] FRQVehicleIdentificationNumber -- conditions failed: State NOT_EXISTS [value='NJ']
 
     [FIRES first-match] RQLicensePlateNumber
       set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
@@ -53,9 +53,9 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
-    [SKIP] FDQName -- conditions failed: State NOT_EXISTS  [value='NJ']; OperatorLicenseNumber NOT_EXISTS  [value='D123456789']
-    [SKIP] FDQOperatorLicenseNumber -- conditions failed: State NOT_EXISTS  [value='NJ']
-    [SKIP] DQName -- conditions failed: OperatorLicenseNumber NOT_EXISTS  [value='D123456789']
+    [SKIP] FDQName -- conditions failed: State NOT_EXISTS [value='NJ']; OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] FDQOperatorLicenseNumber -- conditions failed: State NOT_EXISTS [value='NJ']
+    [SKIP] DQName -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DQOperatorLicenseNumber
       set: [operatorLicenseNumber, registrationState]
@@ -76,8 +76,24 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-    [SKIP] KQName -- conditions failed: State NOT_EQUALS FL [value='FL']; OperatorLicenseNumber NOT_EXISTS  [value='D123456789']
-    [SKIP] KQOperatorLicenseNumber -- conditions failed: State NOT_EQUALS FL [value='FL']
+    [SKIP] KQName -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+
+    [FIRES first-match] KQOperatorLicenseNumber
+      set: [operatorLicenseNumberDH, registrationStateDH]
+      any: [purposeCodeDH, attentionDH] -> matched: [purposeCodeDH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>FL</State>
+      </Transaction>
+
+    >> PLATFORM FIRES: KQOperatorLicenseNumber (first matching combo)
+    >> UNION POOL (platform serializes): OperatorLicenseNumber=D123456789, PurposeCode=C, State=FL
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: FL_FCIC_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 3
@@ -179,10 +195,10 @@ QUERY SIMULATION
 
 --- QIDM: FL_FCIC_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 12  |  Combos: 12
-    [SKIP] FBQBoatHullIdNumber -- conditions failed: State NOT_EXISTS  [value='FL']; RelatedHitSearchIndicator NOT_EQUALS Y [value='Y']
-    [SKIP] FBQDecalNumber -- conditions failed: State NOT_EXISTS  [value='FL']
-    [SKIP] FBQRegistrationNumber -- conditions failed: State NOT_EXISTS  [value='FL']; RelatedHitSearchIndicator NOT_EQUALS Y [value='Y']
-    [SKIP] FBQTitleLienInformation -- conditions failed: State NOT_EXISTS  [value='FL']
+    [SKIP] FBQBoatHullIdNumber -- conditions failed: State NOT_EXISTS [value='FL']; RelatedHitSearchIndicator NOT_EXISTS [value='Y']
+    [SKIP] FBQDecalNumber -- conditions failed: State NOT_EXISTS [value='FL']
+    [SKIP] FBQRegistrationNumber -- conditions failed: State NOT_EXISTS [value='FL']; RelatedHitSearchIndicator NOT_EXISTS [value='Y']
+    [SKIP] FBQTitleLienInformation -- conditions failed: State NOT_EXISTS [value='FL']
 
     [FIRES first-match] QBBoatHullIdNumber
       set: [boatHullIdNumber, relatedHitSearchIndicator]
@@ -245,12 +261,47 @@ QUERY SIMULATION
         <RegistrationNumber>FL1234AB</RegistrationNumber>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
-    [SKIP] BQName -- conditions failed: State NOT_EQUALS FL [value='FL']
-    [SKIP] BQBoatHullIdNumber -- conditions failed: State NOT_EQUALS FL [value='FL']
-    [SKIP] BQRegistrationNumber -- conditions failed: State NOT_EQUALS FL [value='FL']
+
+    [FIRES shadowed -- first match above wins] BQName
+      set: [birthDate, nameLast, nameFirst, registrationState]
+      any: [boatHullIdNumber, registrationNumber] -> matched: [boatHullIdNumber, registrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <Name>Doe,John</Name>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] BQBoatHullIdNumber
+      set: [boatHullIdNumber, registrationState]
+      any: [registrationNumber] -> matched: [registrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] BQRegistrationNumber
+      set: [registrationNumber, registrationState]
+      any: [boatHullIdNumber] -> matched: [boatHullIdNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>BQ</MessageKey>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+      </Transaction>
 
     >> PLATFORM FIRES: QBBoatHullIdNumber (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, CoastGuardDocumentNumber=CG123456, ImageIndicator=Y, NCICNumber=B123456789, ProcessControlNumber=0000012345, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y
+    >> UNION POOL (platform serializes): BirthDate=19900115, BoatHullIdNumber=FL1234AB56H7, CoastGuardDocumentNumber=CG123456, ImageIndicator=Y, Name=Doe,John, NCICNumber=B123456789, ProcessControlNumber=0000012345, RegistrationNumber=FL1234AB, State=FL, RelatedHitSearchIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

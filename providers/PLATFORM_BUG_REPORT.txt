@@ -309,3 +309,56 @@ Suggestion:
 ===============================================================================
 END OF REPORT
 ===============================================================================
+
+===============================================================================
+BUG 6: VALUE-COMPARISON CONDITIONS SILENTLY DISABLE ENTIRE CONDITIONS ARRAY
+(added 2026-06-12 -- NOT YET SUBMITTED)
+===============================================================================
+
+Severity: HIGH -- Makes value-based combo gating impossible; silently breaks
+co-resident existence checks; affects pool isolation (over-send to state
+switches).
+
+Environment: USx tenant, RMS client, default bundle. Provider: FL_FCIC v4.9.
+
+Description:
+  A QIDM combination whose requirements.conditions array contains ANY
+  value-comparison operator (EQUALS, NOT_EQUALS, IN, NOT_IN, REGEX) behaves
+  as if it had NO conditions at all. The entire array is ignored -- including
+  EXISTS/NOT_EXISTS members in the same array. Existence-only arrays evaluate
+  correctly (verified same day, same tenant, same QIDM family).
+
+Reproduction (request XML on file, FL_FCIC tests/ T-A + T-B logs, 2026-06-12):
+  T-A: DriverHistoryQuery combo KQOperatorLicenseNumber,
+       conditions = [State NOT_EQUALS "FL"]. State field is a literal 2-char
+       FormInput (no codeTypeProvider); officer typed exact uppercase "FL"
+       (raw form value confirmed "FL" in form-state capture).
+       EXPECTED: combo blocked. ACTUAL: KQ SENT with <State>FL</State>.
+       (Transaction 01KTYR2ZJC87QX2C6FSEW1ZZVJ)
+  T-B: combo KQName, conditions = [State NOT_EQUALS "FL",
+       OperatorLicenseNumber NOT_EXISTS]. OLN was populated, destination "GA".
+       EXPECTED: KQName excluded by NOT_EXISTS -> Name/DOB/Sex not serialized.
+       ACTUAL: <Name>DOE,JOHN</Name>, <BirthDate>, <SexCode> all pooled into
+       the request. The value-comparison member disabled the NOT_EXISTS too.
+       (Transaction 01KTYR5Y9YBKW2Y3A8QM1XPZXN)
+  Control: DriverLicenseQuery combos with existence-ONLY arrays
+       (State NOT_EXISTS / OperatorLicenseNumber NOT_EXISTS) both gated firing
+       and isolated the pool correctly (FL v4.8 T1, same day).
+
+Operational Impact:
+  1. Mandatory value gates required by state systems (FCIC: DriverHistoryQuery
+     destination must not be FL) cannot be enforced in configuration.
+  2. Mixed arrays silently lose their existence checks -> serialization pool
+     over-send: fields from non-firing combos are transmitted to the state
+     switch (T-B: a name/DOB/sex transmitted on an OLN-only driver history
+     query).
+  3. Any provider using EQUALS/NOT_EQUALS conditions for combo routing may be
+     misrouting in production without visible errors (under review: NJ
+     RandomRequest EQUALS routing, TX ImageIndicator EQUALS routing, NY/CA
+     NOT_EQUALS state guards).
+
+Request:
+  Either fix value-comparison condition evaluation on the CommSys form path,
+  or document the supported operator contract explicitly so configurations
+  can be designed against it. A server-side validation/rejection option for
+  destination-state rules (e.g. FCIC KQ State != FL) would also close the gap.

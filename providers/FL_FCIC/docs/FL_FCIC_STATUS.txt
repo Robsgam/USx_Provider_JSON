@@ -1,7 +1,7 @@
 FL_FCIC Build Status
 ====================
-Current: v4.9 | 90P/0F/0W/0LIM | Updated 2026-06-12
-Current version : v4.9
+Current: v5.0 | 92P/0F/0W/0LIM | Updated 2026-06-12
+Current version : v5.0
 Last updated    : 2026-06-12
 Output file     : FL_FCIC.json
 Build script    : scripts/build_fl_fcic.ps1
@@ -351,42 +351,65 @@ LIVE TEST -- v4.9 (2026-06-12)
 
 IMPORT: IMPORTED 2026-06-12 to USx Tenant (v4.9)
 
-  RESULT SO FAR: DH negative test FAILED (see live-test row below + full log in
-  tests/). Typed "fl" -> KQ SENT (State=FL after serializer uppercasing; conditions
-  ran pre-uppercase) AND XML pooled Name+DOB+Sex -- fields only in KQName, whose
-  OLN NOT_EXISTS should have excluded it (mechanism live-PASSED on DL v4.8 T1).
-  Hypothesis [Likely]: any value-comparison condition disables that combo's entire
-  conditions array on OnScene (KB QIDM_REFERENCE Sec 2a "OPEN" block).
+  RESULT: DH negative test FAILED (lowercase "fl" -> KQ SENT + Name/DOB/Sex
+  pooled). Discriminating tests T-A and T-B run same day -- see VERDICT below.
+
+T-A / T-B VERDICT (2026-06-12, USx tenant RMS client default bundle)
+--------------------------------------------------------------------
+  T-A: DH OLN + Destination = "FL" EXACT UPPERCASE (literal FormInput, raw form
+       value confirmed "FL") -> KQ SENT with State=FL. Case-sensitivity and
+       raw-value theories ELIMINATED.
+  T-B: full DH card + Destination = "GA" -> KQ sent (legal) but Name/DOB/Sex
+       POOLED despite KQName's OLN NOT_EXISTS (OLN was populated).
+  PROVEN (POISONED-ARRAY RULE, KB QIDM_REFERENCE Sec 2a): a conditions array
+  containing ANY value-comparison operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX)
+  is disabled IN ITS ENTIRETY, incl. co-resident NOT_EXISTS members. Existence-
+  only arrays work (DL v4.8 T1). FL-gate NOT buildable config-side.
+  Logs (request XML captured): tests/_archive_pre_v5.0/...T-A... and ...T-B...
+
+LIVE TEST -- v5.0 (2026-06-12)
+------------------------------
+  Build: dropdown revert + poisoned-array purge.
+  - DH + Boat destination State: NCIC dropdown restored (attributeTypeId=STATE
+    Sel, codeTypeProvider=NCIC back on QIDM attrs, no default).
+  - ALL value-comparison conditions REMOVED (KQ x2 NOT_EQUALS FL, BQ x3
+    NOT_EQUALS FL, QB Hull/Reg EQUALS Y, FBQ Hull/Reg NOT_EQUALS Y).
+  - FBQ Hull/Reg: RelatedHitSearchIndicator NOT_EXISTS added (existence-only
+    replacement for the NOT_EQUALS Y intent -- any Stolen value defers to QB).
+  - QB Hull/Reg stolen routing: relatedHitSearchIndicator in set[] (presence-
+    based, v3.x 13/13 live-proven mechanism).
+  - Not-FL destination (DH KQ, Boat BQ): LIMITATION -- card labels only;
+    escalated to platform team (see PLATFORM_BUG_REPORT.txt).
+  - Vehicle/Person-DL State NOT_EXISTS conditions unchanged (live-proven).
+
+IMPORT: NOT YET IMPORTED (v5.0)
 
 PENDING
 -------
-  1. [BLOCKING] Discriminating test T-A: DH card, OLN + Destination State = "FL"
-     (exact uppercase), nothing else.
-       BLOCKED -> case-sensitivity only: fix = case normalization or LIMITATION.
-       SENT    -> NOT_EQUALS wholly non-functional on OnScene: FL-gate not buildable
-                  with conditions -> LIMITATION or platform escalation (no third
-                  config-side option).
-  2. [CONFIRM] T-B: full DH card + Destination = "GA". Name/DOB/Sex pooled again
-     confirms the conditions-array theory independently (the send itself is legal).
-  3. [AFTER VERDICT] Update test_commsys/run_test_matrix inert-condition model to
-     the proven rule; sweep NY/CA presumed-inert NOT_EQUALS guards; decide DH/Boat
-     FL-gate fate; resume full matrix from T1.
-  4. [OPEN] FCIC response XML for a State=FL KQ never captured -- does the state
-     switch reject it server-side? Capture response XML on T-A/T-B.
+  1. [READY] Import v5.0 to USx Tenant; run full matrix from T1
+     (docs/FL_FCIC_TEST_MATRIX.txt). Priority adds: Boat Hull+Stolen=Y must fire
+     QB not FBQ (v4.9 in-tenant routing is presumed broken by poisoned FBQ
+     arrays); DH KQ pool isolation (OLN-only query must NOT pool Name/DOB/Sex).
+  2. [OPEN] FCIC response XML for T-A (State=FL KQ) and T-B never captured --
+     does the state switch reject State=FL server-side? Pull from server logs;
+     determines how much the FL-gate LIMITATION matters operationally.
+  3. [ESCALATE] Poisoned-array conditions bug -> platform team (Cringer):
+     value-comparison conditions silently disable entire conditions arrays on
+     the CommSys form path. Request: working value-comparison evaluation OR a
+     documented contract. Added to PLATFORM_BUG_REPORT.txt 2026-06-12.
+  4. [EARMARK -- other providers, act at their rebuild/test, one provider at a
+     time] NJ RAND/FULL EQUALS routing live-passed 2026-05-28 (NJCJIS tenant) --
+     contradicts poisoned-array rule; verify with one RAND=Y query at NJ's next
+     session. TX ImageIndicator EQUALS Y conditions routing. NY DALHOUT/DALLOUT
+     + CA State NOT_EQUALS guards. CA_CLETS IV.4* plate-type conditions.
   5. [GATED] RMS union-pool over-send fix designed, NOT applied (G1 impact test /
      G2 RmsRestPayloadHandler condition verification) -- per user directive.
   6. [DONE 2026-05-19] KB update: VehicleMakeCode serialization -- FIELD_REFERENCE.txt Section 3 updated
+  7. [DONE 2026-06-12] test_commsys + run_test_matrix condition model updated to
+     poisoned-array rule; KB QIDM_REFERENCE Sec 2a rewritten (OPEN block closed).
 
 LIVE TEST RESULTS -- BASE (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  (none yet -- v4.9 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.9/)
-
-LIVE TEST RESULTS -- BASE (post_test.ps1)
---------------------------------------------------
-  #     Date        Entity      Combo                Result    Notes
-  ---   ----------  ----------  -------------------  --------  -----
-  ---   2026-06-12 Person     DH:KQOperatorLicenseNumber FAIL     DH negative lowercase fl SENT + union pool over-send (Name/DOB/Sex beyond firing combo)
-  ---   2026-06-12 Person     DH:KQOperatorLicenseNumber FAIL     T-A: DH OLN + State=FL EXACT UPPERCASE -> SENT. Case-sensitivity eliminated; value-comparison conditions wholly inert on USx RMS client. FL-gate not buildable with conditions.
-  ---   2026-06-12 Person     DH:KQName-pooling    FAIL     T-B: full DH card + State=GA -> KQ sent (legal) but Name/DOB/Sex POOLED despite KQName OLN NOT_EXISTS. Confirms value-comparison poisons entire conditions array incl NOT_EXISTS members.
+  (none yet -- v5.0 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v5.0/)

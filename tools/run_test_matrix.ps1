@@ -120,12 +120,22 @@ function Test-ComboConditionsPass($qidm, $combo, $formData) {
     if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
     if ($conds.Count -eq 0) { return $true }
 
+    # POISONED-ARRAY RULE (live-proven FL v4.9 T-A/T-B, USx tenant RMS client,
+    # 2026-06-12; QIDM_REFERENCE Section 2a): ANY value-comparison operator
+    # (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) in the array disables the ENTIRE array,
+    # including co-resident EXISTS/NOT_EXISTS -- combo treated as unconditioned.
+    # Not limited to reverse-lookup attrs (T-A: literal FormInput "FL" still passed).
+    # Existence-only arrays are honored (live-proven FL v4.8 DL T1).
+    foreach ($cond in $conds) {
+        if ("$($cond.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')) {
+            return $true
+        }
+    }
+
     foreach ($cond in $conds) {
         $op = "$($cond.operator)".ToUpperInvariant()
         if ($op -eq 'EXCLUSIVE') { continue }
         $fields = @($cond.field)
-        $values = @()
-        if ($null -ne $cond.value) { $values = @($cond.value) }
 
         foreach ($f in $fields) {
             # Attribute-name resolution FIRST (platform/KB canonical), fieldId fallback.
@@ -140,26 +150,10 @@ function Test-ComboConditionsPass($qidm, $combo, $formData) {
             elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
 
-            # PLATFORM REALITY (live-proven FL v4.8 DH FAIL, 2026-06-12): conditions see
-            # the RAW pre-reverse-lookup value. On codeTypeProvider/useAttributeId attrs
-            # the raw value is a tenant attrId UUID -> value comparisons are INERT:
-            # EQUALS/IN/REGEX never match, NOT_EQUALS/NOT_IN always pass.
-            # EXISTS/NOT_EXISTS unaffected (presence-based).
-            $rawIsAttrId = $attr -and ($attr.codeTypeProvider -or $attr.useAttributeId)
-            if ($rawIsAttrId -and $op -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')) {
-                $pass = ($op -in @('NOT_EQUALS','NOT_IN'))
-            }
-            else {
-                $pass = switch ($op) {
-                    'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
-                    'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
-                    'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
-                    'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
-                    'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
-                    'EXISTS'     { $present }
-                    'NOT_EXISTS' { -not $present }
-                    default      { $true }
-                }
+            $pass = switch ($op) {
+                'EXISTS'     { $present }
+                'NOT_EXISTS' { -not $present }
+                default      { $true }
             }
             if (-not $pass) { return $false }
         }

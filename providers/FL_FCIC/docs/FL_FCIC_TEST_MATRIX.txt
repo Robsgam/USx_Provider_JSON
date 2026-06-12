@@ -1,4 +1,4 @@
-FL_FCIC MC v4.9 -- TEST MATRIX
+FL_FCIC MC v5.0 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-12
 Variant: MC (multi-card per entity)
@@ -16,7 +16,7 @@ Vehicle (2 cards, 10 fields):
 
 Person (2 cards, 17 fields):
   CARD_DH (Driver History (Out-of-State Only)):
-    ROW 1: operatorLicenseNumberDH [Inp 20], registrationStateDH [Inp 2], purposeCodeDH [Inp 1]
+    ROW 1: operatorLicenseNumberDH [Inp 20], registrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
     ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], birthDateDH [FormDate], sexCodeDH [Sel SEX]
     ROW 3: attentionDH [Inp 30]
   CARD_DL (Driver License):
@@ -36,7 +36,7 @@ Article (1 card, 6 fields):
 
 Boat (2 cards, 13 fields):
   CARD_BOA_OPT (Search Options):
-    registrationState [Inp 2], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    registrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_BOA_SEARCH (Boat Search):
     ROW 1: boatHullIdNumber [Inp 62], registrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], ncicNumber [Inp 10], processControlNumber [Inp 10]
@@ -68,14 +68,14 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Decal Number, Title/Lien Info.
  2  Boat        Render form. Verify 2 cards:                        [    ]
               CARD_BOA_OPT: titled "Search Options".
-              Destination State (2-letter, blank for FL), Stolen Search dropdown (no default), Image dropdown=N.
+              Destination State (blank for FL, required for name/DOB) dropdown (no default), Stolen Search dropdown (no default), Image dropdown=N.
               CARD_BOA_SEARCH: titled "Boat Search".
               Hull ID Number, Registration Number, Coast Guard Doc #.
               Decal Number, Title/Lien Info, NCIC Number, PCN.
               Owner Last Name (OOS), Owner First Name (OOS), Owner DOB (OOS).
  3  Person      Render form. Verify 2 cards:                        [    ]
               CARD_DH: titled "Driver History (Out-of-State Only)".
-              OLN (DH), Destination State (2-letter, not FL), Purpose Code.
+              OLN (DH), Destination State (not FL) dropdown (no default), Purpose Code.
               Last Name (DH), First Name (DH), DOB (DH), Sex (DH) dropdown (no default).
               Attention (DH).
               CARD_DL: titled "Driver License".

@@ -17,9 +17,11 @@
 #
 # QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 31 combos):
 #   Combo array order follows the devdoc "Possible Combinations" listing order in every
-#   QIDM (v4.7 standard). Routing conditions (State NOT_EXISTS / RelatedHit NOT_EQUALS Y /
-#   OLN NOT_EXISTS) keep later OOS/stolen combos reachable under first-match evaluation
-#   AND isolate the serialization pool so only the firing path's fields are sent.
+#   QIDM (v4.7 standard). Routing conditions are EXISTENCE-ONLY (State NOT_EXISTS /
+#   RelatedHit NOT_EXISTS / OLN NOT_EXISTS) -- v5.0 POISONED-ARRAY RULE: any value
+#   comparison (EQUALS/NOT_EQUALS/...) disables its entire conditions array, live-proven
+#   v4.9 T-A/T-B 2026-06-12 (QIDM_REFERENCE Sec 2a). Existence conditions keep later
+#   OOS/stolen combos reachable under first-match AND isolate the serialization pool.
 #   VehicleRegistrationQuery   FRQ (Decal/plate/Title/VIN) + RQ (plate+state/VIN+state) = 6 combos
 #                              QV (plate/VIN) NOT BUILT -- devdoc "Data-Mined Transactions"
 #                              (QA, QB, QG, QV, QW) = CommSys auto secondaries [PENDING CONFIRMATION]
@@ -28,7 +30,8 @@
 #   DriverHistoryQuery         KQ (Name/OLN) = 2 combos, DH-suffix fields, OUT-OF-STATE ONLY:
 #                              FCIC: "KQ is out of state and <XX> destination is required ...
 #                              would require the destination to be something other than FL."
-#                              State in set[], conditions NOT_EQUALS FL, no default.
+#                              State in set[], no default. Not-FL gate NOT enforceable
+#                              (LIMITATION -- value conditions inert; platform escalation).
 #   GunQuery                   QG (serial/NCIC/PCN) = 3 combos
 #   ArticleSingleQuery         QA (serial/OAN/NCIC/PCN) = 4 combos
 #   BoatQuery                  FBQ (hull/decal/reg/title) + QB (hull/CG/NCIC/PCN/reg)
@@ -48,19 +51,18 @@
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue anywhere (LIMITATION #30 -- in-state vs OOS routing;
 #                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted).
-#                DH + Boat destination state = blank 2-char FormInput, no codeTypeProvider
-#                (v4.9): NOT_EQUALS FL guards need literal values -- attributeTypeId
-#                dropdowns never carry the literal code (live capture: "Florida"), making
-#                value guards inert (INERT-CONDITION RULE, live FAIL v4.8 2026-06-12).
-#                Vehicle/Person-DL State stays NCIC dropdown
-#                (presence-only NOT_EXISTS conditions, unaffected; 4 live PASSes).
+#                ALL State fields = NCIC dropdown (attributeTypeId=STATE Sel +
+#                codeTypeProvider NCIC). v5.0 reverted the v4.9 literal-FormInput
+#                experiment: T-A proved value guards inert even on literal "FL", so the
+#                FormInput bought nothing (POISONED-ARRAY RULE). The not-FL destination
+#                rule is officer-facing only (card labels) -- LIMITATION + escalation.
 #   Conditions:  NESTED inside requirements, field = @(AttributeName), value = @(...)
 #                (CA_CLETS/NY live-proven wire format). v4.7's combo-level camelCase
 #                scalar conditions were SILENTLY IGNORED by the platform (live XML
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "4.9"
+    [string]$Version = "5.0"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -288,9 +290,13 @@ $dlQuery = [PSCustomObject]@{
 # is required, yes DriverHistoryQuery can only be used out of state and would require the
 # destination to be something other than FL." Devdoc: State is Mandatory, both combos (Out).
 # Therefore: registrationStateDH in set[] (no default possible -- destination must be an
-# explicit officer choice), conditions State NOT_EQUALS FL on both combos.
+# explicit officer choice). NO NOT_EQUALS FL gate: value-comparison conditions are wholly
+# inert and poison the entire array (POISONED-ARRAY RULE, QIDM_REFERENCE Sec 2a; live-proven
+# v4.9 T-A/T-B 2026-06-12). Not-FL destination is LIMITATION + platform escalation; the
+# dropdown (no FL exclusion possible) + card title carry the officer-facing guard.
 # Devdoc order: KQ Name(1), KQ OLN(2). operatorLicenseNumberDH NOT_EXISTS on KQName
-# falls through to KQ OLN and keeps Name/DOB/Sex out of the pool on OLN searches.
+# (existence-only array -- the working class) falls through to KQ OLN and keeps
+# Name/DOB/Sex out of the pool on OLN searches.
 # CAD dispatch cannot supply a destination state, so DH will not auto-fire from CAD (correct).
 # DH-suffix fields isolate from DL field pool (AP #14)
 # Attention: visible FormInput (AttentionDH), NOT in combo requirements
@@ -311,20 +317,21 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        # No codeTypeProvider: registrationStateDH is a blank 2-char FormInput -- the officer
-        # types the literal destination code, so the NOT_EQUALS FL gate evaluates a real value
-        # (INERT-CONDITION RULE, QIDM_REFERENCE Sec 2a: attributeTypeId dropdowns never carry
-        # the literal code -- live capture showed "Florida" -- making value guards inert;
-        # live FAIL v4.8 2026-06-12).
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State' }
+        # v5.0: dropdown restored (attributeTypeId=STATE Sel + NCIC reverse-lookup).
+        # The v4.9 literal-FormInput experiment is over: T-A proved the NOT_EQUALS FL
+        # gate is inert even against an exact-uppercase literal "FL", so the literal
+        # field bought nothing and cost typo/case risk. Reverse-lookup serialization
+        # is live-proven on all instances.
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('birthDateDH','nameLastDH','nameFirstDH','sexCodeDH','registrationStateDH')
                 any        = @('purposeCodeDH','attentionDH')
+                # Existence-only array (working class). NEVER add a value comparison
+                # here -- it would poison the array and kill this NOT_EXISTS (T-B).
                 conditions = @(
-                    [PSCustomObject]@{ field = @('State');                 operator = 'NOT_EQUALS'; value = @('FL') }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                 )
             }
@@ -336,14 +343,14 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('operatorLicenseNumberDH','registrationStateDH')
                 any        = @('purposeCodeDH','attentionDH')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
+                conditions = $null
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'Out'
         }
     )
-    description     = 'DriverHistoryQuery -- OOS only (FCIC): KQ by Name+DestState, KQ by OLN+DestState. State in set[], NOT_EQUALS FL. DH-suffix fields. Attention visible.'
+    description     = 'DriverHistoryQuery -- OOS only (FCIC): KQ by Name+DestState, KQ by OLN+DestState. State in set[] (dropdown, no default); not-FL gate is a LIMITATION (value conditions inert). DH-suffix fields. Attention visible.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverHistoryQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -460,13 +467,15 @@ $artQuery = [PSCustomObject]@{
 # BQ (Nlets OOS) RESTORED v4.7 -- devdoc Boat combos 10-12 ARE the BQ paths and BQ is not
 # in the data-mined list. The v4.4 removal cited a devdoc "key list (FBQ + QB only)" that
 # does not exist (devdoc contains no key mnemonics; combos are the authority).
-# Routing conditions (first-match + pool isolation):
+# Routing conditions (v5.0: EXISTENCE-ONLY -- value comparisons poison the whole array,
+# POISONED-ARRAY RULE, QIDM_REFERENCE Sec 2a, live-proven v4.9 T-A/T-B 2026-06-12):
 #   FBQ all: registrationState NOT_EXISTS (State filled falls through to BQ)
-#   FBQ Hull/Reg additionally: relatedHitSearchIndicator NOT_EQUALS Y (Stolen=Y falls
-#   through to QB; replaces the v4.6 QB-first ordering trick, same live-tested mechanism)
-#   QB Hull/Reg: relatedHitSearchIndicator EQUALS Y (unchanged from v4.6)
-#   BQ all: registrationState NOT_EQUALS FL (Out-routed destination, assumed same non-FL
-#   rule as KQ -- ASSUMPTION pending FCIC confirmation, see BUILD_NOTES v4.7)
+#   FBQ Hull/Reg additionally: relatedHitSearchIndicator NOT_EXISTS (any Stolen Search
+#   value falls through to QB -- same routing as the v4.7 NOT_EQUALS Y intent, but in
+#   the working operator class; officer types Y per card hint, live-proven 13/13 v3.x)
+#   QB Hull/Reg: NO conditions -- relatedHitSearchIndicator in set[] does the gating
+#   BQ all: NO conditions -- the non-FL destination rule is NOT enforceable config-side
+#   (LIMITATION + platform escalation, same as DH KQ)
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'FBQ', 'QB', 'BQ' for multiple combos each; field-name suffixes
 # (FBQBoatHullIdNumber, QBRegistrationNumber, etc.) are synthetic routing labels.
@@ -488,22 +497,22 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'NCICNumber';                size = 10; sourceField = @('ncicNumber');                targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('registrationNumber');        targetField = 'RegistrationNumber' }
-        # No codeTypeProvider: registrationState is a blank 2-char FormInput (literal code) so
-        # the BQ NOT_EQUALS FL guards evaluate a real value (INERT-CONDITION RULE, same as DH).
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State' }
+        # v5.0: dropdown restored (attributeTypeId=STATE Sel + NCIC reverse-lookup) -- the
+        # literal-FormInput experiment proved nothing gates on value anyway (T-A).
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'TitleLienInformation';      size = 8;  sourceField = @('titleLienInformation');      targetField = 'TitleLienInformation' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
         # FBQ combos -- devdoc 1-4 (FCIC registration; State NOT_EXISTS defers to BQ,
-        # Hull/Reg additionally NOT_EQUALS Y defers to QB)
+        # Hull/Reg additionally RelatedHit NOT_EXISTS defers to QB -- existence-only arrays)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('boatHullIdNumber')
                 any        = @('decalNumber','registrationNumber','titleLienInformation','imageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EQUALS'; value = @('Y') }
+                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
@@ -528,7 +537,7 @@ $boatQuery = [PSCustomObject]@{
                 any        = @('boatHullIdNumber','decalNumber','titleLienInformation','imageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EQUALS'; value = @('Y') }
+                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
@@ -547,12 +556,12 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'
         }
-        # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by Stolen Search EQUALS Y)
+        # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by relatedHitSearchIndicator
+        # in set[] -- presence-based, no conditions; officer types Y per card hint)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('boatHullIdNumber','relatedHitSearchIndicator')
                 any        = @('imageIndicator','registrationNumber')
-                conditions = @([PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'EQUALS'; value = @('Y') })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -581,19 +590,18 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('registrationNumber','relatedHitSearchIndicator')
                 any        = @('imageIndicator','boatHullIdNumber')
-                conditions = @([PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'EQUALS'; value = @('Y') })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QBRegistrationNumber'
             state                 = 'In/Out'
         }
-        # BQ combos -- devdoc 10-12 (Nlets OOS; destination state in set[], non-FL assumed)
+        # BQ combos -- devdoc 10-12 (Nlets OOS; destination state in set[]. Non-FL rule
+        # NOT enforceable config-side -- LIMITATION, dropdown + card hint only)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('birthDate','nameLast','nameFirst','registrationState')
                 any        = @('boatHullIdNumber','registrationNumber')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
             }
             primaryFieldReference = 'Name'
             keyReference          = 'BQName'
@@ -603,7 +611,6 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('boatHullIdNumber','registrationState')
                 any        = @('registrationNumber')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQBoatHullIdNumber'
@@ -613,14 +620,13 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('registrationNumber','registrationState')
                 any        = @('boatHullIdNumber')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('FL') })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
             state                 = 'Out'
         }
     )
-    description     = 'BoatQuery -- devdoc order: FBQ (hull/decal/reg/title; State NOT_EXISTS), QB (hull/CG/NCIC/PCN/reg; Stolen=Y), BQ (name/hull/reg; State+non-FL). 12 combos.'
+    description     = 'BoatQuery -- devdoc order: FBQ (hull/decal/reg/title; State+RelatedHit NOT_EXISTS), QB (hull/CG/NCIC/PCN/reg; Stolen in set[]), BQ (name/hull/reg; State in set[], non-FL is LIMITATION). 12 combos.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_BoatQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -717,7 +723,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Inp 'registrationStateDH' 'Destination State (2-letter, not FL)' '2' 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'registrationStateDH' 'Destination State (not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
@@ -805,7 +811,7 @@ $boaLayout = MakeLayouts @(
         title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_BOA_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Inp 'registrationState' 'Destination State (2-letter, blank for FL)' '2' 'ROW_BOA_O1' }
+                @{ id = 'RegistrationState_Input';         node = Sel 'registrationState' 'Destination State (blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_O1' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
             )}

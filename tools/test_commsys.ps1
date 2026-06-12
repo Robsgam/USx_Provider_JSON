@@ -313,6 +313,23 @@ function Test-ComboConditions($qidm, $combo, $formData) {
     $result = @{ ok = $true; failures = @(); warnings = @() }
     if ($conds.Count -eq 0) { return $result }
 
+    # POISONED-ARRAY RULE (live-proven FL v4.9 T-A/T-B, USx tenant RMS client,
+    # 2026-06-12; QIDM_REFERENCE Section 2a): a conditions array containing ANY
+    # value-comparison operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is disabled
+    # IN ITS ENTIRETY -- including co-resident EXISTS/NOT_EXISTS members. The
+    # combo behaves as unconditioned (fires by set[]/any[], joins the pool).
+    # Scope is NOT limited to reverse-lookup attrs: T-A used a literal FormInput
+    # carrying exact-uppercase "FL" and the NOT_EQUALS still passed.
+    # Existence-ONLY arrays are honored (live-proven FL v4.8 DL T1).
+    $poisoners = @($conds | Where-Object {
+        "$($_.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
+    })
+    if ($poisoners.Count -gt 0) {
+        $desc = ($poisoners | ForEach-Object { "$(@($_.field) -join '+') $("$($_.operator)".ToUpperInvariant()) $(@($_.value) -join ',')" }) -join '; '
+        $result.warnings += "POISONED ARRAY: value-comparison condition(s) [$desc] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12."
+        return $result
+    }
+
     foreach ($cond in $conds) {
         $op = "$($cond.operator)".ToUpperInvariant()
         if ($op -eq 'EXCLUSIVE') { continue }
@@ -320,8 +337,6 @@ function Test-ComboConditions($qidm, $combo, $formData) {
         # @() wraps scalars AND preserves arrays; assigning from an if-expression would
         # unroll a single-element array to a scalar (then [0] indexes a char) -- avoid.
         $fields = @($cond.field)
-        $values = @()
-        if ($null -ne $cond.value) { $values = @($cond.value) }
 
         foreach ($f in $fields) {
             # Resolve field value: QIDM attribute name FIRST (platform/KB canonical --
@@ -333,41 +348,15 @@ function Test-ComboConditions($qidm, $combo, $formData) {
             elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
 
-            # PLATFORM REALITY (live-proven FL v4.8 DH FAIL, 2026-06-12): conditions
-            # evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup.
-            # attributeTypeId dropdowns (State/Sex etc.) carry tenant attrId UUIDs, so
-            # value-comparison operators NEVER match the code: EQUALS/IN/REGEX always
-            # fail, NOT_EQUALS/NOT_IN always pass (the guard is INERT). EXISTS/NOT_EXISTS
-            # are presence-based and unaffected (4 live PASSes same day). Code-type
-            # dropdowns (codeTypeCategory, literal values) compare normally (CA PlateType
-            # live-proven). CAD differs: combo defaults[] inject literal codes there.
-            $rawIsAttrId = $attr -and ($attr.codeTypeProvider -or $attr.useAttributeId)
-            $valueComparison = $op -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
-
-            if ($rawIsAttrId -and $valueComparison) {
-                $pass = switch ($op) {
-                    'NOT_EQUALS' { $true }
-                    'NOT_IN'     { $true }
-                    default      { $false }
-                }
-                $result.warnings += "INERT CONDITION: $f $op $($values -join ',') -- attr '$($attr.name)' uses reverse-lookup (codeTypeProvider/useAttributeId); platform compares the raw attrId, so this $op $(if ($pass) { 'ALWAYS PASSES (guard is inert)' } else { 'NEVER MATCHES (combo unreachable via this condition)' }). Live-proven FL v4.8 DH 2026-06-12."
-            }
-            else {
-                $pass = switch ($op) {
-                    'EQUALS'     { $present -and ("$val" -ieq "$($values[0])") }
-                    'NOT_EQUALS' { -not ($present -and ("$val" -ieq "$($values[0])")) }
-                    'IN'         { ($values | Where-Object { ("$_" -ieq "$val") -or ("$_" -ieq 'null' -and -not $present) }).Count -gt 0 }
-                    'NOT_IN'     { ($values | Where-Object { "$_" -ieq "$val" }).Count -eq 0 }
-                    'REGEX'      { $present -and ("$val" -match "^(?:$($values[0]))$") }
-                    'EXISTS'     { $present }
-                    'NOT_EXISTS' { -not $present }
-                    default      { $true }
-                }
+            $pass = switch ($op) {
+                'EXISTS'     { $present }
+                'NOT_EXISTS' { -not $present }
+                default      { $true }
             }
             if (-not $pass) {
                 $result.ok = $false
                 $shown = if ($present) { "'$val'" } else { '(blank)' }
-                $result.failures += "$f $op $($values -join ',') [value=$shown]"
+                $result.failures += "$f $op [value=$shown]"
             }
         }
     }

@@ -155,60 +155,70 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
     "requirements": { "set": [...], "any": [...],
       "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["CA"] } ] }
 
-  OPERATOR LIVE-VERIFICATION STATUS (2026-06-12): EQUALS and NOT_EQUALS are
-  live-proven (CA_CLETS). NOT_EXISTS is LIVE-PROVEN (FL v4.8, USx Tenant
-  2026-06-12): full DL card sent ONLY OLN+ImageIndicator -- the failing
-  NOT_EXISTS on the Name combos both blocked firing AND excluded Name/DOB/Sex
-  from the serialization pool, and the passing NOT_EXISTS (State blank) let
-  FDQ fire. EXISTS / IN / NOT_IN / REGEX remain documented but not yet
-  live-proven -- the first build relying on one must verify it live.
+  OPERATOR LIVE-VERIFICATION STATUS (updated 2026-06-12): NOT_EXISTS is
+  LIVE-PROVEN working (FL v4.8, USx tenant RMS client): full DL card sent
+  ONLY OLN+ImageIndicator -- the failing NOT_EXISTS on the Name combos both
+  blocked firing AND excluded Name/DOB/Sex from the serialization pool, and
+  the passing NOT_EXISTS (State blank) let FDQ fire. NOT_EQUALS is LIVE-PROVEN
+  BROKEN (FL v4.9 T-A/T-B -- see POISONED-ARRAY RULE below); EQUALS and all
+  other value comparisons are presumed broken on the CommSys form path (the
+  CA_CLETS "live-proven" EQUALS was CAD-path; NJ RAND/FULL EQUALS is an
+  unresolved contradiction -- see earmark below). EXISTS / IN / NOT_IN /
+  REGEX have never been form-path live-proven.
   HANDLER SCOPE: all of the above is proven for CommsysTransactionRequestHandler
   ONLY. Zero RmsRestPayloadHandler combos portfolio-wide use conditions --
   whether the RMS handler honors them is UNVERIFIED.
 
-  INERT-CONDITION RULE (live-proven FL v4.8 DH FAIL, USx Tenant 2026-06-12):
-  conditions evaluate the RAW form value BEFORE codeTypeProvider reverse-lookup.
-  On attributeTypeId dropdowns (State, Sex, ...) the raw form value is NOT the
-  2-letter/short code -- FL live form-state capture showed the display label
-  ("registrationStateDH":"Florida"), while the RMS payload carried a numeric
-  attrId for the same field. Whichever representation the condition sees, it is
-  never the code the guard names, so VALUE-COMPARISON operators are INERT:
-    EQUALS / IN / REGEX   -> never match (combo unreachable via that condition)
-    NOT_EQUALS / NOT_IN   -> always pass (the guard does nothing)
-    EXISTS / NOT_EXISTS   -> UNAFFECTED (presence-based; 4 live PASSes same day)
-  Evidence: FL DH 'registrationStateDH NOT_EQUALS FL' did not block an explicit
-  Florida destination -- KQ fired and serialized State=FL (reverse-lookup ran at
-  serialization, AFTER the condition). CA_CLETS's working EQUALS conditions are
-  on CODE-TYPE dropdowns (codeTypeCategory -> literal values like PlateType 'AP'),
-  which compare normally. CAD differs: combo defaults[] inject literal codes, so
-  CAD-path comparisons can work where OnScene-form ones do not (this is how
-  CA's 'State NOT_EQUALS CA' was validated).
-  RULE: never put a value-comparison condition on a codeTypeProvider or
-  useAttributeId attribute for OnScene routing. Presence-based design
-  (set[] membership + EXISTS/NOT_EXISTS) or a literal-value field (FormInput,
-  codeTypeCategory dropdown) are the working alternatives.
-  CROSS-PROVIDER: NY DH OOS 'State NOT_EQUALS NY' and CA State NOT_EQUALS
-  guards are presumed equally inert on OnScene -- verify at their rebuilds.
-  test_commsys + run_test_matrix simulate this rule and flag [!] INERT CONDITION.
+  POISONED-ARRAY RULE -- VALUE-COMPARISON CONDITIONS ARE WHOLLY INERT
+  (LIVE-PROVEN, FL v4.9 T-A + T-B, USx tenant RMS client default bundle,
+  2026-06-12 -- NOT OnScene; earlier "OnScene" attributions in this section
+  were a client-naming error):
 
-  OPEN -- NOT_EQUALS MAY BE WHOLLY NON-FUNCTIONAL ON ONSCENE (FL v4.9 live FAIL,
-  2026-06-12, log: ...DH_negative_lowercase_fl_SENT_+_union_pool_over-send...):
-  DH destination changed to a literal-value FormInput; officer typed "fl"; KQ was
-  SENT (State=FL after serializer uppercasing) AND the XML pooled Name+DOB+Sex --
-  fields belonging only to KQName, whose 'OperatorLicenseNumber NOT_EXISTS' should
-  have failed (OLN present) and excluded it, the mechanism live-PROVEN on DL (v4.8
-  T1). Two candidate explanations:
-    (a) case-sensitivity only: "fl" != "FL" passed the guard (does not explain the
-        pooled KQName fields);
-    (b) [Likely] any VALUE-COMPARISON condition disables that combo's ENTIRE
-        conditions array on the OnScene path -- KQName matched as unconditioned,
-        fired first, pool = union of both KQ combos. Also explains the v4.8 DH
-        FAIL without invoking raw-value mismatch; consistent with T1 (DL conditions
-        are pure NOT_EXISTS); CA's "working" NOT_EQUALS was CAD-context only.
-  DISCRIMINATOR (run before any further NOT_EQUALS design): exact uppercase "FL"
-  typed in DH destination + OLN. BLOCKED -> (a), fix is case normalization.
-  SENT -> (b), NOT_EQUALS unusable on OnScene; presence-based design only.
-  NOT_EXISTS pool isolation remains live-proven either way.
+    A conditions array containing ANY value-comparison operator (EQUALS,
+    NOT_EQUALS, IN, NOT_IN, REGEX) is disabled IN ITS ENTIRETY -- including
+    co-resident EXISTS/NOT_EXISTS members. The combo behaves as if it had
+    no conditions at all: it fires by set[]/any[] first-match and joins the
+    serialization pool. Existence-ONLY arrays (EXISTS/NOT_EXISTS exclusively)
+    work correctly for both firing and pool isolation.
+
+  Evidence (both logs in providers/FL_FCIC/tests/, request XML captured):
+    T-A: DH OLN + literal FormInput destination = "FL" (EXACT uppercase,
+         raw form value confirmed "FL" in form-state JSON). Conditions
+         [State NOT_EQUALS FL] should have blocked. KQ SENT with State=FL.
+         Case-sensitivity and raw-value/reverse-lookup explanations both
+         ELIMINATED (the condition saw the literal code and still passed).
+    T-B: full DH card + destination "GA". KQName conditions
+         [State NOT_EQUALS FL, OperatorLicenseNumber NOT_EXISTS]: with OLN
+         populated the NOT_EXISTS member alone should have excluded KQName
+         from the pool -- yet Name/DOB/Sex serialized into the request.
+         The value-comparison member disabled the NOT_EXISTS member too.
+    Control: FL v4.8 DL T1 -- pure-NOT_EXISTS arrays both gated firing AND
+         excluded fields from the pool. Existence-only arrays are reliable.
+
+  RULE: value-comparison conditions MUST NOT be used for routing or gating
+  on the CommSys form path. Working alternatives, in preference order:
+    1. Presence-based routing: field membership in set[] + combo ordering
+       (live-proven: FL Boat QB RelatedHitSearchIndicator, 13/13 2026-05-05).
+    2. Existence-only conditions arrays (State NOT_EXISTS in-state pattern).
+    3. If a VALUE-based gate is genuinely required (e.g. "destination must
+       not be FL"): NOT BUILDABLE config-side. Document as LIMITATION and
+       escalate to the platform team.
+  NEVER mix a value comparison into an existence array -- it silently kills
+  the existence checks (T-B).
+
+  UNRESOLVED CONTRADICTION (earmarked, do not resolve from the armchair):
+    NJ v3.5 RandomRequest EQUALS Y/N routing (RAND vs FULL) reportedly passed
+    live 2026-05-28 on the NJ NJCJIS tenant; CA_CLETS EQUALS PlateType guards
+    were validated via the CAD path. Under the poisoned-array rule both should
+    misroute on the CommSys form path. Candidates: tenant/platform version
+    difference, CAD-vs-form path difference, or the NJ tests never actually
+    discriminated the EQUALS branch (NJ stolen-branch JSONs were never live
+    tested). VERIFY AT NJ'S NEXT TEST SESSION: one RAND=Y query -- check which
+    keyRef fires. Same earmark for NY DALHOUT/DALLOUT NOT_EQUALS guards and
+    CA State NOT_EQUALS guards at their rebuilds.
+  test_commsys + run_test_matrix must model the poisoned-array rule: arrays
+  containing any value-comparison operator = pass-all (flag [!] POISONED
+  ARRAY); existence-only arrays = honored.
 
   RMS QIDMs FOLLOW THE SAME UNION-POOL SERIALIZATION MODEL (live evidence,
   FL v4.8 USx Tenant 2026-06-12): a full DL card produced an RMS elastic query

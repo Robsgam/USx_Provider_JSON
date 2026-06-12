@@ -15,7 +15,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 2 | HI_HCJDC_OFML | v1.7 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. GAP (2026-06-08): DL SexCode-primary combo missing (metadata DQ primaryFieldReference=SexCode has no JSON combo -- add on rebuild) |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v4.9 |  | 90P/0F/0W/0LIM | 0 | v4.7 (2026-06-12): DH out-of-state-only (FCIC-confirmed; State in set[], NOT_EQUALS FL, no default), devdoc combo order all QIDMs + routing conditions (pool isolation), BQ x3 RESTORED (v4.4 removal cited nonexistent devdoc key list), 31 combos. QV x2 PENDING platform confirmation (devdoc Data-Mined list = likely auto-sent secondaries; if refuted build Stolen Search toggle v4.8). ImageQuery = user-approved scope skip |
+| 5 | FL_FCIC | v5.0 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported |
 | 6 | TX_TLETS | v3.3 |  | 86P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
@@ -47,6 +47,23 @@ key lists; the v4.4 FL misread cited one that does not exist).
 ACTION at each provider's next rebuild: classify every UNBUILT row in its
 METADATA_REFERENCE as BUILT-VARIANT / APPROVED-SKIP (cite devdoc+BUILD_NOTES) /
 REAL-GAP (build it). One provider at a time — do not mass-sweep.
+
+## Poisoned-Array Conditions Sweep (flagged 2026-06-12)
+
+POISONED-ARRAY RULE live-proven on FL v4.9 T-A/T-B (USx tenant, RMS client):
+any value-comparison condition (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) disables
+its ENTIRE conditions array, incl. co-resident NOT_EXISTS. See
+knowledge-base/QIDM_REFERENCE.txt Sec 2a + PLATFORM_BUG_REPORT.txt BUG 6.
+
+Providers carrying value-comparison conditions — fix at each one's next
+rebuild/test session (one provider at a time, NOT a mass sweep):
+
+| Provider | Conditions at risk | Action at next session |
+|---|---|---|
+| NJ_NJCJIS | RandomRequest EQUALS Y/N (RAND vs FULL routing) | CONTRADICTION: live-passed 2026-05-28 NJCJIS tenant. Run ONE RAND=Y discriminating query — check firing keyRef. If poisoned: redesign per FL v5.0 pattern |
+| TX_TLETS | ImageIndicator EQUALS Y conditions routing | Verify with one live query or redesign to existence/set[]-based routing |
+| NY_NYSPIN_EJUSTICE | DALHOUT/DALLOUT State guards (if NOT_EQUALS) | Inspect JSON; replace with existence-only or set[] routing |
+| CA_CLETS | IV.4* plate-type conditions (13 combos), State NOT_EQUALS guards | Inspect; IV.4* may be redundant anyway (see reference_ca_clets_iv4_routing) |
 
 | Provider | Residual UNBUILT rows |
 |---|---|
@@ -195,7 +212,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v3.5 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.4 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v4.9 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
+| FL_FCIC | v5.0 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
 ### Flagged for Full Rebuild on Next Test (16)
 
