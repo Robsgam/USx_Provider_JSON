@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleStolenQuery
+Combo: QVN-PASCAL-P4 (Union serialization proof - QVN+QVV both matched, State excluded)
+Variant: MC
+Date: 2026-06-12 08:51:11
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTVW9DJ9BZFHZ9NEHWYVK6AH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleStolenQuery</MessageType><Id>01KTVW9DJ9BZFHZ9NEHWYVK6AH</Id><VehicleIdentificationNumber>VIN234556</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><NCICNumber>NCIC6374</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KTVW9DJ9BZFHZ9NEHWYVK6AH
+  VehicleIdentificationNumber    VIN234556
+  ImageIndicator                 N
+  NCICNumber                     NCIC6374
+
+NOTES
+-----
+JSON: NJ_NJCJIS_PASCAL.json. From 2026-06-11 spot-check exercise (log 8 of 8). Officer entered NCIC# AND VIN on Stolen paths with State=MS set on form. BOTH combos matched (QVN set=[NCICNumber], QVV set=[VehicleIdentificationNumber]); QVN fired as primary (first in combo order). KEY PLATFORM SEMANTICS PROOF: serializer sends the UNION of MATCHING combos' set[]/any[] fields (NCIC+VIN+Image) -- NOT all populated attributes: State was provably populated (RMS payload carried MS attrId [69509895892]) yet EXCLUDED from XML because only non-matching QVP lists registrationState in any[]. Corrects QIDM_REFERENCE blanket claim 'ALL populated attributes are sent'. RMS fired independently: {"elasticQuery":{"vehicle":{"registrationStateAttrIds":[69509895892],"vinNumber":"vin234556"}}}. Response: No Returns (synthetic). Also noted: NCIC+VIN together is not a metadata-legal combination; extra fields ignored server-side per KB.
+
+RESULT: PASS
