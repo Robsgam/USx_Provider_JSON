@@ -1,29 +1,100 @@
-================================================================
-TEST LOG: FL_FCIC Person DriverHistoryQuery
-Combo: KQName-pooling (T-B: full DH card + State=GA -> KQ sent (legal) but Name/DOB/Sex POOLED despite KQName OLN NOT_EXISTS. Confirms value-comparison poisons entire conditions array incl NOT_EXISTS members.)
-Variant: BASE
-Date: 2026-06-12 16:29:55
-Result: FAIL
-================================================================
+FL_FCIC BASE v4.9 -- Test Log
+============================================================
+Date       : 2026-06-12
+JSON       : FL_FCIC.json (v4.9, imported USx Tenant 2026-06-12)
+Entity     : Person
+Combo      : KQ-Full-StateGA-POOLING (T-B confirm: full DH card + Destination State=GA. Legal send; check whether Name/DOB/Sex pool into XML despite KQName OLN NOT_EXISTS condition)
+Test type  : Pooling confirmation (conditions-array-inert theory)
+Client     : USx tenant, RMS client, default bundle (NOT OnScene -- prior doc
+             language corrected)
 
-FORM STATE
-----------
-Not captured
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
 
-XML REQUEST
------------
-Not captured
+  Form state JSON (default bundle):
+  {"birthDateDH":"1985-01-01","imageIndicator":"Y","nameFirstDH":"john","nameLastDH":"doe","operatorLicenseNumberDH":"D999888777","registrationStateDH":"GA","sexCodeDH":"Male"}
 
-XML RESPONSE
-------------
-Not captured
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumberDH   D999888777         typed
+  registrationStateDH       GA                 typed
+  nameLastDH                doe                typed (lowercase)
+  nameFirstDH               john               typed (lowercase)
+  birthDateDH               1985-01-01         picked
+  sexCodeDH                 Male               selected (dropdown)
+  imageIndicator            Y                  default (DL card, not in KQ pool)
 
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KTYR5Y9YBKW2Y3A8QM1XPZXN
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber (expected first-match)
+
+  Fields sent in XML request:
+    Element                Value
+    ---------------------  -------------------
+    State                  GA
+    OperatorLicenseNumber  D999888777
+    SexCode                M
+    BirthDate              19850101
+    Name                   DOE,JOHN
+
+================================================================================
 FIELD ANALYSIS
---------------
-Not captured (no XML provided)
+================================================================================
 
-NOTES
------
+  Combination fired: KQOperatorLicenseNumber (OLN present)
+  Pooling observed: SexCode, BirthDate, Name serialized into the request.
+  These fields belong ONLY to KQName, whose conditions array contains
+  [State NOT_EQUALS FL, OperatorLicenseNumber NOT_EXISTS]. With OLN populated,
+  NOT_EXISTS should have excluded KQName from the match pool. It did not.
 
+  CONFIRMS (independently of T-A): a value-comparison condition in the array
+  disables the ENTIRE conditions array, including the NOT_EXISTS member.
+  (Pure existence-only arrays remain functional -- DL v4.8 T1 live PASS.)
 
-RESULT: FAIL
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  State                  YES    GA              legal OOS destination
+  OperatorLicenseNumber  YES    D999888777      firing combo set[]
+  SexCode                YES    M               POOLED from KQName (reverse-lookup
+                                                Male->M worked)
+  BirthDate              YES    19850101        POOLED from KQName (yyyyMMdd OK)
+  Name                   YES    DOE,JOHN        POOLED from KQName (serializer
+                                                uppercased lowercase input)
+
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: not recorded (not the test target)
+
+================================================================================
+RESULT
+================================================================================
+
+  FAIL
+
+  Reason: Union-pool over-send -- Name/DOB/Sex serialized beyond the firing
+          combo's fields because the KQName conditions array is inert.
+  Detail: The SEND itself is legal (GA OOS KQ is a valid query); FAIL refers
+          to pool isolation, not the dispatch. Serializer behavior notes:
+          uppercases free-text (doe->DOE, consistent with v4.9 "fl"->FL),
+          SexCode reverse-lookup works, BirthDate yyyyMMdd works.
+  Response XML: NOT YET CAPTURED -- requested from server logs.
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYR5Y9YBKW2Y3A8QM1XPZXN"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KTYR5Y9YBKW2Y3A8QM1XPZXN</Id><State>GA</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber><SexCode>M</SexCode><BirthDate>19850101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML RESPONSE (from server logs)
+================================================================================
+
+[NOT YET CAPTURED -- pending from server logs]

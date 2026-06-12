@@ -1,29 +1,90 @@
-================================================================
-TEST LOG: FL_FCIC Person DriverHistoryQuery
-Combo: KQOperatorLicenseNumber (T-A: DH OLN + State=FL EXACT UPPERCASE -> SENT. Case-sensitivity eliminated; value-comparison conditions wholly inert on USx RMS client. FL-gate not buildable with conditions.)
-Variant: BASE
-Date: 2026-06-12 16:29:36
-Result: FAIL
-================================================================
+FL_FCIC BASE v4.9 -- Test Log
+============================================================
+Date       : 2026-06-12
+JSON       : FL_FCIC.json (v4.9, imported USx Tenant 2026-06-12)
+Entity     : Person
+Combo      : KQ-OLN-StateFL-NEGATIVE (T-A discriminating: DH OLN + Destination State=FL exact uppercase, nothing else. BLOCKED=case-sensitivity only; SENT=value-conditions wholly inert)
+Test type  : Negative / discriminating (platform conditions mechanism)
+Client     : USx tenant, RMS client, default bundle (NOT OnScene -- prior doc
+             language corrected)
 
-FORM STATE
-----------
-Not captured
+================================================================================
+FORM STATE (what was on the form when submitted)
+================================================================================
 
-XML REQUEST
------------
-Not captured
+  Form state JSON (default bundle):
+  {"imageIndicator":"Y","operatorLicenseNumberDH":"D999888777","registrationStateDH":"FL"}
 
-XML RESPONSE
-------------
-Not captured
+  Field                     Value              Source
+  ------------------------  -----------------  --------------------------------
+  operatorLicenseNumberDH   D999888777         typed
+  registrationStateDH       FL                 typed (EXACT UPPERCASE)
+  imageIndicator            Y                  default (DL card, not in KQ pool)
 
+================================================================================
+REQUEST SUMMARY
+================================================================================
+
+  Route       : MK43RS -> ConnectCic
+  Transaction : 01KTYR2ZJC87QX2C6FSEW1ZZVJ
+  MessageType : DriverHistoryQuery
+  keyReference: KQOperatorLicenseNumber
+
+  Fields sent in XML request:
+    Element                Value
+    ---------------------  -------------------
+    State                  FL
+    OperatorLicenseNumber  D999888777
+
+================================================================================
 FIELD ANALYSIS
---------------
-Not captured (no XML provided)
+================================================================================
 
-NOTES
------
+  Combination fired: KQOperatorLicenseNumber
+  Reason: set[operatorLicenseNumberDH, registrationStateDH] both populated.
+  Condition "State NOT_EQUALS FL" DID NOT BLOCK despite exact-uppercase literal
+  match. Case-sensitivity hypothesis ELIMINATED (v4.9 lowercase-"fl" theory).
 
+  QIDM attribute         Sent?  Value           Note
+  ---------------------  -----  --------------  --------------------------------
+  State                  YES    FL              SHOULD HAVE BEEN BLOCKED by
+                                                NOT_EQUALS FL condition
+  OperatorLicenseNumber  YES    D999888777      mapped from operatorLicenseNumberDH
+  ImageIndicator         NO     --              not in KQ combo pool (correct)
+  Name/BirthDate/SexCode NO     --              DH name fields empty (correct)
 
-RESULT: FAIL
+================================================================================
+RMS CO-FIRE (if applicable)
+================================================================================
+
+  RMS combo fired: not recorded (not the test target)
+
+================================================================================
+RESULT
+================================================================================
+
+  FAIL
+
+  Reason: Send button lit and query SENT with Destination State = FL (exact
+          uppercase). The NOT_EQUALS FL condition is non-functional.
+  Detail: VERDICT -- value-comparison conditions (NOT_EQUALS, and by class
+          EQUALS/IN/REGEX) do not gate combo firing on the USx RMS client.
+          Combined with T-B (same date): a value comparison in a conditions
+          array renders the ENTIRE array inert, including co-resident
+          NOT_EXISTS checks. Existence-only arrays remain live-proven
+          (DL v4.8 T1). FL-gate is NOT buildable with conditions ->
+          dropdown revert + condition removal + platform escalation.
+  Response XML: NOT YET CAPTURED -- requested from server logs (open question:
+          does FCIC reject State=FL KQ server-side?).
+
+================================================================================
+RAW XML REQUEST (from server logs)
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KTYR2ZJC87QX2C6FSEW1ZZVJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KTYR2ZJC87QX2C6FSEW1ZZVJ</Id><State>FL</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+================================================================================
+RAW XML RESPONSE (from server logs)
+================================================================================
+
+[NOT YET CAPTURED -- pending from server logs]
