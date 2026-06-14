@@ -15,9 +15,11 @@ ORDER (user directive): GAP-PROOFING FIRST, then NJ.
      iterate-phase gate + hypothesis-quarantine BEFORE touching NJ, then run NJ
      through the new gates as the first real exercise.
 
-NJ ROOT = 4 JSONs (one-JSON-in-root rule SUSPENDED until a random-branch winner is chosen):
-  NJ_NJCJIS.json (mainline v3.5) | NJ_NJCJIS_PASCAL.json | NJ_NJCJIS_RANDOM_COLLAPSED.json
-  | NJ_NJCJIS_RANDOM_REMOVED.json
+NJ ROOT = 4 JSONs (one-JSON-in-root rule SUSPENDED until a stolen-branch winner is chosen).
+RENAMED 2026-06-14 for PM clarity (RANDOM_* -> VehStolen* names):
+  NJ_NJCJIS.json (mainline v3.5) | NJ_NJCJIS_PASCAL.json
+  | NJ_NJCJIS_VehStolenSeparate.json (was RANDOM_COLLAPSED; v3.7-SEPARATE; "Vehicle Stolen" card title)
+  | NJ_NJCJIS_VehStolenRemoved.json  (was RANDOM_REMOVED;   v3.6-REMOVED, content unchanged)
 
 Step A -- REVIEW NJ, lead with the poisoned-array contradiction:
   Mainline routes RAND vs FULL via RandomRequest EQUALS Y/N conditions. The poisoned-array
@@ -31,11 +33,14 @@ Step A -- REVIEW NJ, lead with the poisoned-array contradiction:
       pre-decides the branch winner (COLLAPSED suffix-isolation / REMOVED deletion are the
       value-condition-free redesigns).
 
-Step B -- TEST the 2 random branches (after Step A):
-  RANDOM_REMOVED FIRST: run Q4a/Q4b premise test (known-stolen plate, inspect FULL response
-    XML for auto-QV evidence). Failure = REMOVED loses stolen capability -> branch dead, escalate.
-    Plan: docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt. Logs: -Version 3.6-REMOVED.
-  Then RANDOM_COLLAPSED: docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt (22 stubs). -Version 3.6-COLLAPSED.
+Step B -- TEST the 2 stolen branches:
+  VehStolenRemoved: DONE 2026-06-14 (Vehicle, request-side). All runnable tests PASS;
+    verdict sound; sole loss = NCIC# (approved). Q4b response-premise N/A in env (no state
+    backend). Plan: docs/TEST_PLAN_VEH_VehStolenRemoved.txt. Logs: -Version 3.6-REMOVED.
+    NOTE: env has NO live state responses -- testing is request-side XML + visual only.
+  VehStolenSeparate: NEXT -- import NJ_NJCJIS_VehStolenSeparate.json (v3.7), run discreteness
+    (QV fires only from "Vehicle Stolen" card) + both-plate firing order + intra-card over-send.
+    Plan: docs/TEST_PLAN_VEH_VehStolenSeparate.txt. Logs: -Version 3.7-SEPARATE.
   Decision gate: pick a winner, then un-suspend one-JSON rule (delete losers + suspension note).
 
 Lower-priority OPEN (already tracked above): PascalCase A/B mainline-vs-PascalCAD on USx,
@@ -67,12 +72,14 @@ tokens (CAD_UNIT_SELECT_VALUE etc.) stay uppercase.
 EXPERIMENTAL BRANCH EVALUATION (2026-06-10) -- one-JSON-in-root rule suspended by
 user directive until a winner is chosen; mainline v3.5 untouched. PAUSED 2026-06-11
 (superseded in priority by the PascalCase work):
-  NJ_NJCJIS_RANDOM_COLLAPSED.json | v3.6-COLLAPSED | 70P/0F/0W/0LIM | NOT live-tested
-    Stolen suffix-isolated on RANDOM card; autoSelect=true; no deselect.
-    Test package: docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt (PENDING; 22 stubs created)
-  NJ_NJCJIS_RANDOM_REMOVED.json   | v3.6-REMOVED   | 63P/0F/0W/0LIM | NOT live-tested
-    VehicleStolenQuery eliminated (user-approved QV skip; premise unverified).
-    Test package: docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt (PENDING -- run Q4a/Q4b FIRST)
+  NJ_NJCJIS_VehStolenSeparate.json | v3.7-SEPARATE | 70P/0F/0W/0LIM | NOT live-tested
+    (was RANDOM_COLLAPSED). Stolen suffix-isolated on "Vehicle Stolen" card (renamed from
+    "RANDOM" 2026-06-14); autoSelect=true; no deselect; disjoint set[] pools vs VehReg.
+    Test package: docs/TEST_PLAN_VEH_VehStolenSeparate.txt (PENDING). Logs -Version 3.7-SEPARATE.
+  NJ_NJCJIS_VehStolenRemoved.json  | v3.6-REMOVED   | 63P/0F/0W/0LIM | Vehicle DONE 2026-06-14
+    (was RANDOM_REMOVED). VehicleStolenQuery eliminated (user-approved QV skip). Stolen
+    preserved via Random=Y; sole loss NCIC#. Request-side Vehicle tests all PASS.
+    Test package: docs/TEST_PLAN_VEH_VehStolenRemoved.txt (Vehicle COMPLETE).
   v3.4  -- 69P/0F/0W/0LIM -- State defaults, single-JSON merge (2026-05-21)
   v3.2  -- 69P/0F/0W/0LIM -- 26/26 PASS (2026-05-18) -- full combo + CAD + deselect + any[] coverage
   v3.0  -- 69P/0F/0W/1LIM -- 14/14 PASS (2026-05-08) -- full combo coverage

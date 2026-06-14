@@ -55,12 +55,14 @@ v3.6-COLLAPSED + v3.6-REMOVED  2026-06-10  EXPERIMENTAL BRANCHES -- Vehicle Stol
   CHANGED
     - TWO new JSONs built alongside untouched mainline v3.5 (one-JSON-in-root rule
       SUSPENDED by user directive until a winner is chosen):
-    - NJ_NJCJIS_RANDOM_COLLAPSED.json (build_nj_njcjis_random_collapsed.ps1):
-      New CARD_VEH_RAND ("RANDOM") with suffixed Stolen triggers licensePlateNumberRand +
+    - NJ_NJCJIS_VehStolenSeparate.json (build_nj_njcjis_vehstolenseparate.ps1; was
+      RANDOM_COLLAPSED/build_nj_njcjis_random_collapsed.ps1, renamed 2026-06-14):
+      New CARD_VEH_RAND (title "Vehicle Stolen"; was "RANDOM" until 2026-06-14) with suffixed Stolen triggers licensePlateNumberRand +
       vehicleIdentificationNumberRand; ncicNumber + vehicleMakeCode MOVED there from VIN
       card (both stolen-only); VIN card shrinks to VIN alone; Stolen QIDM rewired to
       suffixed fields, autoSelect=true, queriesToDeselect removed. 70P/0F/0W/0LIM.
-    - NJ_NJCJIS_RANDOM_REMOVED.json (build_nj_njcjis_random_removed.ps1):
+    - NJ_NJCJIS_VehStolenRemoved.json (build_nj_njcjis_vehstolenremoved.ps1; was
+      RANDOM_REMOVED/build_nj_njcjis_random_removed.ps1, renamed 2026-06-14):
       VehicleStolenQuery QIDM deleted (QVN/QVP/QVV = user-approved skip of the 3
       metadata QV combos); ncicNumber + vehicleMakeCode removed from layout. 63P/0F/0W/0LIM.
     - validate.ps1 Phase 4 refined: multi-autoSelect on single QIF now PASSES when

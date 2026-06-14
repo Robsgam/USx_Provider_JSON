@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: NJ_NJCJIS_RANDOM_COLLAPSED
-  Source: NJ_NJCJIS_RANDOM_COLLAPSED.json
-  Generated: 2026-06-10 19:10
+  PICKLIST / DROPDOWN REPORT: NJ_NJCJIS_VehStolenRemoved
+  Source: NJ_NJCJIS_VehStolenRemoved.json
+  Generated: 2026-06-14 15:37
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -42,22 +42,17 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     registrationState [State] (default=NJ)
       Config: attributeTypeId=STATE
-    vehicleMakeCode [Vehicle Make]
-      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 --------------------------------------------------
 
   Config Type: QUERYINPUTDATAMAPPING
-    Config: NJ_NJCJIS_DriverLicenseQuery
-      SexCode -> SexCode
-        codeTypeProvider=NIBRS
-      State -> State
-        codeTypeProvider=NCIC
     Config: NJ_NJCJIS_VehicleRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
-    Config: NJ_NJCJIS_VehicleStolenQuery
+    Config: NJ_NJCJIS_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
       State -> State
         codeTypeProvider=NCIC
 
@@ -85,9 +80,6 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 --------------------------------------------------
 
-  QIDM: NJ_NJCJIS_VehicleStolenQuery
-    State -> targetField=State, codeTypeProvider=NCIC
-
   QIDM: NJ_NJCJIS_VehicleRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
@@ -100,5 +92,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 14
-  QRDM code type attrs: 13
+  Form dropdowns: 13
+  QRDM code type attrs: 12

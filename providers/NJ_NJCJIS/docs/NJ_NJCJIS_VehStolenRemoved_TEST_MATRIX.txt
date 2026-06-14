@@ -1,19 +1,16 @@
 NJ_NJCJIS MC v3.6 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-10
+Generated: 2026-06-14
 Variant: MC (multi-card per entity)
 Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
-Vehicle (4 cards, 11 fields):
+Vehicle (3 cards, 7 fields):
   CARD_VEH_OPT (Search Options):
     registrationState [Sel STATE, NJ], randomRequest [Sel YES_NO_UNKNOWN/NCIC, N], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_VEH_PLATE (PLATE SEARCH):
     licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
-  CARD_VEH_RAND (RANDOM):
-    ROW 1: licensePlateNumberRand [Inp 10], vehicleIdentificationNumberRand [Inp 20]
-    ROW 2: ncicNumber [Inp 10], vehicleMakeCode [Sel VEHICLE_MAKE]
   CARD_VEH_VIN (VIN SEARCH):
     vehicleIdentificationNumber [Inp 20]
 
@@ -39,9 +36,8 @@ Boat (1 card, 3 fields):
   CARD_BOA (BOAT SEARCH):
     registrationNumber [Inp 20], boatHullIdNumber [Inp 20], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
-QIDM SUMMARY (6 QIDMs, 13 combos)
+QIDM SUMMARY (5 QIDMs, 10 combos)
 ----------------------------------------
-  VehicleStolenQuery: 3 combos (QV x3), autoSelect=true
   VehicleRegistrationQuery: 4 combos (RQ x4), autoSelect=true
   DriverLicenseQuery: 2 combos (DQ x2), autoSelect=true
   GunQuery: 1 combos (QG x1)
@@ -56,14 +52,11 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     Render form. Verify 4 cards:                        [    ]
+ 1  Vehicle     Render form. Verify 3 cards:                        [    ]
               CARD_VEH_OPT: titled "Search Options".
               State dropdown=NJ, Random dropdown=N, Image dropdown=N.
               CARD_VEH_PLATE: titled "PLATE SEARCH".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              CARD_VEH_RAND: titled "RANDOM".
-              Plate Number, VIN.
-              NCIC Number, Vehicle Make dropdown (no default).
               CARD_VEH_VIN: titled "VIN SEARCH".
               VIN.
  2  Person      Render form. Verify 3 cards:                        [    ]
@@ -85,84 +78,77 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_ART: titled "NCIC ARTICLE QUERY".
               Serial Number, Article Type dropdown (no default), Image dropdown=N.
 
-PHASE 2: VEHICLE COMBOS (7 tests, 7 combos)
+PHASE 2: VEHICLE COMBOS (4 tests, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Vehicle     QV+N               ncicNumber=X123456789            [    ]
-              Expected: VehicleStolenQuery fires (QV)
- 7  Vehicle     QV+P               licensePlateNumberRand=TEST123   [    ]
-              Expected: VehicleStolenQuery fires (QV)
- 8  Vehicle     QV+V               vehicleIdentificationNumberRand=1HGCM... [    ]
-              Expected: VehicleStolenQuery fires (QV)
- 9  Vehicle     RQ+_RAND           licensePlateNumber=TEST123       [    ]
+ 6  Vehicle     RQ+N_RAND          vehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
-10  Vehicle     RQ+Plate           licensePlateNumber=TEST123       [    ]
+ 7  Vehicle     RQ+N               vehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
-11  Vehicle     RQ+N_RAND          vehicleIdentificationNumber=1HGCM8263... [    ]
+ 8  Vehicle     RQ+_RAND           licensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
-12  Vehicle     RQ+N               vehicleIdentificationNumber=1HGCM8263... [    ]
+ 9  Vehicle     RQ+Plate           licensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
 
 PHASE 3: PERSON COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-13  Person      DQ+birthDate       birthDate=01/15/1990, nameLast=DOE, n... [    ]
+10  Person      DQ+N+State         operatorLicenseNumber=D999888777, reg... [    ]
               Expected: DriverLicenseQuery fires (DQ)
-14  Person      DQ+N+State         operatorLicenseNumber=D999888777, reg... [    ]
+11  Person      DQ+birthDate       birthDate=01/15/1990, nameLast=DOE, n... [    ]
               Expected: DriverLicenseQuery fires (DQ)
 
 PHASE 4: BOAT COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-15  Boat        QB+Reg             registrationNumber=FL1234AB      [    ]
+12  Boat        QB+N               boatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QB)
-16  Boat        QB+N               boatHullIdNumber=FL1234AB56H7    [    ]
+13  Boat        QB+Reg             registrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB)
 
 PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-17  Firearm     QG+Serial          gunSerialNumber=GUN12345         [    ]
+14  Firearm     QG+Serial          gunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (QG)
 
 PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-18  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
+15  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
               Expected: ArticleSingleQuery fires (QA)
 
 PHASE 7: ANY[] FIELD TESTS (3 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-19  Vehicle     RQ+_RAND           + randomRequest, registrationState, licensePlateTypeCode [    ]
+16  Vehicle     RQ+_RAND           + randomRequest, registrationState, licensePlateTypeCode [    ]
               Expected: any[] fields present in XML output.
-20  Person      DQ+birthDate       + sexCode                       [    ]
+17  Person      DQ+birthDate       + sexCode                       [    ]
               Expected: any[] fields present in XML output.
-21  Firearm     QG+Serial          + gunCaliber, gunMake, gunModel [    ]
+18  Firearm     QG+Serial          + gunCaliber, gunMake, gunModel [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-22  Vehicle     Empty form, verify no Send button / no request.    [    ]
-23  Boat        Empty form, verify no Send button / no request.    [    ]
+19  Vehicle     Empty form, verify no Send button / no request.    [    ]
+20  Boat        Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 23 tests
+TOTAL: 20 tests
 
-COMBO COVERAGE (13/13):
-  VehicleStolenQuery: 3/3 -- T6(N), T7(P), T8(V)
-  VehicleRegistrationQuery: 4/4 -- T9(_RAND), T10(Plate), T11(N_RAND), T12(N)
-  DriverLicenseQuery: 2/2 -- T13(birthDate), T14(N)
-  GunQuery: 1/1 -- T17(Serial)
-  ArticleSingleQuery: 1/1 -- T18(Serial)
-  BoatQuery: 2/2 -- T15(Reg), T16(N)
+COMBO COVERAGE (10/10):
+  VehicleRegistrationQuery: 4/4 -- T6(N_RAND), T7(N), T8(_RAND), T9(Plate)
+  DriverLicenseQuery: 2/2 -- T10(N), T11(birthDate)
+  GunQuery: 1/1 -- T14(Serial)
+  ArticleSingleQuery: 1/1 -- T15(Serial)
+  BoatQuery: 2/2 -- T12(N), T13(Reg)
 
-IMPORT FILE: NJ_NJCJIS_RANDOM_COLLAPSED.json
+IMPORT FILE: NJ_NJCJIS_VehStolenRemoved.json

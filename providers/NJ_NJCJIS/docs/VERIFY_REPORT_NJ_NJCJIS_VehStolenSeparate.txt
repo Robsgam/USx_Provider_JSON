@@ -1,0 +1,56 @@
+================================================================
+  Build Report: NJ_NJCJIS_VehStolenSeparate
+  Source: NJ_NJCJIS_VehStolenSeparate.json
+  Generated: 2026-06-14 15:37
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: NJ_NJCJIS_VehStolenSeparate
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [PASS] No banned pattern 'LicensePlateNumberIn'
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 16 [imageIndicator, licensePlateNumberRand, ncicNumber, vehicleIdentificationNumberRand, vehicleMakeCode, licensePlateTypeCode, licensePlateYear, randomRequest, gunCaliber, gunMake, gunModel, gunSerialNumber, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
+  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
+  [PASS] Cross-bundle fieldId consistency checked
+
+--- CHECK 5: camelCase Enforcement ---
+  [INFO] camelCase check skipped (use -CamelCase to enable)
+
+--- CHECK 6: Reference Pattern Check ---
+  [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+  [PASS] All 2 RMS QIDMs have autoSelect=true
+
+--- CHECK 7: Cross-Variant Consistency ---
+  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+
+--- CHECK 8: Visible-First Mandate ---
+  [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (24) (RMS-generic allowed)
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: NJ_NJCJIS_VehicleRegistrationQuery/RQ_RAND: EQUALS; NJ_NJCJIS_VehicleRegistrationQuery/RQN_RAND: EQUALS
+
+========================================
+ VERIFICATION PASSED (with warnings): 9 PASS / 1 WARN / 0 FAIL
+========================================
+
+

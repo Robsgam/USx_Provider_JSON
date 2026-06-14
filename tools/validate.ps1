@@ -1674,7 +1674,7 @@ foreach ($entity in $entityQidms.Keys) {
         # Suffix-isolation refinement: if every pair of autoSelect QIDMs has fully
         # disjoint set[] trigger pools, neither can arm from the other's field entry --
         # toggle control exists structurally (separate cards). Pattern precedent:
-        # TX_TLETS_CCH (CCH-suffix), NJ RANDOM-COLLAPSED branch (Rand-suffix).
+        # TX_TLETS_CCH (CCH-suffix), NJ VehStolenSeparate branch (Rand-suffix).
         $setPools = @()
         foreach ($asq in $autoSelectQidms) {
             $pool = [System.Collections.Generic.HashSet[string]]::new()

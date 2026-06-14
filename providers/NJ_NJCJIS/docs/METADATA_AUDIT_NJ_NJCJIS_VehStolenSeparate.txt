@@ -1,13 +1,21 @@
+================================================================
+  Build Report: NJ_NJCJIS_VehStolenSeparate
+  Source: NJ_NJCJIS_VehStolenSeparate.json
+  Generated: 2026-06-14 15:37
+================================================================
+METADATA AUDIT
+==============
+
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-10 19:10
+ Generated: 2026-06-14 15:37
 ============================================================
 
 ============================================================
- METADATA AUDIT: NJ_NJCJIS_RANDOM_REMOVED
+ METADATA AUDIT: NJ_NJCJIS_VehStolenSeparate
 ============================================================
   XML: NJ_NJCJIS.xml
-  JSON: NJ_NJCJIS_RANDOM_REMOVED.json
+  JSON: NJ_NJCJIS_VehStolenSeparate.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -15,6 +23,7 @@
   [PASS] DriverLicenseQuery: in XML and JSON
   [PASS] GunQuery: in XML and JSON
   [PASS] VehicleRegistrationQuery: in XML and JSON
+  [PASS] VehicleStolenQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
   [PASS] QG: exists in XML GunQuery
@@ -51,7 +60,13 @@
   [PASS]   RandomRequest: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
-  VehicleStolenQuery: (not built in JSON -- see CHECK 1)
+  VehicleStolenQuery:
+  [PASS]   ImageIndicator: in XML and QIDM
+  [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   NCICNumber: in XML and QIDM
+  [PASS]   State: in XML and QIDM
+  [PASS]   VehicleIdentificationNumber: in XML and QIDM
+  [PASS]   VehicleMakeCode: in XML and QIDM
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
@@ -98,6 +113,17 @@
   [PASS]   keyRef FULL: set field 'State' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
   [PASS]   keyRef FULL: set field 'RandomRequest' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
   [PASS]   keyRef FULL: any field 'ImageIndicator' covered by invented variants (RQ_RAND,RQ,RQN_RAND,RQN)
+  VehicleStolenQuery:
+  [PASS]   keyRef QV: set field 'NCICNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'State' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleIdentificationNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'ImageIndicator' covered by invented variants (QVN,QVP,QVV)
+  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by invented variants (QVN,QVP,QVV)
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -115,6 +141,10 @@
   VehicleRegistrationQuery: 2 metadata search paths
   [PASS]   LicensePlateNumber: at least one combo built (e.g. RAND)
   [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. RAND)
+  VehicleStolenQuery: 3 metadata search paths
+  [PASS]   LicensePlateNumber: at least one combo built (e.g. QV)
+  [PASS]   NCICNumber: at least one combo built (e.g. QV)
+  [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. QV)
 
 --- CHECK 5: Field maxLength Alignment ---
   [PASS] articleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
@@ -128,10 +158,14 @@
   [PASS] licensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] licensePlateYear: maxLength 4 matches XML (LicensePlateYear)
   [PASS] vehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] licensePlateNumberRand: maxLength 10 matches XML (LicensePlateNumber)
+  [PASS] ncicNumber: maxLength 10 matches XML (NCICNumber)
+  [PASS] vehicleIdentificationNumberRand: maxLength 20 matches XML (VehicleIdentificationNumber)
 
 ============================================================
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 90 PASS / 0 FAIL / 0 WARN
+Total: 113 PASS / 0 FAIL / 0 WARN
 ============================================================
+

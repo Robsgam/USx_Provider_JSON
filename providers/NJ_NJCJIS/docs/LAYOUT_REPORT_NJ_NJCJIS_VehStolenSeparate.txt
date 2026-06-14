@@ -1,3 +1,30 @@
+================================================================
+  Build Report: NJ_NJCJIS_VehStolenSeparate
+  Source: NJ_NJCJIS_VehStolenSeparate.json
+  Generated: 2026-06-14 15:37
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== NJ_NJCJIS_VehStolenSeparate.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=4 fields=6
+  Person | entity=Person | qidm= | cards=3 fields=3
+  Firearm | entity=Firearm | qidm= | cards=1 fields=2
+  Article | entity=Article | qidm= | cards=1 fields=1
+  Boat | entity=Boat | qidm= | cards=1 fields=2
+QIDMs: 6
+  NJ_NJCJIS_VehicleStolenQuery | attrs=6 combos=3 autoSelect=True
+  NJ_NJCJIS_VehicleRegistrationQuery | attrs=7 combos=4 autoSelect=True
+  NJ_NJCJIS_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
+  NJ_NJCJIS_GunQuery | attrs=5 combos=1 autoSelect=
+  NJ_NJCJIS_ArticleSingleQuery | attrs=3 combos=1 autoSelect=
+  NJ_NJCJIS_BoatQuery | attrs=3 combos=2 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
 
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
@@ -84,3 +111,4 @@
     vehicleIdentificationNumber -> vehicle.vinNumber
     licensePlateNumber -> vehicle.tag
     registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

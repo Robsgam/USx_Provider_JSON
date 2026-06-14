@@ -1,36 +1,34 @@
-# build_nj_njcjis_random_collapsed.ps1  -- NJ_NJCJIS EXPERIMENTAL BRANCH: RANDOM-COLLAPSED
+# build_nj_njcjis_random_removed.ps1  -- NJ_NJCJIS EXPERIMENTAL BRANCH: RANDOM-REMOVED
 # =====================================================================
 # EXPERIMENTAL BRANCH (2026-06-10) -- DO NOT IMPORT AS MAINLINE
-# Candidate design: VehicleStolenQuery isolated on its own "RANDOM" card.
+# Candidate design: VehicleStolenQuery (QV) ELIMINATED from the JSON entirely.
+# Premise under evaluation: NJCJIS runs the QV stolen check automatically
+# state-side with registration queries, making the JSON-side query redundant.
 # Mainline NJ_NJCJIS.json (v3.5) is untouched. May be promoted to mainline.
 #
 # DELTAS vs build_nj_njcjis.ps1 (marked with "BRANCH DELTA"):
-#   1. Vehicle layout: new CARD_VEH_RAND ("RANDOM") with suffixed trigger fields
-#      licensePlateNumberRand + vehicleIdentificationNumberRand, plus ncicNumber and
-#      vehicleMakeCode MOVED from the VIN card (both are stolen-only fields --
-#      VehicleRegistrationQuery metadata has neither).
-#   2. CARD_VEH_VIN shrinks to vehicleIdentificationNumber alone.
-#   3. VehicleStolenQuery QIDM: sourceFields/set[]/any[] rewired to the suffixed
-#      trigger fields; autoSelect=true (safe: disjoint set[] pools vs VehReg --
-#      kills the v2.4 arming problem); queriesToDeselect REMOVED (nothing to
-#      defend against; avoids the v2.3/v2.8 deadlock class entirely).
-#   4. Output file: NJ_NJCJIS_RANDOM_COLLAPSED.json
-# targetFields unchanged -- NJCJIS receives identical QV transaction XML.
-# Accepted consequences: CAD dispatch cannot fire Stolen (CAD sends unsuffixed
-# plate/VIN); RMS does not co-fire from the RANDOM card.
+#   1. VehicleStolenQuery QIDM removed (QVN/QVP/QVV combos -- USER-APPROVED SKIP
+#      of the 3 metadata QV combos; that is the point of this branch).
+#   2. Vehicle layout: ncicNumber + vehicleMakeCode fields removed (both served
+#      ONLY the stolen query -- VehicleRegistrationQuery metadata has neither).
+#      CARD_VEH_VIN shrinks to vehicleIdentificationNumber alone.
+#   3. Output file: NJ_NJCJIS_RANDOM_REMOVED.json
+# CommSys QRDM kept intact: if the state auto-runs QV, its response tags still
+# come back and are data-mined (devdoc: "Data-Mined Transactions: NCIC (... QV ...)").
+# Consequence: no NCIC#-based stolen search path exists in this variant.
 # =====================================================================
 #
-# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis_random_collapsed.ps1
+# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis_random_removed.ps1
 
 param(
-    [string]$Version = "3.6-COLLAPSED"
+    [string]$Version = "3.6-REMOVED"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases"
-$OUT      = "$DIR\NJ_NJCJIS_RANDOM_COLLAPSED.json"
+$OUT      = "$DIR\NJ_NJCJIS_VehStolenRemoved.json"
 $VEROUT   = "$PHASEDIR\NJ_NJCJIS_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -49,7 +47,8 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
 $auth = Build-Auth -ProviderName 'NJ_NJCJIS'
 
-# QUERYRESULTDATAMAPPING (from KB specs)
+# QUERYRESULTDATAMAPPING (from KB specs) -- kept intact (QV response tags still
+# data-mined if the state auto-runs QV with registration queries)
 $results = Build-ProviderQrdm -ProviderName 'NJ_NJCJIS'
 
 $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
@@ -150,77 +149,11 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. VehicleStolenQuery -- BRANCH DELTA: suffix-isolated on RANDOM card
-#     autoSelect=true -- SAFE here: set[] triggers (licensePlateNumberRand,
-#     vehicleIdentificationNumberRand) are disjoint from VehReg's pool, so
-#     Stolen can never arm during a registration search (the v2.4 problem).
-#     queriesToDeselect REMOVED -- disjoint pools leave nothing to defend
-#     against (avoids the v2.3/v2.8 deadlock class).
-#     Suffix-isolation precedent: TX_TLETS_CCH (CCH-suffix), DH-suffix providers.
-# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'QV' for all stolen-vehicle combos; synthetic labels QVN (NCIC#),
-# QVP (plate), QVV (VIN) invented to differentiate routing. NOT real NJCJIS transaction codes.
-# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+# 1e. VehicleStolenQuery -- BRANCH DELTA: REMOVED ENTIRELY.
+#     QVN/QVP/QVV (metadata keyRef 'QV', 3 combos) are a USER-APPROVED SKIP in
+#     this variant (2026-06-10): premise is the state runs QV automatically
+#     with registration queries. No JSON-side stolen query, no Stolen checkbox.
 # =====================================================================
-$vehStolenQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('imageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('licensePlateNumberRand');         targetField = 'LicensePlateNumber' }
-        [PSCustomObject]@{ name = 'NCICNumber';                   size = 10; sourceField = @('ncicNumber');                   targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('vehicleIdentificationNumberRand');  targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 24; sourceField = @('vehicleMakeCode');              targetField = 'VehicleMakeCode' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('ncicNumber')
-                any      = @('imageIndicator')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                )
-            }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'QVN'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('licensePlateNumberRand')
-                any      = @('imageIndicator','registrationState','vehicleIdentificationNumberRand','vehicleMakeCode')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
-                )
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QVP'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('vehicleIdentificationNumberRand')
-                any      = @('imageIndicator','vehicleMakeCode')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                )
-            }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QVV'
-            state                 = 'In/Out'
-        }
-    )
-    description        = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). RANDOM-COLLAPSED branch: suffix-isolated triggers on dedicated RANDOM card; autoSelect=true (disjoint set[] pools vs VehReg); no queriesToDeselect.'
-    handlerFunction    = 'CommsysTransactionRequestHandler'
-    name               = 'NJ_NJCJIS_VehicleStolenQuery'
-    type               = 'QUERYINPUTDATAMAPPING'
-    autoSelect         = $true
-    provider           = 'NJ_NJCJIS'
-    providerType       = 'Commsys'
-    query              = 'VehicleStolenQuery'
-    queryLabel         = 'Vehicle Stolen'
-    targetEntity       = 'Vehicle'
-}
 
 # =====================================================================
 # 1f. DriverLicenseQuery -- UNCHANGED from mainline
@@ -405,8 +338,9 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# BRANCH DELTA: $vehStolenQuery omitted from configurations
 $njBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehStolenQuery, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for NJ_NJCJIS v${Version} MC"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'
@@ -415,17 +349,15 @@ $njBundle = [PSCustomObject]@{
 
 # =====================================================================
 # BUNDLE 2: ENTITIES (multi-card layouts)
-# BRANCH DELTA -- Vehicle: 4 cards (OPTIONS + PLATE + VIN + RANDOM)
-# Person: 3 cards (OPTIONS+OLN+NAME); Firearm/Article/Boat: 1 card each
+# BRANCH DELTA -- Vehicle: 3 cards, VIN card = VIN only (ncicNumber and
+# vehicleMakeCode removed -- both served ONLY the deleted stolen query)
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- BRANCH DELTA: 4 cards: OPTIONS, PLATE SEARCH, VIN SEARCH, RANDOM
+# Vehicle -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
 # OPTIONS: State+Random+Image (shared routing fields for all combos)
-# PLATE SEARCH: Plate+PlateType+PlateYear (VehicleRegistrationQuery)
-# VIN SEARCH: VIN only (VehicleRegistrationQuery)
-# RANDOM: PlateRand+VINRand (suffixed Stolen triggers) + NCIC#+Make (moved here --
-#         both stolen-only fields; VehicleRegistrationQuery metadata has neither)
+# PLATE SEARCH: Plate+PlateType+PlateYear
+# VIN SEARCH: VIN only (BRANCH DELTA)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -459,23 +391,9 @@ $vehLayout = MakeLayouts @(
             )}
         )
     }
-    @{
-        id    = 'CARD_VEH_RAND'
-        title = 'RANDOM'
-        rows  = @(
-            @{ id = 'ROW_VEH_R1'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateNumberRand_Input';          node = Inp 'licensePlateNumberRand' 'Plate Number' '10' 'ROW_VEH_R1' }
-                @{ id = 'VehicleIdentificationNumberRand_Input'; node = Inp 'vehicleIdentificationNumberRand' 'VIN' '20' 'ROW_VEH_R1' }
-            )}
-            @{ id = 'ROW_VEH_R2'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';      node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_R2' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_R2' }
-            )}
-        )
-    }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- RANDOM-COLLAPSED branch: OPTIONS + PLATE + VIN + RANDOM cards. Stolen triggers suffix-isolated on RANDOM card.'
+    description  = 'Vehicle queries -- RANDOM-REMOVED branch: OPTIONS + PLATE + VIN cards. VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -614,8 +532,7 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
-# NOTE: RMS Vehicle sourceFields stay unsuffixed -- RMS co-fires from the
-# PLATE/VIN cards only, not from the RANDOM card (accepted by design).
+# Unchanged: RMS Vehicle uses licensePlateNumber/VIN/registrationState only.
 # =====================================================================
 $rmsBundle = Build-RmsBundle
 # =====================================================================
@@ -626,7 +543,7 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built NJ_NJCJIS v${Version} (RANDOM-COLLAPSED experimental branch)"
+    -Label "Built NJ_NJCJIS v${Version} (RANDOM-REMOVED experimental branch)"
 
 Write-Host ""
-Write-Host "Build complete -- EXPERIMENTAL BRANCH (RANDOM-COLLAPSED). Mainline NJ_NJCJIS.json untouched."
+Write-Host "Build complete -- EXPERIMENTAL BRANCH (RANDOM-REMOVED). Mainline NJ_NJCJIS.json untouched."

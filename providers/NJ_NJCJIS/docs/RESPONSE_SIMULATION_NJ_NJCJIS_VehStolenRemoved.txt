@@ -1,8 +1,17 @@
+================================================================
+  Build Report: NJ_NJCJIS_VehStolenRemoved
+  Source: NJ_NJCJIS_VehStolenRemoved.json
+  Generated: 2026-06-14 15:37
+================================================================
+RESPONSE SIMULATION
+==================
+
 
 ========================================================================
-  CJIS RESPONSE HANDLER SIMULATION -- NJ_NJCJIS_RANDOM_COLLAPSED v3.6-COLLAPSED
-  Generated: 2026-06-10 19:10
+  CJIS RESPONSE HANDLER SIMULATION -- NJ_NJCJIS_VehStolenRemoved v3.5
+  Generated: 2026-06-14 15:37
   QRDM: NJ_NJCJIS_Results  |  67 attributes  |  5 entity combos
+  Mode: Standard + Edge Cases
 ========================================================================
 
   ====================================================================
@@ -95,6 +104,94 @@
               Target: Weight -> UI: 3200
 
   Summary: 24 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  EDGE CASES:
+
+  -- 2-digit year < 50 --
+  [MAPPED]    LicensePlateNumber                 Raw: NJD1234
+              Target: LicensePlateNumber -> UI: NJD1234
+  [MAPPED]    VehicleColorCode                   Raw: BLK
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleColorCode: 'BLK' -> 'Black'
+              Target: VehicleColorCode -> UI: Black
+  [MAPPED]    VehicleMakeCode                    Raw: FORD
+              Target: VehicleMakeCode -> UI: FORD
+  [MAPPED]    VehicleMakeName                    Raw: FORD
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'FORD' -> 'Ford'
+              Target: VehicleMakeName -> UI: Ford
+  [MAPPED]    VehicleYear                        Raw: 22
+              Handler: ParseCommsysVehicleYearRuleHandler
+              22 < 50 -> 2000 + 22 = 2022
+              Target: VehicleYear -> UI: 2022
+
+  -- 2-digit year >= 50 --
+  [MAPPED]    LicensePlateNumber                 Raw: NJD5678
+              Target: LicensePlateNumber -> UI: NJD5678
+  [MAPPED]    VehicleColorCode                   Raw: WHI
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleColorCode: 'WHI' -> 'White'
+              Target: VehicleColorCode -> UI: White
+  [MAPPED]    VehicleMakeCode                    Raw: CHEV
+              Target: VehicleMakeCode -> UI: CHEV
+  [MAPPED]    VehicleMakeName                    Raw: CHEV
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'CHEV' -> 'Chevrolet'
+              Target: VehicleMakeName -> UI: Chevrolet
+  [MAPPED]    VehicleYear                        Raw: 75
+              Handler: ParseCommsysVehicleYearRuleHandler
+              75 >= 50 -> 1900 + 75 = 1975
+              Target: VehicleYear -> UI: 1975
+
+  -- Unknown color code --
+  [MAPPED]    LicensePlateNumber                 Raw: NJD9999
+              Target: LicensePlateNumber -> UI: NJD9999
+  [UNMAPPED]  VehicleColorCode                   Raw: XYZ
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleColorCode: 'XYZ' NOT FOUND in table ({RED,BLU,ONG,BRN,WHI,PNK,TAN,MAR,GRN,SLV,BEG,PRP,CPR,YEL,GLD,BLK,UNK,GRY})
+              Target: VehicleColorCode -> UI: (blank or raw code)
+  [MAPPED]    VehicleMakeCode                    Raw: TOYT
+              Target: VehicleMakeCode -> UI: TOYT
+  [MAPPED]    VehicleMakeName                    Raw: TOYT
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'TOYT' -> 'Toyota'
+              Target: VehicleMakeName -> UI: Toyota
+  [MAPPED]    VehicleYear                        Raw: 2019
+              Handler: ParseCommsysVehicleYearRuleHandler
+              4-digit year: 2019 (passthrough)
+              Target: VehicleYear -> UI: 2019
+
+  -- Unknown make code --
+  [MAPPED]    LicensePlateNumber                 Raw: NJA1111
+              Target: LicensePlateNumber -> UI: NJA1111
+  [MAPPED]    VehicleColorCode                   Raw: RED
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleColorCode: 'RED' -> 'Red'
+              Target: VehicleColorCode -> UI: Red
+  [MAPPED]    VehicleMakeCode                    Raw: UNKN
+              Target: VehicleMakeCode -> UI: UNKN
+  [UNMAPPED]  VehicleMakeName                    Raw: UNKN
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'UNKN' NOT FOUND in table ({LINC,OLDS,VOLK,BMW,SUBA,MERZ,KIA,LEXS,CHRY,CADI,AUDI,HOND,MITS,HYUN,VOLV,MINI,DODG,FORD,CHEV,BUIC,INFI,GMC,SATU,MERC,TOYT,NISS,PONT,JEEP,MAZD})
+              Target: VehicleMakeName -> UI: (blank or raw code)
+  [MAPPED]    VehicleYear                        Raw: 2021
+              Handler: ParseCommsysVehicleYearRuleHandler
+              4-digit year: 2021 (passthrough)
+              Target: VehicleYear -> UI: 2021
+
+  -- Missing VIN --
+  [MAPPED]    LicensePlateNumber                 Raw: NJD1234
+              Target: LicensePlateNumber -> UI: NJD1234
+  [MAPPED]    VehicleMakeCode                    Raw: HOND
+              Target: VehicleMakeCode -> UI: HOND
+  [MAPPED]    VehicleMakeName                    Raw: HOND
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=VehicleMakeName: 'HOND' -> 'Honda'
+              Target: VehicleMakeName -> UI: Honda
+  [MAPPED]    VehicleYear                        Raw: 2020
+              Handler: ParseCommsysVehicleYearRuleHandler
+              4-digit year: 2020 (passthrough)
+              Target: VehicleYear -> UI: 2020
 
   ====================================================================
   ENTITY: Person  |  Synthetic standard
@@ -252,6 +349,202 @@
 
   Summary: 39 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
+  EDGE CASES:
+
+  -- Name: "DOE,JOHN" (no middle) --
+  [MAPPED]    BirthDate                          Raw: 19850101
+              Target: BirthDate -> UI: 19850101
+  [MAPPED]    Height                             Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: Height -> UI: 6'0"
+  [MAPPED]    HeightDisplay                      Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: HeightDisplay -> UI: 6'0"
+  [MAPPED]    Name                               Raw: DOE,JOHN
+              Handler: ParseCommsysNameRuleHandler
+              Level 3: Parsing Name string 'DOE,JOHN' -> comma-separated: Last='DOE' First='JOHN' Middle=''
+              Target: Name -> UI: DOE,JOHN
+  [MAPPED]    RaceCode                           Raw: W
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=RaceCode: 'W' -> 'White'
+              Target: RaceCode -> UI: White
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+
+  -- Name: "DOE JOHN" (space, no comma) --
+  [MAPPED]    BirthDate                          Raw: 19920301
+              Target: BirthDate -> UI: 19920301
+  [MAPPED]    Height                             Raw: 505
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '505' -> 5 feet 5 inches
+              Target: Height -> UI: 5'5"
+  [MAPPED]    HeightDisplay                      Raw: 505
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '505' -> 5 feet 5 inches
+              Target: HeightDisplay -> UI: 5'5"
+  [MAPPED]    Name                               Raw: DOE JOHN
+              Handler: ParseCommsysNameRuleHandler
+              Level 3: Parsing Name string 'DOE JOHN' -> two tokens: Last='DOE' First='JOHN'
+              Target: Name -> UI: DOE JOHN
+  [MAPPED]    SexCode                            Raw: F
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'F' -> 'Female'
+              Target: SexCode -> UI: Female
+
+  -- Name: "SMITH JOHN Q" (3 tokens, 1-char last) --
+  [MAPPED]    BirthDate                          Raw: 19750615
+              Target: BirthDate -> UI: 19750615
+  [MAPPED]    Height                             Raw: 510
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '510' -> 5 feet 10 inches
+              Target: Height -> UI: 5'10"
+  [MAPPED]    HeightDisplay                      Raw: 510
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '510' -> 5 feet 10 inches
+              Target: HeightDisplay -> UI: 5'10"
+  [MAPPED]    Name                               Raw: SMITH JOHN Q
+              Handler: ParseCommsysNameRuleHandler
+              Level 3: Parsing Name string 'SMITH JOHN Q' -> last-token=initial: Last='SMITH' First='JOHN' Middle='Q'
+              Target: Name -> UI: SMITH JOHN Q
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+
+  -- Height: 4-digit "0511" --
+  [MAPPED]    BirthDate                          Raw: 19900101
+              Target: BirthDate -> UI: 19900101
+  [MAPPED]    Height                             Raw: 0511
+              Handler: HeightParserRuleHandler
+              Unrecognized format: '0511' -- returned as-is
+              Target: Height -> UI: 0511
+  [MAPPED]    HeightDisplay                      Raw: 0511
+              Handler: HeightParserRuleHandler
+              Unrecognized format: '0511' -- returned as-is
+              Target: HeightDisplay -> UI: 0511
+  [MAPPED]    Name                               Raw: TEST,USER
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='TEST', First='', Middle='')
+              Target: Name -> UI: TEST,
+  [MAPPED]    NameLast                           Raw: TEST
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='TEST', First='', Middle='')
+              Target: NameLast -> UI: TEST
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+
+  -- Unknown SexCode "X" --
+  [MAPPED]    BirthDate                          Raw: 19950301
+              Target: BirthDate -> UI: 19950301
+  [MAPPED]    Height                             Raw: 504
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '504' -> 5 feet 4 inches
+              Target: Height -> UI: 5'4"
+  [MAPPED]    HeightDisplay                      Raw: 504
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '504' -> 5 feet 4 inches
+              Target: HeightDisplay -> UI: 5'4"
+  [MAPPED]    NameFirst                          Raw: JANE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JANE', Middle='')
+              Target: NameFirst -> UI: JANE
+  [MAPPED]    NameLast                           Raw: DOE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JANE', Middle='')
+              Target: NameLast -> UI: DOE
+  [MAPPED]    RaceCode                           Raw: W
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=RaceCode: 'W' -> 'White'
+              Target: RaceCode -> UI: White
+  [UNMAPPED]  SexCode                            Raw: X
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'X' NOT FOUND in table ({F,M,N,U})
+              Target: SexCode -> UI: (blank or raw code)
+
+  -- Unknown RaceCode "Z" --
+  [MAPPED]    BirthDate                          Raw: 19880901
+              Target: BirthDate -> UI: 19880901
+  [MAPPED]    Height                             Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: Height -> UI: 6'0"
+  [MAPPED]    HeightDisplay                      Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: HeightDisplay -> UI: 6'0"
+  [MAPPED]    NameFirst                          Raw: JOHN
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
+              Target: NameFirst -> UI: JOHN
+  [MAPPED]    NameLast                           Raw: DOE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
+              Target: NameLast -> UI: DOE
+  [UNMAPPED]  RaceCode                           Raw: Z
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=RaceCode: 'Z' NOT FOUND in table ({I,A,H,B,U,W})
+              Target: RaceCode -> UI: (blank or raw code)
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+
+  -- SSN truncation (>11 chars) --
+  [MAPPED]    BirthDate                          Raw: 19900101
+              Target: BirthDate -> UI: 19900101
+  [MAPPED]    Height                             Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
+  [MAPPED]    NameLast                           Raw: DOE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='', Middle='')
+              Target: NameLast -> UI: DOE
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+  [MAPPED]    SocialSecurityNumber               Raw: 123-45-6789-EXTRA
+              Handler: truncate
+              Truncated from 17 to 11 chars: '123-45-6789'
+              Target: SocialSecurityNumber -> UI: 123-45-6789
+
+  -- Missing DOB --
+  [MAPPED]    Height                             Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
+  [MAPPED]    NameFirst                          Raw: JOHN
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
+              Target: NameFirst -> UI: JOHN
+  [MAPPED]    NameLast                           Raw: DOE
+              Handler: ParseCommsysNameRuleHandler
+              Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
+              Target: NameLast -> UI: DOE
+  [MAPPED]    RaceCode                           Raw: W
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=RaceCode: 'W' -> 'White'
+              Target: RaceCode -> UI: White
+  [MAPPED]    SexCode                            Raw: M
+              Handler: CommsysResultAttributeMappingRuleHandler
+              table=SexCode: 'M' -> 'Male'
+              Target: SexCode -> UI: Male
+
   ====================================================================
   ENTITY: Firearm  |  Synthetic standard
   ====================================================================
@@ -304,6 +597,28 @@
               Target: System -> UI: Firearm Query Result
 
   Summary: 14 MAPPED / 0 MISSING / 0 UNMAPPED codes
+
+  EDGE CASES:
+
+  -- Missing serial --
+  [MAPPED]    GunMake                            Raw: COLT
+              Target: FirearmMake -> UI: COLT
+  [MAPPED]    GunTypeCode                        Raw: PI
+              Target: GunTypeCode -> UI: PI
+
+  -- All fields --
+  [MAPPED]    GunCaliber                         Raw: 38
+              Target: Caliber -> UI: 38
+  [MAPPED]    GunMake                            Raw: SMIT
+              Target: FirearmMake -> UI: SMIT
+  [MAPPED]    GunModel                           Raw: 38SPL
+              Target: GunModel -> UI: 38SPL
+  [MAPPED]    GunSerialNumber                    Raw: SN99999
+              Target: GunSerialNumber -> UI: SN99999
+  [MAPPED]    GunTypeCode                        Raw: RV
+              Target: GunTypeCode -> UI: RV
+  [MAPPED]    SerialNumber                       Raw: SN99999
+              Target: SerialNumber -> UI: SN99999
 
   ====================================================================
   ENTITY: Article  |  Synthetic standard
@@ -408,4 +723,5 @@
 ========================================================================
   TOTAL: 103 MAPPED / 0 MISSING / 0 UNMAPPED
 ========================================================================
+
 
