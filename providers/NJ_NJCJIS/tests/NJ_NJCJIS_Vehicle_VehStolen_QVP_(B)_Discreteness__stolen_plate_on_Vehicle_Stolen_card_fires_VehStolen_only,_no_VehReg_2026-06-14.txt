@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleStolenQuery
+Combo: QVP (B) (Discreteness: stolen plate on Vehicle Stolen card fires VehStolen only, no VehReg)
+Variant: MC
+Date: 2026-06-14 15:52:38
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Vehicle Stolen card: licensePlateNumberRand=ABC1234
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleStolenQuery</MessageType><ImageIndicator>N</ImageIndicator><State>NJ</State><LicensePlateNumber>ABC1234</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  State                          NJ
+  LicensePlateNumber             ABC1234
+
+NOTES
+-----
+Separate branch. 1 txn only (VehStolen QVP), State=NJ, Image=N, no RandomRequest/plateType/year. VehReg did NOT fire -- discreteness confirmed.
+
+RESULT: PASS
