@@ -264,6 +264,12 @@ TOOLS
     coverage matrix, checks SQVR alignment, identifies orphan test logs.
     Usage: .\audit_test_coverage.ps1 [-Path <json>] [-OutFile <path>]
 
+  tools/verify_claims.ps1
+    Hypothesis quarantine. Every KB/simulator platform-behavior claim tagged
+    "live-proven" must cite an existing committed test-log path; flags unbacked
+    claims. Wired into enforce.ps1 PHASE 6. Long-path (>260) safe.
+    Usage: .\verify_claims.ps1 [-OutFile <path>]
+
   tools/new_provider.ps1
     Scaffolds a new provider with canonical folder structure, build script
     stubs, doc templates, and tool registrations. Derives folder name from
