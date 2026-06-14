@@ -143,6 +143,17 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   All conditions in the list must pass (AND logic). They restrict which combos
   apply based on field VALUES, not just field presence.
 
+  CLAIM STATUS CONVENTION (enforced by tools/verify_claims.ps1):
+    Every platform-behavior assertion in this file (and PLATFORM_CONSTRAINTS.txt,
+    BUILD_RULES.txt, and the simulators) carries a status line:
+      STATUS: LIVE-PROVEN <test-log path>           -- confirmed by a COMMITTED log
+      STATUS: HYPOTHESIS <named discriminating test> -- not yet proven
+    LIVE-PROVEN must cite a real path (archived logs under tests/_archive_pre_v*/
+    count). A HYPOTHESIS may NOT be encoded in a simulator as fact. This is the
+    guardrail against the FL v4.7->v5.0 churn, where a hypothesis was written in
+    as "live-proven" before the test ran. The poisoned-array rule below shows the
+    convention in use.
+
   REQUIRED WIRE FORMAT (live-proven; violations are SILENTLY IGNORED):
     - conditions MUST be nested INSIDE requirements (sibling of set/any/defaults),
       NOT at combo level. FL v4.7 placed them at combo level and the platform
@@ -181,7 +192,11 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
     serialization pool. Existence-ONLY arrays (EXISTS/NOT_EXISTS exclusively)
     work correctly for both firing and pool isolation.
 
-  Evidence (both logs in providers/FL_FCIC/tests/, request XML captured):
+  STATUS: LIVE-PROVEN providers/FL_FCIC/tests/_archive_pre_v5.0/FL_FCIC_Person_DH_KQOperatorLicenseNumber_T-A__DH_OLN_+_State=FL_EXACT_UPPERCASE_-__SENT._Case-sensitivity_eliminated;_value-comparison_conditions_wholly_inert_on_USx_RMS_client._FL-gate_not_buildable_with_conditions._2026-06-12.txt
+  STATUS: LIVE-PROVEN providers/FL_FCIC/tests/_archive_pre_v5.0/FL_FCIC_Person_DH_KQName-pooling_T-B__full_DH_card_+_State=GA_-__KQ_sent_(legal)_but_Name_DOB_Sex_POOLED_despite_KQName_OLN_NOT_EXISTS._Confirms_value-comparison_poisons_entire_conditions_array_incl_NOT_EXISTS_members._2026-06-12.txt
+
+  Evidence (request XML captured in both logs; cited above -- archived to
+  tests/_archive_pre_v5.0/ on the v5.0 reset, still committed evidence):
     T-A: DH OLN + literal FormInput destination = "FL" (EXACT uppercase,
          raw form value confirmed "FL" in form-state JSON). Conditions
          [State NOT_EQUALS FL] should have blocked. KQ SENT with State=FL.

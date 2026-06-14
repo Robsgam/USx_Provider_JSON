@@ -132,11 +132,54 @@ if (Test-Path $statusPath) {
 # 4. Stamp the new test version (UTF-8 no BOM so the comparison stays reliable)
 [System.IO.File]::WriteAllText($stateFile, $version, (New-Object System.Text.UTF8Encoding($false)))
 
+# 5. Regenerate TEST_MATRIX so it never goes stale against the rebuilt JSON.
+#    A combo add/remove between versions otherwise leaves the matrix claiming the old
+#    count -- which audit_test_coverage -Gate flags as INCONSISTENT (matrix != JSON).
+function Get-MatrixCount($matrixPath) {
+    if (-not (Test-Path $matrixPath)) { return $null }
+    $t = [System.IO.File]::ReadAllText($matrixPath)
+    if ($t -match 'COMBO COVERAGE\s*\(\s*\d+\s*/\s*(\d+)\s*\)') { return [int]$Matches[1] }
+    if ($t -match 'QIDM SUMMARY\s*\(\s*\d+\s*QIDMs?,\s*(\d+)\s*combos?\)') { return [int]$Matches[1] }
+    return $null
+}
+
+$matrixPath = Join-Path $docsDir "${Provider}_TEST_MATRIX.txt"
+$oldMatrixCount = Get-MatrixCount $matrixPath
+
+# Locate the active JSON: single-JSON <PROVIDER>.json, then legacy _MC / _BASE.
+$activeJson = Join-Path $provDir "$Provider.json"
+if (-not (Test-Path $activeJson)) {
+    $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
+    if ($alt) { $activeJson = $alt.FullName }
+}
+
+$matrixRegenerated = $false
+$matrixDelta = $null
+if (Test-Path $activeJson) {
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $toolDir "generate_test_matrix.ps1") -Path $activeJson -OutFile $matrixPath 2>&1 | Out-Null
+    if (Test-Path $matrixPath) {
+        $matrixRegenerated = $true
+        $newMatrixCount = Get-MatrixCount $matrixPath
+        if ($null -ne $oldMatrixCount -and $null -ne $newMatrixCount -and $oldMatrixCount -ne $newMatrixCount) {
+            $matrixDelta = "$oldMatrixCount -> $newMatrixCount"
+        }
+    }
+}
+
 Say ""
 Say "  RESET: $Provider test package restarted for v$version" "Yellow"
 Say "    - archived $archived prior log(s) -> tests/_archive_pre_v$version/" "Gray"
 Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
 Say "    - cleared $statusCleared STATUS live-test row(s)" "Gray"
 Say "    - stamped tests/.test_version = v$version" "Gray"
+if ($matrixRegenerated) {
+    Say "    - regenerated docs/${Provider}_TEST_MATRIX.txt" "Gray"
+    if ($matrixDelta) {
+        Say "    [WARN] TEST_MATRIX combo count changed ($matrixDelta) -- combos added/removed this rebuild" "Yellow"
+    }
+} else {
+    Say "    [WARN] could not regenerate TEST_MATRIX (no active JSON found at $activeJson)" "Yellow"
+}
 Say "  Re-run the full test matrix from Test 1 (see docs/${Provider}_TEST_MATRIX.txt)" "Gray"
 exit 0

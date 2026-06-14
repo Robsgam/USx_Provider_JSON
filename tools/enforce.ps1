@@ -499,6 +499,58 @@ if (-not $SkipGit) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 6: Iterate-Phase Gate + Hypothesis Quarantine
+# ══════════════════════════════════════════════════════════════════════════════
+# The build phase (Phases 1-5) is hard-gated. Phase 6 closes the test->change->iterate
+# phase: a provider can no longer carry stale [CONFIRMED] markers, missing XML, or a stale
+# TEST_MATRIX and still read as "done". And no KB/simulator "live-proven" claim may exist
+# without a committed test log behind it. Both are BLOCKING on a real contradiction.
+SectionHeader "PHASE 6: Iterate-Phase Gate + Claims"
+
+# 6a: Hypothesis quarantine -- every live-proven KB/simulator claim must cite an existing log.
+$claimsOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\verify_claims.ps1" 2>&1 | Out-String
+$claimsExit = $LASTEXITCODE
+if ($claimsExit -eq 0) {
+    Pass "Hypothesis quarantine: all live-proven claims cite committed test logs"
+} else {
+    Fail "Hypothesis quarantine: unbacked/stale 'live-proven' claim(s) found"
+    $claimsOut -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | ForEach-Object { Out "       $($_.Trim())" }
+}
+
+# 6b: Iterate-phase gate -- CLOSED / INCOMPLETE-consistent / INCONSISTENT per provider.
+# Scope to the single provider when -Provider was given, else all providers.
+$gateArgs = @("-ExecutionPolicy", "Bypass", "-File", "$toolDir\audit_test_coverage.ps1", "-Gate")
+if ($Provider) {
+    $provJsonForGate = Join-Path (Join-Path $provDir $Provider) "$Provider.json"
+    if (-not (Test-Path $provJsonForGate)) {
+        $altGate = Get-ChildItem (Join-Path $provDir $Provider) -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $altGate) { $altGate = Get-ChildItem (Join-Path $provDir $Provider) -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
+        if ($altGate) { $provJsonForGate = $altGate.FullName }
+    }
+    if (Test-Path $provJsonForGate) { $gateArgs += @("-Path", $provJsonForGate) }
+}
+$gateOut  = & powershell @gateArgs 2>&1 | Out-String
+$gateExit = $LASTEXITCODE
+
+# Parse the verdict-summary block: lines are "  <Provider>   <VERDICT>" (2-space indent,
+# provider token, verdict). Exclude the per-provider "GATE VERDICT:" detail and headers.
+$badProviders = @()
+foreach ($l in ($gateOut -split "`n")) {
+    if ($l -match '^\s{2}(\S+)\s+INCONSISTENT\s*$') {
+        $name = $Matches[1]
+        if ($name -notmatch 'GATE|VERDICT') {
+            $badProviders += $name
+            Out "       [verdict] $name INCONSISTENT"
+        }
+    }
+}
+if ($gateExit -eq 0) {
+    Pass "Iterate-phase gate: no INCONSISTENT providers (CLOSED or INCOMPLETE-consistent)"
+} else {
+    Fail "Iterate-phase gate: INCONSISTENT provider(s) -- $($badProviders -join ', ')"
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  VERDICT
 # ══════════════════════════════════════════════════════════════════════════════
 Out ""

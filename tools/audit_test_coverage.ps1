@@ -14,11 +14,22 @@
     4. SQVR Alignment      -- compare [CONFIRMED] vs test log count
     5. Orphan Test Logs    -- test logs that don't match any combo
     6. Overall Summary     -- coverage percentage + missing tests
+
+  -Gate mode (blocking iterate-phase gate):
+    Computes a per-provider loop verdict and exits non-zero if ANY provider is
+    INCONSISTENT. The three verdicts:
+      CLOSED                -- nothing [PENDING]; every path [CONFIRMED]-with-XML or
+                               [APPROVED SKIP]; TEST_MATRIX combo count == JSON; version aligned.
+      INCOMPLETE-consistent -- combos still [PENDING], no contradictions. Legitimate for a
+                               freshly-built / not-yet-tested provider (e.g. FL v5.0). NOT done.
+      INCONSISTENT          -- a contradiction exists (see Gate-Verdict). Exit non-zero.
+    Wired into enforce.ps1 as a blocking phase. Default (no -Gate) keeps advisory exit 0.
 #>
 
 param(
     [string]$Path,
-    [string]$OutFile
+    [string]$OutFile,
+    [switch]$Gate
 )
 
 $ErrorActionPreference = "Stop"
@@ -203,6 +214,71 @@ function Match-TestLogToCombo($logName, $combo, $providerName) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+# GATE HELPERS (used only in -Gate mode)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Read the build-script version ($Version = "X.Y"). Mirrors enforce.ps1 / reset_test_package.ps1.
+# Prefer the canonical mainline script build_<provider>.ps1 -- providers in a multi-JSON state
+# (e.g. NJ: pascal / random_collapsed / random_removed branches) carry several build scripts, and
+# the gate evaluates the shipped mainline <PROVIDER>.json, so it must read the mainline version.
+function Get-BuildVersion($provDir) {
+    $scriptsDir = Join-Path $provDir "scripts"
+    if (-not (Test-Path $scriptsDir)) { return $null }
+    $provName = Split-Path $provDir -Leaf
+    $canonical = Join-Path $scriptsDir ("build_" + $provName.ToLower() + ".ps1")
+    $script = $null
+    if (Test-Path $canonical) {
+        $script = Get-Item $canonical
+    } else {
+        $script = Get-ChildItem $scriptsDir -Filter "build_*" -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' } | Select-Object -First 1
+        if (-not $script) {
+            $script = Get-ChildItem $scriptsDir -Filter "build_*_mc*" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        }
+    }
+    if (-not $script) { return $null }
+    $text = [System.IO.File]::ReadAllText($script.FullName)
+    # Allow an optional branch suffix (e.g. "3.6-COLLAPSED") so the compare against .test_version holds.
+    if ($text -match '\$Version\s*=\s*["'']([0-9]+\.[0-9]+(?:-[A-Za-z]+)?)["'']') { return $Matches[1] }
+    return $null
+}
+
+# Read tests/.test_version (the version the current logs belong to). Empty/absent -> $null.
+function Get-TestVersion($provDir) {
+    $f = Join-Path (Join-Path $provDir "tests") ".test_version"
+    if (-not (Test-Path $f)) { return $null }
+    $v = ((Get-Content $f -Raw) -replace "^﻿", '').Trim()
+    if (-not $v) { return $null }
+    return $v
+}
+
+# Parse the combo count the TEST_MATRIX claims: "COMBO COVERAGE (13/13)" -> 13 (denominator),
+# fallback "QIDM SUMMARY (6 QIDMs, 13 combos)" -> 13. Returns $null if no matrix / unparseable.
+function Get-MatrixComboCount($provDir, $provName) {
+    $m = Join-Path (Join-Path $provDir "docs") "${provName}_TEST_MATRIX.txt"
+    if (-not (Test-Path $m)) { return $null }
+    $text = [System.IO.File]::ReadAllText($m)
+    if ($text -match 'COMBO COVERAGE\s*\(\s*\d+\s*/\s*(\d+)\s*\)') { return [int]$Matches[1] }
+    if ($text -match 'QIDM SUMMARY\s*\(\s*\d+\s*QIDMs?,\s*(\d+)\s*combos?\)') { return [int]$Matches[1] }
+    return $null
+}
+
+# A negative/empty-form test log carries no XML by design -- excluded from the XML requirement.
+function Test-IsNegativeLog($logName) {
+    return ($logName -match '(?i)negative')
+}
+
+# A log "has XML" when it contains a real angle-bracket element and is not still a stub
+# (post_test.ps1 writes "Not captured" / new_test_log.ps1 writes "[PASTE RAW XML HERE]").
+function Test-LogHasXml($logFullPath) {
+    $text = [System.IO.File]::ReadAllText($logFullPath)
+    if ($text -match '\[PASTE RAW XML HERE\]') { return $false }
+    # Require an actual XML element (e.g. <Query>, <?xml, <MessageKey>...) somewhere in the log.
+    if ($text -match '<\?xml' -or $text -match '<[A-Za-z][\w:.-]*>') { return $true }
+    return $false
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 # DISCOVER PROVIDERS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -221,12 +297,17 @@ if ($Path) {
         $provName = $dir.Name
         if ($provName -eq 'CA_CONTRA_COSTA') { continue }
 
-        # Prefer MC.json (more combos), fall back to BASE.json
-        $mcJson = Get-ChildItem $dir.FullName -Filter "*_MC.json" -File | Select-Object -First 1
+        # Prefer single-JSON <PROVIDER>.json (merged providers), then MC.json (more
+        # combos than BASE), then BASE.json. The single-JSON branch is required: merged
+        # providers (NJ, FL, CA_CLETS, ...) have no _MC/_BASE suffix and were otherwise
+        # silently skipped, so the gate never saw the shipped JSON.
+        $singleJson = Get-ChildItem $dir.FullName -Filter "${provName}.json" -File | Select-Object -First 1
+        $mcJson   = Get-ChildItem $dir.FullName -Filter "*_MC.json" -File | Select-Object -First 1
         $baseJson = Get-ChildItem $dir.FullName -Filter "*_BASE.json" -File | Select-Object -First 1
 
         $jsonFile = $null
-        if ($mcJson) { $jsonFile = $mcJson }
+        if ($singleJson) { $jsonFile = $singleJson }
+        elseif ($mcJson) { $jsonFile = $mcJson }
         elseif ($baseJson) { $jsonFile = $baseJson }
         else { continue }
 
@@ -412,6 +493,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     $sqvrPath = Join-Path (Join-Path $provDir "docs") "${provName}_SQVR.txt"
     $sqvrConfirmed = 0
     $sqvrPending = 0
+    $sqvrApprovedSkip = 0
     $sqvrExists = $false
 
     if (Test-Path $sqvrPath) {
@@ -419,6 +501,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         $sqvrContent = [System.IO.File]::ReadAllText($sqvrPath)
         $sqvrConfirmed = ([regex]::Matches($sqvrContent, '\[CONFIRMED\]')).Count
         $sqvrPending = ([regex]::Matches($sqvrContent, '\[PENDING\]')).Count
+        $sqvrApprovedSkip = ([regex]::Matches($sqvrContent, '\[APPROVED SKIP\]')).Count
 
         Out-Line "    SQVR file: found"
         Out-Line "    [CONFIRMED]: $sqvrConfirmed"
@@ -491,6 +574,52 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line "      (no SQVR file)"
     }
 
+    # ── GATE VERDICT (only computed in -Gate mode) ──
+    $verdict = $null
+    if ($Gate) {
+        $buildVer    = Get-BuildVersion $provDir
+        $testVer     = Get-TestVersion $provDir
+        $matrixCount = Get-MatrixComboCount $provDir $provName
+
+        # Count non-negative test logs that carry real XML evidence.
+        $xmlLogs = 0
+        foreach ($log in $testLogs) {
+            if (Test-IsNegativeLog $log.Name) { continue }
+            if (Test-LogHasXml $log.FullName) { $xmlLogs++ }
+        }
+
+        # .test_version unset (e.g. NJ 4-JSON state) -> can't prove staleness, don't block on it.
+        $versionAligned = ($null -eq $testVer) -or ($testVer -eq $buildVer)
+
+        $gateReasons = @()
+        if ($sqvrConfirmed -gt 0 -and -not $versionAligned) {
+            $gateReasons += "stale [CONFIRMED]: tests/.test_version (v$testVer) != build (v$buildVer) -- rebuild bypassed reset_test_package"
+        }
+        if ($sqvrConfirmed -gt 0 -and $xmlLogs -lt $sqvrConfirmed) {
+            $gateReasons += "$sqvrConfirmed [CONFIRMED] but only $xmlLogs test log(s) carry XML evidence (no-XML PASS forbidden)"
+        }
+        if ($null -ne $matrixCount -and $matrixCount -ne $totalCombos) {
+            $gateReasons += "TEST_MATRIX combo count ($matrixCount) != JSON combo count ($totalCombos) -- matrix is stale, regenerate"
+        }
+
+        if ($gateReasons.Count -gt 0) {
+            $verdict = "INCONSISTENT"
+        } elseif ($sqvrExists -and $sqvrPending -eq 0 -and $sqvrConfirmed -gt 0) {
+            $verdict = "CLOSED"
+        } else {
+            $verdict = "INCOMPLETE-consistent"
+        }
+
+        $vColor = switch ($verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } default { "Yellow" } }
+        Out-Line ""
+        Out-LineColor "  GATE VERDICT: $verdict" $vColor
+        $tvShow = if ($testVer) { "v$testVer" } else { "(unset)" }
+        $mcShow = if ($null -ne $matrixCount) { $matrixCount } else { "n/a" }
+        Out-Line "    build v$buildVer | tests/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
+        Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | XML logs: $xmlLogs"
+        foreach ($r in $gateReasons) { Out-LineColor "    - $r" "Red" }
+    }
+
     # ── Store summary row ──
     $summaryRows += [PSCustomObject]@{
         Provider  = $provName
@@ -498,6 +627,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Tests     = $totalTests
         Coverage  = "$coveragePct%"
         SqvrMatch = $sqvrStatus
+        Verdict   = $verdict
     }
 }
 
@@ -573,4 +703,36 @@ Out-Line ""
 if ($OutFile) {
     $output.ToString() | Out-File -FilePath $OutFile -Encoding utf8
     Write-Host "Report saved: $OutFile" -ForegroundColor Green
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GATE SUMMARY + EXIT (only in -Gate mode)
+# ══════════════════════════════════════════════════════════════════════════════
+
+if ($Gate) {
+    Out-Line ""
+    Out-LineColor "========================================" "Cyan"
+    Out-LineColor " ITERATE-PHASE GATE VERDICTS" "Cyan"
+    Out-LineColor "========================================" "Cyan"
+
+    $inconsistent = @($summaryRows | Where-Object { $_.Verdict -eq "INCONSISTENT" })
+    foreach ($row in ($summaryRows | Sort-Object Provider)) {
+        if (-not $row.Verdict) { continue }
+        $c = switch ($row.Verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } default { "Yellow" } }
+        Out-LineColor ("  {0,-24} {1}" -f $row.Provider, $row.Verdict) $c
+    }
+
+    if ($OutFile) {
+        $output.ToString() | Out-File -FilePath $OutFile -Encoding utf8
+    }
+
+    Out-Line ""
+    if ($inconsistent.Count -gt 0) {
+        Out-LineColor "  GATE: BLOCKED -- $($inconsistent.Count) provider(s) INCONSISTENT" "Red"
+        Out-Line "  Fix the contradictions above before declaring any provider tested/DONE."
+        exit 1
+    } else {
+        Out-LineColor "  GATE: PASS -- no INCONSISTENT providers (CLOSED or INCOMPLETE-consistent)" "Green"
+        exit 0
+    }
 }

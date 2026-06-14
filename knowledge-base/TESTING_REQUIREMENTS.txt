@@ -624,6 +624,20 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   These are BLOCKING gates. Cannot proceed to next step without
   completing current.
 
+  TOOL-ENFORCED vs OPERATOR-STEP: the build phase (validate/verify_build) was
+  always hard-gated. As of the gap-proofing pass, the iterate phase is too --
+  enforce.ps1 PHASE 6 runs two BLOCKING checks so "tested/DONE" is computed, not
+  remembered:
+    * audit_test_coverage.ps1 -Gate  -> per-provider verdict CLOSED /
+      INCOMPLETE-consistent / INCONSISTENT. INCONSISTENT (stale [CONFIRMED] vs
+      tests/.test_version, a [CONFIRMED] with fewer XML-bearing logs than markers,
+      or TEST_MATRIX combo count != JSON) fails enforce. INCOMPLETE-consistent
+      (fresh all-PENDING build) is NOT a failure but is NOT "done" either.
+    * verify_claims.ps1  -> every KB/simulator "live-proven" claim must cite a
+      committed test log (the STATUS convention, GATE 4). Unbacked = block.
+  Markers below are [TOOL] (enforced by a script) or [OP] (operator must do it;
+  the tool can only check the artifact after the fact).
+
   GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
   [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package
          from Test 1. Combo routing, set[]/any[], conditions, or defaults may
@@ -657,18 +671,30 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
          and pushed
 
   GATE 4 -- AFTER TEST SESSION:
-  [GATE] Update docs/<PROVIDER>_STATUS.txt test matrix with all results
-  [GATE] Commit and push STATUS.txt
-  [GATE] If a new platform behavior is confirmed: update
-         PLATFORM_CONSTRAINTS.txt in knowledge-base/ AND push
+  [OP]   Update docs/<PROVIDER>_STATUS.txt test matrix with all results
+  [OP]   Commit and push STATUS.txt
+  [GATE] HYPOTHESIS QUARANTINE -- if a new platform behavior is observed:
+         a claim may enter KB/simulators ONLY under the STATUS convention:
+           STATUS: LIVE-PROVEN <test-log path>    (the log MUST already be committed)
+           STATUS: HYPOTHESIS <named discriminating test>  (NOT yet proven)
+         A HYPOTHESIS may NOT be encoded in a simulator as fact. Do NOT write a
+         verdict to KB/simulator before the confirming test log is committed --
+         this is the FL v4.7->v5.0 churn failure mode. [TOOL] verify_claims.ps1
+         enforces it; runs in enforce.ps1 PHASE 6.
+  [OP]   If a platform behavior is confirmed: update PLATFORM_CONSTRAINTS.txt /
+         QIDM_REFERENCE.txt with a LIVE-PROVEN status line citing the log, AND push.
 
   GATE 5 -- BEFORE DECLARING PASS OR DONE:
-  [GATE] Verify tests/ contains one log file per test (count must match)
-  [GATE] Verify docs/base/ (and docs/mc/) has all 8 report files
-  [GATE] Verify docs/<PROVIDER>_STATUS.txt is current
-  [GATE] Verify docs/<PROVIDER>_SQVR.txt exists with [CONFIRMED]/
-         [PENDING] markers
-  [GATE] Verify all committed and pushed to GitHub
+  [TOOL] enforce.ps1 PHASE 6 reports the iterate-phase verdict. DONE requires
+         CLOSED (every combo [CONFIRMED]-with-XML or [APPROVED SKIP]); an
+         INCONSISTENT verdict BLOCKS and INCOMPLETE-consistent is "not done yet".
+  [TOOL] verify_claims.ps1 (PHASE 6): no unbacked "live-proven" claim.
+  [OP]   Verify tests/ contains one log file per test (count must match)
+  [OP]   Verify docs/ has all report files (build_report.ps1 output)
+  [OP]   Verify docs/<PROVIDER>_STATUS.txt is current
+  [TOOL] audit_test_coverage.ps1 -Gate confirms SQVR [CONFIRMED]/[PENDING] vs
+         JSON combos and TEST_MATRIX (regenerated automatically by GATE 1 reset).
+  [OP]   Verify all committed and pushed to GitHub (enforce.ps1 git phase)
   [GATE] CANNOT declare PASS/DONE if any gate fails -- fix first
 
 ================================================================================

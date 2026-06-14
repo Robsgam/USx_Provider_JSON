@@ -1,10 +1,30 @@
 # Rebuild Tracker
 Generated: 2026-05-08 | Last updated: 2026-06-14
 
-## Process Gap-Proofing — NEXT (top priority, set 2026-06-14)
+## Process Gap-Proofing — IMPLEMENTED 2026-06-14 (then NJ)
 
-Do this BEFORE the next NJ work (user directive: gap-proofing first, then NJ runs through
-the new gates). Full design: plan file `swift-gathering-snowglobe.md` (outside the repo).
+DONE (all 3 pillars built + verified; design: plan `swift-gathering-snowglobe.md`):
+- **Pillar 1** `tools/audit_test_coverage.ps1 -Gate` — per-provider verdict CLOSED /
+  INCOMPLETE-consistent / INCONSISTENT; exits non-zero only on INCONSISTENT. Also fixed
+  single-JSON discovery (merged providers were silently skipped) + canonical build-script
+  version parse (NJ multi-script).
+- **Pillar 2** new `tools/verify_claims.ps1` — every KB/simulator LIVE-PROVEN claim must cite
+  a committed test log; long-path (>260) safe. KB STATUS convention added to QIDM_REFERENCE
+  Sec 2a + BUILD_RULES §17; poisoned-array rule now cites the archived T-A/T-B logs.
+- **Pillar 3** `reset_test_package.ps1` regenerates TEST_MATRIX (warns on combo delta);
+  `verify_build.ps1` CHECK 10 (RMS combos ⊆ CommSys) + CHECK 11 (value-comparison conditions
+  flag, WARN).
+- Wired both into `enforce.ps1` **PHASE 6** (blocking). Docs: TESTING_REQUIREMENTS §11 GATES
+  4-5 marked [TOOL]/[OP].
+
+**First gate finding (action item, one-at-a-time):** CA_CLETS is **INCONSISTENT** — 40
+[CONFIRMED] but only 36 XML-bearing logs (matches the known "NJ/CA_CLETS XML backfill needed"
+note). Full `enforce.ps1` now BLOCKS on CA_CLETS until its logs carry XML or markers are
+corrected. NJ mainline = CLOSED; TX_TLETS = CLOSED; FL v5.0 = INCOMPLETE-consistent (fresh,
+correct). All other providers INCOMPLETE-consistent.
+
+**Then:** run NJ through the new gates (user directive: gap-proofing first, then NJ).
+Full design: plan file `swift-gathering-snowglobe.md` (outside the repo).
 
 **Problem:** the build phase is hard-gated (`enforce.ps1` exit 0 or blocked) but the
 test→change→iterate phase is only prose-gated, so a provider can carry stale `[CONFIRMED]`

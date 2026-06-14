@@ -1146,3 +1146,44 @@ See also:
     "(no builds yet)" and must cite the version; STATUS.txt must carry the
     validator score (NNP/0F) not "Not built"; SQVR.txt must mention the version.
     sync_version_docs does not fully de-stub a brand-new provider.
+
+
+================================================================================
+17. HYPOTHESIS QUARANTINE + ITERATE-PHASE GATE (gap-proofing)
+================================================================================
+
+  WHY: builds were always hard-gated (validate/verify_build), but the
+  test->change->iterate phase was prose-trusted. Two failure modes recurred:
+  (1) a provider carried stale [CONFIRMED] markers / untested combos / missing
+  XML / a stale TEST_MATRIX yet still "passed" and got called done; (2) an
+  unverified platform HYPOTHESIS was written into the KB + both simulators as
+  "live-proven" before the confirming test ran (the FL v4.7->v5.0 churn). Both
+  are now tool-enforced.
+
+  RULE A -- CLAIM STATUS CONVENTION (enforced by tools/verify_claims.ps1):
+    Every platform-behavior assertion in knowledge-base/*.txt and in the
+    simulators (test_commsys.ps1, run_test_matrix.ps1) carries a status line:
+      STATUS: LIVE-PROVEN <test-log path>            -- confirmed by a COMMITTED log
+      STATUS: HYPOTHESIS <named discriminating test>  -- not yet proven
+    * LIVE-PROVEN MUST cite a path that exists (archived logs under
+      tests/_archive_pre_v*/ count -- they are committed evidence).
+    * A HYPOTHESIS MUST NOT be encoded in a simulator as fact. Simulate it only
+      as an explicit assumption, and do not write the verdict to KB until the
+      discriminating test log is committed.
+    verify_claims.ps1 also flags any concrete test-log path citation that no
+    longer resolves (e.g. a log moved to _archive on a reset).
+
+  RULE B -- ITERATE-PHASE GATE (tools/audit_test_coverage.ps1 -Gate):
+    Per provider, the gate computes one verdict:
+      CLOSED                -- every combo [CONFIRMED]-with-XML or [APPROVED SKIP];
+                               TEST_MATRIX combo count == JSON; version aligned.
+      INCOMPLETE-consistent -- combos still [PENDING], no contradiction (a fresh,
+                               not-yet-tested build -- legitimate, but NOT done).
+      INCONSISTENT          -- blocks: stale [CONFIRMED] vs tests/.test_version,
+                               more [CONFIRMED] markers than XML-bearing logs, or
+                               TEST_MATRIX combo count != JSON combo count.
+
+  Both run as enforce.ps1 PHASE 6 (blocking). "DONE" = CLOSED + claims verified.
+  TEST_MATRIX is regenerated automatically by reset_test_package.ps1 on every
+  rebuild so its combo count never drifts from the JSON.
+  See TESTING_REQUIREMENTS.txt Section 11 GATES 4-5, QIDM_REFERENCE.txt Sec 2a.

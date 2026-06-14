@@ -490,6 +490,79 @@ if (-not (Test-Path $scriptPath)) {
     Info "No provider bundle -- skipping synthetic keyRef documentation check"
 }
 
+# ── CHECK 10: RMS combos subset of CommSys combos ────────────────────────────
+# RMS must not query on a field-path the CommSys form doesn't actually map. Every field
+# used in an RMS combo's set[]/any[] should also appear in some CommSys combo's set[]/any[].
+# A drift (RMS field with no CommSys counterpart) means the two bundles disagree on what the
+# officer can search -- usually a rename that landed in one bundle but not the other.
+Write-Host ""
+Write-Host "--- CHECK 10: RMS combos subset of CommSys combos ---" -ForegroundColor Yellow
+
+function Get-ComboReqFields($bundle) {
+    $fields = [System.Collections.Generic.HashSet[string]]::new()
+    if (-not $bundle) { return $fields }
+    foreach ($cfg in $bundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        foreach ($combo in $cfg.combinations) {
+            if ($combo.requirements.set) { foreach ($f in $combo.requirements.set) { [void]$fields.Add($f) } }
+            if ($combo.requirements.any) { foreach ($f in $combo.requirements.any) { [void]$fields.Add($f) } }
+        }
+    }
+    return $fields
+}
+
+# RMS-generic combo fields legitimately have no CommSys counterpart -- the shared RMS module
+# (_build_rms_bundle.ps1) searches on these even when the provider's CommSys form does not.
+$rmsGenericFields = @('raceCode','socialSecurityNumber')
+
+if ($providerBundle -and $rmsBundle) {
+    $commsysComboFields = Get-ComboReqFields $providerBundle
+    $rmsComboFields     = Get-ComboReqFields $rmsBundle
+    $drift = @($rmsComboFields | Where-Object { -not $commsysComboFields.Contains($_) -and ($rmsGenericFields -notcontains $_) })
+    if ($drift.Count -gt 0) {
+        Warn "RMS combo field(s) not used by any CommSys combo (RMS/CommSys drift): $($drift -join ', ')"
+    } else {
+        Pass "RMS combo fields ($($rmsComboFields.Count)) are a subset of CommSys combo fields ($($commsysComboFields.Count)) (RMS-generic allowed)"
+    }
+} else {
+    Info "No RMS+CommSys bundle pair -- skipping RMS subset check"
+}
+
+# ── CHECK 11: surviving value-comparison routing conditions ───────────────────
+# POISONED-ARRAY RULE (QIDM_REFERENCE Sec 2a, LIVE-PROVEN FL v4.9 T-A/T-B): a conditions
+# array containing ANY value-comparison operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is
+# disabled in its entirety, incl. co-resident EXISTS/NOT_EXISTS. Flag survivors for review
+# at this provider's rebuild -- redesign to presence/existence-only routing or escalate.
+Write-Host ""
+Write-Host "--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---" -ForegroundColor Yellow
+
+$valueOps = @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
+$valueComparisonHits = @()
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        foreach ($combo in $cfg.combinations) {
+            # conditions live under requirements.conditions (the combo-level "conditions"
+            # property is a separate, unused null field). Check both for safety.
+            $condArrays = @()
+            if ($combo.requirements -and $combo.requirements.conditions) { $condArrays += ,$combo.requirements.conditions }
+            if ($combo.conditions) { $condArrays += ,$combo.conditions }
+            foreach ($conds in $condArrays) {
+                foreach ($cond in $conds) {
+                    if ($cond.operator -and ($valueOps -contains $cond.operator)) {
+                        $valueComparisonHits += "$($cfg.name)/$($combo.keyReference): $($cond.operator)"
+                    }
+                }
+            }
+        }
+    }
+}
+if ($valueComparisonHits.Count -gt 0) {
+    Warn "Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: $($valueComparisonHits -join '; ')"
+} else {
+    Pass "No value-comparison routing conditions (existence-only or none)"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
