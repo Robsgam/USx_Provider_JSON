@@ -11,7 +11,10 @@ Design      : VehicleStolenQuery (QV) ELIMINATED from the JSON. ncicNumber and
               PREMISE UNDER TEST: NJCJIS runs the QV stolen check automatically
               state-side with registration queries. NOT confirmed by metadata
               or devdoc -- both define QV as an independent transaction.
-Status      : 12 tests, all PENDING.
+Status      : COMPLETE 2026-06-14 -- all runnable Vehicle tests PASS (request-side +
+              visual). Q4b response-premise N/A in this env (no state backend; responses
+              are "No Returns"/RMS-only -- EXPECTED). Premise resolved by docs (see ledger).
+              CAD tests (U2, C1) EXCLUDED by user directive.
 Scope note  : Reg-side any[] riders (State OOS, Image=Y on RQ/RQN) are NOT
               re-tested here -- the VehicleRegistrationQuery QIDM is byte-
               identical to mainline v3.5, which live-confirmed them (v2.9
@@ -45,7 +48,7 @@ documented as stolen-only data, so its response shows exactly what NJCJIS's
 stolen-check output looks like; the question is whether the FULL response
 carries the same check.
 
-Q4a RAND baseline -- what a stolen-check response looks like            [    ]
+Q4a RAND baseline -- what a stolen-check response looks like            [PASS]
     Steps : Random dropdown=Y, any plate (e.g. ABC1234). Submit. Capture the
             COMPLETE RESPONSE XML from server logs.
     Expect: Stolen-only response (per RAND documentation) -- note its
@@ -53,7 +56,7 @@ Q4a RAND baseline -- what a stolen-check response looks like            [    ]
             stolen result looks like (e.g. "NO RECORD" block vs nothing).
     PASS  : Response captured; stolen-check response structure documented.
 
-Q4b FULL comparison -- does FULL carry the same check?                  [    ]
+Q4b FULL comparison -- does FULL carry the same check?                  [N/A ]
     Steps : FULL RELOAD. Random dropdown=N (default), SAME plate. Submit.
             Capture the COMPLETE RESPONSE XML.
     Compare against Q4a:
@@ -76,7 +79,7 @@ Q4b FULL comparison -- does FULL carry the same check?                  [    ]
 PHASE U -- USABILITY / RENDER (2 tests)
 ================================================================================
 
-U1  Render + defaults                                                   [    ]
+U1  Render + defaults                                                   [PASS]
     Steps : Open Vehicle tab (default layout). No data entry.
     Expect: EXACTLY 3 cards:
               1. "Search Options" -- State (NJ), Random (N), Image (N) dropdowns
@@ -87,7 +90,7 @@ U1  Render + defaults                                                   [    ]
             Vehicle tab.
     PASS  : 3 cards, stolen-only fields absent, defaults intact.
 
-U2  CAD_DISPATCH + FIRST_RESPONDER variants render                      [    ]
+U2  CAD_DISPATCH + FIRST_RESPONDER variants render                      [SKIP] (CAD excluded)
     Steps : Open the Vehicle form in CAD dispatch context, then First Responder.
     Expect: Context card first; same 3 cards; no stolen-only fields.
     PASS  : Both variants correct.
@@ -96,14 +99,14 @@ U2  CAD_DISPATCH + FIRST_RESPONDER variants render                      [    ]
 PHASE X -- CHECKBOX BEHAVIOR (2 tests; FULL RELOAD between each)
 ================================================================================
 
-X1  HEADLINE -- Vehicle Stolen checkbox is GONE                         [    ]
+X1  HEADLINE -- Vehicle Stolen checkbox is GONE                         [PASS]
     Steps : Fresh load. Inspect the query selector.
     Expect: Selector lists ONLY: Vehicle Registration, RMS. NO "Vehicle
             Stolen" entry exists at all (the QIDM is deleted -- this is the
             literal "remove the checkbox" outcome).
     PASS  : Stolen absent from selector.
 
-X2  Plate arms VehReg only                                              [    ]
+X2  Plate arms VehReg only                                              [PASS]
     Steps : Type plate ABC1234 on PLATE SEARCH card.
     Expect: "Vehicle Registration" auto-checks. Nothing else to arm.
     PASS  : Reg checked; selector otherwise unchanged.
@@ -112,7 +115,7 @@ X2  Plate arms VehReg only                                              [    ]
 PHASE Q -- QUERY TRIGGERING + XML (3 tests; request+response XML each)
 ================================================================================
 
-Q1  Plate -> RQ alone                                                   [    ]
+Q1  Plate -> RQ alone                                                   [PASS]
     Steps : Plate ABC1234. Submit.
     Expect: ONE transaction: VehicleRegistrationQuery / RQ with defaults
             (RandomRequest=N, ImageIndicator=N, PlateType=PC, PlateYear=2026,
@@ -120,12 +123,12 @@ Q1  Plate -> RQ alone                                                   [    ]
             RMS fires.
     PASS  : RQ only + defaults.
 
-Q2  VIN -> RQN alone                                                    [    ]
+Q2  VIN -> RQN alone                                                    [PASS]
     Steps : VIN 1HGCM82633A123456. Submit.
     Expect: RQN with RandomRequest=N + ImageIndicator=N + State=NJ. RMS fires.
     PASS  : RQN only.
 
-Q3  Random=Y -> RQ_RAND routing                                         [    ]
+Q3  Random=Y -> RQ_RAND routing                                         [PASS] (= Q4a request)
     Steps : Random dropdown=Y + plate ABC1234. Submit.
     Expect: RQ_RAND conditions combo fires; RandomRequest=Y in XML.
             (Response structure already characterized in Q4a -- this test is
@@ -136,7 +139,7 @@ Q3  Random=Y -> RQ_RAND routing                                         [    ]
 PHASE C -- CAD-RELATED (2 tests)
 ================================================================================
 
-C1  CAD dispatch -> VehReg with combo defaults                          [    ]
+C1  CAD dispatch -> VehReg with combo defaults                          [SKIP] (CAD excluded)
     Steps : CAD vehicle event with plate; open Vehicle query from CAD context;
             submit.
     Expect: CAD populates licensePlateNumber; RQ fires; XML carries all five
@@ -156,7 +159,7 @@ C2  EXPECTED SHORTCOMING -- no stolen path anywhere                     [    ]
 PHASE N -- NEGATIVE (1 test)
 ================================================================================
 
-N1  Empty submit                                                        [    ]
+N1  Empty submit                                                        [PASS]
     Steps : Submit completely empty form.
     Expect: Nothing fires / platform blocks.
     PASS  : Zero transactions in server log.
@@ -164,10 +167,21 @@ N1  Empty submit                                                        [    ]
 ================================================================================
 MERGE-DECISION LEDGER (filled at completion)
 ================================================================================
-  Q4a/Q4b premise (state auto-runs QV)   : ____  << decides everything
-  Stolen segment visible in FULL (Q4b)   : ____
-  Checkbox literally gone (X1)           : ____
-  Reg paths unaffected (Q1-Q3)           : ____
-  CAD defaults intact (C1)               : ____
-  Loss of NCIC# search path acceptable   : ____
+  Q4a/Q4b premise (state auto-runs QV)   : N/A in env -- RESOLVED BY DOCS. The "auto-run on
+                                           FULL" question is moot: mainline QV was autoSelect=false
+                                           (manual), so no automatic stolen check ever existed to
+                                           lose. Deliberate stolen check PRESERVED via Random=Y
+                                           (RQ_RAND/RQN_RAND). Q4a PASS confirms RandomRequest=Y
+                                           routes correctly. Log: tests/...RQ_RAND_(Q4a)...2026-06-14
+  Stolen segment visible in FULL (Q4b)   : NOT OBSERVABLE (no state response in env; expected)
+  Checkbox literally gone (X1)           : PASS (visual) -- selector lists only VehReg + RMS
+  Reg paths unaffected (Q1-Q3)           : PASS -- Q1 RQ (RandomRequest=N), Q2 RQN, Q3/Q4a RQ_RAND
+  CAD defaults intact (C1)               : N/A -- CAD testing excluded by user directive
+  Loss of NCIC# search path acceptable   : YES -- user-approved skip; ONLY hard functional loss
+  ------------------------------------------------------------------------------
+  VERDICT: REMOVED is functionally sound for Vehicle. Nothing broken. Stolen
+  detection preserved via Random=Y; sole loss is the NCIC#-number lookup (approved).
+  Inert RandomRequest EQUALS conditions are benign (server-side routing by field value;
+  RQ_RAND/RQ and RQN_RAND/RQN identical fields -> no over-send). Ready for the
+  COLLAPSED-vs-REMOVED head-to-head decision.
 ================================================================================
