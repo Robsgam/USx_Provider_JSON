@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleStolenQuery
+Combo: C dual-fire (RQ+QVP) (Both plate fields: VehReg(reg plate) + VehStolen(stolen plate) fire as 2 independent txns)
+Variant: MC
+Date: 2026-06-14 15:52:40
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PLATE card licensePlateNumber=ABC1234; Vehicle Stolen card licensePlateNumberRand=XYZ9999
+
+XML REQUEST
+-----------
+<Txn1_VehReg><MessageType>VehicleRegistrationQuery</MessageType><State>NJ</State><RandomRequest>N</RandomRequest><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateYear>2026</LicensePlateYear><ImageIndicator>N</ImageIndicator><LicensePlateNumber>ABC1234</LicensePlateNumber></Txn1_VehReg><Txn2_VehStolen><MessageType>VehicleStolenQuery</MessageType><ImageIndicator>N</ImageIndicator><State>NJ</State><LicensePlateNumber>XYZ9999</LicensePlateNumber></Txn2_VehStolen>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  State                          NJ
+  RandomRequest                  N
+  LicensePlateTypeCode           PC
+  LicensePlateYear               2026
+  ImageIndicator                 N
+  LicensePlateNumber             ABC1234
+  ImageIndicator                 N
+  State                          NJ
+  LicensePlateNumber             XYZ9999
+
+NOTES
+-----
+TWO txns. VehReg carries ABC1234, VehStolen carries XYZ9999 -- each scoped to its own card plate, zero cross-contamination. Order not fixed (ULIDs show VehStolen marginally first) but immaterial (independent queries). No firing-order change needed.
+
+RESULT: PASS
