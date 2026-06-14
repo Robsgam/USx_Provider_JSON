@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ_RAND (Q4a) (Random=Y plate -> RQ_RAND, RandomRequest=Y routed with all 5 defaults)
+Variant: MC
+Date: 2026-06-14 15:12:19
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+randomRequest=Y, licensePlateNumber=abc1234, licensePlateTypeCode=PC, licensePlateYear=2026, imageIndicator=N, registrationState=New Jersey
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KV3QQ27W8QHR3DZG89T2WRK1</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><RandomRequest>Y</RandomRequest><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KV3QQ27W8QHR3DZG89T2WRK1
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  RandomRequest                  Y
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             ABC1234
+
+NOTES
+-----
+Request-side validation (no state response in env, expected). MessageKey routing server-side by RandomRequest value; inert EQUALS conditions benign. NJCJIS response = none; RMS Elastic = No Returns (expected).
+
+RESULT: PASS
