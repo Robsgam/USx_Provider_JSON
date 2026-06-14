@@ -33,15 +33,18 @@ Step A -- REVIEW NJ, lead with the poisoned-array contradiction:
       pre-decides the branch winner (COLLAPSED suffix-isolation / REMOVED deletion are the
       value-condition-free redesigns).
 
-Step B -- TEST the 2 stolen branches:
-  VehStolenRemoved: DONE 2026-06-14 (Vehicle, request-side). All runnable tests PASS;
-    verdict sound; sole loss = NCIC# (approved). Q4b response-premise N/A in env (no state
-    backend). Plan: docs/TEST_PLAN_VEH_VehStolenRemoved.txt. Logs: -Version 3.6-REMOVED.
-    NOTE: env has NO live state responses -- testing is request-side XML + visual only.
-  VehStolenSeparate: NEXT -- import NJ_NJCJIS_VehStolenSeparate.json (v3.7), run discreteness
-    (QV fires only from "Vehicle Stolen" card) + both-plate firing order + intra-card over-send.
-    Plan: docs/TEST_PLAN_VEH_VehStolenSeparate.txt. Logs: -Version 3.7-SEPARATE.
-  Decision gate: pick a winner, then un-suspend one-JSON rule (delete losers + suspension note).
+Step B -- BOTH stolen branches Vehicle-tested (request-side). >>> AWAITING PM DECISION <<<
+  VehStolenRemoved: DONE 2026-06-14. All runnable tests PASS; sole loss = NCIC# (approved).
+    Plan: docs/TEST_PLAN_VEH_VehStolenRemoved.txt. Logs: -Version 3.6-REMOVED.
+  VehStolenSeparate: DONE 2026-06-14. Discreteness CONFIRMED (A/B/C/D); both-plate entry =
+    2 clean independent txns (no firing-order change). E = intra-card multi-identifier
+    over-send (LIMITATION #1) -> fix is a card hint, NOT combo reorder; apply ONLY if Separate
+    wins. Plan: docs/TEST_PLAN_VEH_VehStolenSeparate.txt. Logs: -Version 3.7-SEPARATE.
+  NOTE: env has NO live state responses -- all testing was request-side XML + visual.
+  Comparison handed to PM 2026-06-14 (trade-off: Separate keeps NCIC#/full capability + needs a
+    one-identifier card hint; Removed is simpler, drops NCIC#, relies on Random=Y for stolen).
+  NEXT: on PM verdict -> if Separate, add the card hint (build script) + rebuild; then un-suspend
+    one-JSON rule (delete loser, merge winner toward mainline, remove suspension note).
 
 Lower-priority OPEN (already tracked above): PascalCase A/B mainline-vs-PascalCAD on USx,
 OnScene probe result, portfolio PascalCase migration (one provider at a time).
@@ -72,10 +75,11 @@ tokens (CAD_UNIT_SELECT_VALUE etc.) stay uppercase.
 EXPERIMENTAL BRANCH EVALUATION (2026-06-10) -- one-JSON-in-root rule suspended by
 user directive until a winner is chosen; mainline v3.5 untouched. PAUSED 2026-06-11
 (superseded in priority by the PascalCase work):
-  NJ_NJCJIS_VehStolenSeparate.json | v3.7-SEPARATE | 70P/0F/0W/0LIM | NOT live-tested
+  NJ_NJCJIS_VehStolenSeparate.json | v3.7-SEPARATE | 70P/0F/0W/0LIM | Vehicle DONE 2026-06-14
     (was RANDOM_COLLAPSED). Stolen suffix-isolated on "Vehicle Stolen" card (renamed from
     "RANDOM" 2026-06-14); autoSelect=true; no deselect; disjoint set[] pools vs VehReg.
-    Test package: docs/TEST_PLAN_VEH_VehStolenSeparate.txt (PENDING). Logs -Version 3.7-SEPARATE.
+    Discreteness CONFIRMED; intra-card over-send characterized (card-hint fix pending winner).
+    Test package: docs/TEST_PLAN_VEH_VehStolenSeparate.txt. Logs -Version 3.7-SEPARATE.
   NJ_NJCJIS_VehStolenRemoved.json  | v3.6-REMOVED   | 63P/0F/0W/0LIM | Vehicle DONE 2026-06-14
     (was RANDOM_REMOVED). VehicleStolenQuery eliminated (user-approved QV skip). Stolen
     preserved via Random=Y; sole loss NCIC#. Request-side Vehicle tests all PASS.
