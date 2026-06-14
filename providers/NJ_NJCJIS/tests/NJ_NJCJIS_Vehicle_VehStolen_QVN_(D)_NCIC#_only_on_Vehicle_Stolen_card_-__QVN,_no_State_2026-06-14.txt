@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleStolenQuery
+Combo: QVN (D) (NCIC# only on Vehicle Stolen card -> QVN, no State)
+Variant: MC
+Date: 2026-06-14 15:52:43
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Vehicle Stolen card: ncicNumber=8696234
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleStolenQuery</MessageType><ImageIndicator>N</ImageIndicator><NCICNumber>8696234</NCICNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  NCICNumber                     8696234
+
+NOTES
+-----
+Separate branch. QVN: NCICNumber + Image only, no State element (matches design).
+
+RESULT: PASS
