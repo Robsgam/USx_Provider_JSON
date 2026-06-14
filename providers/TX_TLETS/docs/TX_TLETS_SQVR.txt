@@ -1,7 +1,7 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-09
-JSON version: v3.3
+Last updated: 2026-06-14
+JSON version: v3.4
 Live test: v3.3 imported TLETS USx Tenant 2026-06-03 -- 40/40 PASS 2026-06-04
 Validator: 86 PASS / 0 FAIL / 0 WARN / 0 LIM (v3.3)
 Verify: CLEAN (0 FAIL)
@@ -26,43 +26,43 @@ v3.3 CHANGES (from v3.1):
           VehicleIdentificationNumber, VehicleMakeCode, VehicleYear,
           RegistrationState, FinancialResponsibilityType, RegionId, StickerNumber
 
-  REG Plate -- TX Registration (Plate+Year+FRT) [CONFIRMED]
+  REG Plate -- TX Registration (Plate+Year+FRT) [PENDING]
     keyReference: REGLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [CONFIRMED]
+  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [PENDING]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
     state: In/Out
 
-  VIN+FRT -- VIN + Financial Responsibility [CONFIRMED]
+  VIN+FRT -- VIN + Financial Responsibility [PENDING]
     keyReference: VINVehicleIdentificationNumber
     set: VehicleIdentificationNumber, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  DPSI Sticker -- TX DPS Insurance (Sticker Number) [CONFIRMED]
+  DPSI Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
     keyReference: DPSIStickerNumber
     set: StickerNumber
     any: RegistrationState
     state: In/Out
 
-  QV Plate -- NCIC Stolen Vehicle (Plate only) [CONFIRMED]
+  QV Plate -- NCIC Stolen Vehicle (Plate only) [PENDING]
     keyReference: QVLicensePlateNumber
     set: LicensePlateNumber
     any: RegionId, RegistrationState
     state: In/Out
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
     state: In/Out
 
-  QV VIN -- NCIC Stolen Vehicle (VIN only) [CONFIRMED]
+  QV VIN -- NCIC Stolen Vehicle (VIN only) [PENDING]
     keyReference: QVVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegionId
@@ -87,7 +87,7 @@ v3.3 CHANGES (from v3.1):
   Conditions routing: ImageIndicator EQUALS Y selects image-path combos.
   Catchall combos (no conditions) omit image/email/reason from XML.
 
-  DQ Name Image -- Nlets DL (Name+DOB+Sex, Image=Y path) [CONFIRMED]
+  DQ Name Image -- Nlets DL (Name+DOB+Sex, Image=Y path) [PENDING]
     keyReference: DQNameImg
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
@@ -95,20 +95,20 @@ v3.3 CHANGES (from v3.1):
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ Name -- Nlets DL (Name+DOB+Sex, catchall) [CONFIRMED]
+  DQ Name -- Nlets DL (Name+DOB+Sex, catchall) [PENDING]
     keyReference: DQName
     set: SexCode, BirthDate, NameLast, NameFirst
     any: NameMiddle, NameSuffix, RegistrationState
     defaults: State=TX
     state: In/Out
 
-  QW Name -- NCIC Wanted (Name+DOB, no conditions) [CONFIRMED]
+  QW Name -- NCIC Wanted (Name+DOB, no conditions) [PENDING]
     keyReference: QWName
     set: BirthDate, NameLast, NameFirst
     any: ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode
     state: In/Out
 
-  CPL Name Image -- Criminal History (Name, Image=Y path) [CONFIRMED]
+  CPL Name Image -- Criminal History (Name, Image=Y path) [PENDING]
     keyReference: CPLNameImg
     set: NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
@@ -116,14 +116,14 @@ v3.3 CHANGES (from v3.1):
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  CPL Name -- Criminal History (Name, catchall) [CONFIRMED]
+  CPL Name -- Criminal History (Name, catchall) [PENDING]
     keyReference: CPLName
     set: NameLast, NameFirst
     any: NameMiddle, NameSuffix, RegistrationState
     defaults: State=TX
     state: In/Out
 
-  DQ OLN Image -- Nlets DL (OLN, Image=Y path) [CONFIRMED]
+  DQ OLN Image -- Nlets DL (OLN, Image=Y path) [PENDING]
     keyReference: DQOLNImg
     set: OperatorLicenseNumber
     any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
@@ -131,7 +131,7 @@ v3.3 CHANGES (from v3.1):
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ OLN -- Nlets DL (OLN, catchall) [CONFIRMED]
+  DQ OLN -- Nlets DL (OLN, catchall) [PENDING]
     keyReference: DQOLN
     set: OperatorLicenseNumber
     any: RegistrationState
@@ -161,7 +161,7 @@ v3.3 CHANGES (from v3.1):
   Catchall combos (no conditions) omit image/email/reason from XML.
   PurposeCode is in ALL combos (not gated by conditions).
 
-  KQ Name Image -- Driver History (Name+DOB+Sex, Image=Y path) [CONFIRMED]
+  KQ Name Image -- Driver History (Name+DOB+Sex, Image=Y path) [PENDING]
     keyReference: KQNameImg
     set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH
     any: AttentionDH, EmailAddress, ImageIndicator, NameMiddleDH, NameSuffixDH,
@@ -170,14 +170,14 @@ v3.3 CHANGES (from v3.1):
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ Name -- Driver History (Name+DOB+Sex, catchall) [CONFIRMED]
+  KQ Name -- Driver History (Name+DOB+Sex, catchall) [PENDING]
     keyReference: KQName
     set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH
     any: AttentionDH, NameMiddleDH, NameSuffixDH, PurposeCodeDH, RegistrationState
     defaults: PurposeCode=C, State=TX
     state: In/Out
 
-  KQ OLN Image -- Driver History (OLN, Image=Y path) [CONFIRMED]
+  KQ OLN Image -- Driver History (OLN, Image=Y path) [PENDING]
     keyReference: KQOLNImg
     set: OperatorLicenseNumberDH
     any: AttentionDH, EmailAddress, ImageIndicator, PurposeCodeDH, ReasonCode, RegistrationState
@@ -185,7 +185,7 @@ v3.3 CHANGES (from v3.1):
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ OLN -- Driver History (OLN, catchall) [CONFIRMED]
+  KQ OLN -- Driver History (OLN, catchall) [PENDING]
     keyReference: KQOLN
     set: OperatorLicenseNumberDH
     any: AttentionDH, PurposeCodeDH, RegistrationState
@@ -204,13 +204,13 @@ v3.3 CHANGES (from v3.1):
   Fields: GunSerialNumber, GunMake(23), GunCaliber, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QG Serial -- NCIC Gun (Serial Number) [CONFIRMED]
+  QG Serial -- NCIC Gun (Serial Number) [PENDING]
     keyReference: QGGunSerialNumber
     set: GunSerialNumber
     any: GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QG NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
+  QG NCIC -- NCIC Gun (NCIC Number) [PENDING]
     keyReference: QGNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -226,13 +226,13 @@ v3.3 CHANGES (from v3.1):
   Fields: ArticleSerialNumber, ArticleTypeCode, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QA Serial+Type -- NCIC Article (Serial + Type) [CONFIRMED]
+  QA Serial+Type -- NCIC Article (Serial + Type) [PENDING]
     keyReference: QAArticleSerialNumber
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QA NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
+  QA NCIC -- NCIC Article (NCIC Number) [PENDING]
     keyReference: QANCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -248,31 +248,31 @@ v3.3 CHANGES (from v3.1):
   Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber,
           RegistrationState, ImageIndicator, RelatedHitSearchIndicator
 
-  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [CONFIRMED]
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
     keyReference: BQRegistrationNumber
     set: RegistrationNumber, RegistrationState
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
 
-  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [CONFIRMED]
+  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [PENDING]
     keyReference: BQBoatHullIdNumber
     set: BoatHullIdNumber, RegistrationState
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
 
-  QB Reg -- NCIC Stolen Boat (Reg, any state) [CONFIRMED]
+  QB Reg -- NCIC Stolen Boat (Reg, any state) [PENDING]
     keyReference: QBRegistrationNumber
     set: RegistrationNumber
     any: BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB Hull -- NCIC Stolen Boat (Hull, any state) [CONFIRMED]
+  QB Hull -- NCIC Stolen Boat (Hull, any state) [PENDING]
     keyReference: QBBoatHullIdNumber
     set: BoatHullIdNumber
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB NCIC -- NCIC Stolen Boat (NCIC Number) [CONFIRMED]
+  QB NCIC -- NCIC Stolen Boat (NCIC Number) [PENDING]
     keyReference: QBNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator

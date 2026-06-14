@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-14 16:27
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -38,8 +38,17 @@ POST-BUILD VERIFICATION
 --- CHECK 8: Visible-First Mandate ---
   [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
 
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (40) (RMS-generic allowed)
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
 ========================================
- VERIFICATION PASSED: 7 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 10 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

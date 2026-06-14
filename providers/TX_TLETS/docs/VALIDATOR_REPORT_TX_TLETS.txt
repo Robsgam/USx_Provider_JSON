@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-14 16:27
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -35,14 +35,15 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 9 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber' is unreachable: earlier unconditioned combo 'RQVehicleIdentificationNumber' set[] is a subset of its set[] (first match fires; add routing conditions to 'RQVehicleIdentificationNumber' or reorder)
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 7 combos
+  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 4 combos
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 4 combos
+  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' -> Person : 10 attrs, 2 combos
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' ImageIndicator size=1
@@ -88,16 +89,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQNameImg': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'QWName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLNameImg': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'CPLName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOLNImg': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' combo 'DQOLN': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQNameImg': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQName': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOLNImg': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_DriverHistoryQuery' combo 'KQOLN': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGGunSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_GunQuery' combo 'QGNCICNumber': all set[]/any[] fields resolvable
@@ -110,8 +106,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 86 PASS / 0 FAIL / 0 WARN
+  RESULTS: 81 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

@@ -1,12 +1,14 @@
-# build_tx_tlets.ps1  -- TX_TLETS v3.3
+# build_tx_tlets.ps1  -- TX_TLETS v3.4
 # Single build. 6 cards (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1).
-# 27 CommSys combos: 7 VehReg + 7 DL + 4 DH + 2 Gun + 2 Article + 5 Boat
-# v3.2: email→OPTIONS (shared), conditions routing (ImageIndicator EQUALS Y)
+# 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v3.4: POISONED-ARRAY fix -- removed inert ImageIndicator EQUALS Y conditions; merged
+#       Img/catchall combo pairs (DL 7->4, DH 4->2); image/email/reason kept in any[].
+# v3.2: email→OPTIONS (shared).
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "3.3",
+    [string]$Version = "3.4",
     [string]$Phase   = "current"
 )
 
@@ -64,19 +66,15 @@ $vehRegQuery = [PSCustomObject]@{
     description = 'VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
-# --- DriverLicenseQuery (7 combos) ---
-# v3.2: conditions routing — all 3 image fields must be present for image-path combos;
-# catchall combos (no conditions) omit them. Email on shared OPTIONS card.
-# Order: image-path before catchall at each specificity level.
+# --- DriverLicenseQuery (4 combos) ---
+# v3.4: POISONED-ARRAY fix. v3.2 gated "image-path" combos with `ImageIndicator EQUALS Y` +
+# ReasonCode/EmailAddress conditions -- but value-comparison conditions are INERT on the platform
+# (QIDM_REFERENCE Sec 2a), so each Img combo and its catchall twin (identical set[]) both fired =>
+# union over-send. Fix: merge each pair into ONE combo per path; image/email/reason stay in any[]
+# (sent when populated); defaults inject ImageIndicator=Y + ReasonCode=C (covers CAD). Email is
+# manually entered for now (future email-injection handler TBD). All query paths preserved.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'DQ', 'QW', 'CPL' for multiple combos each; field-name and
-# condition suffixes (DQNameImg, DQName, DQOLNImg, DQOLN, etc.) are synthetic routing labels.
-# NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
-$imgCond = @(
-    [PSCustomObject]@{ field = @('ImageIndicator'); operator = 'EQUALS'; value = @('Y') }
-    [PSCustomObject]@{ field = @('ReasonCode');     operator = 'EQUALS'; value = @('C') }
-    [PSCustomObject]@{ field = @('EmailAddress');   operator = 'REGEX';  value = @('.+') }
-)
+# Metadata uses keyRef 'DQ', 'QW', 'CPL'; field-name suffixes (DQName, DQOLN, CPLName) synthetic.
 $imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefs = @([PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dlQuery = [PSCustomObject]@{
@@ -94,29 +92,24 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # DQ Name — image path (4 set + conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); conditions = $imgCond; defaults = $imgDefs }; primaryFieldReference = 'Name'; keyReference = 'DQNameImg'; state = 'In/Out' }
-        # DQ Name — catchall (4 set, no conditions, no image/reason/email)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('nameMiddle','nameSuffix','registrationState'); defaults = $noImgDefs }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
-        # QW Name — unchanged (no image/email)
+        # DQ Name (merged v3.4 -- image/email/reason in any[], no poisoned conditions)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = $imgDefs }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
+        # QW Name -- unchanged (no image/email)
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('birthDate','nameLast','nameFirst'); any = @('expandedBirthDateSearchCode','nameMiddle','nameSuffix','raceCode','regionId','sexCode') }; primaryFieldReference = 'Name'; keyReference = 'QWName'; state = 'In/Out' }
-        # CPL Name — image path (2 set + conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); conditions = $imgCond; defaults = $imgDefs }; primaryFieldReference = 'Name'; keyReference = 'CPLNameImg'; state = 'In/Out' }
-        # CPL Name — catchall (2 set, no conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('nameMiddle','nameSuffix','registrationState'); defaults = $noImgDefs }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
-        # DQ OLN — image path (1 set + conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('emailAddress','imageIndicator','reasonCode','registrationState'); conditions = $imgCond; defaults = $imgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLNImg'; state = 'In/Out' }
-        # DQ OLN — catchall (1 set, no conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('registrationState'); defaults = $noImgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLN'; state = 'In/Out' }
+        # CPL Name (merged v3.4)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('emailAddress','imageIndicator','nameMiddle','nameSuffix','reasonCode','registrationState'); defaults = $imgDefs }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
+        # DQ OLN (merged v3.4)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('emailAddress','imageIndicator','reasonCode','registrationState'); defaults = $imgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLN'; state = 'In/Out' }
     )
-    description = 'DriverLicenseQuery -- 7 combos (3 image-path + 3 catchall + QW). Conditions: ImageIndicator EQUALS Y.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
+    description = 'DriverLicenseQuery -- 4 combos (DQName, QWName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[].'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
 }
 
 # --- DriverHistoryQuery (4 combos) ---
-# v3.2: EmailAddress sourceField→emailAddress (shared OPTIONS card). Conditions routing same as DL.
+# v3.4: POISONED-ARRAY fix (same as DL) -- merged KQ Img/catchall pairs; image/email/reason in
+# any[]; defaults inject ImageIndicator=Y/PurposeCode=C/ReasonCode=C. EmailAddress sourceField→
+# emailAddress (shared OPTIONS card).
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'KQ' for all 4 combos; synthetic labels KQNameImg, KQName, KQOLNImg,
-# KQOLN differentiate routing. NOT real TX TLETS transaction codes. See PLATFORM_CONSTRAINTS.txt.
+# Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName, KQOLN. See PLATFORM_CONSTRAINTS.txt.
 $imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefsDH = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
@@ -133,16 +126,12 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ Name — image path (4 set + conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','emailAddress','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); conditions = $imgCond; defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQNameImg'; state = 'In/Out' }
-        # KQ Name — catchall (4 set, no conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','nameMiddleDH','nameSuffixDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
-        # KQ OLN — image path (1 set + conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','emailAddress','imageIndicator','purposeCodeDH','reasonCode','registrationState'); conditions = $imgCond; defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLNImg'; state = 'In/Out' }
-        # KQ OLN — catchall (1 set, no conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        # KQ Name (merged v3.4 -- image/email/reason in any[], no poisoned conditions)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','emailAddress','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        # KQ OLN (merged v3.4)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','emailAddress','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
-    description = 'DriverHistoryQuery -- 4 combos (2 image-path + 2 catchall). Conditions: ImageIndicator EQUALS Y. DH-suffix fields. Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
+    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
 
 # --- GunQuery (2 combos) ---
@@ -403,4 +392,4 @@ Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built TX_TLETS v${Version}"
 
 Write-Host ""
-Write-Host "Build complete. 6 cards, 29 CommSys combos, 7 QIDMs."
+Write-Host "Build complete. 6 cards, 22 CommSys combos, 6 QIDMs."
