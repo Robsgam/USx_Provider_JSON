@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ (A) (Discreteness: reg plate on PLATE card fires VehReg only, no VehStolen)
+Variant: MC
+Date: 2026-06-14 15:52:35
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PLATE card: licensePlateNumber=ABC1234; Random default N
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><RandomRequest>N</RandomRequest><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC1234</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  RandomRequest                  N
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             ABC1234
+
+NOTES
+-----
+Separate branch. 1 txn only (VehReg RQ). VehStolen did NOT fire -- disjoint pool discreteness confirmed.
+
+RESULT: PASS
