@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ (Q1) (Plate + Random default N -> RQ, RandomRequest=N with all 5 defaults)
+Variant: MC
+Date: 2026-06-14 15:16:34
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+licensePlateNumber=abc123, randomRequest=N(default), licensePlateTypeCode=PC, licensePlateYear=2026, imageIndicator=N, registrationState=New Jersey
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KV3RWARAKNGF8F2XTZJ9M3VP</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><RandomRequest>N</RandomRequest><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>ABC123</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KV3RWARAKNGF8F2XTZJ9M3VP
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  RandomRequest                  N
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             ABC123
+
+NOTES
+-----
+Request-side. Live MessageType=VehicleRegistrationQuery (RQ). No QV txn (deleted). RMS Elastic tag=abc123. Response No Returns (expected, no state backend).
+
+RESULT: PASS
