@@ -151,6 +151,24 @@ predate the G-16 upgrade; scores refresh at each provider's next rebuild).
 - TX_TLETS: 2 LIM — EmailAddress is QIDM-only on DL+DH (no form field, handler-filled)
 - These are genuinely unfixable without platform form field additions
 
+## One-Directional queriesToDeselect — Flagged 2026-05-12
+
+Rule (KB BUILD_RULES.txt Sec 11 + AP #14/#23): default query (DL, VehReg) has
+autoSelect=true and NO queriesToDeselect; opt-in query (DH, VehStolen) deselects
+ONLY the default. NEVER bidirectional (mutual cross-deselect → error popup).
+Fix at each provider's next rebuild; verify against current JSON (list is as-of
+the flag date and may be stale — `verify_build.ps1` / audit catches live state).
+
+DL+DH — remove queriesToDeselect from DriverLicenseQuery:
+- FIXED: CA_CLETS (v1.8), FL_FCIC (correct since v3.9), TX_TLETS (v3.1)
+- FLAGGED: NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LEMS, HI_HCJDC_OFML, TN_TIES,
+  OH_LEADS, NM_NMLETS_OFML, MD_METERS, CA_SAN_LUIS_OBISPO, CA_eSUN, CA_VENTURA_COUNTY
+- Already correct: NJ_NJCJIS (since v2.9)
+
+VehReg+VehStolen — remove queriesToDeselect from VehicleRegistrationQuery:
+- FIXED: TX_TLETS (v3.1)
+- FLAGGED: HI_HCJDC_OFML
+
 ## Attention Field Hidden Automation — Flagged 2026-05-13
 
 Fix pattern (same as FL_FCIC v4.0): remove CommsysGetLastNameFirstNameInitialRuleHandler,
