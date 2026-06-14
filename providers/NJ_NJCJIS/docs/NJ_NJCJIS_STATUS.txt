@@ -6,6 +6,42 @@ Last updated    : 2026-06-12
       (imported 2026-06-11). Mainline camelCase v3.5 not currently deployed anywhere. ***
 Current mainline: v3.5 | 69P/0F/0W/0LIM | Updated 2026-06-09
 
+================================================================================
+*** NEXT SESSION PICK-UP (set 2026-06-14, for reboot) ***
+================================================================================
+ORDER (user directive): GAP-PROOFING FIRST, then NJ.
+  0. Gap-proof the test->change->iterate process (repo-wide). See REBUILD_TRACKER.md
+     "Process Gap-Proofing -- NEXT" + plan swift-gathering-snowglobe.md. Build the
+     iterate-phase gate + hypothesis-quarantine BEFORE touching NJ, then run NJ
+     through the new gates as the first real exercise.
+
+NJ ROOT = 4 JSONs (one-JSON-in-root rule SUSPENDED until a random-branch winner is chosen):
+  NJ_NJCJIS.json (mainline v3.5) | NJ_NJCJIS_PASCAL.json | NJ_NJCJIS_RANDOM_COLLAPSED.json
+  | NJ_NJCJIS_RANDOM_REMOVED.json
+
+Step A -- REVIEW NJ, lead with the poisoned-array contradiction:
+  Mainline routes RAND vs FULL via RandomRequest EQUALS Y/N conditions. The poisoned-array
+  rule (FL v4.9 T-A/T-B, KB QIDM_REFERENCE Sec 2a) predicts those are INERT, yet NJ
+  reportedly live-PASSED 2026-05-28. Run ONE discriminating RandomRequest=Y query on
+  mainline and check WHICH keyRef actually fires.
+    - Quarantine discipline: do NOT write the verdict to KB until the test log is committed.
+    - Holds (RAND-only keyRef fires) -> NJ is a real exception; record against the Sec 2a
+      "unresolved contradiction" with the log path.
+    - Misroutes (over-send like FL) -> mainline needs the FL v5.0 treatment, and that likely
+      pre-decides the branch winner (COLLAPSED suffix-isolation / REMOVED deletion are the
+      value-condition-free redesigns).
+
+Step B -- TEST the 2 random branches (after Step A):
+  RANDOM_REMOVED FIRST: run Q4a/Q4b premise test (known-stolen plate, inspect FULL response
+    XML for auto-QV evidence). Failure = REMOVED loses stolen capability -> branch dead, escalate.
+    Plan: docs/TEST_PLAN_VEH_RANDOM_REMOVED.txt. Logs: -Version 3.6-REMOVED.
+  Then RANDOM_COLLAPSED: docs/TEST_PLAN_VEH_RANDOM_COLLAPSED.txt (22 stubs). -Version 3.6-COLLAPSED.
+  Decision gate: pick a winner, then un-suspend one-JSON rule (delete losers + suspension note).
+
+Lower-priority OPEN (already tracked above): PascalCase A/B mainline-vs-PascalCAD on USx,
+OnScene probe result, portfolio PascalCase migration (one provider at a time).
+================================================================================
+
 PASCALCASE MIGRATION (2026-06-11) -- DRIVER: platform naming convention is now
 PascalCase for ALL form params (eng analysis). OnScene (Forge entity config) submits
 Pascal attribute params validated against config fieldIds by exact match; camelCase

@@ -1,5 +1,45 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-05-21
+Generated: 2026-05-08 | Last updated: 2026-06-14
+
+## Process Gap-Proofing — NEXT (top priority, set 2026-06-14)
+
+Do this BEFORE the next NJ work (user directive: gap-proofing first, then NJ runs through
+the new gates). Full design: plan file `swift-gathering-snowglobe.md` (outside the repo).
+
+**Problem:** the build phase is hard-gated (`enforce.ps1` exit 0 or blocked) but the
+test→change→iterate phase is only prose-gated, so a provider can carry stale `[CONFIRMED]`
+markers, untested combos, missing XML, and a stale TEST_MATRIX yet still pass enforce and be
+called "done." Separately, unverified platform-behavior hypotheses got written into KB +
+both simulators as "live-proven" before the confirming test ran (the FL v4.7→v5.0 churn) —
+nothing checks that a "live-proven" claim references a real committed test log.
+
+**Pillar 1 — blocking iterate-phase gate.** Extend `tools/audit_test_coverage.ps1` with a
+`-Gate` mode emitting CLOSED / INCOMPLETE-consistent / INCONSISTENT (block on: `[CONFIRMED]`
+older than `tests/.test_version`; a `[CONFIRMED]` combo whose log lacks XML; TEST_MATRIX combo
+count ≠ JSON; orphan logs). Wire into `enforce.ps1` as a blocking phase that fails on
+INCONSISTENT (passes on INCOMPLETE-consistent so fresh all-PENDING builds aren't blocked) and
+always prints the verdict.
+
+**Pillar 2 — hypothesis quarantine.** New `tools/verify_claims.ps1`: every KB/simulator
+platform-behavior claim tagged "live-proven" must reference an existing test-log path; flag
+unbacked claims. KB convention: each behavior rule carries `STATUS: LIVE-PROVEN <log path>` or
+`STATUS: HYPOTHESIS <discriminating test>`; a HYPOTHESIS may not be encoded in a simulator as fact.
+
+**Pillar 3 — close silent drift.** Tighten `tools/reset_test_package.ps1` to regenerate
+TEST_MATRIX (and warn on combo-count delta); add to `tools/verify_build.ps1`: RMS combos ⊆
+CommSys combos, and flag any surviving value-comparison routing condition.
+
+**Docs/rule/memory:** rewrite `knowledge-base/TESTING_REQUIREMENTS.txt` GATES 0-5 to point at
+the enforced checks; add the quarantine rule + STATUS convention to QIDM_REFERENCE.txt +
+BUILD_RULES.txt; durable lesson saved in memory [[iterate-phase-needs-hard-gate]].
+
+**Verify the gates gate:** FL_FCIC v5.0 (all-PENDING) → INCOMPLETE-consistent, not blocked;
+inject a stale `[CONFIRMED]` → INCONSISTENT + non-zero exit; `verify_claims` passes on the
+poisoned-array rule (cites committed T-A/T-B logs), flags it if the citation is removed.
+
+**Then:** run NJ through the new gates as the first real exercise (see NJ_NJCJIS_STATUS.txt PENDING).
+
+---
 
 ## Status: 16 PROVIDERS FLAGGED FOR REBUILD — Single-JSON merge + HIDLE_MC migration
 
