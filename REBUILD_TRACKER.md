@@ -1,6 +1,27 @@
 # Rebuild Tracker
 Generated: 2026-05-08 | Last updated: 2026-06-14
 
+## Poisoned-Array Exposure Catalog (2026-06-14, repo-wide sweep)
+
+Source: `validate.ps1` G-31 (added 2026-06-14; also `verify_build.ps1` CHECK 11). Flags every
+combo with a value-comparison condition (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) — these are INERT on
+the platform (poisoned-array, QIDM_REFERENCE Sec 2a). **Poisoned = inert, NOT automatically broken**:
+benign if routing is carried elsewhere (NJ RandomRequest — same MessageKey, server-side value
+routing), harmful if it causes misroute/over-send (TX Img combos — union over-send). Each needs
+per-case analysis. Fix at each provider's rebuild (one-at-a-time).
+
+| Provider | Combos | Verdict / action |
+|---|---|---|
+| CA_CLETS | 20 | ⚠️ LARGEST + live-imported. NOT yet analyzed benign-vs-harmful. Dedicated look — high priority after TX. (Also INCONSISTENT on the test-coverage gate.) |
+| TX_TLETS | 5 | HARMFUL (Img/catchall union over-send). FIXING NOW (v3.4: strip conditions, merge pairs, keep image+email in any[]). |
+| TX_TLETS_CCH | 5 | OUT OF SCOPE — intentional separate data-ingestion stub (user directive). |
+| NY_NYSPIN_EJUSTICE | 4 | Earmark for NY's rebuild; analyze benign-vs-harmful then. |
+| NJ_NJCJIS (mainline + PASCAL + VehStolenRemoved + VehStolenSeparate) | 2 each | KNOWN BENIGN — RandomRequest EQUALS Y; routing carried by field value, identical MessageKey. Documented. No action. |
+
+Process lesson: simulator/combo-match tests PASS without exercising conditions live → false
+confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard + request-side live test
+close that gap.
+
 ## Process Gap-Proofing — IMPLEMENTED 2026-06-14 (then NJ)
 
 DONE (all 3 pillars built + verified; design: plan `swift-gathering-snowglobe.md`):

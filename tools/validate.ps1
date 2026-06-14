@@ -1027,6 +1027,25 @@ foreach ($bundle in $providerBundles) {
                 }
             }
 
+            # G-31: POISONED-ARRAY -- value-comparison conditions (EQUALS/NOT_EQUALS/IN/NOT_IN/
+            # REGEX) are INERT on this platform; they disable the combo's ENTIRE conditions array
+            # (incl. co-resident EXISTS/NOT_EXISTS), so it fires unconditioned and can join the
+            # union pool / over-send. Only existence conditions are honored. Live-proven FL v4.9
+            # T-A/T-B 2026-06-12 (QIDM_REFERENCE Sec 2a). WARN -> fix at provider rebuild.
+            foreach ($combo in $cfg.combinations) {
+                $cConds = @()
+                if ($combo.conditions) { $cConds += $combo.conditions }
+                if ($combo.requirements -and $combo.requirements.conditions) { $cConds += $combo.requirements.conditions }
+                if ($cConds.Count -eq 0) { continue }
+                $poison = @($cConds | Where-Object { "$($_.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX') })
+                if ($poison.Count -gt 0) {
+                    $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
+                    $desc = ($poison | ForEach-Object { "$(@($_.field) -join '+') $("$($_.operator)".ToUpperInvariant())" }) -join '; '
+                    Write-Warn "QIDM '$($cfg.name)' combo '$comboId' has POISONED-ARRAY condition(s) [$desc] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk)."
+                    Write-Host "    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array)." -ForegroundColor Cyan
+                }
+            }
+
             # G-16: Combination ordering -- shadowing check. A later combo is unreachable when an
             # EARLIER combo's set[] is a subset of its set[] (first match fires) UNLESS the earlier
             # combo carries routing conditions (NOT_EXISTS/NOT_EQUALS defer to later combos --
