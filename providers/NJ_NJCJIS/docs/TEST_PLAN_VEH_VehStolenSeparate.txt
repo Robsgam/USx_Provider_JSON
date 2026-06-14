@@ -4,6 +4,24 @@ NJ_NJCJIS VehStolenSeparate BRANCH -- VEHICLE-ONLY LIVE TEST PACKAGE
 JSON        : NJ_NJCJIS_VehStolenSeparate.json (v3.7-SEPARATE, rebuilt 2026-06-14; was RANDOM_COLLAPSED)
 Build script: scripts/build_nj_njcjis_vehstolenseparate.ps1
 *** CARD RENAME 2026-06-14: the card called "RANDOM" below is now titled "Vehicle Stolen". ***
+================================================================================
+LIVE RESULTS 2026-06-14 (request-side; USx tenant; v3.7-SEPARATE) -- DISCRETENESS CONFIRMED
+  A  reg plate (PLATE card)          -> VehReg RQ ONLY, no VehStolen          PASS
+  B  stolen plate (Vehicle Stolen)   -> VehStolen QVP ONLY, no VehReg         PASS
+  C  both plates (reg + stolen)      -> 2 independent txns: VehReg=ABC1234,
+                                        VehStolen=XYZ9999 (each scoped to its
+                                        own card plate; order not fixed but
+                                        immaterial -- no firing-order change)  PASS
+  D  NCIC# only (Vehicle Stolen)     -> VehStolen QVN, no State               PASS
+  E  plate+VIN+NCIC# (Vehicle Stolen)-> SINGLE QV unions all 3 + State
+                                        (LIMITATION #1 union-pool)            CHARACTERIZED
+  U/X render + selector (VehReg+Vehicle Stolen) + per-card arming             PASS (visual)
+
+  E DECISION: combo reorder does NOT fix the over-send (union pool is priority-
+  independent); poisoned-array blocks conditions. RECOMMENDED mitigation = card hint
+  "enter ONE identifier (plate, VIN, or NCIC#)" on the Vehicle Stolen card; alt = document
+  as LIMITATION (mainline QV had same union behavior). Apply hint only if SEPARATE is chosen.
+================================================================================
 Scope       : Vehicle entity ONLY -- usability, checkbox behavior, query
               triggering, CAD-related shortcomings. Other entities unchanged
               from mainline v3.5 (already live-confirmed).
