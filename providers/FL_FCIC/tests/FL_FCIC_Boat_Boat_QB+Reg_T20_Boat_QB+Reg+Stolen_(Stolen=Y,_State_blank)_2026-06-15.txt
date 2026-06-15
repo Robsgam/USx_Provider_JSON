@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QB+Reg (T20 Boat QB+Reg+Stolen (Stolen=Y, State blank))
+Variant: MC
+Date: 2026-06-15 10:25:42
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+registrationNumber=FL1234AB, relatedHitSearchIndicator=Y, State=blank, Hull=blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5TR16HHN332E5C55NQJ0D5"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KV5TR16HHN332E5C55NQJ0D5</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><RegistrationNumber>FL1234AB</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5TR16HHN332E5C55NQJ0D5
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+QB PASS: Reg+Stolen=Y routed to QB (RelatedHitSearchIndicator=Y present), not FBQ. Existence-only routing confirmed for Reg path too (mirrors T19 Hull).
+
+RESULT: PASS
