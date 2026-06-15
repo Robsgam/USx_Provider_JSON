@@ -1,6 +1,23 @@
 # Rebuild Tracker
 Generated: 2026-05-08 | Last updated: 2026-06-14
 
+## CURRENT TEST / BUILD ORDER (user directive 2026-06-14, SUBJECT TO CHANGE)
+
+1. **FL_FCIC** (v5.0) -- test. Already rebuilt + enforce-clean; awaiting USx import. Request-side.
+2. **TX_TLETS** (v3.4) -- test. Rebuilt (poisoned-array fix) + enforce-clean; awaiting import. Request-side.
+3. **NJ_NJCJIS** -- test + DECIDE the Vehicle-Stolen branch winner (VehStolenRemoved vs
+   VehStolenSeparate). Hopefully we know which way to go by then (PM input pending).
+4. **NY_NYSPIN_EJUSTICE** -- (has 4 poisoned-array combos earmarked; analyze benign-vs-harmful at rebuild).
+5. **AZ_AZDPS**.
+
+Gating reality: each "test" needs the JSON imported to the USx tenant by the user; this env returns
+NO live state responses (request-side XML + visual only). Methodology: challenge/verify + secure data
+before running down a path (do NOT assume; confirm against XML/devdoc/live logs first).
+
+**ON RECORD -- PascalCase vs camelCase:** may need to PAUSE the order and re-evaluate the form-param
+casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
+revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
+
 ## Poisoned-Array Exposure Catalog (2026-06-14, repo-wide sweep)
 
 Source: `validate.ps1` G-31 (added 2026-06-14; also `verify_build.ps1` CHECK 11). Flags every
