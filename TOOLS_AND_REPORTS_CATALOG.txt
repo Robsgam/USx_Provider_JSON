@@ -65,6 +65,9 @@ B. CORE BUILD-REPORT PIPELINE
 ================================================================================
 C. GATES & AUDITORS (repo-wide / pre-import gates)
 ================================================================================
+  doctor.ps1                 ONE-SHOT HEALTH DASHBOARD -- composes score_all -Quick +
+                             poisoned-array sweep (validate G-31) + git status into one
+                             read-only snapshot. Flags: -SkipPoison (faster), -OutFile.
   enforce.ps1                MANDATORY FINAL GATE -- 6 phases: build freshness,
                              validator scores, doc version sync, cross-provider +
                              repo integrity, iterate-phase gate + hypothesis
