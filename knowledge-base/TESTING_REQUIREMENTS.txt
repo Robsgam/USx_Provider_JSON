@@ -785,6 +785,75 @@ SECTION 13 -- TESTING WORKFLOW CONSTRAINTS
     verify both payloads.
 
 ================================================================================
+SECTION 13b -- STANDARD TEST PRESENTATION + PER-ENTITY RENDER GATE
+================================================================================
+
+  This section standardizes HOW each live test is PRESENTED to the user
+  before it is run (not just how it is logged). Applies to ALL providers,
+  ALL test sessions. Goal: the user can visually verify the form AND the
+  expected result, and knows exactly what to do if something is off.
+
+  PER-ENTITY RENDER GATE (do this FIRST, per entity):
+    Before running ANY of an entity's combo tests, present + run that
+    entity's RENDER test and confirm PASS. The render gate re-arms on every
+    version bump (a rebuild restarts testing -- Section 11 GATE 1), so an
+    entity rendered at v(N) must be re-rendered at v(N+1) before its combos.
+    Sequence example:
+      Firearm RENDER (gate) -> T_QG+Serial -> T_QG+NCIC -> T_QG+PCN
+      Article RENDER (gate) -> T_QA+Serial -> ...
+
+  PRESENT ONE TEST AT A TIME. The full matrix is presented once up front
+  for visibility (GATE 1), but tests are executed and presented singly.
+
+  COMPACT RENDER CARD (what to show for a render gate):
+
+    > <Entity> RENDER (gate)
+    Verify: <N> cards (<card titles>); <N> fields;
+            defaults <field=value list>; dropdowns <list> populated;
+            State = no default (routing safety, LIMITATION #30)
+    On mismatch: stop, note delta, fix before running this entity's combos.
+
+  COMPACT FUNCTIONAL TEST CARD (what to show for each combo test):
+
+    > T<n> <Entity> <Combo>
+    Fill: <fieldId>=<value> (type|select), rest blank
+    Expected: <Query>, keyRef=<keyRef>, only <XML elements> (+defaults);
+              <co-fire or none>
+    On mismatch: stop, capture XML, report.
+    [+ one known-risk branch if the test has an obvious failure mode,
+     e.g. "extra NCIC/PCN in pool -> over-send"]
+
+  MANDATORY CONTENT OF EVERY CARD:
+    - The EXPECTED line is REQUIRED (this is what the user visually verifies
+      against the form and the XML). Never present a test without it.
+    - Tag EVERY field as (type) or (select) -- the user must know whether to
+      type a value or pick from a dropdown. See "Check form field type" and
+      "Check combo set[] before every test": confirm FormInput vs FormSelect
+      in the QIF layout and read the combo's set[]/any[] from the build
+      before writing the card. Use test_commsys.ps1 / render_layout.ps1 to
+      confirm, not memory.
+    - Name the expected keyReference, not just the field list (combo priority:
+      losing combos' set[] fields may still appear in XML -- LIMITATION #1).
+
+  DISCREPANCY PROTOCOL (when observed != EXPECTED):
+    1. STOP. Do not mark PASS. Do not proceed to the next test.
+    2. Capture the request XML (and a screenshot if it's a render/UI delta).
+    3. Report the delta: observed vs expected, likely cause, proposed action.
+    4. Resolve (fix + rebuild, or document as LIMITATION) before continuing.
+    Common branches: extra fields in XML -> over-send (pool/conditions);
+    no Send button -> set[] not satisfied; wrong keyRef -> combo order;
+    empty dropdown -> codeType pairing (FIELD_REFERENCE.txt).
+
+  RESPONSE XML: not expected in this environment (request-side only; real
+  logs withheld for PII). "XML RESPONSE = Not captured" is correct, NOT a
+  gap. Response-handler correctness is verified by simulate_response.ps1.
+  The request XML is the PASS evidence (post_test.ps1 -XmlRequest gate).
+
+  STUB ALIGNMENT: new_test_log.ps1 carries matching EXPECTED OUTCOME and
+  DISCREPANCY / TROUBLESHOOTING sections so the on-disk log mirrors the card
+  presented. Pass -Expected "<text>" to pre-fill the EXPECTED OUTCOME section.
+
+================================================================================
 SECTION 14 -- VALIDATOR MARKERS
 ================================================================================
 

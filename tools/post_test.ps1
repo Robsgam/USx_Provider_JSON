@@ -159,8 +159,8 @@ Write-Step 2 $totalSteps "Creating test log..."
 $dateStr   = Get-Date -Format 'yyyy-MM-dd'
 $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
 $queryShort = Get-QueryShort $Query
-$descSafe  = $Description -replace '[\\/:*?"<>| ]', '_'
-$comboSafe = $Combo -replace '[\\/:*?"<>| ]', '_'
+$descSafe  = $Description -replace '[\\/:*?"<>|,()\[\] ]', '_'
+$comboSafe = $Combo -replace '[\\/:*?"<>|,()\[\] ]', '_'
 
 $logFilename = "${Provider}_${Entity}_${queryShort}_${comboSafe}_${descSafe}_${dateStr}.txt"
 $logPath     = Join-Path $testsDir $logFilename
@@ -229,7 +229,7 @@ $notesContent
 RESULT: $Result
 "@
 
-$logContent | Set-Content -Path $logPath -Encoding UTF8
+$logContent | Set-Content -LiteralPath $logPath -Encoding UTF8
 Write-Ok "Saved: $logPath"
 
 # ============================================================================

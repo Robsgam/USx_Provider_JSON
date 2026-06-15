@@ -33,4 +33,11 @@ NOTES
 -----
 FAIL. Expected: DH auto-selects, deselects DL, only DriverHistoryQuery fires. Observed: DL filled first stayed checked; DH 'became active' but did NOT auto-select; submit sent DriverLicenseQuery ONLY (OLN=D111111111) -- DriverHistoryQuery never fired. RMS co-fired on DL (elasticQuery dlNumber=D111111111). Config is correct (DH autoSelect=true + queriesToDeselect=[DriverLicenseQuery]). Likely cause: shared-entity autoSelect contention -- first-filled query (DL) holds selection; DH autoSelect does not preempt, so queriesToDeselect never executes. Discriminating re-test pending (manual DH selection).
 
-RESULT: FAIL
+RESULT: FAIL (SUPERSEDED -- expectation miscalibrated, NOT a defect)
+
+SUPERSEDED BY T40b (2026-06-15, commit 45ccf78): the "auto-preempt" expectation
+was wrong. The one-directional deselect contract is OPT-IN, not auto-populate:
+manually selecting Driver History deselects DL and fires only DH; DL does not
+deselect DH. Behavior is correct and arguably safer for an OOS-only opt-in query
+(auto-populating DH fields should NOT silently fire an out-of-state history pull).
+No JSON change required. This row is retained for history only.

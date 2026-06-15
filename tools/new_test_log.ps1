@@ -21,6 +21,7 @@ param(
     [Parameter(Mandatory)][string]$Entity,
     [Parameter(Mandatory)][string]$Combo,
     [Parameter(Mandatory)][string]$Description,
+    [string]$Expected,
     [string]$ProviderDir
 )
 
@@ -43,6 +44,19 @@ New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 
 $JSON_FILE = "${Provider}_${Variant}.json"
 
+if ($Expected) {
+    $EXPECTED_BODY = $Expected
+} else {
+    $EXPECTED_BODY = @'
+  [Compact card presented to the user before this test -- TESTING_REQUIREMENTS.txt Sec 13b]
+  Query        : [Query that should fire, e.g. GunQuery]
+  keyReference : [expected keyRef, e.g. QGGunSerialNumber]
+  XML elements : [elements that MUST appear, e.g. GunSerialNumber (+ImageIndicator=N)]
+  MUST NOT have: [elements that must be ABSENT, e.g. NCICNumber, ProcessControlNumber]
+  Co-fire      : [expected co-fire query or NONE]
+'@
+}
+
 $CONTENT = @"
 $Provider $Variant v$Version -- Test Log
 ============================================================
@@ -51,6 +65,12 @@ JSON       : $JSON_FILE
 Entity     : $Entity
 Combo      : $Combo ($Description)
 Test type  : [T1/T2/T3/T4/T5 -- see BUILD_CHECKLIST standard test sequence]
+
+================================================================================
+EXPECTED OUTCOME (what was presented BEFORE the test -- visual + XML)
+================================================================================
+
+$EXPECTED_BODY
 
 ================================================================================
 FORM STATE (what was on the form when submitted)
@@ -101,6 +121,15 @@ RESULT
 
   Reason: [one line -- what confirmed PASS, or what broke for FAIL]
   Detail: [optional -- any surprising behavior, limitation confirmed, etc.]
+
+================================================================================
+DISCREPANCY / TROUBLESHOOTING (only if observed != EXPECTED OUTCOME)
+================================================================================
+
+  Observed vs expected: [the delta -- e.g. "extra NCICNumber in XML pool"]
+  Likely cause        : [e.g. over-send / combo-order / set[] unmet / missing default]
+  Action taken        : [STOP + capture + report; fix applied; escalated; etc.]
+  (Per Sec 13b discrepancy protocol: on mismatch STOP, capture XML, report -- do NOT mark PASS.)
 
 ================================================================================
 RAW XML REQUEST (from browser F12 > Network > select request > Payload)
