@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQ+OLN (T39 Person KQ+OLN +any purposeCode attention)
+Variant: MC
+Date: 2026-06-15 14:23:08
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+operatorLicenseNumberDH=D999888777 (typed); registrationStateDH=Georgia (selected); purposeCodeDH=c (typed); attentionDH=TESTUSER (typed)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV68AGD92RQAFGEWAD680GDK"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV68AGD92RQAFGEWAD680GDK</Id><State>GA</State><Attention>TESTUSER</Attention><OperatorLicenseNumber>D999888777</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV68AGD92RQAFGEWAD680GDK
+  State                          GA
+  Attention                      TESTUSER
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    C
+
+NOTES
+-----
+any[] test: PurposeCode (form c -> XML C, uppercased) + Attention=TESTUSER both serialized. Clean pool OLN+State+Purpose+Attention; NO Name/DOB/Sex (v5.1 isolation holds with any[] populated). DL deselected, no RMS co-fire. Attention element present (not overridden this run). Matches EXPECTED.
+
+RESULT: PASS
