@@ -245,6 +245,25 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   elastic query. Fix design + verification gates: BUILD_RULES.txt Section 4
   ("RMS POOL ISOLATION").
 
+  SERVER-SIDE VALUE ROUTING -- why inert conditions are often BENIGN (resolves the
+  "unresolved contradiction" earmark above). STATUS: LIVE-PROVEN -- CA_CLETS v2.5, 12
+  VehicleRegistrationQuery + 9 DriverLicenseQuery committed request logs, USx tenant 2026-06-14:
+    The wire request carries MessageType=<transaction name> (e.g. VehicleRegistrationQuery);
+    the combo keyReference is INTERNAL and is NEVER sent. The CommSys server selects the actual
+    message key (e.g. IV.4I vs IV.4C; or the IR.QVC super-inquiry) from the FIELD VALUES it
+    receives (LicensePlateTypeCode, CriminalIdNumber, ...), NOT from our conditions. Therefore:
+      - Inert (poisoned) conditions are BENIGN when every matched combo shares ONE field
+        signature: all produce the identical wire message, the first-match "winner" is irrelevant,
+        and the server still routes by value. (CA_CLETS had 13 IV.4* plate-type combos with an
+        identical set[] -- deleted as redundant; the server routes by LicensePlateTypeCode value.)
+      - Inert conditions are HARMFUL only when matched combos DIFFER in fields: the union pool then
+        OVER-SENDS the extras (TX_TLETS Img vs catchall combos pushed email/image/reason; fixed
+        v3.4 by merging the pairs). The harm is over-send, not a wrong MessageType.
+    This EXPLAINS the NJ RandomRequest=Y/N and CA PlateType "routing": the inert EQUALS does nothing;
+    the field VALUE reaches the server and the server routes -- never a real contradiction (conditions
+    inert AND queries work). NJ's one-RAND-query discriminating test is still worth running as direct
+    confirmation, but the model is settled. See PLATFORM_CONSTRAINTS.txt LIMITATION #37.
+
   Each condition object:
     operator    String        REQUIRED  The type of check (see table below)
     field       List<String>  REQUIRED  QIDM attribute name(s) the condition applies to

@@ -824,6 +824,22 @@ AP #20: Defaulting BadgeNumber to visible without asking
        @('dexStateUserId'); update all combination set/any refs.
     4. If visible: use Inp 'BadgeNumber' as normal.
 
+LIMITATION #37: Value-comparison conditions are wholly inert (poisoned-array);
+                routing is server-side by field VALUE
+  STATUS: LIVE-PROVEN -- FL v4.9 T-A/T-B (2026-06-12) + CA_CLETS v2.5 (2026-06-14).
+  A conditions array containing ANY value-comparison operator (EQUALS/NOT_EQUALS/
+  IN/NOT_IN/REGEX) is disabled IN ITS ENTIRETY -- including co-resident EXISTS/
+  NOT_EXISTS members. The combo fires by set[]/any[] first-match and joins the pool.
+  The wire carries MessageType=<transaction name>; the combo keyReference is INTERNAL
+  (never sent) -- the CommSys SERVER selects the real message key from field VALUES.
+  Consequence: inert conditions are BENIGN when matched combos share one field
+  signature (identical wire; CA IV.4* plate types), HARMFUL (union over-send) only
+  when matched combos differ in fields (TX Img/catchall). Use existence-only
+  conditions or presence-based set[] routing; a true value gate is NOT buildable
+  config-side -> document + escalate. Full detail + evidence: QIDM_REFERENCE.txt
+  Section 2a (POISONED-ARRAY RULE + SERVER-SIDE VALUE ROUTING). Flagged by
+  validate.ps1 G-31 and test_commsys.ps1 ([!] POISONED ARRAY).
+
 ================================================================================
 CROSS-REFERENCE INDEX
 ================================================================================
@@ -845,6 +861,7 @@ CROSS-REFERENCE INDEX
   LIMITATION #29 -> Section 3 (Multi-Entity)
   LIMITATION #30 -> Section 5 (Combo Routing)
   LIMITATION #31 -> Section 5 (Combo Routing)
+  LIMITATION #37 -> Conditions/poisoned-array (detail: QIDM_REFERENCE.txt Sec 2a)
   AP #1  -> Section 2 (folded into LIMITATION #4)
   AP #2  -> Section 2 (Field Encoding)
   AP #3  -> Section 2 (Field Encoding)
