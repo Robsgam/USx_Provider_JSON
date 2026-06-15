@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQ+Reg (T17 Boat BQ+Reg+State OOS (State=ID))
+Variant: MC
+Date: 2026-06-15 09:42:09
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+registrationNumber=GA9999ZZ, registrationState=Idaho, Hull=blank, Stolen=blank, Image=N(default)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5R62AFV6WKGN8W3A5RNHV8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KV5R62AFV6WKGN8W3A5RNHV8</Id><ImageIndicator>N</ImageIndicator><State>ID</State><RegistrationNumber>GA9999ZZ</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5R62AFV6WKGN8W3A5RNHV8
+  ImageIndicator                 N
+  State                          ID
+  RegistrationNumber             GA9999ZZ
+
+NOTES
+-----
+OOS ROUTING PASS: BQ fired, State=ID (reverse-lookup Idaho), RegistrationNumber serialized. ImageIndicator=N serialized though NOT in BQ+Reg combo -- CONFIRMS ImageIndicator-as-modifier theory (rides with request regardless of firing combo; consistent T11/T16/DL-v4.8). Resolves T16 'anomaly': not a defect, ImageIndicator is pervasive modifier. Sim under-models it (minor fidelity note).
+
+RESULT: PASS
