@@ -24,10 +24,14 @@ From the tools/scripts/KB consolidation audit. Tier 1 (KB poisoned-array central
 QIDM builder helpers, doctor.ps1) + Tier 2 done/in-progress. Tier 3 deferred:
 
 - **Data-driven generic build engine** — replace ~20 bespoke `build_<provider>.ps1` (~80% boilerplate)
-  with one engine + per-provider config. ~40-60h + migration risk. `generate_build_script.ps1` is the
-  incomplete seed. **REMINDER TRIGGER:** revisit when 5+ NEW providers queue for builds, OR when a
-  build-script change would clearly benefit. Until then, use the new `Build-QidmCombo`/`Build-QidmAttribute`
-  helpers incrementally at each provider's rebuild (semantic-reformat, validator-verified — not byte-diff).
+  with one engine + per-provider config. SCAFFOLDED/DEFERRED (user can't dedicate a big Claude block).
+  The 30-60h figure is a brute-force [Guessing] estimate — **do NOT commit to it.** Before any real
+  work, run a cheap time-boxed (~1-2h) SPIKE for a measured number / smarter path: derive ONE provider's
+  config from its existing JSON → generate → diff (config-by-example round-trip). If that works, per-
+  provider cost may be ~minutes and the whole effort far less than guessed. `generate_build_script.ps1`
+  is the incomplete seed. **REMINDER TRIGGER:** 5+ NEW providers queued, OR idle capacity for the spike.
+  Until then, use the new `Build-QidmCombo`/`Build-QidmAttribute` helpers incrementally at each rebuild
+  (semantic-reformat, validator-verified — not byte-diff).
 - **Modularize `validate.ps1`** (~2200 lines, 6 coupled phases) — SKIP. Risk > benefit; revisit only if
   it grows materially or a phase needs independent reuse.
 
