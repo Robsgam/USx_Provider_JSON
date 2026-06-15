@@ -988,13 +988,20 @@ function Audit-Provider {
             }
         }
 
-        # Collect unique primaryFieldReferences from JSON combos
+        # Collect unique primaryFieldReferences from JSON combos. A combo's
+        # primaryFieldReference names a QIDM attribute; resolve it to that
+        # attribute's targetField so suffixed primaries (DH-suffix etc.) match
+        # the metadata field name -- e.g. 'OperatorLicenseNumberDH' -> 'OperatorLicenseNumber'.
         $jsonPrimaries = @{}
         foreach ($qidm in $jsonQidms) {
             if (-not $qidm.combinations) { continue }
             foreach ($jc in @($qidm.combinations)) {
                 $pfr = $jc.primaryFieldReference
-                if ($pfr) { $jsonPrimaries[$pfr] = $true }
+                if (-not $pfr) { continue }
+                $jsonPrimaries[$pfr] = $true
+                foreach ($attr in @($qidm.attributes)) {
+                    if ($attr.name -ieq $pfr -and $attr.targetField) { $jsonPrimaries[$attr.targetField] = $true; break }
+                }
             }
         }
 
