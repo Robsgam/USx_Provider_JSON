@@ -395,6 +395,28 @@ foreach ($pd in $providers) {
             Warn "$provName -- tests/.test_version (v${testVer}) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
         }
     }
+
+    # Check 3i: JSON-embedded version matches build script default (version-lag trap).
+    # A JSON built with a -Version override while the script default lagged ships the
+    # correct artifact but mis-stamps every doc (Get-ScriptVersion reads the default).
+    # FL_FCIC v5.1 hit this 2026-06-15 (4 enforce FAILs). Fix = bump the script default.
+    $jsonFile3i = Join-Path $pd.FullName "${provName}.json"
+    if (-not (Test-Path $jsonFile3i)) {
+        $jsonFile3i = Get-ChildItem $pd.FullName -Filter "*.json" -File | Select-Object -First 1 -ExpandProperty FullName
+    }
+    if ($jsonFile3i -and (Test-Path $jsonFile3i)) {
+        $jsonText3i = [System.IO.File]::ReadAllText($jsonFile3i)
+        if ($jsonText3i -match '"description":\s*"Provider configuration for [^"]*?\bv([0-9]+\.[0-9]+)') {
+            $embeddedVer = $Matches[1]
+            if ($embeddedVer -eq $version) {
+                Pass "$provName -- JSON embedded version v${embeddedVer} matches build script"
+            } else {
+                Fail "$provName -- JSON embedded v${embeddedVer} != build script default v${version} (version-lag trap: bump the build script default -Version)"
+            }
+        } else {
+            Warn "$provName -- JSON provider-bundle description has no parseable embedded version"
+        }
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
