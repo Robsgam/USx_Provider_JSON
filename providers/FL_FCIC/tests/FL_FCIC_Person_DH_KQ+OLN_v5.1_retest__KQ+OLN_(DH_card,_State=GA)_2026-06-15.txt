@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQ+OLN (v5.1 retest: KQ+OLN (DH card, State=GA))
+Variant: MC
+Date: 2026-06-15 12:05:43
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+operatorLicenseNumberDH=D999888777, registrationStateDH=Georgia
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KV60AN6J0E0RS749BEXDGJP9"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV60AN6J0E0RS749BEXDGJP9</Id><State>GA</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV60AN6J0E0RS749BEXDGJP9
+  State                          GA
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+v5.1 PASS: DriverHistoryQuery OLN+State only. Unique attr name OperatorLicenseNumberDH. Wire element still <OperatorLicenseNumber>.
+
+RESULT: PASS
