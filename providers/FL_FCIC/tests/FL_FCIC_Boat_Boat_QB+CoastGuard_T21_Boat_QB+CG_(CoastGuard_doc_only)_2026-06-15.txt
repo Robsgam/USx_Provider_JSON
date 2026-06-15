@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QB+CoastGuard (T21 Boat QB+CG (CoastGuard doc only))
+Variant: MC
+Date: 2026-06-15 10:26:40
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+coastGuardDocumentNumber=CG123456, State=blank, Stolen=blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5TSXREHA6R8A7AMHHWEK1F"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KV5TSXREHA6R8A7AMHHWEK1F</Id><ImageIndicator>N</ImageIndicator><CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5TSXREHA6R8A7AMHHWEK1F
+  ImageIndicator                 N
+  CoastGuardDocumentNumber       CG123456
+
+NOTES
+-----
+QB PASS: CoastGuardDocumentNumber+ImageIndicator=N. No RelatedHitSearchIndicator (Stolen blank, it's any[] not set[]). CG inherently QB.
+
+RESULT: PASS
