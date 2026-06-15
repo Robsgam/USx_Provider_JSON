@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQ+TitleLien (T9 Vehicle FRQ+TitleLien in-state (State blank))
+Variant: MC
+Date: 2026-06-15 08:59:38
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+titleLienInformation=ABCD1234, State=blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5NTFN3Q6R5R4FAD045K3SS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KV5NTFN3Q6R5R4FAD045K3SS</Id><TitleLienInformation>ABCD1234</TitleLienInformation><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5NTFN3Q6R5R4FAD045K3SS
+  TitleLienInformation           ABCD1234
+  ImageIndicator                 N
+
+NOTES
+-----
+MessageType=VehicleRegistrationQuery (FRQ Title). TitleLienInformation+ImageIndicator=N serialized, no State (NOT_EXISTS worked). LicensePlateYear default correctly absent (not in title combo). No RMS (title not RMS-mapped).
+
+RESULT: PASS
