@@ -84,6 +84,60 @@ function Build-EntitiesBundle {
     }
 }
 
+# -----------------------------------------------------------------------------
+# QIDM builders (opt-in convenience; promote the _A/_C patterns from
+# _build_rms_bundle.ps1 to the CommSys provider QIDMs). Reduce ~200 lines of
+# [PSCustomObject]@{...} boilerplate per build script.
+#
+# ADOPTION NOTE: output is SEMANTIC-identical and validator-clean, but property
+# ORDER may differ from legacy hand-written attrs (ConvertTo-Json preserves
+# insertion order; hand-written attrs vary -- e.g. BirthDate has rule before
+# size, State has codeTypeProvider last). So adoption is a one-time reformat:
+# verify with validate.ps1 + render_layout/test_commsys diff (combos/fields
+# unchanged), NOT a byte-diff. Adopt per provider at its next rebuild.
+# -----------------------------------------------------------------------------
+function Build-QidmAttribute {
+    param(
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter(Mandatory)][int]$Size,
+        [Parameter(Mandatory)][string[]]$SourceField,
+        [string]$TargetField,
+        [object]$Rule,                 # [PSCustomObject]@{ function=...; arguments=@(...) }
+        [string]$CodeTypeProvider,     # e.g. 'NIBRS','NCIC'
+        [string]$Description
+    )
+    if (-not $TargetField) { $TargetField = $Name }
+    $o = [ordered]@{ name = $Name }
+    if ($Rule) { $o.rule = $Rule }
+    $o.size = $Size
+    $o.sourceField = @($SourceField)
+    $o.targetField = $TargetField
+    if ($CodeTypeProvider) { $o.codeTypeProvider = $CodeTypeProvider }
+    if ($Description)      { $o.description = $Description }
+    [PSCustomObject]$o
+}
+
+function Build-QidmCombo {
+    param(
+        [Parameter(Mandatory)][string]$KeyReference,
+        [Parameter(Mandatory)][string]$PrimaryFieldReference,
+        [string[]]$Set = @(),
+        [string[]]$Any = @(),
+        [array]$Conditions,
+        [array]$Defaults,
+        [string]$State = 'In/Out'
+    )
+    $req = [ordered]@{ set = @($Set); any = @($Any) }
+    if ($PSBoundParameters.ContainsKey('Conditions')) { $req.conditions = $Conditions }
+    if ($PSBoundParameters.ContainsKey('Defaults'))   { $req.defaults   = $Defaults }
+    [PSCustomObject]@{
+        requirements          = [PSCustomObject]$req
+        primaryFieldReference = $PrimaryFieldReference
+        keyReference          = $KeyReference
+        state                 = $State
+    }
+}
+
 function Write-ProviderJson {
     param(
         [Parameter(Mandatory)]$BundleObject,

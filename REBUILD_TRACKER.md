@@ -18,6 +18,19 @@ before running down a path (do NOT assume; confirm against XML/devdoc/live logs 
 casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
 revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
 
+## DEFERRED BACKLOG — Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
+
+From the tools/scripts/KB consolidation audit. Tier 1 (KB poisoned-array centralization, README fix,
+QIDM builder helpers, doctor.ps1) + Tier 2 done/in-progress. Tier 3 deferred:
+
+- **Data-driven generic build engine** — replace ~20 bespoke `build_<provider>.ps1` (~80% boilerplate)
+  with one engine + per-provider config. ~40-60h + migration risk. `generate_build_script.ps1` is the
+  incomplete seed. **REMINDER TRIGGER:** revisit when 5+ NEW providers queue for builds, OR when a
+  build-script change would clearly benefit. Until then, use the new `Build-QidmCombo`/`Build-QidmAttribute`
+  helpers incrementally at each provider's rebuild (semantic-reformat, validator-verified — not byte-diff).
+- **Modularize `validate.ps1`** (~2200 lines, 6 coupled phases) — SKIP. Risk > benefit; revisit only if
+  it grows materially or a phase needs independent reuse.
+
 ## Poisoned-Array Exposure Catalog (2026-06-14, repo-wide sweep)
 
 Source: `validate.ps1` G-31 (added 2026-06-14; also `verify_build.ps1` CHECK 11). Flags every
