@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DQ+Name (T27 Person DQ+Name+State OOS (DL card, State=MO))
+Variant: MC
+Date: 2026-06-15 11:10:16
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+nameLast=doe, nameFirst=john, birthDate=1990-01-01, sexCode=Male, DL State=Missouri, OLN=blank, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5X94MGH69AZ6ZDQTJB488J"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV5X94MGH69AZ6ZDQTJB488J</Id><ImageIndicator>Y</ImageIndicator><State>MO</State><SexCode>M</SexCode><BirthDate>19900101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5X94MGH69AZ6ZDQTJB488J
+  ImageIndicator                 Y
+  State                          MO
+  SexCode                        M
+  BirthDate                      19900101
+  Name                           DOE,JOHN
+
+NOTES
+-----
+OOS ROUTING PASS: DQ fired (State present, OLN absent). DriverLicenseQuery + State=MO + Name=DOE,JOHN + BirthDate=19900101 + SexCode=M + ImageIndicator=Y, no OLN. RMS co-fired all + registrationStateAttrId. Completes all 4 DL combos (FDQ x2, DQ x2).
+
+RESULT: PASS
