@@ -1,0 +1,61 @@
+TX_TLETS MC v3.4 -- Test Log
+============================================================
+Date       : 2026-06-15
+JSON       : TX_TLETS.json
+Entity     : Person
+Combo      : RENDER (Render verification - 3 cards OPTIONS+DL+DH v3.4)
+Test type  : T1 -- RENDER gate (visual; no combo fire, no XML)
+
+================================================================================
+EXPECTED OUTCOME (presented BEFORE the test -- visual)
+================================================================================
+
+  3 cards render, order OPTIONS -> DRIVER LICENSE -> DRIVER HISTORY.
+  CARD "SEARCH OPTIONS":  registrationState (Sel, default TX), imageIndicator
+                          (Sel YES_NO_UNKNOWN/NCIC, default Y), reasonCode (Inp 1,
+                          default C), emailAddress (Inp 80, empty).
+  CARD "DRIVER LICENSE":  operatorLicenseNumber (Inp 20), birthDate (Date),
+                          sexCode (Sel SEX, no default), nameLast/First/Middle/Suffix
+                          (Inp 30), raceCode (Sel NIBRS_RACE, no default),
+                          expandedBirthDateSearchCode (Inp 1), regionId (Inp 4).
+  CARD "DRIVER HISTORY":  operatorLicenseNumberDH (Inp 20), purposeCodeDH (Inp 1,
+                          default C), attentionDH (Inp 30), nameLast/First/Middle/
+                          SuffixDH (Inp 30), birthDateDH (Date), sexCodeDH (Sel SEX,
+                          no default).
+  Dropdowns (sexCode, sexCodeDH, raceCode, imageIndicator, registrationState) must
+  populate with options (empty dropdown = FAIL).
+
+================================================================================
+FORM STATE
+================================================================================
+
+  N/A -- render gate (no fields submitted).
+
+================================================================================
+REQUEST SUMMARY / FIELD ANALYSIS / RMS CO-FIRE
+================================================================================
+
+  N/A -- render gate fires no query and sends no XML.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: User confirmed Person form renders all 3 cards (OPTIONS, DRIVER LICENSE,
+          DRIVER HISTORY) with all fields present, correct input types, dropdowns
+          populated, and defaults shown (TX / Y / C / C).
+  Detail: Layout matches render_layout.ps1 output for the imported v3.4 JSON.
+
+================================================================================
+DISCREPANCY / TROUBLESHOOTING
+================================================================================
+
+  None observed.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+N/A -- render gate, no XML request generated.
