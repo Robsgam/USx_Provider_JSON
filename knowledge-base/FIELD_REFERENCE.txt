@@ -616,6 +616,28 @@ SECTION 9 -- IMAGEINDICATOR
     Vehicle queries:   initialValue = 'N' (or omit -- check per query)
     Article/Boat:      initialValue = 'N' (if field exists in metadata)
 
+  BLANK -> N (provider default) and "cannot uniformly blank" -- finding 2026-06-15
+  (FL_FCIC v5.0 live testing; FCIC metadata: ImageIndicator "If blank, default value
+  shall be 'N'"):
+    - The provider treats a BLANK ImageIndicator as 'N'. So sending 'N' on N-entities
+      (Vehicle/Boat/Gun/Article) is REDUNDANT but harmless. This is also why an
+      ImageIndicator=N that leaks onto an OOS Nlets query (e.g. Boat BQ -- see below) is
+      benign: the destination would default blank to N anyway.
+    - DO NOT try to "blank the field" to suppress that leak. 'Y' on Person/DL is
+      FUNCTIONAL (requests the driver photo); blank -> N would silently DROP photos.
+      The field therefore cannot be uniformly blanked -- Person must keep an explicit 'Y'.
+    - Serialization model: ImageIndicator also rides in via combo-level defaults[] (the
+      CAD/First-Responder mechanism -- those contexts ignore form initialValue, so
+      audit_cad CHECK 6 REQUIRES a combo default for any any[] field that has a form
+      initialValue). Therefore blanking the form field alone does NOT stop serialization;
+      you'd also have to strip the combo defaults[] and any[] membership. Net: a true
+      suppression on a specific path (e.g. OOS BQ only) needs card/combo isolation, not a
+      field-default change. Not worth it for a benign redundant field.
+    - REQUIRED-anywhere scan (all 24 provider JSONs, 2026-06-15): imageIndicator appears
+      in a combo set[] exactly ONCE -- LA_LEMS DP (legacy _MC artifact, likely a mistake;
+      flagged in REBUILD_TRACKER for LA's rebuild). Everywhere else it is any[]/defaults
+      only. ImageIndicator is never required in FL.
+
 ================================================================================
 SECTION 10 -- OPERATIONAL IDENTITY FIELDS (BadgeNumber / dexStateUserId)
 ================================================================================

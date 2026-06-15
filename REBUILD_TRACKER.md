@@ -56,6 +56,16 @@ Process lesson: simulator/combo-match tests PASS without exercising conditions l
 confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard + request-side live test
 close that gap.
 
+## ImageIndicator set[] anomaly — LA_LEMS (flagged 2026-06-15)
+
+Repo-wide scan (all 24 provider JSONs, during FL_FCIC v5.0 live testing) found `imageIndicator`
+in a combo `set[]` (i.e. REQUIRED) in exactly ONE place: **`LA_LEMS_MC.json` combo `DP`**.
+Everywhere else it is `any[]`/`defaults[]` only. ImageIndicator should not be required (FCIC-class
+metadata defaults blank→N; it is a query modifier, not a search key). **At LA_LEMS's next rebuild:
+verify DP and move `imageIndicator` out of `set[]` into `any[]`** unless LA metadata genuinely
+requires it. Context + full ImageIndicator serialization finding: `knowledge-base/FIELD_REFERENCE.txt`
+Section 9. One provider at a time — do not touch LA before its rebuild.
+
 ## Process Gap-Proofing — IMPLEMENTED 2026-06-14 (then NJ)
 
 DONE (all 3 pillars built + verified; design: plan `swift-gathering-snowglobe.md`):
