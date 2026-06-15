@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQ+Plate (T6 Vehicle FRQ+Plate in-state (State blank))
+Variant: MC
+Date: 2026-06-15 08:55:38
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+licensePlateNumber=test123, State=blank; defaults PlateType=PC, PlateYear=2026, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5NHH8JVHEE3JJR2QQB1J9C"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KV5NHH8JVHEE3JJR2QQB1J9C</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5NHH8JVHEE3JJR2QQB1J9C
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+MessageType=VehicleRegistrationQuery (FRQ keyRef internal). No State => FRQ path (State NOT_EXISTS worked). LicensePlateNumber+LicensePlateYear=2026+ImageIndicator=N serialized. LicensePlateTypeCode correctly absent (not in FRQ combo any[], only RQ). No QV. RMS elastic co-fired tag=test123 (No Returns).
+
+RESULT: PASS
