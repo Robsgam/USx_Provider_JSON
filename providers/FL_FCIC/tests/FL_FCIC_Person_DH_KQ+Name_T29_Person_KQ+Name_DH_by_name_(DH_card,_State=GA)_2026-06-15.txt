@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQ+Name (T29 Person KQ+Name DH by name (DH card, State=GA))
+Variant: MC
+Date: 2026-06-15 11:16:23
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+nameLastDH=doe, nameFirstDH=john, birthDateDH=1990-01-01, sexCodeDH=Male, registrationStateDH=Georgia, OLN(DH)=blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5XMP42V74FA73T14PT24NE"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV5XMP42V74FA73T14PT24NE</Id><State>GA</State><SexCode>M</SexCode><BirthDate>19900101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5XMP42V74FA73T14PT24NE
+  State                          GA
+  SexCode                        M
+  BirthDate                      19900101
+  Name                           DOE,JOHN
+
+NOTES
+-----
+KQ Name PASS: DriverHistoryQuery. Name=DOE,JOHN + BirthDate=19900101 + SexCode=M + State=GA, no OLN. Completes all 6 Person combos (FDQ x2, DQ x2, KQ x2). No ImageIndicator (DH QIDM). Full-DH-card v4.9 closure test next.
+
+RESULT: PASS
