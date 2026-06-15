@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QG+Serial (T30 Firearm QG+Serial (gunSerialNumber only, no State))
+Variant: MC
+Date: 2026-06-15 13:23:11
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+gunSerialNumber=GUN12345 (typed); imageIndicator=N (default)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV64X204RYNDHJGYH5DM1NPC"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KV64X204RYNDHJGYH5DM1NPC</Id><GunSerialNumber>GUN12345</GunSerialNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV64X204RYNDHJGYH5DM1NPC
+  GunSerialNumber                GUN12345
+  ImageIndicator                 N
+
+NOTES
+-----
+Render gate PASS first. Clean pool: GunSerialNumber+ImageIndicator only, no NCIC/PCN/GunMake, no co-fire. Matches EXPECTED exactly.
+
+RESULT: PASS
