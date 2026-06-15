@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QB+NCIC (T22 Boat QB+NCIC (NCIC number only))
+Variant: MC
+Date: 2026-06-15 10:27:46
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+ncicNumber=X123456789, all else blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5TVZ1QZWPAFYWCH39MTF06"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KV5TVZ1QZWPAFYWCH39MTF06</Id><ImageIndicator>N</ImageIndicator><NCICNumber>X123456789</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5TVZ1QZWPAFYWCH39MTF06
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+QB PASS: NCICNumber+ImageIndicator=N. No RelatedHitSearch (Stolen blank).
+
+RESULT: PASS
