@@ -272,6 +272,41 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
     value       List<String>  depends   Value(s) to compare against
 
   -----------------------------------------------------------------------
+  ATTRIBUTE-NAME RESOLUTION IS ENTITY-GLOBAL -- shared names COLLIDE
+  (LIVE-PROVEN FL_FCIC v5.0->v5.1, 2026-06-15)
+  -----------------------------------------------------------------------
+  conditions.field (and defaults.field, primaryFieldReference) resolve an
+  attribute by its `name`, and resolution is GLOBAL ACROSS ALL QIDMs ON THE
+  SAME targetEntity -- NOT scoped to the combo's own QIDM. When two QIDMs on
+  one entity define attributes with the SAME `name` but different sourceFields,
+  the condition resolves to the FIRST-declared one (by QIDM order in the bundle).
+
+  FL_FCIC DL+DH on Person both named their OLN attr 'OperatorLicenseNumber'
+  (DL sourceField=operatorLicenseNumber, DH sourceField=operatorLicenseNumberDH).
+  The DH KQName gate {field:['OperatorLicenseNumber'], NOT_EXISTS} resolved to
+  the DL field (blank on a DH-card query) -> gate never fired -> full DH card
+  OVER-SENT Name/DOB/Sex. The DH-suffix isolation is at the sourceField/form
+  layer; it does NOT disambiguate the condition, which uses `name`.
+
+  RULE: when DH (or any second QIDM) shares an entity with DL (or a first QIDM)
+  and needs a conditions/defaults gate, the second QIDM's attribute `name` MUST
+  be unique (e.g. 'OperatorLicenseNumberDH'). Keep `targetField` = the real wire
+  element ('OperatorLicenseNumber') so the outbound XML is unchanged; only the
+  internal `name` (and the matching condition/primaryFieldReference) change.
+  STATUS: LIVE-PROVEN providers/FL_FCIC/tests/FL_FCIC_Person_DH_KQ-FullCard-Isolation_v5.1_FIX_CONFIRMED__DH_full-card_pool_isolation_(OLN+Name+DOB+Sex+State)_2026-06-15.txt
+  (FAIL before fix: ...KQ-FullCard-Isolation_SUPPLEMENTAL... same date.)
+
+  BENIGN sub-case: a shared name is harmless when the gate's owning QIDM is the
+  FIRST-declared (resolution lands on its own field). FL DL 'State' gate shares
+  'State' with DH but DL is declared first, so DL's gate resolves correctly
+  (D1 live-proven: DL full card isolates). Only the LATER QIDM's gate breaks.
+
+  DETECTOR: for each entity, find attribute `name`s shared by 2+ QIDMs with
+  different sourceFields, then flag any NOT_EXISTS/EXISTS gate referencing that
+  name in a non-first QIDM. (TODO: add as verify_build.ps1 CHECK; ad-hoc scan
+  used 2026-06-15 found only FL, remaining hits benign.)
+
+  -----------------------------------------------------------------------
   Available Operators
   -----------------------------------------------------------------------
 

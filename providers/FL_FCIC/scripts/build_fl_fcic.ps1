@@ -314,7 +314,13 @@ $dhQuery = [PSCustomObject]@{
             name = 'Name'; size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        # v5.1: attribute NAME made unique (OperatorLicenseNumberDH) so the KQName NOT_EXISTS
+        # gate resolves to THIS field, not the DL QIDM's OperatorLicenseNumber. Conditions/
+        # defaults/primaryFieldReference resolve attributes by NAME, entity-global; a shared
+        # name collided -> the gate checked the DL field (blank on a DH query) -> never fired
+        # -> full DH card over-sent Name/DOB/Sex (live FAIL 2026-06-15, txn 01KV5XVZ...).
+        # targetField stays 'OperatorLicenseNumber' so the wire element is unchanged.
+        [PSCustomObject]@{ name = 'OperatorLicenseNumberDH'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('sexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         # v5.0: dropdown restored (attributeTypeId=STATE Sel + NCIC reverse-lookup).
@@ -331,8 +337,10 @@ $dhQuery = [PSCustomObject]@{
                 any        = @('purposeCodeDH','attentionDH')
                 # Existence-only array (working class). NEVER add a value comparison
                 # here -- it would poison the array and kill this NOT_EXISTS (T-B).
+                # v5.1: references the unique DH attr name (not the shared 'OperatorLicenseNumber')
+                # so it resolves to operatorLicenseNumberDH, not the DL field.
                 conditions = @(
-                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -345,7 +353,7 @@ $dhQuery = [PSCustomObject]@{
                 any        = @('purposeCodeDH','attentionDH')
                 conditions = $null
             }
-            primaryFieldReference = 'OperatorLicenseNumber'
+            primaryFieldReference = 'OperatorLicenseNumberDH'
             keyReference          = 'KQOperatorLicenseNumber'
             state                 = 'Out'
         }
