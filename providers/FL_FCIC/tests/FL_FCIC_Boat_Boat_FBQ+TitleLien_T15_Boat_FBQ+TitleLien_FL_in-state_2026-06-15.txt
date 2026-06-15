@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQ+TitleLien (T15 Boat FBQ+TitleLien FL in-state)
+Variant: MC
+Date: 2026-06-15 09:10:06
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+titleLienInformation=ABCD1234, State=blank, Stolen=blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5PDQWTN9BPFWE9E8V0ZKC0"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KV5PDQWTN9BPFWE9E8V0ZKC0</Id><TitleLienInformation>ABCD1234</TitleLienInformation><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5PDQWTN9BPFWE9E8V0ZKC0
+  TitleLienInformation           ABCD1234
+  ImageIndicator                 N
+
+NOTES
+-----
+FBQ PASS: MessageType=BoatQuery. TitleLienInformation+ImageIndicator=N; no State. All 4 FBQ paths (Hull/Reg/Decal/Title) confirmed.
+
+RESULT: PASS
