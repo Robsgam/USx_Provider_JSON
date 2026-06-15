@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQ+OLN (T28 Person KQ+OLN PRIORITY DH pool isolation (DH card, State=GA))
+Variant: MC
+Date: 2026-06-15 11:14:22
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+operatorLicenseNumberDH=D999888777, registrationStateDH=Georgia, name/DOB/sex/purpose/attention DH=blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5XGJ5TZKAP2PBJ995DZQ5M"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV5XGJ5TZKAP2PBJ995DZQ5M</Id><State>GA</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5XGJ5TZKAP2PBJ995DZQ5M
+  State                          GA
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+PRIORITY PASS (DH pool isolation, OLN-only). DriverHistoryQuery KQ: OperatorLicenseNumber + State=GA ONLY. NO Name/BirthDate/SexCode. No PurposeCode/Attention (blank). No ImageIndicator (shared form imageIndicator=Y did NOT serialize -- DH QIDM doesn't reference it; reinforces serialization-via-QIDM-reference model). No RMS (DH-suffixed fields not RMS-keyed). Full-DH-card test next to close v4.9 scenario.
+
+RESULT: PASS
