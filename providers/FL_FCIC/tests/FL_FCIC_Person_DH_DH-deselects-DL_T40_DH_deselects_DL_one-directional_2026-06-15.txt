@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: DH-deselects-DL (T40 DH deselects DL one-directional)
+Variant: MC
+Date: 2026-06-15 14:27:11
+Result: FAIL
+================================================================
+
+FORM STATE
+----------
+DL card: operatorLicenseNumber=D111111111 (typed), imageIndicator=Y. DH card: operatorLicenseNumberDH=D999888777 (typed), registrationStateDH=Georgia (selected). Order: DL filled first, then DH.
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV68F4P07DDZ4JNCH89KP4CJ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV68F4P07DDZ4JNCH89KP4CJ</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>D111111111</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV68F4P07DDZ4JNCH89KP4CJ
+  ImageIndicator                 Y
+  OperatorLicenseNumber          D111111111
+
+NOTES
+-----
+FAIL. Expected: DH auto-selects, deselects DL, only DriverHistoryQuery fires. Observed: DL filled first stayed checked; DH 'became active' but did NOT auto-select; submit sent DriverLicenseQuery ONLY (OLN=D111111111) -- DriverHistoryQuery never fired. RMS co-fired on DL (elasticQuery dlNumber=D111111111). Config is correct (DH autoSelect=true + queriesToDeselect=[DriverLicenseQuery]). Likely cause: shared-entity autoSelect contention -- first-filled query (DL) holds selection; DH autoSelect does not preempt, so queriesToDeselect never executes. Discriminating re-test pending (manual DH selection).
+
+RESULT: FAIL
