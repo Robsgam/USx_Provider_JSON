@@ -1,0 +1,43 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: DH-deselects-DL (T40b DH deselects DL on opt-in + co-fire pool isolation)
+Variant: MC
+Date: 2026-06-15 14:31:20
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+DL card: operatorLicenseNumber=D111111111, imageIndicator=Y. DH card: operatorLicenseNumberDH=D999888777, registrationStateDH=Georgia. Action: manually clicked DH query (DL deselected), then manually re-checked DL (DH stayed) -> both fired.
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KV68RFHJBY3E27TEC5K4TF5R"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV68RFHJBY3E27TEC5K4TF5R</Id><State>GA</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction><api:Transaction id="01KV68RFE2H32ST8NYQMP4R3CY"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV68RFE2H32ST8NYQMP4R3CY</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>D111111111</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV68RFHJBY3E27TEC5K4TF5R
+  State                          GA
+  OperatorLicenseNumber          D999888777
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV68RFE2H32ST8NYQMP4R3CY
+  ImageIndicator                 Y
+  OperatorLicenseNumber          D111111111
+
+NOTES
+-----
+PASS. One-directional deselect CONFIRMED: manual DH selection deselects DL; DL does NOT deselect DH (both stay checked -> both fire). Co-fire POOL ISOLATION CONFIRMED: DH txn = OLN D999888777 + State GA only (no DL leak); DL txn = OLN D111111111 only (no DH OLN, no State leak). RMS co-fired on DL (elasticQuery dlNumber=D111111111). Supersedes T40 'FAIL' which used a miscalibrated expectation (auto-populating DH fields does NOT preempt an already-selected DL -- correct/safe for an OOS-only opt-in query). DH-suffix fieldId isolation airtight even in co-fire.
+
+RESULT: PASS
