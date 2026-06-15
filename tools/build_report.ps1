@@ -61,56 +61,27 @@ $header = @"
 
 "@
 
-# --- PRE. Build Script Lint (fast, runs before parallel batch) ---
+# --- PRE. Build Script Lint (delegates to lint_build_scripts.ps1 -- single source of truth,
+#     broader checks than the old inline set). Run as a CHILD PROCESS: lint_build_scripts ends
+#     in exit 0/1, which would terminate this script if called with & in-session. ---
 Write-Host ""
 Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
 $scriptsDir = Join-Path $jsonDir "scripts"
-$lintWarnings = @()
-$lintWarnCount = 0
-if (Test-Path $scriptsDir) {
-    $buildScripts = Get-ChildItem -Path $scriptsDir -Filter "build_*.ps1" -File
-    if ($buildScripts.Count -eq 0) {
-        $lintWarnings += "[INFO] No build_*.ps1 scripts found in $scriptsDir"
-    }
-    foreach ($script in $buildScripts) {
-        $scriptName = $script.Name
-        $scriptWarns = @()
-
-        $yearHits = Select-String -Path $script.FullName -Pattern "initialValue\s*=\s*['""]?(20(?:2[4-9]|[3-9]\d))['""]?" | Where-Object { $_.Line -notmatch '\$currentYear' -and $_.Line -notmatch '^\s*#' }
-        foreach ($hit in $yearHits) {
-            $scriptWarns += "  [WARN] Line $($hit.LineNumber): Hardcoded PlateYear '$($hit.Matches[0].Groups[1].Value)' -- [FIX] Use `$currentYear instead"
-            $lintWarnCount++
-        }
-
-        $bannedHits = Select-String -Path $script.FullName -Pattern "LicensePlateNumberIn" | Where-Object { $_.Line -notmatch '-replace' -and $_.Line -notmatch '^\s*#' -and $_.Line -notmatch 'Patch\s*8' -and $_.Line -notmatch "'\s*=" }
-        foreach ($hit in $bannedHits) {
-            $scriptWarns += "  [WARN] Line $($hit.LineNumber): LicensePlateNumberIn (banned) -- [FIX] Use licensePlateNumber"
-            $lintWarnCount++
-        }
-
-        $ap23Hits = Select-String -Path $script.FullName -Pattern "autoSelect\s*=\s*['""](?:true|false)['""]" | Where-Object { $_.Line -notmatch '^\s*#' }
-        foreach ($hit in $ap23Hits) {
-            $scriptWarns += "  [WARN] Line $($hit.LineNumber): autoSelect as string (AP #23) -- [FIX] Use `$true/`$false (boolean)"
-            $lintWarnCount++
-        }
-
-        if ($scriptWarns.Count -gt 0) {
-            $lintWarnings += "${scriptName}: $($scriptWarns.Count) warning(s)"
-            $lintWarnings += $scriptWarns
-        } else {
-            $lintWarnings += "${scriptName}: CLEAN"
-        }
-    }
-} else {
-    $lintWarnings += "[INFO] No scripts/ directory found at $scriptsDir"
-}
 $lintFile = Join-Path $DocsDir "LINT_REPORT_$jsonName.txt"
-$lintBody = ($lintWarnings -join "`n")
-($header + "BUILD SCRIPT LINT`n=================`n`n" + $lintBody + "`n") | Out-File -FilePath $lintFile -Encoding utf8
-if ($lintWarnCount -gt 0) {
-    Write-Host "  [PRE] $lintWarnCount warning(s) found -- see $lintFile" -ForegroundColor Red
+if (Test-Path $scriptsDir) {
+    $linter = Join-Path $PSScriptRoot "lint_build_scripts.ps1"
+    $lintOut = powershell.exe -ExecutionPolicy Bypass -File $linter -Path $scriptsDir -OutFile $lintFile 2>&1 | Out-String
+    $m = [regex]::Match($lintOut, '(\d+)\s+warnings\s*\|\s*(\d+)\s+failures')
+    $lintWarnCount = if ($m.Success) { [int]$m.Groups[1].Value } else { 0 }
+    $lintFailCount = if ($m.Success) { [int]$m.Groups[2].Value } else { 0 }
+    if ($lintWarnCount -gt 0 -or $lintFailCount -gt 0) {
+        Write-Host "  [PRE] $lintWarnCount warning(s), $lintFailCount failure(s) -- see $lintFile" -ForegroundColor Red
+    } else {
+        Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
+    }
 } else {
-    Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
+    ($header + "BUILD SCRIPT LINT`n=================`n`nNo scripts/ directory found at $scriptsDir`n") | Out-File -FilePath $lintFile -Encoding utf8
+    Write-Host "  [PRE] No scripts/ directory -- $lintFile" -ForegroundColor Gray
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

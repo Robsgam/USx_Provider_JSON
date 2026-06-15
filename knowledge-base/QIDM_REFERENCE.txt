@@ -246,8 +246,10 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
   ("RMS POOL ISOLATION").
 
   SERVER-SIDE VALUE ROUTING -- why inert conditions are often BENIGN (resolves the
-  "unresolved contradiction" earmark above). STATUS: LIVE-PROVEN -- CA_CLETS v2.5, 12
-  VehicleRegistrationQuery + 9 DriverLicenseQuery committed request logs, USx tenant 2026-06-14:
+  "unresolved contradiction" earmark above).
+  STATUS: LIVE-PROVEN providers/CA_CLETS/tests/_archive_pre_v2.5/2026-05-19_Vehicle_IA.QV_Plate_search_-_no_State_-_IA.QV_fires_v2.1.txt
+  (one of 12 committed CA VehReg + 9 DL logs; all carry MessageType=VehicleRegistrationQuery on the
+  wire with no IV.4* keyRef -- CA_CLETS v2.5, USx 2026-06-14):
     The wire request carries MessageType=<transaction name> (e.g. VehicleRegistrationQuery);
     the combo keyReference is INTERNAL and is NEVER sent. The CommSys server selects the actual
     message key (e.g. IV.4I vs IV.4C; or the IR.QVC super-inquiry) from the FIELD VALUES it

@@ -355,7 +355,6 @@ All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (c
 |---|---|---|
 | `test_layout.ps1` | QIF layout validator + HTML form preview | `-Path <json>` |
 | `build_codetype_test.ps1` | Generates CODETYPE_TEST.json for dropdown validation | `-OutputPath` |
-| `check_docs.ps1` | Documentation consistency gate (version numbers across all provider docs) | (no args) |
 | `preflight_check.ps1` | Pre-build validation against PROVIDER_CONFIG.txt | (no args) |
 | `map_cad_fields.ps1` | Maps CAD field names to provider JSON fieldIds (MATCH/CASE_MISMATCH/NO_MATCH) | `-Path <json>` `-CadFields` `-OutFile` `-GeneratePatch` |
 | `report_cad_mapping.ps1` | HTML report mapping CAD fields to provider sourceField/targetField per QIDM | `-Path <json>` `-OutFile` |

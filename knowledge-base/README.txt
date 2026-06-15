@@ -177,12 +177,6 @@ TOOLS
     codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
     Usage: -OutFile <path>
 
-  tools/check_docs.ps1
-    Documentation consistency gate. Verifies version numbers and status
-    match across all provider docs (STATUS.txt, SQVR.txt, BUILD_NOTES.txt,
-    JSON_INVENTORY.md, CLAUDE.md).
-    Usage: .\check_docs.ps1
-
   tools/extract_queries.ps1
     Parses metadata XML and extracts all query transactions, fields, and
     combinations into a structured SQVR-ready tracking file.
@@ -317,6 +311,11 @@ TOOLS
     reports in -Quick mode), outputs a sorted table with version, score
     scores, and rebuild flags. The go-to dashboard for project status.
     Usage: .\score_all.ps1 [-Quick] [-OutFile <path>]
+
+  tools/doctor.ps1
+    One-shot repo health dashboard (read-only). Composes score_all -Quick +
+    poisoned-array sweep (validate.ps1 G-31) + git status into one snapshot.
+    Usage: .\doctor.ps1 [-SkipPoison] [-OutFile <path>]
 
   tools/lint_build_scripts.ps1
     Static analysis of all build scripts for anti-patterns. Checks: PlateYear
