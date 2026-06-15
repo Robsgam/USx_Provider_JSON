@@ -1,0 +1,55 @@
+TX_TLETS MC v3.4 -- Test Log
+============================================================
+Date       : 2026-06-15
+JSON       : TX_TLETS.json
+Entity     : Vehicle
+Combo      : RENDER (Render verification - 1 card VEHICLE QUERY v3.4)
+Test type  : T2 -- RENDER gate (visual; no combo fire, no XML)
+
+================================================================================
+EXPECTED OUTCOME (presented BEFORE the test -- visual)
+================================================================================
+
+  1 card "VEHICLE QUERY", 10 fields:
+    licensePlateNumber (Inp 10), licensePlateTypeCode (Sel NCIC_LICENSE_PLATE_TYPE/NCIC,
+    default PC), licensePlateYear (Inp 4, default 2026), vehicleIdentificationNumber
+    (Inp 20), stickerNumber (Inp 10), financialResponsibilityType (Inp 1, label
+    "Fin. Resp. Type"), vehicleMakeCode (Sel VEHICLE_MAKE, no default), vehicleYear
+    (Inp 4), registrationState (Sel STATE, default TX), regionId (Inp 4).
+  Dropdowns (licensePlateTypeCode, vehicleMakeCode, registrationState) must populate
+  with options (empty vehicleMakeCode = FAIL). Defaults PC / 2026 / TX.
+
+================================================================================
+FORM STATE
+================================================================================
+
+  N/A -- render gate (no fields submitted).
+
+================================================================================
+REQUEST SUMMARY / FIELD ANALYSIS / RMS CO-FIRE
+================================================================================
+
+  N/A -- render gate fires no query and sends no XML.
+
+================================================================================
+RESULT
+================================================================================
+
+  PASS
+
+  Reason: User confirmed Vehicle form renders 1 card (VEHICLE QUERY) with all 10 fields,
+          correct input types, dropdowns populated (incl. vehicleMakeCode), and defaults
+          shown (PC / 2026 / TX). "Fin. Resp. Type" label correct.
+  Detail: Layout matches render_layout.ps1 output for the imported v3.4 JSON.
+
+================================================================================
+DISCREPANCY / TROUBLESHOOTING
+================================================================================
+
+  None observed.
+
+================================================================================
+RAW XML REQUEST
+================================================================================
+
+N/A -- render gate, no XML request generated.
