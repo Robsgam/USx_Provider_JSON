@@ -1,19 +1,22 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-14
+Last updated: 2026-06-15
 JSON version: v3.4
-Live test: v3.3 imported TLETS USx Tenant 2026-06-03 -- 40/40 PASS 2026-06-04
-Validator: 86 PASS / 0 FAIL / 0 WARN / 0 LIM (v3.3)
+Live test: v3.4 NOT yet imported -- test package reset to T1, all combos [PENDING]
+Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIM (v3.4)
 Verify: CLEAN (0 FAIL)
 
-NOTE: All combos confirmed until exhaustive testing with per-test log captures (GATE 2/3).
+NOTE: All combos [PENDING] -- exhaustive testing restarts from T1 on v3.4 import
+      (per-test log captures, GATE 2/3).
 
-v3.3 CHANGES (from v3.1):
-  v3.2: Conditions routing on DL+DH — ImageIndicator EQUALS Y selects image-path
-        combos (email+image+reason in any[]); catchall combos omit those fields.
-        Email moved to shared OPTIONS card. DL 4→7 combos. DH 2→4 combos.
+v3.4 CHANGES (from v3.3):
+  v3.4: Poisoned-array fix -- removed inert ImageIndicator EQUALS Y conditions from
+        DL + DH combos (value-comparison conditions are wholly inert on the platform;
+        QIDM_REFERENCE Sec 2a). Merged the Img/catchall combo pairs: DL 7→4, DH 4→2.
+        image/email/reason now carried in any[] (no longer condition-gated).
+        Total: 6 QIDMs, 22 combos (was 27).
   v3.3: Removed VehicleStolenQuery (not authorized by devdoc).
-        Total: 6 QIDMs, 27 combos.
+  v3.2: Conditions routing on DL+DH (REMOVED in v3.4 -- see above).
 
 ================================================================================
 1. VehicleInsuranceRegistrationQuery -- Vehicle Entity
@@ -84,62 +87,39 @@ v3.3 CHANGES (from v3.1):
           EmailAddress (shared OPTIONS card), ExpandedBirthDateSearchCode,
           ReasonCode, RegionId
 
-  Conditions routing: ImageIndicator EQUALS Y selects image-path combos.
-  Catchall combos (no conditions) omit image/email/reason from XML.
+  No conditions (v3.4 poisoned-array fix). image/email/reason carried in any[] on
+  every combo; defaults supply CAD values.
 
-  DQ Name Image -- Nlets DL (Name+DOB+Sex, Image=Y path) [PENDING]
-    keyReference: DQNameImg
+  DQ Name -- Nlets DL (Name+DOB+Sex) [PENDING]
+    keyReference: DQName  (MessageKey DQ)
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
-    conditions: ImageIndicator EQUALS Y
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ Name -- Nlets DL (Name+DOB+Sex, catchall) [PENDING]
-    keyReference: DQName
-    set: SexCode, BirthDate, NameLast, NameFirst
-    any: NameMiddle, NameSuffix, RegistrationState
-    defaults: State=TX
-    state: In/Out
-
-  QW Name -- NCIC Wanted (Name+DOB, no conditions) [PENDING]
-    keyReference: QWName
+  QW Name -- NCIC Wanted (Name+DOB) [PENDING]
+    keyReference: QWName  (MessageKey QW)
     set: BirthDate, NameLast, NameFirst
     any: ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode
+    defaults: (none)
     state: In/Out
 
-  CPL Name Image -- Criminal History (Name, Image=Y path) [PENDING]
-    keyReference: CPLNameImg
+  CPL Name -- Criminal History (Name) [PENDING]
+    keyReference: CPLName  (MessageKey CPLName)
     set: NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
-    conditions: ImageIndicator EQUALS Y
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  CPL Name -- Criminal History (Name, catchall) [PENDING]
-    keyReference: CPLName
-    set: NameLast, NameFirst
-    any: NameMiddle, NameSuffix, RegistrationState
-    defaults: State=TX
-    state: In/Out
-
-  DQ OLN Image -- Nlets DL (OLN, Image=Y path) [PENDING]
-    keyReference: DQOLNImg
+  DQ OLN -- Nlets DL (OLN) [PENDING]
+    keyReference: DQOLN  (MessageKey DQ)
     set: OperatorLicenseNumber
     any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
-    conditions: ImageIndicator EQUALS Y
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ OLN -- Nlets DL (OLN, catchall) [PENDING]
-    keyReference: DQOLN
-    set: OperatorLicenseNumber
-    any: RegistrationState
-    defaults: State=TX
-    state: In/Out
-
-  Combo ordering: DQNameImg (4 set+cond) → DQName (4 set) → QWName (3 set) →
-    CPLNameImg (2 set+cond) → CPLName (2 set) → DQOLNImg (1 set+cond) → DQOLN (1 set).
+  Combo ordering (first-match): DQName (4 set) → QWName (3 set) → CPLName (2 set)
+    → DQOLN (1 set).
 
   RMS co-fire (confirmed)
     RMS Person combo fires alongside CommSys.
@@ -157,40 +137,25 @@ v3.3 CHANGES (from v3.1):
           BirthDateDH, SexCodeDH, RegistrationState, AttentionDH (visible), PurposeCodeDH,
           EmailAddress (shared OPTIONS card), ImageIndicator
 
-  Conditions routing: ImageIndicator EQUALS Y selects image-path combos.
-  Catchall combos (no conditions) omit image/email/reason from XML.
-  PurposeCode is in ALL combos (not gated by conditions).
+  No conditions (v3.4 poisoned-array fix). image/email/reason carried in any[];
+  PurposeCode in all combos; defaults supply CAD values.
 
-  KQ Name Image -- Driver History (Name+DOB+Sex, Image=Y path) [PENDING]
-    keyReference: KQNameImg
+  KQ Name -- Driver History (Name+DOB+Sex) [PENDING]
+    keyReference: KQName  (MessageKey KQ)
     set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH
     any: AttentionDH, EmailAddress, ImageIndicator, NameMiddleDH, NameSuffixDH,
          PurposeCodeDH, ReasonCode, RegistrationState
-    conditions: ImageIndicator EQUALS Y
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ Name -- Driver History (Name+DOB+Sex, catchall) [PENDING]
-    keyReference: KQName
-    set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH
-    any: AttentionDH, NameMiddleDH, NameSuffixDH, PurposeCodeDH, RegistrationState
-    defaults: PurposeCode=C, State=TX
-    state: In/Out
-
-  KQ OLN Image -- Driver History (OLN, Image=Y path) [PENDING]
-    keyReference: KQOLNImg
+  KQ OLN -- Driver History (OLN) [PENDING]
+    keyReference: KQOLN  (MessageKey KQ)
     set: OperatorLicenseNumberDH
     any: AttentionDH, EmailAddress, ImageIndicator, PurposeCodeDH, ReasonCode, RegistrationState
-    conditions: ImageIndicator EQUALS Y
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ OLN -- Driver History (OLN, catchall) [PENDING]
-    keyReference: KQOLN
-    set: OperatorLicenseNumberDH
-    any: AttentionDH, PurposeCodeDH, RegistrationState
-    defaults: PurposeCode=C, State=TX
-    state: In/Out
+  Combo ordering (first-match): KQName (4 set) → KQOLN (1 set).
 
   Attention: visible FormInput (attentionDH), no handler.
 
@@ -293,7 +258,6 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 27 (7+7+4+2+2+5)
+  Total CommSys combos: 22 (7+4+2+2+2+5)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
-  CONFIRMED: NONE
-  CONFIRMED: ALL
+  CONFIRMED: NONE (v3.4 -- test package reset to T1, all combos [PENDING])

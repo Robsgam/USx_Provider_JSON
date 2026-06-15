@@ -3,10 +3,22 @@ TX_TLETS -- Build Notes
 Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
-v3.4  2026-06-14  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
-
+--------------------------------------------------------------------------------
+v3.4  2026-06-14  Poisoned-array fix (DL+DH ImageIndicator conditions)
+--------------------------------------------------------------------------------
+CHANGED : Removed inert `ImageIndicator EQUALS Y` conditions from all DriverLicenseQuery
+          and DriverHistoryQuery combos. Merged the Image-path / catchall combo pairs:
+          DL 7 combos -> 4 (DQName, QWName, CPLName, DQOLN); DH 4 -> 2 (KQName, KQOLN).
+          image/email/reason now carried in any[] (no longer condition-gated); CAD values
+          supplied via combo defaults[] (ImageIndicator=Y, ReasonCode=C, PurposeCode=C, State=TX).
+REASON  : Value-comparison conditions (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) are wholly inert
+          on the platform -- they disable the entire conditions array and never route
+          (poisoned-array, QIDM_REFERENCE Sec 2a; live-proven FL v4.9 T-A/T-B). The v3.2
+          Img/catchall split therefore over-sent (union of both matching branches).
+          Collapsing to single combos with the fields in any[] is the correct pattern.
+SCRIPT  : scripts/build_tx_tlets.ps1
+OUTPUT  : TX_TLETS.json (6 cards, 22 combos, 6 QIDMs)
+NOTE    : EmailAddress remains manual-entry on DL+DH (1 LIM) -- auto-fill handler pending.
 
 --------------------------------------------------------------------------------
 v3.3  2026-06-09  Remove unauthorized VehicleStolenQuery
