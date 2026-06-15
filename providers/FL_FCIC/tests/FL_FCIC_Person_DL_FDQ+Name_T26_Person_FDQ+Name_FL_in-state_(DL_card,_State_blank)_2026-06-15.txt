@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQ+Name (T26 Person FDQ+Name FL in-state (DL card, State blank))
+Variant: MC
+Date: 2026-06-15 10:57:24
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+nameLast=doe, nameFirst=john, birthDate=1990-01-01, sexCode=Male, DL State=blank, OLN=blank, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5WHYZNQ1Y30RH9EXA2M66B"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV5WHYZNQ1Y30RH9EXA2M66B</Id><ImageIndicator>Y</ImageIndicator><SexCode>M</SexCode><BirthDate>19900101</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5WHYZNQ1Y30RH9EXA2M66B
+  ImageIndicator                 Y
+  SexCode                        M
+  BirthDate                      19900101
+  Name                           DOE,JOHN
+
+NOTES
+-----
+FDQ Name PASS: DriverLicenseQuery. Name=DOE,JOHN + BirthDate=19900101 + SexCode=M (form 'Male'->'M' code conversion confirmed) + ImageIndicator=Y. No State (NOT_EXISTS), no OLN (NOT_EXISTS). RMS co-fired lastName/firstName/sexAttrId/dateOfBirth. QW auto-send server-side.
+
+RESULT: PASS
