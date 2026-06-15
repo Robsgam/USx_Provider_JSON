@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQ+Plate (T37 Vehicle FRQ+Plate +any vehicleMakeCode vehicleYear)
+Variant: MC
+Date: 2026-06-15 13:41:47
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+licensePlateNumber=TEST123 (typed); vehicleMakeCode=AGRI-SUPPLY CO. (selected); vehicleYear=2020 (typed); licensePlateTypeCode=PC default; licensePlateYear=2026 default; imageIndicator=N default; State blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV65V68A3QEGEH4XAN23KJCN"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KV65V68A3QEGEH4XAN23KJCN</Id><VehicleMakeCode>CNST_AGRI</VehicleMakeCode><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><VehicleYear>2020</VehicleYear><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV65V68A3QEGEH4XAN23KJCN
+  VehicleMakeCode                CNST_AGRI
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  VehicleYear                    2020
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+any[] test: VehicleMakeCode (dropdown AGRI-SUPPLY CO. -> code CNST_AGRI) + VehicleYear=2020 both serialized. LicensePlateYear=2026 default. No State (FRQ path). RMS co-fire: elasticQuery vehicle.tag=TEST123. VEHICLE_MAKE dropdown reverse-lookup confirmed.
+
+RESULT: PASS
