@@ -81,7 +81,7 @@ if ($providerBundle) {
 
 # ── Parse metadata XML ────────────────────────────────────────────────────────
 function Parse-Requirements($reqNode, $nsMgr, $pre) {
-    $result = @{ set = @(); any = @(); choice = @() }
+    $result = @{ set = @(); any = @(); choice = @(); valueRouting = @() }
     if (-not $reqNode) { return $result }
 
     $setNode = $reqNode.SelectSingleNode("${pre}Set", $nsMgr)
@@ -90,6 +90,11 @@ function Parse-Requirements($reqNode, $nsMgr, $pre) {
     foreach ($child in $setNode.ChildNodes) {
         if ($child.LocalName -eq 'Field') {
             $result.set += $child.GetAttribute('reference')
+            # Capture value-routing annotations (e.g. "LicensePlateTypeCode has a value of 'AP'")
+            # -- the server selects the message key from this field VALUE. Critical for poisoned-array
+            # analysis (these describe server-side routing, NOT client conditions). See QIDM_REFERENCE.
+            $fd = $child.GetAttribute('description')
+            if ($fd) { $result.valueRouting += "$($child.GetAttribute('reference')): $fd" }
         }
         elseif ($child.LocalName -eq 'Any') {
             foreach ($f in $child.ChildNodes) {
@@ -250,6 +255,13 @@ foreach ($qName in $includeQueries) {
         if ($anyStr.Length -gt 30) { $anyStr = $anyStr.Substring(0, 27) + "..." }
 
         [void]$sb.AppendLine("  $($c.keyReference.PadRight(12))  $($c.primaryField.PadRight(22))  $($setStr.PadRight(53))  $anyStr")
+        # Value-routing annotations: the server selects this keyRef from a field VALUE (NOT client
+        # conditions). E.g. multiple keyRefs sharing one field signature = server-side value routing.
+        if ($c.requirements.valueRouting -and $c.requirements.valueRouting.Count -gt 0) {
+            foreach ($vr in $c.requirements.valueRouting) {
+                [void]$sb.AppendLine("                -> server-routes on $vr")
+            }
+        }
     }
     [void]$sb.AppendLine("")
 

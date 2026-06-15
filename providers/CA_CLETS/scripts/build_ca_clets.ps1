@@ -4,7 +4,9 @@
 # Layout: Vehicle(2), Person(3), Firearm(1), Article(1), Boat(1) -- 8 cards total
 #
 # QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 40 combos):
-#   VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IA.QVK + IA.QV + IV.4*(13) + IV.4V = 19 combos
+#   VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IV.4V + IA.QVK + IA.QV = 6 combos
+#     v2.5: deleted 13 IV.4* plate-type combos (server routes by LicensePlateTypeCode value;
+#     wire = MessageType=VehicleRegistrationQuery, keyRef internal) + removed inert State NOT_EQUALS.
 #   DriverLicenseQuery         NLTS.DQ(N/O) + IN.L1 + ID.L1 + IR.QVC(OLN/Name/CriminalId/SSN) = 8 combos
 #     IR.QVC OLN: criminalIdNumber promoted from any[] to set[] as routing differentiator vs ID.L1
 #   DriverHistoryQuery         NLTS.KQ(N/O) = 2 combos, DH-suffix fields
@@ -16,13 +18,16 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.4
 
 param(
-    [string]$Version = "2.4"
+    [string]$Version = "2.5"
 )
 
 $ErrorActionPreference = "Stop"
 $provider = 'CA_CLETS'
 $currentYear = [string](Get-Date).Year
 $outPath  = "$PSScriptRoot\..\CA_CLETS.json"
+$DATE     = (Get-Date -Format 'yyyy-MM-dd')
+$phaseDir = "$PSScriptRoot\..\phases\current"
+New-Item -ItemType Directory -Force -Path $phaseDir | Out-Null
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -43,7 +48,7 @@ $results = Build-ProviderQrdm -ProviderName 'CA_CLETS'
 
 $qmf = Build-Qmf -ProviderName 'CA_CLETS'
 
-# --- 1. VehicleRegistrationQuery -- 19 combos ---
+# --- 1. VehicleRegistrationQuery -- 6 combos (v2.5: IV.4* server-routed by plate type) ---
 # NLTS.RQ (OOS plate/VIN) + IV.4* (13 plate-type-routed) + IV.4A (PC/AQ fallback)
 # + IN.VP (name) + IV.4V (VIN) + IA.QVK (VIN+make) + IA.QV (plate catchall)
 # IV.4* combos use conditions on LicensePlateTypeCode to route by plate type.
@@ -76,7 +81,6 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState')
                 any        = @('vehicleMakeCode','vehicleYear')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'NLTS.RQ.P'
@@ -86,158 +90,29 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','vehicleIdentificationNumber','registrationState')
                 any        = @('vehicleMakeCode','vehicleYear')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'NLTS.RQ.V'
             state                 = 'In/Out'
         }
-        # --- IV.4* plate-type-routed combos (PlateType in set[], conditions differentiate) ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('AP') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4I'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('CO','TK','TR') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4C'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('MC') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4M'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('RE','PE') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4L'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('TL') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4T'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('AT') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4F'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('DX') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4S'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('EX') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4E'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('DL') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IL.A1'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('AR') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4H'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('IP') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4P'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber','licensePlateTypeCode')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('TM') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4K'
-            state                 = 'In/Out'
-        }
-        # --- IN.VP name search (cross-entity, set=3, before IV.4A set=2) ---
+        # --- Plate + type (in-state): handled by the IA.QV catchall below. ---
+        # v2.5 POISONED-ARRAY cleanup: the 12 IV.4* plate-type combos (IV.4I/C/M/L/T/F/S/E,
+        # IL.A1, IV.4H/P/K) + IV.4A were DELETED. They shared one field signature
+        # [purposeCode, licensePlateNumber, licensePlateTypeCode] and differed only by
+        # LicensePlateTypeCode VALUE -- which the CommSys SERVER reads to pick the IV.4* message
+        # key. The wire carries MessageType=VehicleRegistrationQuery + fields (keyReference is
+        # internal, never sent -- confirmed by 12 live VehReg logs), so all 13 produced an
+        # identical wire message and their EQUALS conditions were inert (poisoned-array).
+        # IA.QV already sends licensePlateNumber + licensePlateTypeCode (any[]) -> server routes.
+        # --- IN.VP name search (cross-entity) ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst'); any = @('addressCity','addressStreetNumber') }
             primaryFieldReference = 'Name'
             keyReference          = 'IN.VP'
             state                 = 'In/Out'
         }
-        # --- IV.4A: PlateType in any[] (PC/AQ fallback when PlateType actively selected) ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','licensePlateNumber')
-                any        = @('licensePlateTypeCode')
-                conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EQUALS'; value = @('PC','AQ') })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'IV.4A'
-            state                 = 'In/Out'
-        }
-        # --- IV.4V VIN (no optional fields) -- covered by IA.QVK (IA superset of IV routing) ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('purposeCode','vehicleIdentificationNumber'); any = @() }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'IV.4V'
-            state                 = 'In/Out'
-        }
+        # (IV.4A PC/AQ combo DELETED v2.5 -- redundant with IA.QV; same plate+optional-type signature.)
+        # (IV.4V VIN combo DELETED v2.5 -- identical required set to IA.QVK; server routes; wire=VehicleRegistrationQuery+VIN.)
         # --- IA.QVK VIN + optional make/state ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('purposeCode','vehicleIdentificationNumber'); any = @('vehicleMakeCode','registrationState') }
@@ -260,7 +135,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- 19 combos: NLTS.RQ (OOS), IV.4* (plate-type-routed), IV.4A (PC/AQ), IN.VP (name), IV.4V/IA.QVK (VIN), IA.QV (plate catchall).'
+    description        = 'VehicleRegistrationQuery -- 6 combos: NLTS.RQ.P/V (OOS), IN.VP (name), IV.4V/IA.QVK (VIN), IA.QV (plate+optional type; server routes IV.4* by plate-type value). v2.5: 13 IV.4* combos deleted (redundant; server-side value routing), inert State conditions removed.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = "${provider}_VehicleRegistrationQuery"
     type               = 'QUERYINPUTDATAMAPPING'
@@ -311,9 +186,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','nameLast','nameFirst','registrationState')
-                any        = @('birthDate')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
-            }
+                any        = @('birthDate')            }
             primaryFieldReference = 'Name'
             keyReference          = 'NLTS.DQ.N'
             state                 = 'In/Out'
@@ -322,16 +195,24 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','operatorLicenseNumber','registrationState')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
-            }
+                any        = @()            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'
         }
-        # --- IN.L1: In-state name search (any[] expanded with IR.QVC Name optional fields) ---
+        # --- IR.QVC.Name: criminal/demographic name search. Devdoc combos #3/#4 require
+        #     Name + SexCode (+ BirthDate/Age). v2.5 fix: sexCode PROMOTED to set[] so this is
+        #     MORE specific than IN.L1 (name-only) and ordered FIRST -> reachable, no shadow.
+        #     (keyRef IR.QVC = server-routed Supervised Release Super Inquiry; basic per devdoc DL.) ---
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState','sexCode','addressCounty','height','raceCode','age') }
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst','sexCode'); any = @('birthDate','age','addressCounty','height','raceCode') }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IR.QVC.N'
+            state                 = 'In/Out'
+        }
+        # --- IN.L1: In-state DMV name search (plain name; devdoc combo #1) ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst'); any = @('birthDate','registrationState') }
             primaryFieldReference = 'Name'
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
@@ -341,13 +222,6 @@ $dlQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('purposeCode','operatorLicenseNumber','criminalIdNumber'); any = @('socialSecurityNumber','age') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'IR.QVC.O'
-            state                 = 'In/Out'
-        }
-        # --- IR.QVC.Name: Criminal records by name (set=3, nameLast+nameFirst promoted to prevent blank-form send) ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('purposeCode','nameLast','nameFirst'); any = @('addressCounty','height','raceCode','sexCode','age') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'IR.QVC.N'
             state                 = 'In/Out'
         }
         # --- ID.L1: In-state OLN search (set=2) ---
@@ -540,9 +414,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','nameLast','nameFirst','birthDate','registrationState')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
-            }
+                any        = @()            }
             primaryFieldReference = 'Name'
             keyReference          = 'NLTS.BQ.N'
             state                 = 'In/Out'
@@ -550,9 +422,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','boatHullIdNumber','registrationState')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
-            }
+                any        = @()            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'NLTS.BQ.H'
             state                 = 'In/Out'
@@ -560,9 +430,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','registrationNumber','registrationState')
-                any        = @()
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EQUALS'; value = @('CA') })
-            }
+                any        = @()            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'NLTS.BQ.R'
             state                 = 'In/Out'
@@ -585,13 +453,7 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'IA.QB.R'
             state                 = 'In/Out'
         }
-        # --- IV.4B: same set[] as IA.QB.R — documented as covered by IA routing superset ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('purposeCode','registrationNumber'); any = @() }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'IV.4B'
-            state                 = 'In/Out'
-        }
+        # (IV.4B boat-reg combo DELETED v2.5 -- identical required set to IA.QB.R; server routes; wire=BoatQuery+regNumber.)
     )
     description     = 'BoatQuery -- 7 combos: NLTS.BQ OOS (name, hull, reg) + IA.QB (hull, OAN, reg) + IV.4B (covered by IA.QB.R). MC cross-entity.'
     handlerFunction = 'CommsysTransactionRequestHandler'
@@ -854,5 +716,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $outPath `
-    -PhasePath "$PSScriptRoot\..\phases\${provider}.json" `
+    -PhasePath "$phaseDir\${provider}_v${Version}_${DATE}.json" `
     -Label "Built ${provider} v${Version} MC"

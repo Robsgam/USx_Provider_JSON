@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
   Source: CA_CLETS.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-14 21:59
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -10,7 +10,7 @@ TEST MATRIX VALIDATION -- CA_CLETS
 ============================================================
 Source: CA_CLETS.json
 Matrix: CA_CLETS_TEST_MATRIX.txt
-Generated: 2026-06-09
+Generated: 2026-06-14
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
   T1  Person     [PASS] 3 cards, 19 fields, defaults verified
@@ -25,55 +25,40 @@ PHASE 2: PERSON COMBOS (10 tests, 10 combos)
   T9  Person     [PASS] (structural check)
   T10  Person     [PASS] DriverLicenseQuery fires (NLTS.DQ.N)
   T11  Person     [PASS] DriverLicenseQuery fires (NLTS.DQ.N)
-  T12  Person     [PASS] (structural check)
-  T13  Person     [PASS] DriverLicenseQuery fires (IN.L1)
+  T12  Person     [PASS] DriverLicenseQuery fires (IN.L1)
+  T13  Person     [PASS] (structural check)
   T14  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
   T15  Person     [PASS] DriverHistoryQuery fires (NLTS.KQ.N)
-PHASE 3: VEHICLE COMBOS (19 tests, 19 combos)
+PHASE 3: VEHICLE COMBOS (5 tests, 5 combos)
   T16  Vehicle    [PASS] (structural check)
   T17  Vehicle    [PASS] (structural check)
-  T18  Vehicle    [PASS] (structural check)
-  T19  Vehicle    [PASS] (structural check)
-  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (IN.VP)
-  T21  Vehicle    [PASS] (structural check)
-  T22  Vehicle    [PASS] (structural check)
-  T23  Vehicle    [PASS] (structural check)
-  T24  Vehicle    [PASS] (structural check)
-  T25  Vehicle    [PASS] (structural check)
-  T26  Vehicle    [PASS] (structural check)
-  T27  Vehicle    [PASS] (structural check)
-  T28  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
-  T29  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
-  T30  Vehicle    [PASS] (structural check)
-  T31  Vehicle    [PASS] (structural check)
-  T32  Vehicle    [PASS] (structural check)
-  T33  Vehicle    [PASS] (structural check)
-  T34  Vehicle    [PASS] (structural check)
-PHASE 4: BOAT COMBOS (7 tests, 7 combos)
-  T35  Boat       [PASS] (structural check)
-  T36  Boat       [PASS] (structural check)
-  T37  Boat       [PASS] (structural check)
-  T38  Boat       [PASS] (structural check)
-  T39  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
-  T40  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
-  T41  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
+  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (IN.VP)
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
+  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (NLTS.RQ.P)
+PHASE 4: BOAT COMBOS (6 tests, 6 combos)
+  T21  Boat       [PASS] (structural check)
+  T22  Boat       [PASS] (structural check)
+  T23  Boat       [PASS] (structural check)
+  T24  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
+  T25  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
+  T26  Boat       [PASS] BoatQuery fires (NLTS.BQ.N)
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
-  T42  Firearm    [PASS] GunQuery fires (IG.QGH)
-  T43  Firearm    [PASS] GunQuery fires (IG.QGH)
+  T27  Firearm    [PASS] GunQuery fires (IG.QGH)
+  T28  Firearm    [PASS] GunQuery fires (IG.QGH)
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
-  T44  Article    [PASS] (structural check)
-  T45  Article    [PASS] (structural check)
+  T29  Article    [PASS] (structural check)
+  T30  Article    [PASS] (structural check)
 PHASE 7: ANY[] FIELD TESTS (4 tests)
-  T46  Vehicle    [PASS] any[] fields verified: vehicleMakeCode, vehicleYear
-  T47  Person     [PASS] any[] fields verified: birthDate, sexCode, addressCounty
-  T48  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode
-  T49  Article    [PASS] any[] fields verified: articleBrand, articleTypeCode
+  T31  Person     [PASS] any[] fields verified: birthDate, age, addressCounty
+  T32  Vehicle    [PASS] any[] fields verified: vehicleMakeCode, vehicleYear
+  T33  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode
+  T34  Article    [PASS] any[] fields verified: articleBrand, articleTypeCode
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T50  Person     [PASS] queriesToDeselect verified
+  T35  Person     [PASS] queriesToDeselect verified
 PHASE 9: NEGATIVES (empty forms = no send)
-  T51  Person     [PASS] empty form: no combos fire
-  T52  Boat       [PASS] empty form: no combos fire
+  T36  Person     [PASS] empty form: no combos fire
+  T37  Boat       [PASS] empty form: no combos fire
 
-SUMMARY: 52/52 PASS, 0 FAIL
+SUMMARY: 37/37 PASS, 0 FAIL
 
 

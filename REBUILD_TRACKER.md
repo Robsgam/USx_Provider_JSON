@@ -12,7 +12,7 @@ per-case analysis. Fix at each provider's rebuild (one-at-a-time).
 
 | Provider | Combos | Verdict / action |
 |---|---|---|
-| CA_CLETS | 20 | ⚠️ LARGEST + live-imported. NOT yet analyzed benign-vs-harmful. Dedicated look — high priority after TX. (Also INCONSISTENT on the test-coverage gate.) |
+| CA_CLETS | 0 (was 20) | FIXED v2.5 2026-06-14. Server-routing model confirmed (wire=MessageType=VehicleRegistrationQuery/DriverLicenseQuery; IV.4*/IR.QVC keyRefs server-selected by field VALUE, internal-only — 12 live VehReg + 9 DL logs). Removed 20 inert conditions; deleted 13 redundant IV.4* + IV.4V/IV.4B dups; IR.QVC criminal combos kept (devdoc DL #3-7), IR.QVC.N set[] fixed (Name+SexCode). 0F/0W/0LIM. ON RETEST QUEUE. |
 | TX_TLETS | 5 | HARMFUL (Img/catchall union over-send). FIXING NOW (v3.4: strip conditions, merge pairs, keep image+email in any[]). |
 | TX_TLETS_CCH | 5 | OUT OF SCOPE — intentional separate data-ingestion stub (user directive). |
 | NY_NYSPIN_EJUSTICE | 4 | Earmark for NY's rebuild; analyze benign-vs-harmful then. |
@@ -99,7 +99,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 5 | FL_FCIC | v5.0 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported |
 | 6 | TX_TLETS | v3.4 |  | 81P/0F/0W/1LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v2.4 |  | 91P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
+| 8 | CA_CLETS | v2.5 |  | 76P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
 | 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 |  | 63P/0F/0W/0LIM | 0 | |
 | 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | NEW SOURCE (2026-06-12): updated metadata XML + devdoc PDF received (old CA_eSUN.4.17.26.pdf removed). v1.5 build predates new source. On next rebuild: regen DEVDOC text, re-run extract_metadata_reference + extract_queries, diff_docs vs KB, rebuild against new XML |
@@ -310,7 +310,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 | Provider | Version | Score | Status |
 |---|---|---|---|
 | NJ_NJCJIS | v3.5 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
-| CA_CLETS | v2.4 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
+| CA_CLETS | v2.5 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
 | FL_FCIC | v5.0 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
 ### Flagged for Full Rebuild on Next Test (16)

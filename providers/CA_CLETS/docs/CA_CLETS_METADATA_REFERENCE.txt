@@ -1,6 +1,6 @@
-﻿CA_CLETS METADATA REFERENCE
+CA_CLETS METADATA REFERENCE
 ============================
-Generated: 2026-06-12
+Generated: 2026-06-14
 Source: CA_CLETS.xml (metadata) + CA_CLETS.json
 Metadata: 179 total transactions, 6 queries built in JSON
 
@@ -54,14 +54,14 @@ METADATA COMBINATIONS (7 total):
   NLTS.BQ       BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber, State          --
   NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
-BUILD COVERAGE (7 of 7 built):
+BUILD COVERAGE (6 of 7 built):
   BUILT   NLTS.BQ.N      set[purposeCode, nameLast, nameFirst, birthDate, registrationState]
   BUILT   NLTS.BQ.H      set[purposeCode, boatHullIdNumber, registrationState]
   BUILT   NLTS.BQ.R      set[purposeCode, registrationNumber, registrationState]
   BUILT   IA.QB.H        set[purposeCode, boatHullIdNumber]
   BUILT   IA.QB.O        set[purposeCode, ownerAppliedNumber]
   BUILT   IA.QB.R        set[purposeCode, registrationNumber]
-  BUILT   IV.4B          set[purposeCode, registrationNumber]
+  UNBUILT IV.4B          RegistrationNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 22)
@@ -120,9 +120,9 @@ METADATA COMBINATIONS (8 total):
 BUILD COVERAGE (8 of 8 built):
   BUILT   NLTS.DQ.N      set[purposeCode, nameLast, nameFirst, registrationState]
   BUILT   NLTS.DQ        set[purposeCode, operatorLicenseNumber, registrationState]
+  BUILT   IR.QVC.N       set[purposeCode, nameLast, nameFirst, sexCode]
   BUILT   IN.L1          set[purposeCode, nameLast, nameFirst]
   BUILT   IR.QVC.O       set[purposeCode, operatorLicenseNumber, criminalIdNumber]
-  BUILT   IR.QVC.N       set[purposeCode, nameLast, nameFirst]
   BUILT   ID.L1          set[purposeCode, operatorLicenseNumber]
   BUILT   IR.QVC.C       set[purposeCode, criminalIdNumber]
   BUILT   IR.QVC.S       set[purposeCode, socialSecurityNumber]
@@ -174,43 +174,55 @@ METADATA COMBINATIONS (19 total):
   IA.QV         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               State
   IA.QVK        VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      VehicleMakeCode
   IV.4I         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AP'
   IV.4C         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'CO', 'TK', or 'TR'
   IV.4M         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'MC'
   IV.4L         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'RE' or 'PE'
   IV.4T         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TL'
   IV.4A         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               LicensePlateTypeCode
   IV.4F         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AT'
   IV.4S         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DX'
   IV.4E         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'EX'
   IL.A1         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DL'
   IV.4H         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AR'
   IV.4P         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'IP'
   IV.4K         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TM'
   IV.4V         VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      --
   NLTS.RQ       LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  VehicleMakeCode, VehicleYear
   NLTS.RQ       VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber,...  VehicleMakeCode, VehicleYear
   IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
-BUILD COVERAGE (19 of 19 built):
+BUILD COVERAGE (5 of 19 built):
   BUILT   NLTS.RQ.P      set[purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
   BUILT   NLTS.RQ.V      set[purposeCode, vehicleIdentificationNumber, registrationState]
-  BUILT   IV.4I          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4C          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4M          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4L          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4T          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4F          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4S          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4E          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IL.A1          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4H          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4P          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
-  BUILT   IV.4K          set[purposeCode, licensePlateNumber, licensePlateTypeCode]
   BUILT   IN.VP          set[purposeCode, nameLast, nameFirst]
-  BUILT   IV.4A          set[purposeCode, licensePlateNumber]
-  BUILT   IV.4V          set[purposeCode, vehicleIdentificationNumber]
   BUILT   IA.QVK         set[purposeCode, vehicleIdentificationNumber]
   BUILT   IA.QV          set[purposeCode, licensePlateNumber]
+  UNBUILT IV.4I          LicensePlateNumber
+  UNBUILT IV.4C          LicensePlateNumber
+  UNBUILT IV.4M          LicensePlateNumber
+  UNBUILT IV.4L          LicensePlateNumber
+  UNBUILT IV.4T          LicensePlateNumber
+  UNBUILT IV.4A          LicensePlateNumber
+  UNBUILT IV.4F          LicensePlateNumber
+  UNBUILT IV.4S          LicensePlateNumber
+  UNBUILT IV.4E          LicensePlateNumber
+  UNBUILT IL.A1          LicensePlateNumber
+  UNBUILT IV.4H          LicensePlateNumber
+  UNBUILT IV.4P          LicensePlateNumber
+  UNBUILT IV.4K          LicensePlateNumber
+  UNBUILT IV.4V          VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -219,13 +231,33 @@ BUILD SUMMARY
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
-  BoatQuery                                  7      7     0  100% (COMPLETE)
+  BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         8      8     0  100% (COMPLETE)
   GunQuery                                   2      2     0  100% (COMPLETE)
-  VehicleRegistrationQuery                  19     19     0  100% (COMPLETE)
+  VehicleRegistrationQuery                  19      5    14  26%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   40     40     0  100%
+  TOTAL                                   40     25    15  62%
+
+================================================================================
+UNBUILT METADATA COMBOS (15 combos in metadata, not in JSON)
+================================================================================
+
+  IV.4B          RegistrationNumber       (BoatQuery)
+  IV.4I          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4C          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4M          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4L          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4T          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4A          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4F          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4S          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4E          LicensePlateNumber       (VehicleRegistrationQuery)
+  IL.A1          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4H          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4P          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4K          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4V          VehicleIdentificationNumber (VehicleRegistrationQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (173 of 179 in metadata)
