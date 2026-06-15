@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DL-FullCard-Isolation-D1 (D1 discriminator: DL full-card pool isolation (OLN+Name+DOB+Sex, State blank))
+Variant: MC
+Date: 2026-06-15 11:56:30
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+operatorLicenseNumber=D999888777, nameLast=doe, nameFirst=john, birthDate=1985-01-15, sexCode=Male, DL State=blank, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV5ZW4QHE3ACJZ3K9Q1XSFJD"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV5ZW4QHE3ACJZ3K9Q1XSFJD</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV5ZW4QHE3ACJZ3K9Q1XSFJD
+  ImageIndicator                 Y
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+DISCRIMINATOR PASS: DL full card ISOLATES -- CommSys DriverLicenseQuery sent OLN+ImageIndicator ONLY (no Name/DOB/Sex). Confirms shared-targetField collision resolves to DL field: DL gate checks its own operatorLicenseNumber (filled => name gated => isolates), DH gate checks same DL field (blank on DH card => never gates => pools). RMS elastic pooled name/dob/sex separately (by design). DH-specific defect confirmed.
+
+RESULT: PASS
