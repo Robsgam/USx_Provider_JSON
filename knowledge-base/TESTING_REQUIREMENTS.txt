@@ -875,6 +875,32 @@ SECTION 13b -- STANDARD TEST PRESENTATION + PER-ENTITY RENDER GATE
   DISCREPANCY / TROUBLESHOOTING sections so the on-disk log mirrors the card
   presented. Pass -Expected "<text>" to pre-fill the EXPECTED OUTCOME section.
 
+  POST-TEST LOGGING QUICK REFERENCE (post_test.ps1 exact invocations):
+
+    COMBO TEST (user gets XML from server logs):
+      pwsh -File tools\post_test.ps1 `
+        -Provider <PROV> -Entity <Ent> -Query <QueryName> `
+        -Combo "<Combo>" -Result PASS -Description "<brief>" `
+        -XmlRequest "<xml from server log>" -FormState "<field=val list>"
+
+    RENDER GATE (no query fired -- use -Render flag):
+      pwsh -File tools\post_test.ps1 `
+        -Provider <PROV> -Entity <Ent> -Query RENDER -Combo RENDER `
+        -Result PASS -Description "<Ent> RENDER gate" -Render
+
+    NEGATIVE TEST (empty form, no Send -- use -Negative flag):
+      pwsh -File tools\post_test.ps1 `
+        -Provider <PROV> -Entity <Ent> -Query NEGATIVE -Combo NEGATIVE `
+        -Result PASS -Description "Empty form no send" -Negative
+
+    FAIL (any type -- no XML required, add -Notes):
+      pwsh -File tools\post_test.ps1 `
+        -Provider <PROV> -Entity <Ent> -Query <QueryName> `
+        -Combo "<Combo>" -Result FAIL -Description "<brief>" `
+        -Notes "<observed vs expected>"
+
+  NOTE: XML comes from server logs, NOT from browser F12 Network tab.
+
 ================================================================================
 SECTION 14 -- VALIDATOR MARKERS
 ================================================================================

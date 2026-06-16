@@ -2,17 +2,27 @@
 # Instant-save tool for test results. After ANY test completes, this script
 # immediately saves all artifacts, updates docs, commits, and pushes.
 #
-# Usage:
-#   powershell.exe -ExecutionPolicy Bypass -File tools\post_test.ps1 `
-#     -Provider TX_TLETS -Entity Vehicle -Query VehicleRegistrationQuery `
-#     -Combo IA.QV -Result PASS -Description "Plate search basic"
+# ── COMBO TEST (with XML from server logs) ──────────────────────────────────
+#   pwsh -File tools\post_test.ps1 `
+#     -Provider TX_TLETS -Entity Person -Query DriverLicenseQuery `
+#     -Combo "DQ+Name" -Result PASS -Description "DL by Name" `
+#     -XmlRequest "<xml>...</xml>" -FormState "Sex=M, DOB=01/15/1990, Last=DOE, First=JOHN"
 #
-#   With XML capture:
-#   powershell.exe -ExecutionPolicy Bypass -File tools\post_test.ps1 `
-#     -Provider FL_FCIC -Entity Person -Query DriverLicenseQuery `
-#     -Combo FDQ+OLN -Result PASS -Description "DL by OLN" `
-#     -XmlRequest "<xml>...</xml>" -XmlResponse "<xml>...</xml>" `
-#     -FormState "OLN=D123456789, State=blank" -Notes "FDQ fires, no QW co-fire"
+# ── RENDER GATE (no query fired — visual check only) ────────────────────────
+#   pwsh -File tools\post_test.ps1 `
+#     -Provider TX_TLETS -Entity Person -Query RENDER -Combo RENDER `
+#     -Result PASS -Description "Person RENDER gate" -Render
+#
+# ── NEGATIVE TEST (empty form, no Send) ─────────────────────────────────────
+#   pwsh -File tools\post_test.ps1 `
+#     -Provider TX_TLETS -Entity Person -Query NEGATIVE -Combo NEGATIVE `
+#     -Result PASS -Description "Empty form no send" -Negative
+#
+# ── FAIL (any test type — no XML required) ──────────────────────────────────
+#   pwsh -File tools\post_test.ps1 `
+#     -Provider TX_TLETS -Entity Person -Query DriverLicenseQuery `
+#     -Combo "DQ+Name" -Result FAIL -Description "Wrong keyRef" `
+#     -Notes "Expected DQ fired QW instead"
 
 param(
     [Parameter(Mandatory)][string]$Provider,
@@ -21,14 +31,14 @@ param(
     [Parameter(Mandatory)][string]$Combo,
     [Parameter(Mandatory)][ValidateSet('PASS','FAIL')][string]$Result,
     [Parameter(Mandatory)][string]$Description,
-    [ValidateSet('BASE','MC')][string]$Variant = 'BASE',
 
     [string]$XmlRequest,
     [string]$XmlResponse,
     [string]$FormState,
     [string]$Notes,
     [switch]$NoCommit,
-    [switch]$Negative
+    [switch]$Negative,
+    [switch]$Render
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,7 +47,7 @@ $ErrorActionPreference = "Stop"
 # HARD GATE: No XML = No PASS (unless negative test)
 # ============================================================================
 
-if ($Result -eq 'PASS' -and -not $Negative -and (-not $XmlRequest -or $XmlRequest.Trim().Length -eq 0)) {
+if ($Result -eq 'PASS' -and -not $Negative -and -not $Render -and (-not $XmlRequest -or $XmlRequest.Trim().Length -eq 0)) {
     Write-Host ""
     Write-Host "  BLOCKED: Cannot save PASS without XML evidence." -ForegroundColor Red
     Write-Host "  Pass -XmlRequest with the server log XML, or use -Negative for empty-form tests." -ForegroundColor Red
@@ -106,7 +116,7 @@ $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " POST-TEST SAVE: $Provider $Entity $Query" -ForegroundColor Cyan
-Write-Host " Combo: $Combo  Result: $Result  Variant: $Variant" -ForegroundColor Cyan
+Write-Host " Combo: $Combo  Result: $Result" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 $totalSteps = if ($NoCommit) { 5 } else { 6 }
@@ -208,7 +218,6 @@ $logContent = @"
 ================================================================
 TEST LOG: $Provider $Entity $Query
 Combo: $Combo ($Description)
-Variant: $Variant
 Date: $timestamp
 Result: $Result
 ================================================================
@@ -337,7 +346,7 @@ if (Test-Path $sqvrPath) {
 $Provider -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 Last updated: $dateStr
-JSON version: $Variant
+JSON version: (see REBUILD_TRACKER.md)
 Live test: In progress
 
 ================================================================================
@@ -443,10 +452,9 @@ if (Test-Path $statusPath) {
 $Provider -- Build Status
 ========================
 Last updated    : $dateStr
-Current version : $Variant
 Provider        : $Provider
 
-LIVE TEST RESULTS -- $Variant (post_test.ps1)
+LIVE TEST RESULTS (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
