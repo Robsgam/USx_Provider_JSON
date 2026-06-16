@@ -6,16 +6,40 @@ Current version : v3.6
 Provider: TX_TLETS
 Phase: Single JSON (multi-card)
 
-BUILD RESULTS (v3.4)
+BUILD RESULTS (v3.6)
 ====================
   Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
   Verify:    CLEAN
-  Test:      35/35 test matrix (test conductor, v3.4)
+  Test:      35/35 test matrix (test conductor)
   Lint:      CLEAN
 
-  Import:    v3.4 imported USx TLETS tenant 2026-06-15.
-  Live Test: in progress from T1 (v3.4 rebuild). T1 Person render PASS 2026-06-15.
-             Prior v3.3 live logs (T1-T40 PASS 2026-06-04) archived to tests/_archive_pre_v3.4/.
+  Import:    v3.6 imported USx TLETS tenant 2026-06-16 (v3.5 never imported; re-import required
+             for ImageIndicator=Y revert on DH; v3.4 was last imported version).
+  Live Test: in progress. RENDER T1-T5 PASS. Person T6-T11 PASS. Vehicle T12-T14 PASS.
+             VIN+VIN (T17) PASS. T15 RQ+VIN PENDING re-run (see PICKUP below).
+             QV VIN (T16) = LIMITATION (permanently shadowed by RQ VIN).
+
+PICKUP -- 2026-06-16 (next session resumes here)
+=================================================
+  Completed: T1 Person RENDER, T2 Vehicle RENDER, T3 Boat RENDER, T4 Firearm RENDER,
+             T5 Article RENDER, T6 DQ+Name, T7 QW+Name, T8 DQ+OLN, T9 CPL+Name,
+             T10 KQ+Name, T11 KQ+OLN, T12 RQ+Plate, T13 QV+Plate, T14 REG+Plate,
+             T17 VIN+VIN (form had FinancialResponsibilityType=Y; fired VINVehicleIdentificationNumber).
+
+  FIRST TASK: T15 RQ+VIN re-run.
+    Fill: VIN=1HGCM82633A123456, FinancialResponsibilityType=BLANK (must be empty), all else blank.
+    Expected: VehicleInsuranceRegistrationQuery fires; XML has VIN + State=TX only (no FinancialResponsibilityType).
+    keyRef=RQVehicleIdentificationNumber.
+
+  SKIP: T16 QV+VIN -- LIMITATION documented in SQVR. QVVehicleIdentificationNumber same set[] as
+        RQ; combo position 7 vs RQ at position 6; permanently shadowed. No test possible.
+
+  NEXT AFTER T15: T18 DPSI+Sticker, T19-T23 Boat, T24-T25 Firearm, T26-T27 Article,
+                  T28-T32 any[], T33 deselect, T34-T35 negatives.
+                  Then: enforce, final SQVR, commit/push.
+
+  WARNING: mislabeled T15 log was deleted (git rm). The correct VIN+VIN log is:
+           TX_TLETS_Vehicle_VehReg_VIN+VIN_VehReg_VIN+FinancialResponsibilityType_search_2026-06-16.txt
 
 LIVE TEST FINDINGS (v3.1)
 =========================
