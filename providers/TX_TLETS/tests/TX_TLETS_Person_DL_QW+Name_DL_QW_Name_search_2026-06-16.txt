@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: QW+Name (DL QW Name search)
+Date: 2026-06-16 14:07:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+birthDate=1985-01-01, nameLast=doe, nameFirst=jon, sex=blank; State=TX/ImageIndicator=Y/ReasonCode=C from OPTIONS card
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV8ST67CQ4BMN1R2ZFJB3Q4W"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV8ST67CQ4BMN1R2ZFJB3Q4W</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><ReasonCode>C</ReasonCode><BirthDate>01011985</BirthDate><Name>DOE,JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV8ST67CQ4BMN1R2ZFJB3Q4W
+  ImageIndicator                 Y
+  State                          TX
+  ReasonCode                     C
+  BirthDate                      01011985
+  Name                           DOE,JON
+
+NOTES
+-----
+keyRef=QWName; set[birthDate,nameLast,nameFirst] matched; no SexCode in XML correct; ImageIndicator+ReasonCode+State present because OPTIONS card values are non-empty mapped fields -- platform sends all mapped non-empty fields when combo fires (not a defect)
+
+RESULT: PASS
