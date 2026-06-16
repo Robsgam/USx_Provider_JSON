@@ -1,8 +1,11 @@
-# build_tx_tlets.ps1  -- TX_TLETS v3.5
+# build_tx_tlets.ps1  -- TX_TLETS v3.6
 # Single build. 6 cards (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1).
 # 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
-# v3.5: DH ImageIndicator default changed Y→N (devdoc: EmailAddress required when
-#       ImageIndicator=Y; no email handler exists; default must not trigger silent requirement).
+# v3.6: Revert DH ImageIndicator default N→Y. Design intent: ImageIndicator=Y is preferred
+#       on all DH queries (officers want photo). EmailAddress is a visible FormInput; officers
+#       fill it manually until the email-injection handler is available (dexUserId-style).
+#       ReasonCode=C default already satisfies the second ImageIndicator=Y constraint (devdoc).
+# v3.5: DH ImageIndicator default Y→N (erroneous; v3.5 never imported; reverted in v3.6).
 # v3.4: POISONED-ARRAY fix -- removed inert ImageIndicator EQUALS Y conditions; merged
 #       Img/catchall combo pairs (DL 7->4, DH 4->2); image/email/reason kept in any[].
 # v3.2: email→OPTIONS (shared).
@@ -10,7 +13,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "3.5",
+    [string]$Version = "3.6",
     [string]$Phase   = "current"
 )
 
@@ -112,7 +115,10 @@ $dlQuery = [PSCustomObject]@{
 # emailAddress (shared OPTIONS card).
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName, KQOLN. See PLATFORM_CONSTRAINTS.txt.
-$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
+# LIMITATION: EmailAddress is required when ImageIndicator=Y (devdoc). Officers fill it manually
+# until the email-injection handler is available (dexUserId-style). See PENDING PLATFORM FEATURES.
+# ReasonCode=C default satisfies the second ImageIndicator=Y constraint per devdoc.
+$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefsDH = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
     attributes = @(
