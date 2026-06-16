@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQ+OLN (DH OLN search)
+Date: 2026-06-16 14:14:31
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+operatorLicenseNumberDH=D999888777 (trailing ) typo), emailAddress=test@test.com; ImageIndicator=Y/ReasonCode=C/State=TX from defaults
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV8T7QKH0HEZ3BMPVCP5304S"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KV8T7QKH0HEZ3BMPVCP5304S</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><OperatorLicenseNumber>D999888777)</OperatorLicenseNumber><ReasonCode>C</ReasonCode><PurposeCode>C</PurposeCode><EmailAddress>TEST@TEST.COM</EmailAddress></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV8T7QKH0HEZ3BMPVCP5304S
+  ImageIndicator                 Y
+  State                          TX
+  OperatorLicenseNumber          D999888777)
+  ReasonCode                     C
+  PurposeCode                    C
+  EmailAddress                   TEST@TEST.COM
+
+NOTES
+-----
+keyRef=KQOLN; set[operatorLicenseNumberDH] matched; EmailAddress present satisfies devdoc constraint; PurposeCode=C correct; DL deselected; trailing ) is test data artifact
+
+RESULT: PASS
