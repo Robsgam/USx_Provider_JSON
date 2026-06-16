@@ -276,6 +276,15 @@ TOOLS
     XML capture and form state documentation.
     Usage: .\post_test.ps1 -Provider <name> -Entity <entity> -Query <query> -Combo <combo> -Result <PASS|FAIL> -Description <desc>
 
+  tools/check_test_preconditions.ps1
+    Pre-test gate: cross-checks combo defaults against devdoc conditional field
+    constraints (FIELD CONSTRAINTS blocks in METADATA_REFERENCE.txt). Emits WARN
+    to stdout if a default triggers a "Must be filled if" requirement that has no
+    corresponding default or handler. Called by PreToolUse hook before post_test.ps1
+    invocations. Exit 0 always (warn-only).
+    Usage: .\check_test_preconditions.ps1 -Provider <name> [-Query <qidmName>]
+           .\check_test_preconditions.ps1 -FromHook  (reads JSON from stdin, hook mode)
+
   tools/reset_test_package.ps1
     Restarts the live test package when a JSON is rebuilt. A version bump
     invalidates prior logs (routing/conditions/defaults may have changed), so

@@ -1,6 +1,6 @@
-TX_TLETS MC v3.4 -- TEST MATRIX
+TX_TLETS MC v3.5 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-14
+Generated: 2026-06-16
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -97,6 +97,11 @@ PHASE 2: PERSON COMBOS (6 tests, 6 combos)
               Expected: DriverLicenseQuery fires (DQ)
  9  Person      CPLNam+CPLName     nameLast=DOE, nameFirst=JOHN     [    ]
               Expected: DriverLicenseQuery fires (CPLNam)
+
+  WARN -- FIELD CONSTRAINTS for DriverHistoryQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y Y, N or Blank
+         C,F,E,D,J,S Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
 10  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 11  Person      KQ+OLN             operatorLicenseNumberDH=D999888777 [    ]

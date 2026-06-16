@@ -1,3 +1,16 @@
 {
-  "model": "claude-opus-4-6"
+  "model": "claude-opus-4-6",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -File tools/check_test_preconditions.ps1 -FromHook"
+          }
+        ]
+      }
+    ]
+  }
 }

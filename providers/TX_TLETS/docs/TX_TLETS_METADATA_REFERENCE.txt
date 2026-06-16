@@ -1,6 +1,6 @@
 ﻿TX_TLETS METADATA REFERENCE
 ============================
-Generated: 2026-06-12
+Generated: 2026-06-16
 Source: TX_TLETS.xml (metadata) + TX_TLETS.json
 Metadata: 113 total transactions, 6 queries built in JSON
 
@@ -74,12 +74,14 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber + Choice[ImageIndicator + Re...  Attention, PurposeCode, State
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
-BUILD COVERAGE (4 of 2 built):
-  BUILT   KQNameImg      set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+BUILD COVERAGE (2 of 2 built):
   BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-  BUILT   KQOLNImg       set[operatorLicenseNumberDH]
   BUILT   KQOLN          set[operatorLicenseNumberDH]
   UNBUILT KQ             OperatorLicenseNumber
+
+FIELD CONSTRAINTS (from devdoc -- cross-reference field list above for exact field names):
+  Must be filled if ImageIndicator = Y Y, N or Blank
+  C,F,E,D,J,S Must be filled if ImageIndicator = Y
 
 ================================================================================
 4. DriverLicenseQuery (version 15)
@@ -108,13 +110,10 @@ METADATA COMBINATIONS (5 total):
   RSDWW         OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
 
-BUILD COVERAGE (7 of 5 built):
-  BUILT   DQNameImg      set[sexCode, birthDate, nameLast, nameFirst]
+BUILD COVERAGE (4 of 5 built):
   BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst]
   BUILT   QWName         set[birthDate, nameLast, nameFirst]
-  BUILT   CPLNameImg     set[nameLast, nameFirst]
   BUILT   CPLName        set[nameLast, nameFirst]
-  BUILT   DQOLNImg       set[operatorLicenseNumber]
   BUILT   DQOLN          set[operatorLicenseNumber]
   UNBUILT RSDWW          OperatorLicenseNumber
   UNBUILT DQ             OperatorLicenseNumber
@@ -184,12 +183,12 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         1      2     0  200%
   BoatQuery                                  5      5     0  100% (COMPLETE)
-  DriverHistoryQuery                         2      4     0  200%
-  DriverLicenseQuery                         5      7     0  140%
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         5      4     1  80%
   GunQuery                                   1      2     0  200%
   VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   21     27     0  129%
+  TOTAL                                   21     22     1  105%
 
 ================================================================================
 UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)

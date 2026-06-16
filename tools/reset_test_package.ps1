@@ -82,7 +82,18 @@ if ($logs) {
     $archiveDir = Join-Path $testsDir "_archive_pre_v$version"
     if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
     foreach ($f in $logs) {
-        Move-Item $f.FullName (Join-Path $archiveDir $f.Name) -Force
+        $dest = Join-Path $archiveDir $f.Name
+        # Truncate dest filename if it would exceed MAX_PATH (260) -- long-named logs
+        # hit this when the archive subdir adds ~22 chars.
+        if ($dest.Length -gt 255) {
+            $destDir  = [System.IO.Path]::GetDirectoryName($dest)
+            $ext      = [System.IO.Path]::GetExtension($f.Name)
+            $stem     = [System.IO.Path]::GetFileNameWithoutExtension($f.Name)
+            $maxStem  = 255 - $destDir.Length - 1 - $ext.Length
+            if ($maxStem -lt 8) { $maxStem = 8 }
+            $dest = Join-Path $destDir ($stem.Substring(0, [Math]::Min($stem.Length, $maxStem)) + $ext)
+        }
+        Move-Item $f.FullName $dest -Force
         $archived++
     }
 }

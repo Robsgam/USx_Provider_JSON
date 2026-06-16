@@ -20,6 +20,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
     [string]$OutFile,
+    [string]$DevdocPath = "",
     [switch]$All
 )
 
@@ -162,6 +163,37 @@ foreach ($txNode in $metadata.SelectNodes("//${nsPrefix}Transaction[@name]", $ns
         }
     } else {
         $transactions[$txName].combos += $combos
+    }
+}
+
+# ── Parse devdoc for conditional field constraints ────────────────────────────
+# Auto-discovers devdoc at source/<PROVIDER>_DEVDOC.txt if -DevdocPath not specified.
+# Scans each transaction section for "Must be filled if X = Y" lines (PDF-extracted
+# devdocs don't reliably preserve table structure, so we capture raw constraint text
+# within section boundaries and let the reader cross-reference the field list above).
+$devdocConstraints = @{}
+$devdocResolved = $DevdocPath
+if (-not $devdocResolved) {
+    $jsonDir = [System.IO.Path]::GetDirectoryName($jsonResolved)
+    $candidate = [System.IO.Path]::Combine($jsonDir, "source", "${providerName}_DEVDOC.txt")
+    if (Test-Path $candidate) { $devdocResolved = $candidate }
+}
+if ($devdocResolved -and (Test-Path $devdocResolved)) {
+    $devdocLines = Get-Content $devdocResolved
+    $knownTxNames = @($transactions.Keys)
+    $currentTx = $null
+    foreach ($dLine in $devdocLines) {
+        $trimmed = $dLine.Trim()
+        if ($knownTxNames -contains $trimmed) {
+            $currentTx = $trimmed
+            continue
+        }
+        if ($currentTx -and ($trimmed -match 'Must be filled if')) {
+            if (-not $devdocConstraints.ContainsKey($currentTx)) {
+                $devdocConstraints[$currentTx] = @()
+            }
+            $devdocConstraints[$currentTx] += $trimmed
+        }
     }
 }
 
@@ -319,6 +351,15 @@ foreach ($qName in $includeQueries) {
         [void]$sb.AppendLine("BUILD COVERAGE: NOT BUILT (0 of $($metaCombos.Count))")
         foreach ($c in $metaCombos) {
             $unbuiltCombos += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }
+        }
+        [void]$sb.AppendLine("")
+    }
+
+    # Field constraints from devdoc
+    if ($devdocConstraints.ContainsKey($qName) -and $devdocConstraints[$qName].Count -gt 0) {
+        [void]$sb.AppendLine("FIELD CONSTRAINTS (from devdoc -- cross-reference field list above for exact field names):")
+        foreach ($c in $devdocConstraints[$qName]) {
+            [void]$sb.AppendLine("  $c")
         }
         [void]$sb.AppendLine("")
     }

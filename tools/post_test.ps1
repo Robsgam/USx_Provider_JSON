@@ -163,6 +163,13 @@ $descSafe  = $Description -replace '[\\/:*?"<>|,()\[\] ]', '_'
 $comboSafe = $Combo -replace '[\\/:*?"<>|,()\[\] ]', '_'
 
 $logFilename = "${Provider}_${Entity}_${queryShort}_${comboSafe}_${descSafe}_${dateStr}.txt"
+# Truncate to keep total path (with archive subdir) under MAX_PATH=260.
+# Archive adds ~22 chars (_archive_pre_vX.Y\) so cap filename at 155 chars.
+if ($logFilename.Length -gt 155) {
+    $ext  = ".txt"
+    $stem = $logFilename.Substring(0, 155 - $ext.Length)
+    $logFilename = "${stem}${ext}"
+}
 $logPath     = Join-Path $testsDir $logFilename
 
 # Check for existing log for same combo (any date)
