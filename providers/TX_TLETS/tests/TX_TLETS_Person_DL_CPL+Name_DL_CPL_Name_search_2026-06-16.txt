@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: CPL+Name (DL CPL Name search)
+Date: 2026-06-16 14:11:34
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+nameLast=doe, nameFirst=jon; DOB/Sex blank; State=TX/ImageIndicator=Y/ReasonCode=C from OPTIONS/defaults
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KV8T24D9P85CNF3AKSQ1Y6F5"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KV8T24D9P85CNF3AKSQ1Y6F5</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><ReasonCode>C</ReasonCode><Name>DOE,JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KV8T24D9P85CNF3AKSQ1Y6F5
+  ImageIndicator                 Y
+  State                          TX
+  ReasonCode                     C
+  Name                           DOE,JON
+
+NOTES
+-----
+keyRef=CPLName; set[nameLast,nameFirst] matched; no DOB/SexCode correct; first XML block in session data was stale T8 request (same txn ID), disregarded
+
+RESULT: PASS
