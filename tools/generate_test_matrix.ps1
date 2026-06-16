@@ -77,8 +77,14 @@ $qifs = @($entBundle.configurations | Where-Object { $_.type -eq 'QUERYINPUTFORM
 function Get-CardFields($layout) {
     $cards = [ordered]@{}
     if (-not $layout) { return $cards }
-    $members = ($layout | Get-Member -MemberType NoteProperty).Name
-    foreach ($m in $members) {
+    # Use ROOT_PAGE.nodes for display order (Get-Member returns alphabetical, which is wrong)
+    $orderedKeys = if ($layout.ROOT_PAGE -and $layout.ROOT_PAGE.nodes) {
+        $layout.ROOT_PAGE.nodes
+    } else {
+        ($layout | Get-Member -MemberType NoteProperty).Name
+    }
+    foreach ($m in $orderedKeys) {
+        if (-not $layout.$m) { continue }
         $node = $layout.$m
         if ($node.type.resolvedName -eq 'Card') {
             $title = if ($node.props.title) { $node.props.title } elseif ($node.props.label) { $node.props.label } else { $m }

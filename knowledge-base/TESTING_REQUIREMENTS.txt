@@ -805,13 +805,35 @@ SECTION 13b -- STANDARD TEST PRESENTATION + PER-ENTITY RENDER GATE
   PRESENT ONE TEST AT A TIME. The full matrix is presented once up front
   for visibility (GATE 1), but tests are executed and presented singly.
 
-  COMPACT RENDER CARD (what to show for a render gate):
+  RENDER CARD (what to show for a render gate):
 
-    > <Entity> RENDER (gate)
-    Verify: <N> cards (<card titles>); <N> fields;
-            defaults <field=value list>; dropdowns <list> populated;
-            State = no default (routing safety, LIMITATION #30)
-    On mismatch: stop, note delta, fix before running this entity's combos.
+    > T<n> — <Entity> RENDER (gate)
+
+    Verify <N> cards in this order:
+
+    <Card display name> card (titled "<exact card title>"):
+    - <Field label> (type, max <N>), <Field label> (type, default <value>), <Field label> (type, max <N>)
+    - <Field label> (type), <Field label> (type), <Field label> (type), <Field label> (type)
+    - <Field label> (date picker), <Field label> (select -- no default)
+
+    [repeat per card in layout order]
+
+    Dropdowns that must be populated: <human-readable label list>.
+
+    On mismatch: stop, note delta, do not run <Entity> combos until resolved.
+
+  RENDER CARD RULES (all mandatory):
+    - Use human-readable field labels, NOT fieldIds
+      (e.g. "License Number DH" not "operatorLicenseNumberDH")
+    - Tag every field: (type), (select), (date picker), or (select -- no default)
+    - Show defaults inline: (type, default C), (select, default TX), (type, blank)
+    - Group fields by card; preserve row structure from build script layout
+    - Separate "Dropdowns that must be populated" line using human names
+    - "On mismatch" line: "do not run <Entity> combos until resolved"
+    - NOTE: State = no default applies ONLY when State is in set[] and routes combos
+      (e.g. NY_NYSPIN); for most providers State has a home-state default -- show it
+    - Present cards in screen (UI) order = TEST_MATRIX.txt FORM FIELDS order
+      (TEST_MATRIX.txt is authoritative; Get-Member returns alphabetical which is wrong)
 
   COMPACT FUNCTIONAL TEST CARD (what to show for each combo test):
 
