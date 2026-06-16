@@ -256,7 +256,7 @@ if (Test-Path $sqvrPath) {
     #             description line that has [PENDING] and replace ONLY that one.
     $keyRefIdx = -1
     for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
-        if ($sqvrLines[$i] -match "^\s*keyReference:\s*${comboEsc}\s*$") {
+        if ($sqvrLines[$i] -match "^\s*keyReference:\s*${comboEsc}(\s|$)") {
             $keyRefIdx = $i
             break
         }
@@ -376,24 +376,26 @@ if (Test-Path $statusPath) {
     }
 
     if (-not $statusUpdated) {
-        # Find the test matrix section and append
-        # Look for "Test Matrix:" or "LIVE TEST" section header
+        # Anchor to the "LIVE TEST RESULTS" section header, then insert after the last row in it.
+        # A backward scan with ^\s*\d+\s was incorrectly matching build-log lines like
+        # "      3 layout variants..." before reaching the LIVE TEST section.
         $insertIdx = -1
-        for ($i = $statusLines.Count - 1; $i -ge 0; $i--) {
-            $line = $statusLines[$i]
-            if ($line -match '^\s*\d+\s' -or $line -match '^\s*---\s' -or
-                $line -match 'Test Matrix' -or $line -match 'LIVE TEST') {
-                # Found the test matrix area; find the last numbered row
-                for ($j = $i; $j -lt $statusLines.Count; $j++) {
-                    if ($statusLines[$j] -match '^\s*\d+\s' -or $statusLines[$j] -match '^\s+---\s') {
-                        $insertIdx = $j
-                    }
-                    # Stop at blank line or next section header
-                    if ($j -gt $i -and $statusLines[$j] -match '^\s*$' -and $insertIdx -gt 0) {
-                        break
-                    }
-                }
+        $liveTestStart = -1
+        for ($i = 0; $i -lt $statusLines.Count; $i++) {
+            if ($statusLines[$i] -match 'LIVE TEST RESULTS') {
+                $liveTestStart = $i
                 break
+            }
+        }
+        if ($liveTestStart -ge 0) {
+            for ($i = $liveTestStart; $i -lt $statusLines.Count; $i++) {
+                if ($statusLines[$i] -match '^\s+---\s') {
+                    $insertIdx = $i
+                }
+                # Stop when we hit the next major section header (all-caps word at col 0)
+                if ($i -gt $liveTestStart -and $statusLines[$i] -match '^[A-Z][A-Z ]') {
+                    break
+                }
             }
         }
 
@@ -407,10 +409,8 @@ if (Test-Path $statusPath) {
             # Append a new test section at the end
             $statusLines += @(
                 "",
-                "LIVE TEST RESULTS -- $Variant (post_test.ps1)",
-                ("-" * 50),
-                "  #     Date        Entity      Combo                Result    Notes",
-                "  ---   ----------  ----------  -------------------  --------  -----",
+                "LIVE TEST RESULTS (v3.4)",
+                "========================",
                 $matrixRow
             )
             $statusUpdated = $true
