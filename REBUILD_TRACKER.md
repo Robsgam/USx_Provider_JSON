@@ -5,9 +5,9 @@ Generated: 2026-05-08 | Last updated: 2026-06-14
 
 1. **FL_FCIC** (v5.1) -- DONE 2026-06-15. Imported to USx tenant; full matrix T1-T42 PASS
    (one-directional deselect + co-fire pool isolation confirmed); enforce-clean. Request-side.
-2. **TX_TLETS** (v3.4) -- ACTIVE (next). Rebuilt (poisoned-array fix) + enforce-clean; awaiting USx
-   import. Request-side. Carry: Img/catchall merged + image/email in any[]; email-in-set[] CAD tabled
-   (handler pending); image/email auto-send handlers pending.
+2. **TX_TLETS** (v3.4) -- ACTIVE. Imported USx TLETS tenant 2026-06-15; RENDER PASS (all 4 entities);
+   T1+ live testing in progress. Carry: Img/catchall merged + image/email in any[]; email-in-set[] CAD
+   tabled (handler pending); image/email auto-send handlers pending.
 3. **NJ_NJCJIS** -- test + DECIDE the Vehicle-Stolen branch winner (VehStolenRemoved vs
    VehStolenSeparate). Hopefully we know which way to go by then (PM input pending).
 4. **NY_NYSPIN_EJUSTICE** -- (has 4 poisoned-array combos earmarked; analyze benign-vs-harmful at rebuild).

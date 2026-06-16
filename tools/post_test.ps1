@@ -308,10 +308,12 @@ if (Test-Path $sqvrPath) {
     }
 
     if ($sqvrUpdated) {
-        # Update the "Last updated" line
+        # Update the "Last updated" line; clear "NOT yet imported" on first test run
         $sqvrLines = $sqvrLines | ForEach-Object {
             if ($_ -match '^Last updated:') {
                 $_ -replace '(Last updated:\s*).*', "`${1}${dateStr}"
+            } elseif ($_ -match '^Live test:.*NOT yet imported') {
+                $_ -replace 'NOT yet imported.*', 'In progress'
             } else { $_ }
         }
         ($sqvrLines -join "`n") | Set-Content -Path $sqvrPath -Encoding UTF8 -NoNewline
