@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: TX_TLETS Article ArticleSingleQuery
+Combo: QA+Serial (QA+Serial: ArticleSerialNumber+Type fires QAArticleSerialNumber)
+Date: 2026-06-17 09:44:52
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVAX6TZD6JZKND8H96FCP9BC"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KVAX6TZD6JZKND8H96FCP9BC</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCL</ArticleTypeCode><ArticleSerialNumber>ART99999</ArticleSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVAX6TZD6JZKND8H96FCP9BC
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+QA+Serial fires on ArticleSerialNumber+ArticleTypeCode. ArticleTypeCode=BBICYCL (bicycle) selected from dropdown. No NCICNumber in XML.
+
+RESULT: PASS
