@@ -1,6 +1,6 @@
-TX_TLETS MC v3.6 -- TEST MATRIX
+TX_TLETS MC v3.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-16
+Generated: 2026-06-17
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -104,7 +104,7 @@ PHASE 2: PERSON COMBOS (6 tests, 6 combos)
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
 10  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQ)
-11  Person      KQ+OLN             operatorLicenseNumberDH=D999888777 [    ]
+11  Person      KQ+OLN             operatorLicenseNumberDH=D999888777, e... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 
 PHASE 3: VEHICLE COMBOS (7 tests, 7 combos)
@@ -169,7 +169,7 @@ PHASE 7: ANY[] FIELD TESTS (5 tests)
               Expected: any[] fields present in XML output.
 30  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-31  Person      KQ+Name            + attentionDH, emailAddress, nameMiddleDH [    ]
+31  Person      KQ+Name            + attentionDH, nameMiddleDH, nameSuffixDH [    ]
               Expected: any[] fields present in XML output.
 32  Article     QA+NCIC            + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.

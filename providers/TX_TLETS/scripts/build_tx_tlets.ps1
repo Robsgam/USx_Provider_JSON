@@ -1,6 +1,10 @@
-# build_tx_tlets.ps1  -- TX_TLETS v3.6
+# build_tx_tlets.ps1  -- TX_TLETS v3.7
 # Single build. 6 cards (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1).
 # 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v3.7: DH emailAddress moved from any[] to set[] on both combos (KQName, KQOLN).
+#       Structural enforcement: DH won't fire without Email (devdoc requires Email when
+#       ImageIndicator=Y; Image=Y is the default on every DH combo). CAD DH suppressed
+#       until email-injection handler is available -- documented as LIMITATION.
 # v3.6: Revert DH ImageIndicator default N→Y. Design intent: ImageIndicator=Y is preferred
 #       on all DH queries (officers want photo). EmailAddress is a visible FormInput; officers
 #       fill it manually until the email-injection handler is available (dexUserId-style).
@@ -13,7 +17,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "3.6",
+    [string]$Version = "3.7",
     [string]$Phase   = "current"
 )
 
@@ -134,12 +138,12 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ Name (merged v3.4 -- image/email/reason in any[], no poisoned conditions)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','emailAddress','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
-        # KQ OLN (merged v3.4)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','emailAddress','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        # KQ Name (v3.7: emailAddress moved to set[] -- DH won't fire without Email; devdoc requires Email when Image=Y)
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddress'); any = @('attentionDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        # KQ OLN (v3.7: emailAddress moved to set[])
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddress'); any = @('attentionDH','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
-    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
+    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v3.7: emailAddress in set[] (required). v3.4: poisoned conditions removed. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
 
 # --- GunQuery (2 combos) ---

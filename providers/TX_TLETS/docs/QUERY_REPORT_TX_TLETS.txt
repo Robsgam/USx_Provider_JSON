@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-16 12:53
+  Generated: 2026-06-17 10:20
 ================================================================
 QUERY SIMULATION
 ================
@@ -131,39 +131,8 @@ QUERY SIMULATION
 
 --- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
-
-    [FIRES first-match] KQName
-      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [attentionDH, emailAddress, imageIndicator, nameMiddleDH, nameSuffixDH, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddleDH, purposeCodeDH, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] KQOLN
-      set: [operatorLicenseNumberDH]
-      any: [attentionDH, emailAddress, imageIndicator, purposeCodeDH, reasonCode, registrationState] -> matched: [imageIndicator, purposeCodeDH, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>C</PurposeCode>
-        <State>NJ</State>
-      </Transaction>
-
-    >> PLATFORM FIRES: KQName (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, ImageIndicator=Y, Name=Doe,John A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
-       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
-        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+    [SKIP] KQName -- missing set: emailAddress
+    [SKIP] KQOLN -- missing set: emailAddress
 
 --- QIDM: TX_TLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2

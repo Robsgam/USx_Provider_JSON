@@ -1,8 +1,8 @@
 TX_TLETS -- Build Status
 ========================
 Last updated    : 2026-06-17
-Current: v3.6 | 81P/0F/0W/1LIM | Updated 2026-06-16
-Current version : v3.6
+Current: v3.7 | 81P/0F/0W/1LIM | Updated 2026-06-17
+Current version : v3.7
 Provider: TX_TLETS
 Phase: Single JSON (multi-card)
 
@@ -109,12 +109,12 @@ BUILD LOG (newest first)
 
   v3.2  2026-05-26  Conditional image/email routing
     Conditions routing on DL+DH: ImageIndicator EQUALS Y selects image-path combos.
-    Email moved to shared OPTIONS card. DL 4Ã¢â€ â€™7 combos, DH 2Ã¢â€ â€™4 combos.
+    Email moved to shared OPTIONS card. DL 4ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢7 combos, DH 2ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢4 combos.
     90P/0F/0W/0LIM.
 
   v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge)
     Merged BASE+MC into single build script + single JSON output
-    Added CPL Name combo (DL: 3Ã¢â€ â€™4 combos, total 23Ã¢â€ â€™24)
+    Added CPL Name combo (DL: 3ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢4 combos, total 23ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢24)
     Reordered DL+DH combos to most-specific first (eliminated 2 LIMs)
     Removed _MC suffix from JSON filename
     85P/0F/0W/0LIM, Verify CLEAN, 37/37 test conductor PASS
@@ -165,120 +165,90 @@ BUILD LOG (newest first)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     RENDER:RENDER        PASS     Person RENDER gate
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    RENDER:RENDER        PASS     Vehicle RENDER gate
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Boat       RENDER:RENDER        PASS     Boat RENDER gate
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Firearm    RENDER:RENDER        PASS     Firearm RENDER gate
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Article    RENDER:RENDER        PASS     Article RENDER gate
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DL:DQ+Name           PASS     DL Name search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DL:QW+Name           PASS     DL QW Name search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DL:DQ+OLN            PASS     DL OLN search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DL:CPL+Name          PASS     DL CPL Name search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DH:KQ+Name           PASS     DH Name search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Person     DH:KQ+OLN            PASS     DH OLN search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    VehReg:RQ+Plate      PASS     VehReg RQ Plate search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    VehReg:QV+Plate      PASS     VehReg QV Plate search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    VehReg:REG+Plate     PASS     VehReg REG Plate search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    VehReg:RQ+VIN        PASS     VehReg RQ VIN search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-16 Vehicle    VehReg:VIN+VIN       PASS     VehReg VIN+FinancialResponsibilityType search
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Vehicle    VehReg:VehReg_RQ+VIN PASS     RQ+VIN: VIN-only input fires RQVehicleIdentificationNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Vehicle    VehReg:VehReg_DPSI+StickerNumber PASS     DPSI+StickerNumber: sticker-only input fires DPSIStickerNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:BQ+Hull+State   PASS     BQ+Hull: HullId+State fires BQBoatHullIdNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:QB+Hull         PASS     QB+Hull: HullId-only fires QBBoatHullIdNumber (no state)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:BQ+Reg+State    PASS     BQ+Reg: RegNum+State fires BQRegistrationNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:QB+Reg          PASS     QB+Reg: RegNum-only fires QBRegistrationNumber (no state)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:QB+NCIC         PASS     QB+NCIC: NCICNumber-only fires QBNCICNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Firearm    Gun:QG+Serial        PASS     QG+Serial: GunSerialNumber fires QGGunSerialNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Firearm    Gun:QG+NCIC          PASS     QG+NCIC: NCICNumber fires QGNCICNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Article    Article:QA+Serial    PASS     QA+Serial: ArticleSerialNumber+Type fires QAArticleSerialNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Article    Article:QA+NCIC      PASS     QA+NCIC: NCICNumber fires QANCICNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Vehicle    VehReg:anyField_RQ+VIN+anyFields PASS     T28 any[]: VehicleMakeCode + VehicleYear + RegistrationState all serialize in RQ+VIN
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Boat       Boat:anyField_QB+Reg+RelatedHit PASS     T29 any[]: RelatedHitSearchIndicator=Y serializes in QB+Reg
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-17 Firearm    Gun:anyField_QG+Serial+anyFields PASS     T30 any[]: GunCaliber + GunMake + RelatedHitSearchIndicator all serialize in QG+Serial
