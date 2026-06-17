@@ -1,0 +1,59 @@
+﻿================================================================
+  Build Report: HI_HCJDC_OFML
+  Source: HI_HCJDC_OFML.json
+  Generated: 2026-06-17 17:18
+================================================================
+POST-BUILD VERIFICATION
+=======================
+
+
+========================================
+ POST-BUILD VERIFICATION: HI_HCJDC_OFML
+========================================
+
+--- CHECK 1: Banned Patterns ---
+  [PASS] No banned pattern 'LicensePlateNumberIn'
+
+--- CHECK 2: fieldId / sourceField Consistency ---
+  [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
+
+--- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
+
+--- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 26 [imageIndicator, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleTypeCode, vehicleYear, nameMiddle, nameSuffix, Attention, birthDateDH, nameFirstDH, nameLastDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunModel, gunSerialNumber, relatedSearchHitIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
+  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
+  [PASS] Cross-bundle fieldId consistency checked
+
+--- CHECK 5: camelCase Enforcement ---
+  [INFO] camelCase check skipped (use -CamelCase to enable)
+
+--- CHECK 6: Reference Pattern Check ---
+  [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+  [PASS] All 2 RMS QIDMs have autoSelect=true
+
+--- CHECK 7: Cross-Variant Consistency ---
+  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+
+--- CHECK 8: Visible-First Mandate ---
+  [WARN] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (auto-populate) with no visible form field -- expose field first per Visible-First Mandate; add handler only with approval
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [WARN] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment before keyRef 'RQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [WARN] QIDM 'HI_HCJDC_OFML_DriverLicenseQuery' has 3 combos but build script has no LIMITATION #21/#36 comment before keyRef 'DQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [WARN] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'KQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [WARN] QIDM 'HI_HCJDC_OFML_BoatQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'BQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (23) (RMS-generic allowed)
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
+========================================
+ VERIFICATION PASSED (with warnings): 8 PASS / 5 WARN / 0 FAIL
+========================================
+
+

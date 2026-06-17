@@ -1,18 +1,23 @@
-CommSys Query Simulator -- Test Case Reference
-Generated: 2026-05-29 15:39:14
-JSON: HI_HCJDC_OFML_MC.json
-========================================================================
+﻿================================================================
+  Build Report: HI_HCJDC_OFML
+  Source: HI_HCJDC_OFML.json
+  Generated: 2026-06-17 17:18
+================================================================
+QUERY SIMULATION
+================
 
-QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle]
-Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
-------------------------------------------------------------------------
 
-  [FIRES] RQ
-    REQUIRED (set): [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber + licensePlateTypeCode + licensePlateYear
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+================================================================
+  CommSys Query Simulator -- HI_HCJDC_OFML.json
+================================================================
+
+--- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
+
+    [FIRES first-match] RQ
+      set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -22,12 +27,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <LicensePlateYear>2024</LicensePlateYear>
       </Transaction>
 
-  [FIRES] M55L
-    REQUIRED (set): [vehicleTypeCode, licensePlateNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleTypeCode + licensePlateNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] M55L
+      set: [vehicleTypeCode, licensePlateNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>M55L</MessageKey>
@@ -36,12 +39,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <VehicleTypeCode>1</VehicleTypeCode>
       </Transaction>
 
-  [FIRES] QVP
-    REQUIRED (set): [licensePlateNumber, registrationState]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: licensePlateNumber + registrationState
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] QVP
+      set: [licensePlateNumber, registrationState]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QV</MessageKey>
@@ -50,12 +51,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <State>NJ</State>
       </Transaction>
 
-  [FIRES] M55S
-    REQUIRED (set): [vehicleTypeCode, vehicleIdentificationNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleTypeCode + vehicleIdentificationNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] M55S
+      set: [vehicleTypeCode, vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>M55S</MessageKey>
@@ -64,12 +63,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <VehicleTypeCode>1</VehicleTypeCode>
       </Transaction>
 
-  [FIRES] QVV
-    REQUIRED (set): [vehicleIdentificationNumber, vehicleMakeCode]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber + vehicleMakeCode
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] QVV
+      set: [vehicleIdentificationNumber, vehicleMakeCode]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QV</MessageKey>
@@ -78,12 +75,10 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <VehicleMakeCode>FORD</VehicleMakeCode>
       </Transaction>
 
-  [FIRES] RQV
-    REQUIRED (set): [vehicleIdentificationNumber]
-    OPTIONAL (any): [imageIndicator]
-    TEST INSTRUCTIONS: Enter values for: vehicleIdentificationNumber
-      Defaults/optional: imageIndicator
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] RQV
+      set: [vehicleIdentificationNumber]
+      any: [imageIndicator] -> matched: [imageIndicator]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
@@ -91,15 +86,17 @@ Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
-QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person]
-Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
-------------------------------------------------------------------------
+    >> PLATFORM FIRES: RQ (first matching combo)
+    >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleTypeCode=1
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
-  [FIRES] DQ
-    REQUIRED (set): [sexCode, birthDate, nameLast, nameFirst]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: sexCode + birthDate + nameLast + nameFirst
-    EXPECTED XML:
+--- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+
+    [FIRES first-match] DQ
+      set: [sexCode, birthDate, nameLast, nameFirst]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
@@ -108,11 +105,9 @@ Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
         <SexCode>M</SexCode>
       </Transaction>
 
-  [FIRES] QW
-    REQUIRED (set): [birthDate, nameLast, nameFirst]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: birthDate + nameLast + nameFirst
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] QW
+      set: [birthDate, nameLast, nameFirst]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QW</MessageKey>
@@ -120,26 +115,26 @@ Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
         <Name>John Doe A</Name>
       </Transaction>
 
-  [FIRES] DQN
-    REQUIRED (set): [operatorLicenseNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumber
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] DQN
+      set: [operatorLicenseNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
       </Transaction>
 
-QIDM: HI_HCJDC_OFML_DriverHistoryQuery [Person]
-Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
-------------------------------------------------------------------------
+    >> PLATFORM FIRES: DQ (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
-  [FIRES] KQ
-    REQUIRED (set): [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: sexCodeDH + birthDateDH + nameLastDH + nameFirstDH
-    EXPECTED XML:
+--- QIDM: HI_HCJDC_OFML_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+
+    [FIRES first-match] KQ
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
@@ -148,41 +143,43 @@ Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
         <SexCode>M</SexCode>
       </Transaction>
 
-  [FIRES] KQN
-    REQUIRED (set): [operatorLicenseNumberDH]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: operatorLicenseNumberDH
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] KQN
+      set: [operatorLicenseNumberDH]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
       </Transaction>
 
-QIDM: HI_HCJDC_OFML_GunQuery [Firearm]
-Query: GunQuery  |  Attrs: 5  |  Combos: 1
-------------------------------------------------------------------------
+    >> PLATFORM FIRES: KQ (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
-  [FIRES] QG
-    REQUIRED (set): [gunSerialNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: gunSerialNumber
-    EXPECTED XML:
+--- QIDM: HI_HCJDC_OFML_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+
+    [FIRES first-match] QG
+      set: [gunSerialNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
         <GunSerialNumber>ABC12345</GunSerialNumber>
       </Transaction>
 
-QIDM: HI_HCJDC_OFML_ArticleSingleQuery [Article]
-Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
-------------------------------------------------------------------------
+    >> PLATFORM FIRES: QG (first matching combo)
+    >> UNION POOL (platform serializes): GunSerialNumber=ABC12345
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
-  [FIRES] QA
-    REQUIRED (set): [articleSerialNumber, articleTypeCode]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: articleSerialNumber + articleTypeCode
-    EXPECTED XML:
+--- QIDM: HI_HCJDC_OFML_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES first-match] QA
+      set: [articleSerialNumber, articleTypeCode]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QA</MessageKey>
@@ -190,30 +187,93 @@ Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
         <ArticleTypeCode>COMP</ArticleTypeCode>
       </Transaction>
 
-QIDM: HI_HCJDC_OFML_BoatQuery [Boat]
-Query: BoatQuery  |  Attrs: 4  |  Combos: 2
-------------------------------------------------------------------------
+    >> PLATFORM FIRES: QA (first matching combo)
+    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
-  [FIRES] BQ
-    REQUIRED (set): [registrationNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: registrationNumber
-    EXPECTED XML:
+--- QIDM: HI_HCJDC_OFML_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+
+    [FIRES first-match] BQ
+      set: [registrationNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
       </Transaction>
 
-  [FIRES] QB
-    REQUIRED (set): [boatHullIdNumber]
-    OPTIONAL (any): []
-    TEST INSTRUCTIONS: Enter values for: boatHullIdNumber
-    EXPECTED XML:
+    [FIRES shadowed -- first match above wins] QB
+      set: [boatHullIdNumber]
+      -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
       </Transaction>
 
-========================================================================
+    >> PLATFORM FIRES: BQ (first matching combo)
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Person Search query [Person] ---
+    Query: Person  |  Attrs: 7  |  Combos: 4
+
+    [FIRES first-match] firstNameLastNameDriversLicenseNumber
+      set: [operatorLicenseNumber, nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
+      set: [nameFirst, nameLast, birthDate]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastName
+      set: [nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] driversLicenseNumber
+      set: [operatorLicenseNumber]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    >> PLATFORM FIRES: firstNameLastNameDriversLicenseNumber (first matching combo)
+    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, raceAttrIds=W, sexAttrId=M, registrationStateAttrId=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Vehicle search query [Vehicle] ---
+    Query: Vehicle  |  Attrs: 3  |  Combos: 2
+
+    [FIRES first-match] vehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [licensePlateNumber, registrationState] -> matched: [licensePlateNumber, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.vinNumber":"1HGCM82633A123456","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] licensePlateIn
+      set: [licensePlateNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    >> PLATFORM FIRES: vehicleIdentificationNumber (first matching combo)
+    >> UNION POOL (platform serializes): vehicle.vinNumber=1HGCM82633A123456, vehicle.tag=ABC1234, vehicle.registrationStateAttrIds=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

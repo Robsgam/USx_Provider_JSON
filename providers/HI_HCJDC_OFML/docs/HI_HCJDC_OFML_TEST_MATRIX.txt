@@ -1,50 +1,42 @@
-HI_HCJDC_OFML MC v1.7 -- TEST MATRIX
+HI_HCJDC_OFML MC v1.8 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-08
+Generated: 2026-06-17
 Variant: MC (multi-card per entity)
 Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
-Vehicle (3 cards, 9 fields):
-  CARD_VEH_OPT (OPTIONS):
-    registrationState [Sel STATE], vehicleTypeCode [Inp 1, 1], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    vehicleIdentificationNumber [Inp 20]
-    vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+Vehicle (1 card, 9 fields):
+  CARD_VEH (VEHICLE SEARCH):
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], vehicleTypeCode [Inp 1, 1]
+    ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
+    ROW 3: vehicleIdentificationNumber [Inp 20]
+    ROW 4: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
-Person (4 cards, 16 fields):
+Person (2 cards, 16 fields):
+  CARD_PER_DL (DRIVER LICENSE):
+    ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE]
+    ROW 2: nameFirst [Inp 30], nameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
+    ROW 3: birthDate [FormDate], sexCode [Sel SEX]
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Sel DEX_INQUIRY_PURPOSE_CODE]
-    ROW 2: nameFirstDH [Inp 30], nameLastDH [Inp 30], NameMiddleDH [Inp 30], NameSuffixDH [Inp 30]
+    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
+    ROW 2: nameFirstDH [Inp 30], nameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
-  CARD_PER_NAME (NAME SEARCH):
-    ROW 1: nameFirst [Inp 30], nameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
-    ROW 2: birthDate [FormDate], sexCode [Sel SEX]
-  CARD_PER_OLN (DRIVER LICENSE):
-    operatorLicenseNumber [Inp 20]
-  CARD_PER_OPT (OPTIONS):
-    registrationState [Sel STATE]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (NCIC FIREARM QUERY):
     ROW 1: gunSerialNumber [Inp 20], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunModel [Inp 20], RelatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunModel [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
   CARD_ART (NCIC ARTICLE QUERY):
     articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    RelatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-Boat (3 cards, 4 fields):
-  CARD_BOA_HULL (HULL):
-    boatHullIdNumber [Inp 20]
-  CARD_BOA_OPT (OPTIONS):
-    registrationState [Sel STATE], RelatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_BOA_REG (REGISTRATION):
-    registrationNumber [Inp 8]
+Boat (1 card, 4 fields):
+  CARD_BOA (BOAT SEARCH):
+    ROW 1: registrationNumber [Inp 8], registrationState [Sel STATE]
+    ROW 2: boatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (6 QIDMs, 15 combos)
 ----------------------------------------
@@ -63,33 +55,25 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 4 cards:                        [    ]
-              CARD_PER_DH: titled "DRIVER HISTORY".
-              OLN (DH), Purpose Code (DH) dropdown (no default).
-              First Name (DH), Last Name (DH), Middle Name (DH), Suffix (DH).
-              DOB (DH), Sex (DH) dropdown (no default).
-              CARD_PER_NAME: titled "NAME SEARCH".
+ 1  Person      Render form. Verify 2 cards:                        [    ]
+              CARD_PER_DL: titled "DRIVER LICENSE".
+              License Number, State dropdown (no default).
               First Name, Last Name, Middle Name, Suffix.
               Date of Birth, Sex dropdown (no default).
-              CARD_PER_OLN: titled "DRIVER LICENSE".
-              License Number.
-              CARD_PER_OPT: titled "OPTIONS".
-              State dropdown (no default).
- 2  Vehicle     Render form. Verify 3 cards:                        [    ]
-              CARD_VEH_OPT: titled "OPTIONS".
-              State dropdown (no default), Type Code=1, Image dropdown=N.
-              CARD_VEH_PLATE: titled "PLATE SEARCH".
-              Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              CARD_VEH_VIN: titled "VIN SEARCH".
+              CARD_PER_DH: titled "DRIVER HISTORY".
+              License Number, Purpose Code=C.
+              First Name, Last Name, Middle Name, Suffix.
+              Date of Birth, Sex dropdown (no default).
+ 2  Vehicle     Render form. Verify 1 card:                        [    ]
+              CARD_VEH: titled "VEHICLE SEARCH".
+              Plate Number, State dropdown (no default), Type Code=1.
+              Plate Type dropdown=PC, Plate Year=2026.
               VIN.
-              Vehicle Make dropdown (no default), Vehicle Year.
- 3  Boat        Render form. Verify 3 cards:                        [    ]
-              CARD_BOA_HULL: titled "HULL".
-              Hull ID Number.
-              CARD_BOA_OPT: titled "OPTIONS".
-              State dropdown (no default), Search Hit dropdown=Y.
-              CARD_BOA_REG: titled "REGISTRATION".
-              Registration Number.
+              Vehicle Make dropdown (no default), Vehicle Year, Image dropdown=N.
+ 3  Boat        Render form. Verify 1 card:                        [    ]
+              CARD_BOA: titled "BOAT SEARCH".
+              Registration Number, State dropdown (no default).
+              Hull ID Number, Search Hit dropdown=Y.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "NCIC FIREARM QUERY".
               Serial Number, Make dropdown (no default).
@@ -179,4 +163,4 @@ COMBO COVERAGE (15/15):
   ArticleSingleQuery: 1/1 -- T20(Serial)
   BoatQuery: 2/2 -- T17(BQ+Reg), T18(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_MC.json
+IMPORT FILE: HI_HCJDC_OFML.json

@@ -1,5 +1,9 @@
-# build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML v1.4 BASE
-# Builds HI_HCJDC_OFML_BASE.json from source\HI_HCJDC_OFML.xml + KB specs.
+# build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
+# Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v1.8 (2026-06-17): consolidated BASE/MC split -> single JSON; Person split to 2 cards
+#   (Driver License / Driver History); added ImageIndicator=N combo defaults to all 6
+#   VehicleRegistrationQuery combos (the real CAD failure -- CAD ignores form initialValue).
+#   Card count is NOT the CAD cause (BASE single-card and MC multi-card failed identically).
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml.ps1
 #
@@ -51,15 +55,14 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "1.7",
-    [string]$Phase   = "base"
+    [string]$Version = "1.8"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases\$Phase"
-$OUT      = "$DIR\HI_HCJDC_OFML_BASE.json"
+$PHASEDIR = "$DIR\phases"
+$OUT      = "$DIR\HI_HCJDC_OFML.json"
 $VEROUT   = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
@@ -107,42 +110,42 @@ $vehRegQuery = [PSCustomObject]@{
     combinations = @(
         # RQ: Out-state plate (Plate + PlateType + PlateYear) -- 3 set[], plate
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode','licensePlateYear'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode','licensePlateYear'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
         }
         # M55L: In-state plate (VehicleTypeCode + Plate) -- 2 set[], plate
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','licensePlateNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','licensePlateNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
         }
         # QVP: Stolen plate (Plate + State) -- 2 set[], plate
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','registrationState'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','registrationState'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
         # M55S: In-state VIN (VehicleTypeCode + VIN) -- 2 set[], VIN
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','vehicleIdentificationNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','vehicleIdentificationNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
         }
         # QVV: Stolen VIN (VIN + MakeCode) -- 2 set[], VIN
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','vehicleMakeCode'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','vehicleMakeCode'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVV'
             state                 = 'In/Out'
         }
         # RQV: Out-state VIN fallback (VIN only) -- 1 set[], VIN
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator') }
+            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('imageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQV'
             state                 = 'Out'
@@ -434,44 +437,55 @@ $vehicleForm = [PSCustomObject]@{
 # Serves BOTH DriverLicenseQuery (DQN/DQ/QW) and DriverHistoryQuery (KQN/KQ)
 # DL/DH share fields. DH adds Attention + PurposeCode.
 # autoSelect on DL, queriesToDeselect bidirectional.
+# Person -- 2 cards: DRIVER LICENSE (DL: DQ/QW/DQN) and DRIVER HISTORY (DH: KQ/KQN).
+# DL and DH are distinct queries with bidirectional autoSelect + queriesToDeselect, so they
+# get distinct cards (clarifies which query the officer runs). One QIF, two visual cards;
+# DH uses DH-suffix fieldIds. registrationState lives on the DL card and is shared by the
+# DH State attr (cards are visual only -- field population is form-wide, not card-scoped).
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER'
-        title = 'PERSON SEARCH'
+        id    = 'CARD_PER_DL'
+        title = 'DRIVER LICENSE'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('8','4'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+            @{ id = 'ROW_PER_DL1'; cols = @('8','4'); fields = @(
+                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_DL1' }
+                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'nameFirst_Input';  node = Inp 'nameFirst'  'First Name'  '30' 'ROW_PER_2' }
-                @{ id = 'nameLast_Input';   node = Inp 'nameLast'   'Last Name'   '30' 'ROW_PER_2' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '30' 'ROW_PER_2' }
+            @{ id = 'ROW_PER_DL2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'nameFirst_Input';  node = Inp 'nameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
+                @{ id = 'nameLast_Input';   node = Inp 'nameLast'   'Last Name'   '30' 'ROW_PER_DL2' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_DL2' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '30' 'ROW_PER_DL2' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_3' }
-                @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
+            @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
+                @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_DL3' }
+                @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL3' }
             )}
-            @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
-                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'OLN (Driver History)' '20' 'ROW_PER_4' }
-                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_4' @{ initialValue = 'C' } }
+        )
+    }
+    @{
+        id    = 'CARD_PER_DH'
+        title = 'DRIVER HISTORY'
+        rows  = @(
+            @{ id = 'ROW_PER_DH1'; cols = @('8','4'); fields = @(
+                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH1' }
+                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_PER_5'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_5' }
-                @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_5' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '30' 'ROW_PER_5' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '30' 'ROW_PER_5' }
+            @{ id = 'ROW_PER_DH2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'nameFirstDH_Input';  node = Inp 'nameFirstDH'  'First Name'  '30' 'ROW_PER_DH2' }
+                @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '30' 'ROW_PER_DH2' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix'      '30' 'ROW_PER_DH2' }
             )}
-            @{ id = 'ROW_PER_6'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'Date of Birth (DH)' 'ROW_PER_6' }
-                @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_6' }
+            @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
+                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'Date of Birth' 'ROW_PER_DH3' }
+                @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (DQ/QW/DQN) and DH (KQ/KQN) on single card. DH-suffix fields + queriesToDeselect.'
+    description  = 'Person queries -- DRIVER LICENSE card (DQ/QW/DQN) + DRIVER HISTORY card (KQ/KQN, DH-suffix). Bidirectional autoSelect + queriesToDeselect.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
