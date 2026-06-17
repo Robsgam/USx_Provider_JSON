@@ -1,0 +1,41 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQNameImg (DH Name+DOB+Sex+Email photo path)
+Date: 2026-06-17 11:46:52
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVB420FVW47SAWA9ZVGJMRPF"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVB420FVW47SAWA9ZVGJMRPF</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><SexCode>M</SexCode><ReasonCode>C</ReasonCode><PurposeCode>C</PurposeCode><EmailAddress>TEST@TEST.COM</EmailAddress><BirthDate>01011985</BirthDate><Name>DOE,JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVB420FVW47SAWA9ZVGJMRPF
+  ImageIndicator                 Y
+  State                          TX
+  SexCode                        M
+  ReasonCode                     C
+  PurposeCode                    C
+  EmailAddress                   TEST@TEST.COM
+  BirthDate                      01011985
+  Name                           DOE,JOHN
+
+NOTES
+-----
+
+
+RESULT: PASS
