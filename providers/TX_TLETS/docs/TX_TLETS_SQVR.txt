@@ -1,7 +1,7 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 Last updated: 2026-06-17
-JSON version: v3.7
+JSON version: v3.8
 Live test: v3.7 PENDING re-import -- v3.6 testing was in progress; pipeline reset all markers to [PENDING] on v3.7 rebuild; prior logs archived to tests/_archive_pre_v3.7/
 Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIM (v3.7)
 Verify: CLEAN (0 FAIL)
@@ -14,7 +14,7 @@ NOTE: All combos [PENDING] -- exhaustive testing restarts from T1 on v3.7 import
 v3.4 CHANGES (from v3.3):
   v3.4: Poisoned-array fix -- removed inert ImageIndicator EQUALS Y conditions from
         DL + DH combos (value-comparison conditions are wholly inert on the platform;
-        QIDM_REFERENCE Sec 2a). Merged the Img/catchall combo pairs: DL 7ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢4, DH 4ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢2.
+        QIDM_REFERENCE Sec 2a). Merged the Img/catchall combo pairs: DL 7ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢4, DH 4ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢2.
         image/email/reason now carried in any[] (no longer condition-gated).
         Total: 6 QIDMs, 22 combos (was 27).
   v3.3: Removed VehicleStolenQuery (not authorized by devdoc).
@@ -101,36 +101,36 @@ v3.4 CHANGES (from v3.3):
   No conditions (v3.4 poisoned-array fix). image/email/reason carried in any[] on
   every combo; defaults supply CAD values.
 
-  DQ Name -- Nlets DL (Name+DOB+Sex) [CONFIRMED]
+  DQ Name -- Nlets DL (Name+DOB+Sex) [PENDING]
     keyReference: DQName  (MessageKey DQ)
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  QW Name -- NCIC Wanted (Name+DOB) [CONFIRMED]
+  QW Name -- NCIC Wanted (Name+DOB) [PENDING]
     keyReference: QWName  (MessageKey QW)
     set: BirthDate, NameLast, NameFirst
     any: ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode
     defaults: (none)
     state: In/Out
 
-  CPL Name -- Criminal History (Name) [CONFIRMED]
+  CPL Name -- Criminal History (Name) [PENDING]
     keyReference: CPLName  (MessageKey CPLName)
     set: NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ OLN -- Nlets DL (OLN) [CONFIRMED]
+  DQ OLN -- Nlets DL (OLN) [PENDING]
     keyReference: DQOLN  (MessageKey DQ)
     set: OperatorLicenseNumber
     any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  Combo ordering (first-match): DQName (4 set) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ QWName (3 set) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ CPLName (2 set)
-    ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ DQOLN (1 set).
+  Combo ordering (first-match): DQName (4 set) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ QWName (3 set) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ CPLName (2 set)
+    ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ DQOLN (1 set).
 
   RMS co-fire (confirmed)
     RMS Person combo fires alongside CommSys.

@@ -1,10 +1,16 @@
-# build_tx_tlets.ps1  -- TX_TLETS v3.7
+# build_tx_tlets.ps1  -- TX_TLETS v3.8
 # Single build. 6 cards (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1).
-# 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
-# v3.7: DH emailAddress moved from any[] to set[] on both combos (KQName, KQOLN).
-#       Structural enforcement: DH won't fire without Email (devdoc requires Email when
-#       ImageIndicator=Y; Image=Y is the default on every DH combo). CAD DH suppressed
-#       until email-injection handler is available -- documented as LIMITATION.
+# 24 CommSys combos: 7 VehReg + 4 DL + 4 DH + 2 Gun + 2 Article + 5 Boat
+# v3.8: Restore 4-combo DH structure (v3.3 shape, corrected mechanism). devdoc requires
+#       Email ONLY when ImageIndicator=Y -- not always. v3.7 over-restricted (blocked legal
+#       no-photo path). Fix: Image/plain variant pairs (per Name, per OLN). Image variants
+#       put imageIndicator+reasonCode in any[] and require emailAddress in set[]. Plain
+#       variants exclude image/email/reason from pool entirely (union-exclusion semantics --
+#       NJ live-proven: a populated field in only non-matching combos is dropped).
+#       Result: Image=Y can serialize ONLY when email is present. Name/OLN-alone fires
+#       the plain combo with no photo. CAD DH fires plain path (no email source). LA_LEMS
+#       DP/DQ is the portfolio precedent for conditions-free image-variant splitting.
+# v3.7: DH emailAddress to set[] on both combos (over-restrictive; blocked no-photo path).
 # v3.6: Revert DH ImageIndicator default N→Y. Design intent: ImageIndicator=Y is preferred
 #       on all DH queries (officers want photo). EmailAddress is a visible FormInput; officers
 #       fill it manually until the email-injection handler is available (dexUserId-style).
@@ -17,7 +23,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "3.7",
+    [string]$Version = "3.8",
     [string]$Phase   = "current"
 )
 
@@ -114,14 +120,16 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # --- DriverHistoryQuery (4 combos) ---
-# v3.4: POISONED-ARRAY fix (same as DL) -- merged KQ Img/catchall pairs; image/email/reason in
-# any[]; defaults inject ImageIndicator=Y/PurposeCode=C/ReasonCode=C. EmailAddress sourceField→
-# emailAddress (shared OPTIONS card).
+# v3.8: Image-variant split (restores v3.3 4-combo shape; corrected mechanism).
+# devdoc: Email required ONLY when ImageIndicator=Y (not always). v3.7 over-restricted.
+# Image variants (KQNameImg, KQOLNImg): emailAddress in set[]; imageIndicator+reasonCode in
+# any[]. Plain variants (KQName, KQOLN): no image/email/reason in pool.
+# Union-exclusion semantics: imageIndicator lives ONLY in Image-variant any[]. When email is
+# absent the Image variant doesn't match -> imageIndicator excluded from XML (legal Blank).
+# Image=Y therefore can NEVER serialize without email. LA_LEMS DP/DQ is the precedent.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName, KQOLN. See PLATFORM_CONSTRAINTS.txt.
-# LIMITATION: EmailAddress is required when ImageIndicator=Y (devdoc). Officers fill it manually
-# until the email-injection handler is available (dexUserId-style). See PENDING PLATFORM FEATURES.
-# ReasonCode=C default satisfies the second ImageIndicator=Y constraint per devdoc.
+# Metadata uses keyRef 'KQ'; synthetic labels KQNameImg/KQName/KQOLNImg/KQOLN. See PLATFORM_CONSTRAINTS.txt.
+# ReasonCode=C default (in imgDefsDH) satisfies the second ImageIndicator=Y constraint per devdoc.
 $imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefsDH = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
@@ -138,12 +146,16 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ Name (v3.7: emailAddress moved to set[] -- DH won't fire without Email; devdoc requires Email when Image=Y)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddress'); any = @('attentionDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
-        # KQ OLN (v3.7: emailAddress moved to set[])
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddress'); any = @('attentionDH','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        # KQNameImg -- Image+photo path (requires Email). Image/Reason serialize ONLY here.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddress'); any = @('attentionDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQNameImg'; state = 'In/Out' }
+        # KQName -- plain (no photo). No image/email/reason in pool -> fires on Name alone.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','nameMiddleDH','nameSuffixDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        # KQOLNImg -- Image+photo path by OLN (requires Email).
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddress'); any = @('attentionDH','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLNImg'; state = 'In/Out' }
+        # KQOLN -- plain by OLN. No image/email/reason in pool.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
-    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v3.7: emailAddress in set[] (required). v3.4: poisoned conditions removed. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
+    description = 'DriverHistoryQuery -- 4 combos (KQNameImg/KQName/KQOLNImg/KQOLN). v3.8: image-variant split; Image=Y serializes only when email present. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
 
 # --- GunQuery (2 combos) ---

@@ -74,9 +74,11 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber + Choice[ImageIndicator + Re...  Attention, PurposeCode, State
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
-BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH, emailAddress]
-  BUILT   KQOLN          set[operatorLicenseNumberDH, emailAddress]
+BUILD COVERAGE (4 of 2 built):
+  BUILT   KQNameImg      set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH, emailAddress]
+  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+  BUILT   KQOLNImg       set[operatorLicenseNumberDH, emailAddress]
+  BUILT   KQOLN          set[operatorLicenseNumberDH]
   UNBUILT KQ             OperatorLicenseNumber
 
 FIELD CONSTRAINTS (from devdoc -- cross-reference field list above for exact field names):
@@ -183,12 +185,12 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         1      2     0  200%
   BoatQuery                                  5      5     0  100% (COMPLETE)
-  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverHistoryQuery                         2      4     0  200%
   DriverLicenseQuery                         5      4     1  80%
   GunQuery                                   1      2     0  200%
   VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   21     22     1  105%
+  TOTAL                                   21     24     1  114%
 
 ================================================================================
 UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)

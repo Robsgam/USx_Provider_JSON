@@ -1187,3 +1187,41 @@ See also:
   TEST_MATRIX is regenerated automatically by reset_test_package.ps1 on every
   rebuild so its combo count never drifts from the JSON.
   See TESTING_REQUIREMENTS.txt Section 11 GATES 4-5, QIDM_REFERENCE.txt Sec 2a.
+
+================================================================================
+18. CONDITIONAL-REQUIRED FIELD PATTERN (devdoc "must be filled if X=Y")
+================================================================================
+
+  PROBLEM: Devdoc says field A is required when field X=Y (e.g. EmailAddress required
+  when ImageIndicator=Y). Value-comparison conditions are inert (poisoned-array rule --
+  QIDM_REFERENCE.txt Sec 2a), so you cannot enforce "required if X=Y" via conditions[].
+
+  SOLUTION: Image-variant combo split.
+
+  Design rules:
+  1. Create TWO combos per routing path: an "Image" variant and a "plain" variant.
+  2. Image variant: put the dependent field (X, e.g. imageIndicator) AND any co-required
+     fields (e.g. reasonCode) in any[] ONLY. Put the conditionally-required field (A,
+     e.g. emailAddress) in set[]. This combo fires only when A is present.
+  3. Plain variant: OMIT X, A, and co-required fields entirely from both set[] and any[].
+     This combo fires when A is absent. By union-exclusion semantics (QIDM_REFERENCE.txt
+     Sec 1d), X is excluded from the XML because it appears only in the non-matching
+     Image variant. Field X therefore CANNOT serialize without A.
+  4. Combo ordering: Image variant FIRST (more set[] fields = more specific).
+  5. Toggle field must be a typed FormInput with no initialValue. Do NOT use an
+     initialValue field as the toggle (LIMITATION #31 -- initialValue not counted for
+     set[] matching). For Email/Image, emailAddress (typed FormInput) is correct;
+     imageIndicator (initialValue=Y) is NOT.
+  6. defaults[]: $imgDefsDH on Image variants (inject Image=Y, Reason=C, State=TX);
+     $noImgDefsDH on plain variants (inject only Purpose=C, State=TX).
+
+  RESULT: X=Y (e.g. Image=Y) can serialize ONLY when A (Email) is present. No-photo
+  (A absent) fires freely. CAD path fires the plain combo (no email source available).
+
+  PRECEDENT: TX_TLETS v3.8 DriverHistoryQuery (KQNameImg/KQName/KQOLNImg/KQOLN).
+             LA_LEMS DP/DQ (ImageIndicator in set[] of DP vs any[] of DQ -- same split
+             with imageIndicator as the toggle; LA_LEMS is not constrained by Lim #31
+             because its imageIndicator field has no initialValue).
+
+  PORTFOLIO NOTE: Other providers with DH may have the same devdoc constraint. Check
+  at each provider's rebuild -- do not mass-sweep (one-provider-at-a-time rule).

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-17 10:20
+  Generated: 2026-06-17 11:28
 ================================================================
 QUERY SIMULATION
 ================
@@ -130,9 +130,40 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 2
-    [SKIP] KQName -- missing set: emailAddress
-    [SKIP] KQOLN -- missing set: emailAddress
+    Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
+    [SKIP] KQNameImg -- missing set: emailAddress
+
+    [FIRES first-match] KQName
+      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <BirthDate>01151990</BirthDate>
+        <Name>Doe,John A</Name>
+        <PurposeCode>C</PurposeCode>
+        <SexCode>M</SexCode>
+        <State>NJ</State>
+      </Transaction>
+    [SKIP] KQOLNImg -- missing set: emailAddress
+
+    [FIRES shadowed -- first match above wins] KQOLN
+      set: [operatorLicenseNumberDH]
+      any: [attentionDH, purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>KQ</MessageKey>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+    >> PLATFORM FIRES: KQName (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=Doe,John A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
