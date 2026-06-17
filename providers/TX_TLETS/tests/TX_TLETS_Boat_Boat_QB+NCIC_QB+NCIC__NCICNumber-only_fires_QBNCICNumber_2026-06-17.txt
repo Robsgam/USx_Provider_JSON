@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: TX_TLETS Boat BoatQuery
+Combo: QB+NCIC (QB+NCIC: NCICNumber-only fires QBNCICNumber)
+Date: 2026-06-17 09:38:27
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVAWTY111Y5Y2JJJAQZF4DMP"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KVAWTY111Y5Y2JJJAQZF4DMP</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><NCICNumber>X123456789</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVAWTY111Y5Y2JJJAQZF4DMP
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+QB+NCIC fires on NCICNumber only. No State, no hull, no reg in XML.
+
+RESULT: PASS
