@@ -3,7 +3,7 @@
     {
       "configurations": [
         {
-          "description": "Vehicle queries -- VehStolenSeparate branch: OPTIONS + PLATE + VIN + \"Vehicle Stolen\" cards. Stolen triggers suffix-isolated on the Vehicle Stolen card.",
+          "description": "Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VIN card compacted to 1 row.",
           "label": "Vehicle",
           "layout": {
             "default": {
@@ -50,8 +50,7 @@
                 "nodes": [
                   "CARD_VEH_OPT",
                   "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_RAND"
+                  "CARD_VEH_VIN"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -100,7 +99,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -117,11 +116,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "randomRequest",
+                  "fieldId": "RandomRequest",
                   "label": "Random",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -135,11 +134,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -191,7 +190,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateNumber",
+                  "fieldId": "LicensePlateNumber",
                   "label": "Plate Number",
                   "maxLength": "10"
                 },
@@ -207,11 +206,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "licensePlateTypeCode",
+                  "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
                   "initialValue": "PC",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -225,7 +224,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateYear",
+                  "fieldId": "LicensePlateYear",
                   "label": "Plate Year",
                   "maxLength": "4",
                   "initialValue": "2026"
@@ -259,13 +258,17 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "5",
+                    "4",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "NCICNumber_Input",
+                  "VehicleMakeCode_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_VEH_VIN"
@@ -276,7 +279,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "vehicleIdentificationNumber",
+                  "fieldId": "VehicleIdentificationNumber",
                   "label": "VIN",
                   "maxLength": "20"
                 },
@@ -286,102 +289,13 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_V1"
               },
-              "CARD_VEH_RAND": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "Vehicle Stolen"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_R1",
-                  "ROW_VEH_R2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_R1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateNumberRand_Input",
-                  "VehicleIdentificationNumberRand_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
-              "LicensePlateNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "licensePlateNumberRand",
-                  "label": "Plate Number",
-                  "maxLength": "10"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "VehicleIdentificationNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "vehicleIdentificationNumberRand",
-                  "label": "VIN",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "ROW_VEH_R2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NCICNumber_Input",
-                  "VehicleMakeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
               "NCICNumber_Input": {
                 "type": {
                   "resolvedName": "FormInput"
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "ncicNumber",
+                  "fieldId": "NCICNumber",
                   "label": "NCIC Number",
                   "maxLength": "10"
                 },
@@ -389,7 +303,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -397,16 +311,16 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "vehicleMakeCode",
+                  "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               }
             },
             "CAD_DISPATCH": {
@@ -454,8 +368,7 @@
                   "CONTEXT_INFO_CARD",
                   "CARD_VEH_OPT",
                   "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_RAND"
+                  "CARD_VEH_VIN"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -504,7 +417,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -521,11 +434,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "randomRequest",
+                  "fieldId": "RandomRequest",
                   "label": "Random",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -539,11 +452,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -595,7 +508,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateNumber",
+                  "fieldId": "LicensePlateNumber",
                   "label": "Plate Number",
                   "maxLength": "10"
                 },
@@ -611,11 +524,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "licensePlateTypeCode",
+                  "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
                   "initialValue": "PC",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -629,7 +542,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateYear",
+                  "fieldId": "LicensePlateYear",
                   "label": "Plate Year",
                   "maxLength": "4",
                   "initialValue": "2026"
@@ -663,13 +576,17 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "5",
+                    "4",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "NCICNumber_Input",
+                  "VehicleMakeCode_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_VEH_VIN"
@@ -680,7 +597,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "vehicleIdentificationNumber",
+                  "fieldId": "VehicleIdentificationNumber",
                   "label": "VIN",
                   "maxLength": "20"
                 },
@@ -690,102 +607,13 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_V1"
               },
-              "CARD_VEH_RAND": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "Vehicle Stolen"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_R1",
-                  "ROW_VEH_R2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_R1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateNumberRand_Input",
-                  "VehicleIdentificationNumberRand_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
-              "LicensePlateNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "licensePlateNumberRand",
-                  "label": "Plate Number",
-                  "maxLength": "10"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "VehicleIdentificationNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "vehicleIdentificationNumberRand",
-                  "label": "VIN",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "ROW_VEH_R2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NCICNumber_Input",
-                  "VehicleMakeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
               "NCICNumber_Input": {
                 "type": {
                   "resolvedName": "FormInput"
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "ncicNumber",
+                  "fieldId": "NCICNumber",
                   "label": "NCIC Number",
                   "maxLength": "10"
                 },
@@ -793,7 +621,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -801,16 +629,16 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "vehicleMakeCode",
+                  "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -925,8 +753,7 @@
                   "CONTEXT_INFO_CARD",
                   "CARD_VEH_OPT",
                   "CARD_VEH_PLATE",
-                  "CARD_VEH_VIN",
-                  "CARD_VEH_RAND"
+                  "CARD_VEH_VIN"
                 ],
                 "linkedNodes": {},
                 "parent": "FORM_ROOT"
@@ -975,7 +802,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -992,11 +819,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "randomRequest",
+                  "fieldId": "RandomRequest",
                   "label": "Random",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1010,11 +837,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1066,7 +893,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateNumber",
+                  "fieldId": "LicensePlateNumber",
                   "label": "Plate Number",
                   "maxLength": "10"
                 },
@@ -1082,11 +909,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "licensePlateTypeCode",
+                  "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
                   "initialValue": "PC",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1100,7 +927,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "licensePlateYear",
+                  "fieldId": "LicensePlateYear",
                   "label": "Plate Year",
                   "maxLength": "4",
                   "initialValue": "2026"
@@ -1134,13 +961,17 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "5",
+                    "4",
+                    "3"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "VehicleIdentificationNumber_Input"
+                  "VehicleIdentificationNumber_Input",
+                  "NCICNumber_Input",
+                  "VehicleMakeCode_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_VEH_VIN"
@@ -1151,7 +982,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "vehicleIdentificationNumber",
+                  "fieldId": "VehicleIdentificationNumber",
                   "label": "VIN",
                   "maxLength": "20"
                 },
@@ -1161,102 +992,13 @@
                 "linkedNodes": {},
                 "parent": "ROW_VEH_V1"
               },
-              "CARD_VEH_RAND": {
-                "type": {
-                  "resolvedName": "Card"
-                },
-                "displayName": "Card",
-                "props": {
-                  "title": "Vehicle Stolen"
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "ROW_VEH_R1",
-                  "ROW_VEH_R2"
-                ],
-                "linkedNodes": {},
-                "parent": "ROOT_PAGE"
-              },
-              "ROW_VEH_R1": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "LicensePlateNumberRand_Input",
-                  "VehicleIdentificationNumberRand_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
-              "LicensePlateNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "licensePlateNumberRand",
-                  "label": "Plate Number",
-                  "maxLength": "10"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "VehicleIdentificationNumberRand_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "vehicleIdentificationNumberRand",
-                  "label": "VIN",
-                  "maxLength": "20"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_VEH_R1"
-              },
-              "ROW_VEH_R2": {
-                "type": {
-                  "resolvedName": "Row"
-                },
-                "displayName": "Row",
-                "props": {
-                  "templateColumns": [
-                    "6",
-                    "6"
-                  ]
-                },
-                "isCanvas": true,
-                "hidden": false,
-                "nodes": [
-                  "NCICNumber_Input",
-                  "VehicleMakeCode_Input"
-                ],
-                "linkedNodes": {},
-                "parent": "CARD_VEH_RAND"
-              },
               "NCICNumber_Input": {
                 "type": {
                   "resolvedName": "FormInput"
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "ncicNumber",
+                  "fieldId": "NCICNumber",
                   "label": "NCIC Number",
                   "maxLength": "10"
                 },
@@ -1264,7 +1006,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               },
               "VehicleMakeCode_Input": {
                 "type": {
@@ -1272,16 +1014,16 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "vehicleMakeCode",
+                  "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_VEH_R2"
+                "parent": "ROW_VEH_V1"
               },
               "CONTEXT_INFO_CARD": {
                 "type": {
@@ -1303,9 +1045,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " ",
                   "checkboxLabel": "Link to the current assigned event",
-                  "label": " "
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1414,7 +1156,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -1431,11 +1173,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "Y",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1483,7 +1225,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "operatorLicenseNumber",
+                  "fieldId": "OperatorLicenseNumber",
                   "label": "License Number",
                   "maxLength": "20"
                 },
@@ -1536,7 +1278,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameFirst",
+                  "fieldId": "NameFirst",
                   "label": "First Name",
                   "maxLength": "30"
                 },
@@ -1552,7 +1294,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameLast",
+                  "fieldId": "NameLast",
                   "label": "Last Name",
                   "maxLength": "30"
                 },
@@ -1588,7 +1330,7 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "birthDate",
+                  "fieldId": "BirthDate",
                   "label": "Date of Birth"
                 },
                 "isCanvas": false,
@@ -1603,10 +1345,10 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "sexCode",
+                  "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1707,7 +1449,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -1724,11 +1466,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "Y",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1776,7 +1518,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "operatorLicenseNumber",
+                  "fieldId": "OperatorLicenseNumber",
                   "label": "License Number",
                   "maxLength": "20"
                 },
@@ -1829,7 +1571,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameFirst",
+                  "fieldId": "NameFirst",
                   "label": "First Name",
                   "maxLength": "30"
                 },
@@ -1845,7 +1587,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameLast",
+                  "fieldId": "NameLast",
                   "label": "Last Name",
                   "maxLength": "30"
                 },
@@ -1881,7 +1623,7 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "birthDate",
+                  "fieldId": "BirthDate",
                   "label": "Date of Birth"
                 },
                 "isCanvas": false,
@@ -1896,10 +1638,10 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "sexCode",
+                  "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2067,7 +1809,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "registrationState",
+                  "fieldId": "RegistrationState",
                   "label": "State",
                   "attributeTypeId": "STATE",
                   "initialValue": "NJ"
@@ -2084,11 +1826,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "Y",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2136,7 +1878,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "operatorLicenseNumber",
+                  "fieldId": "OperatorLicenseNumber",
                   "label": "License Number",
                   "maxLength": "20"
                 },
@@ -2189,7 +1931,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameFirst",
+                  "fieldId": "NameFirst",
                   "label": "First Name",
                   "maxLength": "30"
                 },
@@ -2205,7 +1947,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "nameLast",
+                  "fieldId": "NameLast",
                   "label": "Last Name",
                   "maxLength": "30"
                 },
@@ -2241,7 +1983,7 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "birthDate",
+                  "fieldId": "BirthDate",
                   "label": "Date of Birth"
                 },
                 "isCanvas": false,
@@ -2256,10 +1998,10 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "sexCode",
+                  "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2287,9 +2029,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " ",
                   "checkboxLabel": "Link to the current assigned event",
-                  "label": " "
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2397,7 +2139,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunSerialNumber",
+                  "fieldId": "GunSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "11"
                 },
@@ -2413,7 +2155,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunMake",
+                  "fieldId": "GunMake",
                   "label": "Make",
                   "codeTypeCategory": "NCIC_FIREARM_MAKE",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2452,7 +2194,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunCaliber",
+                  "fieldId": "GunCaliber",
                   "label": "Caliber",
                   "codeTypeCategory": "NCIC_FIREARM_CALIBER",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2469,7 +2211,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunModel",
+                  "fieldId": "GunModel",
                   "label": "Model",
                   "maxLength": "20"
                 },
@@ -2485,11 +2227,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2589,7 +2331,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunSerialNumber",
+                  "fieldId": "GunSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "11"
                 },
@@ -2605,7 +2347,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunMake",
+                  "fieldId": "GunMake",
                   "label": "Make",
                   "codeTypeCategory": "NCIC_FIREARM_MAKE",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2644,7 +2386,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunCaliber",
+                  "fieldId": "GunCaliber",
                   "label": "Caliber",
                   "codeTypeCategory": "NCIC_FIREARM_CALIBER",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2661,7 +2403,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunModel",
+                  "fieldId": "GunModel",
                   "label": "Model",
                   "maxLength": "20"
                 },
@@ -2677,11 +2419,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2848,7 +2590,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunSerialNumber",
+                  "fieldId": "GunSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "11"
                 },
@@ -2864,7 +2606,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunMake",
+                  "fieldId": "GunMake",
                   "label": "Make",
                   "codeTypeCategory": "NCIC_FIREARM_MAKE",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2903,7 +2645,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "gunCaliber",
+                  "fieldId": "GunCaliber",
                   "label": "Caliber",
                   "codeTypeCategory": "NCIC_FIREARM_CALIBER",
                   "codeTypeSource": "NJ_NIBRS"
@@ -2920,7 +2662,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "gunModel",
+                  "fieldId": "GunModel",
                   "label": "Model",
                   "maxLength": "20"
                 },
@@ -2936,11 +2678,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2968,9 +2710,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " ",
                   "checkboxLabel": "Link to the current assigned event",
-                  "label": " "
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3079,7 +2821,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "articleSerialNumber",
+                  "fieldId": "ArticleSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "20"
                 },
@@ -3095,7 +2837,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "articleTypeCode",
+                  "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
                   "codeTypeCategory": "NCIC_ARTICLE_TYPE",
                   "codeTypeSource": "CA_CLETS"
@@ -3112,11 +2854,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3217,7 +2959,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "articleSerialNumber",
+                  "fieldId": "ArticleSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "20"
                 },
@@ -3233,7 +2975,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "articleTypeCode",
+                  "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
                   "codeTypeCategory": "NCIC_ARTICLE_TYPE",
                   "codeTypeSource": "CA_CLETS"
@@ -3250,11 +2992,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3422,7 +3164,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "articleSerialNumber",
+                  "fieldId": "ArticleSerialNumber",
                   "label": "Serial Number",
                   "maxLength": "20"
                 },
@@ -3438,7 +3180,7 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "articleTypeCode",
+                  "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
                   "codeTypeCategory": "NCIC_ARTICLE_TYPE",
                   "codeTypeSource": "CA_CLETS"
@@ -3455,11 +3197,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3487,9 +3229,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " ",
                   "checkboxLabel": "Link to the current assigned event",
-                  "label": " "
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3598,7 +3340,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "registrationNumber",
+                  "fieldId": "RegistrationNumber",
                   "label": "Registration Number",
                   "maxLength": "20"
                 },
@@ -3614,7 +3356,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "boatHullIdNumber",
+                  "fieldId": "BoatHullIdNumber",
                   "label": "Hull ID Number",
                   "maxLength": "20"
                 },
@@ -3630,11 +3372,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3735,7 +3477,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "registrationNumber",
+                  "fieldId": "RegistrationNumber",
                   "label": "Registration Number",
                   "maxLength": "20"
                 },
@@ -3751,7 +3493,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "boatHullIdNumber",
+                  "fieldId": "BoatHullIdNumber",
                   "label": "Hull ID Number",
                   "maxLength": "20"
                 },
@@ -3767,11 +3509,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3939,7 +3681,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "registrationNumber",
+                  "fieldId": "RegistrationNumber",
                   "label": "Registration Number",
                   "maxLength": "20"
                 },
@@ -3955,7 +3697,7 @@
                 },
                 "displayName": "Input",
                 "props": {
-                  "fieldId": "boatHullIdNumber",
+                  "fieldId": "BoatHullIdNumber",
                   "label": "Hull ID Number",
                   "maxLength": "20"
                 },
@@ -3971,11 +3713,11 @@
                 },
                 "displayName": "Select",
                 "props": {
-                  "fieldId": "imageIndicator",
+                  "fieldId": "ImageIndicator",
                   "label": "Image",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
                   "initialValue": "N",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4003,9 +3745,9 @@
                 },
                 "displayName": "Checkbox",
                 "props": {
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "label": " ",
                   "checkboxLabel": "Link to the current assigned event",
-                  "label": " "
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4961,7 +4703,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             },
@@ -4969,7 +4711,7 @@
               "name": "LicensePlateNumber",
               "size": 10,
               "sourceField": [
-                "licensePlateNumberRand"
+                "LicensePlateNumber"
               ],
               "targetField": "LicensePlateNumber"
             },
@@ -4977,7 +4719,7 @@
               "name": "NCICNumber",
               "size": 10,
               "sourceField": [
-                "ncicNumber"
+                "NCICNumber"
               ],
               "targetField": "NCICNumber"
             },
@@ -4985,7 +4727,7 @@
               "name": "State",
               "size": 2,
               "sourceField": [
-                "registrationState"
+                "RegistrationState"
               ],
               "targetField": "State",
               "codeTypeProvider": "NCIC"
@@ -4994,7 +4736,7 @@
               "name": "VehicleIdentificationNumber",
               "size": 20,
               "sourceField": [
-                "vehicleIdentificationNumberRand"
+                "VehicleIdentificationNumber"
               ],
               "targetField": "VehicleIdentificationNumber"
             },
@@ -5002,7 +4744,7 @@
               "name": "VehicleMakeCode",
               "size": 24,
               "sourceField": [
-                "vehicleMakeCode"
+                "VehicleMakeCode"
               ],
               "targetField": "VehicleMakeCode"
             }
@@ -5011,10 +4753,10 @@
             {
               "requirements": {
                 "set": [
-                  "ncicNumber"
+                  "NCICNumber"
                 ],
                 "any": [
-                  "imageIndicator"
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5030,13 +4772,13 @@
             {
               "requirements": {
                 "set": [
-                  "licensePlateNumberRand"
+                  "LicensePlateNumber"
                 ],
                 "any": [
-                  "imageIndicator",
-                  "registrationState",
-                  "vehicleIdentificationNumberRand",
-                  "vehicleMakeCode"
+                  "ImageIndicator",
+                  "RegistrationState",
+                  "VehicleIdentificationNumber",
+                  "VehicleMakeCode"
                 ],
                 "defaults": [
                   {
@@ -5056,11 +4798,11 @@
             {
               "requirements": {
                 "set": [
-                  "vehicleIdentificationNumberRand"
+                  "VehicleIdentificationNumber"
                 ],
                 "any": [
-                  "imageIndicator",
-                  "vehicleMakeCode"
+                  "ImageIndicator",
+                  "VehicleMakeCode"
                 ],
                 "defaults": [
                   {
@@ -5074,11 +4816,14 @@
               "state": "In/Out"
             }
           ],
-          "description": "VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). RANDOM-COLLAPSED branch: suffix-isolated triggers on dedicated RANDOM card; autoSelect=true (disjoint set[] pools vs VehReg); no queriesToDeselect.",
+          "description": "VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.",
           "handlerFunction": "CommsysTransactionRequestHandler",
           "name": "NJ_NJCJIS_VehicleStolenQuery",
           "type": "QUERYINPUTDATAMAPPING",
-          "autoSelect": true,
+          "autoSelect": false,
+          "queriesToDeselect": [
+            "VehicleRegistrationQuery"
+          ],
           "provider": "NJ_NJCJIS",
           "providerType": "Commsys",
           "query": "VehicleStolenQuery",
@@ -5091,7 +4836,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             },
@@ -5099,7 +4844,7 @@
               "name": "LicensePlateNumber",
               "size": 10,
               "sourceField": [
-                "licensePlateNumber"
+                "LicensePlateNumber"
               ],
               "targetField": "LicensePlateNumber"
             },
@@ -5107,7 +4852,7 @@
               "name": "LicensePlateTypeCode",
               "size": 2,
               "sourceField": [
-                "licensePlateTypeCode"
+                "LicensePlateTypeCode"
               ],
               "targetField": "LicensePlateTypeCode"
             },
@@ -5115,7 +4860,7 @@
               "name": "LicensePlateYear",
               "size": 4,
               "sourceField": [
-                "licensePlateYear"
+                "LicensePlateYear"
               ],
               "targetField": "LicensePlateYear"
             },
@@ -5123,7 +4868,7 @@
               "name": "RandomRequest",
               "size": 1,
               "sourceField": [
-                "randomRequest"
+                "RandomRequest"
               ],
               "targetField": "RandomRequest"
             },
@@ -5131,7 +4876,7 @@
               "name": "State",
               "size": 2,
               "sourceField": [
-                "registrationState"
+                "RegistrationState"
               ],
               "targetField": "State",
               "codeTypeProvider": "NCIC"
@@ -5140,7 +4885,7 @@
               "name": "VehicleIdentificationNumber",
               "size": 20,
               "sourceField": [
-                "vehicleIdentificationNumber"
+                "VehicleIdentificationNumber"
               ],
               "targetField": "VehicleIdentificationNumber"
             }
@@ -5149,14 +4894,14 @@
             {
               "requirements": {
                 "set": [
-                  "licensePlateNumber"
+                  "LicensePlateNumber"
                 ],
                 "any": [
-                  "randomRequest",
-                  "registrationState",
-                  "licensePlateTypeCode",
-                  "imageIndicator",
-                  "licensePlateYear"
+                  "RandomRequest",
+                  "RegistrationState",
+                  "LicensePlateTypeCode",
+                  "ImageIndicator",
+                  "LicensePlateYear"
                 ],
                 "conditions": [
                   {
@@ -5195,14 +4940,14 @@
             {
               "requirements": {
                 "set": [
-                  "licensePlateNumber"
+                  "LicensePlateNumber"
                 ],
                 "any": [
-                  "randomRequest",
-                  "registrationState",
-                  "licensePlateTypeCode",
-                  "imageIndicator",
-                  "licensePlateYear"
+                  "RandomRequest",
+                  "RegistrationState",
+                  "LicensePlateTypeCode",
+                  "ImageIndicator",
+                  "LicensePlateYear"
                 ],
                 "defaults": [
                   {
@@ -5234,12 +4979,12 @@
             {
               "requirements": {
                 "set": [
-                  "vehicleIdentificationNumber"
+                  "VehicleIdentificationNumber"
                 ],
                 "any": [
-                  "randomRequest",
-                  "registrationState",
-                  "imageIndicator"
+                  "RandomRequest",
+                  "RegistrationState",
+                  "ImageIndicator"
                 ],
                 "conditions": [
                   {
@@ -5270,12 +5015,12 @@
             {
               "requirements": {
                 "set": [
-                  "vehicleIdentificationNumber"
+                  "VehicleIdentificationNumber"
                 ],
                 "any": [
-                  "randomRequest",
-                  "registrationState",
-                  "imageIndicator"
+                  "RandomRequest",
+                  "RegistrationState",
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5321,7 +5066,7 @@
               },
               "size": 8,
               "sourceField": [
-                "birthDate"
+                "BirthDate"
               ],
               "targetField": "BirthDate"
             },
@@ -5329,7 +5074,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             },
@@ -5343,8 +5088,8 @@
               },
               "size": 30,
               "sourceField": [
-                "nameLast",
-                "nameFirst"
+                "NameLast",
+                "NameFirst"
               ],
               "targetField": "Name"
             },
@@ -5352,7 +5097,7 @@
               "name": "OperatorLicenseNumber",
               "size": 20,
               "sourceField": [
-                "operatorLicenseNumber"
+                "OperatorLicenseNumber"
               ],
               "targetField": "OperatorLicenseNumber"
             },
@@ -5360,7 +5105,7 @@
               "name": "SexCode",
               "size": 1,
               "sourceField": [
-                "sexCode"
+                "SexCode"
               ],
               "targetField": "SexCode",
               "codeTypeProvider": "NIBRS"
@@ -5369,7 +5114,7 @@
               "name": "State",
               "size": 2,
               "sourceField": [
-                "registrationState"
+                "RegistrationState"
               ],
               "targetField": "State",
               "codeTypeProvider": "NCIC"
@@ -5379,14 +5124,14 @@
             {
               "requirements": {
                 "set": [
-                  "birthDate",
-                  "nameLast",
-                  "nameFirst"
+                  "BirthDate",
+                  "NameLast",
+                  "NameFirst"
                 ],
                 "any": [
-                  "imageIndicator",
-                  "sexCode",
-                  "registrationState"
+                  "ImageIndicator",
+                  "SexCode",
+                  "RegistrationState"
                 ],
                 "defaults": [
                   {
@@ -5406,11 +5151,11 @@
             {
               "requirements": {
                 "set": [
-                  "operatorLicenseNumber",
-                  "registrationState"
+                  "OperatorLicenseNumber",
+                  "RegistrationState"
                 ],
                 "any": [
-                  "imageIndicator"
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5441,7 +5186,7 @@
               "name": "GunCaliber",
               "size": 4,
               "sourceField": [
-                "gunCaliber"
+                "GunCaliber"
               ],
               "targetField": "GunCaliber"
             },
@@ -5449,7 +5194,7 @@
               "name": "GunMake",
               "size": 23,
               "sourceField": [
-                "gunMake"
+                "GunMake"
               ],
               "targetField": "GunMake"
             },
@@ -5457,7 +5202,7 @@
               "name": "GunModel",
               "size": 20,
               "sourceField": [
-                "gunModel"
+                "GunModel"
               ],
               "targetField": "GunModel"
             },
@@ -5465,7 +5210,7 @@
               "name": "GunSerialNumber",
               "size": 11,
               "sourceField": [
-                "gunSerialNumber"
+                "GunSerialNumber"
               ],
               "targetField": "GunSerialNumber"
             },
@@ -5473,7 +5218,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             }
@@ -5482,13 +5227,13 @@
             {
               "requirements": {
                 "set": [
-                  "gunSerialNumber"
+                  "GunSerialNumber"
                 ],
                 "any": [
-                  "gunCaliber",
-                  "gunMake",
-                  "gunModel",
-                  "imageIndicator"
+                  "GunCaliber",
+                  "GunMake",
+                  "GunModel",
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5518,7 +5263,7 @@
               "name": "ArticleSerialNumber",
               "size": 20,
               "sourceField": [
-                "articleSerialNumber"
+                "ArticleSerialNumber"
               ],
               "targetField": "ArticleSerialNumber"
             },
@@ -5526,7 +5271,7 @@
               "name": "ArticleTypeCode",
               "size": 7,
               "sourceField": [
-                "articleTypeCode"
+                "ArticleTypeCode"
               ],
               "targetField": "ArticleTypeCode"
             },
@@ -5534,7 +5279,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             }
@@ -5543,11 +5288,11 @@
             {
               "requirements": {
                 "set": [
-                  "articleSerialNumber",
-                  "articleTypeCode"
+                  "ArticleSerialNumber",
+                  "ArticleTypeCode"
                 ],
                 "any": [
-                  "imageIndicator"
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5577,7 +5322,7 @@
               "name": "BoatHullIdNumber",
               "size": 20,
               "sourceField": [
-                "boatHullIdNumber"
+                "BoatHullIdNumber"
               ],
               "targetField": "BoatHullIdNumber"
             },
@@ -5585,7 +5330,7 @@
               "name": "ImageIndicator",
               "size": 1,
               "sourceField": [
-                "imageIndicator"
+                "ImageIndicator"
               ],
               "targetField": "ImageIndicator"
             },
@@ -5593,7 +5338,7 @@
               "name": "RegistrationNumber",
               "size": 20,
               "sourceField": [
-                "registrationNumber"
+                "RegistrationNumber"
               ],
               "targetField": "RegistrationNumber"
             }
@@ -5602,10 +5347,10 @@
             {
               "requirements": {
                 "set": [
-                  "registrationNumber"
+                  "RegistrationNumber"
                 ],
                 "any": [
-                  "imageIndicator"
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5621,10 +5366,10 @@
             {
               "requirements": {
                 "set": [
-                  "boatHullIdNumber"
+                  "BoatHullIdNumber"
                 ],
                 "any": [
-                  "imageIndicator"
+                  "ImageIndicator"
                 ],
                 "defaults": [
                   {
@@ -5649,7 +5394,7 @@
           "targetEntity": "Boat"
         }
       ],
-      "description": "Provider configuration for NJ_NJCJIS v3.7-SEPARATE MC",
+      "description": "Provider configuration for NJ_NJCJIS v3.5 MC -- PASCAL test variant (form-side fieldIds recased; testing only)",
       "name": "NJ_NJCJIS",
       "type": "BUNDLE",
       "provider": "NJ_NJCJIS"
@@ -5734,7 +5479,7 @@
               "name": "firstName",
               "size": 60,
               "sourceField": [
-                "nameFirst"
+                "NameFirst"
               ],
               "targetField": "firstName"
             },
@@ -5742,7 +5487,7 @@
               "name": "lastName",
               "size": 60,
               "sourceField": [
-                "nameLast"
+                "NameLast"
               ],
               "targetField": "lastName"
             },
@@ -5750,14 +5495,14 @@
               "name": "licenseNumber",
               "size": 60,
               "sourceField": [
-                "operatorLicenseNumber"
+                "OperatorLicenseNumber"
               ],
               "targetField": "dlNumber"
             },
             {
               "name": "dateOfBirth",
               "sourceField": [
-                "birthDate"
+                "BirthDate"
               ],
               "targetField": "dateOfBirth"
             },
@@ -5776,15 +5521,15 @@
             {
               "name": "sex",
               "sourceField": [
-                "sexCode"
+                "SexCode"
               ],
               "targetField": "sexAttrId",
               "useAttributeId": true
             },
             {
-              "name": "registrationState",
+              "name": "RegistrationState",
               "sourceField": [
-                "registrationState"
+                "RegistrationState"
               ],
               "targetField": "registrationStateAttrId",
               "useAttributeId": true
@@ -5794,14 +5539,14 @@
             {
               "requirements": {
                 "set": [
-                  "operatorLicenseNumber",
-                  "nameFirst",
-                  "nameLast"
+                  "OperatorLicenseNumber",
+                  "NameFirst",
+                  "NameLast"
                 ],
                 "any": [
                   "raceCode",
-                  "sexCode",
-                  "registrationState"
+                  "SexCode",
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5811,14 +5556,14 @@
             {
               "requirements": {
                 "set": [
-                  "nameFirst",
-                  "nameLast",
-                  "birthDate"
+                  "NameFirst",
+                  "NameLast",
+                  "BirthDate"
                 ],
                 "any": [
                   "raceCode",
-                  "sexCode",
-                  "registrationState"
+                  "SexCode",
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5828,13 +5573,13 @@
             {
               "requirements": {
                 "set": [
-                  "nameFirst",
-                  "nameLast"
+                  "NameFirst",
+                  "NameLast"
                 ],
                 "any": [
                   "raceCode",
-                  "sexCode",
-                  "registrationState"
+                  "SexCode",
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5844,12 +5589,12 @@
             {
               "requirements": {
                 "set": [
-                  "operatorLicenseNumber"
+                  "OperatorLicenseNumber"
                 ],
                 "any": [
                   "raceCode",
-                  "sexCode",
-                  "registrationState"
+                  "SexCode",
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5872,25 +5617,25 @@
             {
               "name": "vinNumber",
               "sourceField": [
-                "vehicleIdentificationNumber"
+                "VehicleIdentificationNumber"
               ],
               "targetField": "vehicle.vinNumber"
             },
             {
-              "name": "licensePlateNumber",
+              "name": "LicensePlateNumber",
               "sourceField": [
-                "licensePlateNumber"
+                "LicensePlateNumber"
               ],
               "targetField": "vehicle.tag"
             },
             {
-              "name": "registrationState",
+              "name": "RegistrationState",
               "rule": {
                 "function": "AttributeArrayWrapperRuleHandler",
                 "arguments": []
               },
               "sourceField": [
-                "registrationState"
+                "RegistrationState"
               ],
               "targetField": "vehicle.registrationStateAttrIds",
               "useAttributeId": true
@@ -5900,11 +5645,11 @@
             {
               "requirements": {
                 "set": [
-                  "vehicleIdentificationNumber"
+                  "VehicleIdentificationNumber"
                 ],
                 "any": [
-                  "licensePlateNumber",
-                  "registrationState"
+                  "LicensePlateNumber",
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5914,10 +5659,10 @@
             {
               "requirements": {
                 "set": [
-                  "licensePlateNumber"
+                  "LicensePlateNumber"
                 ],
                 "any": [
-                  "registrationState"
+                  "RegistrationState"
                 ],
                 "conditions": null,
                 "defaults": null
@@ -5966,7 +5711,7 @@
               "targetField": "AddressZipCode"
             },
             {
-              "name": "birthDate",
+              "name": "BirthDate",
               "sourceField": [
                 "dateOfBirth"
               ],
@@ -5987,14 +5732,14 @@
               "targetField": "HairColorCode"
             },
             {
-              "name": "nameFirst",
+              "name": "NameFirst",
               "sourceField": [
                 "firstName"
               ],
               "targetField": "NameFirst"
             },
             {
-              "name": "nameLast",
+              "name": "NameLast",
               "sourceField": [
                 "lastName"
               ],
@@ -6008,7 +5753,7 @@
               "targetField": "RaceCode"
             },
             {
-              "name": "sexCode",
+              "name": "SexCode",
               "sourceField": [
                 "sexAttrDetail.displayValue"
               ],
@@ -6029,14 +5774,14 @@
               "targetField": "VehicleColorCode"
             },
             {
-              "name": "vehicleIdentificationNumber",
+              "name": "VehicleIdentificationNumber",
               "sourceField": [
                 "vinNumber"
               ],
               "targetField": "VehicleIdentificationNumber"
             },
             {
-              "name": "vehicleMakeCode",
+              "name": "VehicleMakeCode",
               "sourceField": [
                 "makeNcicCode"
               ],
@@ -6071,7 +5816,7 @@
               "targetField": "BodyStyle"
             },
             {
-              "name": "licensePlateNumber",
+              "name": "LicensePlateNumber",
               "sourceField": [
                 "tag"
               ],
@@ -6113,7 +5858,7 @@
               "targetField": "Weight"
             },
             {
-              "name": "operatorLicenseNumber",
+              "name": "OperatorLicenseNumber",
               "sourceField": [
                 "dlNumber"
               ],
@@ -6474,7 +6219,16 @@
               "name": "Name",
               "rule": {
                 "function": "FormatNameRuleHandler",
-                "arguments": []
+                "arguments": [ [
+                    "firstName",
+                    "lastName",
+                    "middleNameAnalyzed"
+                  ],
+                  [
+                    ", ",
+                    " ",
+                    " "
+                  ]]
               },
               "sourceField": [
                 "name"

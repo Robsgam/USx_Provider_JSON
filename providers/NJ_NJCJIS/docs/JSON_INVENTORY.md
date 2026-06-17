@@ -31,6 +31,12 @@ All JSON versions produced for this provider.
 | v3.0 LOCKED | Imported Newark Foundation. 14/14 live tests PASS. |
 | v1.x | Pre-v2.0 rebuild (2026-04-28). |
 
+
+## v4.0 (2026-06-17)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS.json | v4.0 | Current | 61P/0F/0W/0LIM. |
 ## v3.5 (2026-06-03)
 
 | File | Version | Status | Notes |

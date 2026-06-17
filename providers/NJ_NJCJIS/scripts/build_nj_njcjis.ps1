@@ -1,19 +1,26 @@
-# build_nj_njcjis.ps1  -- NJ_NJCJIS
-# Multi-card layout, 6 QIDMs, 12 combos.
+# build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
+# =====================================================================
+# CANONICAL MAINLINE BUILD. Produces providers/NJ_NJCJIS/NJ_NJCJIS.json.
+# Design (promoted to mainline 2026-06-17, v4.0):
+#   1. VehicleStolenQuery (QV) NOT built -- USER-APPROVED SKIP of the 3 metadata
+#      QV combos. NJCJIS runs the QV stolen check automatically state-side with
+#      registration queries; its response tags are still data-mined via the QRDM.
+#      Vehicle layout therefore omits ncicNumber + vehicleMakeCode (stolen-only).
+#   2. VehicleRegistrationQuery = 2 combos (RQ plate, RQN VIN). RandomRequest is
+#      user-controlled in any[] (form default N); the inert poisoned-array
+#      RandomRequest=Y conditions + synthetic RQ_RAND/RQN_RAND combos were removed
+#      (behavior-preserving; QIDM_REFERENCE Sec 2a; cf. FL v5.0).
+#   3. RMS handler arguments are populated by the fixed _R helper in
+#      tools/_build_rms_bundle.ps1 (the $args reserved-name collision that dropped
+#      them was repaired 2026-06-17; matches the HIDLE engineering baseline).
+#   4. USx CAD-integration field names are recased to PascalCase at the end of the
+#      build (see PASCALCASE RECASE block); Mark43/RMS internal keys stay camelCase.
+# =====================================================================
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
-#
-# LAYOUT (5 QIFs, multi-card + compacted):
-#   Vehicle: 3 cards (OPTIONS: State+Random+Image, PLATE: Plate+Type+Year, VIN: VIN+NCIC+Make)
-#   Person:  3 cards (OPTIONS: State+Image, LICENSE: OLN, NAME: First+Last+DOB+Sex)
-#   Firearm: 1 card (Serial/Make/Caliber/Model/Image)
-#   Article: 1 card (Serial/Type/Image)
-#   Boat:    1 card (Reg/Hull/Image)
-#
-# RMS: from KB specs (no HIDLE dependency)
 
 param(
-    [string]$Version = "3.5"
+    [string]$Version = "4.0"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -39,7 +46,8 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
 $auth = Build-Auth -ProviderName 'NJ_NJCJIS'
 
-# QUERYRESULTDATAMAPPING (from KB specs)
+# QUERYRESULTDATAMAPPING (from KB specs) -- kept intact (QV response tags still
+# data-mined if the state auto-runs QV with registration queries)
 $results = Build-ProviderQrdm -ProviderName 'NJ_NJCJIS'
 
 $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
@@ -48,12 +56,13 @@ $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
 # 1d. VehicleRegistrationQuery
 #     autoSelect=true, NO queriesToDeselect.
 #     Defaulted fields in any[] per LIMITATION #31.
-#     4 combos: RAND (RandomRequest=Y) and default (RandomRequest!=Y) for plate and VIN.
-#     RAND combos first (more specific via conditions), default combos as fallback.
-# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'RQ' (plate) and 'RQN' (VIN); RandomRequest routing splits each
-# into 2 combos. RQ_RAND and RQN_RAND are synthetic -- NOT real NJCJIS transaction codes.
-# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+#     2 combos: RQ (plate), RQN (VIN). RandomRequest is user-controlled (any[],
+#     form default N) and routed server-side by its value -- it does NOT need
+#     separate combos. The earlier synthetic RQ_RAND/RQN_RAND combos used
+#     value-comparison conditions (RandomRequest EQUALS Y) which the platform
+#     treats as INERT (poisoned-array, QIDM_REFERENCE Sec 2a): the conditions
+#     were disabled, so those combos already fired unconditioned and duplicated
+#     RQ/RQN. Removed (behavior-preserving). Cf. FL v5.0 poisoned-array cleanup.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -66,22 +75,6 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('vehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
     )
     combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('licensePlateNumber')
-                any        = @('randomRequest','registrationState','licensePlateTypeCode','imageIndicator','licensePlateYear')
-                conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
-                defaults   = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
-                    [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
-                    [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
-                    [PSCustomObject]@{ field = 'State';                value = 'NJ' }
-                )
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'RQ_RAND'
-            state                 = 'In/Out'
-        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('licensePlateNumber')
@@ -100,20 +93,6 @@ $vehRegQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set        = @('vehicleIdentificationNumber')
-                any        = @('randomRequest','registrationState','imageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('RandomRequest'); operator = 'EQUALS'; value = @('Y') })
-                defaults   = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
-                )
-            }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQN_RAND'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
                 set      = @('vehicleIdentificationNumber')
                 any      = @('randomRequest','registrationState','imageIndicator')
                 defaults = @(
@@ -127,7 +106,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- 4 combos: RQ_RAND/RQ (plate), RQN_RAND/RQN (VIN). RAND=stolen-only (RandomRequest=Y). Defaulted fields in any[] (LIMITATION #31).'
+    description        = 'VehicleRegistrationQuery -- 2 combos: RQ (plate), RQN (VIN). RandomRequest user-controlled in any[] (form default N), default N in defaults[] for CAD. Poisoned-array RandomRequest=Y conditions removed (inert; QIDM_REFERENCE Sec 2a) and synthetic RQ_RAND/RQN_RAND combos collapsed -- behavior-preserving since conditions were already disabled.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -140,78 +119,14 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. VehicleStolenQuery
-#     NO autoSelect -- officer manually checks when needed.
-#     queriesToDeselect=[VehicleRegistrationQuery] -- checking Stolen
-#     unchecks Registration.
-# PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'QV' for all stolen-vehicle combos; synthetic labels QVN (NCIC#),
-# QVP (plate), QVV (VIN) invented to differentiate routing. NOT real NJCJIS transaction codes.
-# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+# 1e. VehicleStolenQuery -- BRANCH DELTA: REMOVED ENTIRELY.
+#     QVN/QVP/QVV (metadata keyRef 'QV', 3 combos) are a USER-APPROVED SKIP in
+#     this variant (2026-06-10): premise is the state runs QV automatically
+#     with registration queries. No JSON-side stolen query, no Stolen checkbox.
 # =====================================================================
-$vehStolenQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'ImageIndicator';               size = 1;  sourceField = @('imageIndicator');               targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';         size = 10; sourceField = @('licensePlateNumber');         targetField = 'LicensePlateNumber' }
-        [PSCustomObject]@{ name = 'NCICNumber';                   size = 10; sourceField = @('ncicNumber');                   targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('vehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 24; sourceField = @('vehicleMakeCode');              targetField = 'VehicleMakeCode' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('ncicNumber')
-                any      = @('imageIndicator')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                )
-            }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'QVN'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('licensePlateNumber')
-                any      = @('imageIndicator','registrationState','vehicleIdentificationNumber','vehicleMakeCode')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
-                )
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QVP'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set      = @('vehicleIdentificationNumber')
-                any      = @('imageIndicator','vehicleMakeCode')
-                defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
-                )
-            }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QVV'
-            state                 = 'In/Out'
-        }
-    )
-    description        = 'VehicleStolenQuery -- QVN (NCIC#), QVP (plate), QVV (VIN). New in v2.'
-    handlerFunction    = 'CommsysTransactionRequestHandler'
-    name               = 'NJ_NJCJIS_VehicleStolenQuery'
-    type               = 'QUERYINPUTDATAMAPPING'
-    autoSelect         = $false
-    queriesToDeselect  = @('VehicleRegistrationQuery')
-    provider           = 'NJ_NJCJIS'
-    providerType       = 'Commsys'
-    query              = 'VehicleStolenQuery'
-    queryLabel         = 'Vehicle Stolen'
-    targetEntity       = 'Vehicle'
-}
 
 # =====================================================================
-# 1f. DriverLicenseQuery
+# 1f. DriverLicenseQuery -- UNCHANGED from mainline
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'DQ' for both combos (Name+DOB and OLN); synthetic label 'DQN'
 # (N=OLN path) invented for platform routing only. NOT a real NJCJIS transaction code.
@@ -274,7 +189,8 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1g. GunQuery # =====================================================================
+# 1g. GunQuery -- UNCHANGED from mainline
+# =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('gunCaliber');      targetField = 'GunCaliber' }
@@ -309,7 +225,8 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1h. ArticleSingleQuery # =====================================================================
+# 1h. ArticleSingleQuery -- UNCHANGED from mainline
+# =====================================================================
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('articleSerialNumber'); targetField = 'ArticleSerialNumber' }
@@ -342,7 +259,7 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1i. BoatQuery
+# 1i. BoatQuery -- UNCHANGED from mainline
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'QB' for both combos (Reg# and Hull ID); synthetic label 'QBN'
 # (N=Hull path) invented for platform routing only. NOT a real NJCJIS transaction code.
@@ -391,8 +308,9 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# BRANCH DELTA: $vehStolenQuery omitted from configurations
 $njBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehStolenQuery, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for NJ_NJCJIS v${Version} MC"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'
@@ -401,15 +319,15 @@ $njBundle = [PSCustomObject]@{
 
 # =====================================================================
 # BUNDLE 2: ENTITIES (multi-card layouts)
-# Vehicle: 3 cards (OPTIONS+PLATE+VIN), Person: 3 cards (OPTIONS+OLN+NAME)
-# Firearm/Article/Boat: 1 card each (compacted rows)
+# BRANCH DELTA -- Vehicle: 3 cards, VIN card = VIN only (ncicNumber and
+# vehicleMakeCode removed -- both served ONLY the deleted stolen query)
 # =====================================================================
 
 # ------------------------------------------------------------------
 # Vehicle -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
 # OPTIONS: State+Random+Image (shared routing fields for all combos)
 # PLATE SEARCH: Plate+PlateType+PlateYear
-# VIN SEARCH: VIN+NCIC+Make (compacted to 1 row)
+# VIN SEARCH: VIN only (BRANCH DELTA)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -438,16 +356,14 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH_VIN'
         title = 'VIN SEARCH'
         rows  = @(
-            @{ id = 'ROW_VEH_V1'; cols = @('5','4','3'); fields = @(
+            @{ id = 'ROW_VEH_V1'; cols = @('12'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_V1' }
-                @{ id = 'NCICNumber_Input';     node = Inp 'ncicNumber' 'NCIC Number' '10' 'ROW_VEH_V1' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_V1' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC: OPTIONS + PLATE + VIN cards. VIN card compacted to 1 row.'
+    description  = 'Vehicle queries -- RANDOM-REMOVED branch: OPTIONS + PLATE + VIN cards. VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -456,10 +372,7 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
-# OPTIONS: State+Image (shared routing fields for DQ/DQN)
-# LICENSE NUMBER: OLN
-# NAME SEARCH: First+Last+DOB+Sex (compacted to 1 row)
+# Person -- UNCHANGED: 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
@@ -506,7 +419,7 @@ $personForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Firearm -- 1 card (same as BASE)
+# Firearm -- UNCHANGED: 1 card
 # ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
@@ -535,7 +448,7 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card (compacted)
+# Article -- UNCHANGED: 1 card
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
@@ -560,7 +473,7 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card (compacted -- Reg+Hull+Image on one row)
+# Boat -- UNCHANGED: 1 card
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
@@ -589,6 +502,7 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
+# Unchanged: RMS Vehicle uses licensePlateNumber/VIN/registrationState only.
 # =====================================================================
 $rmsBundle = Build-RmsBundle
 # =====================================================================
@@ -598,16 +512,61 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $njBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built NJ_NJCJIS v${Version}"
-
 # =====================================================================
-$VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path
-if (Test-Path $VALIDATOR) {
-    Write-Host "Validation complete." -ForegroundColor Green
-} else {
-    Write-Host "Validator not found at $VALIDATOR -- skipping." -ForegroundColor Yellow
+# PASCALCASE RECASE -- USx CAD-integration field names only
+# =====================================================================
+# Recase ONLY the 22 USx form-field tokens (the names CAD/OnScene populate)
+# to PascalCase, across all 3 bundles. Mark43/RMS internal keys (firstName,
+# vinNumber, dlNumber, *AttrDetail.id, nameAttributes, ...), NJCJIS response
+# field names, keyReference labels, targetFields and attribute names are left
+# exactly as-is. This reproduces the casing pattern in Cringer's reference JSON
+# (USx fields = PascalCase; Mark43 plumbing = camelCase). The earlier
+# build_nj_njcjis_pascal.ps1 post-transform is folded in here so the build is a
+# single reproducible step. See knowledge-base + project notes on PascalCase.
+$usxRenames = @{
+    'licensePlateNumber'          = 'LicensePlateNumber'
+    'licensePlateTypeCode'        = 'LicensePlateTypeCode'
+    'licensePlateYear'            = 'LicensePlateYear'
+    'randomRequest'               = 'RandomRequest'
+    'registrationState'           = 'RegistrationState'
+    'imageIndicator'              = 'ImageIndicator'
+    'vehicleIdentificationNumber' = 'VehicleIdentificationNumber'
+    'ncicNumber'                  = 'NCICNumber'
+    'vehicleMakeCode'             = 'VehicleMakeCode'
+    'nameFirst'                   = 'NameFirst'
+    'nameLast'                    = 'NameLast'
+    'birthDate'                   = 'BirthDate'
+    'sexCode'                     = 'SexCode'
+    'operatorLicenseNumber'       = 'OperatorLicenseNumber'
+    'gunSerialNumber'             = 'GunSerialNumber'
+    'gunMake'                     = 'GunMake'
+    'gunCaliber'                  = 'GunCaliber'
+    'gunModel'                    = 'GunModel'
+    'articleSerialNumber'         = 'ArticleSerialNumber'
+    'articleTypeCode'             = 'ArticleTypeCode'
+    'registrationNumber'          = 'RegistrationNumber'
+    'boatHullIdNumber'            = 'BoatHullIdNumber'
 }
+function Convert-UsxCasing($node, $parentProp) {
+    if ($null -eq $node) { return $null }
+    if ($node -is [string]) {
+        if ($parentProp -eq 'keyReference') { return $node }   # platform-internal labels
+        if ($usxRenames.ContainsKey($node) -and $usxRenames[$node] -cne $node) { return $usxRenames[$node] }
+        return $node
+    }
+    if ($node -is [array]) {
+        return ,@($node | ForEach-Object { Convert-UsxCasing $_ $parentProp })
+    }
+    if ($node -is [PSCustomObject]) {
+        foreach ($p in $node.PSObject.Properties) { $p.Value = Convert-UsxCasing $p.Value $p.Name }
+        return $node
+    }
+    return $node
+}
+$output = Convert-UsxCasing $output $null
+
+Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
+    -Label "Built NJ_NJCJIS v${Version} (VehStolenRemoved mainline, PascalCase USx fields, restored RMS args)"
 
 Write-Host ""
-Write-Host "Build complete. Ready for manual review + build_report."
+Write-Host "Build complete -- NJ_NJCJIS v${Version}: VehStolenRemoved + PascalCase USx fields + restored RMS handler args."

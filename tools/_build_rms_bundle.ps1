@@ -18,7 +18,15 @@ function _A($n, $sf, $tf, $extra) {
     [PSCustomObject]$a
 }
 function _As($n) { [PSCustomObject]@{ name = $n; sourceField = @($n); targetField = $n } }
-function _R($fn, $args) { [PSCustomObject]@{ function = $fn; arguments = $args } }
+function _R($fn, $ruleArgs) {
+    # NOTE: param renamed from $args (PowerShell reserved automatic var) — the
+    # collision silently dropped every passed arguments array (regression vs the
+    # HIDLE engineering baseline). When no args are supplied, omit the property
+    # entirely to match the HIDLE baseline (which had no 'arguments' key on
+    # no-arg handlers), rather than emitting null/[].
+    if ($null -eq $ruleArgs) { [PSCustomObject]@{ function = $fn } }
+    else { [PSCustomObject]@{ function = $fn; arguments = $ruleArgs } }
+}
 function _C($kr, $set, $any, $pfr) {
     $req = [ordered]@{ set = $set; any = $any; conditions = $null; defaults = $null }
     $c = [ordered]@{ requirements = [PSCustomObject]$req; keyReference = $kr }

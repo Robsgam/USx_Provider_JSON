@@ -1,8 +1,8 @@
-﻿NJ_NJCJIS_PASCAL METADATA REFERENCE
-====================================
-Generated: 2026-06-12
-Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_PASCAL.json
-Metadata: 6 total transactions, 6 queries built in JSON
+﻿NJ_NJCJIS METADATA REFERENCE
+=============================
+Generated: 2026-06-17
+Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS.json
+Metadata: 6 total transactions, 5 queries built in JSON
 
 ================================================================================
 1. ArticleSingleQuery (version 1)
@@ -104,42 +104,13 @@ METADATA COMBINATIONS (4 total):
   FULL          LicensePlateNumber      LicensePlateNumber, State, LicensePlateTypeCode, R...  ImageIndicator, LicensePlat...
   FULL          VehicleIdentificationNumber  VehicleIdentificationNumber, State, RandomRequest      ImageIndicator
 
-BUILD COVERAGE (4 of 4 built):
-  BUILT   RQ_RAND        set[LicensePlateNumber]
+BUILD COVERAGE (2 of 4 built):
   BUILT   RQ             set[LicensePlateNumber]
-  BUILT   RQN_RAND       set[VehicleIdentificationNumber]
   BUILT   RQN            set[VehicleIdentificationNumber]
   UNBUILT RAND           LicensePlateNumber
   UNBUILT RAND           VehicleIdentificationNumber
   UNBUILT FULL           LicensePlateNumber
   UNBUILT FULL           VehicleIdentificationNumber
-
-================================================================================
-6. VehicleStolenQuery (version 1)
-================================================================================
-
-METADATA FIELDS (6):
-  ImageIndicator              Alphanumeric  maxLen= 1  Image Indicator
-  LicensePlateNumber          Alphanumeric  maxLen=10  License Plate Number
-  NCICNumber                  Alphanumeric  maxLen=10  NCIC Number
-  State                       Alphanumeric  maxLen= 2  State
-  VehicleIdentificationNumber Alphanumeric  maxLen=20  Vehicle Identification Number
-  VehicleMakeCode             Alphanumeric  maxLen=24  Vehicle Make Code
-
-METADATA COMBINATIONS (3 total):
-  KeyRef      Primary                 Set                                                    Any
-  ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  QV            NCICNumber              NCICNumber                                             ImageIndicator
-  QV            LicensePlateNumber      LicensePlateNumber                                     ImageIndicator, State, Vehi...
-  QV            VehicleIdentificationNumber  VehicleIdentificationNumber                            ImageIndicator, VehicleMake...
-
-BUILD COVERAGE (3 of 3 built):
-  BUILT   QVN            set[NCICNumber]
-  BUILT   QVP            set[LicensePlateNumber]
-  BUILT   QVV            set[VehicleIdentificationNumber]
-  UNBUILT QV             NCICNumber
-  UNBUILT QV             LicensePlateNumber
-  UNBUILT QV             VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -151,13 +122,12 @@ BUILD SUMMARY
   BoatQuery                                  2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         2      2     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   4      4     0  100% (COMPLETE)
-  VehicleStolenQuery                         3      3     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   4      2     2  50%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   13     13     0  100%
+  TOTAL                                   10      8     2  80%
 
 ================================================================================
-UNBUILT METADATA COMBOS (9 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
 ================================================================================
 
   FULL           Name                     (DriverLicenseQuery)
@@ -166,8 +136,11 @@ UNBUILT METADATA COMBOS (9 combos in metadata, not in JSON)
   RAND           VehicleIdentificationNumber (VehicleRegistrationQuery)
   FULL           LicensePlateNumber       (VehicleRegistrationQuery)
   FULL           VehicleIdentificationNumber (VehicleRegistrationQuery)
-  QV             NCICNumber               (VehicleStolenQuery)
-  QV             LicensePlateNumber       (VehicleStolenQuery)
-  QV             VehicleIdentificationNumber (VehicleStolenQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (1 of 6 in metadata)
+================================================================================
+
+  VehicleStolenQuery                       v1    3 combos
 
 

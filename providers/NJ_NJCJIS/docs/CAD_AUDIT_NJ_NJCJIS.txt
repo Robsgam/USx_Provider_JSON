@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-09 11:46
+  Generated: 2026-06-17 16:28
 ================================================================
 CAD AUDIT
 =========
@@ -13,14 +13,14 @@ CAD AUDIT
 
 --- CHECK 1: CAD Field Alignment ---
   Vehicle:
-    [PASS] licensePlateNumber: in QIF and CAD list
-    [PASS] licensePlateTypeCode: in QIF and CAD list
-    [PASS] licensePlateYear: in QIF and CAD list
-    [PASS] vehicleIdentificationNumber: in QIF and CAD list
-    [PASS] vehicleMakeCode: in QIF and CAD list
+    [PASS] licensePlateNumber: in QIF as 'LicensePlateNumber' (MC PascalCase)
+    [PASS] licensePlateTypeCode: in QIF as 'LicensePlateTypeCode' (MC PascalCase)
+    [PASS] licensePlateYear: in QIF as 'LicensePlateYear' (MC PascalCase)
+    [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (MC PascalCase)
+    [INFO] vehicleMakeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] vehicleYear: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] registrationState: in QIF and CAD list
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -30,19 +30,18 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] randomRequest: in QIF, not in CAD list (provider-specific)
-    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] RandomRequest: in QIF, not in CAD list (provider-specific)
   Person:
-    [PASS] operatorLicenseNumber: in QIF and CAD list
-    [PASS] nameFirst: in QIF and CAD list
-    [PASS] nameLast: in QIF and CAD list
+    [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (MC PascalCase)
+    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
+    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] birthDate: in QIF and CAD list
-    [PASS] sexCode: in QIF and CAD list
+    [PASS] birthDate: in QIF as 'BirthDate' (MC PascalCase)
+    [PASS] sexCode: in QIF as 'SexCode' (MC PascalCase)
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
-    [PASS] registrationState: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
+    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -62,10 +61,10 @@ CAD AUDIT
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] gunCaliber: in QIF and CAD list
-    [PASS] gunModel: in QIF and CAD list
+    [PASS] gunCaliber: in QIF as 'GunCaliber' (MC PascalCase)
+    [PASS] gunModel: in QIF as 'GunModel' (MC PascalCase)
     [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -76,14 +75,14 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] gunSerialNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] gunMake: in QIF, not in CAD list (provider-specific)
+    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] articleTypeCode: in QIF and CAD list
+    [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (MC PascalCase)
     [INFO] articleBrand: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -92,12 +91,12 @@ CAD AUDIT
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] articleSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
   Boat:
-    [PASS] boatHullIdNumber: in QIF and CAD list
-    [PASS] registrationNumber: in QIF and CAD list
+    [PASS] boatHullIdNumber: in QIF as 'BoatHullIdNumber' (MC PascalCase)
+    [PASS] registrationNumber: in QIF as 'RegistrationNumber' (MC PascalCase)
     [INFO] registrationState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -130,7 +129,6 @@ CAD AUDIT
     [INFO] Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
-    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'NJ_NJCJIS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -138,12 +136,7 @@ CAD AUDIT
     [PASS] QIDM 'NJ_NJCJIS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 6: CAD Defaults Coverage ---
-    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVN -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVP -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NJ_NJCJIS_VehicleStolenQuery' combo QVV -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQ_RAND -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQ -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQN_RAND -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' combo RQN -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo DQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NJ_NJCJIS_DriverLicenseQuery' combo DQN -- defaults cover all initialValue any[] fields
@@ -158,6 +151,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 58 PASS / 0 FAIL / 0 WARN / 68 INFO
+Total: 51 PASS / 0 FAIL / 0 WARN / 68 INFO
 
 

@@ -1,7 +1,7 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-09
-JSON version: v3.5
+Last updated: 2026-06-17
+JSON version: v4.0
 Validator: 69 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v3.5 imported USx NJCJIS Tenant + Newark Foundation 2026-05-28. 14/14 combos, 5 QIDMs.
 
@@ -36,27 +36,27 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   queriesToDeselect: NONE (avoids bidirectional deadlock)
   Combos: RQ_RAND (plate RAND), RQ (plate FULL), RQN_RAND (VIN RAND), RQN (VIN FULL)
 
-  RQ_RAND -- Plate search, RandomRequest=Y [CONFIRMED]
+  RQ_RAND -- Plate search, RandomRequest=Y [PENDING]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     conditions: randomRequest EQUALS Y
     keyReference: RQ_RAND
     T3: Plate + all defaults + RandomRequest=Y. Conditions routing accepted.
 
-  RQ -- Plate search, FULL (default) [CONFIRMED]
+  RQ -- Plate search, FULL (default) [PENDING]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
     T2: Plate + all defaults + RandomRequest=N. Fallback combo (no conditions).
 
-  RQN_RAND -- VIN search, RandomRequest=Y [CONFIRMED]
+  RQN_RAND -- VIN search, RandomRequest=Y [PENDING]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     conditions: randomRequest EQUALS Y
     keyReference: RQN_RAND
     T11: VIN + RandomRequest=Y. No plate fields sent.
 
-  RQN -- VIN search, FULL (default) [CONFIRMED]
+  RQN -- VIN search, FULL (default) [PENDING]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
@@ -76,19 +76,19 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   queriesToDeselect: VehicleRegistrationQuery (checking Stolen unchecks Reg)
   Combos: QVN (NCIC#), QVP (plate), QVV (VIN)
 
-  QVN -- NCIC Number [CONFIRMED]
+  QVN -- NCIC Number [PENDING]
     set: ncicNumber
     any: imageIndicator
     keyReference: QVN
     T12: NCICNumber + ImageIndicator sent. No State, no plate, no VIN.
 
-  QVP -- Plate search [CONFIRMED]
+  QVP -- Plate search [PENDING]
     set: licensePlateNumber
     any: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
     keyReference: QVP
     T5: Plate + State + ImageIndicator. queriesToDeselect confirmed (Reg unchecked).
 
-  QVV -- VIN search [CONFIRMED]
+  QVV -- VIN search [PENDING]
     set: vehicleIdentificationNumber
     any: imageIndicator, vehicleMakeCode
     keyReference: QVV
@@ -107,13 +107,13 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   autoSelect: true
   Combos: DQN (OLN), DQ (Name+DOB)
 
-  DQN -- OLN + State [CONFIRMED]
+  DQN -- OLN + State [PENDING]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
     T6: OLN + State + ImageIndicator sent. RMS co-fired with dlNumber.
 
-  DQ -- Name + DOB [CONFIRMED]
+  DQ -- Name + DOB [PENDING]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ
@@ -131,7 +131,7 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   QIF:  Firearm
   Combos: QG
 
-  QG -- Serial Number [CONFIRMED]
+  QG -- Serial Number [PENDING]
     set: serialNumber
     any: gunCaliber, firearmMake, gunModel, imageIndicator
     keyReference: QG
@@ -145,7 +145,7 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [CONFIRMED]
+  QA -- Serial + ArticleType [PENDING]
     set: serialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
@@ -160,13 +160,13 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   Combos: QB (Registration), QBN (Hull ID)
   No State field on Boat (removed in v2 metadata)
 
-  QB -- Registration Number [CONFIRMED]
+  QB -- Registration Number [PENDING]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
     T10: RegistrationNumber + ImageIndicator sent.
 
-  QBN -- Hull ID [CONFIRMED]
+  QBN -- Hull ID [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN

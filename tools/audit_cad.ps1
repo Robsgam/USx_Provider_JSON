@@ -295,16 +295,24 @@ foreach ($jf in $jsonFiles) {
 
         foreach ($cadField in $cadList) {
             if ($Variant -eq 'MC') {
-                # MC uses PascalCase. Check if the PascalCase version exists.
-                $pascalField = $null
-                if ($camelToPascal.ContainsKey($cadField)) {
-                    $pascalField = $camelToPascal[$cadField]
-                }
+                # MC uses PascalCase. Accept ANY valid PascalCase candidate for this
+                # CAD field. Candidates: the patch8-inverse form (where available) AND
+                # the plain first-letter-uppercase form (with ncicNumber special-cased).
+                # Both are needed because the patch8 reverse map can yield a stale form
+                # for fields renamed in Patch 8 -- e.g. licensePlateNumber reverses to the
+                # BANNED 'LicensePlateNumberIn', while the correct recased form is
+                # 'LicensePlateNumber'. camelCase providers are unaffected: they match the
+                # camelCase branch first and never reach these Pascal candidates.
+                $pascalCands = [System.Collections.Generic.List[string]]::new()
+                if ($camelToPascal.ContainsKey($cadField)) { $pascalCands.Add($camelToPascal[$cadField]) }
+                if ($cadField -eq 'ncicNumber') { $pascalCands.Add('NCICNumber') }
+                if ($cadField) { $pascalCands.Add($cadField.Substring(0,1).ToUpper() + $cadField.Substring(1)) }
+                $hitPascal = $pascalCands | Where-Object { $qifFieldSet.Contains($_) } | Select-Object -First 1
                 if ($qifFieldSet.Contains($cadField)) {
                     # camelCase found in MC -- that's fine (some fields weren't renamed)
                     Out-Pass "${cadField}: in QIF and CAD list"
-                } elseif ($pascalField -and $qifFieldSet.Contains($pascalField)) {
-                    Out-Pass "${cadField}: in QIF as '$pascalField' (MC PascalCase)"
+                } elseif ($hitPascal) {
+                    Out-Pass "${cadField}: in QIF as '$hitPascal' (MC PascalCase)"
                 } else {
                     # Check for wrong case
                     $wrongCase = $null
@@ -312,7 +320,7 @@ foreach ($jf in $jsonFiles) {
                         if ($f -ieq $cadField -and $f -cne $cadField) { $wrongCase = $f; break }
                     }
                     if ($wrongCase) {
-                        Out-Fail "${wrongCase}: wrong case (expected '$cadField' or '$pascalField')"
+                        Out-Fail "${wrongCase}: wrong case (expected '$cadField' or one of: $($pascalCands -join ', '))"
                     } else {
                         Out-Info "${cadField}: in CAD list, not in QIF (CAD sends it but form doesn't have it)"
                     }
