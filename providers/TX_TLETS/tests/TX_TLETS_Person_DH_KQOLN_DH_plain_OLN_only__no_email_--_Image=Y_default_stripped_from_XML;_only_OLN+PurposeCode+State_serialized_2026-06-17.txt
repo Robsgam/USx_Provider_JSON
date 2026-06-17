@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQOLN (DH plain OLN only, no email -- Image=Y default stripped from XML; only OLN+PurposeCode+State serialized)
+Date: 2026-06-17 11:56:13
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVB4PN8VVNSVVCVFSG3DD392"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVB4PN8VVNSVVCVFSG3DD392</Id><State>TX</State><OperatorLicenseNumber>TX123456789</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVB4PN8VVNSVVCVFSG3DD392
+  State                          TX
+  OperatorLicenseNumber          TX123456789
+  PurposeCode                    C
+
+NOTES
+-----
+
+
+RESULT: PASS
