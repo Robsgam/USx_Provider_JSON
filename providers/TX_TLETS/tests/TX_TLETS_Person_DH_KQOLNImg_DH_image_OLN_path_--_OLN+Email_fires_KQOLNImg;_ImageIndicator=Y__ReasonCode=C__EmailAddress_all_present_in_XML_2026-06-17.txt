@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQOLNImg (DH image OLN path -- OLN+Email fires KQOLNImg; ImageIndicator=Y, ReasonCode=C, EmailAddress all present in XML)
+Date: 2026-06-17 12:04:22
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVB550QA9522XPZ6R7QK25GG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MKRS$#</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVB550QA9522XPZ6R7QK25GG</Id><ImageIndicator>Y</ImageIndicator><State>TX</State><OperatorLicenseNumber>TX123456789</OperatorLicenseNumber><ReasonCode>C</ReasonCode><PurposeCode>C</PurposeCode><EmailAddress>LOSER@MC.COM</EmailAddress></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVB550QA9522XPZ6R7QK25GG
+  ImageIndicator                 Y
+  State                          TX
+  OperatorLicenseNumber          TX123456789
+  ReasonCode                     C
+  PurposeCode                    C
+  EmailAddress                   LOSER@MC.COM
+
+NOTES
+-----
+
+
+RESULT: PASS
