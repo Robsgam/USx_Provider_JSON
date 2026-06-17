@@ -1,8 +1,8 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 JSON version: v3.6
-Live test: v3.6 In progress -- imported USx TLETS tenant 2026-06-15 (v3.5 never imported; re-imported v3.6); RENDER PASS (all 5 entities); Vehicle T12-T14 PASS + VIN+VIN(T17) PASS; T15(RQ+VIN) pending
+Live test: v3.6 In progress -- imported USx TLETS tenant 2026-06-15 (v3.5 never imported; re-imported v3.6); RENDER PASS (all 5 entities); Vehicle T12-T15 PASS + VIN+VIN(T17) PASS; T16(QV+VIN) LIMITATION (shadowed); T18 pending
 Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIM (v3.6)
 Verify: CLEAN (0 FAIL)
 
@@ -59,14 +59,14 @@ v3.4 CHANGES (from v3.3):
     any: RegionId, RegistrationState
     state: In/Out
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [PENDING]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
     state: In/Out
-    NOTE: Prior T15 log mislabeled -- test ran with FinancialResponsibilityType=Y which fired
-          VINVehicleIdentificationNumber (more specific, combo #3) not RQVehicleIdentificationNumber
-          (#6). Re-test required: VIN only, FinancialResponsibilityType blank.
+    CONFIRMED: T15 2026-06-17. VIN-only input. XML: VehicleIdentificationNumber + State=TX (default).
+               No plate fields. No FinancialResponsibilityType. State=TX injected from registrationState
+               any[] (initialValue "Texas" reverse-looked up to NCIC code TX).
 
   QV VIN -- NCIC Stolen Vehicle (VIN only) [LIMITATION]
     keyReference: QVVehicleIdentificationNumber
@@ -272,7 +272,7 @@ SUMMARY
     Vehicle: REGLicensePlateNumber, RQLicensePlateNumber, QVLicensePlateNumber, VINVehicleIdentificationNumber
     Person DL: DQName, QWName, CPLName, DQOLN
     Person DH: KQName, KQOLN
-    PENDING: RQVehicleIdentificationNumber (T15 re-run), DPSIStickerNumber (T18),
+    PENDING: DPSIStickerNumber (T18),
              Boat (T19-T23), Firearm (T24-T25), Article (T26-T27),
              any[] tests (T28-T32), deselect (T33), negatives (T34-T35)
     LIMITATION: QVVehicleIdentificationNumber (permanently shadowed by RQ VIN)
