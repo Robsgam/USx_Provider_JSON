@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 17:18
+  Generated: 2026-06-17 20:02
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -13,7 +13,7 @@ Matrix: HI_HCJDC_OFML_TEST_MATRIX.txt
 Generated: 2026-06-17
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
-  T1  Person     [PASS] 2 cards, 16 fields, defaults verified
+  T1  Person     [PASS] 3 cards, 16 fields, defaults verified
   T2  Vehicle    [PASS] 1 cards, 9 fields, defaults verified
   T3  Boat       [PASS] 1 cards, 4 fields, defaults verified
   T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
@@ -38,12 +38,14 @@ PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
   T19  Firearm    [PASS] GunQuery fires (QG)
 PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
   T20  Article    [PASS] ArticleSingleQuery fires (QA)
+PHASE 7: ANY[] FIELD TESTS (1 tests)
+  T21  Person     [PASS] any[] fields verified: registrationState, purposeCodeDH
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T21  Person     [PASS] queriesToDeselect verified
+  T22  Person     [PASS] queriesToDeselect verified
 PHASE 9: NEGATIVES (empty forms = no send)
-  T22  Person     [PASS] empty form: no combos fire
-  T23  Boat       [PASS] empty form: no combos fire
+  T23  Person     [PASS] empty form: no combos fire
+  T24  Boat       [PASS] empty form: no combos fire
 
-SUMMARY: 23/23 PASS, 0 FAIL
+SUMMARY: 24/24 PASS, 0 FAIL
 
 

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 17:18
+  Generated: 2026-06-17 20:02
 ================================================================
 QUERY SIMULATION
 ================
@@ -96,6 +96,7 @@ QUERY SIMULATION
 
     [FIRES first-match] DQ
       set: [sexCode, birthDate, nameLast, nameFirst]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -103,29 +104,34 @@ QUERY SIMULATION
         <BirthDate>01151990</BirthDate>
         <Name>John Doe A</Name>
         <SexCode>M</SexCode>
+        <State>NJ</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QW
       set: [birthDate, nameLast, nameFirst]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QW</MessageKey>
         <BirthDate>01151990</BirthDate>
         <Name>John Doe A</Name>
+        <State>NJ</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] DQN
       set: [operatorLicenseNumber]
+      any: [registrationState] -> matched: [registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>DQ</MessageKey>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
       </Transaction>
 
     >> PLATFORM FIRES: DQ (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -134,26 +140,32 @@ QUERY SIMULATION
 
     [FIRES first-match] KQ
       set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
+      any: [registrationState, purposeCodeDH] -> matched: [registrationState, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
         <BirthDate>01151990</BirthDate>
         <Name>John Doe A</Name>
+        <PurposeCode>C</PurposeCode>
         <SexCode>M</SexCode>
+        <State>NJ</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] KQN
       set: [operatorLicenseNumberDH]
+      any: [registrationState, purposeCodeDH] -> matched: [registrationState, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
       </Transaction>
 
     >> PLATFORM FIRES: KQ (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

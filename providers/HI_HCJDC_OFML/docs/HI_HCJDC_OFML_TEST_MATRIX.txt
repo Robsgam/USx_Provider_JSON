@@ -1,4 +1,4 @@
-HI_HCJDC_OFML MC v1.8 -- TEST MATRIX
+HI_HCJDC_OFML MC v1.9 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-17
 Variant: MC (multi-card per entity)
@@ -7,18 +7,20 @@ Validator: unknown
 FORM FIELDS (MC layout)
 ----------------------------------------
 Vehicle (1 card, 9 fields):
-  CARD_VEH (VEHICLE SEARCH):
-    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], vehicleTypeCode [Inp 1, 1]
+  CARD_VEH (VEHICLE SEARCH -- Hawaii: choose Type Code | Out-of-state: Plate Type + Year (+ State)):
+    ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1]
     ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 3: vehicleIdentificationNumber [Inp 20]
     ROW 4: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
-Person (2 cards, 16 fields):
-  CARD_PER_DL (DRIVER LICENSE):
-    ROW 1: operatorLicenseNumber [Inp 20], registrationState [Sel STATE]
+Person (3 cards, 16 fields):
+  CARD_PER_OPT (SEARCH OPTIONS (applies to License + History)):
+    registrationState [Sel STATE]
+  CARD_PER_DL (DRIVER LICENSE -- License Number, or Name + DOB (+ Sex)):
+    ROW 1: operatorLicenseNumber [Inp 20]
     ROW 2: nameFirst [Inp 30], nameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 3: birthDate [FormDate], sexCode [Sel SEX]
-  CARD_PER_DH (DRIVER HISTORY):
+  CARD_PER_DH (DRIVER HISTORY -- opt in; Purpose Code required. License Number, or Name + DOB (+ Sex)):
     ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: nameFirstDH [Inp 30], nameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
@@ -29,19 +31,19 @@ Firearm (1 card, 5 fields):
     ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunModel [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
-  CARD_ART (NCIC ARTICLE QUERY):
+  CARD_ART (NCIC ARTICLE QUERY -- Serial # and Article Type both required):
     articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 4 fields):
-  CARD_BOA (BOAT SEARCH):
+  CARD_BOA (BOAT SEARCH -- Registration # or Hull ID):
     ROW 1: registrationNumber [Inp 8], registrationState [Sel STATE]
     ROW 2: boatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (6 QIDMs, 15 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, M55S x1, M55L x1), autoSelect=true
-  DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true, deselects: [DH]
+  DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
   ArticleSingleQuery: 1 combos (QA x1)
@@ -55,31 +57,33 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 2 cards:                        [    ]
-              CARD_PER_DL: titled "DRIVER LICENSE".
-              License Number, State dropdown (no default).
+ 1  Person      Render form. Verify 3 cards:                        [    ]
+              CARD_PER_OPT: titled "SEARCH OPTIONS (applies to License + History)".
+              State (out-of-state only) dropdown (no default).
+              CARD_PER_DL: titled "DRIVER LICENSE -- License Number, or Name + DOB (+ Sex)".
+              License Number.
               First Name, Last Name, Middle Name, Suffix.
               Date of Birth, Sex dropdown (no default).
-              CARD_PER_DH: titled "DRIVER HISTORY".
+              CARD_PER_DH: titled "DRIVER HISTORY -- opt in; Purpose Code required. License Number, or Name + DOB (+ Sex)".
               License Number, Purpose Code=C.
               First Name, Last Name, Middle Name, Suffix.
               Date of Birth, Sex dropdown (no default).
  2  Vehicle     Render form. Verify 1 card:                        [    ]
-              CARD_VEH: titled "VEHICLE SEARCH".
-              Plate Number, State dropdown (no default), Type Code=1.
+              CARD_VEH: titled "VEHICLE SEARCH -- Hawaii: choose Type Code | Out-of-state: Plate Type + Year (+ State)".
+              Plate Number, State (out-of-state only) dropdown (no default), Type Code (Hawaii in-state) dropdown=1.
               Plate Type dropdown=PC, Plate Year=2026.
               VIN.
               Vehicle Make dropdown (no default), Vehicle Year, Image dropdown=N.
  3  Boat        Render form. Verify 1 card:                        [    ]
-              CARD_BOA: titled "BOAT SEARCH".
+              CARD_BOA: titled "BOAT SEARCH -- Registration # or Hull ID".
               Registration Number, State dropdown (no default).
               Hull ID Number, Search Hit dropdown=Y.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "NCIC FIREARM QUERY".
-              Serial Number, Make dropdown (no default).
+              Serial Number (required), Make dropdown (no default).
               Caliber dropdown (no default), Model, Search Hit dropdown=Y.
  5  Article     Render form. Verify 1 card:                        [    ]
-              CARD_ART: titled "NCIC ARTICLE QUERY".
+              CARD_ART: titled "NCIC ARTICLE QUERY -- Serial # and Article Type both required".
               Serial Number, Article Type dropdown (no default).
               Search Hit dropdown=Y.
 
@@ -138,22 +142,29 @@ PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
 20  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
               Expected: ArticleSingleQuery fires (QA)
 
+PHASE 7: ANY[] FIELD TESTS (1 tests)
+------------------------------------------------------------------------
+#   Entity      Combo              any[] field tested               Result
+--  ----------  -----------------  -------------------------------- ------
+21  Person      KQ+N               + registrationState, purposeCodeDH [    ]
+              Expected: any[] fields present in XML output.
+
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-21  Person      Deselect: DL deselects DH.     [    ]
+22  Person      Deselect: DH deselects DL.     [    ]
               Fill both query fields. Check deselect behavior.
 
 PHASE 9: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-22  Person      Empty form, verify no Send button / no request.    [    ]
-23  Boat        Empty form, verify no Send button / no request.    [    ]
+23  Person      Empty form, verify no Send button / no request.    [    ]
+24  Boat        Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 23 tests
+TOTAL: 24 tests
 
 COMBO COVERAGE (15/15):
   VehicleRegistrationQuery: 6/6 -- T11(RQ+V), T12(RQ+Plate), T13(QV+V), T14(QV+P), T15(M55L+M55L), T16(M55S+M55S)
