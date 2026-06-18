@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 21:27
+  Generated: 2026-06-17 21:38
 ================================================================
 QUERY SIMULATION
 ================
@@ -16,7 +16,7 @@ QUERY SIMULATION
 
     [FIRES first-match] RQ
       set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -25,6 +25,7 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] M55L
@@ -77,12 +78,13 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] RQV
       set: [vehicleIdentificationNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>RQ</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
+        <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
       </Transaction>
 
