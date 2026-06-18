@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 23:43
+  Generated: 2026-06-18 07:53
 ================================================================
 QUERY SIMULATION
 ================
@@ -15,8 +15,8 @@ QUERY SIMULATION
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
 
     [FIRES first-match] RQ
-      set: [licensePlateNumber, licensePlateTypeCode, licensePlateYear]
-      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -29,8 +29,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] M55L
-      set: [vehicleTypeCode, licensePlateNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      set: [vehicleTypeCode, LicensePlateNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -41,8 +41,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QVP
-      set: [licensePlateNumber, registrationState]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      set: [LicensePlateNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -53,8 +53,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] M55S
-      set: [vehicleTypeCode, vehicleIdentificationNumber]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      set: [vehicleTypeCode, VehicleIdentificationNumber]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -65,8 +65,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QVV
-      set: [vehicleIdentificationNumber, vehicleMakeCode]
-      any: [imageIndicator] -> matched: [imageIndicator]
+      set: [VehicleIdentificationNumber, VehicleMakeCode]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -77,8 +77,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] RQV
-      set: [vehicleIdentificationNumber]
-      any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
+      set: [VehicleIdentificationNumber]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -97,8 +97,8 @@ QUERY SIMULATION
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
 
     [FIRES first-match] DQ
-      set: [sexCode, birthDate, nameLast, nameFirst]
-      any: [registrationState] -> matched: [registrationState]
+      set: [SexCode, BirthDate, NameLast, NameFirst]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -110,8 +110,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QW
-      set: [birthDate, nameLast, nameFirst]
-      any: [registrationState] -> matched: [registrationState]
+      set: [BirthDate, NameLast, NameFirst]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -122,8 +122,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] DQN
-      set: [operatorLicenseNumber]
-      any: [registrationState] -> matched: [registrationState]
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -141,8 +141,8 @@ QUERY SIMULATION
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
     [FIRES first-match] KQ
-      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [registrationState, purposeCodeDH] -> matched: [registrationState, purposeCodeDH]
+      set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+      any: [RegistrationState, purposeCodeDH] -> matched: [RegistrationState, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -155,8 +155,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] KQN
-      set: [operatorLicenseNumberDH]
-      any: [registrationState, purposeCodeDH] -> matched: [registrationState, purposeCodeDH]
+      set: [OperatorLicenseNumberDH]
+      any: [RegistrationState, purposeCodeDH] -> matched: [RegistrationState, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -175,7 +175,7 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
     [FIRES first-match] QG
-      set: [gunSerialNumber]
+      set: [GunSerialNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -192,7 +192,7 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
 
     [FIRES first-match] QA
-      set: [articleSerialNumber, articleTypeCode]
+      set: [ArticleSerialNumber, ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -210,7 +210,7 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 4  |  Combos: 2
 
     [FIRES first-match] BQ
-      set: [registrationNumber]
+      set: [RegistrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -219,7 +219,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QB
-      set: [boatHullIdNumber]
+      set: [BoatHullIdNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -236,26 +236,26 @@ QUERY SIMULATION
     Query: Person  |  Attrs: 7  |  Combos: 4
 
     [FIRES first-match] firstNameLastNameDriversLicenseNumber
-      set: [operatorLicenseNumber, nameFirst, nameLast]
-      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      set: [OperatorLicenseNumber, NameFirst, NameLast]
+      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
-      set: [nameFirst, nameLast, birthDate]
-      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      set: [NameFirst, NameLast, BirthDate]
+      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastName
-      set: [nameFirst, nameLast]
-      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      set: [NameFirst, NameLast]
+      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] driversLicenseNumber
-      set: [operatorLicenseNumber]
-      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      set: [OperatorLicenseNumber]
+      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
@@ -268,14 +268,14 @@ QUERY SIMULATION
     Query: Vehicle  |  Attrs: 3  |  Combos: 2
 
     [FIRES first-match] vehicleIdentificationNumber
-      set: [vehicleIdentificationNumber]
-      any: [licensePlateNumber, registrationState] -> matched: [licensePlateNumber, registrationState]
+      set: [VehicleIdentificationNumber]
+      any: [LicensePlateNumber, RegistrationState] -> matched: [LicensePlateNumber, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"vehicle.vinNumber":"1HGCM82633A123456","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
 
     [FIRES shadowed -- first match above wins] licensePlateIn
-      set: [licensePlateNumber]
-      any: [registrationState] -> matched: [registrationState]
+      set: [LicensePlateNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
 

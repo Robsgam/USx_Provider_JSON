@@ -1,48 +1,48 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 23:43
+  Generated: 2026-06-18 07:53
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    articleTypeCode [Article Type (required)]
+    ArticleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
     relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    registrationState [State (optional)]
+    RegistrationState [State (optional)]
       Config: attributeTypeId=STATE
     relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    gunCaliber [Caliber (optional)]
+    GunCaliber [Caliber (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    gunMake [Make (optional)]
+    GunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
     relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    registrationState [State (leave blank for in-state)]
+    RegistrationState [State (leave blank for in-state)]
       Config: attributeTypeId=STATE
-    sexCode [Sex (optional)]
+    SexCode [Sex (optional)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    sexCodeDH [Sex (DH) - required with Name]
+    SexCodeDH [Sex (DH) - required with Name]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    imageIndicator [Image (optional)] (default=N)
+    ImageIndicator [Image (optional)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    licensePlateTypeCode [Plate Type (out-of-state)] (default=PC)
+    LicensePlateTypeCode [Plate Type (out-of-state)] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    registrationState [State (optional)]
+    RegistrationState [State (optional)]
       Config: attributeTypeId=STATE
-    vehicleMakeCode [Make (optional)]
+    VehicleMakeCode [Make (optional)]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
     vehicleTypeCode [Type Code (required for in-state HI)] (default=1)
       Config: codeTypeCategory=VEHICLE_TYPE, codeTypeSource=HI_NIBRS

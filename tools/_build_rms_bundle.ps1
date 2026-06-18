@@ -34,13 +34,38 @@ function _C($kr, $set, $any, $pfr) {
     [PSCustomObject]$c
 }
 
+# Canonical PascalCase for the USx CAD-integration form fields that the RMS
+# Person/Vehicle search QIDMs read FROM the form (sourceField / set / any). Only
+# these form-fed references are recased; Mark43-internal targetFields, response
+# QRDM names, and non-USx tokens (raceCode, SocialSecurityNumber) stay as-is.
+$script:UsxPascalMap = @{
+    vehicleIdentificationNumber = 'VehicleIdentificationNumber'
+    licensePlateNumber          = 'LicensePlateNumber'
+    registrationState           = 'RegistrationState'
+    nameFirst                   = 'NameFirst'
+    nameLast                    = 'NameLast'
+    operatorLicenseNumber       = 'OperatorLicenseNumber'
+    birthDate                   = 'BirthDate'
+    sexCode                     = 'SexCode'
+}
+# _U recases a form-field reference array to PascalCase when the calling
+# Build-RmsBundle was invoked with -PascalCaseUsxFields (read via dynamic scope).
+# Tokens absent from the map pass through unchanged. Always returns an array.
+function _U($arr) {
+    if (-not $PascalCaseUsxFields) { return ,@($arr) }
+    ,@($arr | ForEach-Object {
+        if ($_ -and $script:UsxPascalMap.ContainsKey([string]$_)) { $script:UsxPascalMap[[string]$_] } else { $_ }
+    })
+}
+
 # =====================================================================
 # Build-RmsBundle — Constructs the complete RMS bundle from KB specs
 # =====================================================================
 function Build-RmsBundle {
     param(
-        [switch]$KeepSsn,    # AZ, TN: include socialSecurityNumber attr + combo
-        [switch]$SkipRace    # TX, LA, MD, CA_CONTRA_COSTA: exclude race attr + raceCode from any[]
+        [switch]$KeepSsn,             # AZ, TN: include socialSecurityNumber attr + combo
+        [switch]$SkipRace,            # TX, LA, MD, CA_CONTRA_COSTA: exclude race attr + raceCode from any[]
+        [switch]$PascalCaseUsxFields  # NJ, FL, HI: form-fed sourceField/set/any in PascalCase (match PascalCase form fieldIds)
     )
 
     # --- RMS AUTHENTICATION (REST) ---
@@ -80,19 +105,19 @@ function Build-RmsBundle {
     # --- RMS VEHICLE QIDM (3 attrs, 2 combos — primary keys only, no year/make/model filtering) ---
     $rmsVeh = [PSCustomObject]@{
         attributes = @(
-            [PSCustomObject]@{ name = 'vinNumber';            sourceField = @('vehicleIdentificationNumber'); targetField = 'vehicle.vinNumber' }
-            [PSCustomObject]@{ name = 'licensePlateNumber';   sourceField = @('licensePlateNumber');           targetField = 'vehicle.tag' }
+            [PSCustomObject]@{ name = 'vinNumber';            sourceField = (_U @('vehicleIdentificationNumber')); targetField = 'vehicle.vinNumber' }
+            [PSCustomObject]@{ name = 'licensePlateNumber';   sourceField = (_U @('licensePlateNumber'));           targetField = 'vehicle.tag' }
             [PSCustomObject]@{
                 name            = 'registrationState'
                 rule            = _R 'AttributeArrayWrapperRuleHandler' $null
-                sourceField     = @('registrationState')
+                sourceField     = (_U @('registrationState'))
                 targetField     = 'vehicle.registrationStateAttrIds'
                 useAttributeId  = $true
             }
         )
         combinations = @(
-            _C 'vehicleIdentificationNumber' @('vehicleIdentificationNumber') @('licensePlateNumber','registrationState') $null
-            _C 'licensePlateIn'              @('licensePlateNumber')           @('registrationState') $null
+            _C 'vehicleIdentificationNumber' (_U @('vehicleIdentificationNumber')) (_U @('licensePlateNumber','registrationState')) $null
+            _C 'licensePlateIn'              (_U @('licensePlateNumber'))           (_U @('registrationState')) $null
         )
         description     = 'Configuration for handling elastic query with various attributes'
         handlerFunction = 'RmsRestPayloadHandler'
@@ -110,13 +135,13 @@ function Build-RmsBundle {
     if (-not $SkipRace) { $personAny.Add('raceCode') }
     $personAny.Add('sexCode')
     $personAny.Add('registrationState')
-    $anyArr = @($personAny)
+    $anyArr = (_U @($personAny))
 
     $personAttrs = [System.Collections.Generic.List[object]]::new()
-    $personAttrs.Add([PSCustomObject]@{ name = 'firstName';     size = 60; sourceField = @('nameFirst');              targetField = 'firstName' })
-    $personAttrs.Add([PSCustomObject]@{ name = 'lastName';      size = 60; sourceField = @('nameLast');               targetField = 'lastName' })
-    $personAttrs.Add([PSCustomObject]@{ name = 'licenseNumber'; size = 60; sourceField = @('operatorLicenseNumber');  targetField = 'dlNumber' })
-    $personAttrs.Add([PSCustomObject]@{ name = 'dateOfBirth';              sourceField = @('birthDate');              targetField = 'dateOfBirth' })
+    $personAttrs.Add([PSCustomObject]@{ name = 'firstName';     size = 60; sourceField = (_U @('nameFirst'));              targetField = 'firstName' })
+    $personAttrs.Add([PSCustomObject]@{ name = 'lastName';      size = 60; sourceField = (_U @('nameLast'));               targetField = 'lastName' })
+    $personAttrs.Add([PSCustomObject]@{ name = 'licenseNumber'; size = 60; sourceField = (_U @('operatorLicenseNumber'));  targetField = 'dlNumber' })
+    $personAttrs.Add([PSCustomObject]@{ name = 'dateOfBirth';              sourceField = (_U @('birthDate'));              targetField = 'dateOfBirth' })
     if (-not $SkipRace) {
         $personAttrs.Add([PSCustomObject]@{
             name           = 'race'
@@ -126,20 +151,20 @@ function Build-RmsBundle {
             useAttributeId = $true
         })
     }
-    $personAttrs.Add([PSCustomObject]@{ name = 'sex'; sourceField = @('sexCode'); targetField = 'sexAttrId'; useAttributeId = $true })
-    $personAttrs.Add([PSCustomObject]@{ name = 'registrationState'; sourceField = @('registrationState'); targetField = 'registrationStateAttrId'; useAttributeId = $true })
+    $personAttrs.Add([PSCustomObject]@{ name = 'sex'; sourceField = (_U @('sexCode')); targetField = 'sexAttrId'; useAttributeId = $true })
+    $personAttrs.Add([PSCustomObject]@{ name = 'registrationState'; sourceField = (_U @('registrationState')); targetField = 'registrationStateAttrId'; useAttributeId = $true })
     if ($KeepSsn) {
         $personAttrs.Add([PSCustomObject]@{ name = 'socialSecurityNumber'; size = 60; sourceField = @('SocialSecurityNumber'); targetField = 'ssn' })
     }
 
     $personCombos = [System.Collections.Generic.List[object]]::new()
     if ($KeepSsn) {
-        $personCombos.Add((_C 'firstNameLastNameSocialSecurityNumber' @('SocialSecurityNumber','nameFirst','nameLast') $anyArr $null))
+        $personCombos.Add((_C 'firstNameLastNameSocialSecurityNumber' (_U @('SocialSecurityNumber','nameFirst','nameLast')) $anyArr $null))
     }
-    $personCombos.Add((_C 'firstNameLastNameDriversLicenseNumber' @('operatorLicenseNumber','nameFirst','nameLast') $anyArr $null))
-    $personCombos.Add((_C 'firstNameLastNameDateOfBirth'          @('nameFirst','nameLast','birthDate')             $anyArr $null))
-    $personCombos.Add((_C 'firstNameLastName'                     @('nameFirst','nameLast')                         $anyArr $null))
-    $personCombos.Add((_C 'driversLicenseNumber'                  @('operatorLicenseNumber')                        $anyArr $null))
+    $personCombos.Add((_C 'firstNameLastNameDriversLicenseNumber' (_U @('operatorLicenseNumber','nameFirst','nameLast')) $anyArr $null))
+    $personCombos.Add((_C 'firstNameLastNameDateOfBirth'          (_U @('nameFirst','nameLast','birthDate'))             $anyArr $null))
+    $personCombos.Add((_C 'firstNameLastName'                     (_U @('nameFirst','nameLast'))                         $anyArr $null))
+    $personCombos.Add((_C 'driversLicenseNumber'                  (_U @('operatorLicenseNumber'))                        $anyArr $null))
 
     $rmsPer = [PSCustomObject]@{
         attributes      = @($personAttrs)

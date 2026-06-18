@@ -1,6 +1,6 @@
 ﻿FL_FCIC METADATA REFERENCE
 ===========================
-Generated: 2026-06-17
+Generated: 2026-06-18
 Source: FL_FCIC.xml (metadata) + FL_FCIC.json
 Metadata: 177 total transactions, 6 queries built in JSON
 
@@ -27,9 +27,9 @@ METADATA COMBINATIONS (4 total):
   QA            ProcessControlNumber    ProcessControlNumber                                   ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
-  BUILT   QAOwnerAppliedNumber set[articleTypeCode, ownerAppliedNumber]
-  BUILT   QANCICNumber   set[ncicNumber]
+  BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
+  BUILT   QAOwnerAppliedNumber set[ArticleTypeCode, ownerAppliedNumber]
+  BUILT   QANCICNumber   set[NCICNumber]
   BUILT   QAProcessControlNumber set[processControlNumber]
 
 ================================================================================
@@ -72,18 +72,18 @@ METADATA COMBINATIONS (12 total):
   BQ            RegistrationNumber      RegistrationNumber, State                              BoatHullIdNumber, Requestor...
 
 BUILD COVERAGE (12 of 12 built):
-  BUILT   FBQBoatHullIdNumber set[boatHullIdNumber]
+  BUILT   FBQBoatHullIdNumber set[BoatHullIdNumber]
   BUILT   FBQDecalNumber set[decalNumber]
-  BUILT   FBQRegistrationNumber set[registrationNumber]
+  BUILT   FBQRegistrationNumber set[RegistrationNumber]
   BUILT   FBQTitleLienInformation set[titleLienInformation]
-  BUILT   QBBoatHullIdNumber set[boatHullIdNumber, relatedHitSearchIndicator]
+  BUILT   QBBoatHullIdNumber set[BoatHullIdNumber, relatedHitSearchIndicator]
   BUILT   QBCoastGuardDocumentNumber set[coastGuardDocumentNumber]
-  BUILT   QBNCICNumber   set[ncicNumber]
+  BUILT   QBNCICNumber   set[NCICNumber]
   BUILT   QBProcessControlNumber set[processControlNumber]
-  BUILT   QBRegistrationNumber set[registrationNumber, relatedHitSearchIndicator]
-  BUILT   BQName         set[birthDate, nameLast, nameFirst, registrationState]
-  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
-  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
+  BUILT   QBRegistrationNumber set[RegistrationNumber, relatedHitSearchIndicator]
+  BUILT   BQName         set[BirthDate, NameLast, NameFirst, RegistrationState]
+  BUILT   BQBoatHullIdNumber set[BoatHullIdNumber, RegistrationState]
+  BUILT   BQRegistrationNumber set[RegistrationNumber, RegistrationState]
 
 ================================================================================
 3. DriverHistoryQuery (version 15)
@@ -106,8 +106,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           Attention, PurposeCode, Req...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, registrationStateDH]
-  BUILT   KQOperatorLicenseNumber set[operatorLicenseNumberDH, registrationStateDH]
+  BUILT   KQName         set[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH]
+  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, RegistrationStateDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 20)
@@ -139,10 +139,10 @@ METADATA COMBINATIONS (6 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber, State                           State2, State3, State4, Sta...
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   FDQName        set[birthDate, nameLast, nameFirst, sexCode]
-  BUILT   FDQOperatorLicenseNumber set[operatorLicenseNumber]
-  BUILT   DQName         set[birthDate, nameLast, nameFirst, sexCode, registrationState]
-  BUILT   DQOperatorLicenseNumber set[operatorLicenseNumber, registrationState]
+  BUILT   FDQName        set[BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   FDQOperatorLicenseNumber set[OperatorLicenseNumber]
+  BUILT   DQName         set[BirthDate, NameLast, NameFirst, SexCode, RegistrationState]
+  BUILT   DQOperatorLicenseNumber set[OperatorLicenseNumber, RegistrationState]
   UNBUILT QW             Name
   UNBUILT QW             OperatorLicenseNumber
 
@@ -167,8 +167,8 @@ METADATA COMBINATIONS (3 total):
   QG            ProcessControlNumber    ProcessControlNumber                                   GunMake, ImageIndicator, Re...
 
 BUILD COVERAGE (3 of 3 built):
-  BUILT   QGGunSerialNumber set[gunSerialNumber]
-  BUILT   QGNCICNumber   set[ncicNumber]
+  BUILT   QGGunSerialNumber set[GunSerialNumber]
+  BUILT   QGNCICNumber   set[NCICNumber]
   BUILT   QGProcessControlNumber set[processControlNumber]
 
 ================================================================================
@@ -207,12 +207,12 @@ METADATA COMBINATIONS (8 total):
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Requestor, State2, State3, ...
 
 BUILD COVERAGE (6 of 8 built):
-  BUILT   FRQDecalNumber set[decalNumber, licensePlateYear]
-  BUILT   FRQLicensePlateNumber set[licensePlateNumber]
+  BUILT   FRQDecalNumber set[decalNumber, LicensePlateYear]
+  BUILT   FRQLicensePlateNumber set[LicensePlateNumber]
   BUILT   FRQTitleLienInformation set[titleLienInformation]
-  BUILT   FRQVehicleIdentificationNumber set[vehicleIdentificationNumber]
-  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber, registrationState]
+  BUILT   FRQVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
 
