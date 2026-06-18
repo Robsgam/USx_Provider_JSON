@@ -406,7 +406,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'licensePlateNumber_Input'; node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (leave blank for in-state)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'vehicleTypeCode_Input';      node = Sel 'vehicleTypeCode' 'Type Code (required for in-state HI)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
