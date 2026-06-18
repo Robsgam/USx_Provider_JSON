@@ -1,50 +1,50 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-17 20:02
+  Generated: 2026-06-17 20:32
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    articleTypeCode [Article Type]
+    articleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    relatedSearchHitIndicator [Search Hit] (default=Y)
+    relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    registrationState [State]
+    registrationState [State (optional)]
       Config: attributeTypeId=STATE
-    relatedSearchHitIndicator [Search Hit] (default=Y)
+    relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    gunCaliber [Caliber]
+    gunCaliber [Caliber (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    gunMake [Make]
+    gunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    relatedSearchHitIndicator [Search Hit] (default=Y)
+    relatedSearchHitIndicator [Search Hit (optional)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    registrationState [State (out-of-state only)]
+    registrationState [State (leave blank for in-state)]
       Config: attributeTypeId=STATE
-    sexCode [Sex]
+    sexCode [Sex (optional)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    sexCodeDH [Sex]
+    sexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    imageIndicator [Image] (default=N)
+    imageIndicator [Image (optional)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    licensePlateTypeCode [Plate Type] (default=PC)
+    licensePlateTypeCode [Plate Type (out-of-state)] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    registrationState [State (out-of-state only)]
+    registrationState [State (leave blank for in-state)]
       Config: attributeTypeId=STATE
-    vehicleMakeCode [Vehicle Make]
+    vehicleMakeCode [Make (optional)]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
-    vehicleTypeCode [Type Code (Hawaii in-state)] (default=1)
+    vehicleTypeCode [Type Code (required for in-state HI)] (default=1)
       Config: codeTypeCategory=VEHICLE_TYPE, codeTypeSource=HI_NIBRS
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES

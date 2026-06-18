@@ -1,4 +1,4 @@
-HI_HCJDC_OFML MC v1.9 -- TEST MATRIX
+HI_HCJDC_OFML MC v2.0 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-17
 Variant: MC (multi-card per entity)
@@ -7,36 +7,36 @@ Validator: unknown
 FORM FIELDS (MC layout)
 ----------------------------------------
 Vehicle (1 card, 9 fields):
-  CARD_VEH (VEHICLE SEARCH -- Hawaii: choose Type Code | Out-of-state: Plate Type + Year (+ State)):
+  CARD_VEH (VEHICLE SEARCH):
     ROW 1: licensePlateNumber [Inp 10], registrationState [Sel STATE], vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1]
     ROW 2: licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
     ROW 3: vehicleIdentificationNumber [Inp 20]
     ROW 4: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (3 cards, 16 fields):
-  CARD_PER_OPT (SEARCH OPTIONS (applies to License + History)):
+  CARD_PER_OPT (SEARCH OPTIONS):
     registrationState [Sel STATE]
-  CARD_PER_DL (DRIVER LICENSE -- License Number, or Name + DOB (+ Sex)):
+  CARD_PER_DL (DRIVER LICENSE):
     ROW 1: operatorLicenseNumber [Inp 20]
     ROW 2: nameFirst [Inp 30], nameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 3: birthDate [FormDate], sexCode [Sel SEX]
-  CARD_PER_DH (DRIVER HISTORY -- opt in; Purpose Code required. License Number, or Name + DOB (+ Sex)):
+  CARD_PER_DH (DRIVER HISTORY):
     ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: nameFirstDH [Inp 30], nameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
 
 Firearm (1 card, 5 fields):
-  CARD_GUN (NCIC FIREARM QUERY):
+  CARD_GUN (FIREARM):
     ROW 1: gunSerialNumber [Inp 20], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunModel [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
-  CARD_ART (NCIC ARTICLE QUERY -- Serial # and Article Type both required):
+  CARD_ART (ARTICLE):
     articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 4 fields):
-  CARD_BOA (BOAT SEARCH -- Registration # or Hull ID):
+  CARD_BOA (BOAT SEARCH):
     ROW 1: registrationNumber [Inp 8], registrationState [Sel STATE]
     ROW 2: boatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
@@ -58,34 +58,34 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
  1  Person      Render form. Verify 3 cards:                        [    ]
-              CARD_PER_OPT: titled "SEARCH OPTIONS (applies to License + History)".
-              State (out-of-state only) dropdown (no default).
-              CARD_PER_DL: titled "DRIVER LICENSE -- License Number, or Name + DOB (+ Sex)".
-              License Number.
+              CARD_PER_OPT: titled "SEARCH OPTIONS".
+              State (leave blank for in-state) dropdown (no default).
+              CARD_PER_DL: titled "DRIVER LICENSE".
+              License Number (or search by Name + DOB).
               First Name, Last Name, Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default).
-              CARD_PER_DH: titled "DRIVER HISTORY -- opt in; Purpose Code required. License Number, or Name + DOB (+ Sex)".
-              License Number, Purpose Code=C.
-              First Name, Last Name, Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default).
+              Date of Birth (required with Name), Sex (optional) dropdown (no default).
+              CARD_PER_DH: titled "DRIVER HISTORY".
+              License Number (DH), Purpose Code (DH)=C.
+              First Name (DH), Last Name (DH), Middle Name (DH), Suffix (DH).
+              Date of Birth (DH), Sex (DH) dropdown (no default).
  2  Vehicle     Render form. Verify 1 card:                        [    ]
-              CARD_VEH: titled "VEHICLE SEARCH -- Hawaii: choose Type Code | Out-of-state: Plate Type + Year (+ State)".
-              Plate Number, State (out-of-state only) dropdown (no default), Type Code (Hawaii in-state) dropdown=1.
-              Plate Type dropdown=PC, Plate Year=2026.
-              VIN.
-              Vehicle Make dropdown (no default), Vehicle Year, Image dropdown=N.
+              CARD_VEH: titled "VEHICLE SEARCH".
+              Plate Number, State (leave blank for in-state) dropdown (no default), Type Code (required for in-state HI) dropdown=1.
+              Plate Type (out-of-state) dropdown=PC, Plate Year (out-of-state)=2026.
+              VIN (add Type Code for in-state).
+              Make (optional) dropdown (no default), Year (optional), Image (optional) dropdown=N.
  3  Boat        Render form. Verify 1 card:                        [    ]
-              CARD_BOA: titled "BOAT SEARCH -- Registration # or Hull ID".
-              Registration Number, State dropdown (no default).
-              Hull ID Number, Search Hit dropdown=Y.
+              CARD_BOA: titled "BOAT SEARCH".
+              Registration Number (or use Hull ID), State (optional) dropdown (no default).
+              Hull ID Number, Search Hit (optional) dropdown=Y.
  4  Firearm     Render form. Verify 1 card:                        [    ]
-              CARD_GUN: titled "NCIC FIREARM QUERY".
-              Serial Number (required), Make dropdown (no default).
-              Caliber dropdown (no default), Model, Search Hit dropdown=Y.
+              CARD_GUN: titled "FIREARM".
+              Serial Number (required), Make (optional) dropdown (no default).
+              Caliber (optional) dropdown (no default), Model (optional), Search Hit (optional) dropdown=Y.
  5  Article     Render form. Verify 1 card:                        [    ]
-              CARD_ART: titled "NCIC ARTICLE QUERY -- Serial # and Article Type both required".
-              Serial Number, Article Type dropdown (no default).
-              Search Hit dropdown=Y.
+              CARD_ART: titled "ARTICLE".
+              Serial Number (required), Article Type (required) dropdown (no default).
+              Search Hit (optional) dropdown=Y.
 
 PHASE 2: PERSON COMBOS (5 tests, 5 combos)
 ------------------------------------------------------------------------
