@@ -98,6 +98,23 @@ if ($logs) {
     }
 }
 
+# Helper: insert provisional-label banner after the first two lines (title + underline)
+# of a doc file. Idempotent -- no second copy if already present.
+$provisionalBanner = "LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case."
+function Add-ProvisionalBanner([string]$filePath) {
+    if (-not (Test-Path $filePath)) { return }
+    $lines = Get-Content $filePath
+    # Already present anywhere in the file -- skip
+    if ($lines | Where-Object { $_ -eq $provisionalBanner }) { return }
+    # Insert after the first two lines (title + === underline)
+    $insertAt = [Math]::Min(2, $lines.Count)
+    $newLines  = [System.Collections.Generic.List[string]]::new()
+    for ($i = 0; $i -lt $insertAt; $i++) { $newLines.Add($lines[$i]) }
+    $newLines.Add($provisionalBanner)
+    for ($i = $insertAt; $i -lt $lines.Count; $i++) { $newLines.Add($lines[$i]) }
+    Set-Content -Path $filePath -Value $newLines -Encoding UTF8
+}
+
 # 2. Reset SQVR combo markers to [PENDING]
 $sqvrReset = 0
 $sqvrPath = Join-Path $docsDir "${Provider}_SQVR.txt"
@@ -109,6 +126,7 @@ if (Test-Path $sqvrPath) {
     $sqvr = $sqvr -replace '\[FAILED[^\]]*\]', '[PENDING]'
     Set-Content -Path $sqvrPath -Value $sqvr -NoNewline -Encoding UTF8
 }
+Add-ProvisionalBanner $sqvrPath
 
 # 3. Clear STATUS "LIVE TEST RESULTS" data rows
 $statusCleared = 0
@@ -139,6 +157,7 @@ if (Test-Path $statusPath) {
     }
     Set-Content -Path $statusPath -Value $out -Encoding UTF8
 }
+Add-ProvisionalBanner $statusPath
 
 # 4. Stamp the new test version (UTF-8 no BOM so the comparison stays reliable)
 [System.IO.File]::WriteAllText($stateFile, $version, (New-Object System.Text.UTF8Encoding($false)))

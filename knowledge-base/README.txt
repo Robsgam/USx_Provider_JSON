@@ -169,6 +169,12 @@ TOOLS
     Self-contained HTML layout report with color-coded fields and QIDM tables.
     Usage: -Path <json> -OutFile <path>
 
+  tools/render_officer_guide.ps1
+    Officer-facing printable quick-reference: every supported query + each search path's
+    required/optional fields in plain English (no internal jargon). HTML + best-effort PDF
+    via Edge headless. A transform of QIDM combos + queryLabel + QIF field labels.
+    Usage: -Path <json> -OutFile <html> [-PdfFile <pdf>]
+
   tools/new_test_log.ps1
     Creates a stub test log in tests/. Required by GATE 2 before every test.
     Usage: -Provider <name> -Version <ver> -Entity <entity> -Combo <combo>
@@ -242,6 +248,15 @@ TOOLS
     metadata. Checks that every query/field/combo in metadata is correctly
     implemented in the JSON.
     Usage: .\audit_metadata.ps1 [-Path <json>] [-OutFile <path>]
+
+  tools/accept_divergence.ps1
+    Appends a reasoned entry to a per-provider accepted-divergence registry
+    (providers/<Provider>/docs/<Provider>_ACCEPTED_DIVERGENCES.txt). Entries
+    recorded here are read by audit_metadata.ps1 (CHECK 4 / 4d) and treated as
+    [NOTE] instead of [FAIL], so intentional set/any divergences do not block
+    the build gate. Idempotent -- skips if (query|keyRef|field) key already exists.
+    Usage: .\accept_divergence.ps1 -Provider <name> -Query <query> -KeyRef <keyRef>
+               -Field <field> -Rule <rule> -Reason <reason> [-TestLog <path>] [-Date <yyyy-MM-dd>]
 
   tools/audit_structure.ps1
     Validates provider folder structure against canonical rules. Checks folder

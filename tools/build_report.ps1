@@ -44,7 +44,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 11
+$stepCount = 13
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -327,6 +327,34 @@ if (Test-Path $respSimPath) {
     Write-Host "  [11/$stepCount] Saved: $respSimFile  (MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped)" -ForegroundColor Green
 } else {
     Write-Host "  [11/$stepCount] SKIPPED (simulate_response.ps1 not found)" -ForegroundColor Gray
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  STEP 12: Label Review (sequential -- advisory, does not fail the build)
+# ══════════════════════════════════════════════════════════════════════════════
+
+Write-Host ""
+Write-Host "  [12/$stepCount] Running label review..." -ForegroundColor Yellow
+$labelReviewPath = Join-Path $toolDir "suggest_field_labels.ps1"
+$labelReviewFile  = Join-Path $DocsDir "LABEL_REVIEW_$jsonName.txt"
+if (Test-Path $labelReviewPath) {
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $labelReviewPath -Path $resolvedStr -OutFile $labelReviewFile 2>&1 | Out-Null
+    Write-Host "  [12/$stepCount] Saved: $labelReviewFile" -ForegroundColor Green
+} else {
+    Write-Host "  [12/$stepCount] SKIPPED (suggest_field_labels.ps1 not found)" -ForegroundColor Gray
+}
+
+Write-Host ""
+Write-Host "  [13/$stepCount] Generating officer query guide..." -ForegroundColor Yellow
+$officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
+$officerHtml = Join-Path $DocsDir "OFFICER_GUIDE_$jsonName.html"
+$officerPdf  = Join-Path $DocsDir "OFFICER_GUIDE_$jsonName.pdf"
+if (Test-Path $officerGuidePath) {
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1 | Out-Null
+    if (Test-Path $officerHtml) { Write-Host "  [13/$stepCount] Saved: $officerHtml" -ForegroundColor Green }
+    else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
+} else {
+    Write-Host "  [13/$stepCount] SKIPPED (render_officer_guide.ps1 not found)" -ForegroundColor Gray
 }
 
 # --- Summary ---

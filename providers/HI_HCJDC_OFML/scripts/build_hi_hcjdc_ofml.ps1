@@ -55,7 +55,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.2"
+    [string]$Version = "2.3"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -187,10 +187,11 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # DQ: Name path -- 4 set[], most specific. State optional companion (OOS).
+        # DQ: Name+DOB+Sex path -- 4 set[], most specific. primary=SexCode per metadata
+        # (the SexCode-primary DQ combo; distinguishes from QW Name+DOB). State optional (OOS).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('registrationState') }
-            primaryFieldReference = 'Name'
+            primaryFieldReference = 'SexCode'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }

@@ -1,0 +1,166 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>FL_FCIC — Officer Query Guide</title>
+<style>@page { margin: 2cm; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 12pt; line-height:1.4; max-width: 820px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 20pt; margin: 0 0 4px; }
+.howto { color:#444; font-size: 11pt; margin: 0 0 18px; }
+h2 { font-size: 16pt; background:#1f3b57; color:#fff; padding:6px 10px; border-radius:4px; margin: 18px 0 10px; }
+h3 { font-size: 13.5pt; color:#1f3b57; margin: 14px 0 6px; border-bottom:2px solid #cdd8e3; padding-bottom:2px; }
+.path { margin: 0 0 8px 6px; padding:6px 10px; border-left:3px solid #4a7ba6; background:#f5f8fb; border-radius:0 4px 4px 0; }
+.pathname { font-weight:600; margin-bottom:2px; }
+.req .lbl { color:#7a1f1f; font-weight:600; }
+.opt .lbl { color:#3a5a3a; font-weight:600; }
+.opt { color:#333; }
+.pre { color:#666; font-style:italic; font-size: 10.5pt; }
+footer { margin-top:24px; border-top:1px solid #ccc; padding-top:6px; color:#777; font-size:10pt; }</style></head><body>
+<h1>FL_FCIC — Query Guide</h1>
+<p class='howto'>Pick the entity, choose how you want to search, then fill the fields marked <b>Must enter</b>. Pre-filled fields are set for you — change them only if needed.</p>
+<section class='entity'><h2>Person</h2>
+<div class='query'><h3>Driver License</h3>
+<div class='path'><div class='pathname'>Search by Name</div>
+<div class='req'><span class='lbl'>Must enter:</span> Date of Birth, Last Name, First Name, Sex</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by OLN</div>
+<div class='req'><span class='lbl'>Must enter:</span> OLN</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Name</div>
+<div class='req'><span class='lbl'>Must enter:</span> Date of Birth, Last Name, First Name, Sex, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by OLN</div>
+<div class='req'><span class='lbl'>Must enter:</span> OLN, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+</div>
+<div class='query'><h3>Driver History</h3>
+<div class='path'><div class='pathname'>Search by Name</div>
+<div class='req'><span class='lbl'>Must enter:</span> DOB, Last Name, First Name, Sex, Destination State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Purpose Code, Attention</div>
+</div>
+<div class='path'><div class='pathname'>Search by OLN</div>
+<div class='req'><span class='lbl'>Must enter:</span> OLN, Destination State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Purpose Code, Attention</div>
+</div>
+</div>
+</section>
+<section class='entity' style="page-break-before:always"><h2>Vehicle</h2>
+<div class='query'><h3>Vehicle Registration</h3>
+<div class='path'><div class='pathname'>Search by Decal Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Decal Number, Plate Year <span class='pre'>(pre-filled: 2026 — change if needed)</span></div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Plate Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Plate Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Plate Year <span class='pre'>(pre-filled: 2026)</span>, Vehicle Make, Vehicle Year, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Title/Lien Info</div>
+<div class='req'><span class='lbl'>Must enter:</span> Title/Lien Info</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by VIN</div>
+<div class='req'><span class='lbl'>Must enter:</span> VIN</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Vehicle Make, Vehicle Year, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Plate Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Plate Number, Plate Type <span class='pre'>(pre-filled: PC — change if needed)</span>, Plate Year <span class='pre'>(pre-filled: 2026 — change if needed)</span>, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by VIN</div>
+<div class='req'><span class='lbl'>Must enter:</span> VIN, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Vehicle Make, Vehicle Year, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+</div>
+</section>
+<section class='entity' style="page-break-before:always"><h2>Firearm</h2>
+<div class='query'><h3>Firearm</h3>
+<div class='path'><div class='pathname'>Search by Serial Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Serial Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Gun Make, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by NCIC Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> NCIC Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Gun Make, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by PCN</div>
+<div class='req'><span class='lbl'>Must enter:</span> PCN</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Gun Make, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+</div>
+</section>
+<section class='entity' style="page-break-before:always"><h2>Article</h2>
+<div class='query'><h3>Article</h3>
+<div class='path'><div class='pathname'>Search by Serial Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Serial Number, Article Type</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Owner Applied Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Article Type, Owner Applied Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by NCIC Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> NCIC Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by PCN</div>
+<div class='req'><span class='lbl'>Must enter:</span> PCN</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+</div>
+</section>
+<section class='entity' style="page-break-before:always"><h2>Boat</h2>
+<div class='query'><h3>Boat</h3>
+<div class='path'><div class='pathname'>Search by Hull ID Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Hull ID Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Decal Number, Registration Number, Title/Lien Info, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Decal Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Decal Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Hull ID Number, Registration Number, Title/Lien Info, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Registration Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> Registration Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Hull ID Number, Decal Number, Title/Lien Info, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Title/Lien Info</div>
+<div class='req'><span class='lbl'>Must enter:</span> Title/Lien Info</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Hull ID Number, Decal Number, Registration Number, Image <span class='pre'>(pre-filled: N)</span></div>
+</div>
+<div class='path'><div class='pathname'>Search by Hull ID Number (stolen / wanted check)</div>
+<div class='req'><span class='lbl'>Must enter:</span> Hull ID Number, Stolen Search</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span>, Registration Number</div>
+</div>
+<div class='path'><div class='pathname'>Search by Coast Guard Doc #</div>
+<div class='req'><span class='lbl'>Must enter:</span> Coast Guard Doc #</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span>, Stolen Search</div>
+</div>
+<div class='path'><div class='pathname'>Search by NCIC Number</div>
+<div class='req'><span class='lbl'>Must enter:</span> NCIC Number</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span>, Stolen Search</div>
+</div>
+<div class='path'><div class='pathname'>Search by PCN</div>
+<div class='req'><span class='lbl'>Must enter:</span> PCN</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span>, Stolen Search</div>
+</div>
+<div class='path'><div class='pathname'>Search by Registration Number (stolen / wanted check)</div>
+<div class='req'><span class='lbl'>Must enter:</span> Registration Number, Stolen Search</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Image <span class='pre'>(pre-filled: N)</span>, Hull ID Number</div>
+</div>
+<div class='path'><div class='pathname'>Search by Name</div>
+<div class='req'><span class='lbl'>Must enter:</span> Date of Birth, Last Name, First Name, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Hull ID Number, Registration Number</div>
+</div>
+<div class='path'><div class='pathname'>Search by Hull ID Number (out-of-state)</div>
+<div class='req'><span class='lbl'>Must enter:</span> Hull ID Number, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Registration Number</div>
+</div>
+<div class='path'><div class='pathname'>Search by Registration Number (out-of-state)</div>
+<div class='req'><span class='lbl'>Must enter:</span> Registration Number, State</div>
+<div class='opt'><span class='lbl'>You can also add:</span> Hull ID Number</div>
+</div>
+</div>
+</section>
+
+<footer>FL_FCIC &middot; Generated 2026-06-17 &middot; Reference only — supported search paths and field requirements.</footer>
+</body></html>

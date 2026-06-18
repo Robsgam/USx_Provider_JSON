@@ -315,6 +315,113 @@ function Audit-Provider {
         }
     }
 
+    # ── Metadata-divergence gate: source map, defaulted tokens, registry ────────
+    # Used by CHECK 4 demote classification and CHECK 4d defaulted-in-set gate.
+    $sourceToTargetG = @{}
+    foreach ($q in $qidms) {
+        if (-not $q.attributes) { continue }
+        foreach ($attr in @($q.attributes)) {
+            if ($attr.sourceField -and $attr.targetField) {
+                foreach ($sf in @($attr.sourceField)) { $sourceToTargetG[([string]$sf).ToLower()] = [string]$attr.targetField }
+            }
+        }
+    }
+
+    # Defaulted fields: QIF initialValue OR combo defaults[]. Platform rule
+    # (initialValue-not-counted-for-set) => a defaulted field MUST live in any[].
+    # Store lowercased; add both the raw token and its mapped targetField so that
+    # set-field (sourceField) and XML (targetField) names both resolve.
+    $defaultedTokens = @{}
+    function Add-Defaulted([string]$tok) {
+        if (-not $tok) { return }
+        $t = $tok.ToLower()
+        $defaultedTokens[$t] = $true
+        if ($sourceToTargetG.ContainsKey($t)) { $defaultedTokens[$sourceToTargetG[$t].ToLower()] = $true }
+        if ($fieldAliases.ContainsKey($tok)) { $defaultedTokens[([string]$fieldAliases[$tok]).ToLower()] = $true }
+    }
+    foreach ($bundle in $json.bundles) {
+        foreach ($cfg in $bundle.configurations) {
+            if ($cfg.type -ne 'QUERYINPUTFORM') { continue }
+            $lv = $null; try { $lv = $cfg.layout.default } catch { }
+            if (-not $lv) { continue }
+            foreach ($prop in $lv.PSObject.Properties) {
+                $node = $prop.Value
+                if (-not $node -or -not $node.props) { continue }
+                $fid = $null; $iv = $null
+                try { $fid = $node.props.fieldId } catch { }
+                try { $iv = $node.props.initialValue } catch { }
+                if ($fid -and $null -ne $iv -and "$iv".Trim() -ne '') { Add-Defaulted ([string]$fid) }
+            }
+        }
+    }
+    foreach ($q in $qidms) {
+        if (-not $q.combinations) { continue }
+        foreach ($c in @($q.combinations)) {
+            if (-not $c.defaults) { continue }
+            foreach ($d in @($c.defaults)) {
+                $df = $null; try { $df = $d.field } catch { }
+                if ($df) { Add-Defaulted ([string]$df) }
+            }
+        }
+    }
+    function Test-IsDefaulted([string]$tok) {
+        if (-not $tok) { return $false }
+        $t = $tok.ToLower()
+        if ($defaultedTokens.ContainsKey($t)) { return $true }
+        if ($sourceToTargetG.ContainsKey($t) -and $defaultedTokens.ContainsKey($sourceToTargetG[$t].ToLower())) { return $true }
+        return $false
+    }
+
+    # Per-provider ACCEPTED-DIVERGENCE registry (learning mechanism). Lines:
+    #   query | keyRef | field | rule | reason | source | date    (# = comment)
+    $acceptedDiv = @{}
+    $acceptedDivFile = Join-Path $jsonDir ("docs\{0}_ACCEPTED_DIVERGENCES.txt" -f $providerName)
+    if (Test-Path $acceptedDivFile) {
+        foreach ($ln in (Get-Content $acceptedDivFile)) {
+            $s = $ln.Trim()
+            if (-not $s -or $s.StartsWith('#')) { continue }
+            $parts = $s -split '\|'
+            if ($parts.Count -ge 3) {
+                $k = ('{0}|{1}|{2}' -f $parts[0].Trim(), $parts[1].Trim(), $parts[2].Trim()).ToLower()
+                $acceptedDiv[$k] = $true
+            }
+        }
+    }
+    function Test-AllowListed([string]$q, [string]$kr, [string]$field) {
+        return $acceptedDiv.ContainsKey(('{0}|{1}|{2}' -f $q, $kr, $field).ToLower())
+    }
+
+    # Per-query metadata SET-union / ANY-union (XML field tokens, lowercased) for the
+    # promote gate (CHECK 4d). A field metadata has in ANY but the build puts in SET[]
+    # is an over-promotion (the DQN v4.0 bug class). A field metadata ALSO has in SET[]
+    # (PlateType/Year, VehicleTypeCode) is correct and must NOT be flagged.
+    $metaSetUnion = @{}   # query(lower) -> @{ token = $true } present in any metadata SET
+    $metaAnyUnion = @{}   # query(lower) -> @{ token = $true } present in any metadata ANY
+    foreach ($txn in $xmlQueryTxns) {
+        $qkey = ([string]$txn.name).ToLower()
+        if (-not $metaSetUnion.ContainsKey($qkey)) { $metaSetUnion[$qkey] = @{}; $metaAnyUnion[$qkey] = @{} }
+        $xc = $null; try { $xc = @($txn.Combinations.Combination) } catch { }
+        foreach ($cmb in $xc) {
+            if (-not $cmb) { continue }
+            $r = Get-XmlComboRequirements $cmb
+            foreach ($f in @($r.Set)) { if ($f) { $metaSetUnion[$qkey][([string]$f).ToLower()] = $true } }
+            foreach ($f in @($r.Any)) { if ($f) { $metaAnyUnion[$qkey][([string]$f).ToLower()] = $true } }
+        }
+    }
+    function Resolve-MetaToken([string]$jsf) {
+        $t = $jsf.ToLower()
+        if ($sourceToTargetG.ContainsKey($t)) { return $sourceToTargetG[$t].ToLower() }
+        return $t
+    }
+    function Test-InMetaSet([string]$query, [string]$jsf) {
+        $qk = $query.ToLower(); if (-not $metaSetUnion.ContainsKey($qk)) { return $false }
+        return ($metaSetUnion[$qk].ContainsKey((Resolve-MetaToken $jsf)) -or $metaSetUnion[$qk].ContainsKey($jsf.ToLower()))
+    }
+    function Test-InMetaAny([string]$query, [string]$jsf) {
+        $qk = $query.ToLower(); if (-not $metaAnyUnion.ContainsKey($qk)) { return $false }
+        return ($metaAnyUnion[$qk].ContainsKey((Resolve-MetaToken $jsf)) -or $metaAnyUnion[$qk].ContainsKey($jsf.ToLower()))
+    }
+
     # Build lookup: query name -> QIDM config(s)
     $qidmByQuery = @{}
     foreach ($q in $qidms) {
@@ -740,7 +847,14 @@ function Audit-Provider {
                             }
                         }
                         if ($inAny) {
-                            Out-Info "  keyRef ${kr}: XML set field '$xsf' is in JSON any[] (demoted)"
+                            # Demote classification (metadata says set[], build has any[])
+                            if (Test-IsDefaulted $xsf) {
+                                Out-Note "  keyRef ${kr}: XML set '$xsf' in any[] -- PRINCIPLED (defaulted field -> any[] per initialValue-not-counted-for-set)"
+                            } elseif (Test-AllowListed $qName $kr $xsf) {
+                                Out-Note "  keyRef ${kr}: XML set '$xsf' in any[] -- ACCEPTED per registry"
+                            } else {
+                                Out-Fail "  keyRef ${kr}: XML set '$xsf' demoted to any[] with NO default and NO registry entry -- fix build or record in docs\${providerName}_ACCEPTED_DIVERGENCES.txt"
+                            }
                         } else {
                             # Check invented keyRef variants (JSON combos for same query not in XML)
                             $inInvented = $false
@@ -802,6 +916,38 @@ function Audit-Provider {
             }
         }
     }
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 4d: Defaulted-field-in-set[] gate (DEFAULT-IN-SET)
+    # Platform ignores initialValue for set[] evaluation -> a defaulted field in a
+    # combo set[] mis-evaluates (the combo won't fire on the default value alone).
+    # This is the bug class that made NJ DQN require State (defaulted NJ) pre-v4.1.
+    # Runs across ALL JSON combos (incl. invented keyRefs), independent of XML.
+    # ══════════════════════════════════════════════════════════════════════════
+    Out-Line ""
+    Out-Line "--- CHECK 4d: Field promoted to set[] vs metadata any[] ---"
+    $promoteHit = $false
+    foreach ($q in $qidms) {
+        $qn = $q.query
+        if (-not $q.combinations) { continue }
+        foreach ($c in @($q.combinations)) {
+            $kr2 = [string]$c.keyReference
+            if (-not ($c.requirements -and $c.requirements.set)) { continue }
+            foreach ($sf in @($c.requirements.set)) {
+                $sfS = [string]$sf
+                if (Test-InMetaSet $qn $sfS) { continue }          # metadata agrees set[] -> correct (PlateType/Year, VehicleType)
+                if (-not (Test-InMetaAny $qn $sfS)) { continue }    # not in metadata any either -> form-only/extra, not a promote
+                if (Test-AllowListed $qn $kr2 $sfS) {
+                    Out-Note "  keyRef ${kr2}: '$sfS' in set[] but metadata any[] -- ACCEPTED per registry"
+                } else {
+                    $defNote = if (Test-IsDefaulted $sfS) { ' (defaulted -- initialValue not counted for set[])' } else { '' }
+                    Out-Fail "  keyRef ${kr2} ($qn): '$sfS' PROMOTED to set[] but metadata has it in any[]$defNote -- move to any[] or record in ${providerName}_ACCEPTED_DIVERGENCES.txt"
+                    $promoteHit = $true
+                }
+            }
+        }
+    }
+    if (-not $promoteHit) { Out-Pass "  No fields over-promoted from metadata any[] to set[]" }
 
     # ══════════════════════════════════════════════════════════════════════════
     # CHECK 4b: Choice-Set Option Coverage
