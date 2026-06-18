@@ -20,7 +20,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.0"
+    [string]$Version = "4.1"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -165,10 +165,11 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('operatorLicenseNumber','registrationState')
-                any      = @('imageIndicator')
+                set      = @('operatorLicenseNumber')
+                any      = @('imageIndicator','registrationState')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
+                    [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -335,9 +336,9 @@ $vehLayout = MakeLayouts @(
         title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_O1' }
-                @{ id = 'RandomRequest_Input';     node = Sel 'randomRequest' 'Random' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State (default NJ - change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_O1' }
+                @{ id = 'RandomRequest_Input';     node = Sel 'randomRequest' 'Random Request (N = full record; Y = random)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
             )}
         )
     }
@@ -346,9 +347,9 @@ $vehLayout = MakeLayouts @(
         title = 'PLATE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'licensePlateNumber' 'Plate Number (required)' '10' 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'licensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
             )}
         )
     }
@@ -357,7 +358,7 @@ $vehLayout = MakeLayouts @(
         title = 'VIN SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_V1'; cols = @('12'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_V1' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN (required)' '20' 'ROW_VEH_V1' }
             )}
         )
     }
@@ -380,8 +381,8 @@ $perLayout = MakeLayouts @(
         title = 'Search Options'
         rows  = @(
             @{ id = 'ROW_PER_O1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'registrationState' 'State (default NJ - change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'imageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
             )}
         )
     }
@@ -390,7 +391,7 @@ $perLayout = MakeLayouts @(
         title = 'LICENSE NUMBER'
         rows  = @(
             @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_L1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_L1' }
             )}
         )
     }
@@ -403,8 +404,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_N1' }
             )}
             @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                    'ROW_PER_N2' }
-                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'birthDate' 'Date of Birth (required with Name)'                             'ROW_PER_N2' }
+                @{ id = 'SexCode_Input';   node = Sel 'sexCode'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
             )}
         )
     }
@@ -427,13 +428,13 @@ $faLayout = MakeLayouts @(
         title = 'NCIC FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'gunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'gunMake'         'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'gunSerialNumber' 'Serial Number (required)' '11' 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'gunMake'         'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'GunCaliber_Input';      node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_2' }
-                @{ id = 'GunModel_Input';        node = Inp 'gunModel'   'Model'   '20' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'GunCaliber_Input';      node = Sel 'gunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_2' }
+                @{ id = 'GunModel_Input';        node = Inp 'gunModel'   'Model (optional)'   '20' 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'imageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -456,9 +457,9 @@ $artLayout = MakeLayouts @(
         title = 'NCIC ARTICLE QUERY'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'articleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-                @{ id = 'ImageIndicator_Input'; node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'articleSerialNumber' 'Serial Number (required)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'articleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'ImageIndicator_Input'; node = Sel 'imageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
         )
     }
@@ -481,9 +482,9 @@ $boaLayout = MakeLayouts @(
         title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('5','5','2'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'imageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'registrationNumber' 'Registration Number (or use Hull ID)' '20' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'boatHullIdNumber' 'Hull ID Number (or use Registration Number)' '20' 'ROW_BOA_1' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'imageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
             )}
         )
     }

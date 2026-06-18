@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-17 16:28
+  Generated: 2026-06-17 22:29
 ================================================================
 QUERY SIMULATION
 ================
@@ -65,8 +65,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] DQN
-      set: [OperatorLicenseNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

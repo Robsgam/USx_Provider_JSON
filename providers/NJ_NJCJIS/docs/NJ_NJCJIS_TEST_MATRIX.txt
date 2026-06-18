@@ -1,4 +1,4 @@
-NJ_NJCJIS MC v4.0 -- TEST MATRIX
+NJ_NJCJIS MC v4.1 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-17
 Variant: MC (multi-card per entity)
@@ -54,29 +54,29 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     Render form. Verify 3 cards:                        [    ]
               CARD_VEH_OPT: titled "Search Options".
-              State dropdown=NJ, Random dropdown=N, Image dropdown=N.
+              State (default NJ - change for out-of-state) dropdown=NJ, Random Request (N = full record; Y = random) dropdown=N, Image (optional) dropdown=N.
               CARD_VEH_PLATE: titled "PLATE SEARCH".
-              Plate Number, Plate Type dropdown=PC, Plate Year=2026.
+              Plate Number (required), Plate Type (optional) dropdown=PC, Plate Year (optional)=2026.
               CARD_VEH_VIN: titled "VIN SEARCH".
-              VIN.
+              VIN (required).
  2  Person      Render form. Verify 3 cards:                        [    ]
               CARD_PER_OPT: titled "Search Options".
-              State dropdown=NJ, Image dropdown=Y.
+              State (default NJ - change for out-of-state) dropdown=NJ, Image (optional) dropdown=Y.
               CARD_PER_OLN: titled "LICENSE NUMBER".
-              License Number.
+              License Number (or search by Name + DOB).
               CARD_PER_NAME: titled "NAME SEARCH".
               First Name, Last Name.
-              Date of Birth, Sex dropdown (no default).
+              Date of Birth (required with Name), Sex (optional) dropdown (no default).
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT SEARCH".
-              Registration Number, Hull ID Number, Image dropdown=N.
+              Registration Number (or use Hull ID), Hull ID Number (or use Registration Number), Image (optional) dropdown=N.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "NCIC FIREARM QUERY".
-              Serial Number, Make dropdown (no default).
-              Caliber dropdown (no default), Model, Image dropdown=N.
+              Serial Number (required), Make (optional) dropdown (no default).
+              Caliber (optional) dropdown (no default), Model (optional), Image (optional) dropdown=N.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "NCIC ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default), Image dropdown=N.
+              Serial Number (required), Article Type (required) dropdown (no default), Image (optional) dropdown=N.
 
 PHASE 2: VEHICLE COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
@@ -91,7 +91,7 @@ PHASE 3: PERSON COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 8  Person      DQ+N+State         OperatorLicenseNumber=D999888777, Reg... [    ]
+ 8  Person      DQ+N               OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DQ)
  9  Person      DQ+BirthDate       BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (DQ)
@@ -123,7 +123,7 @@ PHASE 7: ANY[] FIELD TESTS (3 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-14  Person      DQ+BirthDate       + SexCode                       [    ]
+14  Person      DQ+BirthDate       + SexCode, RegistrationState    [    ]
               Expected: any[] fields present in XML output.
 15  Vehicle     RQ+Plate           + RandomRequest, RegistrationState, LicensePlateTypeCode [    ]
               Expected: any[] fields present in XML output.

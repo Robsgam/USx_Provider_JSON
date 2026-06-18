@@ -159,6 +159,12 @@ TOOLS
     Scans all FormSelect dropdowns + QRDM/QIDM code types.
     Usage: -Path <json> [-OutFile <path>]
 
+  tools/suggest_field_labels.ps1
+    Derives each field's (required)/(required for <keyRefs>)/(optional) label hint from the
+    QIDM combo set[]/any[] -- the consistent method for the field labeling convention. Flags
+    fields needing a human semantic hint (value meanings, out-of-state, cross-field "or use X").
+    Usage: -Path <json> [-OutFile <path>]
+
   tools/render_html.ps1
     Self-contained HTML layout report with color-coded fields and QIDM tables.
     Usage: -Path <json> -OutFile <path>
