@@ -1317,9 +1317,14 @@ foreach ($bundle in $providerBundles) {
                                 if ($combo.requirements.any -and $combo.requirements.any -contains $attnFieldName) { $attnInCombo = $true }
                             }
                         }
-                        if ($attnInCombo) {
-                            Write-Warn "QIDM '$($cfg.name)' Attention attr '$($attr.name)' in combo set[]/any[] -- auto-fill handler present, should not be in combos"
-                            Write-Host "    [FIX] In build script: remove '$($attr.name)' from all combo set[]/any[] arrays in QIDM '$($cfg.name)' -- handler auto-fills without combo trigger" -ForegroundColor Cyan
+                        # LIVE-PROVEN (HI 2026-06-22): this platform serializes ONLY fields in
+                        # the fired combo's set[]/any[]. An auto-fill Attention handler therefore
+                        # MUST have its source field in a combo any[] or its output is dropped
+                        # (handler emitted 'SGAMBELLONE R' only once Attention was in any[]).
+                        # So the correct state is IN a combo; flag the INVERSE.
+                        if (-not $attnInCombo) {
+                            Write-Warn "QIDM '$($cfg.name)' Attention auto-fill handler present but '$attnFieldName' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)"
+                            Write-Host "    [FIX] In build script: add '$attnFieldName' to the combo any[] arrays in QIDM '$($cfg.name)', and keep a populated (hidden) '$attnFieldName' gate-feeder field" -ForegroundColor Cyan
                         }
                     }
                 }

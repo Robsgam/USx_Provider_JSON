@@ -55,7 +55,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.8",
+    [string]$Version = "2.9",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -291,12 +291,15 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
         rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
     }
 }
-# Platform serializes only fields in the FIRED COMBO's set[]/any[] -- an attribute
-# absent from the combo is dropped (live-proven HI v2.8: passthrough Attention not
-# in any[] never reached the wire). The passthrough diagnostic adds 'Attention' to
-# the DH any[] to prove membership is what lets a form-sourced value serialize.
-# (dochandler is a sourceless generated field, so it is NOT added to any[].)
-$dhAny = if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler')) { @('RegistrationState','purposeCodeDH','Attention') } else { @('RegistrationState','purposeCodeDH') }
+# Platform serializes ONLY fields in the FIRED COMBO's set[]/any[]; an attribute
+# absent from the combo is dropped -- this is why Attention never reached the wire
+# before. FIX (live-proven HI handler diagnostic 2026-06-22): 'Attention' must be
+# in the DH combos' any[]. With that + the hidden gate-feeder field populated +
+# sourceField=['Attention'] + the handler, CommsysGetLastNameFirstNameInitialRuleHandler
+# emits the officer's profile name (e.g. "SGAMBELLONE R"). So Attention is in any[]
+# for production AND the passthrough/handler diagnostics; only the (dead, import-
+# rejected) dochandler sourceField=[] variant omits it.
+$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationState','purposeCodeDH') } else { @('RegistrationState','purposeCodeDH','Attention') }
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -331,7 +334,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- KQ (Name+Sex+DOB), KQN (OLN). DH-suffix fields on own card. State+PurposeCode in any[]. autoSelect + one-directional queriesToDeselect=DL. Attention handler-only.'
+    description     = 'DriverHistoryQuery -- KQ (Name+Sex+DOB), KQN (OLN). DH-suffix fields on own card. State+PurposeCode+Attention in any[]. Attention auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (officer LastName FirstInitial from RMS profile) -- requires Attention in any[] + hidden gate-feeder field populated (v2.9, live-proven). autoSelect + one-directional queriesToDeselect=DL.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'HI_HCJDC_OFML_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'

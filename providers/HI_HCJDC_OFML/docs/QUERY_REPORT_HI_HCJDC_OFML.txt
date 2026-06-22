@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 12:01
+  Generated: 2026-06-22 13:07
 ================================================================
 QUERY SIMULATION
 ================
@@ -145,7 +145,7 @@ QUERY SIMULATION
 
     [FIRES first-match] KQ
       set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
-      any: [RegistrationState, purposeCodeDH] -> matched: [RegistrationState, purposeCodeDH]
+      any: [RegistrationState, purposeCodeDH, Attention] -> matched: [RegistrationState, purposeCodeDH, Attention]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -160,7 +160,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] KQN
       set: [OperatorLicenseNumberDH]
-      any: [RegistrationState, purposeCodeDH] -> matched: [RegistrationState, purposeCodeDH]
+      any: [RegistrationState, purposeCodeDH, Attention] -> matched: [RegistrationState, purposeCodeDH, Attention]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -172,7 +172,7 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: KQ (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
+    >> UNION POOL (platform serializes): Attention=DOE J, BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
