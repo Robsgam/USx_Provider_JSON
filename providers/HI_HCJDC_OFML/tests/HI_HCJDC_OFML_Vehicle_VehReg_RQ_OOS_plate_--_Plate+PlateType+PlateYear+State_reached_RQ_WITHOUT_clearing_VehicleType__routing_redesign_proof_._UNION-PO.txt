@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQ (OOS plate -- Plate+PlateType+PlateYear+State reached RQ WITHOUT clearing VehicleType (routing redesign proof). UNION-POOL NOTE: VehicleTypeCode=1 in XML (M55L set[] also satisfied; extra field benign))
+Date: 2026-06-22 15:52:15
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"ImageIndicator":"N","LicensePlateNumber":"abc123","LicensePlateTypeCode":"PC","LicensePlateYear":"2025","RegistrationState":"California","vehicleTypeCode":"1"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVRE1SHPXKHMF5T7H90N3YX9"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVRE1SHPXKHMF5T7H90N3YX9</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2025</LicensePlateYear><State>CA</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><VehicleTypeCode>1</VehicleTypeCode><LicensePlateNumber>ABC123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVRE1SHPXKHMF5T7H90N3YX9
+  ImageIndicator                 N
+  LicensePlateYear               2025
+  State                          CA
+  LicensePlateTypeCode           PC
+  VehicleTypeCode                1
+  LicensePlateNumber             ABC123
+
+NOTES
+-----
+
+
+RESULT: PASS
