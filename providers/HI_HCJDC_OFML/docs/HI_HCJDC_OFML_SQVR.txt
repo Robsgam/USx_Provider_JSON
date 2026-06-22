@@ -75,6 +75,12 @@ Architecture notes:
   Priority order: M55L > M55S > RQ > QVV > QVP > RQV [PENDING]
     M55 in-state first, then OOS plate, then stolen, then VIN fallback
 
+  APPROVED SKIP -- QV (by LicensePlateNumber) and QV (by VehicleIdentificationNumber):
+    Metadata lists these 2 generic QV combos; intentionally NOT built. QV is a
+    catch-all transaction, not an authorized basic query; plate and VIN paths are
+    fully covered by the 6 combos above. Confirmed not-to-build (user, 2026-06-22).
+    Not a coverage gap -- excluded from the test matrix.
+
   OOS routing -- State != HI [PENDING]
     Non-HI state should route to RQ instead of M55L
 

@@ -140,11 +140,11 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.2 |  | 61P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation |
-| 2 | HI_HCJDC_OFML | v2.4 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. GAP (2026-06-08): DL SexCode-primary combo missing (metadata DQ primaryFieldReference=SexCode has no JSON combo -- add on rebuild) |
+| 2 | HI_HCJDC_OFML | v2.4 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. DL SexCode-primary combo BUILT v2.3 (DQ primaryFieldReference Name->SexCode, clears CHECK 5 -- prior GAP note resolved). Attention auto-populated (handler, conforms to 2026-06-22 standard). QV (plate/VIN) = approved skip (catch-all, not an authorized basic query). |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v5.2 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported |
-| 6 | TX_TLETS | v3.8 |  | 83P/0F/0W/1LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
+| 5 | FL_FCIC | v5.3 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported |
+| 6 | TX_TLETS | v3.9 |  | 83P/0F/0W/1LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.5 |  | 76P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
 | 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
@@ -289,31 +289,34 @@ the flag date and may be stale — `verify_build.ps1` / audit catches live state
 
 DL+DH — remove queriesToDeselect from DriverLicenseQuery:
 - FIXED: CA_CLETS (v1.8), FL_FCIC (correct since v3.9), TX_TLETS (v3.1)
-- FLAGGED: NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LEMS, HI_HCJDC_OFML, TN_TIES,
+- FLAGGED: NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LEMS, TN_TIES,
   OH_LEADS, NM_NMLETS_OFML, MD_METERS, CA_SAN_LUIS_OBISPO, CA_eSUN, CA_VENTURA_COUNTY
-- Already correct: NJ_NJCJIS (since v2.9)
+- Already correct: NJ_NJCJIS (since v2.9), HI_HCJDC_OFML (one-directional since v1.8 -- DL has no deselect; DH deselects DL only)
 
 VehReg+VehStolen — remove queriesToDeselect from VehicleRegistrationQuery:
 - FIXED: TX_TLETS (v3.1)
-- FLAGGED: HI_HCJDC_OFML
+- N/A: HI_HCJDC_OFML (no VehicleStolenQuery built; prior flag was stale)
 
-## Attention Field Hidden Automation — Flagged 2026-05-13
+## Attention Field — Automated Handler is the Standard (REVERSED 2026-06-22)
 
-Fix pattern (same as FL_FCIC v4.0): remove CommsysGetLastNameFirstNameInitialRuleHandler,
-add visible FormInput for Attention (DH-suffix where applicable), update sourceField.
+REVERSAL: the prior "expose Attention as a visible field" directive (FL_FCIC v4.0,
+flagged 2026-05-13) is REVERSED. Wherever Attention is part of a query as an
+OPTIONAL field, it is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
+(no visible field) -- the automated-Attention standard (BUILD_RULES Sec 14, user
+directive 2026-06-22). The earlier performance attribution to the handler is doubted;
+WNG perf fix makes any degradation negligible (re-verify in HI live test).
+REQUIRED Attention (metadata set[], e.g. CCH) stays a visible officer-supplied field.
 
-| # | Provider | QIDMs affected | Scope | Fix |
-|---|---|---|---|---|
-| 1 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM |
-| 2 | HI_HCJDC_OFML | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-| 3 | TX_TLETS | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-| 4 | CA_eSUN | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-| 5 | CA_VENTURA_COUNTY | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-| 6 | OH_LEADS | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-| 7 | TN_TIES | DriverHistoryQuery | DH only | Add attentionDH FormInput on DH card; remove handler; sourceField→attentionDH |
-
-**Already clean:** NJ, CA_CLETS, CA_OCATS, CA_SLO, IL, MD, NY, OR (no Attention attr),
-AZ (Attention visible, no handler), NM (Attention InpH, no handler), FL (FIXED v4.0)
+Conformance (verify_build.ps1 CHECK 8):
+| Provider | Attention state | Status |
+|---|---|---|
+| HI_HCJDC_OFML | handler on DriverHistoryQuery | CONFORMS |
+| LA_LEMS | handler on all 6 QIDMs | CONFORMS |
+| TN_TIES, CA_eSUN, CA_VENTURA_COUNTY, OH_LEADS | handler on DriverHistoryQuery | CONFORMS |
+| FL_FCIC | converted to handler v5.3 (2026-06-22) | CONFORMS |
+| TX_TLETS | converted to handler v3.9 (2026-06-22) | CONFORMS |
+| TX_TLETS_CCH | CCH = required (visible, exempt); DH optional still visible | OUT OF SCOPE (do not touch) |
+| NJ, CA_CLETS, CA_OCATS, CA_SLO, IL, MD, NY, OR, AZ, NM | no optional Attention attr | N/A |
 
 **Also noted:** TX_TLETS EmailAddress on DL+DH — no form field AND no handler (orphan, sends empty).
 
@@ -358,7 +361,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v4.2 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.5 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v5.2 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
+| FL_FCIC | v5.3 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
 
 ### Flagged for Full Rebuild on Next Test (16)
 
