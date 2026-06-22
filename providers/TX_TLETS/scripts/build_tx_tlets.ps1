@@ -23,7 +23,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "3.8",
+    [string]$Version = "3.9",
     [string]$Phase   = "current"
 )
 
@@ -134,7 +134,7 @@ $imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCu
 $noImgDefsDH = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention' }
+        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate' }
         [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress' }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('imageIndicator'); targetField = 'ImageIndicator' }
@@ -147,13 +147,13 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         # KQNameImg -- Image+photo path (requires Email). Image/Reason serialize ONLY here.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddress'); any = @('attentionDH','imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQNameImg'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH','emailAddress'); any = @('imageIndicator','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQNameImg'; state = 'In/Out' }
         # KQName -- plain (no photo). No image/email/reason in pool -> fires on Name alone.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('attentionDH','nameMiddleDH','nameSuffixDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('nameMiddleDH','nameSuffixDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
         # KQOLNImg -- Image+photo path by OLN (requires Email).
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddress'); any = @('attentionDH','imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLNImg'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH','emailAddress'); any = @('imageIndicator','purposeCodeDH','reasonCode','registrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLNImg'; state = 'In/Out' }
         # KQOLN -- plain by OLN. No image/email/reason in pool.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('attentionDH','purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('purposeCodeDH','registrationState'); defaults = $noImgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
     description = 'DriverHistoryQuery -- 4 combos (KQNameImg/KQName/KQOLNImg/KQOLN). v3.8: image-variant split; Image=Y serializes only when email present. DH-suffix; Attention visible.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
@@ -311,10 +311,11 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY'
         rows  = @(
-            @{ id = 'ROW_PER_DHL1'; cols = @('6','2','4'); fields = @(
+            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
+            # (automated-Attention standard, BUILD_RULES Sec 14) -- no visible field.
+            @{ id = 'ROW_PER_DHL1'; cols = @('8','4'); fields = @(
                 @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DHL1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose (DH)' '1' 'ROW_PER_DHL1' @{ initialValue = 'C' } }
-                @{ id = 'attentionDH_Input';             node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_PER_DHL1' }
             )}
             @{ id = 'ROW_PER_DHN1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'nameLastDH_Input';   node = Inp 'nameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_DHN1' }

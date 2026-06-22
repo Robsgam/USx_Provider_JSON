@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-17 11:28
+  Generated: 2026-06-22 09:13
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -36,13 +36,14 @@ POST-BUILD VERIFICATION
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
+  [INFO] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (40) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (39) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)

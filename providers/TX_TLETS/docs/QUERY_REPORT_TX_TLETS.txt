@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-17 11:28
+  Generated: 2026-06-22 09:13
 ================================================================
 QUERY SIMULATION
 ================
@@ -135,11 +135,12 @@ QUERY SIMULATION
 
     [FIRES first-match] KQName
       set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
+      any: [nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
+        <Attention>DOE J</Attention>
         <BirthDate>01151990</BirthDate>
         <Name>Doe,John A</Name>
         <PurposeCode>C</PurposeCode>
@@ -150,11 +151,12 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] KQOLN
       set: [operatorLicenseNumberDH]
-      any: [attentionDH, purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
+      any: [purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
+        <Attention>DOE J</Attention>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
         <State>NJ</State>

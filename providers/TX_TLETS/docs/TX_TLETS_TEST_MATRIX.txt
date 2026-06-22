@@ -1,6 +1,6 @@
-TX_TLETS MC v3.8 -- TEST MATRIX
+TX_TLETS MC v3.9 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-17
+Generated: 2026-06-22
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -12,7 +12,7 @@ Vehicle (1 card, 10 fields):
     ROW 2: vehicleIdentificationNumber [Inp 20], stickerNumber [Inp 10], financialResponsibilityType [Inp 1]
     ROW 3: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], registrationState [Sel STATE, TX], regionId [Inp 4]
 
-Person (3 cards, 23 fields):
+Person (3 cards, 22 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
     registrationState [Sel STATE, TX], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1], emailAddress [Inp 80]
   CARD_PER_DL (DRIVER LICENSE):
@@ -20,7 +20,7 @@ Person (3 cards, 23 fields):
     ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 3: raceCode [Sel NIBRS_RACE/NIBRS], expandedBirthDateSearchCode [Inp 1], regionId [Inp 4]
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1], attentionDH [Inp 30]
+    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
 
@@ -64,7 +64,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Last Name, First Name, Middle Name, Suffix.
               Race dropdown (no default), Expanded DOB, Region ID.
               CARD_PER_DH: titled "DRIVER HISTORY".
-              License Number (DH), Purpose (DH)=C, Attention (DH).
+              License Number (DH), Purpose (DH)=C.
               Last Name (DH), First Name (DH), Middle Name (DH), Suffix (DH).
               DOB (DH), Sex (DH) dropdown (no default).
  2  Vehicle     Render form. Verify 1 card:                        [    ]
@@ -171,7 +171,7 @@ PHASE 7: ANY[] FIELD TESTS (5 tests)
               Expected: any[] fields present in XML output.
 31  Boat        QB+Reg             + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
-32  Person      KQ+Name            + attentionDH, nameMiddleDH, nameSuffixDH [    ]
+32  Person      QW+Name            + expandedBirthDateSearchCode, nameMiddle, nameSuffix [    ]
               Expected: any[] fields present in XML output.
 33  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
