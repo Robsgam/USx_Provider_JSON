@@ -159,18 +159,61 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
       NOT at combo level. FL v4.7 placed them at combo level and the platform
       ignored them entirely (live XML evidence 2026-06-12: full DL card over-sent
       every populated field despite NOT_EXISTS conditions).
-    - field MUST be a List<String> of QIDM ATTRIBUTE names (e.g. ["State"]),
-      not form fieldIds. value MUST be a List<String> (e.g. ["CA"]).
-    - Live-proven references: CA_CLETS.json (20 conditions: NOT_EQUALS State
-      routing + EQUALS LicensePlateTypeCode), NY DALHOUT/DALLOUT.
+    - field MUST be a List<String> of the FORM sourceField / fieldId -- i.e. the
+      form-state KEY -- NOT the QIDM attribute `name`. value MUST be a List<String>.
+      *** CORRECTED 2026-06-22 (LIVE-PROVEN HI v3.4 T5). The earlier "attribute
+      names" claim here was WRONG and silently broke gates portfolio-wide. ***
+      The platform matches `field` against the populated form-state keys directly;
+      it does NOT look up an attribute by name and read its sourceField. So when an
+      attribute's `name` differs from its `sourceField` (e.g. name=State,
+      sourceField=RegistrationState), a condition field=["State"] is INERT (no form
+      field is keyed "State" -> always absent -> NOT_EXISTS always true).
+      Use field=["RegistrationState"] (the sourceField). See "FIELD = SOURCEFIELD"
+      block below for the controlled proof.
     "requirements": { "set": [...], "any": [...],
-      "conditions": [ { "field": ["State"], "operator": "NOT_EQUALS", "value": ["CA"] } ] }
+      "conditions": [ { "field": ["RegistrationState"], "operator": "NOT_EXISTS" } ] }
 
-  OPERATOR LIVE-VERIFICATION STATUS (updated 2026-06-12): NOT_EXISTS is
+  -----------------------------------------------------------------------
+  FIELD = SOURCEFIELD (form-state key), NOT attribute name
+  STATUS: LIVE-PROVEN providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_RQV_T5_RQV_v3.4_OOS_VIN__DECISIVE___VIN+State=CA._XML_VehicleIdentificationNumber=233HNFHFG783634_+_State=CA_+_ImageIndica.txt
+  -----------------------------------------------------------------------
+  Controlled experiment (HI VehicleRegistrationQuery M55S, OOS-VIN RQV path; same
+  form input, ONLY the condition field name changed between builds):
+    - v3.2 conditions field=["State"] (the attribute NAME; that attribute's
+      sourceField is "RegistrationState") -> NOT_EXISTS never fired -> the union
+      pool still included M55S's VehicleTypeCode -> <VehicleTypeCode>1</> BLED into
+      RQV's OOS XML.
+    - v3.4 conditions field=["RegistrationState"] (the sourceField / form-state key)
+      -> NOT_EXISTS fired when State present -> M55S left the pool -> VehicleTypeCode
+      ABSENT from RQV XML. Clean.
+  This RULES OUT the old "field=name, platform reads its sourceField" model (it
+  predicts v3.2 would have suppressed -- it did not). The correct model: field is
+  matched against the form-state KEY (the sourceField / fieldId) directly.
+
+  REINTERPRETS the FL v5.1 OLN finding below: that over-send was NOT "entity-global
+  name resolution to the first-declared QIDM"; it was simply the condition naming the
+  DL sourceField ("OperatorLicenseNumber"), which is blank on a DH-card query, so the
+  NOT_EXISTS gate read absent and KQName stayed in the pool. Renaming to the DH
+  sourceField ("OperatorLicenseNumberDH") fixed it because that key IS populated on a
+  DH query. Both findings unify under FIELD = SOURCEFIELD. The practical guidance --
+  give the second (DH) QIDM a unique DH-suffixed identifier and point its condition at
+  that DH sourceField -- is unchanged and still correct.
+
+  -- Live-proven references: CA_CLETS / NY value-comparison gates are POISONED-ARRAY
+     (inert regardless -- see below); FL_FCIC State gates are INERT (field=State vs
+     sourceField RegistrationState -- the same bug as HI v3.2, see "FL INERT" below).
+
+  OPERATOR LIVE-VERIFICATION STATUS (updated 2026-06-22): NOT_EXISTS is
   LIVE-PROVEN working (FL v4.8, USx tenant RMS client): full DL card sent
   ONLY OLN+ImageIndicator -- the failing NOT_EXISTS on the Name combos both
   blocked firing AND excluded Name/DOB/Sex from the serialization pool, and
-  the passing NOT_EXISTS (State blank) let FDQ fire. NOT_EQUALS is LIVE-PROVEN
+  the passing NOT_EXISTS (State blank) let FDQ fire.
+  CORROBORATED for UNION-POOL FILTERING (HI v3.4 T4 M55L + T5 RQV, 2026-06-22):
+  NOT_EXISTS on a defaulted-field combo (M55L/M55S) makes that combo LEAVE the
+  serialization union pool when the OOS discriminator is present, so its
+  VehicleTypeCode no longer bleeds into the OOS combo's (RQ/RQV) XML -- the FIRST
+  live proof of NOT_EXISTS pool-filtering on a tenant OTHER than FL, AND the proof
+  that field must be the sourceField (see FIELD=SOURCEFIELD above). NOT_EQUALS is LIVE-PROVEN
   BROKEN (FL v4.9 T-A/T-B -- see POISONED-ARRAY RULE below); EQUALS and all
   other value comparisons are presumed broken on the CommSys form path (the
   CA_CLETS "live-proven" EQUALS was CAD-path; NJ RAND/FULL EQUALS is an
@@ -268,44 +311,53 @@ SECTION 2a -- CONDITIONS (Advanced Field Constraints)
 
   Each condition object:
     operator    String        REQUIRED  The type of check (see table below)
-    field       List<String>  REQUIRED  QIDM attribute name(s) the condition applies to
+    field       List<String>  REQUIRED  The FORM sourceField / fieldId (form-state key)
+                                         the condition reads -- NOT the attribute name
+                                         (CORRECTED 2026-06-22, see FIELD=SOURCEFIELD above)
     value       List<String>  depends   Value(s) to compare against
 
   -----------------------------------------------------------------------
-  ATTRIBUTE-NAME RESOLUTION IS ENTITY-GLOBAL -- shared names COLLIDE
-  (LIVE-PROVEN FL_FCIC v5.0->v5.1, 2026-06-15)
+  DH/SECOND-QIDM GATES NEED A UNIQUE (DH-SUFFIXED) sourceField
+  (LIVE-PROVEN FL_FCIC v5.0->v5.1, 2026-06-15; mechanism REINTERPRETED 2026-06-22
+   under FIELD=SOURCEFIELD -- the "entity-global name resolution" framing was wrong,
+   but the practical rule below is unchanged and still correct.)
   -----------------------------------------------------------------------
-  conditions.field (and defaults.field, primaryFieldReference) resolve an
-  attribute by its `name`, and resolution is GLOBAL ACROSS ALL QIDMs ON THE
-  SAME targetEntity -- NOT scoped to the combo's own QIDM. When two QIDMs on
-  one entity define attributes with the SAME `name` but different sourceFields,
-  the condition resolves to the FIRST-declared one (by QIDM order in the bundle).
+  conditions.field reads a FORM-STATE KEY (the sourceField). When DL and DH share
+  an entity, the DH card's fields are DH-suffixed sourceFields; a gate that names
+  the DL sourceField reads BLANK on a DH-card query (the officer filled the
+  DH-suffixed field), so the gate is inert and the DH card over-sends.
 
-  FL_FCIC DL+DH on Person both named their OLN attr 'OperatorLicenseNumber'
-  (DL sourceField=operatorLicenseNumber, DH sourceField=operatorLicenseNumberDH).
-  The DH KQName gate {field:['OperatorLicenseNumber'], NOT_EXISTS} resolved to
-  the DL field (blank on a DH-card query) -> gate never fired -> full DH card
-  OVER-SENT Name/DOB/Sex. The DH-suffix isolation is at the sourceField/form
-  layer; it does NOT disambiguate the condition, which uses `name`.
+  FL_FCIC DL+DH on Person: DL OLN sourceField=OperatorLicenseNumber,
+  DH OLN sourceField=OperatorLicenseNumberDH. The DH KQName gate
+  {field:['OperatorLicenseNumber'], NOT_EXISTS} read the DL form key (blank on a
+  DH query) -> gate never fired -> DH card OVER-SENT Name/DOB/Sex. Pointing it at
+  the DH sourceField fixed it.
 
   RULE: when DH (or any second QIDM) shares an entity with DL (or a first QIDM)
-  and needs a conditions/defaults gate, the second QIDM's attribute `name` MUST
-  be unique (e.g. 'OperatorLicenseNumberDH'). Keep `targetField` = the real wire
-  element ('OperatorLicenseNumber') so the outbound XML is unchanged; only the
-  internal `name` (and the matching condition/primaryFieldReference) change.
+  and needs a conditions/defaults gate, the second QIDM's sourceField (and matching
+  condition field / primaryFieldReference) MUST be the unique DH-suffixed key
+  (e.g. 'OperatorLicenseNumberDH'). Keep `targetField` = the real wire element
+  ('OperatorLicenseNumber') so the outbound XML is unchanged; only the form-layer
+  sourceField (and the condition field that reads it) change.
   STATUS: LIVE-PROVEN providers/FL_FCIC/tests/_archive_pre_v5.2/FL_FCIC_Person_DH_KQ-FullCard-Isolation_v5.1_FIX_CONFIRMED__DH_full-card_pool_isolation_(OLN+Name+DOB+Sex+State)_2026-06-15.txt
   (proven on FL v5.1 camelCase; behavior is casing-independent -- log archived when FL went v5.2 PascalCase 2026-06-18; re-confirm on v5.2 re-import.)
   (FAIL before fix: ...KQ-FullCard-Isolation_SUPPLEMENTAL... same date.)
 
-  BENIGN sub-case: a shared name is harmless when the gate's owning QIDM is the
-  FIRST-declared (resolution lands on its own field). FL DL 'State' gate shares
-  'State' with DH but DL is declared first, so DL's gate resolves correctly
-  (D1 live-proven: DL full card isolates). Only the LATER QIDM's gate breaks.
+  CORRECTION (2026-06-22): the earlier "BENIGN when first-declared" sub-case was
+  WRONG. Under FIELD=SOURCEFIELD, a gate is inert whenever its `field` matches no
+  form sourceField -- regardless of QIDM order. FL's DL State gates (FDQName,
+  FDQOperatorLicenseNumber) use field=['State'] while the sourceField is
+  'RegistrationState', so they are INERT too -- not just the DH ones. ("DL is first
+  declared" is irrelevant; there is no name-resolution step.) The FL inert-State
+  gates happen to be benign in PRACTICE only because FL's competing combos are
+  separated by primary field (server routes by value; see SERVER-SIDE VALUE ROUTING),
+  not because the gate fires.
 
-  DETECTOR: for each entity, find attribute `name`s shared by 2+ QIDMs with
-  different sourceFields, then flag any NOT_EXISTS/EXISTS gate referencing that
-  name in a non-first QIDM. (TODO: add as verify_build.ps1 CHECK; ad-hoc scan
-  used 2026-06-15 found only FL, remaining hits benign.)
+  DETECTOR (CORRECTED): for each QIDM combo condition, check whether each `field`
+  value matches some attribute's sourceField IN THAT QIDM. If it matches only an
+  attribute `name` whose sourceField differs (or matches nothing), the condition is
+  INERT live. Implemented as validate.ps1 check (inert-conditions). Cross-provider
+  scan 2026-06-22: 10 inert (all FL_FCIC State NOT_EXISTS), 0 elsewhere; HI clean.
 
   -----------------------------------------------------------------------
   Available Operators

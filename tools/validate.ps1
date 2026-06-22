@@ -281,6 +281,7 @@ if ($entitiesBundle) {
                             codeTypeProvider = $node.props.codeTypeProvider
                             codeTypeCategory = $node.props.codeTypeCategory
                             fieldType = $node.type.resolvedName
+                            initialValue = $node.props.initialValue
                         }
                     }
                 }
@@ -1064,6 +1065,48 @@ foreach ($bundle in $providerBundles) {
                     $desc = ($poison | ForEach-Object { "$(@($_.field) -join '+') $("$($_.operator)".ToUpperInvariant())" }) -join '; '
                     Write-Warn "QIDM '$($cfg.name)' combo '$comboId' has POISONED-ARRAY condition(s) [$desc] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk)."
                     Write-Host "    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array)." -ForegroundColor Cyan
+                }
+            }
+
+            # G-32: INERT CONDITION FIELD -- conditions[].field must be a FORM sourceField /
+            # fieldId (the form-state key the platform reads), NOT the QIDM attribute `name`.
+            # A field that matches only an attribute name whose sourceField differs (or matches
+            # nothing) is SILENTLY INERT live: the EXISTS/NOT_EXISTS never sees the populated
+            # form field, so the combo fires unconditioned (union-pool / over-send risk). The
+            # valid form-state keys = every attribute's sourceField in THIS QIDM.
+            # Live-proven HI v3.4 T5 (field=State [attr name, sourceField RegistrationState]
+            # bled; field=RegistrationState suppressed). Cross-provider scan 2026-06-22 found
+            # 10 inert (all FL_FCIC State NOT_EXISTS). Poisoned arrays (G-31) are skipped here.
+            $validCondKeys = @{}
+            foreach ($a in $cfg.attributes) {
+                foreach ($sf in @($a.sourceField)) { if ($sf) { $validCondKeys["$sf"] = $true } }
+            }
+            $condAttrByName = @{}
+            foreach ($a in $cfg.attributes) { if ($a.name) { $condAttrByName["$($a.name)"] = $a } }
+            foreach ($combo in $cfg.combinations) {
+                $cConds = @()
+                if ($combo.conditions) { $cConds += $combo.conditions }
+                if ($combo.requirements -and $combo.requirements.conditions) { $cConds += $combo.requirements.conditions }
+                if ($cConds.Count -eq 0) { continue }
+                # value-comparison arrays are already flagged by G-31 (poisoned) -- skip to avoid double-flag
+                $hasValueCmp = @($cConds | Where-Object { "$($_.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX') }).Count -gt 0
+                if ($hasValueCmp) { continue }
+                $comboId = if ($combo.keyReference) { $combo.keyReference } else { "(unnamed)" }
+                foreach ($cond in $cConds) {
+                    $op = "$($cond.operator)".ToUpperInvariant()
+                    if ($op -eq 'EXCLUSIVE') { continue }
+                    foreach ($f in @($cond.field)) {
+                        if (-not $f) { continue }
+                        if ($validCondKeys.ContainsKey("$f")) { continue }   # resolves to a sourceField -> EFFECTIVE
+                        if ($condAttrByName.ContainsKey("$f")) {
+                            $sf = (@($condAttrByName["$f"].sourceField) -join ',')
+                            Write-Warn "QIDM '$($cfg.name)' combo '$comboId' condition field '$f' ($op) is INERT -- '$f' is an attribute NAME (sourceField '$sf'); conditions match the FORM sourceField, not the attribute name, so this gate never fires (always treated as absent)."
+                            Write-Host "    [FIX] In build script: change the conditions field from '$f' to '$sf' (the sourceField). Live-proven HI v3.4 T5; see QIDM_REFERENCE FIELD=SOURCEFIELD." -ForegroundColor Cyan
+                        } else {
+                            Write-Warn "QIDM '$($cfg.name)' combo '$comboId' condition field '$f' ($op) is INERT -- it matches no attribute sourceField in this QIDM (no such form-state key); the gate never fires."
+                            Write-Host "    [FIX] In build script: set the conditions field to a real form sourceField/fieldId defined in this QIDM's attributes." -ForegroundColor Cyan
+                        }
+                    }
                 }
             }
 

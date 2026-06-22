@@ -839,13 +839,31 @@ See also:
         (the over-send fix: a fired combo serializes the union pool of all
         condition-matched combos -- LIMITATION #1 -- so failing the Name combos'
         conditions when OLN is filled removes Name/DOB/Sex from the XML)
-    Conditions both route firing AND filter the serialization pool. Simulator-
-    verified on FL v4.7/v4.8; live verification of NOT_EXISTS pending (FL v4.8).
+    Conditions both route firing AND filter the serialization pool. NOT_EXISTS
+    pool-filtering is now LIVE-PROVEN on two tenants (FL v4.8 + HI v3.4 T4/T5).
     Validator G-16 understands this: it only flags an earlier UNCONDITIONED combo
     whose set[] is a subset of a later combo's set[] (true shadowing).
-    WIRE FORMAT IS MANDATORY: conditions nested in requirements, attribute-name
-    arrays, value arrays (QIDM_REFERENCE Section 2a) -- combo-level conditions
-    are silently ignored (FL v4.7 live failure 2026-06-12).
+    WIRE FORMAT IS MANDATORY: conditions nested in requirements; field = the FORM
+    sourceField / fieldId (NOT the attribute name -- CORRECTED 2026-06-22, HI v3.4
+    T5; an attribute-name field whose sourceField differs is silently INERT);
+    value arrays (QIDM_REFERENCE Section 2a). Combo-level conditions are silently
+    ignored (FL v4.7 live failure 2026-06-12).
+
+    DEFAULTED-FIELD SUBSET-SHADOWING (HI VehicleRegistrationQuery, 2026-06-22):
+    a combo whose set[] contains a DEFAULTED form field (e.g. vehicleTypeCode
+    initialValue=1) plus a shared primary (LicensePlateNumber) is ALWAYS satisfied
+    once the primary is filled -- the defaulted field is never blank. So it sits in
+    the union pool permanently and bleeds its fields (VehicleTypeCode) into any
+    co-satisfied OOS combo's XML. Fixes: (a) order the more-specific OOS combo first
+    AND (b) give the defaulted-field combo an existence-only condition on the OOS
+    discriminator's sourceField (M55L: LicensePlateTypeCode NOT_EXISTS; M55S:
+    RegistrationState NOT_EXISTS) so it LEAVES the pool when the OOS combo applies.
+    For routing purposes, a combo's EFFECTIVE required fields = set[] minus any
+    field that has an initialValue. Validator flags when an earlier combo's effective
+    set is a subset of a later one's (it will shadow it). Do NOT put the OOS
+    discriminator in the defaulted combo's any[] -- it can never serialize there and
+    it breaks the test conductor (HI v3.3 T16: RegistrationState in M55S any[] +
+    NOT_EXISTS condition contradicted; removed v3.4).
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a

@@ -138,16 +138,16 @@ function Test-ComboConditionsPass($qidm, $combo, $formData) {
         $fields = @($cond.field)
 
         foreach ($f in $fields) {
-            # Attribute-name resolution FIRST (platform/KB canonical), fieldId fallback.
-            $val = $null
-            $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
-            if ($attr) {
-                $sfs = @($attr.sourceField)
-                foreach ($sf in $sfs) {
-                    if ($formData.ContainsKey($sf) -and $formData[$sf]) { $val = $formData[$sf]; break }
-                }
-            }
-            elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
+            # LIVE MODEL (proven HI v3.4 T5, 2026-06-22): the platform evaluates
+            # conditions[].field against FORM-STATE KEYS -- i.e. the form fieldId, which equals
+            # the QIDM attribute's sourceField -- NOT the attribute NAME. A condition whose
+            # field matches only an attribute name (with a different sourceField) is SILENTLY
+            # INERT on the live platform: HI v3.2 used field=["State"] (attr name; sourceField
+            # was "RegistrationState") and the NOT_EXISTS never fired => VehicleTypeCode bled.
+            # v3.4 field=["RegistrationState"] (the sourceField) suppressed it. So the simulator
+            # MUST resolve by direct form-state key lookup ONLY -- no attribute-name indirection
+            # (the old attribute-first logic falsely modelled the platform and masked the bug).
+            $val = if ($formData.ContainsKey($f)) { $formData[$f] } else { $null }
             $present = -not [string]::IsNullOrWhiteSpace("$val")
 
             $pass = switch ($op) {
