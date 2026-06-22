@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 17:44
+  Generated: 2026-06-22 18:21
 ================================================================
 QUERY SIMULATION
 ================
@@ -27,33 +27,10 @@ QUERY SIMULATION
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] RQV
-      set: [VehicleIdentificationNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
+    [SKIP] RQV -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
     [SKIP] M55L -- conditions failed: LicensePlateTypeCode NOT_EXISTS [value='PC']
-    [SKIP] M55S -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
-
-    [FIRES shadowed -- first match above wins] QVV
-      set: [VehicleIdentificationNumber, VehicleMakeCode]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
+    [SKIP] M55S -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] QVV -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     [FIRES shadowed -- first match above wins] QVP
       set: [LicensePlateNumber, RegistrationState]
@@ -68,7 +45,7 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: RQ (first matching combo)
-    >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD
+    >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

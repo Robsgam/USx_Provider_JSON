@@ -3,6 +3,23 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v3.6  2026-06-22  Plate-wins guardrail + vehicleYear any[] gap fix
+  CHANGED: (1) Added LicensePlateNumber NOT_EXISTS condition to RQV, QVV, and M55S.
+    When LicensePlateNumber is in form state, all VIN-path combos exit the union pool
+    so VehicleIdentificationNumber and VehicleMakeCode do not bleed into the plate XML.
+    Discovered via all-fields stress test: Plate+PlateType+PlateYear+VIN+State+Make
+    simultaneously fired RQ+RQV+QVV via union pool -- VIN+Make appeared in XML. Plate
+    should win when present. Mirrors M55L (LicensePlateTypeCode NOT_EXISTS) and M55S
+    (RegistrationState NOT_EXISTS) pool-exclusion pattern. M55S now has two conditions:
+    RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (both must pass).
+    Documented as VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL in KB BUILD_RULES.
+    (2) Added vehicleYear to any[] of RQV, M55S, and QVV. vehicleYear attribute
+    (sourceField='vehicleYear', targetField='VehicleYear') existed in QIDM but was in
+    no combo's any[], so it was silently dropped from all VIN query XML even when
+    filled by the officer. Plate-path combos (RQ, M55L, QVP) unchanged -- vehicleYear
+    is a VIN-search field only.
+  REASON: All-fields stress test (2026-06-22) revealed union-pool over-send + any[] gap
+
 v3.5  2026-06-22  QG/QA/BQ/QB any[] gap fix
   CHANGED: Added any[] and relatedSearchHitIndicator default=Y to GunQuery (QG),
     ArticleSingleQuery (QA), and BoatQuery (BQ/QB). All three QIDMs had any=@() which

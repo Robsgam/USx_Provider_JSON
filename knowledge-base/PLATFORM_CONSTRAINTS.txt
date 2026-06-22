@@ -63,6 +63,16 @@ LIMITATION #1: Attribute serialization controlled by CONDITIONS POOL, not just f
     Monitor provider responses for signs of rejection on extra fields.
     As of 2026-04-29, NJ CommSys tolerates the extra fields with no errors.
 
+  MITIGATION -- PLATE-WINS GUARDRAIL (HI v3.6 2026-06-22):
+    The "cannot be changed" claim above applies to simple combo ordering. It CAN
+    be mitigated for the plate/VIN conflict using NOT_EXISTS conditions:
+    Add { field: ['LicensePlateNumber'], operator: 'NOT_EXISTS' } to all VIN-path
+    combos (RQV, QVV, M55S). When Plate is present, VIN combos exit the conditions
+    pool entirely, so their fields (VehicleIdentificationNumber, VehicleMakeCode,
+    VehicleYear) do NOT enter the union pool and are absent from the plate XML.
+    LIVE-PROVEN HI v3.6: all-fields test → only RQ fires; VIN absent from XML. Clean.
+    FULL RULE: See BUILD_RULES.txt "VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL".
+
 --------------------------------------------------------------------------------
 
 LIMITATION #2: ONE QIDM per (targetEntity, query) pair

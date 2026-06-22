@@ -1,5 +1,15 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.6 (2026-06-22): Plate-wins guardrail + vehicleYear any[] gap fix.
+#   PLATE-WINS: Added LicensePlateNumber NOT_EXISTS condition to RQV, QVV, M55S. When
+#   Plate is in form state, all VIN-path combos exit the union pool so VIN/MakeCode do not
+#   bleed into the plate XML (live-proven union-pool over-send: all-fields case fired
+#   RQ+RQV+QVV simultaneously). Mirrors the M55L (LicensePlateTypeCode NOT_EXISTS) and
+#   M55S (RegistrationState NOT_EXISTS) pool-exclusion pattern. M55S now has two conditions:
+#   RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS -- fires only for bare VIN.
+#   VEHICLEYEAR: Added vehicleYear to RQV, M55S, QVV any[]. sourceField='vehicleYear';
+#   the attribute existed in QIDM but was in no combo any[], so vehicleYear was silently
+#   dropped from all VIN-query XML even when filled.
 # v3.5 (2026-06-22): Fixed any[] gap on GunQuery (QG), ArticleSingleQuery (QA), and BoatQuery
 #   (BQ/QB). Platform only serializes set[]+any[] fields; all three QIDMs had any=@(), which
 #   silently dropped RelatedSearchHitIndicator (default=Y) + optional fields from XML.
@@ -93,7 +103,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.5",
+    [string]$Version = "3.6",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -195,8 +205,11 @@ $vehRegQuery = [PSCustomObject]@{
         }
         # RQV: Out-of-state VIN (VIN + State). State in set[] is the VIN OOS discriminator
         # -- a bare VIN has no State -> falls through to M55S (in-state).
+        # CONDITION: LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. When officer fills
+        # both Plate and VIN, Plate wins: RQV exits the union pool so VehicleIdentificationNumber
+        # and vehicleYear do NOT bleed into RQ's XML. (v3.6 all-fields stress test finding)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQV'
             state                 = 'Out'
@@ -213,21 +226,28 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In'
         }
         # M55S: In-state VIN (VehicleTypeCode + VIN) -- PRIMARY VIN
-        # CONDITION: RegistrationState NOT_EXISTS -- when officer fills State for an OOS VIN
-        # query (RQV), M55S exits the union pool so VehicleTypeCode does NOT bleed into RQV XML.
-        # NOTE: conditions[].field = SOURCEFIELD (form fieldId), NOT the attribute name.
-        # FL_FCIC uses 'State' because its sourceField IS 'State'; HI's sourceField is
-        # 'RegistrationState'. v3.2 used @('State') which was always NOT_EXISTS (no form field
-        # named 'State' in HI form), so M55S never exited the pool. Fixed in v3.3. (T5 finding)
+        # CONDITIONS (two -- both must pass):
+        #   1. RegistrationState NOT_EXISTS -- when officer fills State for an OOS VIN query
+        #      (RQV), M55S exits the pool so VehicleTypeCode does NOT bleed into RQV XML.
+        #      NOTE: conditions[].field = SOURCEFIELD (form fieldId), NOT the attribute name.
+        #      FL_FCIC uses 'State' because its sourceField IS 'State'; HI's sourceField is
+        #      'RegistrationState'. v3.2 used @('State') (silent no-op). Fixed v3.3. (T5)
+        #   2. LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. When bare Plate+VIN
+        #      present (no State, no PlateType/Year), M55L (in-state plate) and M55S (in-state
+        #      VIN) would both satisfy; without this condition VIN bleeds into the plate XML.
+        #      With both conditions: M55S fires ONLY for bare VIN (no State, no Plate). (v3.6)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
         }
         # QVV: Stolen VIN (VIN + MakeCode) -- DORMANT (server-generated QV).
+        # CONDITION: LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. Without this,
+        # filling Plate+VIN+Make causes QVV to co-fire with RQ and bleed VehicleMakeCode
+        # into the plate XML via the union pool. (v3.6 all-fields stress test finding)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator','RegistrationState','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QVV'
             state                 = 'In/Out'

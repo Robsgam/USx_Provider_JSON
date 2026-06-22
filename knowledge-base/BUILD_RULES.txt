@@ -676,6 +676,25 @@ See also:
     RaceCode                FormSelect
     RegistrationState       FormSelect
 
+  PERSON (DriverLicenseQuery) COMBO PRIORITY ORDER -- DL-PRIORITY PATTERN:
+    Combo ordering must be: OLN-based combo first, Name+Sex+DOB second, fallback
+    (Name+DOB without Sex) last. This is the DL-priority order.
+
+    Standard: DQN (OLN+State) > DQ (Name+SexCode+BirthDate) > QW (Name+BirthDate)
+    DH variant: KQN (OLN+State) > KQ (Name+SexCode+BirthDate)
+
+    RULE: OLN is the most-specific identifier (unique, no ambiguity). Name+Sex+DOB is
+    next (identity triple). Name+DOB without Sex is the fallback for when SexCode is
+    absent. Most-specific combo FIRST -- matches the general combo priority rule.
+
+    MUTUAL EXCLUSION (DL/DH): DL autoSelect=true + queriesToDeselect=[DH]. DH
+    autoSelect=true + queriesToDeselect=[DL] ONLY when DH opt-in checkbox is checked
+    (one-directional). DL fires by default; DH fires only when officer opts in.
+    This ensures DL always runs on OLN entry without requiring DH checkbox.
+
+    LIVE-PROVEN HI v2.9 2026-06-22: DQN > DQ > QW priority confirmed (T6/T7/T8 +
+    T22 DL/DH mutual exclusion). KQN > KQ confirmed (T9/T10).
+
   ---- FIREARM ----
 
   Standard fields:
@@ -864,6 +883,39 @@ See also:
     discriminator in the defaulted combo's any[] -- it can never serialize there and
     it breaks the test conductor (HI v3.3 T16: RegistrationState in M55S any[] +
     NOT_EXISTS condition contradicted; removed v3.4).
+
+  VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL (HI v3.6, 2026-06-22):
+    When a VehicleRegistrationQuery QIDM has both plate-path combos (set includes
+    LicensePlateNumber) and VIN-path combos (set includes VehicleIdentificationNumber),
+    add a LicensePlateNumber NOT_EXISTS condition to ALL VIN-path combos. Without this,
+    filling both Plate and VIN simultaneously causes every VIN-path combo to also satisfy
+    (union pool), and the platform serializes the union of all fired-combo set[]+any[] --
+    sending VehicleIdentificationNumber and VehicleMakeCode into what should be a clean
+    plate XML request (LIMITATION #1 over-send).
+
+    RULE: On every VIN-path combo in VehicleRegistrationQuery QIDM --
+      RQV, QVV, any in-state VIN combo (M55S, etc.) -- add:
+        conditions: [ { field: ['LicensePlateNumber'], operator: 'NOT_EXISTS' } ]
+    For combos with an existing condition (e.g. M55S has RegistrationState NOT_EXISTS),
+    ADD a second condition object to the array; both must pass.
+
+    WHY conditions[].field = 'LicensePlateNumber': LicensePlateNumber is both the
+    QIDM attribute name AND the form sourceField (one of the 22 PascalCase USx fields).
+    This is correct per the FIELD = SOURCEFIELD rule.
+
+    WHAT NOT TO DO: Do NOT add LicensePlateNumber NOT_EXISTS to QVP (set requires
+    LicensePlateNumber -- self-contradictory) or to RQ/M55L (plate-path combos).
+    QVP is already dormant and shadowed; if Plate+State present, M55L/RQ win via
+    first-match ordering, and QVP's union contribution is a subset of their output.
+
+    ALSO: VehicleYear should be in any[] of VIN-path combos only (RQV, M55S, QVV).
+    Do NOT add it to plate-path combos (RQ, M55L, QVP) -- Year is not a plate attribute.
+    sourceField='vehicleYear' (camelCase); attribute targetField='VehicleYear'.
+
+    LIVE-PROVEN HI v3.6 2026-06-22: all-fields stress test (Plate+PlateType+PlateYear+
+    VIN+State+Make) confirmed: only RQ fires; RQV/QVV/M55S all show
+    "[SKIP] conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC123']";
+    union pool = {Plate+PlateType+PlateYear+State+Image} only. VIN absent. Clean.
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a

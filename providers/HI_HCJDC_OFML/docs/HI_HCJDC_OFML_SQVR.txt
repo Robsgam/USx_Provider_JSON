@@ -2,12 +2,14 @@ HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-22
-JSON version: v3.5
+JSON version: v3.6
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: PENDING (In progress
 
 NOTE: Person entity CONFIRMED (live v2.9, blocked/preserved). Vehicle entity CONFIRMED
-(live v3.4 T1-T5, 2026-06-22). Firearm/Article/Boat PENDING live test on v3.4.
+(live v3.4 T1-T5, 2026-06-22) -- PENDING re-test on v3.6 (plate-wins guardrail +
+vehicleYear added; full re-test required per rebuild-restarts-testing rule).
+Firearm/Article/Boat CONFIRMED (live v3.5); PENDING re-test on v3.6.
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built HI production JSON, comparison only)
@@ -38,8 +40,11 @@ Architecture notes:
   Routing principle (v3.0+): out-of-state is reached by ADDING fields, never by
     clearing Vehicle Type. Plate discriminator = Plate Type/Year presence; VIN
     discriminator = State presence. First-match firing on combos ordered OOS-first.
+  Plate-wins guardrail (v3.6): LicensePlateNumber NOT_EXISTS condition on RQV/QVV/M55S
+    ensures that when Plate is present, all VIN combos exit the union pool. Plate wins.
+  vehicleYear (v3.6): added to RQV/M55S/QVV any[]; serializes on VIN searches only.
 
-  RQ -- OOS plate (Plate + PlateType + PlateYear) [CONFIRMED]
+  RQ -- OOS plate (Plate + PlateType + PlateYear) [PENDING]
     set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
     any: ImageIndicator, RegistrationState
     keyReference: RQ
@@ -50,19 +55,18 @@ Architecture notes:
       XML LicensePlateNumber/LicensePlateTypeCode/LicensePlateYear/State=CA/Image=N,
       VehicleTypeCode ABSENT. RMS registrationStateAttrIds+tag.
 
-  RQV -- OOS VIN (VIN + State) [CONFIRMED]
+  RQV -- OOS VIN (VIN + State) [PENDING]
     set: VehicleIdentificationNumber, RegistrationState
-    any: ImageIndicator
+    any: ImageIndicator, vehicleYear
+    conditions: LicensePlateNumber NOT_EXISTS (plate-wins guardrail, v3.6)
     keyReference: RQV
-    Fires when: VIN + State filled (State is the VIN OOS discriminator, in set[]).
-      VehicleTypeCode does NOT bleed (M55S's RegistrationState NOT_EXISTS condition
-      exits it from the union pool).
-    Live v3.4 T5 (DECISIVE): VIN=233HNFHFG783634 + State=CA -> XML VIN/State=CA/Image=N,
-      VehicleTypeCode ABSENT. Proves conditions[].field = sourceField
-      (RegistrationState); v3.2 used field=State (attribute name) and VehicleTypeCode
-      BLED. RMS registrationStateAttrIds+vinNumber.
+    Fires when: VIN + State filled AND LicensePlateNumber absent. State is the VIN OOS
+      discriminator. VehicleTypeCode does NOT bleed (M55S RegistrationState NOT_EXISTS
+      exits it). vehicleYear serializes when filled (v3.6 any[] fix).
+    Prior live v3.4 T5 (DECISIVE, archived): VIN+State=CA -> VIN/State/Image in XML,
+      VehicleTypeCode absent. Confirms conditions[].field = sourceField. Re-test required.
 
-  M55L -- in-state plate (VehicleTypeCode + Plate) [CONFIRMED]
+  M55L -- in-state plate (VehicleTypeCode + Plate) [PENDING]
     set: vehicleTypeCode, LicensePlateNumber
     any: ImageIndicator, RegistrationState
     conditions: LicensePlateTypeCode NOT_EXISTS (exits pool for OOS plate / RQ)
@@ -71,24 +75,27 @@ Architecture notes:
       the server's in-state requirement). Defaults: VehicleTypeCode=1, ImageIndicator=N.
     Live v3.4 T2: Plate=ABC123 -> XML LicensePlateNumber/VehicleTypeCode=1/Image=N.
 
-  M55S -- in-state VIN (VehicleTypeCode + VIN) [CONFIRMED]
+  M55S -- in-state VIN (VehicleTypeCode + VIN) [PENDING]
     set: vehicleTypeCode, VehicleIdentificationNumber
-    any: ImageIndicator
-    conditions: RegistrationState NOT_EXISTS (exits pool for OOS VIN / RQV)
+    any: ImageIndicator, vehicleYear
+    conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (v3.6)
     keyReference: M55S
-    Fires when: bare VIN present, no State. Defaults: VehicleTypeCode=1, Image=N.
-    NOTE: RegistrationState removed from any[] in v3.4 -- it can never serialize
-      alongside M55S (M55S only fires when State absent), and its presence in any[]
-      caused the test conductor to inject State and falsely block M55S (v3.3 T16 FAIL).
-    Live v3.4 T3: VIN=1HGNM8363783 -> XML VIN/VehicleTypeCode=1/Image=N, no State.
+    Fires when: bare VIN present, no State, no Plate. Both conditions must pass.
+      Defaults: VehicleTypeCode=1, Image=N. vehicleYear serializes when filled (v3.6).
+    NOTE: RegistrationState NOT in any[] (v3.4 fix -- semantic contradiction; M55S only
+      fires when State absent). LicensePlateNumber NOT_EXISTS added v3.6 (plate-wins).
+      Bare Plate+VIN (no State, no PlateType/Year): without this condition, M55L and M55S
+      both satisfy and VIN bleeds into the plate union pool. With it: M55S exits. Clean.
+    Prior live v3.4 T3: VIN only -> VIN/VehicleTypeCode=1/Image in XML, no State. Re-test required.
 
   QVV -- stolen VIN (VIN + VehicleMakeCode) [DORMANT]
     set: VehicleIdentificationNumber, VehicleMakeCode
-    any: ImageIndicator, RegistrationState
+    any: ImageIndicator, RegistrationState, vehicleYear
+    conditions: LicensePlateNumber NOT_EXISTS (plate-wins guardrail, v3.6)
     keyReference: QVV
-    DORMANT by design: ordered last; shadowed by M55S/RQV for any VIN entry. The
-      state CommSys server auto-generates the QV/stolen query from supplied fields
-      (response data-mined via QRDM). Not directly live-fireable from the form.
+    DORMANT by design: shadowed by M55S/RQV. Server auto-generates QV/stolen (QRDM).
+    LicensePlateNumber NOT_EXISTS prevents VehicleMakeCode from bleeding into plate XML
+    via union pool when Plate+VIN+Make are all filled simultaneously (v3.6 fix).
 
   QVP -- stolen plate (Plate + State) [DORMANT]
     set: LicensePlateNumber, RegistrationState
@@ -97,9 +104,10 @@ Architecture notes:
     DORMANT by design: ordered last; shadowed by RQ/M55L for any plate entry.
       Server auto-generates QV/stolen (QRDM data-mined). Not live-fireable from form.
 
-  Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- CONFIRMED (note; backed by live v3.4 T2-T5)
+  Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- PENDING (was CONFIRMED v3.4; re-test required for v3.6)
     OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
-    Each combo fired as expected on first match (T2-T5).
+    v3.6 sim: all-fields stress test confirmed plate-wins -- RQV/QVV/M55S all SKIPped
+    on LicensePlateNumber NOT_EXISTS condition when Plate present. Union pool = Plate-only. Clean.
 
   APPROVED SKIP -- generic QV catch-all (by LicensePlateNumber / by VIN):
     The 2 generic QV combos in metadata are intentionally NOT built as standalone
