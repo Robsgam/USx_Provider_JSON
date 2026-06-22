@@ -156,7 +156,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.2 |  | 61P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation |
-| 2 | HI_HCJDC_OFML | v2.9 |  | 67P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. DL SexCode-primary combo BUILT v2.3 (DQ primaryFieldReference Name->SexCode, clears CHECK 5 -- prior GAP note resolved). Attention auto-populated (handler, conforms to 2026-06-22 standard). QV (plate/VIN) = approved skip (catch-all, not an authorized basic query). |
+| 2 | HI_HCJDC_OFML | v3.0 |  | 68P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed. DL SexCode-primary combo BUILT v2.3 (DQ primaryFieldReference Name->SexCode, clears CHECK 5 -- prior GAP note resolved). Attention auto-populated (handler, conforms to 2026-06-22 standard). QV (plate/VIN) = approved skip (catch-all, not an authorized basic query). |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
 | 5 | FL_FCIC | v5.5 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported |

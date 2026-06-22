@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 13:07
+  Generated: 2026-06-22 15:14
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,6 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' ImageIndicator default='N' for Vehicle
   [PASS] QIF 'ENTITY_Vehicle' PlateType no initialValue (combo defaults expected)
+  [PASS] QIF 'ENTITY_Vehicle' 'LicensePlateYear' no initialValue (OOS-only plate field; PlateType also blank)
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 12 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 20 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
@@ -74,12 +75,12 @@ VALIDATOR RESULTS
   [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
+  [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'RQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'RQV': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'M55L': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'M55S': all set[]/any[] fields resolvable
-  [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'RQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'QVV': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'QVP': all set[]/any[] fields resolvable
-  [PASS] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' combo 'RQV': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_DriverLicenseQuery' combo 'QW': all set[]/any[] fields resolvable
   [PASS] QIDM 'HI_HCJDC_OFML_DriverLicenseQuery' combo 'DQN': all set[]/any[] fields resolvable
@@ -91,7 +92,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'HI_HCJDC_OFML_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 67 PASS / 0 FAIL / 0 WARN
+  RESULTS: 68 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 13:07
+  Generated: 2026-06-22 15:14
 ================================================================
 QUERY SIMULATION
 ================
@@ -14,7 +14,33 @@ QUERY SIMULATION
 --- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
 
-    [FIRES first-match] M55L
+    [FIRES first-match] RQ
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] RQV
+      set: [VehicleIdentificationNumber, RegistrationState]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>
+        <MessageKey>RQ</MessageKey>
+        <ImageIndicator>Y</ImageIndicator>
+        <State>NJ</State>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] M55L
       set: [vehicleTypeCode, LicensePlateNumber]
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
@@ -38,20 +64,6 @@ QUERY SIMULATION
         <State>NJ</State>
         <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
         <VehicleTypeCode>1</VehicleTypeCode>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] RQ
-      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <State>NJ</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QVV
@@ -79,19 +91,7 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES shadowed -- first match above wins] RQV
-      set: [VehicleIdentificationNumber]
-      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
-
-    >> PLATFORM FIRES: M55L (first matching combo)
+    >> PLATFORM FIRES: RQ (first matching combo)
     >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleTypeCode=1
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)

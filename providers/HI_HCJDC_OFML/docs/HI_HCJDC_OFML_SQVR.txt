@@ -2,7 +2,7 @@ HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-22
-JSON version: v2.9
+JSON version: v3.0
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: PENDING (In progress
 
@@ -35,14 +35,14 @@ Architecture notes:
   Optional fields: VehicleMakeCode, VehicleModelCode, VehicleYear,
                    ImageIndicator, VehicleTypeCode (default=1)
 
-  M55L -- Plate + State(HI) + VehicleTypeCode [CONFIRMED]
+  M55L -- Plate + State(HI) + VehicleTypeCode [PENDING]
     set: LicensePlateNumber, RegistrationState, VehicleTypeCode
     any: (empty)
     keyReference: M55L
     Fires when: State=HI (in-state) and Plate present
     Defaults: State=HI, VehicleTypeCode=1 (Auto), ImageIndicator=N
 
-  M55S -- VIN + State(HI) + VehicleTypeCode [CONFIRMED]
+  M55S -- VIN + State(HI) + VehicleTypeCode [PENDING]
     set: VehicleIdentificationNumber, RegistrationState, VehicleTypeCode
     any: (empty)
     keyReference: M55S

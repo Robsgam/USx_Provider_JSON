@@ -242,6 +242,21 @@ if ($entitiesBundle) {
             Write-Host "    [FIX] Remove 'providerType' property from QIF '$($cfg.name)' -- providerType belongs on QIDMs, not QIFs" -ForegroundColor Cyan
         }
 
+        # Pre-scan: does this QIF's PlateType carry a default? Used by the PlateYear
+        # OOS-only exception below -- when PlateType has NO default (blank), the plate
+        # extras are out-of-state-only fields and PlateYear is legitimately blank too
+        # (HI v3.0 pattern). Only an asymmetric pair (PlateType defaulted, PlateYear
+        # blank) is a real omission worth a WARN.
+        $plateTypeHasDefault = $false
+        if ($cfg.layout.default) {
+            foreach ($p in $cfg.layout.default.PSObject.Properties) {
+                $nd = $p.Value
+                if ($nd.props -and $nd.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $nd.props.initialValue) {
+                    $plateTypeHasDefault = $true; break
+                }
+            }
+        }
+
         # Extract fieldIds from all layout variants
         $entityFieldIds = New-Object System.Collections.Generic.HashSet[string]
         $entityFieldPropsMap = @{}
@@ -328,8 +343,12 @@ if ($entitiesBundle) {
                     }
                     if ($node.props.fieldId -match '^(LicensePlateYear|licensePlateYear|PlateYear)$') {
                         if (-not $node.props.initialValue) {
-                            Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' missing initialValue -- standard is current year"
-                            Write-Host "    [FIX] In build script: add initialValue=`$currentYear (dynamic) on the '$($node.props.fieldId)' field" -ForegroundColor Cyan
+                            if ($plateTypeHasDefault) {
+                                Write-Warn "QIF '$($cfg.name)' '$($node.props.fieldId)' missing initialValue -- standard is current year"
+                                Write-Host "    [FIX] In build script: add initialValue=`$currentYear (dynamic) on the '$($node.props.fieldId)' field" -ForegroundColor Cyan
+                            } else {
+                                Write-Pass "QIF '$($cfg.name)' '$($node.props.fieldId)' no initialValue (OOS-only plate field; PlateType also blank)"; Inc-Pass
+                            }
                         }
                     }
                     if ($node.props.fieldId -eq 'ImageIndicator') {
