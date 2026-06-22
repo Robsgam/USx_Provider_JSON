@@ -379,8 +379,10 @@ if ($entitiesBundle) {
                             Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) with attributeTypeId='STATE', or to hidden FormInput (InpH) if outbound-only" -ForegroundColor Cyan
                         }
                     }
-                    # Visible Attention FormInput: only flag if a QIDM auto-fills it via handler
-                    if ($node.props.fieldId -eq 'Attention' -and $node.props.hidden -ne $true) {
+                    # Visible Attention FormInput: only flag if a QIDM auto-fills it via handler.
+                    # The hidden flag is node-level ($node.hidden), not in props -- a hidden
+                    # Attention gate-feeder (the working pattern on ConnectCic) must NOT warn.
+                    if ($node.props.fieldId -eq 'Attention' -and $node.hidden -ne $true -and $node.props.hidden -ne $true) {
                         $fieldType = $node.type.resolvedName
                         if ($fieldType -match 'FormInput|FormSelect') {
                             $attnAutoFilled = $false

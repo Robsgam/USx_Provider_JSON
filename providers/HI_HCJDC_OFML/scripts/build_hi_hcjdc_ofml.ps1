@@ -55,7 +55,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.6"
+    [string]$Version = "2.7"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -493,6 +493,15 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_PER_DH3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
+            )}
+            # v2.7: hidden Attention gate-feeder. The DH QIDM Attention attribute
+            # (CommsysGetLastNameFirstNameInitialRuleHandler) is gated out of
+            # serialization unless its sourceField ['Attention'] resolves to a value.
+            # This hidden field supplies that value so the handler runs and emits the
+            # logged-in officer's name (LastName FirstInitial) from the profile.
+            # initialValue is a placeholder the handler is expected to ignore.
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
             )}
         )
     }

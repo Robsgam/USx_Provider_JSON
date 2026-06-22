@@ -372,7 +372,8 @@ Write-Host "--- CHECK 8: Visible-First Mandate ---" -ForegroundColor Yellow
 $hiddenFieldWhitelist = @(
     '(?i)state',                         # RMS dual-field State exception
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
-    '(?i)cadUnit|cadEvent|linkToEvent'   # CAD / First-Responder context
+    '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
+    '(?i)^Attention$'                    # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
 )
 
 # Recursively collect hidden form-field nodes (hidden=true + props.fieldId + Form* type)

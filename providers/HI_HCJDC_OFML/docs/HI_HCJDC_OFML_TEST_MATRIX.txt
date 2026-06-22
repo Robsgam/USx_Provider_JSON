@@ -1,4 +1,4 @@
-HI_HCJDC_OFML MC v2.6 -- TEST MATRIX
+HI_HCJDC_OFML MC v2.7 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-22
 Variant: MC (multi-card per entity)
@@ -13,7 +13,7 @@ Vehicle (1 card, 9 fields):
     ROW 3: VehicleIdentificationNumber [Inp 20]
     ROW 4: VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
-Person (3 cards, 16 fields):
+Person (3 cards, 17 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
     RegistrationState [Sel STATE]
   CARD_PER_DL (DRIVER LICENSE):
@@ -24,6 +24,7 @@ Person (3 cards, 16 fields):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 4: Attention [Inp X, 30]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM):
@@ -68,6 +69,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               License Number (DH) - or Name + DOB + Sex, Purpose Code (DH) - optional=C.
               First Name (DH), Last Name (DH), Middle Name (DH, optional), Suffix (DH, optional).
               Date of Birth (DH) - required with Name, Sex (DH) - required with Name dropdown (no default).
+              Attention (auto-populated from officer profile)=X.
  2  Vehicle     Render form. Verify 1 card:                        [    ]
               CARD_VEH: titled "VEHICLE SEARCH".
               Plate Number, State (optional) dropdown (no default), Type Code (required for in-state HI) dropdown=1.
