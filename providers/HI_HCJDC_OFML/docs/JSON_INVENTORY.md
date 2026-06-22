@@ -34,6 +34,18 @@ Every iteration saved. Never overwrite.
 
 
 
+## v3.4 (2026-06-22)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML.json | v3.4 | Current | 68P/0F/0W/0LIM. Removed RegistrationState from M55S any[] (any[]/NOT_EXISTS conflict). |
+
+## v3.3 (2026-06-22)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML.json | v3.3 | Current | 68P/0F/0W/0LIM. M55S conditions field: @('State')->@('RegistrationState') (sourceField fix). |
+
 ## v3.2 (2026-06-22)
 
 | File | Version | Status | Notes |

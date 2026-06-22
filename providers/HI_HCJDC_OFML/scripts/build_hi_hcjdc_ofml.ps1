@@ -1,5 +1,19 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.4 (2026-06-22): Removed RegistrationState from M55S any[]. M55S can only fire when
+#   RegistrationState NOT_EXISTS (condition); having it in any[] was a semantic contradiction
+#   (State can never be serialized alongside M55S since it's blank when M55S fires) and
+#   caused the test conductor to inject RegistrationState="NJ" into minimal test data,
+#   triggering the NOT_EXISTS condition and blocking M55S from firing in T16.
+#   M55L UNCHANGED -- M55L's condition is LicensePlateTypeCode (not RegistrationState), so
+#   State CAN ride along on in-state plate queries via any[].
+# v3.3 (2026-06-22): Fixed M55S conditions field name: was @('State') (attribute name),
+#   must be @('RegistrationState') (sourceField). T5 (RQV OOS VIN) showed VehicleTypeCode
+#   still bled because conditions[].field matches sourceField, NOT the attribute name.
+#   M55L worked in T4 because LicensePlateTypeCode is BOTH the attribute name and sourceField.
+#   Rule corrected in KB: conditions[].field = sourceField. FL_FCIC uses 'State' because
+#   FL's sourceField for the state selector IS 'State'; HI uses 'RegistrationState'. Vehicle
+#   tests restarted from T1. Person UNCHANGED (stays blocked).
 # v3.2 (2026-06-22): Added conditions to M55L (LicensePlateTypeCode NOT_EXISTS) and M55S
 #   (RegistrationState NOT_EXISTS) to prevent VehicleTypeCode union-pool bleed-through in OOS
 #   XML. Live T4 (RQ) showed <VehicleTypeCode>1</VehicleTypeCode> in OOS plate XML because
@@ -71,7 +85,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.2",
+    [string]$Version = "3.4",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -191,12 +205,14 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In'
         }
         # M55S: In-state VIN (VehicleTypeCode + VIN) -- PRIMARY VIN
-        # CONDITION: State NOT_EXISTS -- when officer fills State for an OOS VIN query (RQV),
-        # M55S exits the union pool so VehicleTypeCode does NOT bleed into RQV XML. NOTE: the
-        # condition references the QIDM ATTRIBUTE NAME ('State'), NOT the form sourceField
-        # ('RegistrationState') -- FL_FCIC live-proven convention (condition.field = attr name).
+        # CONDITION: RegistrationState NOT_EXISTS -- when officer fills State for an OOS VIN
+        # query (RQV), M55S exits the union pool so VehicleTypeCode does NOT bleed into RQV XML.
+        # NOTE: conditions[].field = SOURCEFIELD (form fieldId), NOT the attribute name.
+        # FL_FCIC uses 'State' because its sourceField IS 'State'; HI's sourceField is
+        # 'RegistrationState'. v3.2 used @('State') which was always NOT_EXISTS (no form field
+        # named 'State' in HI form), so M55S never exited the pool. Fixed in v3.3. (T5 finding)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'

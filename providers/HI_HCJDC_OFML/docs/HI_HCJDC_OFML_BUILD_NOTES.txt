@@ -3,6 +3,21 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v3.4  2026-06-22  M55S any[] RegistrationState removal
+  CHANGED: Removed RegistrationState from M55S any[]. M55S only fires when RegistrationState
+    NOT_EXISTS, so State can never serialize alongside it -- the any[] entry was a semantic
+    contradiction and caused the test conductor's Build-MinimalData to inject State="NJ",
+    triggering the NOT_EXISTS condition and blocking M55S (T16 FAIL). M55L UNCHANGED (its
+    condition is LicensePlateTypeCode, so State rides along on in-state plate queries).
+  REASON: T16 test conductor FAIL -- M55S did not fire; root cause = any[]/condition conflict.
+
+v3.3  2026-06-22  conditions[].field sourceField fix
+  CHANGED: M55S conditions field corrected from @('State') to @('RegistrationState'). T5 (RQV
+    OOS VIN) showed VehicleTypeCode still bled because conditions[].field matches the form
+    sourceField, not the QIDM attribute name. M55L worked (T4) only because LicensePlateTypeCode
+    is both attribute name and sourceField. Rule corrected in KB. Vehicle tests restart from T1.
+  REASON: T5 FAIL -- VehicleTypeCode present in RQV XML (M55S conditions silently no-op'd)
+
 v3.2  2026-06-22  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild
