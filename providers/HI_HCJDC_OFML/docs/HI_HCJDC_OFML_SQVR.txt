@@ -97,21 +97,21 @@ Architecture notes:
     DORMANT by design: ordered last; shadowed by RQ/M55L for any plate entry.
       Server auto-generates QV/stolen (QRDM data-mined). Not live-fireable from form.
 
-  Priority order: RQ > RQV > M55L > M55S > QVV > QVP [CONFIRMED]
+  Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- CONFIRMED (note; backed by live v3.4 T2-T5)
     OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
-    Backed by live v3.4 T2-T5 (each combo fired as expected on first match).
+    Each combo fired as expected on first match (T2-T5).
 
   APPROVED SKIP -- generic QV catch-all (by LicensePlateNumber / by VIN):
     The 2 generic QV combos in metadata are intentionally NOT built as standalone
     user combos; stolen lookup is server-generated (QVV/QVP dormant + QRDM).
     Confirmed not-to-build (user, 2026-06-22). Not a coverage gap.
 
-  OOS routing -- reached by adding fields [CONFIRMED]
+  OOS routing -- reached by adding fields -- CONFIRMED (note; backed by live v3.4 T2-T5)
     Plate: bare -> M55L (in-state); +PlateType+PlateYear -> RQ (OOS). VIN: bare ->
     M55S (in-state); +State -> RQV (OOS). Live v3.4 T2/T4 (plate), T3/T5 (VIN).
     Both OOS combos emit clean XML with NO VehicleTypeCode bleed (NOT_EXISTS conditions).
 
-  RMS co-fire [CONFIRMED]
+  RMS co-fire -- CONFIRMED (note; backed by live v3.4 T2-T5)
     RMS Vehicle fired alongside CommSys on all v3.4 Vehicle tests (elasticQuery:
     tag / vinNumber / registrationStateAttrIds). Live v3.4 T2-T5.
 
