@@ -591,6 +591,86 @@ if ($valueComparisonHits.Count -gt 0) {
     Pass "No value-comparison routing conditions (existence-only or none)"
 }
 
+# ── CHECK 12: Identifier-priority guardrail (Plate>VIN, OLN>Name) ─────────────
+# KB: BUILD_RULES.txt "IDENTIFIER-PRIORITY GUARDRAIL" (HI v3.6 plate-wins + FL DL OLN-priority).
+# When one QIDM has combos for two different search identifiers an officer can fill together,
+# the platform serializes the UNION of all satisfied combos' set[]+any[] (LIMITATION #1). The
+# lower-priority combos must carry a NOT_EXISTS condition on the higher-priority identifier's
+# sourceField so they exit the pool. Casing-agnostic: matches the provider's actual token.
+Write-Host ""
+Write-Host "--- CHECK 12: Identifier-Priority Guardrail ---" -ForegroundColor Yellow
+
+# does combo set[] contain a token matching $rx (case-insensitive, whole token)?
+function Set-HasToken($combo, [string]$rx) {
+    if (-not ($combo.requirements -and $combo.requirements.set)) { return $false }
+    foreach ($f in @($combo.requirements.set)) { if ([string]$f -match $rx) { return $true } }
+    return $false
+}
+# does combo have a NOT_EXISTS condition whose field[] includes a token matching $rx?
+function Has-NotExistsOn($combo, [string]$rx) {
+    $conds = @()
+    if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
+    if ($combo.conditions) { $conds += @($combo.conditions) }
+    foreach ($c in $conds) {
+        if ($c.operator -eq 'NOT_EXISTS') {
+            foreach ($fld in @($c.field)) { if ([string]$fld -match $rx) { return $true } }
+        }
+    }
+    return $false
+}
+
+$rxPlate = '(?i)^licensePlateNumber$'
+$rxVin   = '(?i)^vehicleIdentificationNumber$'
+$rxOln   = '(?i)^operatorLicenseNumber$'
+$rxName  = '(?i)^name(Last|First)$'
+$guardViolations = 0
+$guardPairs = 0
+
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        $combos = @($cfg.combinations)
+
+        # Vehicle: Plate > VIN
+        $hasPlate = @($combos | Where-Object { Set-HasToken $_ $rxPlate }).Count -gt 0
+        $hasVin   = @($combos | Where-Object { Set-HasToken $_ $rxVin   }).Count -gt 0
+        if ($hasPlate -and $hasVin) {
+            $guardPairs++
+            foreach ($c in $combos) {
+                # pure VIN combo = set has VIN but not Plate
+                if ((Set-HasToken $c $rxVin) -and -not (Set-HasToken $c $rxPlate)) {
+                    if (-not (Has-NotExistsOn $c $rxPlate)) {
+                        Warn "QIDM '$($cfg.name)' VIN combo '$($c.keyReference)' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)"
+                        $guardViolations++
+                    }
+                }
+            }
+        }
+
+        # Person: OLN > Name
+        $hasOln  = @($combos | Where-Object { Set-HasToken $_ $rxOln  }).Count -gt 0
+        $hasName = @($combos | Where-Object { Set-HasToken $_ $rxName }).Count -gt 0
+        if ($hasOln -and $hasName) {
+            $guardPairs++
+            foreach ($c in $combos) {
+                # pure Name combo = set has Name but not OLN
+                if ((Set-HasToken $c $rxName) -and -not (Set-HasToken $c $rxOln)) {
+                    if (-not (Has-NotExistsOn $c $rxOln)) {
+                        Warn "QIDM '$($cfg.name)' Name combo '$($c.keyReference)' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)"
+                        $guardViolations++
+                    }
+                }
+            }
+        }
+    }
+    if ($guardViolations -eq 0) {
+        if ($guardPairs -gt 0) { Pass "Identifier-priority guardrail satisfied on $guardPairs identifier pair(s)" }
+        else { Info "No coexisting Plate/VIN or OLN/Name combo pairs -- guardrail not applicable" }
+    }
+} else {
+    Info "No provider bundle -- skipping identifier-priority guardrail check"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

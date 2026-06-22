@@ -884,7 +884,25 @@ See also:
     it breaks the test conductor (HI v3.3 T16: RegistrationState in M55S any[] +
     NOT_EXISTS condition contradicted; removed v3.4).
 
-  VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL (HI v3.6, 2026-06-22):
+  IDENTIFIER-PRIORITY GUARDRAIL (generalized HI v3.6 plate-wins + FL DL OLN-priority):
+
+    PRINCIPLE: Within ONE QIDM, when two combos represent different search identifiers
+    an officer can fill at the same time, the platform serializes the UNION of every
+    satisfied combo's set[]+any[] (LIMITATION #1) -- not just the first match. To keep
+    the higher-priority identifier's query clean, gate the lower-priority combos out of
+    the union pool with a NOT_EXISTS condition on the higher-priority identifier's
+    sourceField. Standard priority order:
+      - Vehicle: Plate > VIN  -> every VIN-path combo gets <plate> NOT_EXISTS
+      - Person : OLN  > Name  -> every Name-path combo gets <oln>   NOT_EXISTS
+    NOT_EXISTS-only (existence test). NEVER a value-comparison condition (poisoned-array;
+    those are silently inert -- QIDM_REFERENCE Sec 2a).
+
+    CASING: conditions[].field = the provider's actual form sourceField token (FIELD =
+    SOURCEFIELD rule). PascalCase providers (NJ/FL/HI) use ['LicensePlateNumber'] /
+    ['OperatorLicenseNumber']; camelCase providers (TX/CA_CLETS/NY/AZ) use
+    ['licensePlateNumber'] / ['operatorLicenseNumber']. Verify the token before editing.
+
+  --- VEHICLE half (Plate > VIN) -- HI v3.6 plate-wins ---
     When a VehicleRegistrationQuery QIDM has both plate-path combos (set includes
     LicensePlateNumber) and VIN-path combos (set includes VehicleIdentificationNumber),
     add a LicensePlateNumber NOT_EXISTS condition to ALL VIN-path combos. Without this,
@@ -898,10 +916,6 @@ See also:
         conditions: [ { field: ['LicensePlateNumber'], operator: 'NOT_EXISTS' } ]
     For combos with an existing condition (e.g. M55S has RegistrationState NOT_EXISTS),
     ADD a second condition object to the array; both must pass.
-
-    WHY conditions[].field = 'LicensePlateNumber': LicensePlateNumber is both the
-    QIDM attribute name AND the form sourceField (one of the 22 PascalCase USx fields).
-    This is correct per the FIELD = SOURCEFIELD rule.
 
     WHAT NOT TO DO: Do NOT add LicensePlateNumber NOT_EXISTS to QVP (set requires
     LicensePlateNumber -- self-contradictory) or to RQ/M55L (plate-path combos).
@@ -919,6 +933,33 @@ See also:
     M55S exits on LicensePlateNumber NOT_EXISTS condition. DECISIVE.
     Test logs: providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_RQ+AllFieldsStress_*.txt
                providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_M55L+PlateWinsVIN_*.txt
+
+  --- PERSON half (OLN > Name) -- FL DL live precedent ---
+    When a DriverLicenseQuery (or DriverHistoryQuery) has both an OLN-set combo (set
+    includes OperatorLicenseNumber) and one or more Name-set combos (set includes
+    NameLast/NameFirst), add an <oln> NOT_EXISTS condition to EVERY Name-set combo.
+    When OLN is present the Name combo(s) exit the pool and the OLN query fires alone --
+    Name/DOB/Sex fields don't bleed into the OLN XML. This makes OLN win regardless of
+    combo array order (the condition, not ordering, enforces priority).
+
+    RULE: on every Name-set combo --
+      conditions: [ { field: ['OperatorLicenseNumber'], operator: 'NOT_EXISTS' } ]   (PascalCase)
+      conditions: [ { field: ['operatorLicenseNumber'], operator: 'NOT_EXISTS' } ]   (camelCase)
+    Append to any existing condition (e.g. an OOS State NOT_EXISTS gate); all must pass.
+
+    LIVE PRECEDENT: FL_FCIC DriverLicenseQuery -- FDQName and DQName already carry
+    OperatorLicenseNumber NOT_EXISTS; OLN wins when officer enters OLN+Name together.
+    Apply to multi-Name-combo providers: TX (DQName/QWName/CPLName), AZ (ACWL/DQN),
+    CA_CLETS (NLTS.DQ.N/IR.QVC.N/IN.L1), NJ (DQ), NY (DLICN). FL already conformant.
+
+    NOTE: A SEPARATE opt-in Name query (e.g. NY DGRP NyNyspinDriverLicenseNameQuery,
+    autoSelect=false) needs NO condition -- it does not co-fire by default, so there is
+    no union-pool bleed to gate. The guardrail is only for combos WITHIN one autoSelect
+    QIDM that can co-satisfy.
+
+    MULTI-IDENTIFIER QIDMs (CA_CLETS: OLN, Name, SSN, CII): the same principle extends --
+    rank identifiers by specificity/priority and gate each lower-priority combo out when a
+    higher-priority identifier is present. Scope per devdoc; review co-fire pairs at build.
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a
