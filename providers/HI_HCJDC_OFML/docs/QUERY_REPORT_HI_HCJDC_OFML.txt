@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 16:30
+  Generated: 2026-06-22 17:44
 ================================================================
 QUERY SIMULATION
 ================
@@ -157,15 +157,19 @@ QUERY SIMULATION
 
     [FIRES first-match] QG
       set: [GunSerialNumber]
+      any: [GunMake, GunCaliber, GunModel, relatedSearchHitIndicator] -> matched: [GunMake, GunCaliber, GunModel]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QG</MessageKey>
+        <GunCaliber>9MM</GunCaliber>
+        <GunMake>SMTH</GunMake>
+        <GunModel>M&P</GunModel>
         <GunSerialNumber>ABC12345</GunSerialNumber>
       </Transaction>
 
     >> PLATFORM FIRES: QG (first matching combo)
-    >> UNION POOL (platform serializes): GunSerialNumber=ABC12345
+    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunModel=M&P, GunSerialNumber=ABC12345
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -174,6 +178,7 @@ QUERY SIMULATION
 
     [FIRES first-match] QA
       set: [ArticleSerialNumber, ArticleTypeCode]
+      any: [relatedSearchHitIndicator] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -192,24 +197,28 @@ QUERY SIMULATION
 
     [FIRES first-match] BQ
       set: [RegistrationNumber]
+      any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>BQ</MessageKey>
         <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] QB
       set: [BoatHullIdNumber]
+      any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>QB</MessageKey>
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: BQ (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

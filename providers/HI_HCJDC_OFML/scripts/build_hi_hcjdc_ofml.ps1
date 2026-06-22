@@ -1,5 +1,13 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.5 (2026-06-22): Fixed any[] gap on GunQuery (QG), ArticleSingleQuery (QA), and BoatQuery
+#   (BQ/QB). Platform only serializes set[]+any[] fields; all three QIDMs had any=@(), which
+#   silently dropped RelatedSearchHitIndicator (default=Y) + optional fields from XML.
+#   QG: added any=@('GunMake','GunCaliber','GunModel','relatedSearchHitIndicator') + default Y.
+#   QA: added any=@('relatedSearchHitIndicator') + default Y.
+#   BQ/QB: added any=@('RegistrationState','relatedSearchHitIndicator') + default Y.
+#   Pattern confirmed from FL_FCIC GunQuery (GunMake+ImageIndicator in any[] + default).
+#   Pre-live-test gap found during T19 pre-flight simulator check.
 # v3.4 (2026-06-22): Removed RegistrationState from M55S any[]. M55S can only fire when
 #   RegistrationState NOT_EXISTS (condition); having it in any[] was a semantic contradiction
 #   (State can never be serialized alongside M55S since it's blank when M55S fires) and
@@ -85,7 +93,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.4",
+    [string]$Version = "3.5",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -409,9 +417,15 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RelatedSearchHitIndicator'; size = 1;  sourceField = @('relatedSearchHitIndicator'); targetField = 'RelatedSearchHitIndicator' }
     )
     combinations = @(
-        # Caliber/Make/Model/RSH optional (Any inside Set).
+        # Caliber/Make/Model ride along in any[]; relatedSearchHitIndicator defaults Y.
+        # NOTE: Platform serializes only set[]+any[] fields -- empty any[] silently drops
+        # all optional fields (Make/Caliber/Model/RSH) from XML. FL_FCIC pattern confirmed.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set      = @('GunSerialNumber')
+                any      = @('GunMake','GunCaliber','GunModel','relatedSearchHitIndicator')
+                defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QG'
             state                 = 'In/Out'
@@ -439,9 +453,13 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RelatedSearchHitIndicator'; size = 1;  sourceField = @('relatedSearchHitIndicator'); targetField = 'RelatedSearchHitIndicator' }
     )
     combinations = @(
-        # RSH optional (Any inside Set).
+        # RSH optional; must be in any[] to serialize. Default Y.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ArticleSerialNumber','ArticleTypeCode'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set      = @('ArticleSerialNumber','ArticleTypeCode')
+                any      = @('relatedSearchHitIndicator')
+                defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA'
             state                 = 'In/Out'
@@ -471,16 +489,24 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # BQ: Boat Registration. RSH/State optional (Any inside Set).
+        # BQ: Boat Registration. RegistrationState/RSH optional; must be in any[] to serialize.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set      = @('RegistrationNumber')
+                any      = @('RegistrationState','relatedSearchHitIndicator')
+                defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQ'
             state                 = 'In/Out'
         }
-        # QB: Stolen Boat. RSH/State optional (Any inside Set).
+        # QB: Stolen Boat. RegistrationState/RSH optional; must be in any[] to serialize.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set      = @('BoatHullIdNumber')
+                any      = @('RegistrationState','relatedSearchHitIndicator')
+                defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QB'
             state                 = 'In/Out'

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 16:30
+  Generated: 2026-06-22 17:44
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -38,14 +38,17 @@ PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
   T19  Firearm    [PASS] GunQuery fires (QG)
 PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
   T20  Article    [PASS] ArticleSingleQuery fires (QA)
-PHASE 7: ANY[] FIELD TESTS (1 tests)
-  T21  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
+PHASE 7: ANY[] FIELD TESTS (4 tests)
+  T21  Boat       [PASS] any[] fields verified: RegistrationState, relatedSearchHitIndicator
+  T22  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
+  T23  Article    [PASS] any[] fields verified: relatedSearchHitIndicator
+  T24  Firearm    [PASS] any[] fields verified: GunMake, GunCaliber, GunModel
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T22  Person     [PASS] queriesToDeselect verified
+  T25  Person     [PASS] queriesToDeselect verified
 PHASE 9: NEGATIVES (empty forms = no send)
-  T23  Person     [PASS] empty form: no combos fire
-  T24  Boat       [PASS] empty form: no combos fire
+  T26  Person     [PASS] empty form: no combos fire
+  T27  Boat       [PASS] empty form: no combos fire
 
-SUMMARY: 24/24 PASS, 0 FAIL
+SUMMARY: 27/27 PASS, 0 FAIL
 
 

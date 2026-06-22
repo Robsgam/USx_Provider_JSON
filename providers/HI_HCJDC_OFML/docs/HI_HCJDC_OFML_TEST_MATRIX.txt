@@ -1,4 +1,4 @@
-HI_HCJDC_OFML MC v3.4 -- TEST MATRIX
+HI_HCJDC_OFML MC v3.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-22
 Variant: MC (multi-card per entity)
@@ -150,29 +150,35 @@ PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
 20  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QA)
 
-PHASE 7: ANY[] FIELD TESTS (1 tests)
+PHASE 7: ANY[] FIELD TESTS (4 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-21  Person      KQ+N               + RegistrationState, purposeCodeDH, Attention [    ]
+21  Boat        BQ+Reg             + RegistrationState, relatedSearchHitIndicator [    ]
+              Expected: any[] fields present in XML output.
+22  Person      KQ+N               + RegistrationState, purposeCodeDH, Attention [    ]
+              Expected: any[] fields present in XML output.
+23  Article     QA+Serial          + relatedSearchHitIndicator     [    ]
+              Expected: any[] fields present in XML output.
+24  Firearm     QG+Serial          + GunMake, GunCaliber, GunModel [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-22  Person      Deselect: DH deselects DL.     [    ]
+25  Person      Deselect: DH deselects DL.     [    ]
               Fill both query fields. Check deselect behavior.
 
 PHASE 9: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-23  Person      Empty form, verify no Send button / no request.    [    ]
-24  Boat        Empty form, verify no Send button / no request.    [    ]
+26  Person      Empty form, verify no Send button / no request.    [    ]
+27  Boat        Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 24 tests
+TOTAL: 27 tests
 
 COMBO COVERAGE (15/15):
   VehicleRegistrationQuery: 6/6 -- T11(RQ+V), T12(RQ+Plate), T13(QV+V), T14(QV+P), T15(M55L+M55L), T16(M55S+M55S)
