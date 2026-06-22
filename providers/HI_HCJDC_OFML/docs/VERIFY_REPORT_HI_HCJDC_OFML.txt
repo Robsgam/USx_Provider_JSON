@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-18 07:53
+  Generated: 2026-06-22 10:06
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 26 [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleTypeCode, vehicleYear, nameMiddle, nameSuffix, Attention, BirthDateDH, NameFirstDH, NameLastDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunModel, GunSerialNumber, relatedSearchHitIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 25 [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleTypeCode, vehicleYear, nameMiddle, nameSuffix, BirthDateDH, NameFirstDH, NameLastDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunModel, GunSerialNumber, relatedSearchHitIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -38,7 +38,8 @@ POST-BUILD VERIFICATION
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [WARN] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (auto-populate) with no visible form field -- expose field first per Visible-First Mandate; add handler only with approval
+  [INFO] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
   [WARN] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment before keyRef 'RQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
@@ -53,7 +54,7 @@ POST-BUILD VERIFICATION
   [PASS] No value-comparison routing conditions (existence-only or none)
 
 ========================================
- VERIFICATION PASSED (with warnings): 8 PASS / 5 WARN / 0 FAIL
+ VERIFICATION PASSED (with warnings): 9 PASS / 4 WARN / 0 FAIL
 ========================================
 
 
