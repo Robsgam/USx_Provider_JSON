@@ -55,7 +55,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.5"
+    [string]$Version = "2.6"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -235,7 +235,7 @@ $dlQuery = [PSCustomObject]@{
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
-            name = 'Attention'; size = 30; sourceField = @(); targetField = 'Attention'
+            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
             rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
         }
         [PSCustomObject]@{

@@ -233,9 +233,25 @@ Found at 4 property paths in the JSON structure.
         {
           "name": "Attention",
           "rule": { "function": "CommsysGetLastNameFirstNameInitialRuleHandler" },
-          "sourceField": [],
+          "sourceField": ["Attention"],
           "targetField": "Attention"
         }
+
+      *** CORRECTION 2026-06-22 (live-proven, supersedes earlier "sourceField: []") ***
+      sourceField MUST be NON-EMPTY. ConnectCic REJECTS an empty sourceField at
+      import: "Invalid Bundle configurations: [Invalid attributes found in query
+      input data mapping: [Attention]]" (HI_HCJDC_OFML v2.5 import, 2026-06-22).
+      Use sourceField=["Attention"]. The earlier "[]" guidance here was never
+      live-validated (CA_ESUN/LA_LEMS do not actually carry this handler) and is
+      WRONG for this platform.
+
+      KNOWN LIMITATION (unresolved): with sourceField=["Attention"] -- which names
+      no real form field -- this platform gates the attribute out of serialization,
+      so Attention never reaches the wire (HI v2.4 T9: DriverHistoryQuery omitted
+      Attention). Neither importable config makes the handler emit. Net: the
+      auto-Attention handler is effectively INERT on ConnectCic. Treat Attention
+      auto-populate as a platform limitation / escalate to Cringer before relying
+      on it. Do NOT switch sourceField to [] to "fix" it -- that only breaks import.
 
   --------------------------------------------------------------------------
   14. IgnoreUserValueRuleHandler

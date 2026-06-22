@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-22 10:13
+  Generated: 2026-06-22 10:23
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 31 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 32 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -36,7 +36,7 @@ POST-BUILD VERIFICATION
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [INFO] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler with empty sourceField -- approved automated-Attention standard
+  [INFO] QIDM 'TX_TLETS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---

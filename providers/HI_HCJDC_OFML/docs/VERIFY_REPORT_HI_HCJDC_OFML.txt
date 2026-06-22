@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 10:06
+  Generated: 2026-06-22 10:23
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 25 [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleTypeCode, vehicleYear, nameMiddle, nameSuffix, BirthDateDH, NameFirstDH, NameLastDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunModel, GunSerialNumber, relatedSearchHitIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 26 [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleTypeCode, vehicleYear, nameMiddle, nameSuffix, Attention, BirthDateDH, NameFirstDH, NameLastDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunModel, GunSerialNumber, relatedSearchHitIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -38,7 +38,7 @@ POST-BUILD VERIFICATION
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [INFO] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard
+  [INFO] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
