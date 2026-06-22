@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.2"
+    [string]$Version = "4.3"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -104,6 +104,7 @@ $vehRegQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
                     [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
+                conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQN'
@@ -162,6 +163,7 @@ $dlQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                     [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ'
@@ -181,7 +183,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). Most-specific first.'
+    description     = 'DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). OLN>Name guardrail: DQ has OperatorLicenseNumber NOT_EXISTS so OLN wins when both entered (identifier-priority guardrail).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NJ_NJCJIS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'

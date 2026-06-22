@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-18 07:52
+  Generated: 2026-06-22 19:36
 ================================================================
 QUERY SIMULATION
 ================
@@ -28,43 +28,18 @@ QUERY SIMULATION
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] RQN
-      set: [VehicleIdentificationNumber]
-      any: [RandomRequest, RegistrationState, ImageIndicator] -> matched: [RandomRequest, RegistrationState, ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <RandomRequest>N</RandomRequest>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
+    [SKIP] RQN -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     >> PLATFORM FIRES: RQ (first matching combo)
-    >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, RandomRequest=N, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456
+    >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, RandomRequest=N, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
+    [SKIP] DQ -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] DQ
-      set: [BirthDate, NameLast, NameFirst]
-      any: [ImageIndicator, SexCode, RegistrationState] -> matched: [ImageIndicator, SexCode, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe, John</Name>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] DQN
+    [FIRES first-match] DQN
       set: [OperatorLicenseNumber]
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
@@ -76,8 +51,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: DQ (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, ImageIndicator=Y, Name=Doe, John, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ
+    >> PLATFORM FIRES: DQN (first matching combo)
+    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
