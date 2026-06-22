@@ -237,21 +237,26 @@ Found at 4 property paths in the JSON structure.
           "targetField": "Attention"
         }
 
-      *** CORRECTION 2026-06-22 (live-proven, supersedes earlier "sourceField: []") ***
-      sourceField MUST be NON-EMPTY. ConnectCic REJECTS an empty sourceField at
-      import: "Invalid Bundle configurations: [Invalid attributes found in query
-      input data mapping: [Attention]]" (HI_HCJDC_OFML v2.5 import, 2026-06-22).
-      Use sourceField=["Attention"]. The earlier "[]" guidance here was never
-      live-validated (CA_ESUN/LA_LEMS do not actually carry this handler) and is
-      WRONG for this platform.
+      *** RESOLVED 2026-06-22 (live-proven on HI_HCJDC_OFML v2.9) ***
+      The handler WORKS -- it emits the logged-in officer's name (LastName
+      FirstInitial) from the RMS profile. Live proof: <Attention>SGAMBELLONE R</Attention>.
 
-      KNOWN LIMITATION (unresolved): with sourceField=["Attention"] -- which names
-      no real form field -- this platform gates the attribute out of serialization,
-      so Attention never reaches the wire (HI v2.4 T9: DriverHistoryQuery omitted
-      Attention). Neither importable config makes the handler emit. Net: the
-      auto-Attention handler is effectively INERT on ConnectCic. Treat Attention
-      auto-populate as a platform limitation / escalate to Cringer before relying
-      on it. Do NOT switch sourceField to [] to "fix" it -- that only breaks import.
+      WORKING CONFIG (all three required):
+        1. sourceField = ["Attention"]  (NON-EMPTY). ConnectCic REJECTS [] at import
+           ("Invalid attributes found in query input data mapping: [Attention]") --
+           reproducible (HI v2.5 + dochandler diagnostic). The "[]" in the vendor doc
+           does NOT import on this instance.
+        2. "Attention" listed in the relevant combo's any[]. THIS WAS THE REAL BLOCKER:
+           this platform serializes ONLY fields in the FIRED COMBO's set[]/any[]. An
+           attribute absent from the combo is dropped before the handler reaches the
+           wire (why Attention failed v2.4-v2.8 regardless of handler).
+        3. A hidden "Attention" gate-feeder form field with a non-empty initialValue,
+           so the field is populated -> the combo includes it -> the handler runs and
+           overrides the placeholder with the profile name. Field stays hidden.
+
+      The earlier "INERT / escalate" note was wrong -- the cause was the missing
+      any[] membership, not the handler. validate.ps1 / verify_build.ps1 CHECK 8
+      updated to match (an auto-fill Attention handler MUST be in a combo any[]).
 
   --------------------------------------------------------------------------
   14. IgnoreUserValueRuleHandler
