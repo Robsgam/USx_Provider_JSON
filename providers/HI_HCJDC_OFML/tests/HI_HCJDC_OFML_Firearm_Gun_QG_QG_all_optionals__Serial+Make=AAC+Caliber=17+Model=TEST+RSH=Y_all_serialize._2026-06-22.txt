@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Firearm GunQuery
+Combo: QG (QG all optionals: Serial+Make=AAC+Caliber=17+Model=TEST+RSH=Y all serialize.)
+Date: 2026-06-22 17:48:52
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"GunCaliber":"17","GunMake":"AAC","GunModel":"test","GunSerialNumber":"gunser","relatedSearchHitIndicator":"Y"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVRMTAR5WBR78709DMHBND81"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KVRMTAR5WBR78709DMHBND81</Id><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator><GunSerialNumber>GUNSER</GunSerialNumber><GunCaliber>17</GunCaliber><GunMake>AAC</GunMake><GunModel>TEST</GunModel></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVRMTAR5WBR78709DMHBND81
+  RelatedSearchHitIndicator      Y
+  GunSerialNumber                GUNSER
+  GunCaliber                     17
+  GunMake                        AAC
+  GunModel                       TEST
+
+NOTES
+-----
+
+
+RESULT: PASS
