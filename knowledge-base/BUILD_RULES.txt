@@ -1056,11 +1056,18 @@ See also:
     4. CAD / First-Responder dispatch context fields (CadUnit, CadEvent,
        LinkToEvent) -- injected by the CAD_DISPATCH / FIRST_RESPONDER variants.
 
+  REQUIRED ATTENTION (CCH) -- EXEMPT: the automated handler is for OPTIONAL
+  Attention only (DriverHistory-style, metadata any[]). Where Attention is
+  REQUIRED (metadata set[], e.g. the CCH Criminal History query family), the
+  officer must supply the routing value, so a VISIBLE field is correct and the
+  name-derived handler is NOT applied. (TX_TLETS_CCH is the standing example;
+  it is out of scope for the optional-Attention conversion.)
+
   ENFORCEMENT: verify_build.ps1 CHECK 8 ("Visible-First Mandate") scans every
   build. It WARNs on any hidden form field not on the whitelist above, AND on an
-  Attention attribute that LACKS the CommsysGetLastNameFirstNameInitialRuleHandler
-  (i.e. a manual/visible Attention -- now the non-conforming case). An Attention
-  attribute WITH the handler is reported as conforming (Info). The check is
+  OPTIONAL Attention attribute that LACKS the handler (the manual/visible case to
+  convert). An Attention attribute WITH the handler is conforming (Info); a
+  REQUIRED Attention (in a combo set[]) is exempt (Info). The check is
   non-blocking (WARN, not FAIL) so it does not break legacy providers mid-flight,
   but every WARN must be resolved before a build is declared DONE (0 WARN target).
 

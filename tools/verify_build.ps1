@@ -419,11 +419,23 @@ $autoPopHandlers = 0
 if ($providerBundle) {
     foreach ($cfg in $providerBundle.configurations) {
         if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        # Fields required (set[]) across this QIDM's combos. A REQUIRED Attention
+        # (e.g. CCH criminal-history queries) is legitimately an officer-supplied
+        # visible field -- the name-derived handler is the OPTIONAL-Attention
+        # standard only -- so exempt required Attention from the WARN.
+        $setFields = @()
+        foreach ($c in $cfg.combinations) {
+            if ($c.requirements -and $c.requirements.set) { $setFields += @($c.requirements.set) }
+        }
         foreach ($attr in $cfg.attributes) {
             if ($attr.name -ne 'Attention') { continue }
             $hasHandler = ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial')
+            $isRequired = ($setFields -contains 'Attention')
+            foreach ($sf in $attr.sourceField) { if ($setFields -contains $sf) { $isRequired = $true } }
             if ($hasHandler) {
                 Info "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard"
+            } elseif ($isRequired) {
+                Info "QIDM '$($cfg.name)' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard"
             } else {
                 Warn "QIDM '$($cfg.name)' attr 'Attention' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per automated-Attention standard (BUILD_RULES Visible-First Mandate)"
                 $autoPopHandlers++
