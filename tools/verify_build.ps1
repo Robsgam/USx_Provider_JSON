@@ -433,7 +433,19 @@ if ($providerBundle) {
             $isRequired = ($setFields -contains 'Attention')
             foreach ($sf in $attr.sourceField) { if ($setFields -contains $sf) { $isRequired = $true } }
             if ($hasHandler) {
-                Info "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard"
+                # The handler reads the logged-in user PROFILE and ignores the attribute/
+                # sourceField (RULE_HANDLERS.txt:222,236). sourceField MUST be empty: a
+                # non-empty sourceField points at a (non-existent) form field, and this
+                # platform gates attribute serialization on sourceField population, so the
+                # attribute is skipped and the handler never runs -- Attention never
+                # serializes (live-found HI T9 v2.4; fixed v2.5).
+                $sfCount = @($attr.sourceField).Count
+                if ($sfCount -gt 0) {
+                    Fail "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler but sourceField is non-empty ($($attr.sourceField -join ',')) -- MUST be @() or the attribute is gated out and Attention never serializes (RULE_HANDLERS.txt:236)"
+                    $autoPopHandlers++
+                } else {
+                    Info "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler with empty sourceField -- approved automated-Attention standard"
+                }
             } elseif ($isRequired) {
                 Info "QIDM '$($cfg.name)' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard"
             } else {
