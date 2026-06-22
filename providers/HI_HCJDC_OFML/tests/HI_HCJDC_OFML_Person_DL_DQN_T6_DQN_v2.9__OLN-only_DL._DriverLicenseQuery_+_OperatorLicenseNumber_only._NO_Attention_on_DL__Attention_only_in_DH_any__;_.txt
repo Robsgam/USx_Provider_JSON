@@ -1,0 +1,34 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQN (T6 DQN v2.9: OLN-only DL. DriverLicenseQuery + OperatorLicenseNumber only. NO Attention on DL (Attention only in DH any[]; DL/DH isolation holds). RMS dlNumber only.)
+Date: 2026-06-22 13:39:41
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OperatorLicenseNumber=D999888777; Attention=X (hidden, DH-only); State blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVR6M3ENXN4V87XS2R7PQ9BF"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVR6M3ENXN4V87XS2R7PQ9BF</Id><OperatorLicenseNumber>D999888777</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVR6M3ENXN4V87XS2R7PQ9BF
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+
+
+RESULT: PASS
