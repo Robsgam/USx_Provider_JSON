@@ -21,6 +21,22 @@ before running down a path (do NOT assume; confirm against XML/devdoc/live logs 
 casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
 revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
 
+## FLAGGED: Attention auto-populate fix — FL_FCIC + TX_TLETS (2026-06-22, apply at next rebuild)
+
+HI v2.9 RESOLVED Attention auto-populate (live-proven: `<Attention>SGAMBELLONE R</Attention>` from
+the officer's RMS profile). Root cause: this ConnectCic instance serializes ONLY the fired combo's
+`set[]`/`any[]` fields. FL and TX carry the handler (`CommsysGetLastNameFirstNameInitialRuleHandler`,
+`sourceField=['Attention']`) but Attention is **not in any combo `any[]`** and there is **no
+gate-feeder field** → Attention is currently INERT on both (never reaches the wire).
+
+**Fix to apply (proven on HI v2.9 — do NOT use `sourceField=[]`, rejected at import):**
+- Add `'Attention'` to every DriverHistoryQuery combo's `any[]`:
+  - FL_FCIC (`build_fl_fcic.ps1`): `KQName`, `KQOperatorLicenseNumber` (+ any other DH combos).
+  - TX_TLETS (`build_TX_TLETS.ps1`): `KQNameImg`, `KQName`, `KQOLNImg`, `KQOLN`.
+- Add a hidden `Attention` gate-feeder field on the Person/DH card: `InpH 'Attention' ... @{ initialValue = 'X' }`.
+- Keep `sourceField=['Attention']` + the handler. Expect `<Attention>` = officer LastName FirstInitial once re-imported.
+Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13 (working config). Deferred to each provider's next rebuild (user, 2026-06-22).
+
 ## DEFERRED BACKLOG — Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
 
 From the tools/scripts/KB consolidation audit. Tier 1 (KB poisoned-array centralization, README fix,
