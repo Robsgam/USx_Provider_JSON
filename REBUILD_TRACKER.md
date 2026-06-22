@@ -21,6 +21,30 @@ before running down a path (do NOT assume; confirm against XML/devdoc/live logs 
 casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
 revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
 
+## FLAGGED: FL_FCIC inert State conditions — field=attr name not sourceField (2026-06-22, apply at next rebuild)
+
+LIVE-PROVEN (HI v3.4 T5, controlled): `conditions[].field` is matched against the FORM
+sourceField/fieldId, NOT the QIDM attribute `name`. A field naming an attribute whose
+sourceField differs is silently INERT. Cross-provider scan 2026-06-22 found FL_FCIC carries
+this in **10 places** — every `field:["State"]` NOT_EXISTS gate (attribute `State` has
+sourceField `RegistrationState`, so no form field is keyed "State"):
+- VehicleRegistrationQuery: FRQDecalNumber, FRQLicensePlateNumber, FRQTitleLienInformation, FRQVehicleIdentificationNumber
+- DriverLicenseQuery: FDQName, FDQOperatorLicenseNumber
+- BoatQuery: FBQBoatHullIdNumber, FBQDecalNumber, FBQRegistrationNumber, FBQTitleLienInformation
+
+CURRENT IMPACT: BENIGN (conductor 42/42 PASS, live T1-T42 PASS) — FL's competing combos are
+separated by primary field, so the dead State gates don't misroute today; they are dead code.
+`validate.ps1` (G-32 inert-condition check, added 2026-06-22) now WARNs on all 10. FL's stored
+report predates the gate (still 0W) so enforce does not block; a FL build_report re-run will
+show 11W (10 inert + the pre-existing Attention WARN).
+
+**Fix to apply at FL's next rebuild (with FULL re-test — making these gates live CHANGES routing):**
+- In `build_fl_fcic.ps1`, change each `conditions` `field` from `@('State')` to `@('RegistrationState')`.
+- Re-test the OOS-vs-in-state routing per primary (esp. plate+State and VIN+State) to confirm
+  the now-live State gates produce correct pool isolation and don't regress T1-T42.
+- Do NOT change silently; FL is live-validated. Ref: QIDM_REFERENCE.txt FIELD=SOURCEFIELD;
+  memory feedback_conditions_field_sourcefield.
+
 ## FLAGGED: Attention auto-populate fix — FL_FCIC + TX_TLETS (2026-06-22, apply at next rebuild)
 
 HI v2.9 RESOLVED Attention auto-populate (live-proven: `<Attention>SGAMBELLONE R</Attention>` from
