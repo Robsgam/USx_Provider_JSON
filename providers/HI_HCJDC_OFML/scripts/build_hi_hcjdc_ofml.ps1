@@ -1,5 +1,13 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.2 (2026-06-22): Added conditions to M55L (LicensePlateTypeCode NOT_EXISTS) and M55S
+#   (RegistrationState NOT_EXISTS) to prevent VehicleTypeCode union-pool bleed-through in OOS
+#   XML. Live T4 (RQ) showed <VehicleTypeCode>1</VehicleTypeCode> in OOS plate XML because
+#   M55L set[vehicleTypeCode(defaulted)+Plate] was simultaneously satisfied by form state.
+#   Extra field unknown behavior risk on production HI CommSys server. Conditions fix: when
+#   PlateType is present (OOS plate), M55L fails conditions -> exits pool -> RQ XML is clean.
+#   When State is present (OOS VIN), M55S fails conditions -> exits pool -> RQV XML is clean.
+#   Person UNCHANGED (stays blocked). Vehicle tests restarted from T1.
 # v3.1 (2026-06-22): Vehicle State label shortened to 'State (Hawaii = leave blank)'
 #   (was the longer "Registration State - leave blank for Hawaii; enter..."). Label-only
 #   refinement of the v3.0 routing redesign, pre-live-test. Person UNCHANGED (stays blocked).
@@ -63,7 +71,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.1",
+    [string]$Version = "3.2",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -173,15 +181,22 @@ $vehRegQuery = [PSCustomObject]@{
         }
         # M55L: In-state plate (VehicleTypeCode + Plate) -- PRIMARY plate. VehicleTypeCode
         # defaults to 1 (Auto), so a bare plate routes in-state with zero extra clicks.
+        # CONDITION: LicensePlateTypeCode NOT_EXISTS -- when officer fills Plate Type for an
+        # OOS plate query (RQ), M55L exits the union pool so VehicleTypeCode does NOT bleed
+        # into RQ's XML (live T4 finding: extra fields unknown risk on production CommSys).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
         }
         # M55S: In-state VIN (VehicleTypeCode + VIN) -- PRIMARY VIN
+        # CONDITION: State NOT_EXISTS -- when officer fills State for an OOS VIN query (RQV),
+        # M55S exits the union pool so VehicleTypeCode does NOT bleed into RQV XML. NOTE: the
+        # condition references the QIDM ATTRIBUTE NAME ('State'), NOT the form sourceField
+        # ('RegistrationState') -- FL_FCIC live-proven convention (condition.field = attr name).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
