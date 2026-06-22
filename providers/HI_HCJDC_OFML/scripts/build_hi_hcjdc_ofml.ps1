@@ -494,6 +494,14 @@ $vehicleForm = [PSCustomObject]@{
 # fieldIds) + DRIVER HISTORY (KQ/KQN, DH-suffix + Purpose Code). Separate cards need
 # distinct fieldIds (duplicate fieldId across cards = ISE), hence DH-suffix on the DH card.
 # registrationState lives on the Options card and is shared by both DL and DH QIDMs.
+# Attention field on the DH card: normally hidden (gate-feeder for the auto-handler);
+# in -AttnDiagnostic it is VISIBLE passthrough (type a value, expect it verbatim in XML).
+$attnRowHidden = -not $AttnDiagnostic
+if ($AttnDiagnostic) {
+    $attnFieldNode = Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
+} else {
+    $attnFieldNode = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' }
+}
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_OPT'
@@ -547,12 +555,8 @@ $perLayout = MakeLayouts @(
             # This hidden field supplies that value so the handler runs and emits the
             # logged-in officer's name (LastName FirstInitial) from the profile.
             # initialValue is a placeholder the handler is expected to ignore.
-            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = (-not $AttnDiagnostic); fields = @(
-                @{ id = 'Attention_Input'; node = (if ($AttnDiagnostic) {
-                        Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
-                    } else {
-                        InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' }
-                    }) }
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $attnRowHidden; fields = @(
+                @{ id = 'Attention_Input'; node = $attnFieldNode }
             )}
         )
     }
