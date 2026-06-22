@@ -115,25 +115,23 @@ if (-not $order -or $order.Count -eq 0) {
     foreach ($q in $qidms) { if ($q.targetEntity -and ($order -notcontains $q.targetEntity)) { $order += [string]$q.targetEntity } }
 }
 
-# --- build per-entity sections ---
+# --- build per-entity sections (one compact table per query) ---
 $sb = [System.Text.StringBuilder]::new()
-$firstEntity = $true
 foreach ($ent in $order) {
     $entQidms = $qidms | Where-Object { [string]$_.targetEntity -eq $ent }
     if (-not $entQidms) { continue }
-    $pb = if ($firstEntity) { '' } else { ' style="page-break-before:always"' }
-    $firstEntity = $false
-    [void]$sb.AppendLine("<section class='entity'$pb><h2>$(Esc $ent)</h2>")
+    [void]$sb.AppendLine("<section class='entity'><h2>$(Esc $ent)</h2>")
 
     foreach ($q in $entQidms) {
         $qlabel = if ($q.queryLabel) { [string]$q.queryLabel } else { (Prettify (([string]$q.query) -replace 'Query$','')) }
-        [void]$sb.AppendLine("<div class='query'><h3>$(Esc $qlabel)</h3>")
 
         # multiple combos may share a primary -> add an in/out/stolen hint to distinguish
         $combos = @($q.combinations)
         $primaryCounts = @{}
         foreach ($c in $combos) { $p = [string]$c.primaryFieldReference; if ($p) { $primaryCounts[$p] = 1 + ([int]$primaryCounts[$p]) } }
 
+        $rows = [System.Text.StringBuilder]::new()
+        $rowCount = 0
         foreach ($c in $combos) {
             $primary = [string]$c.primaryFieldReference
             $hint = ''
@@ -149,55 +147,65 @@ foreach ($ent in $order) {
                 if ($c.state -eq 'Out') { $hint = ' (out-of-state)' } elseif ($c.state -eq 'In') { $hint = ' (in-state)' }
             }
 
-            # required (set) and optional (any) -> human lines, skipping hidden
+            # required (set) and optional (any) -> field names, skipping hidden; default shown as (value)
             $reqParts = @()
             foreach ($f in $setFields) {
                 $fs = [string]$f; if (IsHidden $fs) { continue }
                 $nm = FieldName $fs; $dv = DefaultValue $fs
-                if ($dv) { $reqParts += "$nm <span class='pre'>(pre-filled: $(Esc $dv) — change if needed)</span>" }
+                if ($dv) { $reqParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" }
                 else { $reqParts += (Esc $nm) }
             }
             $optParts = @()
             foreach ($f in $anyFields) {
                 $fs = [string]$f; if (IsHidden $fs) { continue }
                 $nm = FieldName $fs; $dv = DefaultValue $fs
-                if ($dv) { $optParts += "$(Esc $nm) <span class='pre'>(pre-filled: $(Esc $dv))</span>" }
+                if ($dv) { $optParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" }
                 else { $optParts += (Esc $nm) }
             }
             if ($reqParts.Count -eq 0 -and $optParts.Count -eq 0) { continue }
 
-            [void]$sb.AppendLine("<div class='path'><div class='pathname'>Search by $(Esc $pname)$(Esc $hint)</div>")
-            if ($reqParts.Count -gt 0) { [void]$sb.AppendLine("<div class='req'><span class='lbl'>Must enter:</span> $($reqParts -join ', ')</div>") }
-            if ($optParts.Count -gt 0) { [void]$sb.AppendLine("<div class='opt'><span class='lbl'>You can also add:</span> $($optParts -join ', ')</div>") }
-            [void]$sb.AppendLine("</div>")
+            $reqHtml = if ($reqParts.Count -gt 0) { $reqParts -join ', ' } else { '&mdash;' }
+            $optHtml = if ($optParts.Count -gt 0) { $optParts -join ', ' } else { '&mdash;' }
+            [void]$rows.AppendLine("<tr><td class='sb'>$(Esc $pname)$(Esc $hint)</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
+            $rowCount++
         }
-        [void]$sb.AppendLine("</div>")
+        if ($rowCount -eq 0) { continue }
+
+        [void]$sb.AppendLine("<table class='qt'><caption>$(Esc $qlabel)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>")
+        [void]$sb.Append($rows.ToString())
+        [void]$sb.AppendLine("</tbody></table>")
     }
     [void]$sb.AppendLine("</section>")
 }
 
 $css = @"
-@page { margin: 2cm; }
+@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 12pt; line-height:1.4; max-width: 820px; margin: 0 auto; padding: 16px; }
-h1 { font-size: 20pt; margin: 0 0 4px; }
-.howto { color:#444; font-size: 11pt; margin: 0 0 18px; }
-h2 { font-size: 16pt; background:#1f3b57; color:#fff; padding:6px 10px; border-radius:4px; margin: 18px 0 10px; }
-h3 { font-size: 13.5pt; color:#1f3b57; margin: 14px 0 6px; border-bottom:2px solid #cdd8e3; padding-bottom:2px; }
-.path { margin: 0 0 8px 6px; padding:6px 10px; border-left:3px solid #4a7ba6; background:#f5f8fb; border-radius:0 4px 4px 0; }
-.pathname { font-weight:600; margin-bottom:2px; }
-.req .lbl { color:#7a1f1f; font-weight:600; }
-.opt .lbl { color:#3a5a3a; font-weight:600; }
-.opt { color:#333; }
-.pre { color:#666; font-style:italic; font-size: 10.5pt; }
-footer { margin-top:24px; border-top:1px solid #ccc; padding-top:6px; color:#777; font-size:10pt; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+h1 { font-size: 15pt; margin: 0 0 2px; }
+.howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
+section.entity { margin: 0 0 7px; page-break-inside: avoid; }
+h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
+table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
+table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
+table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
+table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
+th.sb, td.sb { width:24%; font-weight:600; }
+th.req, td.req { width:38%; }
+th.opt, td.opt { width:38%; }
+td.req { color:#7a1f1f; }
+td.opt { color:#3a5a3a; }
+thead th.req { color:#7a1f1f; }
+thead th.opt { color:#3a5a3a; }
+.pre { color:#666; font-style:italic; }
+footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }
 "@
 
 $html = @"
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) — Officer Query Guide</title>
 <style>$css</style></head><body>
 <h1>$(Esc $providerName) — Query Guide</h1>
-<p class='howto'>Pick the entity, choose how you want to search, then fill the fields marked <b>Must enter</b>. Pre-filled fields are set for you — change them only if needed.</p>
+<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 $($sb.ToString())
 <footer>$(Esc $providerName) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements.</footer>
 </body></html>

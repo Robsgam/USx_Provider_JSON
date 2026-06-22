@@ -1,101 +1,62 @@
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>HI_HCJDC_OFML — Officer Query Guide</title>
-<style>@page { margin: 2cm; }
+<style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 12pt; line-height:1.4; max-width: 820px; margin: 0 auto; padding: 16px; }
-h1 { font-size: 20pt; margin: 0 0 4px; }
-.howto { color:#444; font-size: 11pt; margin: 0 0 18px; }
-h2 { font-size: 16pt; background:#1f3b57; color:#fff; padding:6px 10px; border-radius:4px; margin: 18px 0 10px; }
-h3 { font-size: 13.5pt; color:#1f3b57; margin: 14px 0 6px; border-bottom:2px solid #cdd8e3; padding-bottom:2px; }
-.path { margin: 0 0 8px 6px; padding:6px 10px; border-left:3px solid #4a7ba6; background:#f5f8fb; border-radius:0 4px 4px 0; }
-.pathname { font-weight:600; margin-bottom:2px; }
-.req .lbl { color:#7a1f1f; font-weight:600; }
-.opt .lbl { color:#3a5a3a; font-weight:600; }
-.opt { color:#333; }
-.pre { color:#666; font-style:italic; font-size: 10.5pt; }
-footer { margin-top:24px; border-top:1px solid #ccc; padding-top:6px; color:#777; font-size:10pt; }</style></head><body>
+body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+h1 { font-size: 15pt; margin: 0 0 2px; }
+.howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
+section.entity { margin: 0 0 7px; page-break-inside: avoid; }
+h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
+table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
+table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
+table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
+table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
+th.sb, td.sb { width:24%; font-weight:600; }
+th.req, td.req { width:38%; }
+th.opt, td.opt { width:38%; }
+td.req { color:#7a1f1f; }
+td.opt { color:#3a5a3a; }
+thead th.req { color:#7a1f1f; }
+thead th.opt { color:#3a5a3a; }
+.pre { color:#666; font-style:italic; }
+footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
 <h1>HI_HCJDC_OFML — Query Guide</h1>
-<p class='howto'>Pick the entity, choose how you want to search, then fill the fields marked <b>Must enter</b>. Pre-filled fields are set for you — change them only if needed.</p>
+<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
-<div class='query'><h3>Vehicle Registration</h3>
-<div class='path'><div class='pathname'>Search by License Plate Number (out-of-state)</div>
-<div class='req'><span class='lbl'>Must enter:</span> License Plate Number, Plate Type, Plate Year</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span>, State</div>
-</div>
-<div class='path'><div class='pathname'>Search by Vehicle Identification Number (out-of-state)</div>
-<div class='req'><span class='lbl'>Must enter:</span> Vehicle Identification Number, State</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span>, Vehicle Year</div>
-</div>
-<div class='path'><div class='pathname'>Search by License Plate Number (in-state)</div>
-<div class='req'><span class='lbl'>Must enter:</span> Vehicle Type <span class='pre'>(pre-filled: 1 — change if needed)</span>, License Plate Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span>, State</div>
-</div>
-<div class='path'><div class='pathname'>Search by Vehicle Identification Number (in-state)</div>
-<div class='req'><span class='lbl'>Must enter:</span> Vehicle Type <span class='pre'>(pre-filled: 1 — change if needed)</span>, Vehicle Identification Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span>, Vehicle Year</div>
-</div>
-<div class='path'><div class='pathname'>Search by Vehicle Identification Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> Vehicle Identification Number, Make</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span>, State, Vehicle Year</div>
-</div>
-<div class='path'><div class='pathname'>Search by License Plate Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> License Plate Number, State</div>
-<div class='opt'><span class='lbl'>You can also add:</span> NCIC Image <span class='pre'>(pre-filled: N)</span></div>
-</div>
-</div>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>License Plate Number (out-of-state)</td><td class='req'>License Plate Number, Plate Type, Plate Year</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, State</td></tr>
+<tr><td class='sb'>Vehicle Identification Number (out-of-state)</td><td class='req'>Vehicle Identification Number, State</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Vehicle Year</td></tr>
+<tr><td class='sb'>License Plate Number (in-state)</td><td class='req'>Vehicle Type <span class='pre'>(1)</span>, License Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, State</td></tr>
+<tr><td class='sb'>Vehicle Identification Number (in-state)</td><td class='req'>Vehicle Type <span class='pre'>(1)</span>, Vehicle Identification Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Vehicle Year</td></tr>
+<tr><td class='sb'>Vehicle Identification Number</td><td class='req'>Vehicle Identification Number, Make</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, State, Vehicle Year</td></tr>
+<tr><td class='sb'>License Plate Number</td><td class='req'>License Plate Number, State</td><td class='opt'>NCIC Image <span class='pre'>(N)</span></td></tr>
+</tbody></table>
 </section>
-<section class='entity' style="page-break-before:always"><h2>Person</h2>
-<div class='query'><h3>Driver License</h3>
-<div class='path'><div class='pathname'>Search by Name</div>
-<div class='req'><span class='lbl'>Must enter:</span> Sex, Date of Birth, Last Name, First Name</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State</div>
-</div>
-<div class='path'><div class='pathname'>Search by Name</div>
-<div class='req'><span class='lbl'>Must enter:</span> Date of Birth, Last Name, First Name</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State</div>
-</div>
-<div class='path'><div class='pathname'>Search by License Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> License Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State</div>
-</div>
-</div>
-<div class='query'><h3>Driver History</h3>
-<div class='path'><div class='pathname'>Search by Name</div>
-<div class='req'><span class='lbl'>Must enter:</span> Sex, Date of Birth, Last Name, First Name</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State, Purpose Code <span class='pre'>(pre-filled: C)</span>, Attention <span class='pre'>(pre-filled: X)</span></div>
-</div>
-<div class='path'><div class='pathname'>Search by License Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> License Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State, Purpose Code <span class='pre'>(pre-filled: C)</span>, Attention <span class='pre'>(pre-filled: X)</span></div>
-</div>
-</div>
+<section class='entity'><h2>Person</h2>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Name</td><td class='req'>Sex, Date of Birth, Last Name, First Name</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Date of Birth, Last Name, First Name</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>License Number</td><td class='req'>License Number</td><td class='opt'>State</td></tr>
+</tbody></table>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Name</td><td class='req'>Sex, Date of Birth, Last Name, First Name</td><td class='opt'>State, Purpose Code <span class='pre'>(C)</span>, Attention <span class='pre'>(X)</span></td></tr>
+<tr><td class='sb'>License Number</td><td class='req'>License Number</td><td class='opt'>State, Purpose Code <span class='pre'>(C)</span>, Attention <span class='pre'>(X)</span></td></tr>
+</tbody></table>
 </section>
-<section class='entity' style="page-break-before:always"><h2>Firearm</h2>
-<div class='query'><h3>Firearm</h3>
-<div class='path'><div class='pathname'>Search by Serial Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> Serial Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> Make, Caliber, Model, Search Hit <span class='pre'>(pre-filled: Y)</span></div>
-</div>
-</div>
+<section class='entity'><h2>Firearm</h2>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Serial Number</td><td class='req'>Serial Number</td><td class='opt'>Make, Caliber, Model, Search Hit <span class='pre'>(Y)</span></td></tr>
+</tbody></table>
 </section>
-<section class='entity' style="page-break-before:always"><h2>Article</h2>
-<div class='query'><h3>Article</h3>
-<div class='path'><div class='pathname'>Search by Serial Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> Serial Number, Article Type</div>
-<div class='opt'><span class='lbl'>You can also add:</span> Search Hit <span class='pre'>(pre-filled: Y)</span></div>
-</div>
-</div>
+<section class='entity'><h2>Article</h2>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Serial Number</td><td class='req'>Serial Number, Article Type</td><td class='opt'>Search Hit <span class='pre'>(Y)</span></td></tr>
+</tbody></table>
 </section>
-<section class='entity' style="page-break-before:always"><h2>Boat</h2>
-<div class='query'><h3>Boat</h3>
-<div class='path'><div class='pathname'>Search by Registration Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> Registration Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State, Search Hit <span class='pre'>(pre-filled: Y)</span></div>
-</div>
-<div class='path'><div class='pathname'>Search by Hull ID Number</div>
-<div class='req'><span class='lbl'>Must enter:</span> Hull ID Number</div>
-<div class='opt'><span class='lbl'>You can also add:</span> State, Search Hit <span class='pre'>(pre-filled: Y)</span></div>
-</div>
-</div>
+<section class='entity'><h2>Boat</h2>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>State, Search Hit <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>State, Search Hit <span class='pre'>(Y)</span></td></tr>
+</tbody></table>
 </section>
 
 <footer>HI_HCJDC_OFML &middot; Generated 2026-06-22 &middot; Reference only — supported search paths and field requirements.</footer>
