@@ -314,7 +314,7 @@ $dhQuery = [PSCustomObject]@{
         }
         # KQN: OLN path -- 1 set[]. DH-suffix. State+PurposeCode optional.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState','purposeCodeDH'); defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQN'
             state                 = 'In/Out'
