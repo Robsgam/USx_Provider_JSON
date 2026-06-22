@@ -1,0 +1,31 @@
+﻿================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQV (T5 RQV v3.4 OOS VIN (DECISIVE): VIN+State=CA. XML VehicleIdentificationNumber=233HNFHFG783634 + State=CA + ImageIndicator=N; VehicleTypeCode ABSENT. LIVE PROOF conditions[].field=sourceField (RegistrationState) suppresses union-pool bleed; v3.2 field=State(attr name) bled. RMS registrationStateAttrIds+vinNumber.)
+Date: 2026-06-22 16:41:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"ImageIndicator":"N","RegistrationState":"California","VehicleIdentificationNumber":"233hnfhfg783634","vehicleTypeCode":"1"}
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><VehicleIdentificationNumber>233HNFHFG783634</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>CA</State></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  VehicleIdentificationNumber    233HNFHFG783634
+  ImageIndicator                 N
+  State                          CA
+
+NOTES
+-----
+
+
+RESULT: PASS

@@ -6,8 +6,8 @@ JSON version: v3.4
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: PENDING (In progress
 
-NOTE: No live tests have been performed. All combos are [PENDING].
-Import at v1.0 completed 2026-05-06. Re-import needed for v1.1 (VehicleStolenQuery added).
+NOTE: Person entity CONFIRMED (live v2.9, blocked/preserved). Vehicle entity CONFIRMED
+(live v3.4 T1-T5, 2026-06-22). Firearm/Article/Boat PENDING live test on v3.4.
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built HI production JSON, comparison only)
@@ -17,10 +17,11 @@ Architecture notes:
   - 7 transactions, 17 combos (v1.1: +VehicleStolenQuery 2 combos)
   - NCIC state pattern (single RegistrationState, codeTypeProvider=NCIC, initialValue=HI)
   - NIBRS sex reverse-lookup (codeTypeProvider=NIBRS)
-  - Empty any[] on all combos (XML <Any> inside <Set> = optional companions)
-  - VehicleTypeCode default=1 (Auto) for in-state M55L/M55S routing
-  - DL/DH share Person entity: autoSelect + queriesToDeselect bidirectional
-  - VehReg/VehStolen share Vehicle entity: autoSelect + queriesToDeselect bidirectional
+  - VehicleTypeCode default=1 (Auto) for in-state M55L/M55S routing; NOT_EXISTS
+    conditions on M55L (LicensePlateTypeCode) / M55S (RegistrationState) keep it from
+    bleeding into OOS XML (RQ/RQV) via the union pool. conditions[].field = sourceField.
+  - DL/DH share Person entity: autoSelect + queriesToDeselect (one-directional/opt-in)
+  - VehicleStolenQuery NOT built (server auto-generates QV/stolen; QVV/QVP dormant + QRDM)
   - Name format: 4 components (First Last Middle Suffix) with space separators
   - Date format: MMddyyyy
 
@@ -29,63 +30,90 @@ Architecture notes:
 ================================================================================
 
   QIDM: VehicleRegistrationQueryQIDM
-  QIF:  Vehicle
-  Combos: M55L (in-state plate), M55S (in-state VIN), RQ (OOS plate),
-          QVV (stolen VIN), QVP (stolen plate), RQV (VIN fallback)
-  Optional fields: VehicleMakeCode, VehicleModelCode, VehicleYear,
-                   ImageIndicator, VehicleTypeCode (default=1)
+  QIF:  Vehicle (3 cards: SEARCH OPTIONS / PLATE SEARCH / VIN SEARCH)
+  Combos (v3.0+ OOS-first order): RQ (OOS plate), RQV (OOS VIN),
+          M55L (in-state plate), M55S (in-state VIN), QVV/QVP (stolen, dormant)
+  Optional fields: VehicleMakeCode, VehicleYear, ImageIndicator,
+                   VehicleTypeCode (default=1, Auto)
+  Routing principle (v3.0+): out-of-state is reached by ADDING fields, never by
+    clearing Vehicle Type. Plate discriminator = Plate Type/Year presence; VIN
+    discriminator = State presence. First-match firing on combos ordered OOS-first.
 
-  M55L -- Plate + State(HI) + VehicleTypeCode [PENDING]
-    set: LicensePlateNumber, RegistrationState, VehicleTypeCode
-    any: (empty)
-    keyReference: M55L
-    Fires when: State=HI (in-state) and Plate present
-    Defaults: State=HI, VehicleTypeCode=1 (Auto), ImageIndicator=N
-
-  M55S -- VIN + State(HI) + VehicleTypeCode [PENDING]
-    set: VehicleIdentificationNumber, RegistrationState, VehicleTypeCode
-    any: (empty)
-    keyReference: M55S
-    Fires when: State=HI (in-state) and VIN present, no Plate
-
-  RQ -- Plate + State(non-HI) [PENDING]
-    set: LicensePlateNumber, RegistrationState
-    any: (empty)
+  RQ -- OOS plate (Plate + PlateType + PlateYear) [CONFIRMED]
+    set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
+    any: ImageIndicator, RegistrationState
     keyReference: RQ
-    Fires when: State != HI (out-of-state) and Plate present
+    Fires when: Plate Type AND Plate Year filled (the OOS-plate signal). State
+      rides along via any[]. VehicleTypeCode does NOT bleed (M55L's
+      LicensePlateTypeCode NOT_EXISTS condition exits it from the union pool).
+    Live v3.4 T4: Plate=ABC123 + PlateType=PC + PlateYear=2020 + State=CA ->
+      XML LicensePlateNumber/LicensePlateTypeCode/LicensePlateYear/State=CA/Image=N,
+      VehicleTypeCode ABSENT. RMS registrationStateAttrIds+tag.
 
-  QVV -- VIN + VehicleMakeCode [PENDING]
-    set: VehicleIdentificationNumber, VehicleMakeCode
-    any: (empty)
-    keyReference: QVV
-    Stolen vehicle by VIN
-
-  QVP -- Plate + State [PENDING]
-    set: LicensePlateNumber, RegistrationState
-    any: (empty)
-    keyReference: QVP
-    Stolen vehicle by Plate (co-fires with M55L/RQ on shared fields)
-
-  RQV -- VIN [PENDING]
-    set: VehicleIdentificationNumber
-    any: (empty)
+  RQV -- OOS VIN (VIN + State) [CONFIRMED]
+    set: VehicleIdentificationNumber, RegistrationState
+    any: ImageIndicator
     keyReference: RQV
-    VIN fallback (lowest priority)
+    Fires when: VIN + State filled (State is the VIN OOS discriminator, in set[]).
+      VehicleTypeCode does NOT bleed (M55S's RegistrationState NOT_EXISTS condition
+      exits it from the union pool).
+    Live v3.4 T5 (DECISIVE): VIN=233HNFHFG783634 + State=CA -> XML VIN/State=CA/Image=N,
+      VehicleTypeCode ABSENT. Proves conditions[].field = sourceField
+      (RegistrationState); v3.2 used field=State (attribute name) and VehicleTypeCode
+      BLED. RMS registrationStateAttrIds+vinNumber.
 
-  Priority order: M55L > M55S > RQ > QVV > QVP > RQV [PENDING]
-    M55 in-state first, then OOS plate, then stolen, then VIN fallback
+  M55L -- in-state plate (VehicleTypeCode + Plate) [CONFIRMED]
+    set: vehicleTypeCode, LicensePlateNumber
+    any: ImageIndicator, RegistrationState
+    conditions: LicensePlateTypeCode NOT_EXISTS (exits pool for OOS plate / RQ)
+    keyReference: M55L
+    Fires when: bare Plate present (Vehicle Type defaults to 1=Auto, auto-satisfying
+      the server's in-state requirement). Defaults: VehicleTypeCode=1, ImageIndicator=N.
+    Live v3.4 T2: Plate=ABC123 -> XML LicensePlateNumber/VehicleTypeCode=1/Image=N.
 
-  APPROVED SKIP -- QV (by LicensePlateNumber) and QV (by VehicleIdentificationNumber):
-    Metadata lists these 2 generic QV combos; intentionally NOT built. QV is a
-    catch-all transaction, not an authorized basic query; plate and VIN paths are
-    fully covered by the 6 combos above. Confirmed not-to-build (user, 2026-06-22).
-    Not a coverage gap -- excluded from the test matrix.
+  M55S -- in-state VIN (VehicleTypeCode + VIN) [CONFIRMED]
+    set: vehicleTypeCode, VehicleIdentificationNumber
+    any: ImageIndicator
+    conditions: RegistrationState NOT_EXISTS (exits pool for OOS VIN / RQV)
+    keyReference: M55S
+    Fires when: bare VIN present, no State. Defaults: VehicleTypeCode=1, Image=N.
+    NOTE: RegistrationState removed from any[] in v3.4 -- it can never serialize
+      alongside M55S (M55S only fires when State absent), and its presence in any[]
+      caused the test conductor to inject State and falsely block M55S (v3.3 T16 FAIL).
+    Live v3.4 T3: VIN=1HGNM8363783 -> XML VIN/VehicleTypeCode=1/Image=N, no State.
 
-  OOS routing -- State != HI [PENDING]
-    Non-HI state should route to RQ instead of M55L
+  QVV -- stolen VIN (VIN + VehicleMakeCode) [DORMANT]
+    set: VehicleIdentificationNumber, VehicleMakeCode
+    any: ImageIndicator, RegistrationState
+    keyReference: QVV
+    DORMANT by design: ordered last; shadowed by M55S/RQV for any VIN entry. The
+      state CommSys server auto-generates the QV/stolen query from supplied fields
+      (response data-mined via QRDM). Not directly live-fireable from the form.
 
-  RMS co-fire [PENDING]
-    RMS Vehicle combo should fire alongside CommSys
+  QVP -- stolen plate (Plate + State) [DORMANT]
+    set: LicensePlateNumber, RegistrationState
+    any: ImageIndicator
+    keyReference: QVP
+    DORMANT by design: ordered last; shadowed by RQ/M55L for any plate entry.
+      Server auto-generates QV/stolen (QRDM data-mined). Not live-fireable from form.
+
+  Priority order: RQ > RQV > M55L > M55S > QVV > QVP [CONFIRMED]
+    OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
+    Backed by live v3.4 T2-T5 (each combo fired as expected on first match).
+
+  APPROVED SKIP -- generic QV catch-all (by LicensePlateNumber / by VIN):
+    The 2 generic QV combos in metadata are intentionally NOT built as standalone
+    user combos; stolen lookup is server-generated (QVV/QVP dormant + QRDM).
+    Confirmed not-to-build (user, 2026-06-22). Not a coverage gap.
+
+  OOS routing -- reached by adding fields [CONFIRMED]
+    Plate: bare -> M55L (in-state); +PlateType+PlateYear -> RQ (OOS). VIN: bare ->
+    M55S (in-state); +State -> RQV (OOS). Live v3.4 T2/T4 (plate), T3/T5 (VIN).
+    Both OOS combos emit clean XML with NO VehicleTypeCode bleed (NOT_EXISTS conditions).
+
+  RMS co-fire [CONFIRMED]
+    RMS Vehicle fired alongside CommSys on all v3.4 Vehicle tests (elasticQuery:
+    tag / vinNumber / registrationStateAttrIds). Live v3.4 T2-T5.
 
 ================================================================================
 1b. VehicleStolenQuery -- Vehicle Entity
