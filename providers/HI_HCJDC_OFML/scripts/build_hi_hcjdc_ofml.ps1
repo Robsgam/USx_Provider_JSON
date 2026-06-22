@@ -61,7 +61,13 @@ param(
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
     # (isolates "attribute/plumbing" from "the profile handler"). Not for import to
     # production; not part of the normal build/test package.
-    [switch]$AttnDiagnostic
+    [switch]$AttnDiagnostic,
+    # Which Attention experiment to emit (requires -AttnDiagnostic):
+    #   dochandler  = doc-exact handler: sourceField=[], rule=handler, targetField=Attention,
+    #                 NO form field, Attention NOT in combo any[] (generated field).
+    #   passthrough = no handler; visible Attention field + 'Attention' added to DH any[]
+    #                 (tests whether combo-membership lets a typed value serialize).
+    [ValidateSet('passthrough','dochandler')][string]$AttnMode = 'passthrough'
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -69,7 +75,7 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases"
 if ($AttnDiagnostic) {
-    $OUT    = "$DIR\diagnostics\HI_HCJDC_OFML_ATTNTEST.json"
+    $OUT    = "$DIR\diagnostics\HI_HCJDC_OFML_ATTNTEST_${AttnMode}.json"
     $VEROUT = $null
     New-Item -ItemType Directory -Force -Path "$DIR\diagnostics" | Out-Null
 } else {
@@ -256,16 +262,30 @@ $dlQuery = [PSCustomObject]@{
 #   the default DL; never bidirectional -- LIMITATION #24/one-directional rule). PurposeCode
 #   + State in any[] (optional companions). Attention handler-only.
 # =====================================================================
-$attnAttr = if ($AttnDiagnostic) {
-    # DIAGNOSTIC: passthrough -- no handler. Whatever is typed into the visible
-    # Attention field should serialize verbatim, proving the attribute/wire works.
-    [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention' }
+if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
+    # DIAGNOSTIC B: passthrough -- no handler. Typed value should serialize verbatim
+    # IF 'Attention' is in the fired combo's any[] (added below).
+    $attnAttr = [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention' }
+} elseif ($AttnDiagnostic -and $AttnMode -eq 'dochandler') {
+    # DIAGNOSTIC A: doc-exact handler -- sourceField=[] (generated field), per the
+    # CommsysGetLastNameFirstNameInitialRuleHandler documentation.
+    $attnAttr = [PSCustomObject]@{
+        name = 'Attention'; size = 30; sourceField = @(); targetField = 'Attention'
+        rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+    }
 } else {
-    [PSCustomObject]@{
+    # PRODUCTION: handler + sourceField=['Attention'] (the import-safe form we shipped).
+    $attnAttr = [PSCustomObject]@{
         name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
         rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
     }
 }
+# Platform serializes only fields in the FIRED COMBO's set[]/any[] -- an attribute
+# absent from the combo is dropped (live-proven HI v2.8: passthrough Attention not
+# in any[] never reached the wire). The passthrough diagnostic adds 'Attention' to
+# the DH any[] to prove membership is what lets a form-sourced value serialize.
+# (dochandler is a sourceless generated field, so it is NOT added to any[].)
+$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') { @('RegistrationState','purposeCodeDH','Attention') } else { @('RegistrationState','purposeCodeDH') }
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -287,7 +307,7 @@ $dhQuery = [PSCustomObject]@{
     combinations = @(
         # KQ: Name path -- 4 set[], most specific. DH-suffix. State+PurposeCode optional.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('RegistrationState','purposeCodeDH'); defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ'
             state                 = 'In/Out'
@@ -496,10 +516,13 @@ $vehicleForm = [PSCustomObject]@{
 # registrationState lives on the Options card and is shared by both DL and DH QIDMs.
 # Attention field on the DH card: normally hidden (gate-feeder for the auto-handler);
 # in -AttnDiagnostic it is VISIBLE passthrough (type a value, expect it verbatim in XML).
-$attnRowHidden = -not $AttnDiagnostic
-if ($AttnDiagnostic) {
+# Visible Attention field only for the passthrough diagnostic (officer types a value).
+# dochandler + production keep it hidden (handler is sourceless / gate-feeder).
+if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
+    $attnRowHidden = $false
     $attnFieldNode = Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
 } else {
+    $attnRowHidden = $true
     $attnFieldNode = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' }
 }
 $perLayout = MakeLayouts @(
