@@ -912,10 +912,13 @@ See also:
     Do NOT add it to plate-path combos (RQ, M55L, QVP) -- Year is not a plate attribute.
     sourceField='vehicleYear' (camelCase); attribute targetField='VehicleYear'.
 
-    LIVE-PROVEN HI v3.6 2026-06-22: all-fields stress test (Plate+PlateType+PlateYear+
-    VIN+State+Make) confirmed: only RQ fires; RQV/QVV/M55S all show
-    "[SKIP] conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC123']";
-    union pool = {Plate+PlateType+PlateYear+State+Image} only. VIN absent. Clean.
+    LIVE-PROVEN HI v3.6 2026-06-22 (sim + live T6 + T7):
+    T6 all-fields (Plate+PlateType+PlateYear+VIN+State+Make): CommSys XML = plate only;
+    VehicleIdentificationNumber+VehicleMakeCode ABSENT. RQ wins. DECISIVE.
+    T7 bare Plate+VIN (no State, no PlateType/Year): M55L fires; VIN absent from CommSys XML.
+    M55S exits on LicensePlateNumber NOT_EXISTS condition. DECISIVE.
+    Test logs: providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_RQ+AllFieldsStress_*.txt
+               providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_M55L+PlateWinsVIN_*.txt
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a
