@@ -67,7 +67,10 @@ param(
     #                 NO form field, Attention NOT in combo any[] (generated field).
     #   passthrough = no handler; visible Attention field + 'Attention' added to DH any[]
     #                 (tests whether combo-membership lets a typed value serialize).
-    [ValidateSet('passthrough','dochandler')][string]$AttnMode = 'passthrough'
+    #   handler     = import-safe handler: sourceField=['Attention'], rule=handler,
+    #                 'Attention' in combo any[], VISIBLE field (pre-filled). Tests whether
+    #                 the handler reads the RMS profile (-> officer name) or just the field.
+    [ValidateSet('passthrough','dochandler','handler')][string]$AttnMode = 'passthrough'
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -266,6 +269,14 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
     # DIAGNOSTIC B: passthrough -- no handler. Typed value should serialize verbatim
     # IF 'Attention' is in the fired combo's any[] (added below).
     $attnAttr = [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention' }
+} elseif ($AttnDiagnostic -and $AttnMode -eq 'handler') {
+    # DIAGNOSTIC C: import-safe handler WITH correct plumbing (Attention in any[],
+    # visible pre-filled field). Output reveals what the handler does:
+    #   officer name -> reads RMS profile (production: hide the field) | field value -> passthrough.
+    $attnAttr = [PSCustomObject]@{
+        name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
+        rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+    }
 } elseif ($AttnDiagnostic -and $AttnMode -eq 'dochandler') {
     # DIAGNOSTIC A: doc-exact handler -- sourceField=[] (generated field), per the
     # CommsysGetLastNameFirstNameInitialRuleHandler documentation.
@@ -285,7 +296,7 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
 # in any[] never reached the wire). The passthrough diagnostic adds 'Attention' to
 # the DH any[] to prove membership is what lets a form-sourced value serialize.
 # (dochandler is a sourceless generated field, so it is NOT added to any[].)
-$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') { @('RegistrationState','purposeCodeDH','Attention') } else { @('RegistrationState','purposeCodeDH') }
+$dhAny = if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler')) { @('RegistrationState','purposeCodeDH','Attention') } else { @('RegistrationState','purposeCodeDH') }
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -518,7 +529,7 @@ $vehicleForm = [PSCustomObject]@{
 # in -AttnDiagnostic it is VISIBLE passthrough (type a value, expect it verbatim in XML).
 # Visible Attention field only for the passthrough diagnostic (officer types a value).
 # dochandler + production keep it hidden (handler is sourceless / gate-feeder).
-if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
+if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler')) {
     $attnRowHidden = $false
     $attnFieldNode = Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
 } else {
