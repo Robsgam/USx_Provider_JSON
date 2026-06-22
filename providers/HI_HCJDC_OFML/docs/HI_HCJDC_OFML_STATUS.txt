@@ -117,3 +117,7 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-22 Vehicle    VehReg:M55S          PASS     v3.2 in-state VIN -- bare VIN, no State. M55S fires (vehicleTypeCode+VehicleIdentificationNumber). VehicleTypeCode=1 correct (in-state); no State.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:RQ            PASS     v3.2 OOS plate -- Plate+PlateType+PlateYear+State=CA. RQ fires; VehicleTypeCode ABSENT (union-pool bleed FIXED vs v3.1). LIVE-PROVEN: M55L LicensePlateTypeCode NOT_EXISTS condition removed it from the union pool. First live proof of NOT_EXISTS pool-filtering on a real tenant.
