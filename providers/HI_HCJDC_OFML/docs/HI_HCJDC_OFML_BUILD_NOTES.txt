@@ -3,9 +3,19 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
-v3.5  2026-06-22  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v3.5  2026-06-22  QG/QA/BQ/QB any[] gap fix
+  CHANGED: Added any[] and relatedSearchHitIndicator default=Y to GunQuery (QG),
+    ArticleSingleQuery (QA), and BoatQuery (BQ/QB). All three QIDMs had any=@() which
+    silently dropped RelatedSearchHitIndicator (default=Y) and optional fields (GunMake,
+    GunCaliber, GunModel on Gun; RegistrationState on Boat) from XML. Platform only
+    serializes set[]+any[] fields. Gap found via simulator pre-flight before first live
+    Firearm/Article/Boat test; v3.4 never had a live test of these three entities.
+    NOTE: Whether v3.4 would have dropped RSH=Y in live XML is unproven (form initialValue=Y
+    may have put it in form state regardless), but the any[] pattern is required and correct --
+    matches FL_FCIC GunQuery and the Attention any[] fix precedent from v2.9.
+    RESULT: 68P/0F/0W/0LIM. Firearm (QG bare + QG+optionals), Article (QA), Boat (BQ/QB)
+    all live-confirmed on v3.5. All 5 entities CONFIRMED. Cosmetic pass pending.
+  REASON: Pre-live simulator gap detection -- optional fields would not serialize without any[]
 
 v3.4  2026-06-22  M55S any[] RegistrationState removal
   CHANGED: Removed RegistrationState from M55S any[]. M55S only fires when RegistrationState
