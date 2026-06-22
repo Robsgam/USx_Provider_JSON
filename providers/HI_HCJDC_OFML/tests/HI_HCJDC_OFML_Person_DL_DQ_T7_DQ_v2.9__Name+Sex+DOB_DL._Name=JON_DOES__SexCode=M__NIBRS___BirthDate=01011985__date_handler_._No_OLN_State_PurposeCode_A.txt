@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQ (T7 DQ v2.9: Name+Sex+DOB DL. Name=JON DOES, SexCode=M (NIBRS), BirthDate=01011985 (date handler). No OLN/State/PurposeCode/Attention. RMS firstName/lastName/dateOfBirth/sexAttrId.)
+Date: 2026-06-22 13:43:33
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameFirst=jon, NameLast=does, BirthDate=1985-01-01, SexCode=Male; OLN/State blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVR6VA9C159DBK9RF9EAGD4B"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVR6VA9C159DBK9RF9EAGD4B</Id><SexCode>M</SexCode><BirthDate>01011985</BirthDate><Name>JON DOES</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVR6VA9C159DBK9RF9EAGD4B
+  SexCode                        M
+  BirthDate                      01011985
+  Name                           JON DOES
+
+NOTES
+-----
+
+
+RESULT: PASS
