@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 10:48
+  Generated: 2026-06-22 12:01
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === HI_HCJDC_OFML.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
+  Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
   Person | entity=Person | qidm= | cards=3 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
@@ -29,20 +29,23 @@ LAYOUT DETAIL
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
-    CARD "CARD_VEH"
-      ROW ROW_VEH_1 [6 3 3]
-        LicensePlateNumber (Text | maxLen=10)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
+    CARD "CARD_VEH_OPT"
+      ROW ROW_VEH_OPT1 [4 4 4]
         vehicleTypeCode (Dropdown | codeTypeCategory=VEHICLE_TYPE | codeTypeSource=HI_NIBRS | default=1)
-      ROW ROW_VEH_2 [6 6]
-        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+    CARD "CARD_VEH_PLATE"
+      ROW ROW_VEH_PLATE1 [12]
+        LicensePlateNumber (Text | maxLen=10)
+      ROW ROW_VEH_PLATE2 [6 6]
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_3 [12]
+    CARD "CARD_VEH_VIN"
+      ROW ROW_VEH_VIN1 [12]
         VehicleIdentificationNumber (Text | maxLen=20)
-      ROW ROW_VEH_4 [4 4 4]
+      ROW ROW_VEH_VIN2 [6 6]
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=

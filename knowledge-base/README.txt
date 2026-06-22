@@ -309,13 +309,35 @@ TOOLS
   tools/reset_test_package.ps1
     Restarts the live test package when a JSON is rebuilt. A version bump
     invalidates prior logs (routing/conditions/defaults may have changed), so
-    all logs must restart from Test 1 to line up with the shipped JSON.
-    Reads the build-script version, compares to tests/.test_version, and if
-    changed: archives tests/*.txt -> tests/_archive_pre_v<ver>/, resets SQVR
-    markers [CONFIRMED]/[FAILED] -> [PENDING], clears STATUS live-test rows,
-    stamps tests/.test_version. Idempotent (no-op when already aligned).
+    affected logs must restart from Test 1 to line up with the shipped JSON.
+    ENTITY-AWARE (via tests/.test_state.json): an entity "blocked out" with
+    block_entity.ps1 is PRESERVED across rebuilds while its structural
+    fingerprint (get_entity_fingerprints.ps1) is unchanged; every other entity
+    (open, or blocked-but-changed, or all under -Force) is RESET -- archiving
+    its tests/*.txt -> tests/_archive_pre_v<ver>/, resetting its SQVR markers
+    [CONFIRMED]/[FAILED] -> [PENDING], and clearing its STATUS rows. Stamps
+    tests/.test_state.json (authority) + tests/.test_version (legacy scalar =
+    global). Full-reset behavior is unchanged when no entity is blocked.
+    Idempotent (no-op when all entities are blocked & unchanged).
     Called automatically by pipeline.ps1 after a successful build.
     Usage: .\reset_test_package.ps1 -Provider <name> [-Force]
+
+  tools/get_entity_fingerprints.ps1
+    Computes a deterministic per-entity SHA256 fingerprint of behavior-relevant
+    structure (QIF layout + QIDM combinations/attributes across PROVIDER and RMS
+    bundles; excludes version/date/description). Dot-source for the
+    Get-EntityFingerprints function, or run directly to print { entity -> hex }.
+    Underlies entity-aware reset and the enforce block-out drift gate.
+    Usage: .\get_entity_fingerprints.ps1 -Path <json> [-OutFile <json>]
+
+  tools/block_entity.ps1
+    "Blocks out" a validated entity so a later rebuild for a DIFFERENT entity
+    does not wipe its results. Requires all of the entity's SQVR markers to be
+    [CONFIRMED] (no [PENDING]/[FAILED]) unless -Force. Records the entity's
+    current fingerprint + global version in tests/.test_state.json as
+    status='blocked', then commits/pushes. reset_test_package.ps1 preserves it
+    while unchanged; enforce.ps1 FAILS a blocked entity whose fingerprint drifts.
+    Usage: .\block_entity.ps1 -Provider <name> -Entity <entity> [-Force] [-NoCommit]
 
   tools/map_cad_fields.ps1
     Maps CAD field names to provider JSON fieldIds. Reports MATCH,

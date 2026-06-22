@@ -410,9 +410,42 @@ foreach ($pd in $providers) {
     }
 
     # Check 3h: test package aligned to current version (rebuild restarts testing).
-    # Guarded -- only providers that have adopted the .test_version stamp are checked.
-    $testVerFile = Join-Path $pd.FullName "tests\.test_version"
-    if (Test-Path $testVerFile) {
+    # Entity-aware when tests/.test_state.json exists: a 'blocked' entity is OK only
+    # while its structural fingerprint matches the built JSON -- a drift means the
+    # entity changed but kept its CONFIRMED status (stale block) and FAILS. Falls back
+    # to the legacy scalar .test_version check for providers that haven't adopted state.
+    $testStateFile = Join-Path $pd.FullName "tests\.test_state.json"
+    $testVerFile   = Join-Path $pd.FullName "tests\.test_version"
+    if (Test-Path $testStateFile) {
+        $activeJson = Join-Path $pd.FullName "$provName.json"
+        if (-not (Test-Path $activeJson)) {
+            $altJ = Get-ChildItem $pd.FullName -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $altJ) { $altJ = Get-ChildItem $pd.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
+            if ($altJ) { $activeJson = $altJ.FullName }
+        }
+        . "$PSScriptRoot\get_entity_fingerprints.ps1"
+        $curFp = @{}
+        try { if (Test-Path $activeJson) { $curFp = Get-EntityFingerprints -Path $activeJson } } catch {}
+        $st = Get-Content $testStateFile -Raw | ConvertFrom-Json
+        $driftFail = 0; $openMisaligned = 0; $blockedOk = 0
+        foreach ($p in $st.entities.PSObject.Properties) {
+            $ent = $p.Name; $info = $p.Value
+            if ($info.status -eq 'blocked') {
+                if ($curFp.ContainsKey($ent) -and $curFp[$ent] -eq $info.fingerprint) { $blockedOk++ }
+                else { Fail "$provName -- blocked entity '$ent' fingerprint drifted from build (v${version}); re-validate + re-block (block_entity.ps1) or it is silently stale"; $driftFail++ }
+            } else {
+                if ($info.version -ne $st.global) { $openMisaligned++ }
+            }
+        }
+        if ($st.global -ne $version) {
+            Warn "$provName -- tests/.test_state.json global (v$($st.global)) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
+        } elseif ($openMisaligned -gt 0) {
+            Warn "$provName -- $openMisaligned open entity(ies) not aligned to v${version}; run reset_test_package.ps1 -Provider $provName"
+        } elseif ($driftFail -eq 0) {
+            $bk = if ($blockedOk) { " ($blockedOk blocked entity(ies) verified)" } else { "" }
+            Pass "$provName -- test package aligned to v${version}$bk"
+        }
+    } elseif (Test-Path $testVerFile) {
         $testVer = ((Get-Content $testVerFile -Raw) -replace "^﻿", '').Trim()
         if ($testVer -eq $version) {
             Pass "$provName -- test package aligned to v${version}"

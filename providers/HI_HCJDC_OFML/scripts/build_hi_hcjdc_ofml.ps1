@@ -55,7 +55,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.7"
+    [string]$Version = "2.8"
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
@@ -107,43 +107,55 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleTypeCode';              size = 1;  sourceField = @('vehicleTypeCode');              targetField = 'VehicleTypeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('vehicleYear');                  targetField = 'VehicleYear' }
     )
+    # ORDER (v2.8): in-state primary (M55L/M55S) first so a bare plate/VIN routes
+    # in-state HI (VehicleTypeCode defaults to 1). Out-of-state (RQ/RQV) next --
+    # reached when the officer fills Plate Type+Year (plate) or clears Vehicle Type
+    # (VIN); union pool still carries those fields so the CommSys server fans out.
+    # QVP/QVV (stolen) last + DORMANT: the state CommSys server auto-generates the
+    # QV/stolen query from supplied fields (response data-mined via QRDM), so we do
+    # not route them here. Revisit if/when the QV automation is built.
     combinations = @(
-        # RQ: Out-state plate (Plate + PlateType + PlateYear) -- 3 set[], plate
+        # M55L: In-state plate (VehicleTypeCode + Plate) -- PRIMARY plate
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'M55L'
+            state                 = 'In'
+        }
+        # M55S: In-state VIN (VehicleTypeCode + VIN) -- PRIMARY VIN
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'M55S'
+            state                 = 'In'
+        }
+        # RQ: Out-state plate (Plate + PlateType + PlateYear). Plate Type has NO form
+        # default (Plate Year keeps current-year per cross-provider standard), so RQ
+        # only fires once the officer picks a Plate Type -- a deliberate OOS action.
+        # That keeps a bare plate in-state (M55L).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
         }
-        # M55L: In-state plate (VehicleTypeCode + Plate) -- 2 set[], plate
+        # QVV: Stolen VIN (VIN + MakeCode) -- DORMANT (server-generated QV).
+        # Ordered before RQV so RQV's set[VIN] (a subset) does not shadow it.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'M55L'
-            state                 = 'In'
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'QVV'
+            state                 = 'In/Out'
         }
-        # QVP: Stolen plate (Plate + State) -- 2 set[], plate
+        # QVP: Stolen plate (Plate + State) -- DORMANT (server-generated QV)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QVP'
             state                 = 'In/Out'
         }
-        # M55S: In-state VIN (VehicleTypeCode + VIN) -- 2 set[], VIN
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'M55S'
-            state                 = 'In'
-        }
-        # QVV: Stolen VIN (VIN + MakeCode) -- 2 set[], VIN
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QVV'
-            state                 = 'In/Out'
-        }
-        # RQV: Out-state VIN fallback (VIN only) -- 1 set[], VIN
+        # RQV: Out-state VIN (VIN only) -- least specific, ordered LAST. Reached by
+        # clearing Vehicle Type (and no Make).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -151,7 +163,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ/M55L/QVP (plate) > M55S/QVV/RQV (VIN). 6 combos, most set[] first.'
+    description        = 'VehicleRegistrationQuery -- in-state primary: M55L (plate) / M55S (VIN) first; out-of-state RQ/RQV next (Plate Type+Year, or clear Vehicle Type); QVP/QVV stolen DORMANT (server auto-generates QV). State in any[] rides along. 6 combos.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -397,36 +409,52 @@ $provBundle = [PSCustomObject]@{
 # Phase 1: single card per entity.
 # =====================================================================
 
-# Vehicle -- 1 card (Phase 1)
-# Serves VehicleRegistrationQuery (M55L/M55S/RQ/QV) -- all 6 combos
-# VehicleTypeCode: 1=Auto, 2=Motorcycle, 3=Truck, 5=Trailer, 6=Moped (in-state only)
+# Vehicle -- 3 cards (v2.8): SEARCH OPTIONS (shared State/Type/Image) + PLATE SEARCH + VIN SEARCH.
+# Routing: in-state primary (M55L/M55S, VehicleType default=1). Out-of-state via Plate Type
+# (plate) or clearing Vehicle Type (VIN). Plate Type default REMOVED so a bare plate stays
+# in-state (RQ needs Plate Type); Plate Year keeps current-year default (cross-provider standard).
+# QV (stolen) server-generated. VehicleTypeCode: 1=Auto, 2=Motorcycle, 3=Truck, 5=Trailer, 6=Moped.
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'SEARCH OPTIONS'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'licensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'RegistrationState' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'vehicleTypeCode_Input';      node = Sel 'vehicleTypeCode' 'Type Code (required for in-state HI)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_1' }
+            @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type - required for Hawaii (plate or VIN)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'Registration State - leave blank for Hawaii' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - include image (Y/N)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state)' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_PLATE'
+        title = 'PLATE SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_PLATE1'; cols = @('12'); fields = @(
+                @{ id = 'licensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'License Plate Number' '10' 'ROW_VEH_PLATE1' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (add Type Code for in-state)' '20' 'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_PLATE2'; cols = @('6','6'); fields = @(
+                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type - out-of-state plates only' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_PLATE2' }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year - out-of-state plates only' '4' 'ROW_VEH_PLATE2' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'vehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_4' }
-                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear' 'Year (optional)' '4' 'ROW_VEH_4' }
-                @{ id = 'imageIndicator_Input';  node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_4' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_VIN'
+        title = 'VIN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_VIN1'; cols = @('12'); fields = @(
+                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number (VIN)' '20' 'ROW_VEH_VIN1' }
+            )}
+            @{ id = 'ROW_VEH_VIN2'; cols = @('6','6'); fields = @(
+                @{ id = 'vehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make - optional' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_VIN2' }
+                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year - optional' '4' 'ROW_VEH_VIN2' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehReg (M55L/M55S/RQ/QV) + VehStolen (QV.P/QV.V) on single card.'
+    description  = 'Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. In-state primary (M55L/M55S); OOS via Plate Type+Year or clearing Vehicle Type; QV server-generated.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

@@ -63,28 +63,86 @@ if (-not $version) {
     exit 1
 }
 
-# ── Compare against the recorded test version ─────────────────────────────────
-$stateFile = Join-Path $testsDir ".test_version"
-$recorded  = if (Test-Path $stateFile) { ((Get-Content $stateFile -Raw) -replace "^﻿", '').Trim() } else { $null }
+# ── Locate active JSON (needed for per-entity fingerprints) ───────────────────
+$activeJson = Join-Path $provDir "$Provider.json"
+if (-not (Test-Path $activeJson)) {
+    $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
+    if ($alt) { $activeJson = $alt.FullName }
+}
 
-if ($recorded -eq $version -and -not $Force) {
-    Say "  ALIGNED: test package already at v$version (no restart needed)" "Green"
+# ── Per-entity fingerprints + state (entity-aware "block out") ────────────────
+# A "blocked" entity whose fingerprint is unchanged is PRESERVED across a rebuild;
+# every other entity (open, or blocked-but-changed, or all under -Force) is RESET.
+. "$toolDir\get_entity_fingerprints.ps1"
+$currentFp = @{}
+if (Test-Path $activeJson) {
+    try { $currentFp = Get-EntityFingerprints -Path $activeJson } catch { $currentFp = @{} }
+}
+
+$stateFile     = Join-Path $testsDir ".test_version"      # legacy scalar (kept = global)
+$stateJsonPath = Join-Path $testsDir ".test_state.json"   # authority
+
+$priorEntities = @{}
+if (Test-Path $stateJsonPath) {
+    try {
+        $ps = Get-Content $stateJsonPath -Raw | ConvertFrom-Json
+        if ($ps.entities) { foreach ($p in $ps.entities.PSObject.Properties) { $priorEntities[$p.Name] = $p.Value } }
+    } catch { $priorEntities = @{} }
+}
+
+$entityList = @($currentFp.Keys | Sort-Object)
+$resetEntities    = New-Object System.Collections.Generic.List[string]
+$preserveEntities = New-Object System.Collections.Generic.List[string]
+foreach ($ent in $entityList) {
+    $prior     = $priorEntities[$ent]
+    $isBlocked = $prior -and $prior.status -eq 'blocked'
+    $unchanged = $prior -and ($prior.fingerprint -eq $currentFp[$ent])
+    if (-not $Force -and $isBlocked -and $unchanged) { $preserveEntities.Add($ent) }
+    else { $resetEntities.Add($ent) }
+}
+$fullReset = ($preserveEntities.Count -eq 0)
+
+# Build + persist the new state (do this even on the no-op path so global stays current).
+function Write-TestState {
+    $newEntities = [ordered]@{}
+    foreach ($ent in $entityList) {
+        if ($preserveEntities -contains $ent) {
+            $newEntities[$ent] = [ordered]@{ version = $priorEntities[$ent].version; fingerprint = $currentFp[$ent]; status = 'blocked' }
+        } else {
+            $newEntities[$ent] = [ordered]@{ version = $version; fingerprint = $currentFp[$ent]; status = 'open' }
+        }
+    }
+    $stateObj = [ordered]@{ global = $version; entities = $newEntities }
+    [System.IO.File]::WriteAllText($stateJsonPath, ([pscustomobject]$stateObj | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
+    [System.IO.File]::WriteAllText($stateFile, $version, (New-Object System.Text.UTF8Encoding($false)))
+}
+
+if ($resetEntities.Count -eq 0 -and -not $Force) {
+    Write-TestState
+    $pv = if ($preserveEntities.Count) { " (preserved: $($preserveEntities -join ', '))" } else { "" }
+    Say "  ALIGNED: test package already at v$version$pv (no restart needed)" "Green"
     exit 0
 }
 
-# ── RESET ─────────────────────────────────────────────────────────────────────
+# ── RESET (scoped to $resetEntities; full-file behavior when $fullReset) ───────
 if (-not (Test-Path $testsDir)) { New-Item -ItemType Directory -Path $testsDir | Out-Null }
 
-# 1. Archive prior live/sim logs
+function Test-EntityInResetSet([string]$name) {
+    foreach ($e in $resetEntities) { if ($name -match "(?i)(^|_)$([regex]::Escape($e))(_|$)") { return $true } }
+    return $false
+}
+
+# 1. Archive prior live/sim logs (only reset-entity logs unless full reset)
 $logs = Get-ChildItem $testsDir -File -Filter "*.txt" -ErrorAction SilentlyContinue
 $archived = 0
 if ($logs) {
     $archiveDir = Join-Path $testsDir "_archive_pre_v$version"
-    if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
     foreach ($f in $logs) {
+        if (-not $fullReset -and -not (Test-EntityInResetSet $f.BaseName)) { continue }
+        if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
         $dest = Join-Path $archiveDir $f.Name
-        # Truncate dest filename if it would exceed MAX_PATH (260) -- long-named logs
-        # hit this when the archive subdir adds ~22 chars.
+        # Truncate dest filename if it would exceed MAX_PATH (260).
         if ($dest.Length -gt 255) {
             $destDir  = [System.IO.Path]::GetDirectoryName($dest)
             $ext      = [System.IO.Path]::GetExtension($f.Name)
@@ -104,9 +162,7 @@ $provisionalBanner = "LABELS PROVISIONAL -- refine wording during manual form us
 function Add-ProvisionalBanner([string]$filePath) {
     if (-not (Test-Path $filePath)) { return }
     $lines = Get-Content $filePath
-    # Already present anywhere in the file -- skip
     if ($lines | Where-Object { $_ -eq $provisionalBanner }) { return }
-    # Insert after the first two lines (title + === underline)
     $insertAt = [Math]::Min(2, $lines.Count)
     $newLines  = [System.Collections.Generic.List[string]]::new()
     for ($i = 0; $i -lt $insertAt; $i++) { $newLines.Add($lines[$i]) }
@@ -115,42 +171,62 @@ function Add-ProvisionalBanner([string]$filePath) {
     Set-Content -Path $filePath -Value $newLines -Encoding UTF8
 }
 
-# 2. Reset SQVR combo markers to [PENDING]
+# 2. Reset SQVR combo markers to [PENDING].
+#    Full reset -> blanket replace (original behavior). Partial -> only markers in
+#    sections for reset entities (SQVR section headers carry "-- <Entity> Entity";
+#    cross-cutting sections like RMS BUNDLE/SUMMARY reset whenever anything resets).
 $sqvrReset = 0
 $sqvrPath = Join-Path $docsDir "${Provider}_SQVR.txt"
 if (Test-Path $sqvrPath) {
-    $sqvr = Get-Content $sqvrPath -Raw
-    $sqvrReset += ([regex]::Matches($sqvr, '\[CONFIRMED\]')).Count
-    $sqvrReset += ([regex]::Matches($sqvr, '\[FAILED[^\]]*\]')).Count
-    $sqvr = $sqvr -replace '\[CONFIRMED\]', '[PENDING]'
-    $sqvr = $sqvr -replace '\[FAILED[^\]]*\]', '[PENDING]'
-    Set-Content -Path $sqvrPath -Value $sqvr -NoNewline -Encoding UTF8
+    if ($fullReset) {
+        $sqvr = Get-Content $sqvrPath -Raw
+        $sqvrReset += ([regex]::Matches($sqvr, '\[CONFIRMED\]')).Count
+        $sqvrReset += ([regex]::Matches($sqvr, '\[FAILED[^\]]*\]')).Count
+        $sqvr = $sqvr -replace '\[CONFIRMED\]', '[PENDING]'
+        $sqvr = $sqvr -replace '\[FAILED[^\]]*\]', '[PENDING]'
+        Set-Content -Path $sqvrPath -Value $sqvr -NoNewline -Encoding UTF8
+    } else {
+        $lines = Get-Content $sqvrPath
+        $curEntity = $null          # $null = cross-cutting (reset when anything resets)
+        $out = New-Object System.Collections.Generic.List[string]
+        foreach ($line in $lines) {
+            if ($line -match '--\s+([A-Za-z]+)\s+Entity') { $curEntity = $Matches[1] }
+            elseif ($line -match '^(RMS BUNDLE|SUMMARY)\s*$') { $curEntity = $null }
+            $thisResets = ($null -eq $curEntity) -or ($resetEntities -contains $curEntity)
+            if ($thisResets -and ($line -match '\[CONFIRMED\]' -or $line -match '\[FAILED[^\]]*\]')) {
+                $sqvrReset += ([regex]::Matches($line, '\[CONFIRMED\]')).Count
+                $sqvrReset += ([regex]::Matches($line, '\[FAILED[^\]]*\]')).Count
+                $line = $line -replace '\[CONFIRMED\]', '[PENDING]' -replace '\[FAILED[^\]]*\]', '[PENDING]'
+            }
+            $out.Add($line)
+        }
+        Set-Content -Path $sqvrPath -Value $out -Encoding UTF8
+    }
 }
 Add-ProvisionalBanner $sqvrPath
 
-# 3. Clear STATUS "LIVE TEST RESULTS" data rows
+# 3. Clear STATUS "LIVE TEST RESULTS" data rows (Entity is column 3 of each row).
 $statusCleared = 0
 $statusPath = Join-Path $docsDir "${Provider}_STATUS.txt"
 if (Test-Path $statusPath) {
     $lines = Get-Content $statusPath
     $out = New-Object System.Collections.Generic.List[string]
     $inLive = $false
-    $placeholderAdded = $false
     foreach ($line in $lines) {
         if ($line -match 'LIVE TEST RESULTS') { $inLive = $true; $out.Add($line); continue }
         if ($inLive) {
-            # dated data row -> drop
-            if ($line -match '^\s+---\s+\d{4}-\d{2}-\d{2}') { $statusCleared++; continue }
-            # existing placeholder -> drop (will re-add once)
+            # dated data row -> drop only if its Entity is in the reset set (or full reset)
+            if ($line -match '^\s+---\s+\d{4}-\d{2}-\d{2}\s+(\S+)') {
+                $rowEntity = $Matches[1]
+                if ($fullReset -or ($resetEntities -contains $rowEntity)) { $statusCleared++; continue }
+                $out.Add($line); continue
+            }
             if ($line -match '^\s*\(none yet') { continue }
-            # column-dashes header line: keep, then add fresh placeholder after it
             if ($line -match '^\s+---\s+-{3,}') {
                 $out.Add($line)
                 $out.Add("  (none yet -- v$version live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v$version/)")
-                $placeholderAdded = $true
                 continue
             }
-            # blank line or next section ends the LIVE TEST block
             if ($line -match '^\s*$' -or $line -match '^[A-Z]') { $inLive = $false }
         }
         $out.Add($line)
@@ -159,8 +235,8 @@ if (Test-Path $statusPath) {
 }
 Add-ProvisionalBanner $statusPath
 
-# 4. Stamp the new test version (UTF-8 no BOM so the comparison stays reliable)
-[System.IO.File]::WriteAllText($stateFile, $version, (New-Object System.Text.UTF8Encoding($false)))
+# 4. Stamp the new test state (.test_state.json authority + legacy .test_version scalar)
+Write-TestState
 
 # 5. Regenerate TEST_MATRIX so it never goes stale against the rebuilt JSON.
 #    A combo add/remove between versions otherwise leaves the matrix claiming the old
@@ -198,11 +274,15 @@ if (Test-Path $activeJson) {
 }
 
 Say ""
-Say "  RESET: $Provider test package restarted for v$version" "Yellow"
+$scope = if ($fullReset) { "all entities" } else { "entities: $($resetEntities -join ', ')" }
+Say "  RESET: $Provider test package restarted for v$version -- $scope" "Yellow"
+if ($preserveEntities.Count) {
+    Say "    - PRESERVED (blocked, unchanged): $($preserveEntities -join ', ')" "Green"
+}
 Say "    - archived $archived prior log(s) -> tests/_archive_pre_v$version/" "Gray"
 Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
 Say "    - cleared $statusCleared STATUS live-test row(s)" "Gray"
-Say "    - stamped tests/.test_version = v$version" "Gray"
+Say "    - stamped tests/.test_state.json + .test_version = v$version" "Gray"
 if ($matrixRegenerated) {
     Say "    - regenerated docs/${Provider}_TEST_MATRIX.txt" "Gray"
     if ($matrixDelta) {

@@ -1,4 +1,4 @@
-HI_HCJDC_OFML MC v2.7 -- TEST MATRIX
+HI_HCJDC_OFML MC v2.8 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-22
 Variant: MC (multi-card per entity)
@@ -6,12 +6,15 @@ Validator: unknown
 
 FORM FIELDS (MC layout)
 ----------------------------------------
-Vehicle (1 card, 9 fields):
-  CARD_VEH (VEHICLE SEARCH):
-    ROW 1: LicensePlateNumber [Inp 10], RegistrationState [Sel STATE], vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1]
-    ROW 2: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-    ROW 3: VehicleIdentificationNumber [Inp 20]
-    ROW 4: VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+Vehicle (3 cards, 9 fields):
+  CARD_VEH_OPT (SEARCH OPTIONS):
+    vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_VEH_PLATE (PLATE SEARCH):
+    LicensePlateNumber [Inp 10]
+    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 2026, 4]
+  CARD_VEH_VIN (VIN SEARCH):
+    VehicleIdentificationNumber [Inp 20]
+    VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
 Person (3 cards, 17 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
@@ -43,7 +46,7 @@ Boat (1 card, 4 fields):
 
 QIDM SUMMARY (6 QIDMs, 15 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, M55S x1, M55L x1), autoSelect=true
+  VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, M55L x1, M55S x1), autoSelect=true
   DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
@@ -70,12 +73,15 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               First Name (DH), Last Name (DH), Middle Name (DH, optional), Suffix (DH, optional).
               Date of Birth (DH) - required with Name, Sex (DH) - required with Name dropdown (no default).
               Attention (auto-populated from officer profile)=X.
- 2  Vehicle     Render form. Verify 1 card:                        [    ]
-              CARD_VEH: titled "VEHICLE SEARCH".
-              Plate Number, State (optional) dropdown (no default), Type Code (required for in-state HI) dropdown=1.
-              Plate Type (out-of-state) dropdown=PC, Plate Year (out-of-state)=2026.
-              VIN (add Type Code for in-state).
-              Make (optional) dropdown (no default), Year (optional), Image (optional) dropdown=N.
+ 2  Vehicle     Render form. Verify 3 cards:                        [    ]
+              CARD_VEH_OPT: titled "SEARCH OPTIONS".
+              Vehicle Type - required for Hawaii (plate or VIN) dropdown=1, Registration State - leave blank for Hawaii dropdown (no default), NCIC Image - include image (Y/N) dropdown=N.
+              CARD_VEH_PLATE: titled "PLATE SEARCH".
+              License Plate Number.
+              Plate Type - out-of-state plates only dropdown (no default), Plate Year - out-of-state plates only=2026.
+              CARD_VEH_VIN: titled "VIN SEARCH".
+              Vehicle Identification Number (VIN).
+              Make - optional dropdown (no default), Vehicle Year - optional.
  3  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT SEARCH".
               Registration Number (or use Hull ID), State (optional) dropdown (no default).
@@ -112,9 +118,9 @@ PHASE 3: VEHICLE COMBOS (6 tests, 6 combos)
               Expected: VehicleRegistrationQuery fires (RQ)
 12  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
-13  Vehicle     QV+V               VehicleIdentificationNumber=1HGCM8263... [    ]
+13  Vehicle     QV+P+State         LicensePlateNumber=TEST123, Registrat... [    ]
               Expected: VehicleRegistrationQuery fires (QV)
-14  Vehicle     QV+P+State         LicensePlateNumber=TEST123, Registrat... [    ]
+14  Vehicle     QV+V               VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (QV)
 15  Vehicle     M55L+M55L          vehicleTypeCode=TEST, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (M55L)
@@ -169,7 +175,7 @@ PHASE 9: NEGATIVES (empty forms = no send)
 TOTAL: 24 tests
 
 COMBO COVERAGE (15/15):
-  VehicleRegistrationQuery: 6/6 -- T11(RQ+V), T12(RQ+Plate), T13(QV+V), T14(QV+P), T15(M55L+M55L), T16(M55S+M55S)
+  VehicleRegistrationQuery: 6/6 -- T11(RQ+V), T12(RQ+Plate), T13(QV+P), T14(QV+V), T15(M55L+M55L), T16(M55S+M55S)
   DriverLicenseQuery: 3/3 -- T6(DQ+N), T7(DQ+SexCode), T8(QW+BirthDate)
   DriverHistoryQuery: 2/2 -- T9(KQ+N), T10(KQ+SexCodeDH)
   GunQuery: 1/1 -- T19(Serial)
