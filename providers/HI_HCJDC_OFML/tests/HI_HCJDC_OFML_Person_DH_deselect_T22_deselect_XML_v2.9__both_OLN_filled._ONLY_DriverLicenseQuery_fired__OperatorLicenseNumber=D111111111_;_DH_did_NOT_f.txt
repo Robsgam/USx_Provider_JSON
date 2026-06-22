@@ -1,0 +1,34 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: deselect (T22 deselect XML v2.9: both OLN filled. ONLY DriverLicenseQuery fired (OperatorLicenseNumber=D111111111); DH did NOT fire (opt-in, not selected). No DH OLN D222 on wire. One transaction. One-directional/opt-in confirmed via XML. RMS dlNumber=D111111111.)
+Date: 2026-06-22 13:56:59
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OperatorLicenseNumber=D111111111 (DL), OperatorLicenseNumberDH=D222222222 (DH); DL checked, DH not opted-in
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVR7KA09H2WA8949Q55SGH27"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVR7KA09H2WA8949Q55SGH27</Id><OperatorLicenseNumber>D111111111</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVR7KA09H2WA8949Q55SGH27
+  OperatorLicenseNumber          D111111111
+
+NOTES
+-----
+
+
+RESULT: PASS
