@@ -1,6 +1,6 @@
-FL_FCIC MC v5.2 -- TEST MATRIX
+FL_FCIC MC v5.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-18
+Generated: 2026-06-22
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -14,7 +14,7 @@ Vehicle (2 cards, 10 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
 
-Person (2 cards, 17 fields):
+Person (2 cards, 16 fields):
   CARD_DL (Driver License):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30]
@@ -22,7 +22,6 @@ Person (2 cards, 17 fields):
   CARD_DH (Driver History (Out-of-State Only)):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
-    ROW 3: attentionDH [Inp 30]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM QUERY):
@@ -81,7 +80,6 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_DH: titled "Driver History (Out-of-State Only)".
               OLN (DH), Destination State (not FL) dropdown (no default), Purpose Code.
               Last Name (DH), First Name (DH), DOB (DH), Sex (DH) dropdown (no default).
-              Attention (DH).
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM QUERY".
               Serial Number, Gun Make dropdown (no default).
@@ -186,7 +184,7 @@ PHASE 7: ANY[] FIELD TESTS (3 tests)
               Expected: any[] fields present in XML output.
 38  Firearm     QG+Serial          + GunMake                       [    ]
               Expected: any[] fields present in XML output.
-39  Person      KQ+OLN             + purposeCodeDH, attentionDH    [    ]
+39  Person      KQ+OLN             + purposeCodeDH                 [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-18 07:52
+  Generated: 2026-06-22 09:09
 ================================================================
 QUERY SIMULATION
 ================
@@ -80,11 +80,12 @@ QUERY SIMULATION
 
     [FIRES first-match] KQOperatorLicenseNumber
       set: [OperatorLicenseNumberDH, RegistrationStateDH]
-      any: [purposeCodeDH, attentionDH] -> matched: [purposeCodeDH]
+      any: [purposeCodeDH] -> matched: [purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
         <MessageKey>KQ</MessageKey>
+        <Attention>DOE J</Attention>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
         <State>FL</State>

@@ -39,7 +39,7 @@
 #
 # ENTITIES (5 QUERYINPUTFORM):
 #   Vehicle  -- 2 cards: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title)
-#   Person   -- 2 cards: DL(OLN/State/Image/Name/DOB/Sex) + DH(OLN/DestState/Purpose/Name/DOB/Sex/Attention, OOS-only)
+#   Person   -- 2 cards: DL(OLN/State/Image/Name/DOB/Sex) + DH(OLN/DestState/Purpose/Name/DOB/Sex, OOS-only; Attention auto-populated)
 #   Firearm  -- 1 card: serial + make + NCIC# + PCN + Image (2 rows)
 #   Article  -- 1 card: serial + type + OAN + Image + NCIC# + PCN (2 rows)
 #   Boat     -- 2 cards: OPTIONS(DestState/Stolen/Image) + SEARCH(Hull/Reg/CG/Decal/Title/NCIC/PCN/Name/DOB)
@@ -47,7 +47,7 @@
 # FL-SPECIFIC PATTERNS:
 #   Date format: yyyyMMdd (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','yyyyMMdd'])
 #   Name format: FormatStringRuleHandler arguments=[','] (Last,First -- no space)
-#   Attention:   Visible FormInput (AttentionDH) on DH card
+#   Attention:   Auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (no visible field; BUILD_RULES Sec 14)
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue anywhere (LIMITATION #30 -- in-state vs OOS routing;
 #                DH/BQ destination state must be non-FL per FCIC, cannot be defaulted).
@@ -62,7 +62,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "5.2"
+    [string]$Version = "5.3"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -299,13 +299,16 @@ $dlQuery = [PSCustomObject]@{
 # Name/DOB/Sex out of the pool on OLN searches.
 # CAD dispatch cannot supply a destination state, so DH will not auto-fire from CAD (correct).
 # DH-suffix fields isolate from DL field pool (AP #14)
-# Attention: visible FormInput (AttentionDH), NOT in combo requirements
+# Attention: auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler, NOT in combo requirements
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName and KQOperatorLicenseNumber
 # differentiate routing. NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention' }
+        [PSCustomObject]@{
+            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+        }
         [PSCustomObject]@{
             name = 'BirthDate'; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
@@ -334,7 +337,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH')
-                any        = @('purposeCodeDH','attentionDH')
+                any        = @('purposeCodeDH')
                 # Existence-only array (working class). NEVER add a value comparison
                 # here -- it would poison the array and kill this NOT_EXISTS (T-B).
                 # v5.1: references the unique DH attr name (not the shared 'OperatorLicenseNumber')
@@ -350,7 +353,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumberDH','RegistrationStateDH')
-                any        = @('purposeCodeDH','attentionDH')
+                any        = @('purposeCodeDH')
                 conditions = $null
             }
             primaryFieldReference = 'OperatorLicenseNumberDH'
@@ -358,7 +361,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
     )
-    description     = 'DriverHistoryQuery -- OOS only (FCIC): KQ by Name+DestState, KQ by OLN+DestState. State in set[] (dropdown, no default); not-FL gate is a LIMITATION (value conditions inert). DH-suffix fields. Attention visible.'
+    description     = 'DriverHistoryQuery -- OOS only (FCIC): KQ by Name+DestState, KQ by OLN+DestState. State in set[] (dropdown, no default); not-FL gate is a LIMITATION (value conditions inert). DH-suffix fields. Attention auto-populated (handler).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverHistoryQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -740,9 +743,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
-            @{ id = 'ROW_DH4'; cols = @('12'); fields = @(
-                @{ id = 'AttentionDH_Input'; node = Inp 'attentionDH' 'Attention (DH)' '30' 'ROW_DH4' }
-            )}
+            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
+            # (automated-Attention standard, BUILD_RULES Sec 14) -- no visible field.
         )
     }
 )
