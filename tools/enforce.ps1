@@ -431,7 +431,7 @@ foreach ($pd in $providers) {
         foreach ($p in $st.entities.PSObject.Properties) {
             $ent = $p.Name; $info = $p.Value
             if ($info.status -eq 'blocked') {
-                if ($curFp.ContainsKey($ent) -and $curFp[$ent] -eq $info.fingerprint) { $blockedOk++ }
+                if ($curFp.Contains($ent) -and $curFp[$ent] -eq $info.fingerprint) { $blockedOk++ }
                 else { Fail "$provName -- blocked entity '$ent' fingerprint drifted from build (v${version}); re-validate + re-block (block_entity.ps1) or it is silently stale"; $driftFail++ }
             } else {
                 if ($info.version -ne $st.global) { $openMisaligned++ }

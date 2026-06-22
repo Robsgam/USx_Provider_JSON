@@ -49,7 +49,7 @@ if (-not (Test-Path $activeJson)) { Write-Host "  [ERROR] No active JSON for $Pr
 
 . "$toolDir\get_entity_fingerprints.ps1"
 $fp = Get-EntityFingerprints -Path $activeJson
-if (-not $fp.ContainsKey($Entity)) {
+if (-not $fp.Contains($Entity)) {
     Write-Host "  [ERROR] Entity '$Entity' not found in $Provider. Known: $($fp.Keys -join ', ')" -ForegroundColor Red
     exit 1
 }
