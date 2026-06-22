@@ -35,7 +35,7 @@ Architecture notes:
   Optional fields: VehicleMakeCode, VehicleModelCode, VehicleYear,
                    ImageIndicator, VehicleTypeCode (default=1)
 
-  M55L -- Plate + State(HI) + VehicleTypeCode [PENDING]
+  M55L -- Plate + State(HI) + VehicleTypeCode [CONFIRMED]
     set: LicensePlateNumber, RegistrationState, VehicleTypeCode
     any: (empty)
     keyReference: M55L
@@ -88,32 +88,16 @@ Architecture notes:
     RMS Vehicle combo should fire alongside CommSys
 
 ================================================================================
-1b. VehicleStolenQuery -- Vehicle Entity (v1.1)
+1b. VehicleStolenQuery -- Vehicle Entity
 ================================================================================
 
-  QIDM: VehicleStolenQueryQIDM
-  QIF:  Vehicle (shared with VehicleRegistrationQuery)
-  autoSelect: false (officer must manually check)
-  queriesToDeselect: VehicleRegistrationQuery (mutual exclusion)
-  Combos: QV.P (plate), QV.V (VIN)
-
-  QV.P -- Stolen Vehicle by Plate [PENDING]
-    set: LicensePlateNumber
-    any: RegistrationState
-    keyReference: QV.P (invented, LIMITATION #21)
-
-  QV.V -- Stolen Vehicle by VIN [PENDING]
-    set: VehicleIdentificationNumber
-    any: VehicleMakeCode, ImageIndicator
-    keyReference: QV.V (invented, LIMITATION #21)
-
-  Priority order: QV.P > QV.V [PENDING]
-    Plate before VIN
-
-  VehReg/VehStolen mutual exclusion [PENDING]
-    Checking VehicleStolenQuery unchecks VehicleRegistrationQuery and vice versa.
-    VehicleRegistrationQuery is autoSelect=true (default checked).
-    VehicleStolenQuery is autoSelect=false (officer must opt in).
+  APPROVED SKIP -- VehicleStolenQuery QIDM NOT BUILT (2026-06-22, build script decision).
+  The metadata XML includes QV combos (Stolen Vehicle); the PDF "Basic Queries Supported"
+  section is the devdoc authority. Stolen-vehicle lookup is covered by QVV and QVP inside
+  VehicleRegistrationQuery (section 1 above). A separate VehicleStolenQuery QIDM was
+  designed (autoSelect=false, mutual exclusion) but removed per devdoc authority -- the
+  QV combos operate within the VehicleRegistrationQuery QIDM and do not require a
+  separate transaction. Not a coverage gap.
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
