@@ -388,6 +388,16 @@ function Format-Attribute($fname, $camelId, $maxLen, $isDH, $dhSuffix, $hasNameC
         $srcId = if ($isDH) { "sexCode$dhSuffix" } else { 'sexCode' }
         return "        [PSCustomObject]@{ name = 'SexCode'; size = $maxLen; sourceField = @('$srcId'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }"
     }
+    if ($fname -eq 'Attention') {
+        # Automated-Attention standard (BUILD_RULES Sec 14): auto-populate via
+        # handler; no visible form field. Handler derives "LASTNAME F" from name.
+        $sz = if ($maxLen) { $maxLen } else { 30 }
+        $line = "        [PSCustomObject]@{`n"
+        $line += "            name = 'Attention'; size = $sz; sourceField = @('Attention'); targetField = 'Attention'`n"
+        $line += "            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }`n"
+        $line += "        }"
+        return $line
+    }
     $sizeStr = if ($maxLen) { " size = $maxLen;" } else { '' }
     return "        [PSCustomObject]@{ name = '$fname';$sizeStr sourceField = @('$camelId'); targetField = '$fname' }"
 }

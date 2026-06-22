@@ -233,6 +233,16 @@ function Invoke-RuleHandler($ruleFunction, $ruleArgs, $val, $allValues) {
         "ParseCommsysVehicleYearRuleHandler" {
             return $val
         }
+        "CommsysGetLastNameFirstNameInitialRuleHandler" {
+            # Auto-derives Attention as "LASTNAME F" from the query's name.
+            # $allValues = @(lastName, firstName).
+            $last = $null; $first = $null
+            if ($allValues -and $allValues.Count -ge 1) { $last = $allValues[0] }
+            if ($allValues -and $allValues.Count -ge 2) { $first = $allValues[1] }
+            if (-not $last) { return $null }
+            $fi = if ($first) { $first.Substring(0,1).ToUpper() } else { '' }
+            return (("{0} {1}" -f $last.ToUpper(), $fi)).Trim()
+        }
         default { return $val }
     }
 }
@@ -242,6 +252,19 @@ function Get-AttrValue($attr, $formData) {
     $sourceFields = @()
     if ($attr.sourceField -is [System.Array]) { $sourceFields = $attr.sourceField }
     elseif ($attr.sourceField) { $sourceFields = @($attr.sourceField) }
+
+    # Attention auto-populate: the handler derives "LASTNAME F" from the query's
+    # name fields, independent of its sourceField (['Attention']). Mirror that so
+    # simulated XML shows the auto-populated value on the query, not a form entry.
+    if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') {
+        $last = $null; $first = $null
+        foreach ($k in @('NameLastDH','NameLast','nameLast')) { if ($formData.ContainsKey($k) -and $formData[$k]) { $last = $formData[$k]; break } }
+        foreach ($k in @('NameFirstDH','NameFirst','nameFirst')) { if ($formData.ContainsKey($k) -and $formData[$k]) { $first = $formData[$k]; break } }
+        if (-not $last) { return $null }
+        $val = Invoke-RuleHandler "CommsysGetLastNameFirstNameInitialRuleHandler" @() $null @($last, $first)
+        if ($val -and $attr.size -gt 0 -and $val.Length -gt [int]$attr.size) { $val = $val.Substring(0, [int]$attr.size) }
+        return $val
+    }
 
     if ($attr.rule -and $attr.rule.function -eq "FormatStringRuleHandler") {
         $allValues = @()
@@ -441,7 +464,12 @@ function Build-Xml($qidm, $combo, $formData) {
         if ($attr.sourceField -is [System.Array]) { $sourceFields = $attr.sourceField }
         elseif ($attr.sourceField) { $sourceFields = @($attr.sourceField) }
 
-        if ($sourceFields.Count -gt 0 -and $relevantFields.Count -gt 0) {
+        # Attention auto-populate handler fires UNCONDITIONALLY whenever the
+        # query runs -- it is handler-supplied, not combo-gated -- so always
+        # include it regardless of the combo's set[]/any[] membership.
+        $isAutoPop = ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial')
+
+        if (-not $isAutoPop -and $sourceFields.Count -gt 0 -and $relevantFields.Count -gt 0) {
             $relevant = $relevantFields -contains $attr.name
             if (-not $relevant) {
                 foreach ($sf in $sourceFields) {

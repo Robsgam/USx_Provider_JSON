@@ -410,29 +410,30 @@ foreach ($hf in $uniqueHidden) {
     }
 }
 
-# Auto-populate handlers that replace a visible field (Attention / LastNameFirstNameInitial)
+# Attention auto-populate handler -- APPROVED STANDARD (user decision 2026-06-22).
+# Wherever Attention is part of a query it is auto-populated via
+# CommsysGetLastNameFirstNameInitialRuleHandler (no visible field required).
+# Flag the INVERSE: an Attention attribute with NO handler (a manual visible
+# field) should be converted to the automated handler per the standard.
 $autoPopHandlers = 0
 if ($providerBundle) {
     foreach ($cfg in $providerBundle.configurations) {
         if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
         foreach ($attr in $cfg.attributes) {
-            if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') {
-                $entity = $cfg.targetEntity
-                $hasVisibleField = $false
-                if ($formFieldIds.ContainsKey($entity)) {
-                    foreach ($sf in $attr.sourceField) { if ($formFieldIds[$entity].Contains($sf)) { $hasVisibleField = $true } }
-                }
-                if (-not $hasVisibleField) {
-                    Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses CommsysGetLastNameFirstNameInitialRuleHandler (auto-populate) with no visible form field -- expose field first per Visible-First Mandate; add handler only with approval"
-                    $autoPopHandlers++
-                }
+            if ($attr.name -ne 'Attention') { continue }
+            $hasHandler = ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial')
+            if ($hasHandler) {
+                Info "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler -- approved automated-Attention standard"
+            } else {
+                Warn "QIDM '$($cfg.name)' attr 'Attention' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per automated-Attention standard (BUILD_RULES Visible-First Mandate)"
+                $autoPopHandlers++
             }
         }
     }
 }
 
 if ($flaggedHidden -eq 0 -and $autoPopHandlers -eq 0) {
-    Pass "Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions"
+    Pass "Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard"
 }
 
 # ── CHECK 9: Synthetic keyRef documentation in build script ──────────────────

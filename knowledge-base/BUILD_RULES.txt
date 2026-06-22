@@ -1009,50 +1009,68 @@ See also:
   field via a rule handler in place of a visible input, WITHOUT explicit user
   approval or live-test evidence that the platform requires it.
 
-  WHY: Hidden/auto-populated fields silently change what the officer can enter
-  and what the query sends. When a field is hidden "for convenience" the officer
-  loses the ability to correct or override it, and the behavior is invisible in
-  the form. FL_FCIC v3.9 testing caught an Attention field that had been hidden
-  behind CommsysGetLastNameFirstNameInitialRuleHandler -- exposing it as a
-  visible field both restored officer control AND improved form load/submit
-  performance. Expose first; automate only when proven necessary and approved.
+  ATTENTION FIELD -- EXCEPTION TO THE RULE (automated, by directive 2026-06-22):
+    The Attention field is the ONE standing exception. Wherever Attention is
+    part of a query, it MUST be auto-populated via the
+    CommsysGetLastNameFirstNameInitialRuleHandler rule handler (no visible form
+    field). This is the approved STANDARD, not a per-provider exception.
+      QIDM attribute:
+        name='Attention'; size=30; sourceField=['Attention'];
+        targetField='Attention';
+        rule={ function='CommsysGetLastNameFirstNameInitialRuleHandler' }
+    The handler derives "LASTNAME F" (last name + first initial) from the
+    query's name and serves as a response-correlation tag. Scope it to ONLY the
+    query whose metadata lists Attention (e.g. DriverHistoryQuery); never attach
+    it to queries whose metadata does not include Attention.
+    SECURITY: the auto-derived value is name-sourced, so the outbound request
+    XML MUST be properly escaped -- verify with an injection test (a name
+    containing < & " ' ]]> must not break or inject into the XML).
 
-  HOW TO APPLY:
-    - Build all query fields as Inp (FormInput) / Sel (FormSelect) / Dt
-      (FormDate), hidden=false. Use the field's natural fieldId.
+  HISTORY / WHY THE REVERSAL: An earlier policy (FL_FCIC v3.9) exposed Attention
+  as a visible field, attributing a form load/submit slowdown to the handler.
+  That attribution is now doubted -- the slowdown was likely not handler-related,
+  and WNG has since posted a platform performance fix that makes any residual
+  degradation negligible. Per user directive (2026-06-22) the automated handler
+  is restored as the standard; form-load performance is re-verified during HI
+  live testing. The general visible-first rule still governs ALL OTHER fields.
+
+  HOW TO APPLY (all fields EXCEPT Attention):
+    - Build query fields as Inp (FormInput) / Sel (FormSelect) / Dt (FormDate),
+      hidden=false. Use the field's natural fieldId.
     - Do NOT reach for InpH/SelH (hidden helpers) or an auto-populate rule
-      handler as a first move. If you believe a field should be hidden or
+      handler as a first move. If you believe another field should be hidden or
       auto-filled, STOP and get user approval first, or wait for live-test
       evidence that the visible field breaks something.
-    - The Attention auto-populate handler (LIMITATION #29) is NOT a default.
-      Build Attention as a visible field first. Add the handler only with
-      approval -- and document the approval in the provider's BUILD_NOTES.
 
-  APPROVED EXCEPTIONS (the ONLY fields that may be hidden without case-by-case
-  approval -- all are documented platform requirements, not conveniences):
-    1. RMS dual-field State -- SelH 'RegistrationState' (RMS) + InpH outbound
+  APPROVED EXCEPTIONS (fields that may be hidden / auto-populated without
+  case-by-case approval -- documented platform requirements or standing
+  directives, not conveniences):
+    1. Attention -- auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
+       wherever Attention is part of a query (standing directive 2026-06-22; see
+       above). This is the standard, not a violation.
+    2. RMS dual-field State -- SelH 'RegistrationState' (RMS) + InpH outbound
        state field -- ONLY when the NCIC single-visible-State pattern is
        unavailable for the provider. See Section 7. Prefer the single visible
        RegistrationState (NCIC) pattern, which has NO hidden fields.
-    2. dexStateUserId -- auto-populated from the officer's RMS profile (AUTH).
-    3. CAD / First-Responder dispatch context fields (CadUnit, CadEvent,
+    3. dexStateUserId -- auto-populated from the officer's RMS profile (AUTH).
+    4. CAD / First-Responder dispatch context fields (CadUnit, CadEvent,
        LinkToEvent) -- injected by the CAD_DISPATCH / FIRST_RESPONDER variants.
 
   ENFORCEMENT: verify_build.ps1 CHECK 8 ("Visible-First Mandate") scans every
-  build. It WARNs on any hidden form field or auto-populate handler not on the
-  whitelist above. The check is non-blocking (WARN, not FAIL) so it does not
-  break legacy providers mid-flight, but every WARN must be resolved or have a
-  documented approval before a build is declared DONE (0 WARN target, per the
-  zero-WARN gate). The whitelist in CHECK 8 must stay in sync with the APPROVED
-  EXCEPTIONS list above.
+  build. It WARNs on any hidden form field not on the whitelist above, AND on an
+  Attention attribute that LACKS the CommsysGetLastNameFirstNameInitialRuleHandler
+  (i.e. a manual/visible Attention -- now the non-conforming case). An Attention
+  attribute WITH the handler is reported as conforming (Info). The check is
+  non-blocking (WARN, not FAIL) so it does not break legacy providers mid-flight,
+  but every WARN must be resolved before a build is declared DONE (0 WARN target).
 
-  PROVIDERS WITH OUTSTANDING VIOLATIONS (flagged for rebuild -- expose Attention):
-    LA_LEMS (all QIDMs), HI_HCJDC_OFML, CA_eSUN/CA_VENTURA/OH/TN (DH).
-    See project memory "7 providers flagged for Attention rebuild". Run
-    verify_build.ps1 CHECK 8 on any provider to get its current WARN list.
-    The 5 priority providers (NJ, FL, CA_CLETS, TX, NY) are CLEAN: 0 hidden
-    fields, 0 auto-populate handlers (verified 2026-06-09). TX_TLETS already
-    exposed Attention as a visible field (v3.x).
+  ATTENTION CONFORMANCE STATUS (automated handler = conforming):
+    CONFORMING (handler present): HI_HCJDC_OFML, LA_LEMS, CA_eSUN, CA_VENTURA,
+      OH_LEADS, TN_TIES.
+    TO CONVERT (manual visible field -> automated handler): FL_FCIC, TX_TLETS.
+      TX_TLETS_CCH is explicitly OUT OF SCOPE -- do not touch.
+    N/A (no Attention in any query): NJ_NJCJIS, NY_NYSPIN_EJUSTICE, CA_CLETS, etc.
+    Run verify_build.ps1 CHECK 8 on any provider for its current status.
 
 ================================================================================
 15. SYNTHETIC KEYREF DOCUMENTATION (MANDATORY)
