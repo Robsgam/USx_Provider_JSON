@@ -55,15 +55,27 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "2.8"
+    [string]$Version = "2.8",
+    # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
+    # Attention attribute has NO handler (plain passthrough) and the Attention
+    # field is VISIBLE -- to test whether a typed Attention value reaches the wire
+    # (isolates "attribute/plumbing" from "the profile handler"). Not for import to
+    # production; not part of the normal build/test package.
+    [switch]$AttnDiagnostic
 )
 
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases"
-$OUT      = "$DIR\HI_HCJDC_OFML.json"
-$VEROUT   = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
+if ($AttnDiagnostic) {
+    $OUT    = "$DIR\diagnostics\HI_HCJDC_OFML_ATTNTEST.json"
+    $VEROUT = $null
+    New-Item -ItemType Directory -Force -Path "$DIR\diagnostics" | Out-Null
+} else {
+    $OUT    = "$DIR\HI_HCJDC_OFML.json"
+    $VEROUT = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
+}
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
@@ -244,12 +256,19 @@ $dlQuery = [PSCustomObject]@{
 #   the default DL; never bidirectional -- LIMITATION #24/one-directional rule). PurposeCode
 #   + State in any[] (optional companions). Attention handler-only.
 # =====================================================================
+$attnAttr = if ($AttnDiagnostic) {
+    # DIAGNOSTIC: passthrough -- no handler. Whatever is typed into the visible
+    # Attention field should serialize verbatim, proving the attribute/wire works.
+    [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention' }
+} else {
+    [PSCustomObject]@{
+        name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
+        rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+    }
+}
 $dhQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{
-            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
-            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
-        }
+        $attnAttr
         [PSCustomObject]@{
             name        = 'BirthDate'
             rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
@@ -528,8 +547,12 @@ $perLayout = MakeLayouts @(
             # This hidden field supplies that value so the handler runs and emits the
             # logged-in officer's name (LastName FirstInitial) from the profile.
             # initialValue is a placeholder the handler is expected to ignore.
-            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = (-not $AttnDiagnostic); fields = @(
+                @{ id = 'Attention_Input'; node = (if ($AttnDiagnostic) {
+                        Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
+                    } else {
+                        InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' }
+                    }) }
             )}
         )
     }
@@ -636,6 +659,15 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $provBundle, $rmsBundle)
 }
 
+if ($AttnDiagnostic) {
+    Write-ProviderJson -BundleObject $output -OutPath $OUT -Label "Built HI_HCJDC_OFML ATTN DIAGNOSTIC (passthrough, visible Attention)"
+    Write-Host ""
+    Write-Host "DIAGNOSTIC JSON written: $OUT" -ForegroundColor Cyan
+    Write-Host "  Import it, run a Driver History query (the Attention field is visible, pre-filled 'ATTNTEST123')," -ForegroundColor Cyan
+    Write-Host "  and check the XML: if <Attention>ATTNTEST123</Attention> appears, the wire works and the" -ForegroundColor Cyan
+    Write-Host "  production handler is what suppresses output; if absent, Attention is dropped regardless." -ForegroundColor Cyan
+    return
+}
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
     -Label "Built HI_HCJDC_OFML v${Version}"
 
