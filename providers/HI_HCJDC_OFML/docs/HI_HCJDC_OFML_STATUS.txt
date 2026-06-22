@@ -153,3 +153,31 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-22 Boat       Boat:QB              PASS     QB: BoatHullIdNumber=HULL99999, RelatedSearchHitIndicator=Y (default). Priority order BQ>QB confirmed (T22/T23).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    RENDER:RENDER        PASS     Vehicle 3-card layout renders (SEARCH OPTIONS / PLATE SEARCH / VIN SEARCH)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:M55L+BarePlate PASS     M55L in-state plate: VehicleTypeCode=1 in XML, VIN absent
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:M55S+BareVIN  PASS     M55S in-state VIN: VehicleTypeCode=1 + VehicleYear=2019 in XML (any[] fix confirmed), VIN ABSENT from plate path
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:RQ            PASS     RQ OOS plate: PlateType+PlateYear+State in XML, VehicleTypeCode absent
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:RQV           PASS     RQV OOS VIN: VIN+State+VehicleYear=2019 in XML, VehicleTypeCode absent (vehicleYear any[] fix live-confirmed)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:RQ+AllFieldsStress PASS     PLATE-WINS GUARDRAIL: All fields (Plate+PlateType+PlateYear+VIN+State+Make) -- CommSys XML = plate only; VIN+VehicleMakeCode ABSENT. DECISIVE v3.6 confirmation.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-22 Vehicle    VehReg:M55L+PlateWinsVIN PASS     PLATE-WINS T7: Bare Plate+VIN (no State, no PlateType/Year) -- M55L fires, VIN absent from CommSys XML. M55S correctly exits on LicensePlateNumber NOT_EXISTS.

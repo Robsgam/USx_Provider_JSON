@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: M55L+PlateWinsVIN (PLATE-WINS T7: Bare Plate+VIN (no State, no PlateType/Year) -- M55L fires, VIN absent from CommSys XML. M55S correctly exits on LicensePlateNumber NOT_EXISTS.)
+Date: 2026-06-22 18:41:13
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+LicensePlateNumber=BC123, VehicleIdentificationNumber=233HNFHFG783634
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVRQGN2VM5PBT06077A25NZ8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVRQGN2VM5PBT06077A25NZ8</Id><ImageIndicator>N</ImageIndicator><LicensePlateNumber>BC123</LicensePlateNumber><VehicleTypeCode>1</VehicleTypeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVRQGN2VM5PBT06077A25NZ8
+  ImageIndicator                 N
+  LicensePlateNumber             BC123
+  VehicleTypeCode                1
+
+NOTES
+-----
+RMS elasticQuery includes both tag+vinNumber (RMS broader search) but CommSys XML = plate only. VIN absent. M55S LicensePlateNumber NOT_EXISTS condition exits it from pool when Plate present.
+
+RESULT: PASS
