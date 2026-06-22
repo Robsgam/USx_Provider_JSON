@@ -255,14 +255,15 @@ Architecture notes:
     any: (empty)
     keyReference: QB
 
-  Priority order: BQ > QB [PENDING]
-    Registration before Hull
+  Priority order: BQ > QB -- CONFIRMED (note; backed by live v3.5 T22/T23)
+    Registration before Hull. T22: RegistrationNumber filled -> BQ. T23: Hull filled -> QB.
 
 ================================================================================
 RMS BUNDLE
 ================================================================================
 
-  RMS co-fire not yet tested [PENDING]
+  RMS co-fire confirmed on Person (v2.9) and Vehicle (v3.4/v3.5). Firearm/Article/Boat
+  RMS co-fire not separately verified (no RMS Firearm/Article/Boat QIDM in bundle).
   Patches applied: 1 (Vehicle state), 3 (Person state), 6 (cleanup)
   6 RMS configs (one per entity + shared)
 
@@ -270,7 +271,7 @@ RMS BUNDLE
 SUMMARY
 ================================================================================
 
-  Total combos: 17 CommSys + RMS co-fires (v1.1: +2 VehicleStolenQuery)
-  CONFIRMED: NONE
-  PENDING: ALL (no live tests performed)
-  Next step: Re-import v1.1 JSON and run 8-phase live test protocol
+  Total combos: 17 CommSys + RMS co-fires
+  CONFIRMED: ALL entities (Person v2.9, Vehicle v3.4, Firearm/Article/Boat v3.5)
+  PENDING: none
+  All 6 entities live-tested on v3.5. Provider COMPLETE.
