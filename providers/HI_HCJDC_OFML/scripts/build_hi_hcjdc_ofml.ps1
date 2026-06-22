@@ -1,5 +1,8 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.1 (2026-06-22): Vehicle State label shortened to 'State (Hawaii = leave blank)'
+#   (was the longer "Registration State - leave blank for Hawaii; enter..."). Label-only
+#   refinement of the v3.0 routing redesign, pre-live-test. Person UNCHANGED (stays blocked).
 # v3.0 (2026-06-22): Vehicle OOS-first routing redesign. Reordered VehicleRegistrationQuery
 #   combos (RQ-plate, RQV-VIN+State, M55L, M55S, then dormant QVV/QVP) so out-of-state is
 #   reached by ADDING fields (Plate Type+Year for plate, State for VIN) -- never by clearing
@@ -60,7 +63,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.0",
+    [string]$Version = "3.1",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -492,7 +495,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type - Auto (Hawaii queries)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'Registration State - leave blank for Hawaii; enter the state for out-of-state' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (Hawaii = leave blank)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
                 @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - include image (Y/N)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
         )
