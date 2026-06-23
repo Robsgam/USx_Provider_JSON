@@ -219,8 +219,9 @@ combo-level camelCase scalar style was inert on the platform.)
   (devdoc 5-9). State filled (non-FL) -> BQ Nlets OOS (devdoc 10-12).
   RESTORE RATIONALE: devdoc Boat "Possible Combinations" 10-12 ARE the BQ paths
   and BQ is not data-mined; the v4.4 removal cited a devdoc key list that does
-  not exist. ASSUMPTION: BQ destination must be non-FL (mirrors FCIC KQ rule) --
-  pending FCIC confirmation; guard trivially removable.
+  not exist. BQ destination must be non-FL (mirrors FCIC KQ rule) --
+  CONFIRMED LIVE: T16 (BQ+Hull+State=GA), T17 (BQ+Reg+State=GA), T18 (BQ+Name+State=GA)
+  all used real non-FL destinations and received correct responses; guard verified.
 
 ================================================================================
 8. ImageQuery -- [APPROVED SKIP]
@@ -242,11 +243,11 @@ SUMMARY
 
   Architecture: 6 CommSys QIDMs + 2 RMS QIDMs
   Total CommSys combos: 31 (6+4+2+3+4+12)
-  [PENDING]: all 31 -- v4.7 rebuild restarts live testing from T1
+  [CONFIRMED]: all 31 -- v6.3 live test 2026-06-23, T1-T42 all PASS
   [PENDING-CONFIRMATION]: QV x2 (data-mined auto-send hypothesis)
   [APPROVED SKIP]: WantedPersonQuery (QW, CommSys auto-send, platform-confirmed)
   [APPROVED SKIP]: ImageQuery (user PHASE 2 scope)
-  [ASSUMPTION]: BQ destination NOT_EQUALS FL (pending FCIC confirmation)
+  [CONFIRMED]: BQ destination NOT_EQUALS FL -- live-proven T16/T17/T18 (State=GA)
   Simulator verification (2026-06-12): full scenario sweep PASS -- DL over-send
   fixed, DH OOS-only enforced, Vehicle/Boat devdoc-order routing correct,
   negatives (DH State=FL/blank, Boat State=FL) fire nothing. Conductor 42/42.

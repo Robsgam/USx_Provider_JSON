@@ -1024,8 +1024,28 @@ foreach ($q in $qidms) {
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("IMPORT FILE: $fileName")
 
-# ── Output ──
+# ── Preserve existing result column values ──
+# If the matrix file already exists, extract live-test results (e.g. [PASS]) by
+# sequential position and re-inject them into the freshly-generated content.
+# This prevents build_report re-runs from blanking the live-test record.
 $result = $sb.ToString()
+
+if ($OutFile -and (Test-Path $OutFile)) {
+    $existingContent = [System.IO.File]::ReadAllText($OutFile)
+    # Collect all result field values in order: [PASS], [FAIL], [SKIP], [    ], etc.
+    $existingResults = [regex]::Matches($existingContent, '\[([^\]]{0,8})\]') |
+        ForEach-Object { $_.Groups[1].Value }
+    if ($existingResults.Count -gt 0) {
+        $idx = 0
+        $result = [regex]::Replace($result, '\[    \]', {
+            param($m)
+            if ($idx -lt $existingResults.Count) {
+                $val = $existingResults[$idx]; $idx++
+                "[$val]"
+            } else { $m.Value }
+        })
+    }
+}
 
 if ($OutFile) {
     [System.IO.File]::WriteAllText($OutFile, $result, [System.Text.UTF8Encoding]::new($false))
