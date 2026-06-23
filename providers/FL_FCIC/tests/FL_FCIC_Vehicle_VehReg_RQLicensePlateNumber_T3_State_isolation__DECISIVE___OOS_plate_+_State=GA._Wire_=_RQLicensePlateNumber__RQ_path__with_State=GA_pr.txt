@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: RQLicensePlateNumber (T3 State isolation (DECISIVE): OOS plate + State=GA. Wire = RQLicensePlateNumber (RQ path) with State=GA present; FRQLicensePlateNumber excluded by RegistrationState NOT_EXISTS condition. State-gate fix v6.0 confirmed live.)
+Date: 2026-06-23 12:43:42
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Plate=TEST123, PlateType=PC, PlateYear=2026, State=Georgia(GA), Image=N; VIN blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTNKF6656E8EQVJS4GMQTKG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVTNKF6656E8EQVJS4GMQTKG</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>GA</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTNKF6656E8EQVJS4GMQTKG
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          GA
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+
+
+RESULT: PASS
