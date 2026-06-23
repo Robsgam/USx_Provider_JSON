@@ -2,7 +2,7 @@ HI_HCJDC_OFML STATUS
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-06-23
-Current: v3.7 | 68P/0F/0W/0LIM | Updated 2026-06-23
+Current: v3.8 | 68P/0F/0W/0LIM | Updated 2026-06-23
 
 BASE v1.1
   Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
@@ -177,24 +177,18 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     RENDER:RENDER        PASS     T1 Person RENDER v3.7: 3 cards (SEARCH OPTIONS/DRIVER LICENSE/DRIVER HISTORY); no visible Attention (hidden gate-feeder); Sex/State no default; PurposeCodeDH=C. Imported to USx HCJDC tenant 2026-06-23.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DL:DQ                PASS     T8 DQ Name path v3.7 (regression check): Name+Sex+DOB, no OLN. CommSys XML = DriverLicenseQuery + Name=JON FOE + SexCode=F (NIBRS) + BirthDate=01011985 (date handler); NO OperatorLicenseNumber. Confirms guardrail did NOT break the Name path. RMS elasticQuery firstName/lastName/sexAttrId/dateOfBirth.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DL:DQN               PASS     T7 DQN OLN-only v3.7: bare OLN, no Name. CommSys XML = MessageType=DriverLicenseQuery + OperatorLicenseNumber only. Confirms DQN fires on OLN alone. RMS elasticQuery dlNumber only.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DL:QW                PASS     T9 QW v3.7: Name+DOB no-Sex. CommSys XML = DriverLicenseQuery + Name=JON DOE + BirthDate=01011985; NO SexCode, NO OperatorLicenseNumber. QW fires when Sex blank.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DH:KQ                PASS     T10 KQ v3.7: DH Name+Sex+DOB. CommSys XML = DriverHistoryQuery + Name=JON DOE + SexCode=M + BirthDate=01011999 + PurposeCode=C + Attention=SGAMBELLONE R (auto-populated officer profile). DH Name path.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DH:KQN               PASS     T11 KQN v3.7: DH OLN path. CommSys XML = DriverHistoryQuery + OperatorLicenseNumber=D7635373467 + PurposeCode=C + Attention=SGAMBELLONE R (auto). OLN only, no Name.

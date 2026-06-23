@@ -1,5 +1,11 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.8 (2026-06-23): OLN>Name guardrail extended to DriverHistoryQuery. Added
+#   OperatorLicenseNumberDH NOT_EXISTS condition to KQ (Name+Sex+DOB DH). When the officer
+#   enters a DH OLN (fires KQN), the Name-based KQ combo exits the union pool so Name/Sex/DOB
+#   do not bleed onto the DriverHistoryQuery wire (sim-proven both DH paths matched + union
+#   over-sent when both filled). Closes the DH-side gap left by v3.7 (which covered DL only).
+#   Re-opens HI Person for live re-test.
 # v3.7 (2026-06-23): OLN>Name guardrail on Person (DriverLicenseQuery). Added
 #   OperatorLicenseNumber NOT_EXISTS condition to DQ (Name+Sex+DOB) and QW (Name+DOB).
 #   When the officer enters an OLN (fires DQN), the Name-based combos exit the union pool
@@ -109,7 +115,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.7",
+    [string]$Version = "3.8",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -408,8 +414,12 @@ $dhQuery = [PSCustomObject]@{
     )
     combinations = @(
         # KQ: Name path -- 4 set[], most specific. DH-suffix. State+PurposeCode optional.
+        # CONDITION: OperatorLicenseNumberDH NOT_EXISTS -- OLN>Name guardrail (v3.8). When the
+        # officer enters a DH OLN (fires KQN), this Name-based combo exits the union pool so
+        # Name/Sex/DOB do not bleed onto the DriverHistoryQuery wire. Mirrors the v3.7 DL-side
+        # guardrail (DQ/QW). conditions[].field = sourceField (DH-suffix, PascalCase).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ'
             state                 = 'In/Out'

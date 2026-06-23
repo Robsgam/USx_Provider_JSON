@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-23 08:41
+  Generated: 2026-06-23 09:34
 ================================================================
 QUERY SIMULATION
 ================
@@ -72,23 +72,9 @@ QUERY SIMULATION
 
 --- QIDM: HI_HCJDC_OFML_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+    [SKIP] KQ -- conditions failed: OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] KQ
-      set: [SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
-      any: [RegistrationState, purposeCodeDH, Attention] -> matched: [RegistrationState, purposeCodeDH, Attention]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <Attention>DOE J</Attention>
-        <BirthDate>01151990</BirthDate>
-        <Name>John Doe A</Name>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] KQN
+    [FIRES first-match] KQN
       set: [OperatorLicenseNumberDH]
       any: [RegistrationState, purposeCodeDH, Attention] -> matched: [RegistrationState, purposeCodeDH, Attention]
       -- CommSys XML --
@@ -101,8 +87,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: KQ (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
+    >> PLATFORM FIRES: KQN (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
