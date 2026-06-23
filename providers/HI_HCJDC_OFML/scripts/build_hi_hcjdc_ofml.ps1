@@ -1,5 +1,11 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.9 (2026-06-23): identifier-priority guardrail extended to BoatQuery (Hull>Reg). Added
+#   BoatHullIdNumber NOT_EXISTS condition to BQ (RegistrationNumber combo). When the officer
+#   enters a Hull ID (fires QB), the Reg# combo exits the union pool so RegistrationNumber does
+#   not bleed onto the Hull query wire. Hull ID is the unique permanent identifier (VIN-like);
+#   Reg# is reassignable (plate-like). Closes the third identifier pair (after Vehicle Plate>VIN
+#   v3.6 and Person OLN>Name DL v3.7 / DH v3.8). Re-opens HI Boat for live re-test.
 # v3.8 (2026-06-23): OLN>Name guardrail extended to DriverHistoryQuery. Added
 #   OperatorLicenseNumberDH NOT_EXISTS condition to KQ (Name+Sex+DOB DH). When the officer
 #   enters a DH OLN (fires KQN), the Name-based KQ combo exits the union pool so Name/Sex/DOB
@@ -115,7 +121,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.8",
+    [string]$Version = "3.9",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -531,11 +537,16 @@ $boatQuery = [PSCustomObject]@{
     )
     combinations = @(
         # BQ: Boat Registration. RegistrationState/RSH optional; must be in any[] to serialize.
+        # CONDITION: BoatHullIdNumber NOT_EXISTS -- Hull>Reg identifier-priority guardrail (v3.9).
+        # Hull ID (HIN) is the unique permanent identifier (VIN-like); Registration Number is
+        # reassignable (plate-like). When the officer enters a Hull ID (fires QB), this Reg#
+        # combo exits the union pool so RegistrationNumber does not bleed onto the Hull query wire.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('RegistrationNumber')
                 any      = @('RegistrationState','relatedSearchHitIndicator')
                 defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
+                conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQ'

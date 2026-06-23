@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-23 09:34
+  Generated: 2026-06-23 11:00
 ================================================================
 QUERY SIMULATION
 ================
@@ -134,19 +134,9 @@ QUERY SIMULATION
 
 --- QIDM: HI_HCJDC_OFML_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+    [SKIP] BQ -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
-    [FIRES first-match] BQ
-      set: [RegistrationNumber]
-      any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] QB
+    [FIRES first-match] QB
       set: [BoatHullIdNumber]
       any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState]
       -- CommSys XML --
@@ -157,8 +147,8 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    >> PLATFORM FIRES: BQ (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB, State=FL
+    >> PLATFORM FIRES: QB (first matching combo)
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

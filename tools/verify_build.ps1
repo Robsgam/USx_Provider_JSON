@@ -591,8 +591,10 @@ if ($valueComparisonHits.Count -gt 0) {
     Pass "No value-comparison routing conditions (existence-only or none)"
 }
 
-# ── CHECK 12: Identifier-priority guardrail (Plate>VIN, OLN>Name) ─────────────
-# KB: BUILD_RULES.txt "IDENTIFIER-PRIORITY GUARDRAIL" (HI v3.6 plate-wins + FL DL OLN-priority).
+# ── CHECK 12: Identifier-priority guardrail (Plate>VIN, OLN>Name, Hull>Reg) ───
+# KB: BUILD_RULES.txt "IDENTIFIER-PRIORITY GUARDRAIL". Covers Vehicle (Plate>VIN, HI v3.6),
+# Person DL+DH (OLN>Name, FL/HI v3.7-3.8), and Boat (Hull>Reg, HI v3.9). DH-suffixed tokens
+# are matched via the optional (DH)? in the OLN/Name regexes.
 # When one QIDM has combos for two different search identifiers an officer can fill together,
 # the platform serializes the UNION of all satisfied combos' set[]+any[] (LIMITATION #1). The
 # lower-priority combos must carry a NOT_EXISTS condition on the higher-priority identifier's
@@ -619,10 +621,18 @@ function Has-NotExistsOn($combo, [string]$rx) {
     return $false
 }
 
-$rxPlate = '(?i)^licensePlateNumber$'
-$rxVin   = '(?i)^vehicleIdentificationNumber$'
-$rxOln   = '(?i)^operatorLicenseNumber$'
-$rxName  = '(?i)^name(Last|First)$'
+# Optional 'DH' suffix: DriverHistoryQuery combos use DH-suffixed sourceFields
+# (OperatorLicenseNumberDH, NameLastDH/NameFirstDH). Without matching the suffix, CHECK 12
+# was blind to the DH OLN/Name pair and never enforced the guardrail there (HI v3.7 gap,
+# found live 2026-06-23 -> v3.8). Per-QIDM loop keeps DL (unsuffixed) and DH (suffixed) isolated.
+$rxPlate = '(?i)^licensePlateNumber(DH)?$'
+$rxVin   = '(?i)^vehicleIdentificationNumber(DH)?$'
+$rxOln   = '(?i)^operatorLicenseNumber(DH)?$'
+$rxName  = '(?i)^name(Last|First)(DH)?$'
+# Boat: Hull > Reg. Hull ID (HIN) is the unique permanent identifier (VIN-like); Registration
+# Number is reassignable (plate-like). HI v3.9 (found during HI review 2026-06-23).
+$rxHull  = '(?i)^boatHullIdNumber$'
+$rxReg   = '(?i)^registrationNumber$'
 $guardViolations = 0
 $guardPairs = 0
 
@@ -657,6 +667,22 @@ if ($providerBundle) {
                 if ((Set-HasToken $c $rxName) -and -not (Set-HasToken $c $rxOln)) {
                     if (-not (Has-NotExistsOn $c $rxOln)) {
                         Warn "QIDM '$($cfg.name)' Name combo '$($c.keyReference)' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)"
+                        $guardViolations++
+                    }
+                }
+            }
+        }
+
+        # Boat: Hull > Reg
+        $hasHull = @($combos | Where-Object { Set-HasToken $_ $rxHull }).Count -gt 0
+        $hasReg  = @($combos | Where-Object { Set-HasToken $_ $rxReg  }).Count -gt 0
+        if ($hasHull -and $hasReg) {
+            $guardPairs++
+            foreach ($c in $combos) {
+                # pure Reg combo = set has RegistrationNumber but not Hull
+                if ((Set-HasToken $c $rxReg) -and -not (Set-HasToken $c $rxHull)) {
+                    if (-not (Has-NotExistsOn $c $rxHull)) {
+                        Warn "QIDM '$($cfg.name)' Reg combo '$($c.keyReference)' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)"
                         $guardViolations++
                     }
                 }

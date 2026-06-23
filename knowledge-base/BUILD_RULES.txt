@@ -947,10 +947,27 @@ See also:
       conditions: [ { field: ['operatorLicenseNumber'], operator: 'NOT_EXISTS' } ]   (camelCase)
     Append to any existing condition (e.g. an OOS State NOT_EXISTS gate); all must pass.
 
-    LIVE PRECEDENT: FL_FCIC DriverLicenseQuery -- FDQName and DQName already carry
-    OperatorLicenseNumber NOT_EXISTS; OLN wins when officer enters OLN+Name together.
-    Apply to multi-Name-combo providers: TX (DQName/QWName/CPLName), AZ (ACWL/DQN),
-    CA_CLETS (NLTS.DQ.N/IR.QVC.N/IN.L1), NJ (DQ), NY (DLICN). FL already conformant.
+    *** APPLIES TO DriverHistoryQuery TOO -- NOT JUST DriverLicenseQuery. *** The DH KQ-type
+    Name combo (set has NameLastDH/NameFirstDH) needs the SAME guardrail, keyed on the DH-suffixed
+    OLN sourceField:
+      conditions: [ { field: ['OperatorLicenseNumberDH'], operator: 'NOT_EXISTS' } ]
+    conditions[].field = the actual DH sourceField token (DH-suffix per Section "DH-suffix
+    fieldIds"). Without it, KQ (Name) + KQN (OLN) BOTH satisfy when the officer fills the DH OLN
+    AND DH Name, and the union pool over-sends Name+OLN together on the DriverHistoryQuery wire.
+    This was missed in the first guardrail rollout (matrix listed only DL combos) -- always check
+    BOTH the DL and DH QIDMs for an OLN/Name pair.
+
+    LIVE PRECEDENT (DECISIVE, both halves on the wire): HI_HCJDC_OFML --
+      - DL (v3.7): DQ + QW carry OperatorLicenseNumber NOT_EXISTS. T6: OLN+Name+Sex+DOB ->
+        DriverLicenseQuery XML = OperatorLicenseNumber only (Name/Sex/DOB absent). T8 regression:
+        Name no-OLN -> DQ fires with Name.
+      - DH (v3.8): KQ carries OperatorLicenseNumberDH NOT_EXISTS. KQN-decisive: DH OLN+Name ->
+        DriverHistoryQuery XML = OperatorLicenseNumber + Attention + PurposeCode only (Name absent).
+        KQ regression: DH Name no-OLN -> KQ fires with Name.
+    EARLIER PRECEDENT: FL_FCIC DriverLicenseQuery (FDQName/DQName carry OLN NOT_EXISTS) -- DL only.
+    Apply to BOTH DL and DH on multi-Name-combo providers: TX (DL DQName/QWName/CPLName + DH KQName),
+    AZ (DL ACWL/DQN + DH), CA_CLETS (DL NLTS.DQ.N/IR.QVC.N/IN.L1 + DH), NJ (DL DQ + DH -- DH not yet
+    done, add at next NJ touch), NY (DL DLICN + DH DALL/DALH Name combos). FL DL conformant; FL DH to add.
 
     NOTE: A SEPARATE opt-in Name query (e.g. NY DGRP NyNyspinDriverLicenseNameQuery,
     autoSelect=false) needs NO condition -- it does not co-fire by default, so there is
@@ -960,6 +977,24 @@ See also:
     MULTI-IDENTIFIER QIDMs (CA_CLETS: OLN, Name, SSN, CII): the same principle extends --
     rank identifiers by specificity/priority and gate each lower-priority combo out when a
     higher-priority identifier is present. Scope per devdoc; review co-fire pairs at build.
+
+  --- BOAT half (Hull > Reg) -- HI v3.9 live-found ---
+    When a BoatQuery has both a Hull combo (set includes BoatHullIdNumber) and a Registration
+    combo (set includes RegistrationNumber), add a BoatHullIdNumber NOT_EXISTS condition to the
+    Reg combo. Hull ID (HIN) is the unique permanent identifier (VIN-like); Registration Number
+    is reassignable (plate-like) -- so HULL WINS. When the officer enters a Hull ID the Reg combo
+    exits the pool and the Hull query fires alone.
+    RULE: on every Reg-set combo --
+      conditions: [ { field: ['BoatHullIdNumber'], operator: 'NOT_EXISTS' } ]
+    LIVE PRECEDENT: HI_HCJDC_OFML v3.9 -- BQ (RegistrationNumber) carries BoatHullIdNumber
+    NOT_EXISTS; QB (Hull) is the priority combo (no condition).
+    Apply to every provider whose BoatQuery has both a Reg and a Hull combo (portfolio-wide;
+    most providers do) at its next touch. CHECK 12 enforces it (Boat: Hull>Reg).
+
+  *** SCOPE REMINDER: an autoSelect QIDM with ANY two mutually-substitutable identifier combos
+  has the LIMITATION #1 union-bleed. Known pairs: Plate/VIN (Vehicle), OLN/Name (Person DL+DH),
+  Hull/Reg (Boat). At every build, scan ALL QIDMs for co-satisfiable identifier combos -- do not
+  assume only the three named pairs exist for a given provider. ***
 
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a

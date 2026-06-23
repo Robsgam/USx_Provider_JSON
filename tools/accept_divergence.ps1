@@ -1,8 +1,10 @@
 <#
   accept_divergence.ps1 -- Append a reasoned entry to a provider's accepted-divergence registry.
 
-  audit_metadata.ps1 reads this registry (CHECK 4 / 4d). Any entry recorded here is treated
+  audit_metadata.ps1 reads this registry (CHECK 4 / 4d / 5). Any entry recorded here is treated
   as [NOTE] instead of [FAIL] so intentional, tested divergences do not block the build gate.
+  CHECK 5 (Primary Field Coverage) honors it too (added 2026-06-23): a documented deferred
+  primary-combo gap (e.g. MD_METERS GunQuery|ZGUN|GunMake) recorded here becomes a [NOTE].
 
   Registry path: providers/<Provider>/docs/<Provider>_ACCEPTED_DIVERGENCES.txt
   The parser keys on the FIRST THREE pipe-delimited fields (query|keyRef|field), lowercased.

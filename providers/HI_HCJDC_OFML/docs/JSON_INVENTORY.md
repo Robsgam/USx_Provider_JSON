@@ -38,6 +38,12 @@ Every iteration saved. Never overwrite.
 
 
 
+
+## v3.9 (2026-06-23)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML.json | v3.9 | Current | 68P/0F/0W/0LIM. |
 ## v3.8 (2026-06-23)
 
 | File | Version | Status | Notes |
