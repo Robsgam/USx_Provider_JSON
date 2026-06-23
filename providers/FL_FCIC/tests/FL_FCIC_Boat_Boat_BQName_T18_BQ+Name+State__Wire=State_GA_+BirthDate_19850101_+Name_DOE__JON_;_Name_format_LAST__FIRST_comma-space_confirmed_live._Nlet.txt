@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQName (T18 BQ+Name+State: Wire=State(GA)+BirthDate(19850101)+Name(DOE, JON); Name format LAST, FIRST comma-space confirmed live. Nlets OOS name search.)
+Date: 2026-06-23 13:22:01
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Last=doe, First=jon, DOB=1985-01-01, State=Georgia(GA), Image=N; Hull blank, Reg blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTQTPYCBBA8VS1C5M8RNZ55"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KVTQTPYCBBA8VS1C5M8RNZ55</Id><State>GA</State><BirthDate>19850101</BirthDate><Name>DOE, JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTQTPYCBBA8VS1C5M8RNZ55
+  State                          GA
+  BirthDate                      19850101
+  Name                           DOE, JON
+
+NOTES
+-----
+
+
+RESULT: PASS
