@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBBoatHullIdNumber (T19 QB+Hull+Stolen: Wire=RelatedHitSearchIndicator(Y)+BoatHullIdNumber(FL53673)+ImageIndicator(N); NCIC stolen-boat search by Hull.)
+Date: 2026-06-23 13:22:03
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Hull=fl53673, Stolen=Y, Image=N; State blank, Reg blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTQT5S4GVTJHKE1J2ECKH2C"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KVTQT5S4GVTJHKE1J2ECKH2C</Id><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><BoatHullIdNumber>FL53673</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTQT5S4GVTJHKE1J2ECKH2C
+  RelatedHitSearchIndicator      Y
+  BoatHullIdNumber               FL53673
+  ImageIndicator                 N
+
+NOTES
+-----
+
+
+RESULT: PASS
