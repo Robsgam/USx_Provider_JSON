@@ -1,6 +1,8 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.3 (2026-06-23): Label consistency pass: Hull ID Number hint removed (matches HI); boat owner
+#   OOS abbreviation expanded to "out-of-state" throughout.
 # v6.2 (2026-06-23): DH DOB label shortened "Date of Birth (DH) - required with Name" -> "DOB
 #   (required with Name)". helperText/placeholder is NOT rendered on this platform and FormDate
 #   has no help-text slot, so the qualifier stays in the label (the only rendered place).
@@ -82,7 +84,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.2"
+    [string]$Version = "6.3"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -872,7 +874,7 @@ $boaLayout = MakeLayouts @(
         title = 'Boat Search'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number (preferred; wins over Registration #)' '62' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '8' 'ROW_BOA_1' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_1' }
             )}
@@ -883,9 +885,9 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name (OOS)'  '30' 'ROW_BOA_3' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name (OOS)' '30' 'ROW_BOA_3' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Owner DOB (OOS)' 'ROW_BOA_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name (out-of-state)' '30' 'ROW_BOA_3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Owner DOB (out-of-state)' 'ROW_BOA_3' }
             )}
         )
     }
