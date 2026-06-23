@@ -6,7 +6,7 @@ JSON version: v4.0
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: COMPLETE -- v3.6 2026-06-22 (T1-T7 Vehicle all PASS; Firearm/Article/Boat CONFIRMED v3.5)
 v4.0 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
-T27-T28 (negatives) all PASS. T26 (DH deselects DL) PENDING CommSys XML.
+T26 (DH deselects DL), T27-T28 (negatives) all PASS. 28/28 tests PASS.
 
 NOTE: All 5 entities CONFIRMED. Person CONFIRMED (live v2.9, blocked/preserved).
 Vehicle CONFIRMED (live v3.6 T1-T7, 2026-06-22) -- plate-wins guardrail live-proven
@@ -200,11 +200,13 @@ Architecture notes:
   Combos: KQN (OLN), KQ (Name+Sex+DOB)
   Optional fields: SexCode
 
-  KQN -- OLN + State [CONFIRMED]
-    set: OperatorLicenseNumber, RegistrationState
-    any: (empty)
+  KQN -- OLN [CONFIRMED]
+    set: OperatorLicenseNumber
+    any: RegistrationState (→ State XML attr, optional)
     keyReference: KQN
     Uses DH-suffix fieldIds to avoid collision with DL QIDM
+    NOTE: KQN fires on OLN alone (RegistrationState in any[], not set[]). Wire confirmed
+    T26 v4.0: DriverHistoryQuery+OLN with State blank → State absent from XML.
 
   KQ -- Name + SexCode + DOB [CONFIRMED]
     set: Name, SexCode, BirthDate
@@ -294,8 +296,8 @@ SUMMARY
   Total combos: 17 CommSys + RMS co-fires
   CONFIRMED: ALL entities (Person v2.9, Vehicle v3.6 T1-T7, Firearm/Article/Boat v3.5)
   Phase 7-9 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
-    T27-T28 (negatives) all PASS. T26 (DH deselects DL) PENDING CommSys XML.
-  PENDING: T26 deselect XML only. 27/28 tests PASS.
-  All 5 entities CONFIRMED. Provider COMPLETE pending T26.
+    T26 (DH deselects DL), T27-T28 (negatives) all PASS. 28/28 tests PASS.
+  PENDING: none.
+  All 5 entities CONFIRMED. Provider COMPLETE v4.0 2026-06-23.
   Plate-wins guardrail: LIVE-PROVEN HI v3.6 (T6 all-fields decisive + T7 bare plate+VIN decisive).
   vehicleYear any[] fix: LIVE-PROVEN HI v3.6 (T3 M55S + T5 RQV, VehicleYear=2019 in XML).
