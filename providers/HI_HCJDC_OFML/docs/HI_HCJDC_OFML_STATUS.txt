@@ -181,7 +181,7 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-23 Person     DL:DQN-OLN-wins-guardrail PASS     T6 DECISIVE OLN>Name guardrail v3.7: OLN+Name+Sex+DOB all filled. CommSys XML = MessageType=DriverLicenseQuery + OperatorLicenseNumber ONLY. Name/SexCode/BirthDate ABSENT (DQ+QW excluded by OperatorLicenseNumber NOT_EXISTS). Live-confirms identifier-priority guardrail on Person. RMS elasticQuery carries name/sex/dob (RMS own union logic, not CommSys-gated).
+  ---   2026-06-23 Person     DL:DQ                PASS     T8 DQ Name path v3.7 (regression check): Name+Sex+DOB, no OLN. CommSys XML = DriverLicenseQuery + Name=JON FOE + SexCode=F (NIBRS) + BirthDate=01011985 (date handler); NO OperatorLicenseNumber. Confirms guardrail did NOT break the Name path. RMS elasticQuery firstName/lastName/sexAttrId/dateOfBirth.
 
 LIVE TEST RESULTS (v3.4)
 ========================

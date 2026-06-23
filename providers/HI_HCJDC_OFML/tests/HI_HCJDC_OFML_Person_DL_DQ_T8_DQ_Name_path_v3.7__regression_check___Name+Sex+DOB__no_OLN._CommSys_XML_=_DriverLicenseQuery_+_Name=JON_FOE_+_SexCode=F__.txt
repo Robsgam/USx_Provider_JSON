@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQ (T8 DQ Name path v3.7 (regression check): Name+Sex+DOB, no OLN. CommSys XML = DriverLicenseQuery + Name=JON FOE + SexCode=F (NIBRS) + BirthDate=01011985 (date handler); NO OperatorLicenseNumber. Confirms guardrail did NOT break the Name path. RMS elasticQuery firstName/lastName/sexAttrId/dateOfBirth.)
+Date: 2026-06-23 09:26:36
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameFirst=jon, NameLast=foe, SexCode=Female, BirthDate=1985-01-01; OLN blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTAG0WRK8KJA1K54ZZZ7T6Y"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVTAG0WRK8KJA1K54ZZZ7T6Y</Id><SexCode>F</SexCode><BirthDate>01011985</BirthDate><Name>JON FOE</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTAG0WRK8KJA1K54ZZZ7T6Y
+  SexCode                        F
+  BirthDate                      01011985
+  Name                           JON FOE
+
+NOTES
+-----
+
+
+RESULT: PASS
