@@ -3,25 +3,48 @@ FL_FCIC -- Build Notes
 Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
-v6.4  2026-06-23  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v6.4  2026-06-23  FBQ Boat conditions casing fix (verify_build CHECK 13)
+  CHANGED: FBQBoatHullIdNumber and FBQRegistrationNumber conditions[].field changed from
+    @('RelatedHitSearchIndicator') (attribute name, PascalCase) to @('relatedHitSearchIndicator')
+    (form fieldId, camelCase). Casing mismatch made the NOT_EXISTS gate silently inert: when an
+    officer entered Hull ID + Stolen=Y with no State, FBQ fired alongside QB (union over-send).
+    Fix makes the gate live; FBQ now exits the pool when stolen indicator is filled.
+  REASON: Caught by new verify_build.ps1 CHECK 13 (conditions[].field must reference QIF fieldId).
+    Boat entity re-opened for live re-test.
 
-v6.3  2026-06-23  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v6.3  2026-06-23  Label consistency
+  CHANGED: (1) Hull ID Number field hint removed (redundant with label).
+    (2) "OOS" -> "out-of-state" on Boat BQ owner field labels.
+  REASON: Post-v6.0 label consistency pass.
 
-v6.2  2026-06-23  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v6.2  2026-06-23  DH DOB label qualifier
+  CHANGED: DOB field label on DH card -> "DOB (required with Name)". Platform does not render
+    helperText, so the conditional-required qualifier must be in the label itself.
+  REASON: Usability audit -- DH DOB conditional requirement was invisible without helperText.
 
-v6.1  2026-06-23  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v6.1  2026-06-23  Name separator normalization
+  CHANGED: FormatStringRuleHandler separator for DL+DH Name (NameLast+NameFirst) changed to
+    ', ' (comma-space). Wire now emits <Name>Doe, John</Name> per ConnectCIC devdoc. Order was
+    already Last-first (correct since v4.x); only the comma-space separator needed fixing.
+  REASON: ConnectCIC devdoc "LAST, FIRST MIDDLE SUFFIX" format -- comma-space between Last and First.
 
-v6.0  2026-06-23  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v6.0  2026-06-23  Identifier-priority rollout + inert conditions fix + Attention handler
+  CHANGED: (1) Plate>VIN guardrail: LicensePlateNumber NOT_EXISTS added to FRQVehicleIdentificationNumber
+    and RQVehicleIdentificationNumber. When Plate entered, VIN combos exit the union pool.
+    (2) Boat Hull>Reg guardrail: BoatHullIdNumber NOT_EXISTS added to FBQRegistrationNumber
+    (in-state FBQ family only; QB+BQ companion combos are dual-id, exempt).
+    (3) INERT STATE FIX: all conditions[].field @('State') -> @('RegistrationState') in every
+    FRQ/FDQ/FBQ combo (10 places). 'State' was the QIDM attribute name, not the form sourceField --
+    all those gates were silently inert (live-proven HI v3.3). With fix, FRQ/FDQ/FBQ conditions
+    are LIVE routing gates. ROUTING CHANGE -- full re-test of all primary paths required.
+    (4) ATTENTION auto-populate RESTORED: 'Attention' added to DH KQName+KQOperatorLicenseNumber
+    any[]; hidden gate-feeder InpH 'Attention' initialValue=X added to DH card. Uses HI v2.9
+    live-proven pattern (handler emits officer LastName FirstInitial from RMS profile).
+    (5) DL/DH OLN>Name guardrail already correct (no change needed).
+    (6) Labels: required/optional indicators; DH card retitled "Driver History (Out-of-State Only)".
+    (7) Officer guide regenerated (single-page portrait table format).
+  REASON: Identifier-priority rollout (HI done; FL next). Inert conditions hazard resolved.
+    Re-import + full re-test from T1.
 
 v5.5  2026-06-22  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1

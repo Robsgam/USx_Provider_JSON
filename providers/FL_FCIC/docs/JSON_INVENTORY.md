@@ -2,21 +2,11 @@
 
 All JSON versions produced for this provider.
 
-## Root (current)
+## Current
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| FL_FCIC.json | v4.6 | Current | 97P/0F/0W/0LIM. 6 QIDMs, 28 combos. Imported USx FCIC Tenant 2026-05-27. |
-
-## phases/current/
-
-| File | Version | Date | Notes |
-|------|---------|------|-------|
-| FL_FCIC_v4.6_2026-05-27.json | v4.6 | 2026-05-27 | QB routing fix + conditions. |
-| FL_FCIC_v4.5_2026-05-27.json | v4.5 | 2026-05-27 | Removed BQ Name combo. |
-| FL_FCIC_v4.4_2026-05-27.json | v4.4 | 2026-05-27 | Removed VehicleStolenQuery. |
-| FL_FCIC_v4.3_2026-05-21.json | v4.3 | 2026-05-21 | Single JSON merge. |
-| FL_FCIC.json | -- | -- | Unversioned current copy. |
+| FL_FCIC.json | v6.4 | Current | 92P/0F/0W/0LIM. 6 QIDMs, 31 combos. v6.4: FBQ conditions casing fix (Boat re-opened for live test). |
 
 ## Legacy (deleted, in git history)
 
@@ -24,6 +14,8 @@ All JSON versions produced for this provider.
 |---------|-------|
 | v3.1-v4.2 | Pre-merge BASE/MC snapshots. Deleted 2026-06-03. Available in git history. |
 | v1.0-v2.6 | Pre-v3.0 rebuild iterations. Archive folder deleted 2026-06-03. |
+
+## Changelog (auto-appended by sync_version_docs.ps1)
 
 
 
