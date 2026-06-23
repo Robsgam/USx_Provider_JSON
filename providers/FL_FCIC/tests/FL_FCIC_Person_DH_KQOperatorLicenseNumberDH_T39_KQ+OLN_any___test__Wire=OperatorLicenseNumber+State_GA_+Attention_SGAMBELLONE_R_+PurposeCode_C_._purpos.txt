@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQOperatorLicenseNumberDH (T39 KQ+OLN any[] test: Wire=OperatorLicenseNumber+State(GA)+Attention(SGAMBELLONE R)+PurposeCode(C). purposeCodeDH any[] confirmed live. ImageIndicator absent as expected (not in DH any[]).)
+Date: 2026-06-23 14:19:41
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OLN-DH=d7937864, DestState=Georgia(GA), purposeCodeDH=C, Attention=X(hidden gate)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTV4RVDHNVQDEK0177Z0H7K"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVTV4RVDHNVQDEK0177Z0H7K</Id><State>GA</State><Attention>SGAMBELLONE R</Attention><OperatorLicenseNumber>D7937864</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTV4RVDHNVQDEK0177Z0H7K
+  State                          GA
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D7937864
+  PurposeCode                    C
+
+NOTES
+-----
+
+
+RESULT: PASS
