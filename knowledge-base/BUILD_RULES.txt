@@ -1005,6 +1005,19 @@ See also:
   CHECK 12 encodes this: it flags a pure-lower combo only when the higher id is in NEITHER set[]
   NOR any[] (Any-HasToken exemption, 2026-06-23). ***
 
+  *** GATE XOR COMPANION -- never both (TX v3.12 2026-06-23): the two treatments above are
+  MUTUALLY EXCLUSIVE for a given (combo, higher-id) pair. EITHER gate the combo (add the
+  <higher-id> NOT_EXISTS condition AND keep that field out of the combo's set[]/any[]),
+  OR treat it as a companion (leave the field in any[] and add NO condition). Doing BOTH --
+  a NOT_EXISTS condition on a field that also sits in the same combo's any[] -- is dead config:
+  whenever the field has a value the condition blocks the combo, so the any[] entry can NEVER
+  serialize. It is harmless but redundant on the live platform, and it actively BREAKS the test
+  conductor (run_test_matrix Build-MinimalData pulls any[] fields into the minimal test data,
+  which then trips the NOT_EXISTS and the combo falsely fails to fire). TX v3.12
+  QBRegistrationNumber hit this: boatHullIdNumber was in both its any[] and its NOT_EXISTS
+  condition -> conductor FAIL until removed from any[]. When you ADD a guardrail condition,
+  scrub the gated field from that combo's any[]. ***
+
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a
     required destination (FL KQ per FCIC: "destination ... must be something
