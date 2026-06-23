@@ -200,7 +200,7 @@ QB ROUTING LIVE TESTS (2026-05-05, MC instance)
 -------------------------------------------------
   #   Scenario                        Expected KeyRef            Result
   --  ------------------------------  -------------------------  ------
-  48  Hull only                       FBQBoatHullIdNumber        PASS
+  ---   2026-06-23 Boat       Boat:FBQBoatHullIdNumber PASS     T13 Hull>Reg guardrail (DECISIVE): Hull+Reg both filled. FBQBoatHullIdNumber fires (Hull in set[]); FBQRegistrationNumber blocked by BoatHullIdNumber NOT_EXISTS. RegistrationNumber present as any[] companion (LIMITATION #1 union pool -- expected). Hull wins as primary identifier.
   49  Hull + Stolen=Y                 QBBoatHullIdNumber         PASS
   50  Reg only                        FBQRegistrationNumber      PASS
   51  Reg + Stolen=Y                  QBRegistrationNumber       PASS
