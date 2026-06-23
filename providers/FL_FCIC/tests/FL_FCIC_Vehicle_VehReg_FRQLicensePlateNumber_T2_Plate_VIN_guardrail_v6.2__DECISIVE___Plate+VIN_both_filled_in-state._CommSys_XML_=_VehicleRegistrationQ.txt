@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQLicensePlateNumber (T2 Plate>VIN guardrail v6.2 (DECISIVE): Plate+VIN both filled in-state. CommSys XML = VehicleRegistrationQuery + LicensePlateNumber=TEST123 + LicensePlateYear + ImageIndicator only; VehicleIdentificationNumber ABSENT (FRQVehicleIdentificationNumber excluded by LicensePlateNumber NOT_EXISTS). FRQLicensePlateNumber fires. Plate-wins live-confirmed.)
+Date: 2026-06-23 12:38:10
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Plate=test123, PlateType=PC, PlateYear=2026, VIN=1HGCM82633A004352, Image=N; State blank (Plate>VIN stress)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KVTNES73C67P3WJWP75Y5TM6"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+
+
+RESULT: PASS
