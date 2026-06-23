@@ -1,5 +1,13 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.0 (2026-06-23): Name-order fix to the ConnectCIC-preferred "LAST, FIRST MIDDLE SUFFIX".
+#   HI was the lone outlier of 20 providers -- it built Name First-first
+#   (@('NameFirst','NameLast','nameMiddle','nameSuffix'), all-space separators) -> emitted the
+#   malformed "FIRST LAST MIDDLE SUFFIX" (matches NEITHER documented devdoc format). Fixed both
+#   DL and DH Name attrs to @('NameLast','NameFirst',...) + arguments @(', ',' ',' ') so the wire
+#   <Name> is "DOE, JON ..." like every other provider. Authoritative devdoc format ingested to
+#   CLAUDE.md/FIELD_REFERENCE/TESTING_REQUIREMENTS + memory reference-connectcic-name-format.
+#   Re-opens HI Person + DH for live re-test (Vehicle/Firearm/Article/Boat preserved).
 # v3.9 (2026-06-23): identifier-priority guardrail extended to BoatQuery (Hull>Reg). Added
 #   BoatHullIdNumber NOT_EXISTS condition to BQ (RegistrationNumber combo). When the officer
 #   enters a Hull ID (fires QB), the Reg# combo exits the union pool so RegistrationNumber does
@@ -121,7 +129,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.9",
+    [string]$Version = "4.0",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -307,8 +315,8 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(' ',' ',' ') }
-            size        = 30; sourceField = @('NameFirst','NameLast','nameMiddle','nameSuffix'); targetField = 'Name'
+            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
@@ -410,8 +418,8 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(' ',' ',' ') }
-            size        = 30; sourceField = @('NameFirstDH','NameLastDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
+            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size        = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');           targetField = 'PurposeCode' }

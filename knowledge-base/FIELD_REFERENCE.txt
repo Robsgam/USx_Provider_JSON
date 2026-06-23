@@ -551,22 +551,45 @@ SECTION 7 -- NAME FIELD CONFIGURATION
     targetField = 'Name' (or provider's XML element name)
     arguments = [' ', ' ', ' ']  (separators between fields)
 
+  ---- ORDER + FORMAT RULE (AUTHORITATIVE, ConnectCIC devdoc, ingested 2026-06-23) ----
+
+  ConnectCIC parses the single Name field. Preferred format is "LAST, FIRST MIDDLE
+  SUFFIX" (e.g. "Doe, John Thomas Jr."). The reverse "FIRST MIDDLE LAST SUFFIX" is
+  ACCEPTED but NOT recommended ("more difficult to accurately reformat").
+
+  => sourceField order MUST be LAST-first: @('nameLast','nameFirst'[,'nameMiddle','nameSuffix']).
+  => first separator (after Last) is ', ' (comma-space) per the devdoc example.
+
+  RECOMMENDED ALTERNATIVE -- individual component tags: the devdoc warns a non-hyphenated
+  multi-part first/middle/last name "will not be handled properly" in a single concatenated
+  field (ConnectCIC can't unambiguously identify the parts). Sending individual tags for the
+  components avoids this and is the platform's recommended approach. Evaluate per provider at
+  rebuild (needs ConnectCIC component tag names from metadata/devdoc). Portfolio flag.
+
   ---- ARGUMENT COUNT RULE (AP #15) ----
 
   arguments count must equal sourceField count minus 1.
 
     sourceField count   arguments count   Example
     -----------------   ---------------   -------
-    2 (First + Last)    1                 arguments = [' ']
-    4 (First + Last     3                 arguments = [' ', ' ', ' ']
+    2 (Last + First)    1                 arguments = [', ']
+    4 (Last + First     3                 arguments = [', ', ' ', ' ']
        + Middle + Suffix)
 
   ALWAYS check the provider MetaData XML to confirm which Name fields are
   accepted.
 
   Example: NJ_NJCJIS uses 2-field name (provider MetaData only accepts
-           First + Last).
-           NY_NYSPIN uses 4-field name (all four components in NY MetaData).
+           Last + First).
+           NY_NYSPIN uses 4-field name (all four components in NY MetaData),
+           arguments=[', ',' ',' '] -> "LAST, FIRST MIDDLE SUFFIX" (the canonical layout).
+
+  AUDIT 2026-06-23 (all 20 providers): every provider builds Last-first EXCEPT
+  HI_HCJDC_OFML, which built First-first (NameFirst,NameLast,Middle,Suffix) and emitted
+  the malformed "FIRST LAST MIDDLE SUFFIX" (Last/Middle transposed vs even the tolerated
+  format). HI fix queued (-> Last-first + ', '). Cross-check Name order on every build.
+  Separator note: several providers use ',' (no space) for the first separator; the devdoc
+  example uses ', ' (comma-space) -- normalize to comma-space at each provider's rebuild.
 
   Using arguments = [' ', ' ', ' '] with only 2 sourceFields will produce
   wrong output.

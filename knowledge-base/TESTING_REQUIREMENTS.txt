@@ -158,12 +158,14 @@ SECTION 2 -- PRE-BUILD CHECKLIST
 
   NAME FIELD CHECK:
 
-  [ ] Check provider MetaData: does it accept NameMiddle and NameSuffix
-      in Name field?
-      YES -> 4-field name, FormatStringRuleHandler arguments = @(' ',' ',' ')
-      NO  -> 2-field name, FormatStringRuleHandler arguments = @(' ')
-      Mismatch causes malformed Name output.
-      See FIELD_REFERENCE.txt for handler signature details.
+  [ ] Order MUST be LAST-first: sourceField=@('nameLast','nameFirst'[,'nameMiddle','nameSuffix']).
+      ConnectCIC preferred format "LAST, FIRST MIDDLE SUFFIX" (devdoc). First separator = ', '.
+  [ ] Check provider MetaData: does it accept NameMiddle and NameSuffix in Name field?
+      YES -> 4-field name, FormatStringRuleHandler arguments = @(', ',' ',' ')
+      NO  -> 2-field name, FormatStringRuleHandler arguments = @(', ')
+      Wrong ORDER or separator causes malformed Name output (e.g. HI pre-v4.0 "FIRST LAST
+      MIDDLE SUFFIX" -- matched neither documented format). Cross-check against the portfolio.
+      See FIELD_REFERENCE.txt for the authoritative format + the individual-tags recommendation.
 
   BEFORE EACH BUILD:
 
