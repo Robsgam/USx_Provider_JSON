@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBCoastGuardDocumentNumber (T21 QB+CG: Wire=CoastGuardDocumentNumber+ImageIndicator.)
+Date: 2026-06-23 13:25:12
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+CoastGuardDoc=cg53474, Image=N; Hull blank, Reg blank, State blank, Stolen blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTR385M3FABZTRYW3XMX3M5"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KVTR385M3FABZTRYW3XMX3M5</Id><ImageIndicator>N</ImageIndicator><CoastGuardDocumentNumber>CG53474</CoastGuardDocumentNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTR385M3FABZTRYW3XMX3M5
+  ImageIndicator                 N
+  CoastGuardDocumentNumber       CG53474
+
+NOTES
+-----
+
+
+RESULT: PASS
