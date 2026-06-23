@@ -471,6 +471,21 @@ SECTION 5 -- STATE FIELD CONFIGURATION
 
   Confirmed: NY_NYSPIN_EJUSTICE MC 2026-04-24.
 
+  DECISION TREE (new providers -- run before setting initialValue):
+    1. Build with no State initialValue. Run ST-1 (in-state plate) with State blank.
+    2. If in-state combo fires correctly -> home-state routing works without initialValue.
+       Leave State blank. Use card title to guide officers ("blank = <state>").
+       Confirmed SAFE: NJ (State=NJ also safe), NY (must be blank), CA_CLETS (must be blank).
+    3. If OOS combo fires instead -> State is required in set[] for routing.
+       Check: does EVERY combo on that entity have State in set[]?
+         a. YES -> safe to set initialValue=<home state>. Confirmed SAFE: HI, FL (no Vehicle State).
+         b. NO  -> home-state combos lack State in set[]; initialValue silently routes OOS.
+                   DO NOT set initialValue. Use blank + card title hint. See NY-2.
+    4. When State is in set[] of BOTH in-state AND OOS combos with competing conditions
+       (e.g., RegistrationState=FL vs RegistrationState!=FL): DO NOT set initialValue.
+       The default makes the in-state condition always win regardless of officer intent.
+    NOTE: This applies per-entity. Safe for Vehicle may not be safe for Person on same provider.
+
   ---- OOS STATE ----
 
   ONE visible dropdown:

@@ -1,5 +1,5 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-06-14
+Generated: 2026-05-08 | Last updated: 2026-06-23
 
 ## CURRENT TEST / BUILD ORDER (user directive 2026-06-14, SUBJECT TO CHANGE)
 
@@ -21,7 +21,7 @@ before running down a path (do NOT assume; confirm against XML/devdoc/live logs 
 casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
 revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
 
-## FLAGGED: FL_FCIC inert State conditions — field=attr name not sourceField (2026-06-22, apply at next rebuild)
+## RESOLVED v6.0 2026-06-23: FL_FCIC inert State conditions — field=attr name not sourceField
 
 LIVE-PROVEN (HI v3.4 T5, controlled): `conditions[].field` is matched against the FORM
 sourceField/fieldId, NOT the QIDM attribute `name`. A field naming an attribute whose
@@ -45,7 +45,7 @@ show 11W (10 inert + the pre-existing Attention WARN).
 - Do NOT change silently; FL is live-validated. Ref: QIDM_REFERENCE.txt FIELD=SOURCEFIELD;
   memory feedback_conditions_field_sourcefield.
 
-## FLAGGED: Attention auto-populate fix — FL_FCIC + TX_TLETS (2026-06-22, apply at next rebuild)
+## RESOLVED FL v6.0 / PENDING TX: Attention auto-populate fix (2026-06-22)
 
 HI v2.9 RESOLVED Attention auto-populate (live-proven: `<Attention>SGAMBELLONE R</Attention>` from
 the officer's RMS profile). Root cause: this ConnectCic instance serializes ONLY the fired combo's
@@ -401,7 +401,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v4.3 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.5 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v6.4 |  | Single-JSON merged 2026-05-21, 33 combos, Attention visible |
+| FL_FCIC | v6.4 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
 
 ### Flagged for Full Rebuild on Next Test (16)
 
@@ -475,3 +475,24 @@ See BUILD_RULES.txt Section 13 for full checklist.
 - Fix CAD defaults (142 FAILs) on next rebuild of each provider
 - Legacy cleanup per Section 13 checklist on each rebuild
 - Each provider's first test triggers: merge scripts → build → build_report → verify all checks CLEAN
+
+## Medium-Priority Tool Enhancements (post-TX, not blocking)
+
+### 4A — verify_build.ps1: DH-suffix fieldId isolation CHECK
+  Validate all DH card fieldIds end with DH suffix.
+  Cross-check DH QIDM sourceFields only reference DH-suffixed tokens.
+  Prevents DL/DH field bleed without needing a live test to detect it.
+  Track: add after TX_TLETS rebuild (TX is the highest-DH-complexity provider).
+
+### 4B — audit_cad.ps1 CHECK 6 enhancement: defaults[].field name validation
+  Current CHECK 6 validates that combo defaults[] entries exist.
+  Enhancement: verify each defaults[].field matches a QIDM attribute name (not sourceField),
+  and that the field appears in the combo any[]. Catches wrong-field-name defaults silently
+  passing the existing check.
+  Track: add during TX rebuild cycle.
+
+### 4C — lint_build_scripts.ps1: hardcoded value detector
+  Flag string literals in combo set[]/any[] matching year patterns (^\d{4}$), 2-letter
+  state codes, or version strings. $currentYear already enforced for PlateYear; extend
+  to catch accidental hardcodes elsewhere (e.g., hardcoded '2025' in a year field).
+  Track: add during TX rebuild cycle.

@@ -115,6 +115,14 @@ FL-9: Sex reverse-lookup works (single-QIF only)
   Person QIF. Prior "FL doesn't support reverse-lookup" was wrong — actual failure
   was duplicate targetField from entity-split design (FL-1). Confirmed 2026-04-20.
 
+FL-10: DriverHistoryQuery (KQ) is OOS-only by devdoc -- not a platform limitation
+  FCIC confirmed 2026-06-12: "DriverHistoryQuery requires destination <XX> which must
+  be non-FL." FL-in-state DH queries are blocked by design; no in-state KQ combo exists.
+  CAD cannot supply a destination state -> DH never auto-fires from CAD (expected).
+  NOTE: NOT_EQUALS conditions cannot enforce the home-state block programmatically
+  (poisoned-array rule -- LIMITATION #37 -- makes value-comparison conditions inert on
+  this instance). Devdoc authority is the gate; no workaround needed.
+
 ================================================================================
 NY_NYSPIN_EJUSTICE -- New York
 ================================================================================
@@ -172,6 +180,14 @@ HI-4: 6-transaction build from XML metadata
 
 HI-5: NCIC state and SexCode unconfirmed
   Both need first-import testing. Default to standard pattern, verify on import.
+
+HI-6: KQN (DriverHistoryQuery Name combo) fires on OLN alone -- RegistrationState is any[]
+  T26 v4.0 confirmed: KQN fires when only OperatorLicenseNumberDH is entered. RegistrationState
+  is in any[] on KQN (not set[]) -- State is absent from the wire when blank; KQN has no
+  State requirement. This differs from the DL pattern where RegistrationState IS in set[]
+  on OLN combos. Do NOT assume DL and DH have the same set[]/any[] structure for State.
+  Generalizable pattern: DH OLN combos may carry State as optional (any[]) even when DL OLN
+  combos require it (set[]). Verify per-entity; don't copy DL combo set[] verbatim to DH.
 
 ================================================================================
 TX_TLETS -- Texas
