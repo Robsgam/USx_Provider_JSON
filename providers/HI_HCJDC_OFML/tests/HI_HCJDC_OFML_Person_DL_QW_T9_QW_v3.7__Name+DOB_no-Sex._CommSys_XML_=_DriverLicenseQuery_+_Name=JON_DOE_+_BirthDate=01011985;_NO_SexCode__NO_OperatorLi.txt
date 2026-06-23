@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: QW (T9 QW v3.7: Name+DOB no-Sex. CommSys XML = DriverLicenseQuery + Name=JON DOE + BirthDate=01011985; NO SexCode, NO OperatorLicenseNumber. QW fires when Sex blank.)
+Date: 2026-06-23 09:29:14
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameFirst=jon, NameLast=doe, BirthDate=1985-01-01; Sex blank; OLN blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KVTAN721K83KFTVDKNA13D34"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><BirthDate>01011985</BirthDate><Name>JON DOE</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BirthDate                      01011985
+  Name                           JON DOE
+
+NOTES
+-----
+
+
+RESULT: PASS
