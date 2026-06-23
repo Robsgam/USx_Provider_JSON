@@ -1,8 +1,8 @@
 FL_FCIC Build Status
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Current: v6.4 | 92P/0F/0W/0LIM | Updated 2026-06-23
-Current version : v6.4
+Current: v6.5 | 92P/0F/0W/0LIM | Updated 2026-06-23
+Current version : v6.5
 Last updated    : 2026-06-23
 Output file     : FL_FCIC.json
 Build script    : scripts/build_fl_fcic.ps1
@@ -413,32 +413,10 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  (none yet -- v6.4 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.4/)
-  ---   2026-06-23 Vehicle    VehReg:FRQVehicleIdentificationNumber PASS     T7 FRQ+VIN: Wire=VehicleIdentificationNumber+ImageIndicator; no plate.
-  ---   2026-06-23 Vehicle    VehReg:FRQDecalNumber PASS     T8 FRQ+Decal: Wire=DecalNumber(FL643564)+LicensePlateYear+ImageIndicator; no plate, no VIN.
-  ---   2026-06-23 Vehicle    VehReg:FRQTitleLienInformation PASS     T9 FRQ+TitleLien: Wire=TitleLienInformation+ImageIndicator; no plate, no VIN.
-  ---   2026-06-23 Vehicle    VehReg:RQLicensePlateNumber PASS     T10 RQ+Plate+State: Wire=LicensePlateNumber+State(GA)+PlateTypeCode+PlateYear+ImageIndicator; FRQ excluded by RegistrationState NOT_EXISTS.
-  ---   2026-06-23 Vehicle    VehReg:FRQLicensePlateNumber PASS     T6 FRQ+Plate (in-state): Wire=LicensePlateNumber+PlateYear+ImageIndicator; no State, no VIN. FRQLicensePlateNumber fires.
-  ---   2026-06-23 Vehicle    VehReg:RQVehicleIdentificationNumber PASS     T11 RQ+VIN+State: Wire=VehicleIdentificationNumber+State(GA)+ImageIndicator; no plate. All 6 Vehicle combos CONFIRMED.
-  ---   2026-06-23 Person     DL:FDQOperatorLicenseNumber PASS     T24 FDQ+OLN (in-state): Wire=OperatorLicenseNumber+ImageIndicator(Y); no State. DL card. Attention gate-feeder absent from DL wire (DH-only).
-  ---   2026-06-23 Person     DL:DQOperatorLicenseNumber PASS     T25 DQ+OLN+State (OOS DL): Wire=OperatorLicenseNumber+State(GA)+ImageIndicator(Y); FDQ excluded by RegistrationState NOT_EXISTS.
-  ---   2026-06-23 Person     DL:FDQName           PASS     T26 FDQ+Name (in-state DL): Wire=Name(DOE, JON)+BirthDate+SexCode(M)+ImageIndicator(Y); no State, no OLN. Name format LAST, FIRST comma-space confirmed live (devdoc-preferred).
-  ---   2026-06-23 Person     DL:DQName            PASS     T27 DQ+Name+State (OOS DL): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+ImageIndicator(Y); no OLN. FDQ excluded by RegistrationState NOT_EXISTS.
-  ---   2026-06-23 Person     DH:KQOperatorLicenseNumberDH PASS     T40 Deselect: DH fires (DriverHistoryQuery+State+Attention+OLN); no DriverLicenseQuery wire -- deselect [DriverLicenseQuery] confirmed. One-directional: DH suppresses DL when DH active.
-  ---   2026-06-23 Person     DH:KQName            PASS     T29 KQ+Name (DH OOS Name, OLN>Name decisive): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+Attention(SGAMBELLONE R); OLN blank so KQName fires; DH Name format LAST, FIRST comma-space confirmed. Attention live.
-  ---   2026-06-23 Firearm    Gun:QGGunSerialNumber PASS     T30 QG+Serial: Wire=GunSerialNumber(GUN1234)+ImageIndicator(N).
-  ---   2026-06-23 Firearm    Gun:QGNCICNumber     PASS     T31 QG+NCIC: Wire=NCICNumber+ImageIndicator.
-  ---   2026-06-23 Firearm    Gun:QGProcessControlNumber PASS     T32 QG+PCN: Wire=ProcessControlNumber+ImageIndicator. All 3 Firearm combos CONFIRMED.
-  ---   2026-06-23 Article    Article:QAArticleSerialNumber PASS     T33 QA+Serial: Wire=ArticleSerialNumber+ArticleTypeCode(BBICYCL)+ImageIndicator.
-  ---   2026-06-23 Article    Article:QAOwnerAppliedNumber PASS     T34 QA+OAN: Wire=ArticleTypeCode(BBICYCL)+OwnerAppliedNumber+ImageIndicator.
-  ---   2026-06-23 Article    Article:QANCICNumber PASS     T35 QA+NCIC: Wire=NCICNumber+ImageIndicator.
-  ---   2026-06-23 Article    Article:QAProcessControlNumber PASS     T36 QA+PCN: Wire=ProcessControlNumber(3423423)+ImageIndicator(N). All 4 Article combos CONFIRMED.
-  ---   2026-06-23 Vehicle    VehReg:FRQLicensePlateNumber PASS     T37 FRQ+Plate any[] test: Wire=LicensePlateNumber(ABC1234)+LicensePlateYear(2026 default)+VehicleMakeCode(CNST_ADVN)+VehicleYear(2024)+ImageIndicator(N). all VehicleRegistrationQuery any[] confirmed live. LicensePlateTypeCode(PC) absent as expected (not in any[]).
-  ---   2026-06-23 Firearm    Gun:QGGunSerialNumber PASS     T38 QG+Serial any[] test: Wire=GunSerialNumber(GUN3578)+GunMake(AAI)+ImageIndicator(N). GunMake any[] confirmed live.
-  ---   2026-06-23 Person     DH:KQOperatorLicenseNumberDH PASS     T39 KQ+OLN any[] test: Wire=OperatorLicenseNumber+State(GA)+Attention(SGAMBELLONE R)+PurposeCode(C). purposeCodeDH any[] confirmed live. ImageIndicator absent as expected (not in DH any[]).
+  (none yet -- v6.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.5/)
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  (none yet -- v6.4 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.4/)
+  (none yet -- v6.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.5/)

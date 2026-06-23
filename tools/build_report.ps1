@@ -236,8 +236,11 @@ Write-Host ""
 $verifyOut = $outputs[6]
 ($header + "POST-BUILD VERIFICATION`n=======================`n`n" + $verifyOut) | Out-File -FilePath $verifyFile -Encoding utf8
 $verifyFails = ([regex]::Matches($verifyOut, '\[FAIL\]')).Count
+$verifyWarns = ([regex]::Matches($verifyOut, '\[WARN\]')).Count
 if ($verifyFails -gt 0) {
-    Write-Host "  [6/$stepCount] VERIFICATION FAILED ($verifyFails failures) -- see $verifyFile" -ForegroundColor Red
+    Write-Host "  [6/$stepCount] VERIFICATION FAILED ($verifyFails failures, $verifyWarns warnings) -- see $verifyFile" -ForegroundColor Red
+} elseif ($verifyWarns -gt 0) {
+    Write-Host "  [6/$stepCount] VERIFICATION WARNINGS ($verifyWarns) -- see $verifyFile" -ForegroundColor Yellow
 } else {
     Write-Host "  [6/$stepCount] Saved: $verifyFile" -ForegroundColor Green
 }
@@ -369,7 +372,7 @@ Write-Host "================================================================" -F
 Write-Host "  REPORT COMPLETE" -ForegroundColor Green
 Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } else { "CLEAN" })" -ForegroundColor $(if ($lintWarnCount -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
-Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } else { "Green" })
+Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL / $verifyWarns WARN" } elseif ($verifyWarns -gt 0) { "0 FAIL / $verifyWarns WARN" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } elseif ($verifyWarns -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
 Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
 Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray

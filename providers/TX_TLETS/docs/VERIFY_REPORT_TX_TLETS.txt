@@ -1,7 +1,7 @@
 ================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-23 16:49
+  Generated: 2026-06-23 17:57
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -50,13 +50,16 @@ POST-BUILD VERIFICATION
   [PASS] No value-comparison routing conditions (existence-only or none)
 
 --- CHECK 12: Identifier-Priority Guardrail ---
-  [WARN] QIDM 'TX_TLETS_BoatQuery' Reg combo 'BQRegistrationNumber' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
 --- CHECK 13: conditions[].field references a valid QIF sourceField ---
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
 ========================================
- VERIFICATION PASSED (with warnings): 11 PASS / 1 WARN / 0 FAIL
+ VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

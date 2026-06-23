@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-23 12:01
+  Generated: 2026-06-23 18:05
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -43,10 +43,7 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
-  [WARN] QIDM 'HI_HCJDC_OFML_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment before keyRef 'RQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
-  [WARN] QIDM 'HI_HCJDC_OFML_DriverLicenseQuery' has 3 combos but build script has no LIMITATION #21/#36 comment before keyRef 'DQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
-  [WARN] QIDM 'HI_HCJDC_OFML_DriverHistoryQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'KQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
-  [WARN] QIDM 'HI_HCJDC_OFML_BoatQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'BQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (30) (RMS-generic allowed)
@@ -57,8 +54,14 @@ POST-BUILD VERIFICATION
 --- CHECK 12: Identifier-Priority Guardrail ---
   [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
 ========================================
- VERIFICATION PASSED (with warnings): 10 PASS / 4 WARN / 0 FAIL
+ VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

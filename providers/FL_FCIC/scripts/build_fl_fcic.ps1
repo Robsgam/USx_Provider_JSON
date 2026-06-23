@@ -1,6 +1,15 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.5 (2026-06-23): Gap-audit remediation. (1) CAD Attention-default gap -- KQName and
+#   KQOperatorLicenseNumber (DH) carry 'Attention' in any[] (auto-populate handler) but had NO
+#   defaults[] entry, so CAD-dispatched DH queries dropped the officer's Attention value. Added
+#   Attention=X combo default to both (audit_cad CHECK 6). (2) CAD plate-default gap -- FRQDecalNumber
+#   (set: decal+plateYear) and RQLicensePlateNumber (set: plate+type+year+state) require PlateYear/
+#   PlateType in set[] but CAD ignores form initialValue; added LicensePlateYear=$currentYear and
+#   RQ LicensePlateTypeCode=PC defaults (surfaced by audit_cad CHECK 6 set[]-scan fix). (3) Header
+#   conditions comment corrected: conditions[].field is the QIF sourceField, NOT the attribute name.
+#   Re-import + full re-test (Person + Vehicle re-open). Part of the TX/FL/HI portfolio gap audit.
 # v6.3 (2026-06-23): Label consistency pass: Hull ID Number hint removed (matches HI); boat owner
 #   OOS abbreviation expanded to "out-of-state" throughout.
 # v6.2 (2026-06-23): DH DOB label shortened "Date of Birth (DH) - required with Name" -> "DOB
@@ -78,13 +87,14 @@
 #                experiment: T-A proved value guards inert even on literal "FL", so the
 #                FormInput bought nothing (POISONED-ARRAY RULE). The not-FL destination
 #                rule is officer-facing only (card labels) -- LIMITATION + escalation.
-#   Conditions:  NESTED inside requirements, field = @(AttributeName), value = @(...)
+#   Conditions:  NESTED inside requirements, field = @(QIF sourceField / form fieldId -- NOT the
+#                attribute name; a wrong/attr-name token is SILENTLY INERT, verify_build CHECK 13)
 #                (CA_CLETS/NY live-proven wire format). v4.7's combo-level camelCase
 #                scalar conditions were SILENTLY IGNORED by the platform (live XML
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.4"
+    [string]$Version = "6.5"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -141,7 +151,9 @@ $vehRegQuery = [PSCustomObject]@{
                 set        = @('decalNumber','LicensePlateYear')
                 any        = @('ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                # LicensePlateYear is in set[] with a form initialValue; CAD ignores initialValue,
+                # so it needs a combo default or CAD-dispatched FRQ-by-decal can't fire (CHECK 6).
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
             }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FRQDecalNumber'
@@ -192,7 +204,9 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState')
                 any      = @('ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                # PlateType/PlateYear are in set[] with form initialValues; CAD ignores initialValue,
+                # so combo defaults are required for CAD-dispatched RQ-by-plate to fire (CHECK 6).
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQLicensePlateNumber'
@@ -368,6 +382,9 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH')
                 any        = @('purposeCodeDH','Attention')
+                # Attention auto-populates via the handler; the hidden gate-feeder carries
+                # initialValue='X', so CAD dispatch needs a matching combo default (audit_cad CHECK 6).
+                defaults   = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 # Existence-only array (working class). NEVER add a value comparison
                 # here -- it would poison the array and kill this NOT_EXISTS (T-B).
                 # v5.1: references the unique DH attr name (not the shared 'OperatorLicenseNumber')
@@ -384,6 +401,7 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumberDH','RegistrationStateDH')
                 any        = @('purposeCodeDH','Attention')
+                defaults   = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 conditions = $null
             }
             primaryFieldReference = 'OperatorLicenseNumberDH'

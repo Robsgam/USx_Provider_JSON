@@ -1,5 +1,13 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.4 (2026-06-23): Gap-audit remediation. (1) Boat Hull>Reg guardrail -- added BoatHullIdNumber
+#   NOT_EXISTS (PascalCase sourceField) to the QB Reg combo so Hull+Reg co-entry doesn't bleed
+#   RegistrationNumber into the Hull XML (verify_build CHECK 12, now FAIL-level). (2) VehReg
+#   synthetic-keyRef doc added for CHECK 9 (RQN). Part of the TX/FL/HI/NJ portfolio gap audit
+#   (tooling hardened: CHECK 12->FAIL, CHECK 14 gate-xor-companion, conductor exact-match,
+#   audit_cad set[]-scan + case-fix, verify_build + audit_cad wired into enforce). Re-opens Boat;
+#   re-import to USx test + Newark Foundation required.
+# =====================================================================
 # CANONICAL MAINLINE BUILD. Produces providers/NJ_NJCJIS/NJ_NJCJIS.json.
 # Design (promoted to mainline 2026-06-17, v4.0):
 #   1. VehicleStolenQuery (QV) NOT built -- USER-APPROVED SKIP of the 3 metadata
@@ -24,7 +32,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.3"
+    [string]$Version = "4.4"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -60,6 +68,9 @@ $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
 # 1d. VehicleRegistrationQuery
 #     autoSelect=true, NO queriesToDeselect.
 #     Defaulted fields in any[] per LIMITATION #31.
+#     PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+#     Metadata uses keyRef 'RQ' for both combos; synthetic label 'RQN' (VIN path) invented
+#     for platform routing only -- NOT a real NJCJIS transaction code. See PLATFORM_CONSTRAINTS.txt.
 #     2 combos: RQ (plate), RQN (VIN). RandomRequest is user-controlled (any[],
 #     form default N) and routed server-side by its value -- it does NOT need
 #     separate combos. The earlier synthetic RQ_RAND/RQN_RAND combos used
@@ -286,6 +297,10 @@ $boatQuery = [PSCustomObject]@{
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
                 )
+                # Hull>Reg guardrail: Hull ID (HIN) is the unique permanent identifier; Reg# is
+                # reassignable. When a Hull is entered this Reg combo exits the union pool so Reg#
+                # doesn't bleed into the Hull XML (LIMITATION #1). conditions[].field = sourceField.
+                conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QB'

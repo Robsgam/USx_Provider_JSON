@@ -1,7 +1,7 @@
 ================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-23 16:49
+  Generated: 2026-06-23 17:57
 ================================================================
 QUERY SIMULATION
 ================
@@ -164,21 +164,9 @@ QUERY SIMULATION
 
 --- QIDM: TX_TLETS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 6  |  Combos: 5
+    [SKIP] BQRegistrationNumber -- conditions failed: boatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
-    [FIRES first-match] BQRegistrationNumber
-      set: [registrationNumber, registrationState]
-      any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-        <State>FL</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] BQBoatHullIdNumber
+    [FIRES first-match] BQBoatHullIdNumber
       set: [boatHullIdNumber, registrationState]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -216,8 +204,8 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-    >> PLATFORM FIRES: BQRegistrationNumber (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, NCICNumber=B123456789, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y, State=FL
+    >> PLATFORM FIRES: BQBoatHullIdNumber (first matching combo)
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, NCICNumber=B123456789, RelatedHitSearchIndicator=Y, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-23 15:35
+  Generated: 2026-06-23 18:02
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -57,8 +57,11 @@ POST-BUILD VERIFICATION
 --- CHECK 13: conditions[].field references a valid QIF sourceField ---
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
 ========================================
- VERIFICATION PASSED: 12 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

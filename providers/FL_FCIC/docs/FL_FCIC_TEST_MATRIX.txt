@@ -1,4 +1,4 @@
-FL_FCIC MC v6.4 -- TEST MATRIX
+FL_FCIC MC v6.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-23
 Variant: MC (multi-card per entity)
@@ -96,87 +96,87 @@ PHASE 2: VEHICLE COMBOS (6 tests, 6 combos)
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
  6  Vehicle     FRQ+Plate          LicensePlateNumber=TEST123       [Inp 10]
-              Expected: VehicleRegistrationQuery fires (FRQ)
+              Expected: VehicleRegistrationQuery fires (FRQLicensePlateNumber)
  7  Vehicle     FRQ+VIN            VehicleIdentificationNumber=1HGCM8263... [Inp 10]
-              Expected: VehicleRegistrationQuery fires (FRQ)
+              Expected: VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
  8  Vehicle     FRQ+Decal          decalNumber=FL12345678, LicensePlateY... [Inp 10]
-              Expected: VehicleRegistrationQuery fires (FRQ)
+              Expected: VehicleRegistrationQuery fires (FRQDecalNumber)
  9  Vehicle     FRQ+TitleLien      titleLienInformation=ABCD1234    [Inp 10]
-              Expected: VehicleRegistrationQuery fires (FRQ)
+              Expected: VehicleRegistrationQuery fires (FRQTitleLienInformation)
 10  Vehicle     RQ+Plate+State     LicensePlateNumber=TEST123, LicensePl... [Inp 10]
-              Expected: VehicleRegistrationQuery fires (RQ)
+              Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber)
 11  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [Inp 10]
-              Expected: VehicleRegistrationQuery fires (RQ)
+              Expected: VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
 
 PHASE 3: BOAT COMBOS (12 tests, 12 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
 12  Boat        FBQ+Hull           BoatHullIdNumber=FL1234AB56H7    [Inp 10]
-              Expected: BoatQuery fires (FBQ)
+              Expected: BoatQuery fires (FBQBoatHullIdNumber)
 13  Boat        FBQ+Reg            RegistrationNumber=FL1234AB      [Inp 10]
-              Expected: BoatQuery fires (FBQ)
+              Expected: BoatQuery fires (FBQRegistrationNumber)
 14  Boat        FBQ+Decal          decalNumber=FL12345678           [Inp 10]
-              Expected: BoatQuery fires (FBQ)
+              Expected: BoatQuery fires (FBQDecalNumber)
 15  Boat        FBQ+TitleLien      titleLienInformation=ABCD1234    [Inp 10]
-              Expected: BoatQuery fires (FBQ)
+              Expected: BoatQuery fires (FBQTitleLienInformation)
 16  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [Inp 10]
-              Expected: BoatQuery fires (BQ)
+              Expected: BoatQuery fires (BQBoatHullIdNumber)
 17  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [Inp 10]
-              Expected: BoatQuery fires (BQ)
+              Expected: BoatQuery fires (BQRegistrationNumber)
 18  Boat        BQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [Inp 10]
-              Expected: BoatQuery fires (BQ)
+              Expected: BoatQuery fires (BQName)
 19  Boat        QB+Hull+Stolen     BoatHullIdNumber=FL1234AB56H7, relate... [Inp 10]
-              Expected: BoatQuery fires (QB)
+              Expected: BoatQuery fires (QBBoatHullIdNumber)
 20  Boat        QB+Reg+Stolen      RegistrationNumber=FL1234AB, relatedH... [Inp 10]
-              Expected: BoatQuery fires (QB)
+              Expected: BoatQuery fires (QBRegistrationNumber)
 21  Boat        QB+CG              coastGuardDocumentNumber=CG123456 [Inp 10]
-              Expected: BoatQuery fires (QB)
+              Expected: BoatQuery fires (QBCoastGuardDocumentNumber)
 22  Boat        QB+NCIC            NCICNumber=X123456789            [Inp 10]
-              Expected: BoatQuery fires (QB)
+              Expected: BoatQuery fires (QBNCICNumber)
 23  Boat        QB+PCN             processControlNumber=0000012345  [Inp 10]
-              Expected: BoatQuery fires (QB)
+              Expected: BoatQuery fires (QBProcessControlNumber)
 
 PHASE 4: PERSON COMBOS (6 tests, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
 24  Person      FDQ+OLN            OperatorLicenseNumber=D999888777 [Inp 10]
-              Expected: DriverLicenseQuery fires (FDQ)
+              Expected: DriverLicenseQuery fires (FDQOperatorLicenseNumber)
 25  Person      DQ+OLN+State       OperatorLicenseNumber=D999888777, Reg... [Inp 10]
-              Expected: DriverLicenseQuery fires (DQ)
+              Expected: DriverLicenseQuery fires (DQOperatorLicenseNumber)
 26  Person      FDQ+Name           BirthDate=01/15/1990, NameLast=DOE, N... [Inp 10]
-              Expected: DriverLicenseQuery fires (FDQ)
+              Expected: DriverLicenseQuery fires (FDQName)
 27  Person      DQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [Inp 10]
-              Expected: DriverLicenseQuery fires (DQ)
+              Expected: DriverLicenseQuery fires (DQName)
 28  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [Inp 10]
-              Expected: DriverHistoryQuery fires (KQ)
+              Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber)
 29  Person      KQ+Name            BirthDateDH=01/15/1990, NameLastDH=DO... [Inp 10]
-              Expected: DriverHistoryQuery fires (KQ)
+              Expected: DriverHistoryQuery fires (KQName)
 
 PHASE 5: FIREARM COMBOS (3 tests, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
 30  Firearm     QG+Serial          GunSerialNumber=GUN12345         [Inp 10]
-              Expected: GunQuery fires (QG)
+              Expected: GunQuery fires (QGGunSerialNumber)
 31  Firearm     QG+NCIC            NCICNumber=X123456789            [Inp 10]
-              Expected: GunQuery fires (QG)
+              Expected: GunQuery fires (QGNCICNumber)
 32  Firearm     QG+PCN             processControlNumber=0000012345  [Inp 10]
-              Expected: GunQuery fires (QG)
+              Expected: GunQuery fires (QGProcessControlNumber)
 
 PHASE 6: ARTICLE COMBOS (4 tests, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
 33  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [Inp 10]
-              Expected: ArticleSingleQuery fires (QA)
+              Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
 34  Article     QA+OAN             ArticleTypeCode=BBICYCL, ownerApplied... [Inp 10]
-              Expected: ArticleSingleQuery fires (QA)
+              Expected: ArticleSingleQuery fires (QAOwnerAppliedNumber)
 35  Article     QA+NCIC            NCICNumber=X123456789            [Inp 10]
-              Expected: ArticleSingleQuery fires (QA)
+              Expected: ArticleSingleQuery fires (QANCICNumber)
 36  Article     QA+PCN             processControlNumber=0000012345  [Inp 10]
-              Expected: ArticleSingleQuery fires (QA)
+              Expected: ArticleSingleQuery fires (QAProcessControlNumber)
 
 PHASE 7: ANY[] FIELD TESTS (3 tests)
 ------------------------------------------------------------------------

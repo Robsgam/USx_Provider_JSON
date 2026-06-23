@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-22 19:36
+  Generated: 2026-06-23 18:08
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -41,7 +41,7 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
-  [WARN] QIDM 'NJ_NJCJIS_VehicleRegistrationQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'RQ' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [PASS] All 3 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (20) (RMS-generic allowed)
@@ -50,10 +50,16 @@ POST-BUILD VERIFICATION
   [PASS] No value-comparison routing conditions (existence-only or none)
 
 --- CHECK 12: Identifier-Priority Guardrail ---
-  [PASS] Identifier-priority guardrail satisfied on 2 identifier pair(s)
+  [PASS] Identifier-priority guardrail satisfied on 3 identifier pair(s)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 ========================================
- VERIFICATION PASSED (with warnings): 10 PASS / 1 WARN / 0 FAIL
+ VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

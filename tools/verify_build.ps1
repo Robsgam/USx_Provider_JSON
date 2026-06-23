@@ -483,8 +483,19 @@ if (-not (Test-Path $scriptPath)) {
         $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.combinations.Count -gt 1
     })
 
+    # A file-level "keyRef INVENTORY (LIMITATION #21)" comment block that NAMES each QIDM is
+    # equivalent documentation to a per-QIDM comment (and arguably better -- one place, complete).
+    # Accept it: a QIDM passes if its query name appears in a comment line and the inventory
+    # header exists. (HI/NJ use this style; FL uses per-QIDM. Both are valid.)
+    $hasInventory = @($scriptLines | Where-Object { $_ -match 'INVENTORY' -and $_ -match 'LIMITATION #(21|36)' }).Count -gt 0
+
     $missingDocs = 0
     foreach ($cfg in $multiComboQIDMs) {
+        # File-level inventory path: QIDM's query name documented in a comment line.
+        if ($hasInventory) {
+            $namedInComment = @($scriptLines | Where-Object { $_ -match '^\s*#' -and $_ -match [regex]::Escape($cfg.query) }).Count -gt 0
+            if ($namedInComment) { continue }
+        }
         $firstKeyRef    = $cfg.combinations[0].keyReference
         $keyRefLineIdx  = -1
         for ($i = 0; $i -lt $scriptLines.Count; $i++) {
@@ -503,7 +514,7 @@ if (-not (Test-Path $scriptPath)) {
         $window      = $scriptLines[$searchStart..($keyRefLineIdx - 1)]
         $hasDoc      = $window | Where-Object { $_ -match 'LIMITATION #21|LIMITATION #36' }
         if (-not $hasDoc) {
-            Fail "QIDM '$($cfg.name)' has $($cfg.combinations.Count) combos but build script has no LIMITATION #21/#36 comment before keyRef '$firstKeyRef' -- add synthetic keyRef block (BUILD_RULES Section 15)"
+            Fail "QIDM '$($cfg.name)' has $($cfg.combinations.Count) combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming '$($cfg.query)') -- add synthetic keyRef doc (BUILD_RULES Section 15)"
             $missingDocs++
         }
     }
@@ -660,7 +671,7 @@ if ($providerBundle) {
                 # pure VIN combo = set has VIN, and Plate is neither in set[] nor any[] (any[] = intentional dual-id combo, exempt)
                 if ((Set-HasToken $c $rxVin) -and -not (Set-HasToken $c $rxPlate) -and -not (Any-HasToken $c $rxPlate)) {
                     if (-not (Has-NotExistsOn $c $rxPlate)) {
-                        Warn "QIDM '$($cfg.name)' VIN combo '$($c.keyReference)' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)"
+                        Fail "QIDM '$($cfg.name)' VIN combo '$($c.keyReference)' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)"
                         $guardViolations++
                     }
                 }
@@ -676,7 +687,7 @@ if ($providerBundle) {
                 # pure Name combo = set has Name, and OLN is neither in set[] nor any[] (any[] = intentional dual-id combo, exempt)
                 if ((Set-HasToken $c $rxName) -and -not (Set-HasToken $c $rxOln) -and -not (Any-HasToken $c $rxOln)) {
                     if (-not (Has-NotExistsOn $c $rxOln)) {
-                        Warn "QIDM '$($cfg.name)' Name combo '$($c.keyReference)' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)"
+                        Fail "QIDM '$($cfg.name)' Name combo '$($c.keyReference)' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)"
                         $guardViolations++
                     }
                 }
@@ -693,7 +704,7 @@ if ($providerBundle) {
                 # (Hull in any[] = intentional Hull+Reg companion combo, e.g. FL Boat QB/BQ -- exempt)
                 if ((Set-HasToken $c $rxReg) -and -not (Set-HasToken $c $rxHull) -and -not (Any-HasToken $c $rxHull)) {
                     if (-not (Has-NotExistsOn $c $rxHull)) {
-                        Warn "QIDM '$($cfg.name)' Reg combo '$($c.keyReference)' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)"
+                        Fail "QIDM '$($cfg.name)' Reg combo '$($c.keyReference)' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)"
                         $guardViolations++
                     }
                 }

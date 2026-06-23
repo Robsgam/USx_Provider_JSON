@@ -1,6 +1,6 @@
-NJ_NJCJIS MC v4.3 -- TEST MATRIX
+NJ_NJCJIS MC v4.4 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-22
+Generated: 2026-06-23
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -52,14 +52,14 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     Render form. Verify 3 cards:                        [    ]
+ 1  Vehicle     Render form. Verify 3 cards:                        [Inp 10]
               CARD_VEH_OPT: titled "Search Options".
               State (default NJ - change for out-of-state) dropdown=NJ, Random Request (N = full record; Y = random) dropdown=N, Image (optional) dropdown=N.
               CARD_VEH_PLATE: titled "PLATE SEARCH".
               Plate Number (required), Plate Type (optional) dropdown=PC, Plate Year (optional)=2026.
               CARD_VEH_VIN: titled "VIN SEARCH".
               VIN (required).
- 2  Person      Render form. Verify 3 cards:                        [    ]
+ 2  Person      Render form. Verify 3 cards:                        [Inp 10]
               CARD_PER_OPT: titled "Search Options".
               State (default NJ - change for out-of-state) dropdown=NJ, Image (optional) dropdown=Y.
               CARD_PER_OLN: titled "LICENSE NUMBER".
@@ -67,14 +67,14 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_PER_NAME: titled "NAME SEARCH".
               First Name, Last Name.
               Date of Birth (required with Name), Sex (optional) dropdown (no default).
- 3  Boat        Render form. Verify 1 card:                        [    ]
+ 3  Boat        Render form. Verify 1 card:                        [Inp 10]
               CARD_BOA: titled "BOAT SEARCH".
               Registration Number (or use Hull ID), Hull ID Number (or use Registration Number), Image (optional) dropdown=N.
- 4  Firearm     Render form. Verify 1 card:                        [    ]
+ 4  Firearm     Render form. Verify 1 card:                        [Inp 10]
               CARD_GUN: titled "NCIC FIREARM QUERY".
               Serial Number (required), Make (optional) dropdown (no default).
               Caliber (optional) dropdown (no default), Model (optional), Image (optional) dropdown=N.
- 5  Article     Render form. Verify 1 card:                        [    ]
+ 5  Article     Render form. Verify 1 card:                        [Inp 10]
               CARD_ART: titled "NCIC ARTICLE QUERY".
               Serial Number (required), Article Type (required) dropdown (no default), Image (optional) dropdown=N.
 
@@ -82,60 +82,60 @@ PHASE 2: VEHICLE COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Vehicle     RQ+N               VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ)
- 7  Vehicle     RQ+Plate           LicensePlateNumber=TEST123       [    ]
+ 6  Vehicle     RQ+N               VehicleIdentificationNumber=1HGCM8263... [Inp 10]
+              Expected: VehicleRegistrationQuery fires (RQN)
+ 7  Vehicle     RQ+Plate           LicensePlateNumber=TEST123       [Inp 10]
               Expected: VehicleRegistrationQuery fires (RQ)
 
 PHASE 3: PERSON COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 8  Person      DQ+N               OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DQ)
- 9  Person      DQ+BirthDate       BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+ 8  Person      DQ+N               OperatorLicenseNumber=D999888777 [Inp 10]
+              Expected: DriverLicenseQuery fires (DQN)
+ 9  Person      DQ+BirthDate       BirthDate=01/15/1990, NameLast=DOE, N... [Inp 10]
               Expected: DriverLicenseQuery fires (DQ)
 
 PHASE 4: BOAT COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-10  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (QB)
-11  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+10  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [Inp 10]
+              Expected: BoatQuery fires (QBN)
+11  Boat        QB+Reg             RegistrationNumber=FL1234AB      [Inp 10]
               Expected: BoatQuery fires (QB)
 
 PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-12  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+12  Firearm     QG+Serial          GunSerialNumber=GUN12345         [Inp 10]
               Expected: GunQuery fires (QG)
 
 PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-13  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+13  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [Inp 10]
               Expected: ArticleSingleQuery fires (QA)
 
 PHASE 7: ANY[] FIELD TESTS (3 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-14  Person      DQ+BirthDate       + SexCode, RegistrationState    [    ]
+14  Person      DQ+BirthDate       + SexCode, RegistrationState    [Inp 10]
               Expected: any[] fields present in XML output.
-15  Vehicle     RQ+Plate           + RandomRequest, RegistrationState, LicensePlateTypeCode [    ]
+15  Vehicle     RQ+Plate           + RandomRequest, RegistrationState, LicensePlateTypeCode [Inp 10]
               Expected: any[] fields present in XML output.
-16  Firearm     QG+Serial          + GunCaliber, GunMake, GunModel [    ]
+16  Firearm     QG+Serial          + GunCaliber, GunMake, GunModel [Inp 10]
               Expected: any[] fields present in XML output.
 
 PHASE 8: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-17  Vehicle     Empty form, verify no Send button / no request.    [    ]
-18  Boat        Empty form, verify no Send button / no request.    [    ]
+17  Vehicle     Empty form, verify no Send button / no request.    [Inp 10]
+18  Boat        Empty form, verify no Send button / no request.    [Inp 10]
 
 ================================================================================
 TOTAL: 18 tests

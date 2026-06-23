@@ -53,7 +53,23 @@ function Test-RepoPath($p) {
     $full = Join-Path $repoRoot ($p -replace '/', '\')
     if (Test-Path -LiteralPath $full) { return $true }
     $ext = "\\?\" + $full
-    return ([System.IO.File]::Exists($ext) -or [System.IO.Directory]::Exists($ext))
+    if ([System.IO.File]::Exists($ext) -or [System.IO.Directory]::Exists($ext)) { return $true }
+    # ARCHIVE FALLBACK (documented intent, Check A/C): a rebuild's reset_test_package moves
+    # tests/<file>.txt -> tests/_archive_pre_v<ver>/<file>.txt. A KB citation to the original
+    # tests/ path is still backed by that committed archived evidence. Resolve it by basename
+    # under any _archive_pre_v*/ sibling so KB provenance survives every provider rebuild.
+    if ($p -match '(?i)(providers[\\/][^\\/]+[\\/]tests)[\\/](.+\.txt)$') {
+        $testsDir = Join-Path $repoRoot ($Matches[1] -replace '/', '\')
+        $baseName = Split-Path ($Matches[2] -replace '/', '\') -Leaf
+        if (Test-Path -LiteralPath $testsDir) {
+            foreach ($arc in (Get-ChildItem -LiteralPath $testsDir -Directory -Filter '_archive_pre_v*' -ErrorAction SilentlyContinue)) {
+                $cand = Join-Path $arc.FullName $baseName
+                if (Test-Path -LiteralPath $cand) { return $true }
+                if ([System.IO.File]::Exists("\\?\" + $cand)) { return $true }
+            }
+        }
+    }
+    return $false
 }
 
 Out-Color "============================================================" "Cyan"

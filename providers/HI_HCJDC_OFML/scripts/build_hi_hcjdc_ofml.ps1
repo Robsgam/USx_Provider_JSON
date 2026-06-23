@@ -1,5 +1,14 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.1 (2026-06-23): Gap-audit remediation. (1) CAD Attention-default gap -- KQ/KQN carry
+#   'Attention' in any[] (auto-populate handler) but had no defaults[] entry; added Attention=X
+#   to both (audit_cad CHECK 6). (2) CAD vehicleTypeCode gap -- M55L/M55S require vehicleTypeCode
+#   in set[] (initialValue='1') but had no combo default, so CAD-dispatched in-state HI vehicle
+#   queries fired without the required VehicleTypeCode; added VehicleTypeCode=1 default to both
+#   (surfaced by audit_cad CHECK 6 set[]-scan fix). (3) Removed stale "NCIC pattern unconfirmed"
+#   note (NCIC state live-confirmed across v2.x-v3.x). Re-opens Vehicle + DH. Part of the
+#   TX/FL/HI portfolio gap audit (tooling hardened: CHECK 12->FAIL, CHECK 14, conductor exact-match,
+#   audit_cad set[]-scan + case-fix, verify_build + audit_cad wired into enforce).
 # v4.0 (2026-06-23): Name-order fix to the ConnectCIC-preferred "LAST, FIRST MIDDLE SUFFIX".
 #   HI was the lone outlier of 20 providers -- it built Name First-first
 #   (@('NameFirst','NameLast','nameMiddle','nameSuffix'), all-space separators) -> emitted the
@@ -118,7 +127,7 @@
 #   Single visible Sel 'RegistrationState' (attributeTypeId=STATE, initialValue=HI)
 #   CommSys State attr: sourceField=RegistrationState, codeTypeProvider=NCIC
 #   RMS: useAttributeId=true + AttributeArrayWrapperRuleHandler (KB standard)
-#   Note: NCIC pattern unconfirmed for HI -- test ST-1 on first import.
+#   Note: NCIC state pattern live-confirmed for HI (v2.x Person, v3.6 Vehicle).
 #
 # SEX HANDLING (NIBRS reverse-lookup):
 #   Form: Sel 'SexCode' attributeTypeId=SEX + codeTypeProvider=NIBRS
@@ -129,7 +138,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "4.0",
+    [string]$Version = "4.1",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -246,7 +255,7 @@ $vehRegQuery = [PSCustomObject]@{
         # OOS plate query (RQ), M55L exits the union pool so VehicleTypeCode does NOT bleed
         # into RQ's XML (live T4 finding: extra fields unknown risk on production CommSys).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
@@ -263,7 +272,7 @@ $vehRegQuery = [PSCustomObject]@{
         #      VIN) would both satisfy; without this condition VIN bleeds into the plate XML.
         #      With both conditions: M55S fires ONLY for bare VIN (no State, no Plate). (v3.6)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
@@ -433,14 +442,14 @@ $dhQuery = [PSCustomObject]@{
         # Name/Sex/DOB do not bleed onto the DriverHistoryQuery wire. Mirrors the v3.7 DL-side
         # guardrail (DQ/QW). conditions[].field = sourceField (DH-suffix, PascalCase).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ'
             state                 = 'In/Out'
         }
         # KQN: OLN path -- 1 set[]. DH-suffix. State+PurposeCode optional.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQN'
             state                 = 'In/Out'

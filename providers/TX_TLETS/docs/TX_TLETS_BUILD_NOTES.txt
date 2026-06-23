@@ -4,6 +4,23 @@ Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 --------------------------------------------------------------------------------
+v3.13  2026-06-23  Gap-audit remediation (Hull>Reg completion + CAD plate defaults)
+  CHANGED:
+    1. Hull>Reg guardrail COMPLETED -- added boatHullIdNumber NOT_EXISTS to BQRegistrationNumber.
+       v3.12 only gated the in-state QBRegistrationNumber; the OOS Nlets BQRegistrationNumber was
+       missed, so Hull+Reg+State co-entry still bled RegistrationNumber into the Hull XML. Found by
+       verify_build CHECK 12 once it was promoted to FAIL (was a silent WARN).
+    2. CAD plate-default gap -- REGLicensePlateNumber (set: plate+year+FRT) and RQLicensePlateNumber
+       (set: plate+year+type) require licensePlateYear / licensePlateTypeCode in set[], but CAD
+       ignores form initialValue, so CAD-dispatched REG/RQ plate queries could not fire. Added
+       LicensePlateYear=$currentYear and (RQ) LicensePlateTypeCode=PC combo defaults. Surfaced by
+       audit_cad CHECK 6 after it was fixed to scan set[] (not just any[]).
+  CONTEXT: part of the portfolio gap-audit (TX/FL/HI). Tooling hardened in the same pass:
+    verify_build CHECK 14 (gate-xor-companion), CHECK 12 -> FAIL, run_test_matrix exact-match,
+    audit_cad case-fix + set[] scan, and verify_build + audit_cad wired into enforce as blocking gates.
+  RESULT: 83P/0F/0W/0LIM; verify_build CLEAN (14 checks); audit_cad 76P/0F; conductor 37/37.
+    Re-import + full re-test from T1 (test package reset).
+
 v3.12  2026-06-23  Identifier-priority rollout + Attention resolved
   CHANGED:
     1. Identifier-priority guardrail applied for all 3 pairs (NOT_EXISTS conditions,

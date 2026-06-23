@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-22 19:36
+  Generated: 2026-06-23 18:08
 ================================================================
 QUERY SIMULATION
 ================
@@ -100,19 +100,9 @@ QUERY SIMULATION
 
 --- QIDM: NJ_NJCJIS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 3  |  Combos: 2
+    [SKIP] QB -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
-    [FIRES first-match] QB
-      set: [RegistrationNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] QBN
+    [FIRES first-match] QBN
       set: [BoatHullIdNumber]
       any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
@@ -123,8 +113,8 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-    >> PLATFORM FIRES: QB (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, RegistrationNumber=FL1234AB
+    >> PLATFORM FIRES: QBN (first matching combo)
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

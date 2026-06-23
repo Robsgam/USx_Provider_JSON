@@ -2,7 +2,7 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-23
-JSON version: v6.4
+JSON version: v6.5
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v4.8 IMPORTED to USx Tenant 2026-06-12. T1-priority NOT_EXISTS check
 PASSED: full DL card -> XML contained ONLY OLN+ImageIndicator (FDQ+OLN CONFIRMED;
@@ -37,32 +37,32 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: Plate, PlateType(PC), PlateYear(current year), VehicleYear, VIN, Make,
           Decal, TitleLien, RegistrationState(no default), ImageIndicator(N)
 
-  FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
+  FRQ+Decal -- FL DHSMV (Decal Number) [PENDING]
     keyReference: FRQDecalNumber
     set: [DecalNumber, LicensePlateYear]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
+  FRQ+Plate -- FL DHSMV Registration (Plate) [PENDING]
     keyReference: FRQLicensePlateNumber
     set: [LicensePlateNumber]   any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+TitleLien -- FL DHSMV (Title/Lien) [CONFIRMED]
+  FRQ+TitleLien -- FL DHSMV (Title/Lien) [PENDING]
     keyReference: FRQTitleLienInformation
     set: [TitleLienInformation]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
+  FRQ+VIN -- FL DHSMV Registration (VIN) [PENDING]
     keyReference: FRQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber]   any: [VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  RQ+Plate -- Nlets OOS Registration (Plate) [CONFIRMED]
+  RQ+Plate -- Nlets OOS Registration (Plate) [PENDING]
     keyReference: RQLicensePlateNumber
     set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
     any: [ImageIndicator]
 
-  RQ+VIN -- Nlets OOS Registration (VIN) [CONFIRMED]
+  RQ+VIN -- Nlets OOS Registration (VIN) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber, RegistrationState]
     any: [VehicleMakeCode, VehicleYear, ImageIndicator]
@@ -85,22 +85,22 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: OLN, Last, First, Middle, Suffix, DOB, Sex,
           RegistrationState(no default), ImageIndicator(Y)
 
-  FDQ+Name -- FL DHSMV Driver License (Name) [CONFIRMED]
+  FDQ+Name -- FL DHSMV Driver License (Name) [PENDING]
     keyReference: FDQName
     set: [BirthDate, NameLast, NameFirst, SexCode]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS, operatorLicenseNumber NOT_EXISTS
 
-  FDQ+OLN -- FL DHSMV Driver License (OLN) [CONFIRMED]
+  FDQ+OLN -- FL DHSMV Driver License (OLN) [PENDING]
     keyReference: FDQOperatorLicenseNumber
     set: [OperatorLicenseNumber]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  DQ+Name -- Nlets Driver License (Name, In/Out) [CONFIRMED]
+  DQ+Name -- Nlets Driver License (Name, In/Out) [PENDING]
     keyReference: DQName
     set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]   any: [ImageIndicator]
     conditions: operatorLicenseNumber NOT_EXISTS
 
-  DQ+OLN -- Nlets Driver License (OLN, In/Out) [CONFIRMED]
+  DQ+OLN -- Nlets Driver License (OLN, In/Out) [PENDING]
     keyReference: DQOperatorLicenseNumber
     set: [OperatorLicenseNumber, RegistrationState]   any: [ImageIndicator]
 
@@ -132,13 +132,13 @@ combo-level camelCase scalar style was inert on the platform.)
   out of state and would require the destination to be something other than FL."
   Devdoc: State is the only Mandatory field; both combos (Out).
 
-  KQ+Name -- Nlets OOS Driver History (Name) [CONFIRMED]
+  KQ+Name -- Nlets OOS Driver History (Name) [PENDING]
     keyReference: KQName
     set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH]
     any: [PurposeCodeDH, AttentionDH]
     conditions: registrationStateDH NOT_EQUALS FL, operatorLicenseNumberDH NOT_EXISTS
 
-  KQ+OLN -- Nlets OOS Driver History (OLN) [CONFIRMED]
+  KQ+OLN -- Nlets OOS Driver History (OLN) [PENDING]
     keyReference: KQOperatorLicenseNumber
     set: [OperatorLicenseNumberDH, RegistrationStateDH]
     any: [PurposeCodeDH, AttentionDH]
@@ -160,9 +160,9 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: SerialNumber, GunMake (FormSelect NCIC_FIREARM_MAKE/NCIC), NCICNumber,
           PCN, ImageIndicator(N)
 
-  QG+Serial [CONFIRMED]  keyReference: QGGunSerialNumber  set: [GunSerialNumber]  any: [GunMake, ImageIndicator]
-  QG+NCIC   [CONFIRMED]  keyReference: QGNCICNumber       set: [NCICNumber]       any: [GunMake, ImageIndicator]
-  QG+PCN    [CONFIRMED]  keyReference: QGProcessControlNumber  set: [ProcessControlNumber]  any: [GunMake, ImageIndicator]
+  QG+Serial [PENDING]  keyReference: QGGunSerialNumber  set: [GunSerialNumber]  any: [GunMake, ImageIndicator]
+  QG+NCIC   [PENDING]  keyReference: QGNCICNumber       set: [NCICNumber]       any: [GunMake, ImageIndicator]
+  QG+PCN    [PENDING]  keyReference: QGProcessControlNumber  set: [ProcessControlNumber]  any: [GunMake, ImageIndicator]
 
 ================================================================================
 6. ArticleSingleQuery -- Article Entity
@@ -173,10 +173,10 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: SerialNumber, ArticleTypeCode (CA_CLETS source), OwnerAppliedNumber,
           NCICNumber, PCN, ImageIndicator(N)
 
-  QA+Serial [CONFIRMED]  keyReference: QAArticleSerialNumber  set: [ArticleSerialNumber, ArticleTypeCode]  any: [ImageIndicator]
-  QA+Owner  [CONFIRMED]  keyReference: QAOwnerAppliedNumber   set: [ArticleTypeCode, OwnerAppliedNumber]   any: [ImageIndicator]  (T34, tested as "QA+OAN" 2026-06-15)
-  QA+NCIC   [CONFIRMED]  keyReference: QANCICNumber           set: [NCICNumber]                            any: [ImageIndicator]
-  QA+PCN    [CONFIRMED]  keyReference: QAProcessControlNumber set: [ProcessControlNumber]                  any: [ImageIndicator]
+  QA+Serial [PENDING]  keyReference: QAArticleSerialNumber  set: [ArticleSerialNumber, ArticleTypeCode]  any: [ImageIndicator]
+  QA+Owner  [PENDING]  keyReference: QAOwnerAppliedNumber   set: [ArticleTypeCode, OwnerAppliedNumber]   any: [ImageIndicator]  (T34, tested as "QA+OAN" 2026-06-15)
+  QA+NCIC   [PENDING]  keyReference: QANCICNumber           set: [NCICNumber]                            any: [ImageIndicator]
+  QA+PCN    [PENDING]  keyReference: QAProcessControlNumber set: [ProcessControlNumber]                  any: [ImageIndicator]
 
 ================================================================================
 7. BoatQuery -- Boat Entity
