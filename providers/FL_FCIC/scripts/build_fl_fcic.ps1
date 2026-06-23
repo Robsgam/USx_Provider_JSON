@@ -1,6 +1,9 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.1 (2026-06-23): Name separator normalized to comma-space ", " (was ","), so the wire
+#   <Name> reads "Doe, John" per the ConnectCIC devdoc example (order was already Last-first).
+#   Cosmetic alignment; ConnectCIC parses on the comma. All 3 Name attrs (DL/DH/Boat).
 # v6.0 (2026-06-23): identifier-priority guardrail rollout + flagged fixes + new labels + guide:
 #   - Vehicle Plate>VIN guardrail: LicensePlateNumber NOT_EXISTS added to FRQVehicleIdentificationNumber
 #     + RQVehicleIdentificationNumber (VIN combos exit pool when a plate is also entered).
@@ -60,7 +63,7 @@
 #
 # FL-SPECIFIC PATTERNS:
 #   Date format: yyyyMMdd (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','yyyyMMdd'])
-#   Name format: FormatStringRuleHandler arguments=[','] (Last,First -- no space)
+#   Name format: FormatStringRuleHandler arguments=[', '] -> "Last, First" (devdoc comma-space)
 #   Attention:   Auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (no visible field; BUILD_RULES Sec 14)
 #   DH-suffix:   OperatorLicenseNumberDH, NameLastDH, etc. (isolates DH from DL fields)
 #   State:       No initialValue anywhere (LIMITATION #30 -- in-state vs OOS routing;
@@ -76,7 +79,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.0"
+    [string]$Version = "6.1"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -241,7 +244,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('ImageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'; size = 80; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
@@ -337,7 +340,7 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             name = 'Name'; size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
         }
         # v5.1: attribute NAME made unique (OperatorLicenseNumberDH) so the KQName NOT_EXISTS
         # gate resolves to THIS field, not the DL QIDM's OperatorLicenseNumber. Conditions/
@@ -525,7 +528,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('ImageIndicator');            targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'; size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',') }
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
         }
         [PSCustomObject]@{ name = 'NCICNumber';                size = 10; sourceField = @('NCICNumber');                targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
