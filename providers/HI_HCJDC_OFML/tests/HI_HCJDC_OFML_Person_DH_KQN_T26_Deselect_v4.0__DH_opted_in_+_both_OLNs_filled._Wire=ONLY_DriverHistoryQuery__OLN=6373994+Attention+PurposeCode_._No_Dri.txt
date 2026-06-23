@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQN (T26 Deselect v4.0: DH opted in + both OLNs filled. Wire=ONLY DriverHistoryQuery (OLN=6373994+Attention+PurposeCode). No DriverLicenseQuery fired. One-directional deselect CONFIRMED. Secondary finding: RegistrationState absent from wire when blank (KQN fires on OLN alone -- State in any[] not set[]; SQVR set[] note needs correction).)
+Date: 2026-06-23 15:06:47
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+DL OLN=dl648947 filled; DH OLN=6373994, purposeCodeDH=C; RegistrationState=blank. DH opt-in enabled (deselects DL).
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source/><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTXXYZ8DVHQQ61N0KPGNB76"><LawEnforcementTransaction version="1.0"><Session><Id/><Authentication><UserName>MK43RS</UserName><ORI>CA1234567</ORI><Mnemonic>CA1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVTXXYZ8DVHQQ61N0KPGNB76</Id><Attention>SGAMBELLONE R</Attention><OperatorLicenseNumber>6373994</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KVTXXYZ8DVHQQ61N0KPGNB76
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          6373994
+  PurposeCode                    C
+
+NOTES
+-----
+
+
+RESULT: PASS
