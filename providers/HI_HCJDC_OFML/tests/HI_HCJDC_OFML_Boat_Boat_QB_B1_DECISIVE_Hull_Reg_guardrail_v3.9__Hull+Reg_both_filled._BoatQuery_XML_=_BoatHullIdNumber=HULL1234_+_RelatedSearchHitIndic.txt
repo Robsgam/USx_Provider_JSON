@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Boat BoatQuery
+Combo: QB (B1 DECISIVE Hull>Reg guardrail v3.9: Hull+Reg both filled. BoatQuery XML = BoatHullIdNumber=HULL1234 + RelatedSearchHitIndicator=Y only; RegistrationNumber ABSENT (BQ excluded by BoatHullIdNumber NOT_EXISTS). Hull wins, live-confirmed. Bare-Hull (B3) also fired QB identically. Canned NCIC response ignored per user.)
+Date: 2026-06-23 11:06:49
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Hull=hull1234 + Reg=reg36756 both filled (Hull>Reg guardrail stress)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KVTG5JEJESDN625ADYZ27T4M"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><BoatHullIdNumber>HULL1234</BoatHullIdNumber><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BoatHullIdNumber               HULL1234
+  RelatedSearchHitIndicator      Y
+
+NOTES
+-----
+
+
+RESULT: PASS
