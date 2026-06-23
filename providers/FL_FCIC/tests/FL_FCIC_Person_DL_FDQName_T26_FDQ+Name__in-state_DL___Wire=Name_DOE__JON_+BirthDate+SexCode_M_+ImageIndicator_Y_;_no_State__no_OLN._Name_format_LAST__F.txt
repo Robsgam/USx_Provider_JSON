@@ -1,0 +1,37 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQName (T26 FDQ+Name (in-state DL): Wire=Name(DOE, JON)+BirthDate+SexCode(M)+ImageIndicator(Y); no State, no OLN. Name format LAST, FIRST comma-space confirmed live (devdoc-preferred).)
+Date: 2026-06-23 13:29:23
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Last=doe, First=jon, DOB=1985-01-01, Sex=Male, Image=Y; OLN blank, State blank. Attention=X (hidden DH gate-feeder, absent from DL wire)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTR90CANYW32G9HADYN5F45"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVTR90CANYW32G9HADYN5F45</Id><ImageIndicator>Y</ImageIndicator><SexCode>M</SexCode><BirthDate>19850101</BirthDate><Name>DOE, JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTR90CANYW32G9HADYN5F45
+  ImageIndicator                 Y
+  SexCode                        M
+  BirthDate                      19850101
+  Name                           DOE, JON
+
+NOTES
+-----
+
+
+RESULT: PASS
