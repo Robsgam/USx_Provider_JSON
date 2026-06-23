@@ -1,0 +1,29 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQN (T-DL DQN+guardrail v3.8: OLN+Name+Sex+DOB all filled on DL card. CommSys XML = DriverLicenseQuery + OperatorLicenseNumber=D78763832 ONLY; Name/SexCode/BirthDate ABSENT (DQ+QW excluded). DL guardrail intact on v3.8 (re-confirm of v3.7 T6).)
+Date: 2026-06-23 09:50:17
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OLN=d78763832 + NameFirst=jon, NameLast=doe, SexCode=Male, BirthDate=1985-01-01 (DL guardrail stress)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KVTBEECGYKS9V4YX76BNSGKD"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><OperatorLicenseNumber>D78763832</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  OperatorLicenseNumber          D78763832
+
+NOTES
+-----
+
+
+RESULT: PASS
