@@ -433,7 +433,7 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-23 Person     DL:DQOperatorLicenseNumber PASS     T25 DQ+OLN+State (OOS DL): Wire=OperatorLicenseNumber+State(GA)+ImageIndicator(Y); FDQ excluded by RegistrationState NOT_EXISTS.
   ---   2026-06-23 Person     DL:FDQName           PASS     T26 FDQ+Name (in-state DL): Wire=Name(DOE, JON)+BirthDate+SexCode(M)+ImageIndicator(Y); no State, no OLN. Name format LAST, FIRST comma-space confirmed live (devdoc-preferred).
   ---   2026-06-23 Person     DL:DQName            PASS     T27 DQ+Name+State (OOS DL): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+ImageIndicator(Y); no OLN. FDQ excluded by RegistrationState NOT_EXISTS.
-  ---   2026-06-23 Person     DH:KQOperatorLicenseNumberDH PASS     T28 KQ+OLN (DH OOS): Wire=OperatorLicenseNumber(D99887777)+State(GA)+Attention(SGAMBELLONE R); Attention auto-populate LIVE (handler confirmed). No Name/DOB/Sex (OLN only).
+  ---   2026-06-23 Person     DH:KQOperatorLicenseNumberDH PASS     T40 Deselect: DH fires (DriverHistoryQuery+State+Attention+OLN); no DriverLicenseQuery wire -- deselect [DriverLicenseQuery] confirmed. One-directional: DH suppresses DL when DH active.
   ---   2026-06-23 Person     DH:KQName            PASS     T29 KQ+Name (DH OOS Name, OLN>Name decisive): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+Attention(SGAMBELLONE R); OLN blank so KQName fires; DH Name format LAST, FIRST comma-space confirmed. Attention live.
   ---   2026-06-23 Firearm    Gun:QGGunSerialNumber PASS     T30 QG+Serial: Wire=GunSerialNumber(GUN1234)+ImageIndicator(N).
   ---   2026-06-23 Firearm    Gun:QGNCICNumber     PASS     T31 QG+NCIC: Wire=NCICNumber+ImageIndicator.
