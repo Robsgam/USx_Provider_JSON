@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQLicensePlateNumber (T37 FRQ+Plate any[] test: Wire=LicensePlateNumber(ABC1234)+LicensePlateYear(2026 default)+VehicleMakeCode(CNST_ADVN)+VehicleYear(2024)+ImageIndicator(N). all VehicleRegistrationQuery any[] confirmed live. LicensePlateTypeCode(PC) absent as expected (not in any[]).)
+Date: 2026-06-23 14:19:36
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Plate=abc1234, Make=ADVANCE MACHINE CO.(CNST_ADVN), Year=2024, State blank, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTV3K6NEHY06HYCMR4157P3"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVTV3K6NEHY06HYCMR4157P3</Id><VehicleMakeCode>CNST_ADVN</VehicleMakeCode><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><VehicleYear>2024</VehicleYear><LicensePlateNumber>ABC1234</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTV3K6NEHY06HYCMR4157P3
+  VehicleMakeCode                CNST_ADVN
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  VehicleYear                    2024
+  LicensePlateNumber             ABC1234
+
+NOTES
+-----
+
+
+RESULT: PASS
