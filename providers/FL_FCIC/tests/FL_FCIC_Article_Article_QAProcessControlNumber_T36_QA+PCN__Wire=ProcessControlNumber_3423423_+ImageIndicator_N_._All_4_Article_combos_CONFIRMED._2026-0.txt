@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAProcessControlNumber (T36 QA+PCN: Wire=ProcessControlNumber(3423423)+ImageIndicator(N). All 4 Article combos CONFIRMED.)
+Date: 2026-06-23 14:19:33
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PCN=3423423, Image=N; Serial blank, ArticleType blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTV2PJQR6BRNH0Z4A5GFVKH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KVTV2PJQR6BRNH0Z4A5GFVKH</Id><ImageIndicator>N</ImageIndicator><ProcessControlNumber>3423423</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTV2PJQR6BRNH0Z4A5GFVKH
+  ImageIndicator                 N
+  ProcessControlNumber           3423423
+
+NOTES
+-----
+
+
+RESULT: PASS
