@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 11:32
 ================================================================
 CAD AUDIT
 =========
@@ -43,7 +43,7 @@ CAD AUDIT
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (MC PascalCase)
     [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
-    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] attention: in QIF as 'Attention' (MC PascalCase)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -165,8 +165,8 @@ CAD AUDIT
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo FDQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_DriverLicenseQuery' combo DQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQOperatorLicenseNumber -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQName -- missing default for Attention (form default='X')
+    [FAIL] QIDM 'FL_FCIC_DriverHistoryQuery' combo KQOperatorLicenseNumber -- missing default for Attention (form default='X')
     [PASS] QIDM 'FL_FCIC_GunQuery' combo QGGunSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_GunQuery' combo QGNCICNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_GunQuery' combo QGProcessControlNumber -- defaults cover all initialValue any[] fields
@@ -193,6 +193,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 82 PASS / 0 FAIL / 0 WARN / 79 INFO
+Total: 81 PASS / 2 FAIL / 0 WARN / 78 INFO
 
 

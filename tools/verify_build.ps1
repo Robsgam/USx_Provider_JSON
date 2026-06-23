@@ -608,6 +608,15 @@ function Set-HasToken($combo, [string]$rx) {
     foreach ($f in @($combo.requirements.set)) { if ([string]$f -match $rx) { return $true } }
     return $false
 }
+# does combo any[] contain a token matching $rx? A lower-priority combo that lists the
+# HIGHER-priority identifier in its OWN any[] is an INTENTIONAL dual-identifier combo
+# (officer may supply both; e.g. FL Boat QB/BQ Hull+Reg companions) -- it is NOT a pure
+# single-identifier combo, so the guardrail does not apply and we must not flag it.
+function Any-HasToken($combo, [string]$rx) {
+    if (-not ($combo.requirements -and $combo.requirements.any)) { return $false }
+    foreach ($f in @($combo.requirements.any)) { if ([string]$f -match $rx) { return $true } }
+    return $false
+}
 # does combo have a NOT_EXISTS condition whose field[] includes a token matching $rx?
 function Has-NotExistsOn($combo, [string]$rx) {
     $conds = @()
@@ -647,8 +656,8 @@ if ($providerBundle) {
         if ($hasPlate -and $hasVin) {
             $guardPairs++
             foreach ($c in $combos) {
-                # pure VIN combo = set has VIN but not Plate
-                if ((Set-HasToken $c $rxVin) -and -not (Set-HasToken $c $rxPlate)) {
+                # pure VIN combo = set has VIN, and Plate is neither in set[] nor any[] (any[] = intentional dual-id combo, exempt)
+                if ((Set-HasToken $c $rxVin) -and -not (Set-HasToken $c $rxPlate) -and -not (Any-HasToken $c $rxPlate)) {
                     if (-not (Has-NotExistsOn $c $rxPlate)) {
                         Warn "QIDM '$($cfg.name)' VIN combo '$($c.keyReference)' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)"
                         $guardViolations++
@@ -663,8 +672,8 @@ if ($providerBundle) {
         if ($hasOln -and $hasName) {
             $guardPairs++
             foreach ($c in $combos) {
-                # pure Name combo = set has Name but not OLN
-                if ((Set-HasToken $c $rxName) -and -not (Set-HasToken $c $rxOln)) {
+                # pure Name combo = set has Name, and OLN is neither in set[] nor any[] (any[] = intentional dual-id combo, exempt)
+                if ((Set-HasToken $c $rxName) -and -not (Set-HasToken $c $rxOln) -and -not (Any-HasToken $c $rxOln)) {
                     if (-not (Has-NotExistsOn $c $rxOln)) {
                         Warn "QIDM '$($cfg.name)' Name combo '$($c.keyReference)' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)"
                         $guardViolations++
@@ -679,8 +688,9 @@ if ($providerBundle) {
         if ($hasHull -and $hasReg) {
             $guardPairs++
             foreach ($c in $combos) {
-                # pure Reg combo = set has RegistrationNumber but not Hull
-                if ((Set-HasToken $c $rxReg) -and -not (Set-HasToken $c $rxHull)) {
+                # pure Reg combo = set has RegistrationNumber, and Hull is neither in set[] nor any[]
+                # (Hull in any[] = intentional Hull+Reg companion combo, e.g. FL Boat QB/BQ -- exempt)
+                if ((Set-HasToken $c $rxReg) -and -not (Set-HasToken $c $rxHull) -and -not (Any-HasToken $c $rxHull)) {
                     if (-not (Has-NotExistsOn $c $rxHull)) {
                         Warn "QIDM '$($cfg.name)' Reg combo '$($c.keyReference)' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)"
                         $guardViolations++

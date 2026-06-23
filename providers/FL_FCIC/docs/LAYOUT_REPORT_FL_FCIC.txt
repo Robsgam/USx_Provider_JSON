@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 11:32
 ================================================================
 LAYOUT SUMMARY
 ==============
 
 === FL_FCIC.json ===
 QIFs: 5
-  Person | entity=Person | qidm= | cards=2 fields=9
+  Person | entity=Person | qidm= | cards=2 fields=10
   Vehicle | entity=Vehicle | qidm= | cards=2 fields=6
   Firearm | entity=Firearm | qidm= | cards=1 fields=3
   Article | entity=Article | qidm= | cards=1 fields=4
@@ -52,6 +52,8 @@ LAYOUT DETAIL
         NameFirstDH (Text | maxLen=30)
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_DH_ATTN [12]
+        Attention (Text | maxLen=30 | default=X)
 
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=

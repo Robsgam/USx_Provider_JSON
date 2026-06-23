@@ -1,5 +1,19 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
+#
+# v6.0 (2026-06-23): identifier-priority guardrail rollout + flagged fixes + new labels + guide:
+#   - Vehicle Plate>VIN guardrail: LicensePlateNumber NOT_EXISTS added to FRQVehicleIdentificationNumber
+#     + RQVehicleIdentificationNumber (VIN combos exit pool when a plate is also entered).
+#   - Boat Hull>Reg guardrail (FBQ in-state family only, per design call): BoatHullIdNumber NOT_EXISTS
+#     added to FBQRegistrationNumber + Hull removed from its any[]. QB/BQ families keep Hull+Reg as
+#     intentional companions (NCIC/Nlets) -- NOT guarded.
+#   - INERT STATE FIX: all conditions[].field changed @('State') -> @('RegistrationState') (the form
+#     sourceField). These existence gates were attr-name-keyed and SILENTLY INERT; now LIVE, they
+#     isolate in-state (FRQ/FDQ/FBQ) from OOS (RQ/DQ) combos. CHANGES ROUTING -> full re-test.
+#   - ATTENTION auto-populate (HI v2.9 pattern): 'Attention' added to DH KQName/KQOLN any[] + hidden
+#     gate-feeder field (initialValue='X') on the DH card. Reverses the prior "INERT" note.
+#   - DL/DH OLN>Name guardrails already correct (FDQName/DQName/KQName carry OLN NOT_EXISTS).
+#   - New labeling convention (suggest_field_labels: required/required-for/optional) + officer guide.
 # Layout:
 #   Vehicle: 2 cards (OPTIONS: State+Image, SEARCH: compacted rows)
 #   Person:  2 cards (DL + DH, compacted rows)
@@ -62,7 +76,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "5.5"
+    [string]$Version = "6.0"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -118,7 +132,7 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('decalNumber','LicensePlateYear')
                 any        = @('ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'DecalNumber'
@@ -129,7 +143,7 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('LicensePlateNumber')
                 any        = @('LicensePlateYear','VehicleMakeCode','vehicleYear','ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @(
                     [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }
                     [PSCustomObject]@{ field = 'ImageIndicator';   value = 'N' }
@@ -143,7 +157,7 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('titleLienInformation')
                 any        = @('ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'TitleLienInformation'
@@ -154,7 +168,12 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('VehicleIdentificationNumber')
                 any        = @('VehicleMakeCode','vehicleYear','ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                # v6.0: RegistrationState NOT_EXISTS (was @('State') -- inert, attr-name not sourceField; now live, isolates in-state FRQ from OOS RQ)
+                #       + LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail -- VIN combo exits pool when officer also enters a plate)
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
+                )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -175,6 +194,8 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('VehicleIdentificationNumber','RegistrationState')
                 any      = @('VehicleMakeCode','vehicleYear','ImageIndicator')
+                # v6.0: LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail -- OOS VIN combo exits pool when a plate is also entered)
+                conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -232,7 +253,7 @@ $dlQuery = [PSCustomObject]@{
                 set        = @('BirthDate','NameLast','NameFirst','SexCode')
                 any        = @('ImageIndicator')
                 conditions = @(
-                    [PSCustomObject]@{ field = @('State');                 operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');                 operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
@@ -245,7 +266,7 @@ $dlQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumber')
                 any        = @('ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -299,7 +320,8 @@ $dlQuery = [PSCustomObject]@{
 # Name/DOB/Sex out of the pool on OLN searches.
 # CAD dispatch cannot supply a destination state, so DH will not auto-fire from CAD (correct).
 # DH-suffix fields isolate from DL field pool (AP #14)
-# Attention: auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler, NOT in combo requirements
+# Attention: auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler. v6.0: now IN the DH
+# combos' any[] + hidden gate-feeder field (HI v2.9 live-proven) so the handler emits the officer name.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'KQ' for both combos; synthetic labels KQName and KQOperatorLicenseNumber
 # differentiate routing. NOT real FCIC transaction codes. See PLATFORM_CONSTRAINTS.txt.
@@ -337,7 +359,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH')
-                any        = @('purposeCodeDH')
+                any        = @('purposeCodeDH','Attention')
                 # Existence-only array (working class). NEVER add a value comparison
                 # here -- it would poison the array and kill this NOT_EXISTS (T-B).
                 # v5.1: references the unique DH attr name (not the shared 'OperatorLicenseNumber')
@@ -353,7 +375,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumberDH','RegistrationStateDH')
-                any        = @('purposeCodeDH')
+                any        = @('purposeCodeDH','Attention')
                 conditions = $null
             }
             primaryFieldReference = 'OperatorLicenseNumberDH'
@@ -522,7 +544,7 @@ $boatQuery = [PSCustomObject]@{
                 set        = @('BoatHullIdNumber')
                 any        = @('decalNumber','RegistrationNumber','titleLienInformation','ImageIndicator')
                 conditions = @(
-                    [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');                     operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
@@ -535,7 +557,7 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('decalNumber')
                 any        = @('BoatHullIdNumber','RegistrationNumber','titleLienInformation','ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'DecalNumber'
@@ -545,10 +567,15 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('RegistrationNumber')
-                any        = @('BoatHullIdNumber','decalNumber','titleLienInformation','ImageIndicator')
+                # v6.0: Hull removed from any[] -- the Hull>Reg guardrail below makes this combo
+                # fire ONLY when Hull is absent, so Hull can never coexist here (would self-contradict).
+                any        = @('decalNumber','titleLienInformation','ImageIndicator')
                 conditions = @(
-                    [PSCustomObject]@{ field = @('State');                     operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator');  operator = 'NOT_EXISTS' }
+                    # Hull>Reg identifier-priority guardrail (FBQ in-state family). Hull ID is the
+                    # unique permanent identifier; when present, this Reg combo exits and FBQ Hull wins.
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber');           operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
@@ -560,7 +587,7 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('titleLienInformation')
                 any        = @('BoatHullIdNumber','decalNumber','RegistrationNumber','ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('State'); operator = 'NOT_EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'TitleLienInformation'
@@ -670,7 +697,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
             )}
         )
     }
@@ -679,14 +706,14 @@ $vehLayout = MakeLayouts @(
         title = 'Vehicle Search'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN/Decal)' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'DecalNumber_Input';                  node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
@@ -712,9 +739,9 @@ $perLayout = MakeLayouts @(
         title = 'Driver License'
         rows  = @(
             @{ id = 'ROW_DL1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_DL1' }
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_DL1' }
-                @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
+                @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
             )}
             @{ id = 'ROW_DL2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
@@ -722,8 +749,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_DL2' }
             )}
             @{ id = 'ROW_DL3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_DL3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL3' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '10' 'ROW_DL3' }
             )}
         )
@@ -733,18 +760,25 @@ $perLayout = MakeLayouts @(
         title = 'Driver History (Out-of-State Only)'
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_DH1' }
                 @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'Destination State (not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
-                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
+                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code (optional)' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)' 'ROW_DH2' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_DH2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
-            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
-            # (automated-Attention standard, BUILD_RULES Sec 14) -- no visible field.
+            # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
+            # attribute (CommsysGetLastNameFirstNameInitialRuleHandler, sourceField=['Attention'])
+            # is dropped from serialization unless (a) Attention is in the fired combo's any[]
+            # (added to KQName/KQOLN above) AND (b) its sourceField resolves to a value. This
+            # hidden field supplies that value so the handler runs and emits the officer's profile
+            # name (e.g. "SGAMBELLONE R"). Reverses FL's prior "INERT/known-limitation" note.
+            @{ id = 'ROW_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_DH_ATTN' @{ initialValue = 'X' } }
+            )}
         )
     }
 )
@@ -764,13 +798,13 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (or use NCIC#/PCN)' '11' 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';         node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -791,10 +825,10 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE QUERY'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('4','2','4','2'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-                @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_2' }
@@ -822,8 +856,8 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_O1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'Destination State (blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_O1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search (Y for NCIC stolen-boat check)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
             )}
         )
     }
@@ -832,8 +866,8 @@ $boaLayout = MakeLayouts @(
         title = 'Boat Search'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number (preferred; wins over Registration #)' '62' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '8' 'ROW_BOA_1' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('3','3','3','3'); fields = @(

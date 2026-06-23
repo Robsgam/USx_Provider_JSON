@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 11:32
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -38,6 +38,7 @@ POST-BUILD VERIFICATION
   [INFO] Not a BASE/MC variant -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
+  [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
   [INFO] QIDM 'FL_FCIC_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
@@ -46,13 +47,16 @@ POST-BUILD VERIFICATION
   [WARN] QIDM 'FL_FCIC_BoatQuery' has 12 combos but build script has no LIMITATION #21/#36 comment before keyRef 'FBQBoatHullIdNumber' -- add synthetic keyRef block (BUILD_RULES Section 15)
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (33) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (34) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
 
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
+
 ========================================
- VERIFICATION PASSED (with warnings): 9 PASS / 2 WARN / 0 FAIL
+ VERIFICATION PASSED (with warnings): 10 PASS / 2 WARN / 0 FAIL
 ========================================
 
 

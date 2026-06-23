@@ -996,6 +996,15 @@ See also:
   Hull/Reg (Boat). At every build, scan ALL QIDMs for co-satisfiable identifier combos -- do not
   assume only the three named pairs exist for a given provider. ***
 
+  *** INTENTIONAL DUAL-IDENTIFIER COMBOS ARE EXEMPT: if a lower-priority combo lists the
+  higher-priority identifier in its OWN any[] (so the officer may supply BOTH and the combo
+  deliberately accepts both), it is NOT a pure single-identifier combo and the guardrail does
+  NOT apply -- co-sending both is the intended behavior, not a bleed. Example: FL_FCIC Boat QB
+  (NCIC stolen) and BQ (Nlets OOS) carry both Hull and Reg as companions, so only the in-state
+  FBQ family (separate single-identifier primaries) gets the Hull>Reg guardrail. verify_build
+  CHECK 12 encodes this: it flags a pure-lower combo only when the higher id is in NEITHER set[]
+  NOR any[] (Any-HasToken exemption, 2026-06-23). ***
+
   OOS-ONLY QUERY FAMILY (destination state) (FL KQ + NY DALHOUT/DALLOUT pattern):
     When the provider/state switch documents a query as out-of-state only with a
     required destination (FL KQ per FCIC: "destination ... must be something

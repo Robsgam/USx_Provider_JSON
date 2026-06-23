@@ -1,6 +1,6 @@
-FL_FCIC MC v5.5 -- TEST MATRIX
+FL_FCIC MC v6.0 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-22
+Generated: 2026-06-23
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -14,7 +14,7 @@ Vehicle (2 cards, 10 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
 
-Person (2 cards, 16 fields):
+Person (2 cards, 17 fields):
   CARD_DL (Driver License):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30]
@@ -22,6 +22,7 @@ Person (2 cards, 16 fields):
   CARD_DH (Driver History (Out-of-State Only)):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 3: Attention [Inp X, 30]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM QUERY):
@@ -60,33 +61,34 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     Render form. Verify 2 cards:                        [    ]
               CARD_VEH_OPT: titled "Search Options".
-              State (leave blank for FL) dropdown (no default), Image dropdown=N.
+              State (leave blank for FL) dropdown (no default), Image (optional) dropdown=N.
               CARD_VEH_SEARCH: titled "Vehicle Search".
-              Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              VIN, Vehicle Make dropdown (no default), Vehicle Year.
+              Plate Number (or search by VIN/Decal), Plate Type (out-of-state plates) dropdown=PC, Plate Year (out-of-state plates)=2026.
+              VIN (or search by Plate), Vehicle Make (optional) dropdown (no default), Vehicle Year (optional).
               Decal Number, Title/Lien Info.
  2  Boat        Render form. Verify 2 cards:                        [    ]
               CARD_BOA_OPT: titled "Search Options".
-              Destination State (blank for FL, required for name/DOB) dropdown (no default), Stolen Search dropdown (no default), Image dropdown=N.
+              Destination State (blank for FL, required for name/DOB) dropdown (no default), Stolen Search (Y for NCIC stolen-boat check) dropdown (no default), Image (optional) dropdown=N.
               CARD_BOA_SEARCH: titled "Boat Search".
-              Hull ID Number, Registration Number, Coast Guard Doc #.
+              Hull ID Number (preferred; wins over Registration #), Registration Number (or use Hull ID), Coast Guard Doc #.
               Decal Number, Title/Lien Info, NCIC Number, PCN.
               Owner Last Name (OOS), Owner First Name (OOS), Owner DOB (OOS).
  3  Person      Render form. Verify 2 cards:                        [    ]
               CARD_DL: titled "Driver License".
-              OLN, State (leave blank for FL) dropdown (no default), Image dropdown=Y.
+              License Number (or search by Name + DOB), State (leave blank for FL) dropdown (no default), Image (optional) dropdown=Y.
               Last Name, First Name, Middle Name.
-              Date of Birth, Sex dropdown (no default), Suffix.
+              Date of Birth (required with Name), Sex (required with Name) dropdown (no default), Suffix.
               CARD_DH: titled "Driver History (Out-of-State Only)".
-              OLN (DH), Destination State (not FL) dropdown (no default), Purpose Code.
-              Last Name (DH), First Name (DH), DOB (DH), Sex (DH) dropdown (no default).
+              License Number (DH) - or Name + DOB + Sex, Destination State (not FL) dropdown (no default), Purpose Code (optional).
+              Last Name (DH), First Name (DH), Date of Birth (DH) - required with Name, Sex (DH) - required with Name dropdown (no default).
+              Attention (auto-populated from officer profile)=X.
  4  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM QUERY".
-              Serial Number, Gun Make dropdown (no default).
-              NCIC Number, PCN, Image dropdown=N.
+              Serial Number (or use NCIC#/PCN), Gun Make (optional) dropdown (no default).
+              NCIC Number, PCN, Image (optional) dropdown=N.
  5  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default), Owner Applied Number, Image dropdown=N.
+              Serial Number (with Article Type), Article Type (required) dropdown (no default), Owner Applied Number (with Article Type), Image (optional) dropdown=N.
               NCIC Number, PCN.
 
 PHASE 2: VEHICLE COMBOS (6 tests, 6 combos)
@@ -184,7 +186,7 @@ PHASE 7: ANY[] FIELD TESTS (3 tests)
               Expected: any[] fields present in XML output.
 38  Firearm     QG+Serial          + GunMake                       [    ]
               Expected: any[] fields present in XML output.
-39  Person      KQ+OLN             + purposeCodeDH                 [    ]
+39  Person      KQ+OLN             + purposeCodeDH, Attention      [    ]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
