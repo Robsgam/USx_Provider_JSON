@@ -226,6 +226,25 @@ foreach ($pd in $providers) {
             Fail "$provName -- no phase archive for v${version}"
         }
     }
+
+    # TEST_MATRIX freshness -- only for new-model providers (<PROVIDER>.json + build script)
+    # If the matrix predates the JSON, the test instructions are stale relative to the
+    # shipped JSON (a version bump changes combos; matrix must be regenerated via build_report).
+    if ($version -and $provJson) {
+        $testMatrixFile = Join-Path $docsDir "${docPrefix}_TEST_MATRIX.txt"
+        if (Test-Path $testMatrixFile) {
+            $matrixTime = (Get-Item $testMatrixFile).LastWriteTime
+            $jsonTime   = $provJson.LastWriteTime
+            $graceSec   = 300  # 5-min grace: pipeline generates matrix after JSON; allow pipeline to finish
+            if (($jsonTime - $matrixTime).TotalSeconds -gt $graceSec) {
+                Fail "$provName -- TEST_MATRIX predates JSON by $([int]($jsonTime - $matrixTime).TotalMinutes)m (regenerate via build_report)"
+            } else {
+                Pass "$provName -- TEST_MATRIX fresh"
+            }
+        } else {
+            Fail "$provName -- TEST_MATRIX missing (generate via build_report)"
+        }
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

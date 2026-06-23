@@ -497,12 +497,13 @@ if (-not (Test-Path $scriptPath)) {
             Info "QIDM '$($cfg.name)': keyRef '$firstKeyRef' not found in build script -- skipping"
             continue
         }
-        # Search the 40 lines before the first keyRef occurrence for LIMITATION #21 or #36
-        $searchStart = [Math]::Max(0, $keyRefLineIdx - 40)
+        # Search the 60 lines before the first keyRef occurrence for LIMITATION #21 or #36
+        # (60 rather than 40: long attribute sections push the LIMITATION comment 40-50 lines back)
+        $searchStart = [Math]::Max(0, $keyRefLineIdx - 60)
         $window      = $scriptLines[$searchStart..($keyRefLineIdx - 1)]
         $hasDoc      = $window | Where-Object { $_ -match 'LIMITATION #21|LIMITATION #36' }
         if (-not $hasDoc) {
-            Warn "QIDM '$($cfg.name)' has $($cfg.combinations.Count) combos but build script has no LIMITATION #21/#36 comment before keyRef '$firstKeyRef' -- add synthetic keyRef block (BUILD_RULES Section 15)"
+            Fail "QIDM '$($cfg.name)' has $($cfg.combinations.Count) combos but build script has no LIMITATION #21/#36 comment before keyRef '$firstKeyRef' -- add synthetic keyRef block (BUILD_RULES Section 15)"
             $missingDocs++
         }
     }
@@ -705,6 +706,49 @@ if ($providerBundle) {
     }
 } else {
     Info "No provider bundle -- skipping identifier-priority guardrail check"
+}
+
+# ── CHECK 13: conditions[].field must reference a QIF sourceField ──────────────
+# INERT-CONDITIONS ROOT CAUSE (LIVE-PROVEN FL v4.x-v5.x, HI v3.2-v3.3): a conditions[].field
+# value that does not match any QIF sourceField/fieldId is SILENTLY INERT on the platform.
+# Casing matters -- 'State' != 'RegistrationState' (FL bug), 'State' != 'RegistrationState'
+# (HI v3.2 M55S bug). The $formFieldIds hash built in CHECK 2 holds every fieldId from each
+# entity's QIF. Case-sensitive match is intentional (casing IS the bug pattern).
+Write-Host ""
+Write-Host "--- CHECK 13: conditions[].field references a valid QIF sourceField ---" -ForegroundColor Yellow
+
+$condFieldViolations = 0
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        $entity = $cfg.targetEntity
+        $entityFields = if ($formFieldIds.ContainsKey($entity)) { $formFieldIds[$entity] } else { $null }
+        if (-not $entityFields -or $entityFields.Count -eq 0) {
+            Info "QIDM '$($cfg.name)': no QIF found for entity '$entity' -- skipping conditions field check"
+            continue
+        }
+
+        foreach ($combo in $cfg.combinations) {
+            $condArrays = @()
+            if ($combo.requirements -and $combo.requirements.conditions) { $condArrays += ,$combo.requirements.conditions }
+            if ($combo.conditions) { $condArrays += ,$combo.conditions }
+            foreach ($conds in $condArrays) {
+                foreach ($cond in $conds) {
+                    foreach ($fldToken in @($cond.field)) {
+                        if (-not $entityFields.Contains([string]$fldToken)) {
+                            Fail "QIDM '$($cfg.name)' combo '$($combo.keyReference)' conditions[].field='$fldToken' not found in $entity QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)"
+                            $condFieldViolations++
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ($condFieldViolations -eq 0) {
+        Pass "All conditions[].field values reference valid QIF fieldIds (no inert conditions)"
+    }
+} else {
+    Info "No provider bundle -- skipping conditions field validation"
 }
 
 # ── SUMMARY ───────────────────────────────────────────────────────────────────

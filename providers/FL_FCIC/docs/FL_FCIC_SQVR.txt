@@ -2,7 +2,7 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-23
-JSON version: v6.3
+JSON version: v6.4
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v4.8 IMPORTED to USx Tenant 2026-06-12. T1-priority NOT_EXISTS check
 PASSED: full DL card -> XML contained ONLY OLN+ImageIndicator (FDQ+OLN CONFIRMED;
@@ -188,30 +188,30 @@ combo-level camelCase scalar style was inert on the platform.)
           Owner Last/First (OOS), Owner DOB (OOS), Destination State (no default),
           Stolen Search (no default), ImageIndicator(N)
 
-  FBQ+Hull  [CONFIRMED]  keyReference: FBQBoatHullIdNumber
+  FBQ+Hull  [PENDING]  keyReference: FBQBoatHullIdNumber
     set: [BoatHullIdNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EQUALS Y
-  FBQ+Decal [CONFIRMED]  keyReference: FBQDecalNumber
+  FBQ+Decal [PENDING]  keyReference: FBQDecalNumber
     set: [DecalNumber]  conditions: registrationState NOT_EXISTS
-  FBQ+Reg   [CONFIRMED]  keyReference: FBQRegistrationNumber
+  FBQ+Reg   [PENDING]  keyReference: FBQRegistrationNumber
     set: [RegistrationNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EQUALS Y
-  FBQ+TitleLien [CONFIRMED]  keyReference: FBQTitleLienInformation
+  FBQ+TitleLien [PENDING]  keyReference: FBQTitleLienInformation
     set: [TitleLienInformation]  conditions: registrationState NOT_EXISTS
 
-  QB+Hull   [CONFIRMED]  keyReference: QBBoatHullIdNumber
+  QB+Hull   [PENDING]  keyReference: QBBoatHullIdNumber
     set: [BoatHullIdNumber, RelatedHitSearchIndicator]  conditions: relatedHitSearchIndicator EQUALS Y
-  QB+CoastGuard [CONFIRMED]  keyReference: QBCoastGuardDocumentNumber  set: [CoastGuardDocumentNumber]
-  QB+NCIC   [CONFIRMED]  keyReference: QBNCICNumber  set: [NCICNumber]
-  QB+PCN    [CONFIRMED]  keyReference: QBProcessControlNumber  set: [ProcessControlNumber]
-  QB+Reg    [CONFIRMED]  keyReference: QBRegistrationNumber
+  QB+CoastGuard [PENDING]  keyReference: QBCoastGuardDocumentNumber  set: [CoastGuardDocumentNumber]
+  QB+NCIC   [PENDING]  keyReference: QBNCICNumber  set: [NCICNumber]
+  QB+PCN    [PENDING]  keyReference: QBProcessControlNumber  set: [ProcessControlNumber]
+  QB+Reg    [PENDING]  keyReference: QBRegistrationNumber
     set: [RegistrationNumber, RelatedHitSearchIndicator]  conditions: relatedHitSearchIndicator EQUALS Y
 
-  BQ+Name   [CONFIRMED]  keyReference: BQName  -- RESTORED v4.7
+  BQ+Name   [PENDING]  keyReference: BQName  -- RESTORED v4.7
     set: [BirthDate, NameLast, NameFirst, RegistrationState]  any: [BoatHullIdNumber, RegistrationNumber]
     conditions: registrationState NOT_EQUALS FL
-  BQ+Hull   [CONFIRMED]  keyReference: BQBoatHullIdNumber  -- RESTORED v4.7
+  BQ+Hull   [PENDING]  keyReference: BQBoatHullIdNumber  -- RESTORED v4.7
     set: [BoatHullIdNumber, RegistrationState]  any: [RegistrationNumber]
     conditions: registrationState NOT_EQUALS FL
-  BQ+Reg    [CONFIRMED]  keyReference: BQRegistrationNumber  -- RESTORED v4.7
+  BQ+Reg    [PENDING]  keyReference: BQRegistrationNumber  -- RESTORED v4.7
     set: [RegistrationNumber, RegistrationState]  any: [BoatHullIdNumber]
     conditions: registrationState NOT_EQUALS FL
 
@@ -243,11 +243,11 @@ SUMMARY
 
   Architecture: 6 CommSys QIDMs + 2 RMS QIDMs
   Total CommSys combos: 31 (6+4+2+3+4+12)
-  [CONFIRMED]: all 31 -- v6.3 live test 2026-06-23, T1-T42 all PASS
+  [PENDING]: all 31 -- v6.3 live test 2026-06-23, T1-T42 all PASS
   [PENDING-CONFIRMATION]: QV x2 (data-mined auto-send hypothesis)
   [APPROVED SKIP]: WantedPersonQuery (QW, CommSys auto-send, platform-confirmed)
   [APPROVED SKIP]: ImageQuery (user PHASE 2 scope)
-  [CONFIRMED]: BQ destination NOT_EQUALS FL -- live-proven T16/T17/T18 (State=GA)
+  [PENDING]: BQ destination NOT_EQUALS FL -- live-proven T16/T17/T18 (State=GA)
   Simulator verification (2026-06-12): full scenario sweep PASS -- DL over-send
   fixed, DH OOS-only enforced, Vehicle/Boat devdoc-order routing correct,
   negatives (DH State=FL/blank, Boat State=FL) fire nothing. Conductor 42/42.

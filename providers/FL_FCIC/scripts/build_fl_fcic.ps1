@@ -84,7 +84,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.3"
+    [string]$Version = "6.4"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -552,8 +552,10 @@ $boatQuery = [PSCustomObject]@{
                 set        = @('BoatHullIdNumber')
                 any        = @('decalNumber','RegistrationNumber','titleLienInformation','ImageIndicator')
                 conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState');                     operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');             operator = 'NOT_EXISTS' }
+                    # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
+                    # (attribute name) -- wrong casing is silently inert (live-proven HI v3.3 / FL v3.x pattern)
+                    [PSCustomObject]@{ field = @('relatedHitSearchIndicator');     operator = 'NOT_EXISTS' }
                 )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
@@ -579,8 +581,10 @@ $boatQuery = [PSCustomObject]@{
                 # fire ONLY when Hull is absent, so Hull can never coexist here (would self-contradict).
                 any        = @('decalNumber','titleLienInformation','ImageIndicator')
                 conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState');          operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RelatedHitSearchIndicator');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');           operator = 'NOT_EXISTS' }
+                    # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
+                    # (attribute name) -- wrong casing is silently inert (v6.3 bug, fixed v6.4)
+                    [PSCustomObject]@{ field = @('relatedHitSearchIndicator');   operator = 'NOT_EXISTS' }
                     # Hull>Reg identifier-priority guardrail (FBQ in-state family). Hull ID is the
                     # unique permanent identifier; when present, this Reg combo exits and FBQ Hull wins.
                     [PSCustomObject]@{ field = @('BoatHullIdNumber');           operator = 'NOT_EXISTS' }

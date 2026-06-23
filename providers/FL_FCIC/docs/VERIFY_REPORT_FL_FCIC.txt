@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-23 12:59
+  Generated: 2026-06-23 15:35
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -43,8 +43,7 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
-  [WARN] QIDM 'FL_FCIC_DriverHistoryQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'KQName' -- add synthetic keyRef block (BUILD_RULES Section 15)
-  [WARN] QIDM 'FL_FCIC_BoatQuery' has 12 combos but build script has no LIMITATION #21/#36 comment before keyRef 'FBQBoatHullIdNumber' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (34) (RMS-generic allowed)
@@ -55,8 +54,11 @@ POST-BUILD VERIFICATION
 --- CHECK 12: Identifier-Priority Guardrail ---
   [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
 ========================================
- VERIFICATION PASSED (with warnings): 10 PASS / 2 WARN / 0 FAIL
+ VERIFICATION PASSED: 12 PASS / 0 WARN / 0 FAIL
 ========================================
 
 
