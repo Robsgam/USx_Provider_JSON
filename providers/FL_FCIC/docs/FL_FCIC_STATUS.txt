@@ -413,7 +413,7 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  ---   2026-06-23 Vehicle    VehReg:FRQLicensePlateNumber PASS     T2 Plate>VIN guardrail v6.2 (DECISIVE): Plate+VIN both filled in-state. CommSys XML = VehicleRegistrationQuery + LicensePlateNumber=TEST123 + LicensePlateYear + ImageIndicator only; VehicleIdentificationNumber ABSENT (FRQVehicleIdentificationNumber excluded by LicensePlateNumber NOT_EXISTS). FRQLicensePlateNumber fires. Plate-wins live-confirmed.
+  ---   2026-06-23 Vehicle    VehReg:RQVehicleIdentificationNumber PASS     T7 RQ+VIN+State: OOS VIN search. Wire = RQVehicleIdentificationNumber (VehicleIdentificationNumber + State=GA + ImageIndicator); no LicensePlateNumber. All 6 Vehicle combos confirmed.
   ---   2026-06-23 Vehicle    VehReg:RQLicensePlateNumber PASS     T3 State isolation (DECISIVE): OOS plate + State=GA. Wire = RQLicensePlateNumber (RQ path) with State=GA present; FRQLicensePlateNumber excluded by RegistrationState NOT_EXISTS condition. State-gate fix v6.0 confirmed live.
   ---   2026-06-23 Vehicle    VehReg:FRQVehicleIdentificationNumber PASS     T4 FRQ+VIN: VIN only, no plate. Wire = FRQVehicleIdentificationNumber (VehicleIdentificationNumber + ImageIndicator); no LicensePlateNumber bleed.
   ---   2026-06-23 Vehicle    VehReg:FRQDecal      PASS     T5 FRQ+Decal: DecalNumber only. Wire = FRQDecal (DecalNumber + LicensePlateYear + ImageIndicator); no LicensePlateNumber, no VIN.
