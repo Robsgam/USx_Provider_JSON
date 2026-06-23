@@ -1,69 +1,71 @@
 PROVIDER STATUS SUMMARY
 =======================
-Generated: 2026-05-21 (single-JSON build model, deployment terminology corrected)
-Source: CLAUDE.md provider table + enforce.ps1
+Generated: 2026-06-23 (import/rebuild status per user; versions/scores from enforce.ps1 248P/0F/0W)
+Source: CLAUDE.md provider table + enforce.ps1 + user deployment status
+Terminology: "imported" (to a tenant), never "deployed". See deployment-tracking memory + KB TESTING_REQUIREMENTS Sec 17.
 
 PORTFOLIO OVERVIEW
 ------------------
-Total providers:  19
-Active:           17
-Incomplete:        1 (CA_CONTRA_COSTA — awaiting updated devdoc/metadata)
-On hold:           1 (TX_TLETS — ready, awaiting work order slot)
-JSON completeness: 18/19 (CA_CONTRA_COSTA incomplete)
-Validation:        All 18 complete providers at 0 FAIL, 0 WARN
-Enforce gate:      218 PASS / 0 FAIL / 0 WARN (2026-05-15)
+Total providers:        20
+Imported to USx test:    3  (NJ, HI, FL)
+Built, awaiting test:    1  (TX_TLETS v3.12)
+Stale - rebuild needed: 15  (all others; carry none of the current patterns)
+Incomplete:              1  (CA_CONTRA_COSTA - awaiting updated devdoc/metadata)
+Enforce gate:           248 PASS / 0 FAIL / 0 WARN (2026-06-23)
 
-PROVIDER TABLE
---------------
- #  Provider               Version  Validation       Status    Build       Notes
---- ---------------------- -------- ---------------- --------- ----------- --------------------------------------------------
- 1  AZ_AZDPS               v2.3    71P/0F/0W        ACTIVE    READY     dexStateUserId, DH-suffix, WMPI queries
- 2  CA_CLETS               v2.4    91P/0F/0W        ACTIVE    single-JSON v2.4 imported USx Provider 2026-05-21; 40/40 combos
- 3  CA_CLETS_OCATS         v1.2    63P/0F/0W        ACTIVE    READY     CLETS_OCATS v21, 5 queries, 19 combos
- 4  CA_CONTRA_COSTA        ---     INCOMPLETE       INCOMPLETE --          Awaiting updated devdoc/metadata; Person-only
- 5  CA_eSUN                v1.5    71P/0F/0W        ACTIVE    READY     MC multi-card; VP owner search + gun-by-name
- 6  CA_SAN_LUIS_OBISPO     v1.3    65P/0F/0W        ACTIVE    READY     Regional interface; DL+DH DH-suffix pattern
- 7  CA_VENTURA_COUNTY      v1.4    72P/0F/0W (MC)   ACTIVE    READY     6 basic queries; MC multi-card (14 cards)
- 8  FL_FCIC                v4.3    97P/0F/0W        ACTIVE    single-JSON v4.3 imported USx Provider 2026-05-21; 33 combos
- 9  HI_HCJDC_OFML          v1.6    72P/0F/0W        ACTIVE    READY     7-transaction build; State no-default
-10  IL_LEADS_OFML          v1.1    61P/0F/0W        ACTIVE    READY     5 queries (no DH); MC multi-card (11 cards)
-11  LA_LEMS                v2.5    63P/0F/0W        ACTIVE    READY     7 QIDMs; DH-suffix + queriesToDeselect
-12  MD_METERS              v1.3    69P/0F/0W        ACTIVE    READY     6 basic queries; State no-default; MC (12 cards)
-13  NJ_NJCJIS              v3.4    69P/0F/0W        ACTIVE    single-JSON v3.4 imported USx Provider + Newark Foundation 2026-05-21
-14  NM_NMLETS_OFML         v1.3    66P/0F/0W        ACTIVE    READY     6 basic queries; GunModel field
-15  NY_NYSPIN_EJUSTICE     v1.6    74P/0F/0W        ACTIVE    READY     DL+DH DH-suffix; State no-default (LIMIT #30)
-16  OH_LEADS               v1.3    77P/0F/0W        ACTIVE    READY     6 queries, 9 VehReg combos; MC (14 cards)
-17  OR_LEDS                v1.3    58P/0F/0W        ACTIVE    READY     5 queries (no DH); MC multi-card (11 cards)
-18  TN_TIES                v1.4    80P/0F/0W        ACTIVE    READY     6 queries, 28 combos; MC (14 cards)
-19  TX_TLETS               v2.7    84P/0F/0W        ACTIVE    READY     EmailAddress user-fillable + Attention fix applied
+CURRENT PATTERN BASELINE (what "stale" means)
+---------------------------------------------
+A provider is CURRENT only if it carries the 2026-06 pattern set:
+  - NATIVE PascalCase USx fieldIds (no Convert-UsxCasing post-transform)
+  - Identifier-priority guardrail (Plate>VIN, OLN>Name DL+DH, Hull>Reg via NOT_EXISTS)
+  - Attention auto-populate via handler + gate-feeder (resolved, not "INERT")
+  - Poisoned-array cleanup (no value-comparison conditions)
+  - conditions[].field = QIF sourceField; CAD combo defaults; single JSON
+Only NJ / HI / FL / TX carry these. Every other provider predates them = STALE.
 
-FLAGGED FOR NEXT REBUILD
-------------------------
-Attention Field Fix (7 providers):
-  - LA_LEMS              all 7 QIDMs
-  - HI_HCJDC_OFML        DH only
-  - TX_TLETS              DH only
-  - CA_eSUN               DH only
-  - CA_VENTURA_COUNTY     DH only
-  - OH_LEADS              DH only
-  - TN_TIES               DH only
-  Already fixed: FL_FCIC v4.0 (model for the fix)
+IMPORT / TEST STATUS
+--------------------
+ Provider            Version  Validation   Import status
+ ------------------- -------- ------------ ------------------------------------------------------------
+ NJ_NJCJIS           v4.3     61P/0F/0W    IMPORTED USx test + Newark Foundation. Live test in progress.
+ HI_HCJDC_OFML       v4.0     68P/0F/0W    IMPORTED USx test; handed to ENG for OnScene integration.
+ FL_FCIC             v6.4     92P/0F/0W    IMPORTED USx test tenant. (Boat re-opened T1 - FBQ casing fix.)
+ TX_TLETS            v3.12    83P/0F/0W    BUILT, awaiting USx test import + T1 re-test (test pkg reset).
 
-CAD Defaults (17 providers — 142 FAILs):
-  Fix on next rebuild of each provider. See REBUILD_TRACKER.md.
+STALE - REBUILD NEEDED (not current; do not treat as ready)
+-----------------------------------------------------------
+ Provider            Version  Validation   Note
+ ------------------- -------- ------------ ------------------------------------------------------------
+ NY_NYSPIN_EJUSTICE  v3.0     81P/0F/0W    Next in identifier-priority rollout order after CA_CLETS.
+ AZ_AZDPS            v2.3     71P/0F/0W    camelCase; pre-guardrail. dexStateUserId, WMPI.
+ CA_CLETS            v2.5     76P/0F/0W    Was imported v2.4 (2026-05-21); superseded. Next rollout target.
+ LA_LEMS             v2.5     63P/0F/0W    camelCase; Attention handler pre-resolution.
+ CA_VENTURA_COUNTY   v1.4     72P/0F/0W    Legacy MC-era.
+ CA_CLETS_OCATS      v1.2     63P/0F/0W    Legacy MC-era.
+ CA_eSUN             v1.5     71P/0F/0W    Legacy MC-era; Attention-handler origin provider.
+ CA_SAN_LUIS_OBISPO  v1.3     65P/0F/0W    Legacy MC-era.
+ IL_LEADS_OFML       v1.1     61P/0F/0W    Legacy MC-era; 5 queries (no DH).
+ MD_METERS           v1.3     69P/0F/0W    Legacy MC-era.
+ OH_LEADS            v1.3     77P/0F/0W    Legacy MC-era; 9 VehReg combos.
+ NM_NMLETS_OFML      v1.3     66P/0F/0W    Legacy MC-era.
+ OR_LEDS             v1.3     58P/0F/0W    Legacy MC-era; 5 queries (no DH).
+ TN_TIES             v1.4     80P/0F/0W    Legacy MC-era; 28 combos.
+ TX_TLETS_CCH        v1.0     119P/0F/0W   CCH-gated stub; not live-tested.
 
-KNOWN LIMITATIONS
------------------
-  TX_TLETS: EmailAddress QIDM-only on DL+DH (no form field, no handler)
-
-WORK ORDER (user-specified)
----------------------------
-  NJ (DONE) -> CA_CLETS (DONE) -> FL_FCIC (DONE) -> TX_TLETS -> NY_NYSPIN -> AZ_AZDPS
+INCOMPLETE
+----------
+ CA_CONTRA_COSTA     ---      INCOMPLETE   Awaiting updated devdoc/metadata; Person-only, no OLN.
 
 NEXT ACTIONS
 ------------
-  1. Live testing per work order: TX_TLETS next, then NY_NYSPIN, then AZ_AZDPS
-  2. NJ v3.4 imported to USx Provider Tenant + Newark Foundation Tenant (2026-05-21)
-  3. Attention field fix on remaining 7 flagged providers
-  4. CAD defaults fix on remaining 17 providers
-  5. Each provider first test: build -> build_report.ps1 -> CAD audit -> pipeline.ps1
+  1. TX_TLETS v3.12 - user imports to USx test, run T1-T37 (Plate>VIN, OLN>Name, Hull>Reg, Attention).
+  2. FL_FCIC - Boat T1 live test (FBQ casing fix).
+  3. HI - awaiting ENG OnScene integration feedback.
+  4. NJ - awaiting Newark Foundation + USx live test outcome.
+  5. Identifier-priority rollout continues: CA_CLETS -> NY -> AZ (then legacy MC-era rebuilds).
+
+NOTES
+-----
+  - Per-provider import status + test pick-up point: providers/<PROVIDER>/docs/<PROVIDER>_STATUS.txt PENDING.
+  - Per-provider rebuild flags/versions: REBUILD_TRACKER.md (authority).
+  - Live test client = USx tenant RMS client default bundle, not OnScene (usx-rms-client-not-onscene).
