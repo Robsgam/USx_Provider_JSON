@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQN (T5 KQN v4.0: DH OLN-only. DriverHistoryQuery + OperatorLicenseNumber=DL7836353 + Attention=SGAMBELLONE R + PurposeCode=C; no Name.)
+Date: 2026-06-23 12:21:11
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OperatorLicenseNumberDH=dl7836353
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KVTMDCSMXQZT4VQ7FQ50TA8S"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Attention>SGAMBELLONE R</Attention><OperatorLicenseNumber>DL7836353</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          DL7836353
+  PurposeCode                    C
+
+NOTES
+-----
+
+
+RESULT: PASS
