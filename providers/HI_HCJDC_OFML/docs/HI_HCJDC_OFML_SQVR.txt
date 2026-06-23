@@ -5,6 +5,8 @@ Last updated: 2026-06-23
 JSON version: v4.0
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: COMPLETE -- v3.6 2026-06-22 (T1-T7 Vehicle all PASS; Firearm/Article/Boat CONFIRMED v3.5)
+v4.0 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
+T27-T28 (negatives) all PASS. T26 (DH deselects DL) PENDING CommSys XML.
 
 NOTE: All 5 entities CONFIRMED. Person CONFIRMED (live v2.9, blocked/preserved).
 Vehicle CONFIRMED (live v3.6 T1-T7, 2026-06-22) -- plate-wins guardrail live-proven
@@ -206,10 +208,12 @@ Architecture notes:
 
   KQ -- Name + SexCode + DOB [CONFIRMED]
     set: Name, SexCode, BirthDate
-    any: (empty)
+    any: RegistrationState (→ State XML attr), PurposeCode, Attention (handler-auto)
     keyReference: KQ
     Name uses FormatStringRuleHandler: arguments=[' ',' ',' ']
     BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
+    any[] CONFIRMED live T23 v4.0: State=GA + PurposeCode=C + Attention=SGAMBELLONE R
+    in wire (purposeCodeDH=C form input; Attention auto-populated via handler).
 
   Priority order: KQN > KQ -- CONFIRMED (note; backed by combo logs T9/T10)
     OLN before Name. Live v2.9 T9 (KQN) / T10 (KQ).
@@ -262,8 +266,9 @@ Architecture notes:
 
   BQ -- Registration Number [CONFIRMED]
     set: RegistrationNumber
-    any: (empty)
+    any: RegistrationState (→ State XML attr), RelatedSearchHitIndicator (default=Y)
     keyReference: BQ
+    any[] CONFIRMED live T22 v4.0: State=GA + RelatedSearchHitIndicator=Y in wire.
 
   QB -- Hull ID [CONFIRMED]
     set: HullIdentificationNumber
@@ -288,7 +293,9 @@ SUMMARY
 
   Total combos: 17 CommSys + RMS co-fires
   CONFIRMED: ALL entities (Person v2.9, Vehicle v3.6 T1-T7, Firearm/Article/Boat v3.5)
-  PENDING: none
-  All 5 entities CONFIRMED. Provider COMPLETE (v3.6 2026-06-22).
+  Phase 7-9 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
+    T27-T28 (negatives) all PASS. T26 (DH deselects DL) PENDING CommSys XML.
+  PENDING: T26 deselect XML only. 27/28 tests PASS.
+  All 5 entities CONFIRMED. Provider COMPLETE pending T26.
   Plate-wins guardrail: LIVE-PROVEN HI v3.6 (T6 all-fields decisive + T7 bare plate+VIN decisive).
   vehicleYear any[] fix: LIVE-PROVEN HI v3.6 (T3 M55S + T5 RQV, VehicleYear=2019 in XML).
