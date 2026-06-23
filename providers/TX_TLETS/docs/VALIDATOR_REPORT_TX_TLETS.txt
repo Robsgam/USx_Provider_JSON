@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 16:49
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 13 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 25 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 26 fieldIds
   [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='N' for Firearm
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='N' for Article
@@ -35,7 +35,6 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 9 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [LIMITATION] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber' is unreachable: earlier unconditioned combo 'RQVehicleIdentificationNumber' set[] is a subset of its set[] (first match fires; add routing conditions to 'RQVehicleIdentificationNumber' or reorder)
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
   [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_DriverLicenseQuery' -> Person : 11 attrs, 4 combos
@@ -108,10 +107,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 83 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
+  RESULTS: 83 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-
-  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

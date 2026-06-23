@@ -684,7 +684,10 @@ foreach ($ent in $entityOrder) {
             [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  {3,-32} " -f $testNum, $ent, $comboLabel, $fillStr))
             [void]$phaseSb.AppendLine("[    ]")
 
-            $expected = "$($q.query) fires ($shortName)"
+            # Full keyRef (not the collapsed short prefix) so the conductor's Find-ComboByPrefix
+            # resolves THIS combo, not the first sibling sharing the prefix (e.g. QBRegistrationNumber
+            # vs QBBoatHullIdNumber vs QBNCICNumber all collapse to 'QB' and would false-pass).
+            $expected = "$($q.query) fires ($kr)"
             foreach ($ch in $cofireHits) {
                 $expected += ". Check for $($ch.query) co-fire"
             }
@@ -823,7 +826,7 @@ foreach ($ent in $entityOrder) {
             if ($fillStr.Length -gt 40) { $fillStr = $fillStr.Substring(0, 37) + '...' }
             [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  {3,-32} " -f $testNum, $ent, $comboLabel, $fillStr))
             [void]$phaseSb.AppendLine("[    ]")
-            [void]$phaseSb.AppendLine("              Expected: $($q.query) fires ($shortName)")
+            [void]$phaseSb.AppendLine("              Expected: $($q.query) fires ($kr)")
         }
     }
 

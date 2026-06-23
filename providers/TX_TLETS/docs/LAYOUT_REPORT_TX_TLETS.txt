@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 16:49
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -9,7 +9,7 @@ LAYOUT SUMMARY
 === TX_TLETS.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
-  Person | entity=Person | qidm= | cards=3 fields=15
+  Person | entity=Person | qidm= | cards=3 fields=16
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=3
@@ -68,6 +68,8 @@ LAYOUT DETAIL
         expandedBirthDateSearchCode (Text | maxLen=1)
         regionId (Text | maxLen=4)
     CARD "CARD_PER_DH"
+      ROW ROW_PER_DHA [12]
+        Attention (Text | maxLen=30 | default=X)
       ROW ROW_PER_DHL1 [8 4]
         operatorLicenseNumberDH (Text | maxLen=20)
         purposeCodeDH (Text | maxLen=1 | default=C)

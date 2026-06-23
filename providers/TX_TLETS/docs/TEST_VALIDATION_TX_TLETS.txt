@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 16:49
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -10,10 +10,10 @@ TEST MATRIX VALIDATION -- TX_TLETS
 ============================================================
 Source: TX_TLETS.json
 Matrix: TX_TLETS_TEST_MATRIX.txt
-Generated: 2026-06-22
+Generated: 2026-06-23
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
-  T1  Person     [PASS] 3 cards, 22 fields, defaults verified
+  T1  Person     [PASS] 3 cards, 23 fields, defaults verified
   T2  Vehicle    [PASS] 1 cards, 10 fields, defaults verified
   T3  Boat       [PASS] 1 cards, 6 fields, defaults verified
   T4  Firearm    [PASS] 1 cards, 6 fields, defaults verified
@@ -21,36 +21,36 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 PHASE 2: PERSON COMBOS (8 tests, 8 combos)
   T6  Person     [PASS] DriverLicenseQuery fires (DQName)
   T7  Person     [PASS] DriverLicenseQuery fires (QWName)
-  T8  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T8  Person     [PASS] DriverLicenseQuery fires (DQOLN)
   T9  Person     [PASS] DriverLicenseQuery fires (CPLName)
   T10  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
   T11  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
-  T12  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
-  T13  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
+  T12  Person     [PASS] DriverHistoryQuery fires (KQOLNImg)
+  T13  Person     [PASS] DriverHistoryQuery fires (KQOLNImg)
 PHASE 3: VEHICLE COMBOS (7 tests, 7 combos)
   T14  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
   T15  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
   T16  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
-  T17  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-  T18  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
+  T17  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
+  T18  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVVehicleIdentificationNumber)
   T19  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
   T20  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
 PHASE 4: BOAT COMBOS (5 tests, 5 combos)
-  T21  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T22  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T21  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T22  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
   T23  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
   T24  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T25  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T25  Boat       [PASS] BoatQuery fires (QBNCICNumber)
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
   T26  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T27  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T27  Firearm    [PASS] GunQuery fires (QGNCICNumber)
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
   T28  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T29  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T29  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
 PHASE 7: ANY[] FIELD TESTS (5 tests)
   T30  Vehicle    [PASS] any[] fields verified: registrationState, vehicleMakeCode, vehicleYear
   T31  Boat       [PASS] any[] fields verified: relatedHitSearchIndicator
-  T32  Person     [PASS] any[] fields verified: expandedBirthDateSearchCode, nameMiddle, nameSuffix
+  T32  Person     [PASS] any[] fields verified: Attention, nameMiddleDH, nameSuffixDH
   T33  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, relatedHitSearchIndicator
   T34  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)

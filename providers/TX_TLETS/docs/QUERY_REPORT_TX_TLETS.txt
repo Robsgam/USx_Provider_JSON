@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-22 10:23
+  Generated: 2026-06-23 16:49
 ================================================================
 QUERY SIMULATION
 ================
@@ -40,79 +40,21 @@ QUERY SIMULATION
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <State>NJ</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] RQVehicleIdentificationNumber
-      set: [vehicleIdentificationNumber]
-      any: [registrationState, vehicleMakeCode, vehicleYear] -> matched: [registrationState, vehicleMakeCode, vehicleYear]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] QVVehicleIdentificationNumber
-      set: [vehicleIdentificationNumber]
-      any: [regionId] -> matched: []
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-      </Transaction>
+    [SKIP] RQVehicleIdentificationNumber -- conditions failed: licensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] QVVehicleIdentificationNumber -- conditions failed: licensePlateNumber NOT_EXISTS [value='ABC1234']
 
     >> PLATFORM FIRES: RQLicensePlateNumber (first matching combo)
-    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleYear=2023
+    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 11  |  Combos: 4
+    [SKIP] DQName -- conditions failed: operatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] QWName -- conditions failed: operatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] CPLName -- conditions failed: operatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] DQName
-      set: [sexCode, birthDate, nameLast, nameFirst]
-      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] QWName
-      set: [birthDate, nameLast, nameFirst]
-      any: [expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode, regionId, sexCode] -> matched: [expandedBirthDateSearchCode, nameMiddle, raceCode, sexCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QW</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <ExpandedBirthDateSearchCode>E</ExpandedBirthDateSearchCode>
-        <Name>Doe,John A</Name>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] CPLName
-      set: [nameLast, nameFirst]
-      any: [emailAddress, imageIndicator, nameMiddle, nameSuffix, reasonCode, registrationState] -> matched: [imageIndicator, nameMiddle, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>CPLName</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe,John A</Name>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] DQOLN
+    [FIRES first-match] DQOLN
       set: [operatorLicenseNumber]
       any: [emailAddress, imageIndicator, reasonCode, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
@@ -124,34 +66,20 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: DQName (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, ExpandedBirthDateSearchCode=E, ImageIndicator=Y, Name=Doe,John A, OperatorLicenseNumber=D123456789, RaceCode=W, SexCode=M, State=NJ
+    >> PLATFORM FIRES: DQOLN (first matching combo)
+    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 10  |  Combos: 4
     [SKIP] KQNameImg -- missing set: emailAddress
-
-    [FIRES first-match] KQName
-      set: [sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-      any: [nameMiddleDH, nameSuffixDH, purposeCodeDH, registrationState] -> matched: [nameMiddleDH, purposeCodeDH, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
-        <Attention>DOE J</Attention>
-        <BirthDate>01151990</BirthDate>
-        <Name>Doe,John A</Name>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] KQName -- conditions failed: operatorLicenseNumberDH NOT_EXISTS [value='D123456789']
     [SKIP] KQOLNImg -- missing set: emailAddress
 
-    [FIRES shadowed -- first match above wins] KQOLN
+    [FIRES first-match] KQOLN
       set: [operatorLicenseNumberDH]
-      any: [purposeCodeDH, registrationState] -> matched: [purposeCodeDH, registrationState]
+      any: [Attention, purposeCodeDH, registrationState] -> matched: [Attention, purposeCodeDH, registrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -162,8 +90,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: KQName (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=Doe,John A, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
+    >> PLATFORM FIRES: KQOLN (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -262,19 +190,7 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
         <State>FL</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] QBRegistrationNumber
-      set: [registrationNumber]
-      any: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, imageIndicator, relatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
+    [SKIP] QBRegistrationNumber -- conditions failed: boatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
     [FIRES shadowed -- first match above wins] QBBoatHullIdNumber
       set: [boatHullIdNumber]

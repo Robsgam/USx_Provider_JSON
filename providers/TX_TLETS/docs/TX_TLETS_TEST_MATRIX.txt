@@ -1,6 +1,6 @@
-TX_TLETS MC v3.11 -- TEST MATRIX
+TX_TLETS MC v3.12 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-22
+Generated: 2026-06-23
 Variant: MC (multi-card per entity)
 Validator: unknown
 
@@ -12,7 +12,7 @@ Vehicle (1 card, 10 fields):
     ROW 2: vehicleIdentificationNumber [Inp 20], stickerNumber [Inp 10], financialResponsibilityType [Inp 1]
     ROW 3: vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4], registrationState [Sel STATE, TX], regionId [Inp 4]
 
-Person (3 cards, 22 fields):
+Person (3 cards, 23 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
     registrationState [Sel STATE, TX], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1], emailAddress [Inp 80]
   CARD_PER_DL (DRIVER LICENSE):
@@ -20,9 +20,10 @@ Person (3 cards, 22 fields):
     ROW 2: nameLast [Inp 30], nameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 3: raceCode [Sel NIBRS_RACE/NIBRS], expandedBirthDateSearchCode [Inp 1], regionId [Inp 4]
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
-    ROW 2: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
-    ROW 3: birthDateDH [FormDate], sexCodeDH [Sel SEX]
+    ROW 1: Attention [Inp X, 30]
+    ROW 2: operatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
+    ROW 3: nameLastDH [Inp 30], nameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
+    ROW 4: birthDateDH [FormDate], sexCodeDH [Sel SEX]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM QUERY):
@@ -56,7 +57,7 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 3 cards:                        [    ]
+ 1  Person      Render form. Verify 3 cards:                        [Inp 10]
               CARD_PER_OPT: titled "SEARCH OPTIONS".
               State dropdown=TX, Image dropdown=Y, Reason Code=C, Email Address.
               CARD_PER_DL: titled "DRIVER LICENSE".
@@ -64,23 +65,24 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               Last Name, First Name, Middle Name, Suffix.
               Race dropdown (no default), Expanded DOB, Region ID.
               CARD_PER_DH: titled "DRIVER HISTORY".
+              Attention (auto-populated from officer profile)=X.
               License Number (DH), Purpose (DH)=C.
               Last Name (DH), First Name (DH), Middle Name (DH), Suffix (DH).
               DOB (DH), Sex (DH) dropdown (no default).
- 2  Vehicle     Render form. Verify 1 card:                        [    ]
+ 2  Vehicle     Render form. Verify 1 card:                        [Inp 10]
               CARD_VEH: titled "VEHICLE QUERY".
               Plate Number, Plate Type dropdown=PC, Plate Year=2026.
               VIN, Sticker Number, Fin. Resp. Type.
               Vehicle Make dropdown (no default), Vehicle Year, State dropdown=TX, Region ID.
- 3  Boat        Render form. Verify 1 card:                        [    ]
+ 3  Boat        Render form. Verify 1 card:                        [Inp 10]
               CARD_BOA: titled "BOAT QUERY".
               Registration Number, Hull ID Number.
               NCIC Number, State dropdown (no default), Image dropdown=N, Related Hit Search dropdown=Y.
- 4  Firearm     Render form. Verify 1 card:                        [    ]
+ 4  Firearm     Render form. Verify 1 card:                        [Inp 10]
               CARD_GUN: titled "FIREARM QUERY".
               Serial Number, Make dropdown (no default).
               Caliber dropdown (no default), NCIC Number, Image dropdown=N, Related Hit Search dropdown=Y.
- 5  Article     Render form. Verify 1 card:                        [    ]
+ 5  Article     Render form. Verify 1 card:                        [Inp 10]
               CARD_ART: titled "ARTICLE QUERY".
               Serial Number, Article Type dropdown (no default).
               NCIC Number, Image dropdown=N, Related Hit Search dropdown=Y.
@@ -89,108 +91,108 @@ PHASE 2: PERSON COMBOS (8 tests, 8 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
- 6  Person      DQ+Name            sexCode=M, birthDate=01/15/1990, name... [    ]
-              Expected: DriverLicenseQuery fires (DQ)
- 7  Person      QW+Name            birthDate=01/15/1990, nameLast=DOE, n... [    ]
-              Expected: DriverLicenseQuery fires (QW)
- 8  Person      DQ+OLN             operatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DQ)
- 9  Person      CPLNam+CPLName     nameLast=DOE, nameFirst=JOHN     [    ]
-              Expected: DriverLicenseQuery fires (CPLNam)
+ 6  Person      DQ+Name            sexCode=M, birthDate=01/15/1990, name... [Inp 10]
+              Expected: DriverLicenseQuery fires (DQName)
+ 7  Person      QW+Name            birthDate=01/15/1990, nameLast=DOE, n... [Inp 10]
+              Expected: DriverLicenseQuery fires (QWName)
+ 8  Person      DQ+OLN             operatorLicenseNumber=D999888777 [Inp 10]
+              Expected: DriverLicenseQuery fires (DQOLN)
+ 9  Person      CPLNam+CPLName     nameLast=DOE, nameFirst=JOHN     [Inp 10]
+              Expected: DriverLicenseQuery fires (CPLName)
 
   WARN -- FIELD CONSTRAINTS for DriverHistoryQuery (read METADATA_REFERENCE.txt before running tests):
          Must be filled if ImageIndicator = Y Y, N or Blank
          C,F,E,D,J,S Must be filled if ImageIndicator = Y
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
-10  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [    ]
-              Expected: DriverHistoryQuery fires (KQ)
-11  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [    ]
-              Expected: DriverHistoryQuery fires (KQ)
-12  Person      KQ+OLN             operatorLicenseNumberDH=D999888777 [    ]
-              Expected: DriverHistoryQuery fires (KQ)
-13  Person      KQ+OLNImg          operatorLicenseNumberDH=D999888777, e... [    ]
-              Expected: DriverHistoryQuery fires (KQ)
+10  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [Inp 10]
+              Expected: DriverHistoryQuery fires (KQName)
+11  Person      KQ+Name            sexCodeDH=M, birthDateDH=01/15/1990, ... [Inp 10]
+              Expected: DriverHistoryQuery fires (KQNameImg)
+12  Person      KQ+OLN             operatorLicenseNumberDH=D999888777 [Inp 10]
+              Expected: DriverHistoryQuery fires (KQOLN)
+13  Person      KQ+OLNImg          operatorLicenseNumberDH=D999888777, e... [Inp 10]
+              Expected: DriverHistoryQuery fires (KQOLNImg)
 
 PHASE 3: VEHICLE COMBOS (7 tests, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-14  Vehicle     RQ+Plate           licensePlateNumber=TEST123, licensePl... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (RQ)
-15  Vehicle     QV+Plate           licensePlateNumber=TEST123       [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (QV)
-16  Vehicle     REG+Plate          licensePlateNumber=TEST123, licensePl... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (REG)
-17  Vehicle     RQ+VIN             vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (RQ)
-18  Vehicle     QV+VIN             vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (QV)
-19  Vehicle     VIN+VIN            vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (VIN)
-20  Vehicle     DPSI+StickerNumber  stickerNumber=TEST               [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (DPSI)
+14  Vehicle     RQ+Plate           licensePlateNumber=TEST123, licensePl... [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
+15  Vehicle     QV+Plate           licensePlateNumber=TEST123       [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
+16  Vehicle     REG+Plate          licensePlateNumber=TEST123, licensePl... [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
+17  Vehicle     RQ+VIN             vehicleIdentificationNumber=1HGCM8263... [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
+18  Vehicle     QV+VIN             vehicleIdentificationNumber=1HGCM8263... [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (QVVehicleIdentificationNumber)
+19  Vehicle     VIN+VIN            vehicleIdentificationNumber=1HGCM8263... [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
+20  Vehicle     DPSI+StickerNumber  stickerNumber=TEST               [Inp 10]
+              Expected: VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
 
 PHASE 4: BOAT COMBOS (5 tests, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-21  Boat        BQ+Hull+State      boatHullIdNumber=FL1234AB56H7, regist... [    ]
-              Expected: BoatQuery fires (BQ)
-22  Boat        QB+Hull            boatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (QB)
-23  Boat        BQ+Reg+State       registrationNumber=FL1234AB, registra... [    ]
-              Expected: BoatQuery fires (BQ)
-24  Boat        QB+Reg             registrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (QB)
-25  Boat        QB+NCIC            ncicNumber=X123456789            [    ]
-              Expected: BoatQuery fires (QB)
+21  Boat        BQ+Hull+State      boatHullIdNumber=FL1234AB56H7, regist... [Inp 10]
+              Expected: BoatQuery fires (BQBoatHullIdNumber)
+22  Boat        QB+Hull            boatHullIdNumber=FL1234AB56H7    [Inp 10]
+              Expected: BoatQuery fires (QBBoatHullIdNumber)
+23  Boat        BQ+Reg+State       registrationNumber=FL1234AB, registra... [Inp 10]
+              Expected: BoatQuery fires (BQRegistrationNumber)
+24  Boat        QB+Reg             registrationNumber=FL1234AB      [Inp 10]
+              Expected: BoatQuery fires (QBRegistrationNumber)
+25  Boat        QB+NCIC            ncicNumber=X123456789            [Inp 10]
+              Expected: BoatQuery fires (QBNCICNumber)
 
 PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-26  Firearm     QG+Serial          gunSerialNumber=GUN12345         [    ]
-              Expected: GunQuery fires (QG)
-27  Firearm     QG+NCIC            ncicNumber=X123456789            [    ]
-              Expected: GunQuery fires (QG)
+26  Firearm     QG+Serial          gunSerialNumber=GUN12345         [Inp 10]
+              Expected: GunQuery fires (QGGunSerialNumber)
+27  Firearm     QG+NCIC            ncicNumber=X123456789            [Inp 10]
+              Expected: GunQuery fires (QGNCICNumber)
 
 PHASE 6: ARTICLE COMBOS (2 tests, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Combo              Fields to fill                   Result
 --  ----------  -----------------  -------------------------------- ------
-28  Article     QA+Serial          articleSerialNumber=ART99999, article... [    ]
-              Expected: ArticleSingleQuery fires (QA)
-29  Article     QA+NCIC            ncicNumber=X123456789            [    ]
-              Expected: ArticleSingleQuery fires (QA)
+28  Article     QA+Serial          articleSerialNumber=ART99999, article... [Inp 10]
+              Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
+29  Article     QA+NCIC            ncicNumber=X123456789            [Inp 10]
+              Expected: ArticleSingleQuery fires (QANCICNumber)
 
 PHASE 7: ANY[] FIELD TESTS (5 tests)
 ------------------------------------------------------------------------
 #   Entity      Combo              any[] field tested               Result
 --  ----------  -----------------  -------------------------------- ------
-30  Vehicle     RQ+VIN             + registrationState, vehicleMakeCode, vehicleYear [    ]
+30  Vehicle     RQ+VIN             + registrationState, vehicleMakeCode, vehicleYear [Inp 10]
               Expected: any[] fields present in XML output.
-31  Boat        QB+Reg             + relatedHitSearchIndicator     [    ]
+31  Boat        QB+Reg             + relatedHitSearchIndicator     [Inp 10]
               Expected: any[] fields present in XML output.
-32  Person      QW+Name            + expandedBirthDateSearchCode, nameMiddle, nameSuffix [    ]
+32  Person      KQ+Name            + Attention, nameMiddleDH, nameSuffixDH [Inp 10]
               Expected: any[] fields present in XML output.
-33  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [    ]
+33  Firearm     QG+Serial          + gunCaliber, gunMake, relatedHitSearchIndicator [Inp 10]
               Expected: any[] fields present in XML output.
-34  Article     QA+NCIC            + relatedHitSearchIndicator     [    ]
+34  Article     QA+NCIC            + relatedHitSearchIndicator     [Inp 10]
               Expected: any[] fields present in XML output.
 
 PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-35  Person      Deselect: DH deselects DL.     [    ]
+35  Person      Deselect: DH deselects DL.     [Inp 10]
               Fill both query fields. Check deselect behavior.
 
 PHASE 9: NEGATIVES (empty forms = no send)
 ------------------------------------------------------------------------
 #   Entity      Action                                              Result
 --  ----------  --------------------------------------------------  ------
-36  Person      Empty form, verify no Send button / no request.    [    ]
-37  Boat        Empty form, verify no Send button / no request.    [    ]
+36  Person      Empty form, verify no Send button / no request.    [Inp 10]
+37  Boat        Empty form, verify no Send button / no request.    [Inp 10]
 
 ================================================================================
 TOTAL: 37 tests
