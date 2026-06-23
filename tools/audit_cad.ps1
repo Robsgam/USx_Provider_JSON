@@ -555,37 +555,48 @@ foreach ($jf in $jsonFiles) {
             foreach ($combo in $cfg.combinations) {
                 $comboIdx++
                 $keyRef = $combo.keyReference
-                $anyFields = @()
-                if ($combo.requirements.any) { $anyFields = @($combo.requirements.any) }
+                # CAD ignores QIF initialValue for BOTH set[] and any[] fields, so a field in
+                # EITHER list that carries an initialValue needs a matching combo defaults[] entry.
+                # (Earlier this scanned any[] only and silently missed set[] fields like HI
+                #  vehicleTypeCode=1 on M55L/M55S -- a real CAD gap.)
+                $comboFields = @()
+                if ($combo.requirements.any) { $comboFields += @($combo.requirements.any) }
+                if ($combo.requirements.set) { $comboFields += @($combo.requirements.set) }
+                $comboFields = $comboFields | Select-Object -Unique
 
-                # Collect fields guaranteed by conditions (user must set them)
+                # Collect fields guaranteed by conditions (user must set them, or NOT_EXISTS gates
+                # them out) -- normalized lowercase so casing never causes a miss.
                 $conditionFields = [System.Collections.Generic.HashSet[string]]::new()
                 if ($combo.requirements.conditions) {
                     foreach ($cond in $combo.requirements.conditions) {
                         $condField = $null
                         if ($cond.field -is [array]) { $condField = $cond.field[0] }
                         else { $condField = $cond.field }
-                        if ($condField) { [void]$conditionFields.Add($condField) }
+                        if ($condField) { [void]$conditionFields.Add(([string]$condField).ToLower()) }
                     }
                 }
 
-                # Collect existing defaults for this combo
+                # Collect existing defaults for this combo. defaults[].field may be authored in
+                # attribute-name (PascalCase) OR sourceField (camelCase) casing depending on the
+                # build script, so normalize to lowercase -- matching by attrName OR sourceField.
                 $existingDefaults = [System.Collections.Generic.HashSet[string]]::new()
                 if ($combo.requirements.defaults) {
                     foreach ($d in $combo.requirements.defaults) {
-                        [void]$existingDefaults.Add($d.field)
+                        [void]$existingDefaults.Add(([string]$d.field).ToLower())
                     }
                 }
 
                 $missing = @()
                 $codeTypeMissing = @()
-                foreach ($anyField in $anyFields) {
-                    if (-not $ivMap.ContainsKey($anyField)) { continue }
-                    $attrName = $sfToAttrName[$anyField]
+                foreach ($cField in $comboFields) {
+                    if (-not $ivMap.ContainsKey($cField)) { continue }
+                    $attrName = $sfToAttrName[$cField]
                     if (-not $attrName) { continue }
-                    if ($existingDefaults.Contains($attrName)) { continue }
-                    if ($conditionFields.Contains($attrName)) { continue }
-                    $missing += "$attrName (form default='$($ivMap[$anyField])')"
+                    if ($existingDefaults.Contains($attrName.ToLower())) { continue }
+                    if ($existingDefaults.Contains(([string]$cField).ToLower())) { continue }
+                    if ($conditionFields.Contains($attrName.ToLower())) { continue }
+                    if ($conditionFields.Contains(([string]$cField).ToLower())) { continue }
+                    $missing += "$attrName (form default='$($ivMap[$cField])')"
                 }
 
                 if ($missing.Count -eq 0 -and $codeTypeMissing.Count -eq 0) {

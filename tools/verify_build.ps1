@@ -751,6 +751,55 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping conditions field validation"
 }
 
+# ── CHECK 14: NOT_EXISTS condition field must not be in the same combo's set[]/any[] ──
+# GATE-XOR-COMPANION (LIVE-FOUND TX v3.12 2026-06-23): a NOT_EXISTS condition gates a combo
+# OUT when its field has a value. If that same field is also in the combo's set[], the combo
+# can NEVER fire (set requires present, condition requires absent). If it is in any[], the
+# any[] entry is dead config (can never serialize -- any value blocks the combo) AND it poisons
+# the test conductor (Build-MinimalData injects any[] fields, tripping the NOT_EXISTS so the
+# combo falsely fails to fire). The two valid treatments are mutually exclusive: GATE it
+# (NOT_EXISTS + field absent from set/any) OR keep it as a COMPANION (in any[], no condition).
+# See BUILD_RULES.txt IDENTIFIER-PRIORITY GUARDRAIL "GATE XOR COMPANION".
+Write-Host ""
+Write-Host "--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---" -ForegroundColor Yellow
+
+$gateContradictions = 0
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        foreach ($combo in $cfg.combinations) {
+            $req = $combo.requirements
+            if (-not $req) { continue }
+            $setTokens = @(); if ($req.set) { $setTokens = @($req.set) }
+            $anyTokens = @(); if ($req.any) { $anyTokens = @($req.any) }
+            $condArrays = @()
+            if ($req.conditions) { $condArrays += ,$req.conditions }
+            if ($combo.conditions) { $condArrays += ,$combo.conditions }
+            foreach ($conds in $condArrays) {
+                foreach ($cond in $conds) {
+                    if ($cond.operator -ne 'NOT_EXISTS') { continue }
+                    foreach ($fldToken in @($cond.field)) {
+                        $tok = [string]$fldToken
+                        if ($setTokens -contains $tok) {
+                            Fail "QIDM '$($cfg.name)' combo '$($combo.keyReference)': NOT_EXISTS field '$tok' is also in set[] -- combo can NEVER fire (set requires it present, condition requires it absent)"
+                            $gateContradictions++
+                        }
+                        if ($anyTokens -contains $tok) {
+                            Fail "QIDM '$($cfg.name)' combo '$($combo.keyReference)': NOT_EXISTS field '$tok' is also in any[] -- dead config (can never serialize) + poisons test conductor; remove it from any[] (gate XOR companion)"
+                            $gateContradictions++
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ($gateContradictions -eq 0) {
+        Pass "No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)"
+    }
+} else {
+    Info "No provider bundle -- skipping gate-xor-companion check"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

@@ -223,6 +223,17 @@ function Build-MinimalData($qidm, $combo, $fullData) {
 }
 
 function Find-ComboByPrefix($qidm, $prefix) {
+    # EXACT-MATCH FIRST: when the matrix supplies a full keyRef (the generator now does), an
+    # exact match must win over a prefix sibling. Otherwise 'KQName' prefix-matches 'KQNameImg'
+    # (KQNameImg startswith KQName) and the plain combo is never tested -- a silent false pass
+    # (TX_TLETS KQName/KQOLN, FL FRQ*/QB*, HI DQ/DQN, all collapsed to the array-first sibling).
+    foreach ($c in $qidm.combinations) {
+        $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
+        if ($kr -eq $prefix) { return [PSCustomObject]@{ combo=$c; keyRef=$kr } }
+    }
+    # PREFIX FALLBACK: for short co-fire/deselect references (e.g. 'KQ', 'DL') that are not a
+    # full keyRef. If a short prefix matches >1 combo it is ambiguous -- return the match but the
+    # caller's matrix should use full keyRefs for primary 'fires (X)' rows (generator enforces this).
     foreach ($c in $qidm.combinations) {
         $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
         if ($kr -match "^$([regex]::Escape($prefix))") { return [PSCustomObject]@{ combo=$c; keyRef=$kr } }
