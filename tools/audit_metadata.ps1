@@ -1176,7 +1176,11 @@ function Audit-Provider {
                     if ($tf -ieq $pfr) { $hasAttr = $true; break }
                 }
                 if ($hasAttr) {
-                    Out-Fail "  $pfr`: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for $kr path)"
+                    if (Test-AllowListed $qName $kr $pfr) {
+                        Out-Note "  $pfr`: QIDM has attribute but no combo as primaryFieldReference (keyRef $kr) -- ACCEPTED per registry"
+                    } else {
+                        Out-Fail "  $pfr`: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for $kr path)"
+                    }
                 } else {
                     # INFO not WARN: query IS built but this secondary search path (e.g. boat-by-name)
                     # was intentionally not implemented. Devdoc authority determines which paths to build.

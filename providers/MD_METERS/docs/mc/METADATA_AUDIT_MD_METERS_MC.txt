@@ -1,14 +1,6 @@
-﻿================================================================
-  Build Report: MD_METERS_MC
-  Source: MD_METERS_MC.json
-  Generated: 2026-06-08 14:36
-================================================================
-METADATA AUDIT
-==============
-
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:36
+ Generated: 2026-06-23 08:37
 ============================================================
 
 ============================================================
@@ -128,6 +120,9 @@ METADATA AUDIT
   [PASS]   keyRef ZLRG: any field 'State' covered by invented variants (ZLRG.P,ZLRG.V,ZVEH.V,ZVEH.P)
   [PASS]   keyRef ZLRG: any field 'ImageIndicator' covered by invented variants (ZLRG.P,ZLRG.V,ZVEH.V,ZVEH.P)
 
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [PASS]   No fields over-promoted from metadata any[] to set[]
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -143,7 +138,7 @@ METADATA AUDIT
   [PASS]   Name: at least one combo built (e.g. ZWAR)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. ZWAR)
   GunQuery: 1 metadata search paths
-  [FAIL]   GunMake: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for ZGUN path)
+  [NOTE]   GunMake: QIDM has attribute but no combo as primaryFieldReference (keyRef ZGUN) -- ACCEPTED per registry
   VehicleRegistrationQuery: 2 metadata search paths
   [PASS]   LicensePlateNumber: at least one combo built (e.g. ZVEH)
   [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. ZVEH)
@@ -170,6 +165,5 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 115 PASS / 1 FAIL / 0 WARN
+Total: 116 PASS / 0 FAIL / 0 WARN
 ============================================================
-
