@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQName (T29 KQ+Name (DH OOS Name, OLN>Name decisive): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+Attention(SGAMBELLONE R); OLN blank so KQName fires; DH Name format LAST, FIRST comma-space confirmed. Attention live.)
+Date: 2026-06-23 13:29:31
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Last-DH=doe, First-DH=jon, DOB-DH=1985-01-15, Sex-DH=Male, DestState=Georgia(GA); DH OLN blank, DL card blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTRB9H4KNWD9WTB26VWFTC1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVTRB9H4KNWD9WTB26VWFTC1</Id><State>GA</State><Attention>SGAMBELLONE R</Attention><SexCode>M</SexCode><BirthDate>19850115</BirthDate><Name>DOE, JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTRB9H4KNWD9WTB26VWFTC1
+  State                          GA
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  BirthDate                      19850115
+  Name                           DOE, JON
+
+NOTES
+-----
+
+
+RESULT: PASS

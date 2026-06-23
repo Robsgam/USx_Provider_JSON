@@ -434,6 +434,7 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-23 Person     DL:FDQName           PASS     T26 FDQ+Name (in-state DL): Wire=Name(DOE, JON)+BirthDate+SexCode(M)+ImageIndicator(Y); no State, no OLN. Name format LAST, FIRST comma-space confirmed live (devdoc-preferred).
   ---   2026-06-23 Person     DL:DQName            PASS     T27 DQ+Name+State (OOS DL): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+ImageIndicator(Y); no OLN. FDQ excluded by RegistrationState NOT_EXISTS.
   ---   2026-06-23 Person     DH:KQOperatorLicenseNumberDH PASS     T28 KQ+OLN (DH OOS): Wire=OperatorLicenseNumber(D99887777)+State(GA)+Attention(SGAMBELLONE R); Attention auto-populate LIVE (handler confirmed). No Name/DOB/Sex (OLN only).
+  ---   2026-06-23 Person     DH:KQName            PASS     T29 KQ+Name (DH OOS Name, OLN>Name decisive): Wire=Name(DOE, JON)+State(GA)+BirthDate+SexCode(M)+Attention(SGAMBELLONE R); OLN blank so KQName fires; DH Name format LAST, FIRST comma-space confirmed. Attention live.
   (none yet -- v6.3 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.3/)
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
