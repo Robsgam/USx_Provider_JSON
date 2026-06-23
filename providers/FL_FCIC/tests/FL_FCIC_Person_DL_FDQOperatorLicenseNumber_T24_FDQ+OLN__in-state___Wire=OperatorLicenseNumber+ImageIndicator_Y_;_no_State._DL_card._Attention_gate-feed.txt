@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber (T24 FDQ+OLN (in-state): Wire=OperatorLicenseNumber+ImageIndicator(Y); no State. DL card. Attention gate-feeder absent from DL wire (DH-only).)
+Date: 2026-06-23 13:25:20
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OLN=dl673567883, Image=Y; State blank, Name blank. Attention=X (hidden DH gate-feeder, absent from DL wire)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTR416G5H9GBT19WSA7QC30"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVTR416G5H9GBT19WSA7QC30</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>DL673567883</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTR416G5H9GBT19WSA7QC30
+  ImageIndicator                 Y
+  OperatorLicenseNumber          DL673567883
+
+NOTES
+-----
+
+
+RESULT: PASS
