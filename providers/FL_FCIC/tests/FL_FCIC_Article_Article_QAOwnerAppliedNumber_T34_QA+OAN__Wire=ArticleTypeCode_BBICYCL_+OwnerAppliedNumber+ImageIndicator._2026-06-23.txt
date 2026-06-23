@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAOwnerAppliedNumber (T34 QA+OAN: Wire=ArticleTypeCode(BBICYCL)+OwnerAppliedNumber+ImageIndicator.)
+Date: 2026-06-23 13:35:54
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+ArticleType=BBICYCL, OAN=oan55732, Image=N; Serial blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTRKZGH6E1MA3N2GRVVHWX9"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KVTRKZGH6E1MA3N2GRVVHWX9</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCL</ArticleTypeCode><OwnerAppliedNumber>OAN55732</OwnerAppliedNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTRKZGH6E1MA3N2GRVVHWX9
+  ImageIndicator                 N
+  ArticleTypeCode                BBICYCL
+  OwnerAppliedNumber             OAN55732
+
+NOTES
+-----
+
+
+RESULT: PASS
