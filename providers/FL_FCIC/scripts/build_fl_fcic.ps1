@@ -1,6 +1,9 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.2 (2026-06-23): DH DOB label shortened "Date of Birth (DH) - required with Name" -> "DOB
+#   (required with Name)". helperText/placeholder is NOT rendered on this platform and FormDate
+#   has no help-text slot, so the qualifier stays in the label (the only rendered place).
 # v6.1 (2026-06-23): Name separator normalized to comma-space ", " (was ","), so the wire
 #   <Name> reads "Doe, John" per the ConnectCIC devdoc example (order was already Last-first).
 #   Cosmetic alignment; ConnectCIC parses on the comma. All 3 Name attrs (DL/DH/Boat).
@@ -79,7 +82,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.1"
+    [string]$Version = "6.2"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -770,7 +773,7 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_DH2' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (required with Name)' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
