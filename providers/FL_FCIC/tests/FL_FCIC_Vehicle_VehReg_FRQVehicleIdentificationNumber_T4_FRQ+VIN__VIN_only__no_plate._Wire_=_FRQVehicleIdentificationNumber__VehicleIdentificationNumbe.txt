@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQVehicleIdentificationNumber (T4 FRQ+VIN: VIN only, no plate. Wire = FRQVehicleIdentificationNumber (VehicleIdentificationNumber + ImageIndicator); no LicensePlateNumber bleed.)
+Date: 2026-06-23 12:45:35
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+VIN=1HGCM82633A004352, PlateType=PC, PlateYear=2026, Image=N; Plate blank, State blank
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVTNXCYPXH07K3SAZWHQKRT6"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVTNXCYPXH07K3SAZWHQKRT6</Id><VehicleIdentificationNumber>1HGCM82633A004352</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVTNXCYPXH07K3SAZWHQKRT6
+  VehicleIdentificationNumber    1HGCM82633A004352
+  ImageIndicator                 N
+
+NOTES
+-----
+
+
+RESULT: PASS
