@@ -1,8 +1,8 @@
 HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-06-22
-JSON version: v3.6
+Last updated: 2026-06-23
+JSON version: v3.7
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: COMPLETE -- v3.6 2026-06-22 (T1-T7 Vehicle all PASS; Firearm/Article/Boat CONFIRMED v3.5)
 
@@ -151,20 +151,20 @@ Architecture notes:
   Combos: DQN (OLN), DQ (Name+Sex+DOB), QW (Wanted Person)
   Optional fields: SexCode, RelatedSearchHitIndicator (default=Y)
 
-  DQN -- OLN + State [CONFIRMED]
+  DQN -- OLN + State [PENDING]
     set: OperatorLicenseNumber, RegistrationState
     any: (empty)
     keyReference: DQN
     Defaults: State=HI
 
-  DQ -- Name + SexCode + DOB [CONFIRMED]
+  DQ -- Name + SexCode + DOB [PENDING]
     set: Name, SexCode, BirthDate
     any: (empty)
     keyReference: DQ
     Name uses FormatStringRuleHandler: arguments=[' ',' ',' ']
     BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
 
-  QW -- Wanted Person: Name + DOB (no SexCode) [CONFIRMED]
+  QW -- Wanted Person: Name + DOB (no SexCode) [PENDING]
     set: Name, BirthDate
     any: (empty)
     keyReference: QW
@@ -198,13 +198,13 @@ Architecture notes:
   Combos: KQN (OLN), KQ (Name+Sex+DOB)
   Optional fields: SexCode
 
-  KQN -- OLN + State [CONFIRMED]
+  KQN -- OLN + State [PENDING]
     set: OperatorLicenseNumber, RegistrationState
     any: (empty)
     keyReference: KQN
     Uses DH-suffix fieldIds to avoid collision with DL QIDM
 
-  KQ -- Name + SexCode + DOB [CONFIRMED]
+  KQ -- Name + SexCode + DOB [PENDING]
     set: Name, SexCode, BirthDate
     any: (empty)
     keyReference: KQ

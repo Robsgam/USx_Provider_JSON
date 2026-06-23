@@ -1,8 +1,8 @@
 HI_HCJDC_OFML STATUS
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-06-22
-Current: v3.6 | 68P/0F/0W/0LIM | Updated 2026-06-22
+Last updated    : 2026-06-23
+Current: v3.7 | 68P/0F/0W/0LIM | Updated 2026-06-23
 
 BASE v1.1
   Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
@@ -66,31 +66,24 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DH:deselect          PASS     T22 deselect XML v2.9: both OLN filled. ONLY DriverLicenseQuery fired (OperatorLicenseNumber=D111111111); DH did NOT fire (opt-in, not selected). No DH OLN D222 on wire. One transaction. One-directional/opt-in confirmed via XML. RMS dlNumber=D111111111.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     RENDER:RENDER        PASS     T1 Person RENDER v2.9: 3 cards (SEARCH OPTIONS/DRIVER LICENSE/DRIVER HISTORY); no visible Attention field (hidden gate-feeder); PurposeCodeDH=C; Sex/State no default
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DL:DQN               PASS     T6 DQN v2.9: OLN-only DL. DriverLicenseQuery + OperatorLicenseNumber only. NO Attention on DL (Attention only in DH any[]; DL/DH isolation holds). RMS dlNumber only.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DL:DQ                PASS     T7 DQ v2.9: Name+Sex+DOB DL. Name=JON DOES, SexCode=M (NIBRS), BirthDate=01011985 (date handler). No OLN/State/PurposeCode/Attention. RMS firstName/lastName/dateOfBirth/sexAttrId.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DL:QW                PASS     T8 QW v2.9: Name+DOB no-Sex. Name=JON DOES, BirthDate=01011985, NO SexCode (QW fires when Sex blank). No OLN/State/Attention. RMS firstName/lastName/dateOfBirth, no sexAttrId.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DH:KQ                PASS     T10 KQ v2.9: Name+Sex+DOB DH. Attention=SGAMBELLONE R (auto from RMS profile), Name=JON DOE, SexCode=M, BirthDate=01011985, PurposeCode=C. No OLN/State. ONE transaction (DL deselected). Full DH auto-Attention confirmed.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-22 Person     DL:DQN               PASS     T21 any[]/OOS v2.9: DQN + State=California. State=CA rides along via any[] (NCIC reverse-lookup); OperatorLicenseNumber present. RMS dlNumber+registrationStateAttrId. Confirms OOS routing State!=HI + State any[] companion.
 
 LIVE TEST RESULTS (v3.4)
 ========================

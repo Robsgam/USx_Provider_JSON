@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-22 18:21
+  Generated: 2026-06-23 08:41
 ================================================================
 QUERY SIMULATION
 ================
@@ -51,33 +51,10 @@ QUERY SIMULATION
 
 --- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+    [SKIP] DQ -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] QW -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] DQ
-      set: [SexCode, BirthDate, NameLast, NameFirst]
-      any: [RegistrationState] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <Name>John Doe A</Name>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] QW
-      set: [BirthDate, NameLast, NameFirst]
-      any: [RegistrationState] -> matched: [RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QW</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <Name>John Doe A</Name>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] DQN
+    [FIRES first-match] DQN
       set: [OperatorLicenseNumber]
       any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
@@ -88,8 +65,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: DQ (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=John Doe A, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ
+    >> PLATFORM FIRES: DQN (first matching combo)
+    >> UNION POOL (platform serializes): OperatorLicenseNumber=D123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

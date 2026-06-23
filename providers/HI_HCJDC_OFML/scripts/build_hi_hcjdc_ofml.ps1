@@ -1,5 +1,11 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v3.7 (2026-06-23): OLN>Name guardrail on Person (DriverLicenseQuery). Added
+#   OperatorLicenseNumber NOT_EXISTS condition to DQ (Name+Sex+DOB) and QW (Name+DOB).
+#   When the officer enters an OLN (fires DQN), the Name-based combos exit the union pool
+#   so Name/Sex/DOB do not bleed onto the wire. Completes the identifier-priority guardrail
+#   for HI (Vehicle plate-wins done v3.6). conditions[].field = sourceField (PascalCase).
+#   Re-opens HI Person for live re-test. (verify_build CHECK 12)
 # v3.6 (2026-06-22): Plate-wins guardrail + vehicleYear any[] gap fix.
 #   PLATE-WINS: Added LicensePlateNumber NOT_EXISTS condition to RQV, QVV, M55S. When
 #   Plate is in form state, all VIN-path combos exit the union pool so VIN/MakeCode do not
@@ -103,7 +109,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "3.6",
+    [string]$Version = "3.7",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -299,15 +305,20 @@ $dlQuery = [PSCustomObject]@{
     combinations = @(
         # DQ: Name+DOB+Sex path -- 4 set[], most specific. primary=SexCode per metadata
         # (the SexCode-primary DQ combo; distinguishes from QW Name+DOB). State optional (OOS).
+        # CONDITION: OperatorLicenseNumber NOT_EXISTS -- OLN>Name guardrail (v3.7). When the
+        # officer enters an OLN (fires DQN), this Name-based combo exits the union pool so Name/
+        # Sex/DOB do not bleed onto the wire. conditions[].field = sourceField (PascalCase).
+        # Mirrors the v3.6 plate-wins guardrail on the Vehicle side.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'SexCode'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
         # QW: Wanted Person -- 3 set[] (Name+DOB, no Sex). State optional companion (OOS).
+        # CONDITION: OperatorLicenseNumber NOT_EXISTS -- OLN>Name guardrail (v3.7), same as DQ.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'QW'
             state                 = 'In/Out'
