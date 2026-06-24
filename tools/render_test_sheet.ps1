@@ -155,163 +155,127 @@ $entityOrder = @($qifs | Sort-Object {
 # ════════════════════════════════════════════════════════════════════
 
 $css = @'
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: Arial, sans-serif; font-size: 11px; color: #111; background: #fff; padding: 16px; }
-h1 { font-size: 15px; border-bottom: 2px solid #333; padding-bottom: 6px; margin-bottom: 14px; }
-.entity { page-break-after: always; margin-bottom: 30px; }
-.entity:last-child { page-break-after: auto; }
-h2 { font-size: 13px; background: #333; color: #fff; padding: 5px 8px; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
-.test { border: 1px solid #ccc; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
-.test-header { background: #f0f0f0; padding: 5px 8px; font-weight: bold; font-size: 11.5px; display: flex; gap: 12px; align-items: baseline; }
-.test-type { background: #555; color: #fff; padding: 1px 6px; border-radius: 2px; font-size: 10px; letter-spacing: .5px; }
-.test-type.render { background: #2c7; }
-.test-type.combo  { background: #27a; }
-.test-type.any    { background: #a72; }
-.test-type.neg    { background: #a33; }
-.test-body { padding: 8px 10px; }
-table.fill { border-collapse: collapse; width: 100%; margin-bottom: 6px; }
-table.fill th { background: #eee; font-weight: bold; text-align: left; padding: 3px 6px; border: 1px solid #ccc; }
-table.fill td { padding: 3px 6px; border: 1px solid #ddd; vertical-align: top; }
-table.fill td.val { font-family: monospace; font-size: 11px; color: #005; }
-table.fill td.note { font-style: italic; color: #555; font-size: 10px; }
-.expected { background: #f8f8f8; border: 1px solid #ddd; border-radius: 2px; padding: 5px 8px; margin-top: 4px; line-height: 1.6; }
-.expected .label { font-weight: bold; }
-.expected code { background: #e8e8e8; padding: 1px 4px; border-radius: 2px; font-size: 10.5px; }
-.must-not { color: #a00; }
-.sub { color: #555; font-size: 10px; margin-top: 2px; }
-.render-cards { display: flex; flex-wrap: wrap; gap: 8px; }
-.card { border: 1px solid #ccc; padding: 6px 8px; border-radius: 3px; min-width: 160px; flex: 1; }
-.card-title { font-weight: bold; font-size: 10.5px; border-bottom: 1px solid #ddd; margin-bottom: 4px; padding-bottom: 2px; text-transform: uppercase; letter-spacing: .5px; color: #333; }
-.card-field { padding: 1px 0; font-size: 10.5px; }
-.card-field .default { color: #060; font-family: monospace; font-size: 10px; }
-.card-field .type { color: #888; font-size: 10px; }
-@media print { body { padding: 8px; } .entity { page-break-after: always; } }
+body{font-family:monospace;font-size:11px;color:#000;background:#fff;padding:12px;max-width:900px}
+h1{font-size:12px;font-weight:bold;border-bottom:1px solid #000;margin-bottom:10px;padding-bottom:2px}
+h2{font-size:11px;font-weight:bold;border-top:2px solid #000;border-bottom:1px solid #000;padding:2px 0;margin:14px 0 4px}
+.t{border-bottom:1px dashed #ccc;padding:3px 0 5px;margin-bottom:2px}
+.th{font-weight:bold}
+.fill{margin:2px 0 2px 8px}
+.fill span.k{display:inline-block;min-width:220px}
+.fill span.v{font-weight:bold}
+.fill span.g{font-style:italic}
+.exp{margin:2px 0 0 8px}
+.absent{text-decoration:underline}
+@media print{body{padding:4px}.t{page-break-inside:avoid}h2{page-break-before:always}h2:first-of-type{page-break-before:auto}}
 '@
 
 $sb = [System.Text.StringBuilder]::new()
 [void]$sb.Append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>$provider Test Sheet</title><style>$css</style></head><body>")
-[void]$sb.Append("<h1>$provider &mdash; Test Reference Sheet &nbsp;<span style='font-weight:normal;font-size:12px;'>v$version &bull; $genDate</span></h1>")
+[void]$sb.Append("<h1>$provider &mdash; Test Sheet &mdash; v$version &mdash; $genDate</h1>")
 
 $testNum = 0
 
 foreach ($entity in $entityOrder) {
     $qif = $qifs | Where-Object { $_.targetEntity -eq $entity } | Select-Object -First 1
     if (-not $qif) { continue }
-    $cards    = Get-CardFields $qif.layout.default
+    $cards     = Get-CardFields $qif.layout.default
     $allFields = @(); foreach ($c in $cards.Values) { foreach ($r in $c.rows) { foreach ($f in $r.fields) { $allFields += $f } } }
-    $entQidms = @($qidms | Where-Object { $entityMap[$_.name] -eq $entity })
+    $entQidms  = @($qidms | Where-Object { $entityMap[$_.name] -eq $entity })
 
-    [void]$sb.Append("<div class='entity'>")
     [void]$sb.Append("<h2>$entity</h2>")
 
-    # ── RENDER test ──
+    # ── RENDER ──
     $testNum++
-    [void]$sb.Append("<div class='test'>")
-    [void]$sb.Append("<div class='test-header'><span class='test-type render'>RENDER</span><span>T$testNum &mdash; $entity render: verify cards, fields, defaults</span></div>")
-    [void]$sb.Append("<div class='test-body'><div class='render-cards'>")
+    [void]$sb.Append("<div class='t'>")
+    [void]$sb.Append("<div class='th'>T$testNum &mdash; RENDER</div>")
     foreach ($card in $cards.Values) {
-        [void]$sb.Append("<div class='card'><div class='card-title'>$(Esc $card.title)</div>")
+        $flist = @()
         foreach ($row in $card.rows) {
             foreach ($f in $row.fields) {
                 if ($f.hidden) { continue }
-                $dv = if ($f.default_) { " <span class='default'>= $(Esc $f.default_)</span>" } else { "" }
-                $tp = "<span class='type'>($($f.type))</span>"
-                [void]$sb.Append("<div class='card-field'>$(Esc $f.label)$dv $tp</div>")
+                $dv = if ($f.default_) { "=$(Esc $f.default_)" } else { '' }
+                $flist += "$(Esc $f.label)$dv"
             }
         }
-        [void]$sb.Append("</div>")
+        [void]$sb.Append("<div class='fill'><span class='k'>[$(Esc $card.title)]</span> $($flist -join ' | ')</div>")
     }
-    [void]$sb.Append("</div></div></div>")
+    [void]$sb.Append("</div>")
 
-    # ── Combo tests ──
+    # ── Combos ──
     foreach ($qidm in $entQidms) {
         $sortedCombos = @($qidm.combinations | Sort-Object {
-            $kr = if ($_.keyReference) { $_.keyReference } else { $_.keyRef }
             $setNames = @(); if ($_.requirements -and $_.requirements.set) { $setNames = @($_.requirements.set) }
             $setNames.Count
         } -Descending)
 
         foreach ($combo in $sortedCombos) {
-            $kr = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
+            $kr       = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
+            $setIds   = Get-SetFieldIds $combo $qidm $allFields
+            $guardFid = Get-GuardrailField $combo
             $testNum++
-            $setIds    = Get-SetFieldIds $combo $qidm $allFields
-            $guardFid  = Get-GuardrailField $combo
-            $anyNames  = @(); if ($combo.requirements -and $combo.requirements.any) { $anyNames = @($combo.requirements.any) }
-            $anyFields = @($allFields | Where-Object { $anyNames -contains $_.fieldId })
 
-            [void]$sb.Append("<div class='test'>")
-            [void]$sb.Append("<div class='test-header'><span class='test-type combo'>COMBO</span><span>T$testNum &mdash; $(Esc $qidm.query) &mdash; keyRef: <code>$kr</code></span></div>")
-            [void]$sb.Append("<div class='test-body'>")
+            [void]$sb.Append("<div class='t'>")
+            $guardNote = if ($guardFid) { " &mdash; GUARDRAIL: $guardFid NOT_EXISTS" } else { '' }
+            [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) &mdash; keyRef=$kr$guardNote</div>")
 
-            # Fill table
-            [void]$sb.Append("<table class='fill'><tr><th>Field</th><th>Value</th><th>Note</th></tr>")
+            # Fill lines
             foreach ($fid in $setIds) {
-                $f    = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
-                $lbl  = if ($f -and $f.label) { $f.label } else { $fid }
-                $val  = Get-TestValue $fid
-                $note = 'required (set[])'
-                [void]$sb.Append("<tr><td>$(Esc $lbl)</td><td class='val'>$(Esc $val)</td><td class='note'>$note</td></tr>")
+                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
+                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
+                $val = Get-TestValue $fid
+                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [set]</div>")
             }
-            # If guardrail: also show the winning field (the one that must NOT be absent)
             if ($guardFid) {
-                $gf    = $allFields | Where-Object { $_.fieldId -eq $guardFid } | Select-Object -First 1
-                $glbl  = if ($gf -and $gf.label) { $gf.label } else { $guardFid }
-                $gval  = Get-TestValue $guardFid
-                [void]$sb.Append("<tr style='background:#fff8e0'><td>$(Esc $glbl) <em>(guardrail)</em></td><td class='val'>$(Esc $gval)</td><td class='note'>fill to prove NOT_EXISTS fires; this combo fires ONLY when absent</td></tr>")
+                $gf   = $allFields | Where-Object { $_.fieldId -eq $guardFid } | Select-Object -First 1
+                $glbl = if ($gf -and $gf.label) { $gf.label } else { $guardFid }
+                $gval = Get-TestValue $guardFid
+                [void]$sb.Append("<div class='fill'><span class='k g'>$(Esc $glbl) ($guardFid)</span> <span class='v'>$(Esc $gval)</span> [guardrail &mdash; fill to trigger; must be ABSENT in wire]</div>")
             }
-            [void]$sb.Append("</table>")
 
-            # Expected
-            $mustHave  = ($setIds | ForEach-Object { "<code>$_</code>" }) -join ', '
-            $mustNot   = if ($guardFid) { "<span class='must-not'><strong>MUST NOT have:</strong> <code>$guardFid</code></span>" } else { '' }
-            [void]$sb.Append("<div class='expected'>")
-            [void]$sb.Append("<span class='label'>Expected query:</span> $(Esc $qidm.query) &nbsp;|&nbsp; <span class='label'>keyRef:</span> <code>$(Esc $kr)</code><br>")
-            if ($mustHave) { [void]$sb.Append("<span class='label'>Wire must have:</span> $mustHave<br>") }
-            if ($mustNot)  { [void]$sb.Append("$mustNot<br>") }
-            [void]$sb.Append("</div></div></div>")
+            # Expected line
+            $mustHave = $setIds -join ', '
+            $mustNot  = if ($guardFid) { " | ABSENT: $guardFid" } else { '' }
+            [void]$sb.Append("<div class='exp'>Expected: $(Esc $qidm.query) | keyRef=$kr | wire: $mustHave$mustNot</div>")
+            [void]$sb.Append("</div>")
         }
 
-        # ── any[] supplement: add optional fields to first combo ──
+        # ── any[] supplement ──
         $firstCombo = $sortedCombos | Select-Object -First 1
         if ($firstCombo) {
-            $anyNames2 = @(); if ($firstCombo.requirements -and $firstCombo.requirements.any) { $anyNames2 = @($firstCombo.requirements.any) }
+            $anyNames2  = @(); if ($firstCombo.requirements -and $firstCombo.requirements.any) { $anyNames2 = @($firstCombo.requirements.any) }
             $anyFields2 = @($allFields | Where-Object { $anyNames2 -contains $_.fieldId -and -not $_.hidden })
             if ($anyFields2.Count -gt 0) {
-                $testNum++
-                $kr2 = if ($firstCombo.keyReference) { $firstCombo.keyReference } else { $firstCombo.keyRef }
+                $kr2     = if ($firstCombo.keyReference) { $firstCombo.keyReference } else { $firstCombo.keyRef }
                 $setIds2 = Get-SetFieldIds $firstCombo $qidm $allFields
-                [void]$sb.Append("<div class='test'>")
-                [void]$sb.Append("<div class='test-header'><span class='test-type any'>ANY[]</span><span>T$testNum &mdash; $(Esc $qidm.query) + optional fields (keyRef <code>$kr2</code>)</span></div>")
-                [void]$sb.Append("<div class='test-body'>")
-                [void]$sb.Append("<table class='fill'><tr><th>Field</th><th>Value</th><th>Note</th></tr>")
+                $testNum++
+                [void]$sb.Append("<div class='t'>")
+                [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) + any[] &mdash; keyRef=$kr2</div>")
                 foreach ($fid in $setIds2) {
                     $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
                     $lbl = if ($f -and $f.label) { $f.label } else { $fid }
                     $val = Get-TestValue $fid
-                    [void]$sb.Append("<tr><td>$(Esc $lbl)</td><td class='val'>$(Esc $val)</td><td class='note'>required</td></tr>")
+                    [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [set]</div>")
                 }
                 foreach ($f in $anyFields2) {
                     $val = if ($f.default_) { $f.default_ } else { Get-TestValue $f.fieldId }
-                    [void]$sb.Append("<tr style='background:#f0f8ff'><td>$(Esc $f.label)</td><td class='val'>$(Esc $val)</td><td class='note'>optional &mdash; verify it serializes</td></tr>")
+                    [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $f.label) ($($f.fieldId))</span> <span class='v'>$(Esc $val)</span> [any &mdash; verify serializes]</div>")
                 }
-                [void]$sb.Append("</table>")
-                $anyCheck = ($anyFields2 | ForEach-Object { "<code>$($_.fieldId)</code>" }) -join ', '
-                [void]$sb.Append("<div class='expected'><span class='label'>Verify in wire:</span> $anyCheck all present</div>")
-                [void]$sb.Append("</div></div>")
+                $anyCheck = ($anyFields2 | ForEach-Object { $_.fieldId }) -join ', '
+                [void]$sb.Append("<div class='exp'>Verify in wire: $anyCheck</div>")
+                [void]$sb.Append("</div>")
             }
         }
     }
 
-    # ── Negative test (autoSelect entities only) ──
+    # ── Negative ──
     $hasAutoSelect = ($entQidms | Where-Object { $_.autoSelect -eq $true }).Count -gt 0
     if ($hasAutoSelect) {
         $testNum++
-        [void]$sb.Append("<div class='test'>")
-        [void]$sb.Append("<div class='test-header'><span class='test-type neg'>NEGATIVE</span><span>T$testNum &mdash; Empty $entity form &mdash; no Send button</span></div>")
-        [void]$sb.Append("<div class='test-body'><div class='expected'>Clear all fields. Verify: Send button does <strong>not</strong> appear (no set[] field filled).</div></div></div>")
+        [void]$sb.Append("<div class='t'>")
+        [void]$sb.Append("<div class='th'>T$testNum &mdash; NEGATIVE &mdash; $entity empty form</div>")
+        [void]$sb.Append("<div class='exp'>Clear all fields. No Send button.</div>")
+        [void]$sb.Append("</div>")
     }
-
-    [void]$sb.Append("</div>") # /entity
 }
 
 [void]$sb.Append("</body></html>")
