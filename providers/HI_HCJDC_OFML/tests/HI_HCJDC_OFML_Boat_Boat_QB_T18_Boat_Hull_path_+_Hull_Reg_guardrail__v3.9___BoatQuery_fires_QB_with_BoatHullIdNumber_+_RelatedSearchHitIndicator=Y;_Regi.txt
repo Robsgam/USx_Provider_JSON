@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Boat BoatQuery
+Combo: QB (T18 Boat Hull path + Hull>Reg guardrail (v3.9): BoatQuery fires QB with BoatHullIdNumber + RelatedSearchHitIndicator=Y; RegistrationNumber filled in form state but NOT serialized (BQ dropped via BoatHullIdNumber NOT_EXISTS) - guardrail confirmed live. Closes Boat 2/2)
+Date: 2026-06-24 08:54:07
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+BoatHullIdNumber=hull333333 AND RegistrationNumber=reg7666383 (both filled), relatedSearchHitIndicator=Y
+
+XML REQUEST
+-----------
+<Request><MessageType>BoatQuery</MessageType><Id>01KVWV2RH4V12XDGY8C2RHFK31</Id><BoatHullIdNumber>HULL333333</BoatHullIdNumber><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWV2RH4V12XDGY8C2RHFK31
+  BoatHullIdNumber               HULL333333
+  RelatedSearchHitIndicator      Y
+
+NOTES
+-----
+
+
+RESULT: PASS
