@@ -1,5 +1,5 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-06-23
+Generated: 2026-05-08 | Last updated: 2026-06-24
 
 ## CURRENT TEST / BUILD ORDER (user directive 2026-06-14, SUBJECT TO CHANGE)
 
@@ -60,6 +60,40 @@ gate-feeder field** → Attention is currently INERT on both (never reaches the 
 - Add a hidden `Attention` gate-feeder field on the Person/DH card: `InpH 'Attention' ... @{ initialValue = 'X' }`.
 - Keep `sourceField=['Attention']` + the handler. Expect `<Attention>` = officer LastName FirstInitial once re-imported.
 Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13 (working config). Deferred to each provider's next rebuild (user, 2026-06-22).
+
+## ParseCommsysNameRuleHandler empty-args regression (`_R` $args drop) — FLAGGED 2026-06-24
+
+ROOT CAUSE: `tools/_build_rms_bundle.ps1` helper `_R($fn, $args)` named its param `$args`
+(PowerShell reserved automatic variable) → collision silently dropped EVERY passed arguments
+array → emitted `"arguments": []` on every argument-bearing handler in the QRDM/RMS response
+layer during the bug window (intro commit `13a13c8` → FIX commit `1951db4`, NJ v4.0, 2026-06-17;
+param renamed `$args`→`$ruleArgs` + null-guard). Most visible symptom: Person `Name` attr empty
+args → `ParseCommsysNameRuleHandler` returns nothing → `Name` never written → CAD
+`buildParsedPersonTitle` falls back to **DL#** as the entity title (reported on the Newark
+Foundation NJ deploy).
+
+SHARED MODULE IS ALREADY FIXED — remediation = REBUILD from current source (no patch, no code edit;
+[[feedback-clean-build-no-patches]]). Canonical handler spec: Confluence "Attribute Handle" (Cringer)
+handler #3 (3-level fallback: normalized parts → NormalizedName → Name); repo summary
+`knowledge-base/RULE_HANDLERS.txt` #19.
+
+PROPAGATION STATUS (ripgrep-verified 2026-06-24, current root JSONs):
+- POPULATED / fixed (NO action): NJ v4.4, HI v4.1, FL v6.5, TX_TLETS v3.13 (post-fix rebuilds) +
+  12 pre-bug 2026-05-11 legacy builds (LA, MD, OH, NM, OR, TN, CA_VENTURA, CA_eSUN, CA_SAN_LUIS,
+  CA_CLETS_OCATS, IL, CA_CONTRA_COSTA).
+- EMPTY `[]` — AWAITING REBUILD (the only 4; built inside the bug window): **CA_CLETS,
+  NY_NYSPIN_EJUSTICE, AZ_AZDPS, TX_TLETS_CCH.** In-scope: CA_CLETS, NY. Out-of-scope: AZ, TX_TLETS_CCH.
+
+ACTION at each affected provider's next rebuild (one-at-a-time): `pipeline.ps1 -Provider <name>`
+→ regenerates populated args → re-import. Verify: `simulate_response.ps1` shows `Name` populated.
+- **NJ / Newark Foundation:** fix already in repo since v4.0 — **re-deploy current v4.4** (no build change).
+- NUANCE (verify at rebuild): Confluence doc shows NameLast/First/Middle with 2 separators
+  `[", ", " "]`, Name with 3 `[", ", " ", " "]`; `_build_rms_bundle.ps1` emits 3 for all four. Likely immaterial.
+
+GUARD TO ADD (prevents silent regression; do at next tooling window): a `verify_build.ps1` CHECK
+that FAILs on any `ParseCommsysNameRuleHandler` with empty `arguments[]` (enforce PHASE 2c already
+runs verify_build → blocks) — would auto-flag the 4 stale providers and stop a re-regression shipping.
+This bug shipped silently because nothing gated handler args. Plan ref: `dapper-tumbling-muffin.md`.
 
 ## DEFERRED BACKLOG — Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
 
