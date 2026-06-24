@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: M55L (T15 in-state plate: VehicleRegistrationQuery fires M55L with LicensePlateNumber + VehicleTypeCode=1 (v4.1 CAD default rides along) + ImageIndicator N; no PlateType/Year so M55L wins over RQ. Proven via form-based test (PlateType/Year blanked))
+Date: 2026-06-24 08:49:26
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+LicensePlateNumber=abc123, vehicleTypeCode=1, ImageIndicator=N (PlateType/Year/State/VIN blank)
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVWSTPC52XWNY33BJ9G4VS0A</Id><ImageIndicator>N</ImageIndicator><LicensePlateNumber>ABC123</LicensePlateNumber><VehicleTypeCode>1</VehicleTypeCode></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWSTPC52XWNY33BJ9G4VS0A
+  ImageIndicator                 N
+  LicensePlateNumber             ABC123
+  VehicleTypeCode                1
+
+NOTES
+-----
+
+
+RESULT: PASS
