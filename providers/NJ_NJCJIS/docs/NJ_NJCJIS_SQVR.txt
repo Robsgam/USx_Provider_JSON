@@ -1,31 +1,17 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
-LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-24
 JSON version: v4.5
 Validator: 69 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: v3.5 imported USx NJCJIS Tenant + Newark Foundation 2026-05-28. 14/14 combos, 5 QIDMs.
+Live test: IN PROGRESS (entity-by-entity block-out; v4.5 first full live run)
 
-KNOWN LIMITATIONS (2):
-  1. DL combo order: DQN(2 set) before DQ(3 set) -- correct by operational priority (OLN before Name)
-  2. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
+KNOWN LIMITATIONS (1):
+  1. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
 
-EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
-  NJ_NJCJIS_VehStolenSeparate.json (v3.7-SEPARATE; was RANDOM_COLLAPSED): all 13 combos built;
-    QVN/QVP/QVV triggers suffix-isolated on "Vehicle Stolen" card (renamed from "RANDOM"
-    2026-06-14). Live status: PENDING (docs/TEST_PLAN_VEH_VehStolenSeparate.txt).
-  NJ_NJCJIS_VehStolenRemoved.json (v3.6-REMOVED; was RANDOM_REMOVED): VehicleStolenQuery NOT BUILT --
-    QVN/QVP/QVV (metadata keyRef QV, 3 combos) are a USER-APPROVED SKIP
-    (directive 2026-06-10; stolen preserved via Random=Y; sole loss NCIC#).
-    All other combos built. Live status: Vehicle (request-side) COMPLETE 2026-06-14 -- all PASS
-    (docs/TEST_PLAN_VEH_VehStolenRemoved.txt). Q4b response-premise N/A (no state backend in env).
-  One-JSON-in-root rule suspended by user directive until a winner merges to mainline.
-  NJ_NJCJIS_PASCAL.json (v3.5-PASCAL, 2026-06-11): TESTING-ONLY -- mainline recased to
-    PascalCase form params (platform convention change; OnScene/Forge + CAD both emit
-    Pascal). Same 13 combos as mainline; NJCJIS XML identical. Live on USx: typed PASS,
-    CAD-with-state PASS, union-semantics proof (P1/P3/P4); P2 = accepted known condition
-    (State default not surviving codeTypeProvider on blank CAD state). Imported Newark
-    Foundation 2026-06-11 -- hands-off third-party testing, REPORTED status only.
+USER-APPROVED SKIPS:
+  VehicleStolenQuery (QVN/QVP/QVV) -- 3 combos SKIPPED (directive 2026-06-10).
+    Stolen vehicle preserved via RandomRequest=Y on VehicleRegistrationQuery (RQ_RAND / RQN_RAND).
+    Sole loss: NCIC# field. Confirmed acceptable; VehicleStolenQuery NOT BUILT in v4.x.
 
 ================================================================================
 1. VehicleRegistrationQuery -- Vehicle Entity
@@ -33,99 +19,52 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
 
   QIDM: NJ_NJCJIS_VehicleRegistrationQuery
   QIF:  Vehicle
-  autoSelect: true (default query, auto-selects when plate/VIN entered)
-  queriesToDeselect: NONE (avoids bidirectional deadlock)
-  Combos: RQ_RAND (plate RAND), RQ (plate FULL), RQN_RAND (VIN RAND), RQN (VIN FULL)
+  autoSelect: true
+  queriesToDeselect: NONE
+  Combos: RQ (plate), RQN (VIN)
+  Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
 
-  RQ_RAND -- Plate search, RandomRequest=Y [PENDING]
-    set: licensePlateNumber
-    any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
-    conditions: randomRequest EQUALS Y
-    keyReference: RQ_RAND
-    T3: Plate + all defaults + RandomRequest=Y. Conditions routing accepted.
-
-  RQ -- Plate search, FULL (default) [PENDING]
+  RQ -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
-    T2: Plate + all defaults + RandomRequest=N. Fallback combo (no conditions).
+    guardrail: VIN combo gated on LicensePlateNumber NOT_EXISTS (plate wins)
+    V3 (2026-06-24): Plate=TEST123 + VIN filled -- RQ fired, VIN absent (guardrail confirmed).
+    V4 (2026-06-24): any[] fields -- RandomRequest=Y, PlateTypeCode=PC, State=NJ all serialized.
 
-  RQN_RAND -- VIN search, RandomRequest=Y [PENDING]
-    set: vehicleIdentificationNumber
-    any: randomRequest, registrationState, imageIndicator
-    conditions: randomRequest EQUALS Y
-    keyReference: RQN_RAND
-    T11: VIN + RandomRequest=Y. No plate fields sent.
-
-  RQN -- VIN search, FULL (default) [CONFIRMED]
+  RQN -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
-    T4: VIN + State + RandomRequest=N + ImageIndicator sent. No plate fields.
-
-  RMS co-fire CONFIRMED
-    licensePlateIn: tag + registrationStateAttrIds
-    vehicleIdentificationNumber: vinNumber + registrationStateAttrIds
+    guardrail: default combo; fires when no plate present
+    V2 (2026-06-24): VIN=1HGCM82633A123456 -- RQN fired, plate fields absent.
 
 ================================================================================
-2. VehicleStolenQuery -- Vehicle Entity
-================================================================================
-
-  QIDM: NJ_NJCJIS_VehicleStolenQuery
-  QIF:  Vehicle (shared with VehicleReg)
-  autoSelect: false (officer manually checks Stolen checkbox)
-  queriesToDeselect: VehicleRegistrationQuery (checking Stolen unchecks Reg)
-  Combos: QVN (NCIC#), QVP (plate), QVV (VIN)
-
-  QVN -- NCIC Number [PENDING]
-    set: ncicNumber
-    any: imageIndicator
-    keyReference: QVN
-    T12: NCICNumber + ImageIndicator sent. No State, no plate, no VIN.
-
-  QVP -- Plate search [PENDING]
-    set: licensePlateNumber
-    any: imageIndicator, registrationState, vehicleIdentificationNumber, vehicleMakeCode
-    keyReference: QVP
-    T5: Plate + State + ImageIndicator. queriesToDeselect confirmed (Reg unchecked).
-
-  QVV -- VIN search [PENDING]
-    set: vehicleIdentificationNumber
-    any: imageIndicator, vehicleMakeCode
-    keyReference: QVV
-    T13: VIN + ImageIndicator sent. No State. RMS co-fired with vinNumber.
-
-  RMS co-fire CONFIRMED
-    licensePlateIn: tag + registrationStateAttrIds
-    vehicleIdentificationNumber: vinNumber + registrationStateAttrIds
-
-================================================================================
-3. DriverLicenseQuery -- Person Entity
+2. DriverLicenseQuery -- Person Entity
 ================================================================================
 
   QIDM: NJ_NJCJIS_DriverLicenseQuery
   QIF:  Person
   autoSelect: true
   Combos: DQN (OLN), DQ (Name+DOB)
+  Note: DQN before DQ by operational priority (OLN wins); OLN NOT_EXISTS guardrail on DQ
 
-  DQN -- OLN + State [PENDING]
+  DQN -- OLN search [PENDING]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
-    T6: OLN + State + ImageIndicator sent. RMS co-fired with dlNumber.
+    P2: OLN=D999888777 + State=NJ + Image=Y. OLN + State serialized.
 
-  DQ -- Name + DOB [PENDING]
+  DQ -- Name + DOB search [PENDING]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ
-    T7: Name=DOE, JOHN (FormatStringRuleHandler). BirthDate=01011985 (CommsysParseDateRuleHandler).
-
-  RMS co-fire CONFIRMED
-    licenseNumber: dlNumber + registrationStateAttrId
-    firstAndLastName: lastName + firstName + dateOfBirth + registrationStateAttrId
+    guardrail: OLN NOT_EXISTS on this combo
+    P3 (guardrail): OLN + Name + DOB filled -- DQN fires, name fields absent (OLN wins).
+    P4: Name=DOE/JOHN + DOB=01/15/1990 -- DQ fires, OLN absent.
 
 ================================================================================
-4. GunQuery -- Firearm Entity
+3. GunQuery -- Firearm Entity
 ================================================================================
 
   QIDM: NJ_NJCJIS_GunQuery
@@ -133,13 +72,13 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   Combos: QG
 
   QG -- Serial Number [PENDING]
-    set: serialNumber
-    any: gunCaliber, firearmMake, gunModel, imageIndicator
+    set: gunSerialNumber
+    any: gunCaliber, gunMake, gunModel, imageIndicator
     keyReference: QG
-    T8: Serial + ImageIndicator sent (minimal).
+    F2: Serial=GUN12345 + any[] (Make, Caliber, Model) -- QG fires, all any[] serialize.
 
 ================================================================================
-5. ArticleSingleQuery -- Article Entity
+4. ArticleSingleQuery -- Article Entity
 ================================================================================
 
   QIDM: NJ_NJCJIS_ArticleSingleQuery
@@ -147,55 +86,46 @@ EXPERIMENTAL BRANCHES (2026-06-10) -- this SQVR covers MAINLINE v3.5 only:
   Combos: QA
 
   QA -- Serial + ArticleType [PENDING]
-    set: serialNumber, articleTypeCode
+    set: articleSerialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
-    T9: Serial + ArticleTypeCode=BBICYCT + ImageIndicator. Both set[] fields required.
+    A2: Serial=ART99999 + ArticleTypeCode (any) -- QA fires.
 
 ================================================================================
-6. BoatQuery -- Boat Entity
+5. BoatQuery -- Boat Entity
 ================================================================================
 
   QIDM: NJ_NJCJIS_BoatQuery
   QIF:  Boat
-  Combos: QB (Registration), QBN (Hull ID)
-  No State field on Boat (removed in v2 metadata)
+  Combos: QBN (hull, default), QB (registration)
+  Note: No State field on Boat entity
+  guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QB -- Registration Number [PENDING]
-    set: registrationNumber
-    any: imageIndicator
-    keyReference: QB
-    T10: RegistrationNumber + ImageIndicator sent.
-
-  QBN -- Hull ID [PENDING]
+  QBN -- Hull ID search [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
-    T14: BoatHullIdNumber + ImageIndicator sent.
+    B2: HullID=FL1234AB56H7 -- QBN fires.
+    B3 (guardrail): Reg + Hull filled -- QBN fires, Reg absent (hull wins).
+
+  QB -- Registration Number search [PENDING]
+    set: registrationNumber
+    any: imageIndicator
+    keyReference: QB
+    B4: Reg=FL1234AB -- QB fires.
 
 ================================================================================
 UI BEHAVIOR
 ================================================================================
 
-  autoSelect (confirmed T1 2026-05-15)
+  autoSelect (confirmed v3.5 live tests)
     VehicleRegistrationQuery (autoSelect=true): checkbox activates when set[] fields entered
-    VehicleStolenQuery (autoSelect=false): checkbox stays unchecked, requires manual check
-    Note: autoSelect triggers on field entry, NOT on form load (engineering doc misleading)
-
-================================================================================
-RMS BUNDLE
-================================================================================
-
-  Patches applied: 1 (Vehicle state), 3 (Person state), 6 (cleanup)
-  RMS co-fire confirmed: Vehicle (plate T2/T5, VIN T4/T13), Person (OLN T6, Name T7)
+    Note: autoSelect triggers on field entry, NOT on form load
 
 ================================================================================
 SUMMARY
 ================================================================================
 
-  Total combos: 13 CommSys + RMS
-  CONFIRMED: ALL 13 combos + UI behavior
-  PENDING: NONE
-  Live tests: 14/14 PASS (2026-05-08) -- full combo coverage
-  Test logs: 14 files in tests/ with XML captures
-  Test reference: docs/NJ_NJCJIS_TEST_REFERENCE.txt (simulator output)
+  Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
+  CONFIRMED: RQ, RQN (Vehicle -- 2/2)
+  PENDING:   DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 6/8
