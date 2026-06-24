@@ -110,15 +110,15 @@ IMPORT HISTORY:
     T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
     T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
     Phase 2 - Vehicle combos:
-  ---   2026-06-24 Vehicle    VehReg:RQN           PASS     V2 RQN (VIN): VehicleRegistrationQuery fires RQN; VIN + State NJ + RandomRequest N + ImageIndicator N; PlateType/PlateYear form defaults did NOT serialize (not in RQN pool) - no plate bleed into VIN query
-    T7   Vehicle  RQN      VehReg VIN FULL              PASS  (VIN+random=N fallback)
+  ---   2026-06-24 Vehicle    VehReg:RQ            PASS     OOS plate: plate=TEST1 + State=MA + PlateType=PC + PlateYear=2026 + RandomRequest=N + Image=N; RQ fires; State=MA serialized (OOS routing confirmed)
+  ---   2026-06-24 Vehicle    VehReg:RQN           PASS     T6 RQN: VIN=343GFFGDFG + State=NJ + RandomRequest=N + Image=N; RQN fires; no plate in XML (guardrail passive confirm)
     T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
     T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
     T10  Vehicle  QVV      VehStolen VIN                PASS  (VIN+image, queriesToDeselect)
     T11  Vehicle  QVP      VehStolen plate              PASS  (plate+state+image, queriesToDeselect)
     T12  Vehicle  QVN      VehStolen NCIC#              PASS  (NCICNumber+image, exclusive field)
     Phase 3 - Person combos:
-    T13  Person   DQN      DL OLN                       PASS  (OLN+state+image=Y, RMS co-fire)
+  ---   2026-06-24 Person     DL:DQ                PASS     P4-any[]: SexCode=M serialized (reverse-lookup from Male dropdown); Name+DOB+Sex+State+Image all present; BirthDate=01151985
     T14  Person   DQ       DL Name+DOB                  PASS  (Name=DOEA,JOE+DOB+state+image=Y)
     Phase 4 - Boat combos:
     T15  Boat     QBN      Boat hull ID                 PASS  (hullId+image)
@@ -260,4 +260,6 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   ---   2026-06-24 Vehicle    Render:Render        PASS     V1 Vehicle render (v4.5): 3 cards (Search Options/PLATE SEARCH/VIN SEARCH); defaults State=NJ, RandomRequest=N, ImageIndicator=N, PlateType=PC, PlateYear=2026; no Send at empty
   ---   2026-06-24 Vehicle    VehReg:RQ+Plate      PASS     Vehicle by Plate - plate-wins guardrail (VIN absent when both filled)
   ---   2026-06-24 Vehicle    VehReg:RQ+any[]      PASS     Vehicle by Plate - any[] fields serialize (RandomRequest=Y, PlateType=PC, State=NJ)
+  ---   2026-06-24 Person     RENDER:RENDER        PASS     P1 Person render: 3 cards (Search Options/LICENSE NUMBER/NAME SEARCH); State=NJ, Image=Y defaults; all fields present
+  ---   2026-06-24 Article    RENDER:RENDER        PASS     T5 Article render: 1 card (NCIC ARTICLE QUERY); Serial Number, ArticleType dropdown (no default), Image=N; empty form confirmed no-send
   (none yet -- v4.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.5/)
