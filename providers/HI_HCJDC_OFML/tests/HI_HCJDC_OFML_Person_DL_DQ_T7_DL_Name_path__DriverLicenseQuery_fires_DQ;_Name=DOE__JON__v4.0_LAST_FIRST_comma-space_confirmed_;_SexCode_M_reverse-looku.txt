@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQ (T7 DL Name path: DriverLicenseQuery fires DQ; Name=DOE, JON (v4.0 LAST,FIRST comma-space confirmed); SexCode M reverse-lookup from Male; BirthDate MMddyyyy 01011985; no OLN; Attention/purposeCodeDH not serialized)
+Date: 2026-06-24 08:41:22
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameLast=doe, NameFirst=jon, BirthDate=1985-01-01, SexCode=Male (OLN blank)
+
+XML REQUEST
+-----------
+<Request><MessageType>DriverLicenseQuery</MessageType><Id>01KVWTB6R4KD759YRYA3ANT4BF</Id><SexCode>M</SexCode><BirthDate>01011985</BirthDate><Name>DOE, JON</Name></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWTB6R4KD759YRYA3ANT4BF
+  SexCode                        M
+  BirthDate                      01011985
+  Name                           DOE, JON
+
+NOTES
+-----
+
+
+RESULT: PASS
