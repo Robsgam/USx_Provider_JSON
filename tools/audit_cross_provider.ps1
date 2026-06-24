@@ -332,7 +332,10 @@ foreach ($provName in $providerNames) {
     # Look in the provider bundle (not ENTITIES, not RMS)
     function Extract-Version {
         param([object]$json)
-        if (-not $json -or -not $json.bundles) { return $null }
+        if (-not $json) { return $null }
+        # Prefer the top-level JSON `version` field (authoritative); fall back to bundle description.
+        if ($json.version) { return $json.version }
+        if (-not $json.bundles) { return $null }
         foreach ($bundle in $json.bundles) {
             if ($bundle.provider -eq 'MARK43' -or $bundle.provider -eq 'RMS') { continue }
             if ($bundle.description -match 'v(\d+\.\d+)') {

@@ -1421,3 +1421,46 @@ See also:
 
   PORTFOLIO NOTE: Other providers with DH may have the same devdoc constraint. Check
   at each provider's rebuild -- do not mass-sweep (one-provider-at-a-time rule).
+
+================================================================================
+19. BUILD REPRODUCIBILITY CONTRACT
+================================================================================
+
+  CONTRACT: a provider's committed <PROVIDER>.json MUST equal what its build script
+  produces from current inputs (KB + shared modules). The build is the source of
+  truth; the committed JSON is a cached artifact of it.
+
+  TWO DISTINCT FAILURE MODES (audit_reproducible.ps1 separates them):
+    - NON-DETERMINISTIC: two fresh builds (same moment, same inputs) differ.
+      That is a BUILD BUG -- fix it. The build must not depend on anything that
+      varies run-to-run.
+    - STALE: builds are deterministic, but the committed JSON differs from a fresh
+      build. The commit predates a KB / shared-module change. Not a bug -- rebuild
+      that provider to bring it current (one-provider-at-a-time).
+
+  INTENTIONALLY VARIANT FIELDS (normalized out of the reproducibility compare; do
+  NOT treat their drift as non-determinism):
+    - top-level "version" (stamped by Write-ProviderJson from build-script $Version).
+    - PlateYear / LicensePlateYear initialValue = current year (Get-Date). This
+      makes a raw build reproducible only WITHIN a calendar year. audit_reproducible
+      normalizes it; if you ever need cross-year byte-stability, pin the year
+      instead of deriving it. (No other Get-Date value reaches JSON content -- dates
+      appear only in the phase-archive FILENAME.)
+
+  DETERMINISM REQUIREMENTS already in place: [ordered] dicts everywhere (stable
+  key order), ConvertTo-Json -Depth 100, UTF-8 no-BOM. Do not introduce Get-Random,
+  unordered hashtables, or time/now-derived JSON content.
+
+  KEEPING A REBUILD = a real version bump: bump build-script $Version, add a
+  BUILD_NOTES entry (CHANGED/REASON), reset_test_package, sync_version_docs +
+  CLAUDE.md row, build_report, enforce green. (feedback: full-rebuild-audit,
+  rebuild-restarts-testing, bump-build-script-version.)
+
+  GATE: audit_reproducible.ps1 -Path <json>  (or enforce.ps1 -Reproducible; opt-in
+  because it re-runs the build twice per provider). Build to scratch via the
+  $env:REPRO_OUTPATH hook in Write-ProviderJson -- never compare by overwriting the
+  committed file.
+
+  PRECEDENT (2026-06-24): NJ_NJCJIS v4.5 reproduced byte-identical; FL_FCIC v6.5 and
+  HI_HCJDC_OFML v4.1 were DETERMINISTIC-but-STALE (predated the version field + the
+  VehicleMakeName QRDM fix) -> rebuilt to v6.6 / v4.2.

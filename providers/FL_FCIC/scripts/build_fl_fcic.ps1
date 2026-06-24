@@ -94,7 +94,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.5"
+    [string]$Version = "6.6"
 )
 
 $ErrorActionPreference = 'Stop'

@@ -3,6 +3,17 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.2  2026-06-24  Adopt version field + VehicleMakeName QRDM fix (shared-module currency)
+  CHANGED: Native rebuild on current shared modules. (1) Top-level "version":"4.2" now
+    emitted by Write-ProviderJson. (2) VehicleMakeName QRDM attribute codeType corrected
+    from NCIC_FIREARM_MAKE/NJ_NIBRS (firearm-make table -- wrong) to VehicleType/VEHICLE,
+    matching the 2026-06-24 _build_rms_bundle.ps1 fix. Query/combo behavior unchanged
+    (entity fingerprints identical); only results-mapping make resolution + the version
+    field differ.
+  REASON: Reproducibility audit (audit_reproducible.ps1) found the committed v4.1 JSON was
+    DETERMINISTIC but STALE -- it predated the 2026-06-24 shared-module fixes. Rebuilt to
+    bring the committed JSON back in sync with a fresh build.
+
 v4.1  2026-06-23  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild

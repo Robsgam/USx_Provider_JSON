@@ -16,6 +16,8 @@
     .\enforce.ps1 -Provider HI_HCJDC_OFML   # single provider (still runs cross-provider)
     .\enforce.ps1 -SkipGit            # skip git status check (for mid-work runs)
     .\enforce.ps1 -Rebuild            # auto-rebuild stale providers before checking
+    .\enforce.ps1 -Reproducible       # also re-run each build twice to scratch and
+                                      #   confirm committed JSON == fresh build (heavy; opt-in)
     .\enforce.ps1 -OutFile report.txt # save full output to file
 
   Exit code 0 = ENFORCED (all gates pass). Exit code 1 = BLOCKED (fix before declaring done).
@@ -25,6 +27,7 @@ param(
     [string]$Provider,
     [switch]$SkipGit,
     [switch]$Rebuild,
+    [switch]$Reproducible,
     [string]$OutFile
 )
 
@@ -133,6 +136,28 @@ function Parse-Report($path) {
     return $null
 }
 
+# ── Build-manifest trust chain (Workstream 0; closes findings A/B/C) ──
+# Phase 1 loads each provider's BUILD_MANIFEST and verifies its sourceSha256 ==
+# the live JSON hash (auto-rerunning build_report on mismatch). Verified manifests
+# are stashed here so Phase 2/2b/2c can confirm each report it scores is the exact
+# file build_report produced from the current JSON, and carries real checks.
+$script:Manifests = @{}
+
+# Returns @{ok=$bool; reason=$str}. ok only when the report exists, its live SHA
+# matches the manifest entry recorded at build time, and checksRun > 0.
+function Test-ReportTrusted($provName, $reportPath) {
+    $man = $script:Manifests[$provName]
+    if (-not $man)                  { return @{ ok=$false; reason='no verified build manifest' } }
+    if (-not (Test-Path $reportPath)) { return @{ ok=$false; reason='report file missing' } }
+    $leaf  = Split-Path $reportPath -Leaf
+    $entry = $man.reports.$leaf
+    if (-not $entry)                { return @{ ok=$false; reason="'$leaf' not in manifest" } }
+    $liveSha = (Get-FileHash -Path $reportPath -Algorithm SHA256).Hash
+    if ($liveSha -ne $entry.sha256) { return @{ ok=$false; reason='report SHA != manifest (edited/stale)' } }
+    if ([int]$entry.checksRun -le 0){ return @{ ok=$false; reason='report contentless (0 checks)' } }
+    return @{ ok=$true; reason='' }
+}
+
 # ══════════════════════════════════════════════════════════════════════════════
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 Out ""
@@ -190,22 +215,33 @@ foreach ($pd in $providers) {
         $validatorReport = Join-Path $docsDir "base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
     }
 
-    if (Test-Path $validatorReport) {
-        $jsonTime = $activeJson.LastWriteTime
-        $reportTime = (Get-Item $validatorReport).LastWriteTime
-        if ($reportTime -lt $jsonTime) {
-            if ($Rebuild) {
-                Out "  Rebuilding reports for $provName..."
-                & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
-                Fixed "$provName -- reports rebuilt (were stale)"
-            } else {
-                Fail "$provName -- reports STALE (JSON: $($jsonTime.ToString('HH:mm')), reports: $($reportTime.ToString('HH:mm')))"
-            }
-        } else {
-            Pass "$provName -- reports fresh"
+    # ── Build-manifest hash gate (replaces gameable LastWriteTime check) ──
+    # Trust a provider's reports only when its BUILD_MANIFEST records a sourceSha256
+    # equal to the live JSON hash. On mismatch/missing, auto-rerun build_report once
+    # and re-read (Workstream 0.1/0.2). A SHA match guarantees the reports describe
+    # the JSON on disk -- timestamps can't be gamed and re-touching can't fake it.
+    $manifestFile = Join-Path $docsDir "BUILD_MANIFEST_${docPrefix}.json"
+    if (-not (Test-Path $manifestFile)) { $manifestFile = Join-Path $docsDir "mc\BUILD_MANIFEST_${docPrefix}_MC.json" }
+    if (-not (Test-Path $manifestFile)) { $manifestFile = Join-Path $docsDir "base\BUILD_MANIFEST_${docPrefix}_BASE.json" }
+
+    $liveSha = (Get-FileHash -Path $activeJson.FullName -Algorithm SHA256).Hash
+    $man = $null
+    if (Test-Path $manifestFile) {
+        try { $man = Get-Content $manifestFile -Raw | ConvertFrom-Json } catch { $man = $null }
+    }
+    if (-not ($man -and $man.sourceSha256 -eq $liveSha)) {
+        Out "  $provName -- build manifest stale/missing; regenerating reports..."
+        & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
+        $man = $null
+        if (Test-Path $manifestFile) {
+            try { $man = Get-Content $manifestFile -Raw | ConvertFrom-Json } catch { $man = $null }
         }
+    }
+    if ($man -and $man.sourceSha256 -eq $liveSha) {
+        $script:Manifests[$provName] = $man
+        Pass "$provName -- reports match live JSON (SHA $($liveSha.Substring(0,12))...)"
     } else {
-        Fail "$provName -- no validator report found"
+        Fail "$provName -- build manifest missing or != live JSON after rebuild (reports NOT trustworthy)"
     }
 
     # Check phase archive exists for current version
@@ -268,6 +304,11 @@ foreach ($pd in $providers) {
         if (-not (Test-Path $reportPath)) { continue }
 
         $label = if ($variant) { "$provName ($variant)" } else { $provName }
+        $trust = Test-ReportTrusted $provName $reportPath
+        if (-not $trust.ok) {
+            Fail "$label -- validator report not trusted: $($trust.reason)"
+            break
+        }
         $result = Parse-Report $reportPath
         if (-not $result) {
             Fail "$label -- cannot parse validator report"
@@ -301,6 +342,11 @@ foreach ($pd in $providers) {
         if (Test-Path $mdReportMc) { $mdReport = $mdReportMc }
         else { Info "$provName -- no metadata audit report (run build_report)"; continue }
     }
+    $trust = Test-ReportTrusted $provName $mdReport
+    if (-not $trust.ok) {
+        Fail "$provName -- metadata audit not trusted: $($trust.reason)"
+        continue
+    }
     $mdText  = [System.IO.File]::ReadAllText($mdReport)
     $mdFails = ([regex]::Matches($mdText, '\[FAIL\]')).Count
     if ($mdFails -gt 0) {
@@ -333,6 +379,11 @@ foreach ($pd in $providers) {
             if (Test-Path $rptMc) { $rpt = $rptMc }
             else { Info "$provName -- no $($spec.label) report (run build_report)"; continue }
         }
+        $trust = Test-ReportTrusted $provName $rpt
+        if (-not $trust.ok) {
+            Fail "$provName $($spec.label) -- report not trusted: $($trust.reason)"
+            continue
+        }
         $txt   = [System.IO.File]::ReadAllText($rpt)
         $fails = ([regex]::Matches($txt, '\[FAIL\]')).Count
         $warns = ([regex]::Matches($txt, '\[WARN\]')).Count
@@ -342,6 +393,91 @@ foreach ($pd in $providers) {
             Warn "$provName $($spec.label) -- $warns WARN (see docs\$($spec.base))"
         } else {
             Pass "$provName $($spec.label) -- clean"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2d: Simulator Parity (tool integrity, provider-agnostic)
+#  Guards that test_commsys.ps1 and run_test_matrix.ps1 still share one canonical
+#  condition predicate (_sim_helpers.ps1) and have not drifted back to the
+#  attribute-name-first model that masked the HI v3.2 inert-condition bug (finding
+#  H). Run live -- it audits the tools, not a cached report.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2d: Simulator Parity"
+$parityTool = Join-Path $toolDir "audit_simulator_parity.ps1"
+if (Test-Path $parityTool) {
+    $parityOut = & powershell -ExecutionPolicy Bypass -File $parityTool 2>&1 | Out-String
+    $pm = [regex]::Match($parityOut, 'RESULTS:\s*(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL')
+    $parityFail = if ($pm.Success) { [int]$pm.Groups[2].Value } else { 1 }
+    if ($parityFail -gt 0) {
+        Fail "simulator parity -- $parityFail FAIL (test_commsys/run_test_matrix drifted; run audit_simulator_parity.ps1)"
+    } else {
+        Pass "simulator parity -- test_commsys and run_test_matrix share canonical predicate"
+    }
+} else {
+    Fail "simulator parity -- audit_simulator_parity.ps1 not found"
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2e: Supported-Query (Devdoc) Gate
+#  Reads the SUPPORTED_QUERY_AUDIT report (audit_supported_queries.ps1) -- the only
+#  check that confirms a combo is a provider-SUPPORTED query, not just internally
+#  consistent (finding F). FAILs only when the extract is CONFIRMED (signed off vs
+#  devdoc) and a combo is unsupported; PROVISIONAL extracts surface as INFO.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2e: Supported-Query (Devdoc) Gate"
+foreach ($pd in $providers) {
+    $provName = $pd.Name
+    $docPrefix = $provName
+    $sqReport = Join-Path $pd.FullName "docs\SUPPORTED_QUERY_AUDIT_${docPrefix}.txt"
+    if (-not (Test-Path $sqReport)) {
+        $sqReportMc = Join-Path $pd.FullName "docs\mc\SUPPORTED_QUERY_AUDIT_${docPrefix}_MC.txt"
+        if (Test-Path $sqReportMc) { $sqReport = $sqReportMc }
+        else { Info "$provName -- no supported-query audit (run build_report)"; continue }
+    }
+    $trust = Test-ReportTrusted $provName $sqReport
+    if (-not $trust.ok) {
+        Fail "$provName -- supported-query audit not trusted: $($trust.reason)"
+        continue
+    }
+    $sqText  = [System.IO.File]::ReadAllText($sqReport)
+    $sqFails = ([regex]::Matches($sqText, '\[FAIL\]')).Count
+    $isProvisional = ($sqText -match '(?m)^Extract STATUS:\s*PROVISIONAL')
+    if ($sqFails -gt 0) {
+        Fail "$provName -- $sqFails unsupported combo(s) vs devdoc (see SUPPORTED_QUERY_AUDIT)"
+    } elseif ($isProvisional) {
+        Info "$provName -- supported-query extract PROVISIONAL (confirm vs devdoc, then set STATUS: CONFIRMED to gate)"
+    } else {
+        Pass "$provName -- all combos devdoc-supported (CONFIRMED)"
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2f: Build Reproducibility (opt-in: -Reproducible)
+#  Re-runs each provider's build script twice into scratch and compares vs the
+#  committed JSON (audit_reproducible.ps1). Confirms committed == fresh build.
+#  Heavy (a real build per provider) so it is OFF by default. Non-determinism =
+#  FAIL; deterministic-but-stale commit = WARN (rebuild that provider).
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Reproducible) {
+    SectionHeader "PHASE 2f: Build Reproducibility"
+    $reproTool = Join-Path $toolDir "audit_reproducible.ps1"
+    if (-not (Test-Path $reproTool)) {
+        Fail "audit_reproducible.ps1 not found"
+    } else {
+        foreach ($pd in $providers) {
+            $provName = $pd.Name
+            $rjson = Get-ChildItem $pd.FullName -Filter "${provName}.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $rjson) { Info "$provName -- no <PROVIDER>.json (legacy); reproducibility skipped"; continue }
+            if (-not (Test-Path (Join-Path $pd.FullName 'scripts'))) { Info "$provName -- no scripts/; reproducibility skipped"; continue }
+            $rout = & powershell -ExecutionPolicy Bypass -File $reproTool -Path $rjson.FullName 2>&1 | Out-String
+            $rm = [regex]::Match($rout, 'RESULTS:\s*(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN')
+            $rfail = if ($rm.Success) { [int]$rm.Groups[2].Value } else { 1 }
+            $rwarn = if ($rm.Success) { [int]$rm.Groups[3].Value } else { 0 }
+            if ($rfail -gt 0)      { Fail "$provName -- build NON-DETERMINISTIC or build failed (see audit_reproducible)" }
+            elseif ($rwarn -gt 0)  { Warn "$provName -- committed JSON STALE vs fresh build (rebuild needed)" }
+            else                   { Pass "$provName -- committed JSON == fresh build (reproducible & current)" }
         }
     }
 }

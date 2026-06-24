@@ -227,10 +227,10 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.5 |  | 61P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next rebuild; RQ/RQN-only may not need it |
-| 2 | HI_HCJDC_OFML | v4.1 |  | 68P/0F/0W/0LIM | 0 | v3.6: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on RQV/QVV/M55S) + vehicleYear any[] gap fixed. All 5 entities PENDING re-test on v3.6 (Person/Firearm/Article/Boat fingerprints preserved from v3.5; Vehicle blocked at v3.4 routing only). Cosmetic label pass pending. |
+| 2 | HI_HCJDC_OFML | v4.2 |  | 68P/0F/0W/0LIM | 0 | v3.6: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on RQV/QVV/M55S) + vehicleYear any[] gap fixed. All 5 entities PENDING re-test on v3.6 (Person/Firearm/Article/Boat fingerprints preserved from v3.5; Vehicle blocked at v3.4 routing only). Cosmetic label pass pending. |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults. FLAG: plate-wins guardrail -- has RVEHOUT (OOS plate) and VIN combos; audit plate/VIN pool isolation at next rebuild |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v6.5 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next FL rebuild; FL has both plate and VIN paths in VehicleRegistrationQuery |
+| 5 | FL_FCIC | v6.6 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next FL rebuild; FL has both plate and VIN paths in VehicleRegistrationQuery |
 | 6 | TX_TLETS | v3.13 |  | 83P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next TX rebuild |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
 | 8 | CA_CLETS | v2.5 |  | 76P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
@@ -448,7 +448,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 |---|---|---|---|
 | NJ_NJCJIS | v4.5 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.5 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
-| FL_FCIC | v6.5 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
+| FL_FCIC | v6.6 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
 
 ### Flagged for Full Rebuild on Next Test (16)
 

@@ -58,7 +58,9 @@ if (Test-Path $bannedFile) {
         }
     }
 } else {
-    Info "No banned_patterns.txt found -- skipping"
+    # FAIL, not skip: a missing rules file means the banned-pattern gate silently
+    # no-ops and legacy anti-patterns creep back in unnoticed (finding J).
+    Fail "banned_patterns.txt missing ($bannedFile) -- banned-pattern gate cannot run"
 }
 
 # ── CHECK 2: QIF fieldId vs QIDM sourceField consistency ─────────────────────

@@ -15,6 +15,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Shared canonical condition predicate (kept identical with test_commsys.ps1).
+. (Join-Path $PSScriptRoot '_sim_helpers.ps1')
+
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
 $json = $raw | ConvertFrom-Json
 $fileName = Split-Path $Path -Leaf
@@ -112,53 +115,11 @@ function Get-FilledRefs($qidm, $formData) {
 }
 
 function Test-ComboConditionsPass($qidm, $combo, $formData) {
-    # Server-side conditions, AND logic (QIDM_REFERENCE Section 2a). Conditions may live at
-    # combo level (FL style) or inside requirements (NY/CA style); fields may be fieldIds or
-    # attribute names. EXCLUSIVE is UI-only -- always passes.
-    $conds = @()
-    if ($combo.conditions) { $conds += @($combo.conditions) }
-    if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
-    if ($conds.Count -eq 0) { return $true }
-
-    # POISONED-ARRAY RULE (live-proven FL v4.9 T-A/T-B, USx tenant RMS client,
-    # 2026-06-12; QIDM_REFERENCE Section 2a): ANY value-comparison operator
-    # (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) in the array disables the ENTIRE array,
-    # including co-resident EXISTS/NOT_EXISTS -- combo treated as unconditioned.
-    # Not limited to reverse-lookup attrs (T-A: literal FormInput "FL" still passed).
-    # Existence-only arrays are honored (live-proven FL v4.8 DL T1).
-    foreach ($cond in $conds) {
-        if ("$($cond.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')) {
-            return $true
-        }
-    }
-
-    foreach ($cond in $conds) {
-        $op = "$($cond.operator)".ToUpperInvariant()
-        if ($op -eq 'EXCLUSIVE') { continue }
-        $fields = @($cond.field)
-
-        foreach ($f in $fields) {
-            # LIVE MODEL (proven HI v3.4 T5, 2026-06-22): the platform evaluates
-            # conditions[].field against FORM-STATE KEYS -- i.e. the form fieldId, which equals
-            # the QIDM attribute's sourceField -- NOT the attribute NAME. A condition whose
-            # field matches only an attribute name (with a different sourceField) is SILENTLY
-            # INERT on the live platform: HI v3.2 used field=["State"] (attr name; sourceField
-            # was "RegistrationState") and the NOT_EXISTS never fired => VehicleTypeCode bled.
-            # v3.4 field=["RegistrationState"] (the sourceField) suppressed it. So the simulator
-            # MUST resolve by direct form-state key lookup ONLY -- no attribute-name indirection
-            # (the old attribute-first logic falsely modelled the platform and masked the bug).
-            $val = if ($formData.ContainsKey($f)) { $formData[$f] } else { $null }
-            $present = -not [string]::IsNullOrWhiteSpace("$val")
-
-            $pass = switch ($op) {
-                'EXISTS'     { $present }
-                'NOT_EXISTS' { -not $present }
-                default      { $true }
-            }
-            if (-not $pass) { return $false }
-        }
-    }
-    return $true
+    # Delegates to the shared canonical predicate in _sim_helpers.ps1 so this
+    # conductor and test_commsys.ps1 cannot diverge (finding H). Condition model +
+    # poisoned-array rule live there. Poisoned arrays count as unconditioned (pass).
+    $core = Test-ComboConditionsCore -conds (Get-ComboConditions $combo) -formData $formData
+    return $core.ok
 }
 
 function Test-ComboFires($qidm, $combo, $formData) {
@@ -291,11 +252,16 @@ $entityMap = Get-QidmEntityMap $qifs $qidms
 $sb = [System.Text.StringBuilder]::new()
 $pass = 0; $fail = 0; $failures = @()
 
-[void]$sb.AppendLine("TEST MATRIX VALIDATION -- $baseName")
+[void]$sb.AppendLine("TEST MATRIX <-> JSON CONSISTENCY -- $baseName")
 [void]$sb.AppendLine("=" * 60)
 [void]$sb.AppendLine("Source: $fileName")
 [void]$sb.AppendLine("Matrix: $(Split-Path $Matrix -Leaf)")
 [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd')")
+[void]$sb.AppendLine("")
+[void]$sb.AppendLine("SCOPE: This confirms each matrix row's expected combo fires for its")
+[void]$sb.AppendLine("data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.")
+[void]$sb.AppendLine("It does NOT prove the combo is a provider-supported query: that is")
+[void]$sb.AppendLine("checked separately against the devdoc by audit_supported_queries.ps1.")
 [void]$sb.AppendLine("")
 
 $currentPhase = ""; $currentPhaseNum = 0

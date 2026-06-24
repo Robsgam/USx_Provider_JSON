@@ -1,16 +1,21 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-24 14:45
+  Generated: 2026-06-24 16:45
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX VALIDATION -- NJ_NJCJIS
+TEST MATRIX <-> JSON CONSISTENCY -- NJ_NJCJIS
 ============================================================
 Source: NJ_NJCJIS.json
 Matrix: NJ_NJCJIS_TEST_MATRIX.txt
 Generated: 2026-06-24
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
   T1  Vehicle    [PASS] 3 cards, 7 fields, defaults verified

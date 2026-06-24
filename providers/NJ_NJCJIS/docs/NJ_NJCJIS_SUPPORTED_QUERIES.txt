@@ -1,0 +1,24 @@
+STATUS: CONFIRMED
+# NJ_NJCJIS supported queries.
+# CONFIRMED 2026-06-24 against NJ_NJCJIS_SQVR.txt (the repo's human-maintained record
+# of devdoc "Basic Queries Supported" decisions + user-approved skips). If/when the
+# raw devdoc PDF is on hand, cross-check this list against it directly.
+#
+# All 8 combos below map 1:1 to the SQVR's documented supported queries (5 QIDMs):
+#   VehicleRegistrationQuery RQ/RQN, DriverLicenseQuery DQ/DQN,
+#   GunQuery QG, ArticleSingleQuery QA, BoatQuery QBN/QB.
+#
+# DEVDOC-SUPPORTED BUT INTENTIONALLY NOT BUILT (user directive 2026-06-10):
+#   VehicleStolenQuery (QVN/QVP/QVV) -- stolen coverage preserved via RandomRequest=Y
+#   on VehicleRegistrationQuery; sole loss = NCIC# field. Documented skip, not a gap.
+#   Listed as a comment (not an active line) so it does not raise a coverage WARN.
+#
+# Format: <QueryLabel> | <PrimaryFieldReference>
+Vehicle Registration | LicensePlateNumber
+Vehicle Registration | VehicleIdentificationNumber
+Driver License | Name
+Driver License | OperatorLicenseNumber
+Firearm | GunSerialNumber
+Article | ArticleSerialNumber
+Boat | RegistrationNumber
+Boat | BoatHullIdNumber
