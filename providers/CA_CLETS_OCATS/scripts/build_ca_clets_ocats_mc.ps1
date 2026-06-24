@@ -572,4 +572,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built CA_CLETS_OCATS v${Version}"
+    -Label "Built CA_CLETS_OCATS v${Version}" `
+    -Version $Version

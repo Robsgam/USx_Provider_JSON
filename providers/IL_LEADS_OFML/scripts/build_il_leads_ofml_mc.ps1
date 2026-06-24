@@ -513,4 +513,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built IL_LEADS_OFML v${Version}"
+    -Label "Built IL_LEADS_OFML v${Version}" `
+    -Version $Version

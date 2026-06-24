@@ -857,7 +857,8 @@ if ($AttnDiagnostic) {
     return
 }
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built HI_HCJDC_OFML v${Version}"
+    -Label "Built HI_HCJDC_OFML v${Version}" `
+    -Version $Version
 
 # =====================================================================
 # VALIDATE (use NJ validator adapted for HI)

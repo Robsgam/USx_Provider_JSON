@@ -751,6 +751,7 @@ $final = [PSCustomObject]@{
 # OUTPUT
 # =====================================================================
 Write-ProviderJson -BundleObject $final -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built AZ_AZDPS v${Version}"
+    -Label "Built AZ_AZDPS v${Version}" `
+    -Version $Version
 
 # =====================================================================

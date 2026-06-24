@@ -554,7 +554,8 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built LA_LEMS v${Version}"
+    -Label "Built LA_LEMS v${Version}" `
+    -Version $Version
 
 # =====================================================================
 $VALIDATOR = (Resolve-Path "$PSScriptRoot\..\..\..\tools\validate.ps1").Path

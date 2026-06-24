@@ -143,9 +143,16 @@ function Write-ProviderJson {
         [Parameter(Mandatory)]$BundleObject,
         [Parameter(Mandatory)][string]$OutPath,
         [string]$PhasePath,
-        [string]$Label
+        [string]$Label,
+        [string]$Version
     )
-    $json = $BundleObject | ConvertTo-Json -Depth 100
+    if ($Version) {
+        $wrapped = [ordered]@{ version = $Version }
+        $BundleObject.PSObject.Properties | ForEach-Object { $wrapped[$_.Name] = $_.Value }
+        $json = $wrapped | ConvertTo-Json -Depth 100
+    } else {
+        $json = $BundleObject | ConvertTo-Json -Depth 100
+    }
     [System.IO.File]::WriteAllText($OutPath, $json, [System.Text.UTF8Encoding]::new($false))
     if ($PhasePath) {
         [System.IO.File]::WriteAllText($PhasePath, $json, [System.Text.UTF8Encoding]::new($false))

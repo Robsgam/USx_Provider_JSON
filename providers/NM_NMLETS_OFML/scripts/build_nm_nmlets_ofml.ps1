@@ -554,5 +554,6 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built NM_NMLETS_OFML v${Version}"
+    -Label "Built NM_NMLETS_OFML v${Version}" `
+    -Version $Version
 # Run validator

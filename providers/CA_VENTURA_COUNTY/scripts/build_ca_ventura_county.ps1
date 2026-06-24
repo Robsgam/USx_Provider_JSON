@@ -638,4 +638,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built CA_VENTURA_COUNTY v${Version}"
+    -Label "Built CA_VENTURA_COUNTY v${Version}" `
+    -Version $Version

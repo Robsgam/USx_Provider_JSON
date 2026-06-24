@@ -169,6 +169,10 @@ TOOLS
     Self-contained HTML layout report with color-coded fields and QIDM tables.
     Usage: -Path <json> -OutFile <path>
 
+  tools/render_test_sheet.ps1
+    Generates a printable PDF test reference sheet per provider (step 14 of build_report).
+    Usage: -Path <json> [-OutFile <path>]
+
   tools/render_officer_guide.ps1
     Officer-facing printable quick-reference: every supported query + each search path's
     required/optional fields in plain English (no internal jargon). HTML + best-effort PDF

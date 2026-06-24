@@ -672,4 +672,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built CA_eSUN v${Version}"
+    -Label "Built CA_eSUN v${Version}" `
+    -Version $Version

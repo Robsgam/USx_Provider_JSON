@@ -625,7 +625,8 @@ $rmsBundle = Build-RmsBundle -SkipRace
 $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $provBundle, $rmsBundle) }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built TX_TLETS_CCH v${Version}"
+    -Label "Built TX_TLETS_CCH v${Version}" `
+    -Version $Version
 
 Write-Host ""
 Write-Host "Build complete. TX_TLETS_CCH v${Version} -- 14 QIDMs (6 base + 8 CCH), Person CCH cards CCH-suffixed."

@@ -689,6 +689,7 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built NY_NYSPIN_EJUSTICE v${Version}"
+    -Label "Built NY_NYSPIN_EJUSTICE v${Version}" `
+    -Version $Version
 
 # =====================================================================

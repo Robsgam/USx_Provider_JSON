@@ -469,4 +469,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built OR_LEDS v${Version}"
+    -Label "Built OR_LEDS v${Version}" `
+    -Version $Version

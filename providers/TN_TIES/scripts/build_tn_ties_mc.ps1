@@ -696,4 +696,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $final -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built TN_TIES v${Version}"
+    -Label "Built TN_TIES v${Version}" `
+    -Version $Version

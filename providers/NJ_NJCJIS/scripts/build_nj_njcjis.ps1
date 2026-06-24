@@ -554,7 +554,8 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built NJ_NJCJIS v${Version} (VehStolenRemoved mainline, native PascalCase USx fields, restored RMS args)"
+    -Label "Built NJ_NJCJIS v${Version} (VehStolenRemoved mainline, native PascalCase USx fields, restored RMS args)" `
+    -Version $Version
 
 Write-Host ""
 Write-Host "Build complete -- NJ_NJCJIS v${Version}: VehStolenRemoved + PascalCase USx fields + restored RMS handler args."

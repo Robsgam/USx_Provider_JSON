@@ -238,4 +238,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built CA_CONTRA_COSTA v${Version}"
+    -Label "Built CA_CONTRA_COSTA v${Version}" `
+    -Version $Version

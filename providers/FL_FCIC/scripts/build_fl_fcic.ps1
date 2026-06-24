@@ -941,4 +941,5 @@ $output = [PSCustomObject]@{
 $phaseDate = Get-Date -Format "yyyy-MM-dd"
 Write-ProviderJson -BundleObject $output -OutPath $outPath `
     -PhasePath "$PSScriptRoot\..\phases\FL_FCIC_v${Version}_${phaseDate}.json" `
-    -Label "Built FL_FCIC v${Version}"
+    -Label "Built FL_FCIC v${Version}" `
+    -Version $Version

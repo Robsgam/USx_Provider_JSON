@@ -717,4 +717,5 @@ $output = [PSCustomObject]@{
 
 Write-ProviderJson -BundleObject $output -OutPath $outPath `
     -PhasePath "$phaseDir\${provider}_v${Version}_${DATE}.json" `
-    -Label "Built ${provider} v${Version} MC"
+    -Label "Built ${provider} v${Version} MC" `
+    -Version $Version

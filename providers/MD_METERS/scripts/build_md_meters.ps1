@@ -595,4 +595,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built MD_METERS v${Version}"
+    -Label "Built MD_METERS v${Version}" `
+    -Version $Version
