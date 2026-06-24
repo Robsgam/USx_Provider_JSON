@@ -44,7 +44,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 13
+$stepCount = 14
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -358,6 +358,23 @@ if (Test-Path $officerGuidePath) {
     else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
 } else {
     Write-Host "  [13/$stepCount] SKIPPED (render_officer_guide.ps1 not found)" -ForegroundColor Gray
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  STEP 14: Test Sheet (tester reference PDF)
+# ══════════════════════════════════════════════════════════════════════════════
+
+Write-Host ""
+Write-Host "  [14/$stepCount] Generating test sheet..." -ForegroundColor Yellow
+$testSheetPath = Join-Path $toolDir "render_test_sheet.ps1"
+$testSheetHtml = Join-Path $DocsDir "TEST_SHEET_$jsonName.html"
+$testSheetPdf  = Join-Path $DocsDir "TEST_SHEET_$jsonName.pdf"
+if (Test-Path $testSheetPath) {
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $testSheetPath -Path $resolvedStr -OutFile $testSheetHtml -PdfFile $testSheetPdf 2>&1 | Out-Null
+    if (Test-Path $testSheetHtml) { Write-Host "  [14/$stepCount] Saved: $testSheetHtml" -ForegroundColor Green }
+    if (Test-Path $testSheetPdf)  { Write-Host "             PDF: $testSheetPdf" -ForegroundColor Green }
+} else {
+    Write-Host "  [14/$stepCount] SKIPPED (render_test_sheet.ps1 not found)" -ForegroundColor Gray
 }
 
 # --- Summary ---
