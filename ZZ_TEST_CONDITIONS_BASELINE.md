@@ -63,9 +63,11 @@ The platform behaves **exactly as documented** on this build.
 | Tenant | Status | Result |
 |---|---|---|
 | PRACTICE (`LAPTOPNLHTE6T0`) | ✅ DONE 2026-06-24 | All as documented (table above) |
-| **NJ USx test** | ▶ NEXT | pending |
-| HI USx test | pending | |
+| **NJ USx test** | ✅ DONE 2026-06-24 | **Matches practice on all groups.** REGEX appeared to diverge in the batch run (`abc123` fired) but a clean re-run (`ZZZZZ`/`ab123`/`AB123`/`abc123` with reload between each) confirmed strict full+case-sensitive matching — the batch "fire" was a **clear-form-bug artifact**, not a platform difference. |
+| HI USx test | ▶ NEXT | pending |
 | FL USx test | pending | |
+
+> **Testing note:** RELOAD the form between EVERY run. The clear-form bug ([[project_clear_form_bug]]) lets a prior matching run leave its combo selected, which leaks a false-positive marker into the next request. The NJ batch run hit exactly this on E1 (`abc123`) — only the one-at-a-time clean re-run revealed the true (strict) behavior.
 
 If NJ/HI/FL match the practice baseline, the behavior is confirmed across the tenants and we can
 plan the real follow-ups: (1) correct `audit_cad` CHECK 6, re-scope the `set[]`-default gap-audit
