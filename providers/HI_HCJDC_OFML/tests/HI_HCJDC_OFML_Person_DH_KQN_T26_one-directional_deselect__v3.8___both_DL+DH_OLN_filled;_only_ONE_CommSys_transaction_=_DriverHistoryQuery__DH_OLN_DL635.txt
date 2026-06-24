@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQN (T26 one-directional deselect (v3.8): both DL+DH OLN filled; only ONE CommSys transaction = DriverHistoryQuery (DH OLN DL63563); NO DriverLicenseQuery transaction (DL deselected by DH). RMS dlNumber elastic is separate RMS layer, not CommSys co-fire. Deselect confirmed live)
+Date: 2026-06-24 09:03:50
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+BOTH filled: OperatorLicenseNumber=dl254267 (DL) + OperatorLicenseNumberDH=dl63563 (DH), purposeCodeDH=C, Attention auto
+
+XML REQUEST
+-----------
+<Request><MessageType>DriverHistoryQuery</MessageType><Id>01KVWVMD8DSDWYG0YVEN5997F8</Id><Attention>SGAMBELLONE R</Attention><OperatorLicenseNumber>DL63563</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWVMD8DSDWYG0YVEN5997F8
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          DL63563
+  PurposeCode                    C
+
+NOTES
+-----
+
+
+RESULT: PASS
