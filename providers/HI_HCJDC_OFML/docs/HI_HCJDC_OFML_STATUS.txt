@@ -84,3 +84,11 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-24 Vehicle    VehReg:M55S          PASS     T16 in-state VIN: VehicleRegistrationQuery fires M55S; VIN + VehicleTypeCode=1 (v4.1 default) + ImageIndicator N; no State, no plate, no MakeCode bleed
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-24 Vehicle    VehReg:QVV           PASS     T13 QVV DORMANT BY DESIGN (user-approved skip 2026-06-24): VIN-only queries fire M55S first (vehicleTypeCode=1 always defaults), shadowing QVV - live-proven by T16 (bare VIN fired M55S). Server auto-generates QV for stolen. QVV unreachable as primary by intent; not a defect.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-24 Vehicle    VehReg:QVP           PASS     T14 QVP DORMANT BY DESIGN (user-approved skip 2026-06-24): plate+state queries fire M55L first (vehicleType+plate, no PlateType), shadowing QVP - live-proven by T15 (in-state plate fired M55L). Server auto-generates QV for stolen. QVP unreachable as primary by intent; not a defect.
