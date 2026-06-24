@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQ (T12 OOS plate: VehicleRegistrationQuery fires RQ; Plate+Type PC+Year 2024+ImageIndicator N; vehicleTypeCode=1 in form state correctly NOT serialized (RQ pool excludes); no VIN. Manual analogue of CAD Test A (RQ correct when officer intends OOS))
+Date: 2026-06-24 08:47:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+LicensePlateNumber=test123, LicensePlateTypeCode=PC, LicensePlateYear=2024, vehicleTypeCode=1, ImageIndicator=N (VIN/State blank)
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVWTQC638M1V19QNGR9163H8</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2024</LicensePlateYear><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>TEST123</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWTQC638M1V19QNGR9163H8
+  ImageIndicator                 N
+  LicensePlateYear               2024
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+
+
+RESULT: PASS
