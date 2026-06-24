@@ -18,35 +18,9 @@ param(
     [string]$OutFile
 )
 
-# Canonical, deterministic serialization: object keys are sorted, arrays
-# keep order. Produces a stable string so the hash only changes when
-# meaningful structure changes.
-function ConvertTo-Canonical {
-    param($o)
-    if ($null -eq $o) { return 'null' }
-    if ($o -is [bool]) { return $o.ToString().ToLowerInvariant() }
-    if ($o -is [string]) { return '"' + ($o -replace '\\','\\\\' -replace '"','\"') + '"' }
-    if ($o -is [int] -or $o -is [long] -or $o -is [double] -or $o -is [decimal]) { return [string]$o }
-    if ($o -is [System.Collections.IEnumerable] -and $o -isnot [string]) {
-        $items = @($o | ForEach-Object { ConvertTo-Canonical $_ })
-        return '[' + ($items -join ',') + ']'
-    }
-    if ($o -is [System.Management.Automation.PSCustomObject] -or $o.PSObject.Properties.Count -gt 0) {
-        $props = @($o.PSObject.Properties | Sort-Object Name)
-        $parts = foreach ($p in $props) { '"' + $p.Name + '":' + (ConvertTo-Canonical $p.Value) }
-        return '{' + ($parts -join ',') + '}'
-    }
-    return '"' + [string]$o + '"'
-}
-
-function Get-Sha256Hex {
-    param([string]$s)
-    $sha = [System.Security.Cryptography.SHA256]::Create()
-    try {
-        $bytes = [System.Text.Encoding]::UTF8.GetBytes($s)
-        return -join ($sha.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') })
-    } finally { $sha.Dispose() }
-}
+# Canonical serialization + hashing now live in the shared module so this tool
+# and audit_reproducible.ps1 cannot drift (ConvertTo-Canonical, Get-Sha256Hex).
+. (Join-Path $PSScriptRoot '_json_canonical.ps1')
 
 function Get-EntityFingerprints {
     param([Parameter(Mandatory)][string]$Path)

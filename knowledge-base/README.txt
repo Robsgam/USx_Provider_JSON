@@ -512,6 +512,21 @@ AUTHORITATIVE SOURCE FILES (read-only)
   tools/_build_provider_helpers.ps1
     Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
 
+  tools/_json_canonical.ps1
+    Shared canonical JSON serialization + hashing (ConvertTo-Canonical,
+    Get-Sha256Hex, New-NormalizedClone, Get-CanonicalJsonString). Key-sorted,
+    array-order-preserving; New-NormalizedClone drops top-level version + plate
+    year so reproducibility comparisons don't false-flag intentional variance.
+    Used by get_entity_fingerprints.ps1 and audit_reproducible.ps1.
+
+  tools/audit_reproducible.ps1
+    Build-reproducibility gate. Runs a provider's build script twice into scratch
+    (via the $env:REPRO_OUTPATH hook in Write-ProviderJson -- committed files
+    untouched), then checks DETERMINISM (two fresh builds identical) and CURRENCY
+    (committed JSON == fresh build, version/PlateYear normalized). Non-determinism
+    = FAIL; deterministic-but-stale commit = WARN. Opt-in via enforce -Reproducible.
+    Usage: .\audit_reproducible.ps1 -Path <json> [-OutFile <path>] [-Strict]
+
   tools/_sim_helpers.ps1
     Canonical CommSys combo-firing predicate (Get-ComboConditions,
     Test-ComboConditionsCore) shared by test_commsys.ps1 and run_test_matrix.ps1

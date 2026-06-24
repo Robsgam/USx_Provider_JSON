@@ -16,6 +16,8 @@
     .\enforce.ps1 -Provider HI_HCJDC_OFML   # single provider (still runs cross-provider)
     .\enforce.ps1 -SkipGit            # skip git status check (for mid-work runs)
     .\enforce.ps1 -Rebuild            # auto-rebuild stale providers before checking
+    .\enforce.ps1 -Reproducible       # also re-run each build twice to scratch and
+                                      #   confirm committed JSON == fresh build (heavy; opt-in)
     .\enforce.ps1 -OutFile report.txt # save full output to file
 
   Exit code 0 = ENFORCED (all gates pass). Exit code 1 = BLOCKED (fix before declaring done).
@@ -25,6 +27,7 @@ param(
     [string]$Provider,
     [switch]$SkipGit,
     [switch]$Rebuild,
+    [switch]$Reproducible,
     [string]$OutFile
 )
 
@@ -447,6 +450,35 @@ foreach ($pd in $providers) {
         Info "$provName -- supported-query extract PROVISIONAL (confirm vs devdoc, then set STATUS: CONFIRMED to gate)"
     } else {
         Pass "$provName -- all combos devdoc-supported (CONFIRMED)"
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2f: Build Reproducibility (opt-in: -Reproducible)
+#  Re-runs each provider's build script twice into scratch and compares vs the
+#  committed JSON (audit_reproducible.ps1). Confirms committed == fresh build.
+#  Heavy (a real build per provider) so it is OFF by default. Non-determinism =
+#  FAIL; deterministic-but-stale commit = WARN (rebuild that provider).
+# ══════════════════════════════════════════════════════════════════════════════
+if ($Reproducible) {
+    SectionHeader "PHASE 2f: Build Reproducibility"
+    $reproTool = Join-Path $toolDir "audit_reproducible.ps1"
+    if (-not (Test-Path $reproTool)) {
+        Fail "audit_reproducible.ps1 not found"
+    } else {
+        foreach ($pd in $providers) {
+            $provName = $pd.Name
+            $rjson = Get-ChildItem $pd.FullName -Filter "${provName}.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $rjson) { Info "$provName -- no <PROVIDER>.json (legacy); reproducibility skipped"; continue }
+            if (-not (Test-Path (Join-Path $pd.FullName 'scripts'))) { Info "$provName -- no scripts/; reproducibility skipped"; continue }
+            $rout = & powershell -ExecutionPolicy Bypass -File $reproTool -Path $rjson.FullName 2>&1 | Out-String
+            $rm = [regex]::Match($rout, 'RESULTS:\s*(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN')
+            $rfail = if ($rm.Success) { [int]$rm.Groups[2].Value } else { 1 }
+            $rwarn = if ($rm.Success) { [int]$rm.Groups[3].Value } else { 0 }
+            if ($rfail -gt 0)      { Fail "$provName -- build NON-DETERMINISTIC or build failed (see audit_reproducible)" }
+            elseif ($rwarn -gt 0)  { Warn "$provName -- committed JSON STALE vs fresh build (rebuild needed)" }
+            else                   { Pass "$provName -- committed JSON == fresh build (reproducible & current)" }
+        }
     }
 }
 

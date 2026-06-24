@@ -153,6 +153,18 @@ function Write-ProviderJson {
     } else {
         $json = $BundleObject | ConvertTo-Json -Depth 100
     }
+
+    # SCRATCH-BUILD HOOK (reproducibility audit): when $env:REPRO_OUTPATH is set, any
+    # build script writes to that scratch path instead of the committed JSON, skips the
+    # phase archive, and skips the validator-abort -- so audit_reproducible.ps1 can run
+    # the REAL build into a temp file without touching committed files. One central
+    # change gives every build script this behavior. See tools/audit_reproducible.ps1.
+    if ($env:REPRO_OUTPATH) {
+        [System.IO.File]::WriteAllText($env:REPRO_OUTPATH, $json, [System.Text.UTF8Encoding]::new($false))
+        Write-Host "  -> [REPRO] $($env:REPRO_OUTPATH) (scratch; phase archive + validator skipped)"
+        return
+    }
+
     [System.IO.File]::WriteAllText($OutPath, $json, [System.Text.UTF8Encoding]::new($false))
     if ($PhasePath) {
         [System.IO.File]::WriteAllText($PhasePath, $json, [System.Text.UTF8Encoding]::new($false))
