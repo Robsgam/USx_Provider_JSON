@@ -134,12 +134,14 @@ function Get-SetFieldIds($combo, $qidm, $allFields) {
     return $ids
 }
 
-# ── Detect NOT_EXISTS guardrail: which field must be absent for this combo to fire ──
+# ── Detect NOT_EXISTS guardrail: returns the field that must be absent for this combo to fire ──
 function Get-GuardrailField($combo) {
-    foreach ($cond in @($combo.conditions)) {
-        if ($cond.operator -eq 'NOT_EXISTS' -or $cond.operator -eq 'NOT_IN') {
-            $sf = if ($cond.field) { $cond.field } elseif ($cond.sourceField) { $cond.sourceField } else { $null }
-            if ($sf) { return $sf }
+    $conds = $combo.requirements.conditions
+    if (-not $conds) { return $null }
+    foreach ($cond in @($conds)) {
+        if ($cond.operator -eq 'NOT_EXISTS') {
+            $sf = if ($cond.field -is [array]) { $cond.field[0] } else { $cond.field }
+            if ($sf) { return [string]$sf }
         }
     }
     return $null
@@ -208,41 +210,73 @@ foreach ($entity in $entityOrder) {
             $setNames.Count
         } -Descending)
 
+        # Pre-compute guardrail pairs: gated combo -> winning combo
+        # Gated = has NOT_EXISTS condition; winning = the combo whose set[] contains that field
+        $guardrailPairs = @()
         foreach ($combo in $sortedCombos) {
-            $kr       = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
-            $setIds   = Get-SetFieldIds $combo $qidm $allFields
             $guardFid = Get-GuardrailField $combo
+            if ($guardFid) {
+                $winner = $sortedCombos | Where-Object {
+                    $sn = @(); if ($_.requirements.set) { $sn = @($_.requirements.set) }
+                    $sn -contains $guardFid
+                } | Select-Object -First 1
+                if ($winner) {
+                    $guardrailPairs += [PSCustomObject]@{ gated=$combo; winner=$winner; guardFid=$guardFid }
+                }
+            }
+        }
+
+        foreach ($combo in $sortedCombos) {
+            $kr     = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
+            $setIds = Get-SetFieldIds $combo $qidm $allFields
             $testNum++
 
             [void]$sb.Append("<div class='t'>")
-            $guardNote = if ($guardFid) { " &mdash; GUARDRAIL: $guardFid NOT_EXISTS" } else { '' }
-            [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) &mdash; keyRef=$kr$guardNote</div>")
-
-            # Fill lines
+            [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) &mdash; keyRef=$kr</div>")
             foreach ($fid in $setIds) {
                 $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
                 $lbl = if ($f -and $f.label) { $f.label } else { $fid }
                 $val = Get-TestValue $fid
                 [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [set]</div>")
             }
-            if ($guardFid) {
-                $gf   = $allFields | Where-Object { $_.fieldId -eq $guardFid } | Select-Object -First 1
-                $glbl = if ($gf -and $gf.label) { $gf.label } else { $guardFid }
-                $gval = Get-TestValue $guardFid
-                [void]$sb.Append("<div class='fill'><span class='k g'>$(Esc $glbl) ($guardFid)</span> <span class='v'>$(Esc $gval)</span> [guardrail &mdash; fill to trigger; must be ABSENT in wire]</div>")
-            }
-
-            # Expected line
             $mustHave = $setIds -join ', '
-            $mustNot  = if ($guardFid) { " | ABSENT: $guardFid" } else { '' }
-            [void]$sb.Append("<div class='exp'>Expected: $(Esc $qidm.query) | keyRef=$kr | wire: $mustHave$mustNot</div>")
+            [void]$sb.Append("<div class='exp'>Expected: $(Esc $qidm.query) | keyRef=$kr | wire: $mustHave</div>")
             [void]$sb.Append("</div>")
         }
 
-        # ── any[] supplement ──
-        $firstCombo = $sortedCombos | Select-Object -First 1
+        # ── Guardrail tests (one per pair: fill both, winning combo fires, gated field absent) ──
+        foreach ($pair in $guardrailPairs) {
+            $wkr      = if ($pair.winner.keyReference) { $pair.winner.keyReference } else { $pair.winner.keyRef }
+            $gkr      = if ($pair.gated.keyReference)  { $pair.gated.keyReference  } else { $pair.gated.keyRef  }
+            $winIds   = Get-SetFieldIds $pair.winner $qidm $allFields
+            $gatedIds = Get-SetFieldIds $pair.gated  $qidm $allFields
+            $testNum++
+
+            [void]$sb.Append("<div class='t'>")
+            [void]$sb.Append("<div class='th'>T$testNum &mdash; GUARDRAIL: $wkr wins over $gkr ($($pair.guardFid) NOT_EXISTS)</div>")
+            foreach ($fid in $winIds) {
+                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
+                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
+                $val = Get-TestValue $fid
+                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [winning set &mdash; fill this]</div>")
+            }
+            foreach ($fid in $gatedIds) {
+                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
+                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
+                $val = Get-TestValue $fid
+                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [also fill &mdash; must be ABSENT in wire]</div>")
+            }
+            $winWire   = $winIds -join ', '
+            $absentWire = $gatedIds -join ', '
+            [void]$sb.Append("<div class='exp'>Expected: keyRef=$wkr | wire: $winWire | ABSENT: $absentWire</div>")
+            [void]$sb.Append("</div>")
+        }
+
+        # ── any[] supplement (on first non-gated combo) ──
+        $firstCombo = $sortedCombos | Where-Object { -not (Get-GuardrailField $_) } | Select-Object -First 1
+        if (-not $firstCombo) { $firstCombo = $sortedCombos | Select-Object -First 1 }
         if ($firstCombo) {
-            $anyNames2  = @(); if ($firstCombo.requirements -and $firstCombo.requirements.any) { $anyNames2 = @($firstCombo.requirements.any) }
+            $anyNames2  = @(); if ($firstCombo.requirements.any) { $anyNames2 = @($firstCombo.requirements.any) }
             $anyFields2 = @($allFields | Where-Object { $anyNames2 -contains $_.fieldId -and -not $_.hidden })
             if ($anyFields2.Count -gt 0) {
                 $kr2     = if ($firstCombo.keyReference) { $firstCombo.keyReference } else { $firstCombo.keyRef }
