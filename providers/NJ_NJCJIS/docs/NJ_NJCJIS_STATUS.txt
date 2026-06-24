@@ -110,7 +110,7 @@ IMPORT HISTORY:
     T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
     T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
     Phase 2 - Vehicle combos:
-    T6   Vehicle  RQN_RAND VehReg VIN RAND              PASS  (VIN+random=Y, conditions routing)
+  ---   2026-06-24 Vehicle    VehReg:RQN           PASS     V2 RQN (VIN): VehicleRegistrationQuery fires RQN; VIN + State NJ + RandomRequest N + ImageIndicator N; PlateType/PlateYear form defaults did NOT serialize (not in RQN pool) - no plate bleed into VIN query
     T7   Vehicle  RQN      VehReg VIN FULL              PASS  (VIN+random=N fallback)
     T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
     T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
