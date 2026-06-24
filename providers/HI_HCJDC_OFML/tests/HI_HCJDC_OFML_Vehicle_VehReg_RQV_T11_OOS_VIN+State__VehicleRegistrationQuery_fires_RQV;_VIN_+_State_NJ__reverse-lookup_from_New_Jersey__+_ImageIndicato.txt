@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQV (T11 OOS VIN+State: VehicleRegistrationQuery fires RQV; VIN + State NJ (reverse-lookup from New Jersey) + ImageIndicator N; vehicleTypeCode=1 in form state correctly NOT serialized (RQV pool excludes it); no LicensePlateNumber)
+Date: 2026-06-24 08:46:44
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+VehicleIdentificationNumber=1HGCM82633A123456, RegistrationState=New Jersey, vehicleTypeCode=1, ImageIndicator=N (plate blank)
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVWTN7W5W6DGQ80X59ZDSCDE</Id><VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>NJ</State></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             01KVWTN7W5W6DGQ80X59ZDSCDE
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+  State                          NJ
+
+NOTES
+-----
+
+
+RESULT: PASS
