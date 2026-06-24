@@ -95,6 +95,19 @@ that FAILs on any `ParseCommsysNameRuleHandler` with empty `arguments[]` (enforc
 runs verify_build → blocks) — would auto-flag the 4 stale providers and stop a re-regression shipping.
 This bug shipped silently because nothing gated handler args. Plan ref: `dapper-tumbling-muffin.md`.
 
+## VehicleMakeName QRDM make-table fix — FIXED in shared module 2026-06-24 (propagates on rebuild)
+
+The QRDM `VehicleMakeName` attribute resolved vehicle make against the FIREARM make table
+(`codeTypeCategory='NCIC_FIREARM_MAKE'` / `codeTypeSource='NJ_NIBRS'`, AP #24) — wrong; only the regex
+fallback masked it. CORRECTED in `tools/_build_rms_bundle.ps1` `Build-CommsysQrdm` (~line 623) to
+`codeTypeSource='VEHICLE'`, `codeTypeCategory='VehicleType'` (vehicle codes live in the `VehicleType`
+table under the `VEHICLE` source; user-verified vs platform registry 2026-06-24). KB: RULE_HANDLERS #16
++ CLAUDE.md code-type pairings. Bench-verified NJ v4.5 (`HOND -> Honda`, simulate_response 0 MISSING).
+
+**Shared-module change → every provider's VehicleMakeName corrects on its NEXT rebuild (one-at-a-time).**
+Done: **NJ v4.5**. Pending (apply at each provider's rebuild, no separate action needed — automatic on
+rebuild): HI, FL, TX_TLETS, CA_CLETS, NY, AZ, + all legacy. See memory [[project_rms_vehiclemakename_qrdm]].
+
 ## DEFERRED BACKLOG — Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
 
 From the tools/scripts/KB consolidation audit. Tier 1 (KB poisoned-array centralization, README fix,
@@ -213,7 +226,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v4.4 |  | 63P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next rebuild; RQ/RQN-only may not need it |
+| 1 | NJ_NJCJIS | v4.5 |  | 61P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, State defaults, v3.4 imported USx Provider Tenant + Newark Foundation. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next rebuild; RQ/RQN-only may not need it |
 | 2 | HI_HCJDC_OFML | v4.1 |  | 68P/0F/0W/0LIM | 0 | v3.6: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on RQV/QVV/M55S) + vehicleYear any[] gap fixed. All 5 entities PENDING re-test on v3.6 (Person/Firearm/Article/Boat fingerprints preserved from v3.5; Vehicle blocked at v3.4 routing only). Cosmetic label pass pending. |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults. FLAG: plate-wins guardrail -- has RVEHOUT (OOS plate) and VIN combos; audit plate/VIN pool isolation at next rebuild |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
@@ -433,7 +446,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 
 | Provider | Version | Score | Status |
 |---|---|---|---|
-| NJ_NJCJIS | v4.4 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
+| NJ_NJCJIS | v4.5 |  | Single-JSON merged 2026-05-21, State defaults, CAD audit CLEAN |
 | CA_CLETS | v2.5 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
 | FL_FCIC | v6.5 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
 

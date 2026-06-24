@@ -624,8 +624,11 @@ function Build-CommsysQrdm {
             rule = _R 'CommsysResultAttributeMappingRuleHandler' $null
             sourceField = @('VehicleMakeCode')
             targetField = 'VehicleMakeName'
-            codeTypeCategory = 'NCIC_FIREARM_MAKE'
-            codeTypeSource   = 'NJ_NIBRS'
+            # Vehicle MAKE resolves against the platform VehicleType code table under the VEHICLE
+            # source (user-verified vs the code-type registry 2026-06-24). The prior
+            # NCIC_FIREARM_MAKE/NJ_NIBRS pair was a firearm-make table (AP #24) -- wrong for vehicles.
+            codeTypeCategory = 'VehicleType'
+            codeTypeSource   = 'VEHICLE'
         }
         [PSCustomObject]@{ name = 'VehicleMakeCode'; sourceField = @('VehicleMakeCode'); targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'RegistrationStateCode'; sourceField = @('RegistrationState'); targetField = 'RegistrationStateCode' }

@@ -1,5 +1,14 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.5 (2026-06-24): VehicleMakeName QRDM fix (shared module). VehicleMakeName resolved against
+#   the wrong code table -- codeTypeCategory=NCIC_FIREARM_MAKE/codeTypeSource=NJ_NIBRS (FIREARM
+#   makes, AP #24) -- so vehicle make mis-resolved (only the regex fallback saved it). Corrected
+#   in tools/_build_rms_bundle.ps1 Build-CommsysQrdm to codeTypeSource='VEHICLE',
+#   codeTypeCategory='VehicleType' (vehicle codes live in the VehicleType table under VEHICLE;
+#   user-verified vs platform registry 2026-06-24). Shared-module change -> propagates to every
+#   provider on its next rebuild. KB: RULE_HANDLERS #16 + CLAUDE.md code-type pairings updated.
+#   Re-opens Vehicle response mapping; full re-test + re-import (USx + Newark) required.
+# =====================================================================
 # v4.4 (2026-06-23): Gap-audit remediation. (1) Boat Hull>Reg guardrail -- added BoatHullIdNumber
 #   NOT_EXISTS (PascalCase sourceField) to the QB Reg combo so Hull+Reg co-entry doesn't bleed
 #   RegistrationNumber into the Hull XML (verify_build CHECK 12, now FAIL-level). (2) VehReg
@@ -32,7 +41,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.4"
+    [string]$Version = "4.5"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')

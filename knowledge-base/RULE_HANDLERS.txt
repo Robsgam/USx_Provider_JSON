@@ -339,6 +339,14 @@ Found at 4 property paths in the JSON structure.
       Returns null if code not found. Lookup is case-insensitive and also
       accepts a description as input.
 
+      VEHICLE MAKE (VehicleMakeName) -- codeTypeSource='VEHICLE',
+        codeTypeCategory='VehicleType' (vehicle codes live in the VehicleType table
+        under the VEHICLE source; user-verified vs the platform code-type registry
+        2026-06-24). Do NOT use NCIC_FIREARM_MAKE -- that is the FIREARM make table
+        (AP #24); using it for vehicle make mis-resolves (only the regex fallback saves it).
+        VehicleModelName uses attributeType='VEHICLE_MODEL'+codeTypeSource='NCIC';
+        VehicleStyleCode->BodyStyle uses codeTypeCategory='VEHICLE_BODY_STYLE'.
+
       Config:
         {
           "name": "AddressStateCode",
