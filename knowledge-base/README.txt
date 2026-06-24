@@ -240,6 +240,21 @@ TOOLS
     completeness, and QIDM sourceField case alignment.
     Usage: .\audit_cad.ps1 [-Path <json>] [-Variant <BASE|MC>] [-OutFile <path>]
 
+  tools/audit_simulator_parity.ps1
+    Tool-integrity gate. Confirms test_commsys.ps1 and run_test_matrix.ps1 both
+    dot-source _sim_helpers.ps1 and use Test-ComboConditionsCore (no private/
+    attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
+    Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
+
+  tools/audit_supported_queries.ps1
+    Devdoc ground-truth gate. Checks every CommSys combo (queryLabel +
+    primaryFieldReference) against docs/<PROVIDER>_SUPPORTED_QUERIES.txt, the
+    human-reviewed devdoc "Basic Queries Supported" extract. PROVISIONAL extracts
+    report INFO; CONFIRMED extracts FAIL on unsupported combos. Auto-writes a
+    provisional template from the JSON when absent. Step 15 of build_report;
+    gated by enforce Phase 2e.
+    Usage: .\audit_supported_queries.ps1 -Path <json> [-OutFile <path>]
+
   tools/audit_cross_provider.ps1
     Cross-provider consistency audit. Validates ALL provider JSONs against
     documented rules: default field values, version matching, queryLabel
@@ -496,6 +511,12 @@ AUTHORITATIVE SOURCE FILES (read-only)
 
   tools/_build_provider_helpers.ps1
     Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
+
+  tools/_sim_helpers.ps1
+    Canonical CommSys combo-firing predicate (Get-ComboConditions,
+    Test-ComboConditionsCore) shared by test_commsys.ps1 and run_test_matrix.ps1
+    so the two simulators cannot diverge. Condition model = form-state-key only
+    (live-proven HI v3.4 T5); poisoned-array rule lives here.
 
   providers/FL_FCIC/FL_FCIC.json
     Reference for multi-query person forms (autoSelect, queriesToDeselect,

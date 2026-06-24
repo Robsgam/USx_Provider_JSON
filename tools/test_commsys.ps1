@@ -20,6 +20,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Shared canonical condition predicate (kept identical with run_test_matrix.ps1).
+. (Join-Path $PSScriptRoot '_sim_helpers.ps1')
+
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
 $json = $raw | ConvertFrom-Json
 
@@ -326,62 +329,14 @@ function Get-FilledRefs($qidm, $formData) {
 }
 
 # ── Evaluate combo conditions (server-side AND logic) ──
-# Conditions may live at combo level (FL style) or inside requirements (NY/CA style).
-# Condition fields may be fieldIds (FL) or QIDM attribute names (NY/CA/KB) -- both resolved.
-# Operators per QIDM_REFERENCE Section 2a. EXCLUSIVE is UI-only -- always passes here.
+# Delegates to the shared canonical predicate in _sim_helpers.ps1 so this simulator
+# and run_test_matrix.ps1 cannot diverge (finding H). Condition model + poisoned-
+# array rule live there. Returns @{ ok; failures; warnings } for this tool's output.
 function Test-ComboConditions($qidm, $combo, $formData) {
-    $conds = @()
-    if ($combo.conditions) { $conds += @($combo.conditions) }
-    if ($combo.requirements -and $combo.requirements.conditions) { $conds += @($combo.requirements.conditions) }
-    $result = @{ ok = $true; failures = @(); warnings = @() }
-    if ($conds.Count -eq 0) { return $result }
-
-    # POISONED-ARRAY RULE (live-proven FL v4.9 T-A/T-B, USx tenant RMS client,
-    # 2026-06-12; QIDM_REFERENCE Section 2a): a conditions array containing ANY
-    # value-comparison operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is disabled
-    # IN ITS ENTIRETY -- including co-resident EXISTS/NOT_EXISTS members. The
-    # combo behaves as unconditioned (fires by set[]/any[], joins the pool).
-    # Scope is NOT limited to reverse-lookup attrs: T-A used a literal FormInput
-    # carrying exact-uppercase "FL" and the NOT_EQUALS still passed.
-    # Existence-ONLY arrays are honored (live-proven FL v4.8 DL T1).
-    $poisoners = @($conds | Where-Object {
-        "$($_.operator)".ToUpperInvariant() -in @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
-    })
-    if ($poisoners.Count -gt 0) {
-        $desc = ($poisoners | ForEach-Object { "$(@($_.field) -join '+') $("$($_.operator)".ToUpperInvariant()) $(@($_.value) -join ',')" }) -join '; '
-        $result.warnings += "POISONED ARRAY: value-comparison condition(s) [$desc] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12."
-        return $result
-    }
-
-    foreach ($cond in $conds) {
-        $op = "$($cond.operator)".ToUpperInvariant()
-        if ($op -eq 'EXCLUSIVE') { continue }
-
-        # @() wraps scalars AND preserves arrays; assigning from an if-expression would
-        # unroll a single-element array to a scalar (then [0] indexes a char) -- avoid.
-        $fields = @($cond.field)
-
-        foreach ($f in $fields) {
-            # Resolve field value: QIDM attribute name FIRST (platform/KB canonical --
-            # e.g. 'State' must resolve via the attr's sourceField like registrationStateDH,
-            # not a same-named form field), then direct fieldId fallback.
-            $val = $null
-            $attr = $qidm.attributes | Where-Object { $_.name -eq $f } | Select-Object -First 1
-            if ($attr) { $val = Get-AttrValue $attr $formData }
-            elseif ($formData.ContainsKey($f)) { $val = $formData[$f] }
-            $present = -not [string]::IsNullOrWhiteSpace("$val")
-
-            $pass = switch ($op) {
-                'EXISTS'     { $present }
-                'NOT_EXISTS' { -not $present }
-                default      { $true }
-            }
-            if (-not $pass) {
-                $result.ok = $false
-                $shown = if ($present) { "'$val'" } else { '(blank)' }
-                $result.failures += "$f $op [value=$shown]"
-            }
-        }
+    $core = Test-ComboConditionsCore -conds (Get-ComboConditions $combo) -formData $formData
+    $result = @{ ok = $core.ok; failures = $core.failures; warnings = @() }
+    if ($core.poisoned) {
+        $result.warnings += "POISONED ARRAY: value-comparison condition(s) [$($core.poisonDesc)] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12."
     }
     return $result
 }

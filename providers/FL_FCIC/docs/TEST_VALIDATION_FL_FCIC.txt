@@ -1,16 +1,21 @@
-================================================================
+﻿================================================================
   Build Report: FL_FCIC
   Source: FL_FCIC.json
-  Generated: 2026-06-23 18:02
+  Generated: 2026-06-24 15:42
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX VALIDATION -- FL_FCIC
+TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC
 ============================================================
 Source: FL_FCIC.json
 Matrix: FL_FCIC_TEST_MATRIX.txt
-Generated: 2026-06-23
+Generated: 2026-06-24
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
   T1  Vehicle    [PASS] 2 cards, 10 fields, defaults verified

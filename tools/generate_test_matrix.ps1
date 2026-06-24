@@ -30,9 +30,10 @@ if (-not $provBundle) { Write-Error "No provider bundle found"; exit 1 }
 $providerName = $provBundle.name
 $fileName = Split-Path $Path -Leaf
 
-# ── Extract version ──
+# ── Extract version (prefer top-level JSON `version` field; fall back to description/filename) ──
 $version = "unknown"
-if ($provBundle.description -match 'v(\d+\.\d+)') { $version = $Matches[1] }
+if ($json.version) { $version = $json.version }
+elseif ($provBundle.description -match 'v(\d+\.\d+)') { $version = $Matches[1] }
 elseif ($fileName -match 'v(\d+\.\d+)') { $version = $Matches[1] }
 
 # ── Load field constraints from METADATA_REFERENCE.txt ──

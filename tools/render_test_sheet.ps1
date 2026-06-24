@@ -1,14 +1,16 @@
 <#
-  render_test_sheet.ps1 -- Printable tester reference sheet for a provider.
+  render_test_sheet.ps1 -- Compact printable test reference sheet.
 
-  Per entity: RENDER test, per-combo fill tables + expected wire, any[] supplement, negative.
-  Output: HTML + optional PDF via Edge headless.
+  Reads T-numbers and descriptions from TEST_MATRIX.txt (authoritative numbering),
+  enriches set[] fill data from the provider JSON, and outputs a single compact
+  HTML table suitable for printing on 1-2 landscape pages.
 
   Usage:
-    .\render_test_sheet.ps1 -Path <provider.json> -OutFile <sheet.html> [-PdfFile <sheet.pdf>]
+    .\render_test_sheet.ps1 -Path <provider.json> [-MatrixPath <TEST_MATRIX.txt>] -OutFile <sheet.html> [-PdfFile <sheet.pdf>]
 #>
 param(
     [Parameter(Mandatory=$true)][string]$Path,
+    [string]$MatrixPath,
     [Parameter(Mandatory=$true)][string]$OutFile,
     [string]$PdfFile
 )
@@ -19,317 +21,320 @@ $data     = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
 $provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '(?i)_(BASE|MC)$',''
 $genDate  = Get-Date -Format 'yyyy-MM-dd'
 
+# Auto-locate matrix
+if (-not $MatrixPath) {
+    $provDir    = Split-Path $resolved -Parent
+    $MatrixPath = Join-Path $provDir "docs\${provider}_TEST_MATRIX.txt"
+}
+if (-not (Test-Path $MatrixPath)) { Write-Error "TEST_MATRIX.txt not found: $MatrixPath"; exit 1 }
+
 $entBundle  = $data.bundles | Where-Object { $_.name -eq 'ENTITIES' } | Select-Object -First 1
 $provBundle = $data.bundles | Where-Object { $_.name -ne 'ENTITIES' -and $_.name -ne 'RMS' } | Select-Object -First 1
 if (-not $entBundle) { Write-Error "No ENTITIES bundle"; exit 1 }
 
-$version = 'unknown'
-if ($provBundle.description -match 'v(\d+\.\d+)') { $version = $Matches[1] }
+$version = if ($data.version) { $data.version } else { 'unknown' }
+if ($version -eq 'unknown' -and $provBundle.description -match 'v(\d+\.\d+)') { $version = $Matches[1] }
 
-function Esc([string]$s) { if (-not $s) { return '' }; ([string]$s) -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;' -replace '"','&quot;' }
+function Esc([string]$s) {
+    if (-not $s) { return '' }
+    ([string]$s) -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;' -replace '"','&quot;'
+}
 
-# ── Field card extractor (mirrors generate_test_matrix) ──
-function Get-CardFields($layout) {
-    $cards = [ordered]@{}
-    if (-not $layout) { return $cards }
-    $orderedKeys = if ($layout.ROOT_PAGE -and $layout.ROOT_PAGE.nodes) { $layout.ROOT_PAGE.nodes } else { ($layout | Get-Member -MemberType NoteProperty).Name }
-    foreach ($m in $orderedKeys) {
-        if (-not $layout.$m) { continue }
-        $node = $layout.$m
-        if ($node.type.resolvedName -eq 'Card') {
-            $title = if ($node.props.title) { $node.props.title } elseif ($node.props.label) { $node.props.label } else { $m }
-            $fields = @()
-            if ($node.nodes) {
-                foreach ($rowId in $node.nodes) {
-                    $row = $layout.$rowId
-                    if (-not $row) { continue }
-                    $rowFields = @()
-                    if ($row.nodes) {
-                        foreach ($fid in $row.nodes) {
-                            $fn = $layout.$fid
-                            if (-not $fn) { continue }
-                            $fieldId = if ($fn.props.fieldId) { $fn.props.fieldId } else { $fid }
-                            $type = switch ($fn.type.resolvedName) {
-                                'FormSelect'    { 'dropdown' }
-                                'FormInput'     { 'text' }
-                                'FormDate'      { 'date' }
-                                'FormDateInput' { 'date' }
-                                'CheckboxInput' { 'checkbox' }
-                                default         { $fn.type.resolvedName }
-                            }
-                            $rowFields += [PSCustomObject]@{
-                                fieldId  = $fieldId
-                                label    = if ($fn.props.label) { $fn.props.label } else { $fieldId }
-                                type     = $type
-                                default_ = $fn.props.initialValue
-                                hidden   = ($fn.props.hidden -eq $true)
-                            }
-                        }
-                    }
-                    $fields += [PSCustomObject]@{ fields = $rowFields }
-                }
-            }
-            $cards[$m] = [PSCustomObject]@{ title = $title; rows = $fields }
-        }
+# ── Build keyRef -> combo lookup from provider QIDMs ──
+$qidms = @($provBundle.configurations | Where-Object {
+    $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.handlerFunction -eq 'CommsysTransactionRequestHandler'
+})
+$comboByKeyRef = @{}
+foreach ($q in $qidms) {
+    foreach ($c in @($q.combinations)) {
+        $kr = if ($c.keyReference) { $c.keyReference } elseif ($c.keyRef) { $c.keyRef } else { '' }
+        if ($kr) { $comboByKeyRef[$kr] = [PSCustomObject]@{ combo=$c; qidm=$q } }
     }
-    return $cards
 }
 
 # ── Standard test values ──
 function Get-TestValue([string]$fid) {
     switch -Regex ($fid) {
-        '(?i)licensePlateNumber$'           { return 'TEST123' }
+        '(?i)licensePlateNumber$'           { return 'ABC1234' }
         '(?i)vehicleIdentificationNumber$'  { return '1HGCM82633A123456' }
+        '(?i)operatorLicenseNumberDH'       { return 'D999888777' }
         '(?i)operatorLicenseNumber'         { return 'D999888777' }
+        '(?i)nameLastDH'                    { return 'DOE' }
         '(?i)nameLast'                      { return 'DOE' }
+        '(?i)nameFirstDH'                   { return 'JOHN' }
         '(?i)nameFirst'                     { return 'JOHN' }
-        '(?i)nameMiddle'                    { return '' }
+        '(?i)birthDateDH'                   { return '01/15/1990' }
         '(?i)birthDate'                     { return '01/15/1990' }
+        '(?i)sexCodeDH'                     { return 'M' }
         '(?i)sexCode'                       { return 'M' }
+        '(?i)registrationState'             { return 'TX' }
         '(?i)gunSerialNumber'               { return 'GUN12345' }
-        '(?i)gunMake'                       { return 'SMTH' }
-        '(?i)gunCaliber'                    { return '9MM' }
-        '(?i)gunModel'                      { return 'MODEL1' }
         '(?i)articleSerialNumber'           { return 'ART99999' }
         '(?i)articleTypeCode'               { return 'BBICYCL' }
         '(?i)boatHullIdNumber'              { return 'FL1234AB56H7' }
         '(?i)registrationNumber$'           { return 'FL1234AB' }
         '(?i)ncicNumber'                    { return 'X123456789' }
-        '(?i)imageIndicator'                { return 'N' }
-        '(?i)randomRequest'                 { return 'N' }
+        '(?i)stickerNumber'                 { return 'STK1234' }
+        '(?i)imageIndicator'                { return 'Y' }
+        '(?i)relatedHit'                    { return 'Y' }
+        '(?i)emailAddress'                  { return 'officer@agency.gov' }
+        '(?i)purposeCode'                   { return 'C' }
         default                             { return 'TEST' }
     }
 }
 
-# ── QIDM / entity wiring ──
-$qidms = @($provBundle.configurations | Where-Object { $_.type -eq 'QUERYINPUTDATAMAPPING' -and $_.handlerFunction -eq 'CommsysTransactionRequestHandler' })
-$qifs  = @($entBundle.configurations  | Where-Object { $_.type -eq 'QUERYINPUTFORM' })
-
-$entityMap = @{}
-foreach ($qif in $qifs) {
-    $ent = $qif.targetEntity
-    $names = @()
-    if ($qif.queryInputDataMapping -is [array]) { $names = $qif.queryInputDataMapping } elseif ($qif.queryInputDataMapping) { $names = @($qif.queryInputDataMapping) }
-    foreach ($n in $names) { $entityMap[$n] = $ent }
+# ── Resolve QIDM attribute name to its form fieldId ──
+function Resolve-SourceField([string]$attrName, $qidm) {
+    foreach ($attr in @($qidm.attributes)) {
+        if ($attr.name -ne $attrName) { continue }
+        $sfs = if ($attr.sourceField -is [array]) { $attr.sourceField } elseif ($attr.sourceField) { @($attr.sourceField) } else { @() }
+        if ($sfs.Count -gt 0) { return $sfs[0] }
+    }
+    return $attrName
 }
-foreach ($q in $qidms) { if ($q.targetEntity -and -not $entityMap.ContainsKey($q.name)) { $entityMap[$q.name] = $q.targetEntity } }
 
-# ── Resolve combo set[] attrs → form fieldIds ──
-function Get-SetFieldIds($combo, $qidm, $allFields) {
-    $setNames = @(); if ($combo.requirements -and $combo.requirements.set) { $setNames = @($combo.requirements.set) }
-    $ids = @()
-    foreach ($sf in $setNames) {
-        $match = $allFields | Where-Object { $_.fieldId -eq $sf } | Select-Object -First 1
-        if ($match) { $ids += $match.fieldId; continue }
-        foreach ($attr in $qidm.attributes) {
-            if ($attr.name -eq $sf) {
-                $sfs = @(); if ($attr.sourceField -is [array]) { $sfs = $attr.sourceField } elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
-                foreach ($s in $sfs) {
-                    $fm = $allFields | Where-Object { $_.fieldId -eq $s } | Select-Object -First 1
-                    if ($fm) { $ids += $fm.fieldId; break }
-                }; break
+# ── Build fill HTML for a keyRef (set[] fields + guardrail notes) ──
+function Get-ComboFillHtml([string]$keyRef) {
+    $entry = $comboByKeyRef[$keyRef]
+    if (-not $entry) { return "<i>?$keyRef</i>" }
+    $combo = $entry.combo; $qidm = $entry.qidm
+    $setNames = @(); if ($combo.requirements.set) { $setNames = @($combo.requirements.set) }
+
+    $mustBlank = @()
+    if ($combo.requirements.conditions) {
+        foreach ($cond in @($combo.requirements.conditions)) {
+            if ($cond.operator -eq 'NOT_EXISTS') {
+                $sf = if ($cond.field -is [array]) { $cond.field[0] } else { $cond.field }
+                $mustBlank += Resolve-SourceField $sf $qidm
             }
         }
     }
-    return $ids
-}
 
-# ── Detect NOT_EXISTS guardrail: returns the field that must be absent for this combo to fire ──
-function Get-GuardrailField($combo) {
-    $conds = $combo.requirements.conditions
-    if (-not $conds) { return $null }
-    foreach ($cond in @($conds)) {
-        if ($cond.operator -eq 'NOT_EXISTS') {
-            $sf = if ($cond.field -is [array]) { $cond.field[0] } else { $cond.field }
-            if ($sf) { return [string]$sf }
-        }
+    $parts = @()
+    foreach ($sn in $setNames) {
+        $fid = Resolve-SourceField $sn $qidm
+        $val = Get-TestValue $fid
+        $parts += "<b>${fid}=${val}</b>"
     }
-    return $null
+    $html = $parts -join ' '
+    if ($mustBlank.Count -gt 0) {
+        $html += " <span style='color:#c00'>[leave blank: $($mustBlank -join ', ')]</span>"
+    }
+    return $html
 }
 
-# ── Build entity order ──
-$entityOrder = @($qifs | Sort-Object {
-    switch ($_.targetEntity) { 'Vehicle' { 0 } 'Person' { 1 } 'Boat' { 2 } 'Firearm' { 3 } 'Article' { 4 } default { 5 } }
-} | ForEach-Object { $_.targetEntity } | Select-Object -Unique)
+# ── Parse TEST_MATRIX.txt into ordered test records ──
+$matrixLines = Get-Content $MatrixPath
+$tests = [System.Collections.Generic.List[PSCustomObject]]::new()
 
-# ════════════════════════════════════════════════════════════════════
-#  HTML GENERATION
-# ════════════════════════════════════════════════════════════════════
+$i = 0
+while ($i -lt $matrixLines.Count) {
+    $line = $matrixLines[$i]
+    # Match test lines: " NN  Entity  action ... ["
+    if ($line -match '^\s{0,2}(\d{1,3})\s{2,}(\w+)\s{2,}(.+?)\s*\[') {
+        $tNum    = [int]$Matches[1]
+        $tEntity = $Matches[2].Trim()
+        $rawAct  = $Matches[3].Trim()
 
+        # Collect continuation lines (12+ leading spaces)
+        $contLines    = [System.Collections.Generic.List[string]]::new()
+        $expectedLine = ''
+        $j = $i + 1
+        while ($j -lt $matrixLines.Count -and $matrixLines[$j] -match '^\s{12,}') {
+            $cl = $matrixLines[$j].Trim()
+            $contLines.Add($cl)
+            if ($cl -match '^Expected:') { $expectedLine = $cl }
+            $j++
+        }
+
+        # Determine type
+        $type       = 'COMBO'
+        $keyRef     = ''
+        $anyNote    = ''
+        $comboLabel = ($rawAct -split '\s+')[0]
+
+        if ($rawAct -match '^Render form') {
+            $type = 'RENDER'
+        } elseif ($rawAct -match '^Empty form') {
+            $type = 'NEGATIVE'
+        } elseif ($rawAct -match '^Deselect') {
+            $type = 'DESELECT'
+        } elseif ($expectedLine -match 'any\[\] fields present') {
+            $type = 'ANY'
+            # "COMBO             + field1, field2"  (2+ spaces before +)
+            if ($rawAct -match '^(\S+)\s{2,}\+\s+(.+)$') {
+                $comboLabel = $Matches[1]
+                $anyNote    = $Matches[2]
+            } else {
+                $anyNote = $rawAct -replace '^[^\+]+\+\s*',''
+            }
+        } else {
+            if ($expectedLine -match '\(([A-Za-z0-9_]+)\)') { $keyRef = $Matches[1] }
+        }
+
+        # Render description: build from continuation lines
+        $renderDesc = ''
+        if ($type -eq 'RENDER' -and $contLines.Count -gt 0) {
+            $renderDesc = ($contLines | ForEach-Object { Esc $_ }) -join '<br>'
+        }
+
+        $tests.Add([PSCustomObject]@{
+            num        = $tNum
+            entity     = $tEntity
+            action     = $rawAct
+            comboLabel = $comboLabel
+            type       = $type
+            keyRef     = $keyRef
+            anyNote    = $anyNote
+            renderDesc = $renderDesc
+        })
+    }
+    $i++
+}
+
+# Second pass: resolve keyRef for ANY tests via matching prior COMBO test
+foreach ($t in ($tests | Where-Object { $_.type -eq 'ANY' -and -not $_.keyRef })) {
+    $prior = $tests | Where-Object {
+        $_.type -eq 'COMBO' -and $_.keyRef -and
+        $_.comboLabel -eq $t.comboLabel -and $_.entity -eq $t.entity
+    } | Select-Object -Last 1
+    if ($prior) { $t.keyRef = $prior.keyRef }
+}
+
+# ── CSS ──
 $css = @'
-body{font-family:monospace;font-size:11px;color:#000;background:#fff;padding:12px;max-width:900px}
-h1{font-size:12px;font-weight:bold;border-bottom:1px solid #000;margin-bottom:10px;padding-bottom:2px}
-h2{font-size:11px;font-weight:bold;border-top:2px solid #000;border-bottom:1px solid #000;padding:2px 0;margin:14px 0 4px}
-.t{border-bottom:1px dashed #ccc;padding:3px 0 5px;margin-bottom:2px}
-.th{font-weight:bold}
-.fill{margin:2px 0 2px 8px}
-.fill span.k{display:inline-block;min-width:220px}
-.fill span.v{font-weight:bold}
-.fill span.g{font-style:italic}
-.exp{margin:2px 0 0 8px}
-.absent{text-decoration:underline}
-@media print{body{padding:4px}.t{page-break-inside:avoid}h2{page-break-before:always}h2:first-of-type{page-break-before:auto}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000;background:#fff;padding:5mm}
+h1{font-size:9pt;font-weight:bold;border-bottom:2px solid #000;margin-bottom:4px;padding-bottom:2px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+colgroup col:nth-child(1){width:26px}
+colgroup col:nth-child(2){width:52px}
+colgroup col:nth-child(3){width:80px}
+colgroup col:nth-child(4){width:auto}
+colgroup col:nth-child(5){width:18px}
+th{background:#111;color:#fff;font-size:7.5pt;padding:2px 4px;text-align:left;white-space:nowrap}
+td{border:1px solid #bbb;padding:2px 4px;vertical-align:top;word-wrap:break-word;line-height:1.3}
+tr.render td{background:#f2f2f2}
+tr.negative td,tr.deselect td{background:#fffbe6}
+tr.any td{background:#f0f8ff}
+tr.phase td{background:#333;color:#fff;font-weight:bold;font-size:7pt;padding:2px 4px;letter-spacing:.4px}
+.kr{font-size:6.5pt;color:#888;display:block}
+@media print{
+  @page{size:letter landscape;margin:8mm}
+  body{padding:0;font-size:7.5pt}
+  h1{font-size:8pt}
+  tr{page-break-inside:avoid}
+}
 '@
 
+# ── HTML generation ──
 $sb = [System.Text.StringBuilder]::new()
-[void]$sb.Append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>$provider Test Sheet</title><style>$css</style></head><body>")
-[void]$sb.Append("<h1>$provider &mdash; Test Sheet &mdash; v$version &mdash; $genDate</h1>")
+[void]$sb.Append("<!DOCTYPE html><html><head><meta charset='utf-8'>")
+[void]$sb.Append("<title>$(Esc $provider) Test Sheet v$(Esc $version)</title>")
+[void]$sb.Append("<style>$css</style></head><body>")
+[void]$sb.Append("<h1>$(Esc $provider) &mdash; Test Sheet &mdash; v$(Esc $version) &mdash; $genDate &mdash; $($tests.Count) tests</h1>")
+[void]$sb.Append("<table><colgroup><col><col><col><col><col></colgroup>")
+[void]$sb.Append("<thead><tr><th>T#</th><th>Entity</th><th>Combo / Action</th><th>Fill / Verify</th><th>&#10003;</th></tr></thead><tbody>")
 
-$testNum = 0
-
-foreach ($entity in $entityOrder) {
-    $qif = $qifs | Where-Object { $_.targetEntity -eq $entity } | Select-Object -First 1
-    if (-not $qif) { continue }
-    $cards     = Get-CardFields $qif.layout.default
-    $allFields = @(); foreach ($c in $cards.Values) { foreach ($r in $c.rows) { foreach ($f in $r.fields) { $allFields += $f } } }
-    $entQidms  = @($qidms | Where-Object { $entityMap[$_.name] -eq $entity })
-
-    [void]$sb.Append("<h2>$entity</h2>")
-
-    # ── RENDER ──
-    $testNum++
-    [void]$sb.Append("<div class='t'>")
-    [void]$sb.Append("<div class='th'>T$testNum &mdash; RENDER</div>")
-    foreach ($card in $cards.Values) {
-        $flist = @()
-        foreach ($row in $card.rows) {
-            foreach ($f in $row.fields) {
-                if ($f.hidden) { continue }
-                $dv = if ($f.default_) { "=$(Esc $f.default_)" } else { '' }
-                $flist += "$(Esc $f.label)$dv"
-            }
-        }
-        [void]$sb.Append("<div class='fill'><span class='k'>[$(Esc $card.title)]</span> $($flist -join ' | ')</div>")
-    }
-    [void]$sb.Append("</div>")
-
-    # ── Combos ──
-    foreach ($qidm in $entQidms) {
-        $sortedCombos = @($qidm.combinations | Sort-Object {
-            $setNames = @(); if ($_.requirements -and $_.requirements.set) { $setNames = @($_.requirements.set) }
-            $setNames.Count
-        } -Descending)
-
-        # Pre-compute guardrail pairs: gated combo -> winning combo
-        # Gated = has NOT_EXISTS condition; winning = the combo whose set[] contains that field
-        $guardrailPairs = @()
-        foreach ($combo in $sortedCombos) {
-            $guardFid = Get-GuardrailField $combo
-            if ($guardFid) {
-                $winner = $sortedCombos | Where-Object {
-                    $sn = @(); if ($_.requirements.set) { $sn = @($_.requirements.set) }
-                    $sn -contains $guardFid
-                } | Select-Object -First 1
-                if ($winner) {
-                    $guardrailPairs += [PSCustomObject]@{ gated=$combo; winner=$winner; guardFid=$guardFid }
-                }
-            }
-        }
-
-        foreach ($combo in $sortedCombos) {
-            $kr     = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
-            $setIds = Get-SetFieldIds $combo $qidm $allFields
-            $testNum++
-
-            [void]$sb.Append("<div class='t'>")
-            [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) &mdash; keyRef=$kr</div>")
-            foreach ($fid in $setIds) {
-                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
-                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
-                $val = Get-TestValue $fid
-                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [set]</div>")
-            }
-            $mustHave = $setIds -join ', '
-            [void]$sb.Append("<div class='exp'>Expected: $(Esc $qidm.query) | keyRef=$kr | wire: $mustHave</div>")
-            [void]$sb.Append("</div>")
-        }
-
-        # ── Guardrail tests (one per pair: fill both, winning combo fires, gated field absent) ──
-        foreach ($pair in $guardrailPairs) {
-            $wkr      = if ($pair.winner.keyReference) { $pair.winner.keyReference } else { $pair.winner.keyRef }
-            $gkr      = if ($pair.gated.keyReference)  { $pair.gated.keyReference  } else { $pair.gated.keyRef  }
-            $winIds   = Get-SetFieldIds $pair.winner $qidm $allFields
-            $gatedIds = Get-SetFieldIds $pair.gated  $qidm $allFields
-            $testNum++
-
-            [void]$sb.Append("<div class='t'>")
-            [void]$sb.Append("<div class='th'>T$testNum &mdash; GUARDRAIL: $wkr wins over $gkr ($($pair.guardFid) NOT_EXISTS)</div>")
-            foreach ($fid in $winIds) {
-                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
-                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
-                $val = Get-TestValue $fid
-                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [winning set &mdash; fill this]</div>")
-            }
-            foreach ($fid in $gatedIds) {
-                $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
-                $lbl = if ($f -and $f.label) { $f.label } else { $fid }
-                $val = Get-TestValue $fid
-                [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [also fill &mdash; must be ABSENT in wire]</div>")
-            }
-            $winWire   = $winIds -join ', '
-            $absentWire = $gatedIds -join ', '
-            [void]$sb.Append("<div class='exp'>Expected: keyRef=$wkr | wire: $winWire | ABSENT: $absentWire</div>")
-            [void]$sb.Append("</div>")
-        }
-
-        # ── any[] supplement (on first non-gated combo) ──
-        $firstCombo = $sortedCombos | Where-Object { -not (Get-GuardrailField $_) } | Select-Object -First 1
-        if (-not $firstCombo) { $firstCombo = $sortedCombos | Select-Object -First 1 }
-        if ($firstCombo) {
-            $anyNames2  = @(); if ($firstCombo.requirements.any) { $anyNames2 = @($firstCombo.requirements.any) }
-            $anyFields2 = @($allFields | Where-Object { $anyNames2 -contains $_.fieldId -and -not $_.hidden })
-            if ($anyFields2.Count -gt 0) {
-                $kr2     = if ($firstCombo.keyReference) { $firstCombo.keyReference } else { $firstCombo.keyRef }
-                $setIds2 = Get-SetFieldIds $firstCombo $qidm $allFields
-                $testNum++
-                [void]$sb.Append("<div class='t'>")
-                [void]$sb.Append("<div class='th'>T$testNum &mdash; $(Esc $qidm.query) + any[] &mdash; keyRef=$kr2</div>")
-                foreach ($fid in $setIds2) {
-                    $f   = $allFields | Where-Object { $_.fieldId -eq $fid } | Select-Object -First 1
-                    $lbl = if ($f -and $f.label) { $f.label } else { $fid }
-                    $val = Get-TestValue $fid
-                    [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $lbl) ($fid)</span> <span class='v'>$(Esc $val)</span> [set]</div>")
-                }
-                foreach ($f in $anyFields2) {
-                    $val = if ($f.default_) { $f.default_ } else { Get-TestValue $f.fieldId }
-                    [void]$sb.Append("<div class='fill'><span class='k'>$(Esc $f.label) ($($f.fieldId))</span> <span class='v'>$(Esc $val)</span> [any &mdash; verify serializes]</div>")
-                }
-                $anyCheck = ($anyFields2 | ForEach-Object { $_.fieldId }) -join ', '
-                [void]$sb.Append("<div class='exp'>Verify in wire: $anyCheck</div>")
-                [void]$sb.Append("</div>")
-            }
-        }
-    }
-
-    # ── Negative ──
-    $hasAutoSelect = ($entQidms | Where-Object { $_.autoSelect -eq $true }).Count -gt 0
-    if ($hasAutoSelect) {
-        $testNum++
-        [void]$sb.Append("<div class='t'>")
-        [void]$sb.Append("<div class='th'>T$testNum &mdash; NEGATIVE &mdash; $entity empty form</div>")
-        [void]$sb.Append("<div class='exp'>Clear all fields. No Send button.</div>")
-        [void]$sb.Append("</div>")
-    }
+$lastPhaseKey = ''
+$phaseLabels  = @{
+    'RENDER'   = 'PHASE 1 &mdash; RENDER (verify card structure, fields, defaults)'
+    'COMBO'    = 'PHASE 2+ &mdash; COMBO TESTS (enter set[] fields, submit, verify XML keyRef)'
+    'ANY'      = 'PHASE 7 &mdash; ANY[] FIELD TESTS (fire combo + add any[] field, verify in XML)'
+    'DESELECT' = 'PHASE 8 &mdash; DESELECT VERIFICATION'
+    'NEGATIVE' = 'PHASE 9 &mdash; NEGATIVES (empty form = no send button)'
 }
 
-[void]$sb.Append("</body></html>")
+foreach ($t in $tests) {
+    $phaseKey = if ($t.type -eq 'COMBO') { 'COMBO' } else { $t.type }
 
-# Write HTML
-$dir = [System.IO.Path]::GetDirectoryName((Resolve-Path $OutFile -ErrorAction SilentlyContinue).Path ?? $OutFile)
+    if ($phaseKey -ne $lastPhaseKey) {
+        $pl = if ($phaseLabels.ContainsKey($phaseKey)) { $phaseLabels[$phaseKey] } else { Esc $phaseKey }
+        [void]$sb.Append("<tr class='phase'><td colspan='5'>$pl</td></tr>")
+        $lastPhaseKey = $phaseKey
+    }
+
+    $rowClass = switch ($t.type) {
+        'RENDER'   { 'render'   }
+        'NEGATIVE' { 'negative' }
+        'DESELECT' { 'deselect' }
+        'ANY'      { 'any'      }
+        default    { ''         }
+    }
+
+    # Fill column
+    $fillHtml = ''
+    switch ($t.type) {
+        'RENDER' {
+            $fillHtml = if ($t.renderDesc) { $t.renderDesc } else { '&mdash;' }
+        }
+        'COMBO' {
+            if ($t.keyRef) {
+                $fillHtml  = Get-ComboFillHtml $t.keyRef
+                $fillHtml += "<span class='kr'>&#8594; $($t.keyRef)</span>"
+            } else {
+                $fillHtml = Esc $t.action
+            }
+        }
+        'ANY' {
+            if ($t.keyRef) {
+                $baseFill  = Get-ComboFillHtml $t.keyRef
+                $fillHtml  = "Fire: $baseFill"
+                $fillHtml += " &thinsp;+&thinsp; add: <b>$(Esc $t.anyNote)</b>"
+                $fillHtml += "<span class='kr'>&#8594; $($t.keyRef)</span>"
+            } else {
+                $fillHtml = "Add: <b>$(Esc $t.anyNote)</b>"
+            }
+        }
+        'DESELECT' {
+            $fillHtml = "Fill fields for <b>both</b> queries. Submit. Verify DH fires and DL is deselected."
+        }
+        'NEGATIVE' {
+            $fillHtml = "Clear all fields. Verify <b>no Send button</b> appears."
+        }
+    }
+
+    # Action column: abbreviated
+    $actionHtml = switch ($t.type) {
+        'RENDER'   { 'Render form' }
+        'NEGATIVE' { 'Empty form' }
+        'DESELECT' { Esc ($t.action -replace '^Deselect:\s*','') }
+        'ANY'      { "$(Esc $t.comboLabel) <span style='color:#777'>+&nbsp;any[]</span>" }
+        default    { Esc $t.comboLabel }
+    }
+
+    [void]$sb.Append("<tr class='$rowClass'>")
+    [void]$sb.Append("<td style='text-align:center'><b>$($t.num)</b></td>")
+    [void]$sb.Append("<td>$(Esc $t.entity)</td>")
+    [void]$sb.Append("<td>$actionHtml</td>")
+    [void]$sb.Append("<td>$fillHtml</td>")
+    [void]$sb.Append("<td style='text-align:center;font-size:13pt'>&#9744;</td>")
+    [void]$sb.Append("</tr>")
+}
+
+[void]$sb.Append("</tbody></table></body></html>")
+
+$dir = Split-Path $OutFile -Parent
 if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-$sb.ToString() | Set-Content -Path $OutFile -Encoding UTF8
+[System.IO.File]::WriteAllText($OutFile, $sb.ToString(), [System.Text.UTF8Encoding]::new($false))
 Write-Host "  [test-sheet] HTML: $OutFile" -ForegroundColor Green
 
-# Print to PDF via Edge
 if ($PdfFile) {
-    $edge = @('C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe','C:\Program Files\Microsoft\Edge\Application\msedge.exe') | Where-Object { Test-Path $_ } | Select-Object -First 1
+    $edge = @(
+        'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
+        'C:\Program Files\Microsoft\Edge\Application\msedge.exe'
+    ) | Where-Object { Test-Path $_ } | Select-Object -First 1
     if ($edge) {
         $absHtml = (Resolve-Path $OutFile).Path
         $absPdf  = [System.IO.Path]::GetFullPath($PdfFile)
         $fileUri = 'file:///' + ($absHtml -replace '\\','/')
-        Start-Process -FilePath $edge -ArgumentList @("--headless","--disable-gpu","--print-to-pdf=`"$absPdf`"","--no-margins","$fileUri") -Wait -WindowStyle Hidden 2>$null
+        Start-Process -FilePath $edge -ArgumentList @(
+            '--headless','--disable-gpu',
+            "--print-to-pdf=`"$absPdf`"",'--no-margins',
+            "$fileUri"
+        ) -Wait -WindowStyle Hidden 2>$null
         if (Test-Path $absPdf) { Write-Host "  [test-sheet] PDF:  $absPdf" -ForegroundColor Green }
-        else { Write-Host "  [test-sheet] PDF not produced (Edge headless advisory)" -ForegroundColor Yellow }
+        else { Write-Host "  [test-sheet] PDF not produced (Edge headless)" -ForegroundColor Yellow }
     } else {
         Write-Host "  [test-sheet] Edge not found -- HTML only" -ForegroundColor Yellow
     }

@@ -1,16 +1,21 @@
-================================================================
+﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML.json
-  Generated: 2026-06-23 18:05
+  Generated: 2026-06-24 15:42
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX VALIDATION -- HI_HCJDC_OFML
+TEST MATRIX <-> JSON CONSISTENCY -- HI_HCJDC_OFML
 ============================================================
 Source: HI_HCJDC_OFML.json
 Matrix: HI_HCJDC_OFML_TEST_MATRIX.txt
-Generated: 2026-06-23
+Generated: 2026-06-24
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
 
 PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
   T1  Person     [PASS] 3 cards, 17 fields, defaults verified
