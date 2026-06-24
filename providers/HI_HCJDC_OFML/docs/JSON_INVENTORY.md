@@ -42,6 +42,12 @@ Single JSON consolidated at v1.8 (2026-06-17). BASE/MC files deleted from root; 
 
 
 
+
+## v4.2 (2026-06-24)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML.json | v4.2 | Current | 68P/0F/0W/0LIM. |
 ## v4.1 (2026-06-23)
 
 | File | Version | Status | Notes |
