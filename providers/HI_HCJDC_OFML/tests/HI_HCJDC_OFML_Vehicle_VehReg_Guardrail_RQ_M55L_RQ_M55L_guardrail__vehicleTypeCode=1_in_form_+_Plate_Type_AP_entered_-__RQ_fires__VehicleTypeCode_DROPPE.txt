@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: Guardrail RQ>M55L (RQ>M55L guardrail: vehicleTypeCode=1 in form + Plate Type AP entered -> RQ fires, VehicleTypeCode DROPPED from wire (M55L exits pool via LicensePlateTypeCode NOT_EXISTS). Confirmed fires 3+4.)
+Date: 2026-06-25 16:23:59
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+vehicleTypeCode=1, LicensePlateTypeCode=AP, LicensePlateYear=2020, LicensePlateNumber=test
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><ImageIndicator>N</ImageIndicator><LicensePlateYear>2020</LicensePlateYear><LicensePlateTypeCode>AP</LicensePlateTypeCode><LicensePlateNumber>TEST</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  LicensePlateYear               2020
+  LicensePlateTypeCode           AP
+  LicensePlateNumber             TEST
+
+NOTES
+-----
+VehicleTypeCode absent from XML despite vehicleTypeCode=1 in form = guardrail confirmed.
+
+RESULT: PASS

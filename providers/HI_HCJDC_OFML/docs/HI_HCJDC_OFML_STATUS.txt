@@ -194,3 +194,15 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Person     DH:DH deselects DL (one-directional) PASS     One-directional deselect: both DL OLN (12345) and DH OLN (67980) filled; clicking the DH checkbox deselects DL -> SINGLE DriverHistoryQuery fires (OperatorLicenseNumber=67980, PurposeCode=C, Attention=SGAMBELLONE R). No DriverLicenseQuery transaction. Config verified one-directional (only DH has queriesToDeselect=[DriverLicenseQuery]).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:M55L          PASS     In-state plate: VehicleRegistrationQuery fires M55L; LicensePlateNumber=TEST + VehicleTypeCode=1 (default) + ImageIndicator=N. State=AK rides along on variant (plate+State, no Type/Year stays in-state).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:RQ            PASS     OOS plate: VehicleRegistrationQuery fires RQ; LicensePlateNumber=TEST + LicensePlateTypeCode=AP + LicensePlateYear=2020 + ImageIndicator=N; fires with and without State=AK (State rides along when present).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:Guardrail RQ>M55L PASS     RQ>M55L guardrail: vehicleTypeCode=1 in form + Plate Type AP entered -> RQ fires, VehicleTypeCode DROPPED from wire (M55L exits pool via LicensePlateTypeCode NOT_EXISTS). Confirmed fires 3+4.

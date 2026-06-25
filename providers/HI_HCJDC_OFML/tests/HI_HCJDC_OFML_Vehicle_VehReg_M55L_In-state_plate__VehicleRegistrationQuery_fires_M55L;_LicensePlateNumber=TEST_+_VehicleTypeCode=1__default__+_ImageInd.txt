@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: M55L (In-state plate: VehicleRegistrationQuery fires M55L; LicensePlateNumber=TEST + VehicleTypeCode=1 (default) + ImageIndicator=N. State=AK rides along on variant (plate+State, no Type/Year stays in-state).)
+Date: 2026-06-25 16:23:59
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+LicensePlateNumber=test, vehicleTypeCode=1, ImageIndicator=N (+RegistrationState=Alaska variant)
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><ImageIndicator>N</ImageIndicator><LicensePlateNumber>TEST</LicensePlateNumber><VehicleTypeCode>1</VehicleTypeCode></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  LicensePlateNumber             TEST
+  VehicleTypeCode                1
+
+NOTES
+-----
+
+
+RESULT: PASS
