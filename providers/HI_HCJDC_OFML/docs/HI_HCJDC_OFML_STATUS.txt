@@ -2,7 +2,7 @@ HI_HCJDC_OFML STATUS
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-06-25
-Current: v4.3 | 68P/0F/0W/0LIM | Updated 2026-06-25
+Current: v4.4 | 66P/0F/0W/0LIM | Updated 2026-06-25
 
 v4.0 (2026-06-23): 68P/0F/0W/0LIM | 28/28 PASS | All 5 entities blocked
   Single JSON. 6 QIDMs, 17 combos. Identifier-priority guardrail complete (Plate>VIN v3.6,
@@ -31,7 +31,6 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    Render:Render        PASS     T2 Vehicle render: 3 cards (SEARCH OPTIONS/PLATE SEARCH/VIN SEARCH); VehicleType=1 + ImageIndicator=N defaults present; State blank; PlateType no default
 
 LIVE TEST RESULTS (v3.4)
 ========================
@@ -67,27 +66,21 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:RQV           PASS     T11 OOS VIN+State: VehicleRegistrationQuery fires RQV; VIN + State NJ (reverse-lookup from New Jersey) + ImageIndicator N; vehicleTypeCode=1 in form state correctly NOT serialized (RQV pool excludes it); no LicensePlateNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:RQ            PASS     T12 OOS plate: VehicleRegistrationQuery fires RQ; Plate+Type PC+Year 2024+ImageIndicator N; vehicleTypeCode=1 in form state correctly NOT serialized (RQ pool excludes); no VIN. Manual analogue of CAD Test A (RQ correct when officer intends OOS)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:M55L          PASS     T15 in-state plate: VehicleRegistrationQuery fires M55L with LicensePlateNumber + VehicleTypeCode=1 (v4.1 CAD default rides along) + ImageIndicator N; no PlateType/Year so M55L wins over RQ. Proven via form-based test (PlateType/Year blanked)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:M55S          PASS     T21 Vehicle any[] vehicleYear: M55S fires; VehicleYear=2015 rides along any[] pool (+ VIN, VehicleTypeCode=1, ImageIndicator=N). any[] vehicleYear confirmed
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:QVV           PASS     T13 QVV DORMANT BY DESIGN (user-approved skip 2026-06-24): VIN-only queries fire M55S first (vehicleTypeCode=1 always defaults), shadowing QVV - live-proven by T16 (bare VIN fired M55S). Server auto-generates QV for stolen. QVV unreachable as primary by intent; not a defect.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Vehicle    VehReg:QVP           PASS     T14 QVP DORMANT BY DESIGN (user-approved skip 2026-06-24): plate+state queries fire M55L first (vehicleType+plate, no PlateType), shadowing QVP - live-proven by T15 (in-state plate fired M55L). Server auto-generates QV for stolen. QVP unreachable as primary by intent; not a defect.
 
 LIVE TEST RESULTS (v3.4)
 ========================

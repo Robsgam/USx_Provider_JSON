@@ -1,4 +1,4 @@
-HI_HCJDC_OFML v4.3 -- TEST MATRIX
+HI_HCJDC_OFML v4.4 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-25
 Layout: multi-card per entity
@@ -44,9 +44,9 @@ Boat (1 card, 4 fields):
     ROW 1: RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
     ROW 2: BoatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-QIDM SUMMARY (6 QIDMs, 15 combos)
+QIDM SUMMARY (6 QIDMs, 13 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, M55L x1, M55S x1), autoSelect=true
+  VehicleRegistrationQuery: 4 combos (RQ x2, M55S x1, M55L x1), autoSelect=true
   DriverLicenseQuery: 3 combos (DQ x2, QW x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
@@ -107,7 +107,7 @@ ENTITY 1: PERSON (16 tests -- 3 cards, 5 combos)
               Fill both query fields. Check deselect behavior.
 16  Person      Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 2: VEHICLE (19 tests -- 3 cards, 6 combos)
+ENTITY 2: VEHICLE (14 tests -- 3 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -128,91 +128,81 @@ ENTITY 2: VEHICLE (19 tests -- 3 cards, 6 combos)
               Expected: VehicleRegistrationQuery fires (RQV)
 21  Vehicle     RQ+V+State         + ImageIndicator, vehicleYear   [    ]
               Expected: any[] fields present in XML output.
-22  Vehicle     QV+P+State         LicensePlateNumber=TEST123, Registrat... [    ]
-              Expected: VehicleRegistrationQuery fires (QVP)
-23  Vehicle     QV+P+State         + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
-24  Vehicle     QV+V               VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (QVV)
-25  Vehicle     QV+V               + ImageIndicator, vehicleYear   [    ]
-              Expected: any[] fields present in XML output.
-26  Vehicle     M55L+M55L          vehicleTypeCode=TEST, LicensePlateNum... [    ]
-              Expected: VehicleRegistrationQuery fires (M55L)
-27  Vehicle     M55L+M55L          + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
-28  Vehicle     M55S+M55S          vehicleTypeCode=TEST, VehicleIdentifi... [    ]
+22  Vehicle     M55S+M55S          vehicleTypeCode=TEST, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (M55S)
-29  Vehicle     M55S+M55S          + ImageIndicator, vehicleYear   [    ]
+23  Vehicle     M55S+M55S          + ImageIndicator, vehicleYear   [    ]
               Expected: any[] fields present in XML output.
-30  Vehicle     Guardrail: RQ>RQV  LicensePlateNumber=TEST123, VehicleId... [    ]
+24  Vehicle     M55L+M55L          vehicleTypeCode=TEST, LicensePlateNum... [    ]
+              Expected: VehicleRegistrationQuery fires (M55L)
+25  Vehicle     M55L+M55L          + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+26  Vehicle     Guardrail: RQ>RQV  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ). VIN+RegistrationState absent from XML.
-31  Vehicle     Guardrail: RQ>M55L  LicensePlateTypeCode=PC, vehicleTypeC... [    ]
+27  Vehicle     Guardrail: RQ>M55L  LicensePlateTypeCode=PC, vehicleTypeC... [    ]
               Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+Plate absent from XML.
-32  Vehicle     Guardrail: RQV>M55S  vehicleTypeCode=TEST, VehicleIdentifi... [    ]
+28  Vehicle     Guardrail: RQV>M55S  vehicleTypeCode=TEST, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (RQV). vehicleTypeCode+VIN absent from XML.
-33  Vehicle     Guardrail: RQ>M55S  LicensePlateNumber=TEST123, vehicleTy... [    ]
+29  Vehicle     Guardrail: RQ>M55S  LicensePlateNumber=TEST123, vehicleTy... [    ]
               Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+VIN absent from XML.
-34  Vehicle     Guardrail: RQ>QVV  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ). VIN+VehicleMakeCode absent from XML.
-35  Vehicle     Empty form, verify no Send button / no request.    [    ]
+30  Vehicle     Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 3: BOAT (7 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-36  Boat        Render form. Verify 1 card:                        [    ]
+31  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA: titled "BOAT SEARCH".
               Registration Number (or use Hull ID), State (optional) dropdown (no default).
               Hull ID Number, Search Hit (optional) dropdown=Y.
-37  Boat        BQ+Reg             RegistrationNumber=FL1234AB      [    ]
+32  Boat        BQ+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (BQ)
-38  Boat        BQ+Reg             + RegistrationState, relatedSearchHitIndicator [    ]
+33  Boat        BQ+Reg             + RegistrationState, relatedSearchHitIndicator [    ]
               Expected: any[] fields present in XML output.
-39  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
+34  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QB)
-40  Boat        QB+Hull            + RegistrationState, relatedSearchHitIndicator [    ]
+35  Boat        QB+Hull            + RegistrationState, relatedSearchHitIndicator [    ]
               Expected: any[] fields present in XML output.
-41  Boat        Guardrail: QB>BQ   BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+36  Boat        Guardrail: QB>BQ   BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (QB). Reg absent from XML.
-42  Boat        Empty form, verify no Send button / no request.    [    ]
+37  Boat        Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 4: FIREARM (4 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-43  Firearm     Render form. Verify 1 card:                        [    ]
+38  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM".
               Serial Number (required), Make (optional) dropdown (no default).
               Caliber (optional) dropdown (no default), Model (optional), Search Hit (optional) dropdown=Y.
-44  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+39  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (QG)
-45  Firearm     QG+Serial          + GunMake, GunCaliber, GunModel, relatedSearchHitIndicator [    ]
+40  Firearm     QG+Serial          + GunMake, GunCaliber, GunModel, relatedSearchHitIndicator [    ]
               Expected: any[] fields present in XML output.
-46  Firearm     Empty form, verify no Send button / no request.    [    ]
+41  Firearm     Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 5: ARTICLE (4 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-47  Article     Render form. Verify 1 card:                        [    ]
+42  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE".
               Serial Number (required), Article Type (required) dropdown (no default).
               Search Hit (optional) dropdown=Y.
-48  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+43  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QA)
-49  Article     QA+Serial          + relatedSearchHitIndicator     [    ]
+44  Article     QA+Serial          + relatedSearchHitIndicator     [    ]
               Expected: any[] fields present in XML output.
-50  Article     Empty form, verify no Send button / no request.    [    ]
+45  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 50 tests
+TOTAL: 45 tests
 
-COMBO COVERAGE (15/15):
-  VehicleRegistrationQuery: 6/6 -- T18(RQ+Plate), T20(RQ+V), T22(QV+P), T24(QV+V), T26(M55L+M55L), T28(M55S+M55S)
+COMBO COVERAGE (13/13):
+  VehicleRegistrationQuery: 4/4 -- T18(RQ+Plate), T20(RQ+V), T22(M55S+M55S), T24(M55L+M55L)
   DriverLicenseQuery: 3/3 -- T2(DQ+N), T4(DQ+SexCode), T6(QW+DOB)
   DriverHistoryQuery: 2/2 -- T8(KQ+N), T10(KQ+SexCodeDH)
-  GunQuery: 1/1 -- T44(Serial)
-  ArticleSingleQuery: 1/1 -- T48(Serial)
-  BoatQuery: 2/2 -- T37(BQ+Reg), T39(QB+Hull)
+  GunQuery: 1/1 -- T39(Serial)
+  ArticleSingleQuery: 1/1 -- T43(Serial)
+  BoatQuery: 2/2 -- T32(BQ+Reg), T34(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.3.json
+IMPORT FILE: HI_HCJDC_OFML_v4.4.json

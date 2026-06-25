@@ -2,7 +2,7 @@ HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-25
-JSON version: v4.3
+JSON version: v4.4
 Validator: 70 PASS / 0 FAIL / 1 WARN / 4 LIMITATION (v1.1)
 Live test: COMPLETE -- v3.6 2026-06-22 (T1-T7 Vehicle all PASS; Firearm/Article/Boat CONFIRMED v3.5)
 v4.0 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
@@ -46,7 +46,7 @@ Architecture notes:
     ensures that when Plate is present, all VIN combos exit the union pool. Plate wins.
   vehicleYear (v3.6): added to RQV/M55S/QVV any[]; serializes on VIN searches only.
 
-  RQ -- OOS plate (Plate + PlateType + PlateYear) [CONFIRMED]
+  RQ -- OOS plate (Plate + PlateType + PlateYear) [PENDING]
     set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
     any: ImageIndicator, RegistrationState
     keyReference: RQ
@@ -59,7 +59,7 @@ Architecture notes:
     Live v3.6 T6 (DECISIVE -- plate-wins): All fields simultaneously (+ VIN+Make) ->
       CommSys XML = plate only. VehicleIdentificationNumber+VehicleMakeCode ABSENT.
 
-  RQV -- OOS VIN (VIN + State) [CONFIRMED]
+  RQV -- OOS VIN (VIN + State) [PENDING]
     set: VehicleIdentificationNumber, RegistrationState
     any: ImageIndicator, vehicleYear
     conditions: LicensePlateNumber NOT_EXISTS (plate-wins guardrail, v3.6)
@@ -71,7 +71,7 @@ Architecture notes:
       XML VIN/State=CA/VehicleYear=2019/Image=N. VehicleTypeCode ABSENT. vehicleYear confirmed.
       RMS registrationStateAttrIds+vinNumber.
 
-  M55L -- in-state plate (VehicleTypeCode + Plate) [CONFIRMED]
+  M55L -- in-state plate (VehicleTypeCode + Plate) [PENDING]
     set: vehicleTypeCode, LicensePlateNumber
     any: ImageIndicator, RegistrationState
     conditions: LicensePlateTypeCode NOT_EXISTS (exits pool for OOS plate / RQ)
@@ -82,7 +82,7 @@ Architecture notes:
     Live v3.6 T7 (DECISIVE -- plate-wins): Plate+VIN (no State, no PlateType/Year) ->
       M55L fires; VehicleIdentificationNumber ABSENT. M55S exits on LicensePlateNumber NOT_EXISTS.
 
-  M55S -- in-state VIN (VehicleTypeCode + VIN) [CONFIRMED]
+  M55S -- in-state VIN (VehicleTypeCode + VIN) [PENDING]
     set: vehicleTypeCode, VehicleIdentificationNumber
     any: ImageIndicator, vehicleYear
     conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (v3.6)
@@ -202,15 +202,15 @@ Architecture notes:
 
   KQN -- OLN [CONFIRMED]
     set: OperatorLicenseNumber
-    any: RegistrationState (→ State XML attr, optional)
+    any: RegistrationState (Ã¢â€ â€™ State XML attr, optional)
     keyReference: KQN
     Uses DH-suffix fieldIds to avoid collision with DL QIDM
     NOTE: KQN fires on OLN alone (RegistrationState in any[], not set[]). Wire confirmed
-    T26 v4.0: DriverHistoryQuery+OLN with State blank → State absent from XML.
+    T26 v4.0: DriverHistoryQuery+OLN with State blank Ã¢â€ â€™ State absent from XML.
 
   KQ -- Name + SexCode + DOB [CONFIRMED]
     set: Name, SexCode, BirthDate
-    any: RegistrationState (→ State XML attr), PurposeCode, Attention (handler-auto)
+    any: RegistrationState (Ã¢â€ â€™ State XML attr), PurposeCode, Attention (handler-auto)
     keyReference: KQ
     Name uses FormatStringRuleHandler: arguments=[' ',' ',' ']
     BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
@@ -268,7 +268,7 @@ Architecture notes:
 
   BQ -- Registration Number [CONFIRMED]
     set: RegistrationNumber
-    any: RegistrationState (→ State XML attr), RelatedSearchHitIndicator (default=Y)
+    any: RegistrationState (Ã¢â€ â€™ State XML attr), RelatedSearchHitIndicator (default=Y)
     keyReference: BQ
     any[] CONFIRMED live T22 v4.0: State=GA + RelatedSearchHitIndicator=Y in wire.
 

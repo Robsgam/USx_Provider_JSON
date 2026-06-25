@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.3 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -5635,7 +5635,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.3",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -6892,59 +6892,9 @@
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "M55S",
                                                                             "state":  "In"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber",
-                                                                                                             "VehicleMakeCode"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "RegistrationState",
-                                                                                                             "vehicleYear"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "N"
-                                                                                                                  }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "LicensePlateNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "QVV",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "N"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QVP",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen DORMANT (server auto-generates QV), ordered last so they never shadow in-state. 6 combos.",
+                                                   "description":  "VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen combos REMOVED in v4.4 (they should never fire from the form; the state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "HI_HCJDC_OFML_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7488,7 +7438,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.3 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

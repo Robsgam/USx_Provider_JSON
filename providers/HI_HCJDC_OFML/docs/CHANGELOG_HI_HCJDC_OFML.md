@@ -2,9 +2,27 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.3** | Generated: 2026-06-25
+Current: **v4.4** | Generated: 2026-06-25
 
 ---
+
+## v4.4 -- 2026-06-25 -- QVP/QVV stolen combos removed (clearing Vehicle Type no longer surfaces QV)
+
+**CHANGED:** Removed the two dormant stolen combos (QVP plate+state, QVV VIN+MakeCode) from the
+  VehicleRegistrationQuery QIDM. VehicleRegistrationQuery now builds 4 combos (RQ, RQV, M55L,  
+  M55S). Vehicle QIDM only -- other entity fingerprints unchanged.  
+**REASON:** Live test (v4.3) found that CLEARING the Vehicle Type dropdown on a Plate+State query
+  fired QVP (MessageKey=QV, stolen): M55L could not fire without VehicleTypeCode and RQ needed  
+  Plate Type/Year, so QVP caught the query and emitted an unintended QV. QVP/QVV were only  
+  shadow-dormant (ordered last). They should never fire from the form -- the state CommSys  
+  server auto-generates the QV/stolen query from supplied fields (response data-mined via  
+  QRDM) -- so they are deleted outright rather than made hard-dormant via a self-contradicting  
+  NOT_EXISTS-on-own-set guard (which verify_build CHECK 14 correctly flags as a dead combo).  
+**RESULT:** Vehicle re-opens for retest (RQ/RQV/M55L/M55S + guardrails + negative). Other 4
+  entities' fingerprints unchanged -- blocks carry over per entity reset. Accepted tradeoff:  
+  a Plate+State query with Vehicle Type cleared and no Plate Type/Year now matches no combo  
+  and fires nothing (clearing Vehicle Type is an unsupported path). Formalizes the prior  
+  user-approved dormant skip of QVP/QVV.  
 
 ## v4.3 -- 2026-06-25 -- Versioned filename + version-marker cleanup (NJ-parity galvanization)
 

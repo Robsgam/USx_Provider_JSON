@@ -1,18 +1,18 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.3.json
-  Generated: 2026-06-25 12:59
+  Source: HI_HCJDC_OFML_v4.4.json
+  Generated: 2026-06-25 14:31
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- HI_HCJDC_OFML_v4.3.json
+  CommSys Query Simulator -- HI_HCJDC_OFML_v4.4.json
 ================================================================
 
 --- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 6
+    Query: VehicleRegistrationQuery  |  Attrs: 9  |  Combos: 4
 
     [FIRES first-match] RQ
       set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
@@ -30,19 +30,6 @@ QUERY SIMULATION
     [SKIP] RQV -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
     [SKIP] M55L -- conditions failed: LicensePlateTypeCode NOT_EXISTS [value='PC']
     [SKIP] M55S -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; LicensePlateNumber NOT_EXISTS [value='ABC1234']
-    [SKIP] QVV -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
-
-    [FIRES shadowed -- first match above wins] QVP
-      set: [LicensePlateNumber, RegistrationState]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
-        <ImageIndicator>Y</ImageIndicator>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <State>NJ</State>
-      </Transaction>
 
     >> PLATFORM FIRES: RQ (first matching combo)
     >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ

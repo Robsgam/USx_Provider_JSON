@@ -3,6 +3,23 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.4  2026-06-25  QVP/QVV stolen combos removed (clearing Vehicle Type no longer surfaces QV)
+  CHANGED: Removed the two dormant stolen combos (QVP plate+state, QVV VIN+MakeCode) from the
+    VehicleRegistrationQuery QIDM. VehicleRegistrationQuery now builds 4 combos (RQ, RQV, M55L,
+    M55S). Vehicle QIDM only -- other entity fingerprints unchanged.
+  REASON: Live test (v4.3) found that CLEARING the Vehicle Type dropdown on a Plate+State query
+    fired QVP (MessageKey=QV, stolen): M55L could not fire without VehicleTypeCode and RQ needed
+    Plate Type/Year, so QVP caught the query and emitted an unintended QV. QVP/QVV were only
+    shadow-dormant (ordered last). They should never fire from the form -- the state CommSys
+    server auto-generates the QV/stolen query from supplied fields (response data-mined via
+    QRDM) -- so they are deleted outright rather than made hard-dormant via a self-contradicting
+    NOT_EXISTS-on-own-set guard (which verify_build CHECK 14 correctly flags as a dead combo).
+  RESULT: Vehicle re-opens for retest (RQ/RQV/M55L/M55S + guardrails + negative). Other 4
+    entities' fingerprints unchanged -- blocks carry over per entity reset. Accepted tradeoff:
+    a Plate+State query with Vehicle Type cleared and no Plate Type/Year now matches no combo
+    and fires nothing (clearing Vehicle Type is an unsupported path). Formalizes the prior
+    user-approved dormant skip of QVP/QVV.
+
 v4.3  2026-06-25  Versioned filename + version-marker cleanup (NJ-parity galvanization)
   CHANGED: Root JSON now versioned (HI_HCJDC_OFML_v4.3.json). Removed the top-level
     "version" field (platform rejects it as java.lang.Integer; superseded the v4.2 note

@@ -1,7 +1,7 @@
-﻿HI_HCJDC_OFML_v4.3 METADATA REFERENCE
+﻿HI_HCJDC_OFML_v4.4 METADATA REFERENCE
 ======================================
 Generated: 2026-06-25
-Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_v4.3.json
+Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_v4.4.json
 Metadata: 15 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -139,13 +139,11 @@ METADATA COMBINATIONS (6 total):
   M55L          LicensePlateNumber      VehicleTypeCode, LicensePlateNumber                    --
   M55S          VehicleIdentificationNumber  VehicleTypeCode, VehicleIdentificationNumber           --
 
-BUILD COVERAGE (6 of 6 built):
+BUILD COVERAGE (4 of 6 built):
   BUILT   RQ             set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
   BUILT   RQV            set[VehicleIdentificationNumber, RegistrationState]
   BUILT   M55L           set[vehicleTypeCode, LicensePlateNumber]
   BUILT   M55S           set[vehicleTypeCode, VehicleIdentificationNumber]
-  BUILT   QVV            set[VehicleIdentificationNumber, VehicleMakeCode]
-  BUILT   QVP            set[LicensePlateNumber, RegistrationState]
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
 
@@ -160,9 +158,9 @@ BUILD SUMMARY
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         3      3     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   6      6     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   6      4     2  67%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   15     15     0  100%
+  TOTAL                                   15     13     2  87%
 
 ================================================================================
 UNBUILT METADATA COMBOS (2 combos in metadata, not in JSON)

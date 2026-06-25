@@ -138,7 +138,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "4.3",
+    [string]$Version = "4.4",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -200,7 +200,8 @@ $qmf = Build-Qmf -ProviderName 'HI_HCJDC_OFML'
 #   QV:   Stolen plate (Plate + State), Stolen VIN (VIN + MakeCode)
 # State2-5 excluded (not implementable). Single RegistrationState (NCIC).
 # Combo ordering (v3.0, OOS-first): RQ-Plate (OOS, Plate Type+Year) > RQV (OOS VIN, VIN+State)
-#   > M55L (in-state plate) > M55S (in-state VIN) > QVV/QVP (stolen, DORMANT, last)
+#   > M55L (in-state plate) > M55S (in-state VIN). QVV/QVP (stolen) REMOVED v4.4 (server
+#   auto-generates QV; they should never fire from the form). 4 combos built.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -225,9 +226,9 @@ $vehRegQuery = [PSCustomObject]@{
     #   3. M55L (in-state plate): bare plate -- VehicleTypeCode defaults to 1 (Auto),
     #      auto-satisfying the server's in-state requirement so a plate alone routes HI.
     #   4. M55S (in-state VIN): bare VIN -- same, VehicleTypeCode default carries it.
-    #   5-6. QVV/QVP (stolen) last + DORMANT: ordered AFTER M55L/M55S so they never
-    #      shadow an in-state query; the state CommSys server auto-generates the
-    #      QV/stolen query from supplied fields (response data-mined via QRDM).
+    #   (QVV/QVP stolen sub-paths REMOVED v4.4 -- they should never fire from the form;
+    #   the state CommSys server auto-generates the QV/stolen query from supplied fields,
+    #   response data-mined via QRDM. See the removal note in the combinations array below.)
     # Discriminators: plate = Plate Type/Year presence; VIN = State presence. Both are
     # real OOS data, not synthetic switches. Bare plate -> M55L, bare VIN -> M55S.
     combinations = @(
@@ -279,26 +280,19 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'M55S'
             state                 = 'In'
         }
-        # QVV: Stolen VIN (VIN + MakeCode) -- DORMANT (server-generated QV).
-        # CONDITION: LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. Without this,
-        # filling Plate+VIN+Make causes QVV to co-fire with RQ and bleed VehicleMakeCode
-        # into the plate XML via the union pool. (v3.6 all-fields stress test finding)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','VehicleMakeCode'); any = @('ImageIndicator','RegistrationState','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QVV'
-            state                 = 'In/Out'
-        }
-        # QVP: Stolen plate (Plate + State) -- DORMANT (server-generated QV). Ordered
-        # after M55L so a normal plate+state query stays in-state (M55L), not stolen.
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QVP'
-            state                 = 'In/Out'
-        }
+        # QVP/QVV (stolen) REMOVED in v4.4. They were dormant stolen sub-paths (Plate+State /
+        # VIN+MakeCode). A v4.3 live test found that CLEARING the Vehicle Type dropdown on a
+        # Plate+State query fired QVP (MessageKey=QV, stolen) -- M55L could not fire without
+        # VehicleTypeCode and RQ needed Plate Type/Year, so QVP caught the query. Rather than
+        # make them hard-dormant via a self-contradicting NOT_EXISTS-on-own-set guard (which
+        # is a "combo can never fire" dead-config flagged by verify_build CHECK 14), the two
+        # combos are deleted outright: they should never fire from the form, and the state
+        # CommSys server auto-generates the QV/stolen query from supplied fields (response
+        # data-mined via QRDM). Accepted tradeoff: a Plate+State query with Vehicle Type
+        # cleared and no Plate Type/Year now matches no combo and fires NOTHING (clearing
+        # Vehicle Type is an unsupported path). User-approved dormant skip, formalized.
     )
-    description        = 'VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen DORMANT (server auto-generates QV), ordered last so they never shadow in-state. 6 combos.'
+    description        = 'VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen combos REMOVED in v4.4 (they should never fire from the form; the state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
