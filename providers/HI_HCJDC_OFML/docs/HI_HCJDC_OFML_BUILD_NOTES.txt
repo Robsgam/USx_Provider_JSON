@@ -3,6 +3,18 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.5  2026-06-25  Remove orphaned VehicleMakeCode (Make) field -- dead config after QVP/QVV removal
+  CHANGED: Removed the VehicleMakeCode QIDM attribute and the "Make - optional" dropdown from
+    the Vehicle VIN SEARCH card (Vehicle Year now full-width on its row). Vehicle QIDM only.
+  REASON: Per metadata VehicleMakeCode is valid ONLY for the QV (stolen) combo, which was
+    removed in v4.4. With no surviving combo (RQ/RQV/M55L/M55S) carrying it in set[]/any[],
+    the Make field was dead config -- it rendered but could never reach the wire. Live-proven
+    v4.4: officer entered Make="YOU'LL HAUL IT" on two VIN fires and it was absent from the XML
+    both times. Adding it to a registration combo would be metadata-invalid (Make is not a
+    registration field), so the field + attribute are removed together.
+  RESULT: Vehicle re-opens for retest (RQ/RQV/M55L/M55S + guardrails + negative + confirm Make
+    field gone from VIN card). Other 4 entities unchanged -- blocks carry over per entity reset.
+
 v4.4  2026-06-25  QVP/QVV stolen combos removed (clearing Vehicle Type no longer surfaces QV)
   CHANGED: Removed the two dormant stolen combos (QVP plate+state, QVV VIN+MakeCode) from the
     VehicleRegistrationQuery QIDM. VehicleRegistrationQuery now builds 4 combos (RQ, RQV, M55L,

@@ -60,7 +60,7 @@ Current: **v4.6** — 61P/0F/0W/0LIM | 29/29 live tests PASS | 5 entities blocke
 
 ## HI_HCJDC_OFML
 
-Current: **v4.4** — 66P/0F/0W/0LIM | all 5 entities blocked | import: `HI_HCJDC_OFML_v4.4.json`
+Current: **v4.5** — 66P/0F/0W/0LIM | all 5 entities blocked | import: `HI_HCJDC_OFML_v4.5.json`
 
 ### v4.0–v4.2 (2026-06-23 – 2026-06-25) — Pipeline rebuild + 50-test matrix
 - Reproducibility rebuild (behavior-identical to v3.9); entity fingerprints preserved

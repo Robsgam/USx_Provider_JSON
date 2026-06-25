@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.5 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -358,14 +358,12 @@
                                                                                                        "displayName":  "Row",
                                                                                                        "props":  {
                                                                                                                      "templateColumns":  [
-                                                                                                                                             "6",
-                                                                                                                                             "6"
+                                                                                                                                             "12"
                                                                                                                                          ]
                                                                                                                  },
                                                                                                        "isCanvas":  true,
                                                                                                        "hidden":  false,
                                                                                                        "nodes":  [
-                                                                                                                     "vehicleMakeCode_Input",
                                                                                                                      "vehicleYear_Input"
                                                                                                                  ],
                                                                                                        "linkedNodes":  {
@@ -373,27 +371,6 @@
                                                                                                                        },
                                                                                                        "parent":  "CARD_VEH_VIN"
                                                                                                    },
-                                                                                  "vehicleMakeCode_Input":  {
-                                                                                                                "type":  {
-                                                                                                                             "resolvedName":  "FormSelect"
-                                                                                                                         },
-                                                                                                                "displayName":  "Select",
-                                                                                                                "props":  {
-                                                                                                                              "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Make - optional",
-                                                                                                                              "attributeTypeId":  "VEHICLE_MAKE",
-                                                                                                                              "codeTypeProvider":  "NCIC"
-                                                                                                                          },
-                                                                                                                "isCanvas":  false,
-                                                                                                                "hidden":  false,
-                                                                                                                "nodes":  [
-
-                                                                                                                          ],
-                                                                                                                "linkedNodes":  {
-
-                                                                                                                                },
-                                                                                                                "parent":  "ROW_VEH_VIN2"
-                                                                                                            },
                                                                                   "vehicleYear_Input":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "FormInput"
@@ -767,14 +744,12 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "12"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "vehicleMakeCode_Input",
                                                                                                                           "vehicleYear_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
@@ -782,27 +757,6 @@
                                                                                                                             },
                                                                                                             "parent":  "CARD_VEH_VIN"
                                                                                                         },
-                                                                                       "vehicleMakeCode_Input":  {
-                                                                                                                     "type":  {
-                                                                                                                                  "resolvedName":  "FormSelect"
-                                                                                                                              },
-                                                                                                                     "displayName":  "Select",
-                                                                                                                     "props":  {
-                                                                                                                                   "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Make - optional",
-                                                                                                                                   "attributeTypeId":  "VEHICLE_MAKE",
-                                                                                                                                   "codeTypeProvider":  "NCIC"
-                                                                                                                               },
-                                                                                                                     "isCanvas":  false,
-                                                                                                                     "hidden":  false,
-                                                                                                                     "nodes":  [
-
-                                                                                                                               ],
-                                                                                                                     "linkedNodes":  {
-
-                                                                                                                                     },
-                                                                                                                     "parent":  "ROW_VEH_VIN2"
-                                                                                                                 },
                                                                                        "vehicleYear_Input":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "FormInput"
@@ -1257,14 +1211,12 @@
                                                                                                                "displayName":  "Row",
                                                                                                                "props":  {
                                                                                                                              "templateColumns":  [
-                                                                                                                                                     "6",
-                                                                                                                                                     "6"
+                                                                                                                                                     "12"
                                                                                                                                                  ]
                                                                                                                          },
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
                                                                                                                "nodes":  [
-                                                                                                                             "vehicleMakeCode_Input",
                                                                                                                              "vehicleYear_Input"
                                                                                                                          ],
                                                                                                                "linkedNodes":  {
@@ -1272,27 +1224,6 @@
                                                                                                                                },
                                                                                                                "parent":  "CARD_VEH_VIN"
                                                                                                            },
-                                                                                          "vehicleMakeCode_Input":  {
-                                                                                                                        "type":  {
-                                                                                                                                     "resolvedName":  "FormSelect"
-                                                                                                                                 },
-                                                                                                                        "displayName":  "Select",
-                                                                                                                        "props":  {
-                                                                                                                                      "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Make - optional",
-                                                                                                                                      "attributeTypeId":  "VEHICLE_MAKE",
-                                                                                                                                      "codeTypeProvider":  "NCIC"
-                                                                                                                                  },
-                                                                                                                        "isCanvas":  false,
-                                                                                                                        "hidden":  false,
-                                                                                                                        "nodes":  [
-
-                                                                                                                                  ],
-                                                                                                                        "linkedNodes":  {
-
-                                                                                                                                        },
-                                                                                                                        "parent":  "ROW_VEH_VIN2"
-                                                                                                                    },
                                                                                           "vehicleYear_Input":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "FormInput"
@@ -5635,7 +5566,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.5",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -6745,14 +6676,6 @@
                                                                           "targetField":  "VehicleIdentificationNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleMakeCode",
-                                                                          "size":  20,
-                                                                          "sourceField":  [
-                                                                                              "VehicleMakeCode"
-                                                                                          ],
-                                                                          "targetField":  "VehicleMakeCode"
-                                                                      },
-                                                                      {
                                                                           "name":  "VehicleTypeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
@@ -7438,7 +7361,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.4 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.5 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

@@ -1,4 +1,4 @@
-HI_HCJDC_OFML v4.4 -- TEST MATRIX
+HI_HCJDC_OFML v4.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-25
 Layout: multi-card per entity
@@ -6,7 +6,7 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 9 fields):
+Vehicle (3 cards, 8 fields):
   CARD_VEH_OPT (SEARCH OPTIONS):
     vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_VEH_PLATE (PLATE SEARCH):
@@ -14,7 +14,7 @@ Vehicle (3 cards, 9 fields):
     LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
   CARD_VEH_VIN (VIN SEARCH):
     VehicleIdentificationNumber [Inp 20]
-    VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    vehicleYear [Inp 4]
 
 Person (3 cards, 17 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
@@ -119,7 +119,7 @@ ENTITY 2: VEHICLE (14 tests -- 3 cards, 4 combos)
               Plate Type - out-of-state plates only dropdown (no default), Plate Year - out-of-state plates only.
               CARD_VEH_VIN: titled "VIN SEARCH".
               Vehicle Identification Number (VIN).
-              Make - optional dropdown (no default), Vehicle Year - optional.
+              Vehicle Year - optional.
 18  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQ)
 19  Vehicle     RQ+Plate           + ImageIndicator                [    ]
@@ -205,4 +205,4 @@ COMBO COVERAGE (13/13):
   ArticleSingleQuery: 1/1 -- T43(Serial)
   BoatQuery: 2/2 -- T32(BQ+Reg), T34(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.4.json
+IMPORT FILE: HI_HCJDC_OFML_v4.5.json

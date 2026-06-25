@@ -138,7 +138,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "4.4",
+    [string]$Version = "4.5",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -211,7 +211,10 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('VehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 20; sourceField = @('VehicleMakeCode');              targetField = 'VehicleMakeCode' }
+        # VehicleMakeCode attribute REMOVED v4.5: per metadata it is valid ONLY for the QV
+        # (stolen) combo, which was removed in v4.4. With no firing combo to serialize it,
+        # the Make field was dead config (rendered but never reached the wire -- live-proven
+        # v4.4: Make entered, absent from XML). Field + attribute removed together.
         [PSCustomObject]@{ name = 'VehicleTypeCode';              size = 1;  sourceField = @('vehicleTypeCode');              targetField = 'VehicleTypeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('vehicleYear');                  targetField = 'VehicleYear' }
     )
@@ -642,8 +645,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_VIN1'; cols = @('12'); fields = @(
                 @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number (VIN)' '20' 'ROW_VEH_VIN1' }
             )}
-            @{ id = 'ROW_VEH_VIN2'; cols = @('6','6'); fields = @(
-                @{ id = 'vehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make - optional' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_VIN2' }
+            @{ id = 'ROW_VEH_VIN2'; cols = @('12'); fields = @(
                 @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year - optional' '4' 'ROW_VEH_VIN2' }
             )}
         )

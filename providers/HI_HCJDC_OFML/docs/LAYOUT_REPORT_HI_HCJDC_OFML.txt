@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.4.json
-  Generated: 2026-06-25 14:31
+  Source: HI_HCJDC_OFML_v4.5.json
+  Generated: 2026-06-25 15:00
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== HI_HCJDC_OFML_v4.4.json ===
+=== HI_HCJDC_OFML_v4.5.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
   Person | entity=Person | qidm= | cards=3 fields=12
@@ -14,7 +14,7 @@ QIFs: 5
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
 QIDMs: 6
-  HI_HCJDC_OFML_VehicleRegistrationQuery | attrs=9 combos=4 autoSelect=True
+  HI_HCJDC_OFML_VehicleRegistrationQuery | attrs=8 combos=4 autoSelect=True
   HI_HCJDC_OFML_DriverLicenseQuery | attrs=5 combos=3 autoSelect=True
   HI_HCJDC_OFML_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   HI_HCJDC_OFML_GunQuery | attrs=5 combos=1 autoSelect=
@@ -43,8 +43,7 @@ LAYOUT DETAIL
     CARD "CARD_VEH_VIN"
       ROW ROW_VEH_VIN1 [12]
         VehicleIdentificationNumber (Text | maxLen=20)
-      ROW ROW_VEH_VIN2 [6 6]
-        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+      ROW ROW_VEH_VIN2 [12]
         vehicleYear (Text | maxLen=4)
 
 === Person ===
