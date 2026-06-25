@@ -1,0 +1,266 @@
+# HI_HCJDC_OFML -- Changelog
+
+Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
+
+Current: **v4.3** | Generated: 2026-06-25
+
+---
+
+## v4.3 -- 2026-06-25 -- Versioned filename + version-marker cleanup (NJ-parity galvanization)
+
+**CHANGED:** Root JSON now versioned (HI_HCJDC_OFML_v4.3.json). Removed the top-level
+  "version" field (platform rejects it as java.lang.Integer; superseded the v4.2 note  
+  below). Stamped "Provider configuration for HI_HCJDC_OFML v4.3" into all 3 bundle  
+  descriptions (ENTITIES/PROVIDER/RMS) with description-first ordering for near-the-top  
+  visibility. Build-EntitiesBundle/Build-RmsBundle now receive -Description. Added the  
+  per-provider CHANGELOG; pruned stale phase snapshot dirs; removed legacy split wording.  
+**REASON:** Match the NJ_NJCJIS standard (versioned filenames, version-in-all-bundles, auto
+  changelog) and drop the import-breaking version field.  
+**RESULT:** Metadata/structure-cosmetic only -- no QIF/QIDM/query change; entity fingerprints
+  unchanged, so the 5 confirmed entities carry over (no retest).  
+
+## v4.2 -- 2026-06-24 -- Adopt version field + VehicleMakeName QRDM fix (shared-module currency)
+
+**CHANGED:** Native rebuild on current shared modules. (1) Top-level "version":"4.2" now
+  emitted by Write-ProviderJson. (2) VehicleMakeName QRDM attribute codeType corrected  
+  from NCIC_FIREARM_MAKE/NJ_NIBRS (firearm-make table -- wrong) to VehicleType/VEHICLE,  
+  matching the 2026-06-24 _build_rms_bundle.ps1 fix. Query/combo behavior unchanged  
+  (entity fingerprints identical); only results-mapping make resolution + the version  
+  field differ.  
+**REASON:** Reproducibility audit (audit_reproducible.ps1) found the committed v4.1 JSON was
+  DETERMINISTIC but STALE -- it predated the 2026-06-24 shared-module fixes. Rebuilt to  
+  bring the committed JSON back in sync with a fresh build.  
+
+## v4.1 -- 2026-06-23 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v4.0 -- 2026-06-23 -- Name-order fix (Last-first; HI was lone outlier of 20 providers)
+
+**CHANGED:** HI was the only provider building Name in First-first order, emitting malformed
+  "FIRST LAST MIDDLE SUFFIX" (e.g. "JON DOE" instead of "DOE, JON"). Both DL and DH Name  
+  attributes now use @('NameLast','NameFirst',...) sourceField order + @(', ',' ',' ') separators  
+  -> ConnectCIC-preferred "LAST, FIRST MIDDLE SUFFIX". Re-opens Person+DH for live re-test  
+  (Name emitted in different order changes response parsing).  
+**REASON:** Cross-provider name-order audit 2026-06-23 found HI as the lone outlier.
+
+## v3.9 -- 2026-06-23 -- Boat Hull>Reg identifier-priority guardrail
+
+**CHANGED:** BoatHullIdNumber NOT_EXISTS condition added to BQ combo (RegistrationNumber set[]).
+  When Hull ID is entered, the Reg-path combo exits the union pool so only QB (Hull combo) fires.  
+  Hull ID is the unique permanent identifier (VIN-like); Registration Number is reassignable  
+  (plate-like). Without the guardrail: enter Hull+Reg -> QB+BQ union over-send (both combos fire).  
+  Third identifier pair closed: Vehicle Plate>VIN (v3.6), Person OLN>Name DL+DH (v3.7/v3.8),  
+  Boat Hull>Reg (v3.9). Re-opens Boat for live re-test.  
+**REASON:** Portfolio review during FL identifier-priority rollout found Boat QIDM had the same
+  co-satisfiable identifier pair problem as Vehicle (Plate/VIN) and Person (OLN/Name).  
+
+## v3.8 -- 2026-06-23 -- DH OLN>Name identifier-priority guardrail
+
+**CHANGED:** OperatorLicenseNumberDH NOT_EXISTS added to KQ (DriverHistoryQuery Name combo). When
+  OLN is entered on the DH card, the Name combo exits the union pool so Name/DOB/Sex do not  
+  bleed into the OLN XML. Mirror of the DL guardrail (v3.7) applied to DH-suffix fields.  
+  Without the guard: enter OLN+Name on DH card -> KQN+KQ union over-send (both combos fire,  
+  Name+OLN both serialized). Sim-proven before live test.  
+**REASON:** DH-side gap found during v3.7 portfolio review -- OLN>Name guardrail must cover
+  DriverHistoryQuery as well as DriverLicenseQuery.  
+
+## v3.7 -- 2026-06-23 -- DL OLN>Name identifier-priority guardrail
+
+**CHANGED:** OperatorLicenseNumber NOT_EXISTS condition added to DQ (Name+Sex+DOB combo) and QW
+  (Name+DOB combo) in DriverLicenseQuery. When OLN is entered, Name combos exit the union  
+  pool so Name/Sex/DOB do not bleed into the OLN XML. Without the guard: enter OLN+Name ->  
+  DQN+DQ union over-send (Name+DOB+Sex appear in OLN XML). DL guardrail live-confirmed T6+T8.  
+  conditions[].field uses PascalCase (OperatorLicenseNumber) per the form sourceField/fieldId.  
+**REASON:** Identifier-priority rollout pattern (Plate>VIN done v3.6; OLN>Name is the second pair).
+  DH-side gap (KQ) found and queued for v3.8.  
+
+## v3.6 -- 2026-06-22 -- Plate-wins guardrail + vehicleYear any[] gap fix
+
+**CHANGED:** (1) Added LicensePlateNumber NOT_EXISTS condition to RQV, QVV, and M55S.
+  When LicensePlateNumber is in form state, all VIN-path combos exit the union pool  
+  so VehicleIdentificationNumber and VehicleMakeCode do not bleed into the plate XML.  
+  Discovered via all-fields stress test: Plate+PlateType+PlateYear+VIN+State+Make  
+  simultaneously fired RQ+RQV+QVV via union pool -- VIN+Make appeared in XML. Plate  
+  should win when present. Mirrors M55L (LicensePlateTypeCode NOT_EXISTS) and M55S  
+  (RegistrationState NOT_EXISTS) pool-exclusion pattern. M55S now has two conditions:  
+  RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (both must pass).  
+  Documented as VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL in KB BUILD_RULES.  
+  (2) Added vehicleYear to any[] of RQV, M55S, and QVV. vehicleYear attribute  
+  (sourceField='vehicleYear', targetField='VehicleYear') existed in QIDM but was in  
+  no combo's any[], so it was silently dropped from all VIN query XML even when  
+  filled by the officer. Plate-path combos (RQ, M55L, QVP) unchanged -- vehicleYear  
+  is a VIN-search field only.  
+**REASON:** All-fields stress test (2026-06-22) revealed union-pool over-send + any[] gap
+
+## v3.5 -- 2026-06-22 -- QG/QA/BQ/QB any[] gap fix
+
+**CHANGED:** Added any[] and relatedSearchHitIndicator default=Y to GunQuery (QG),
+  ArticleSingleQuery (QA), and BoatQuery (BQ/QB). All three QIDMs had any=@() which  
+  silently dropped RelatedSearchHitIndicator (default=Y) and optional fields (GunMake,  
+  GunCaliber, GunModel on Gun; RegistrationState on Boat) from XML. Platform only  
+  serializes set[]+any[] fields. Gap found via simulator pre-flight before first live  
+  Firearm/Article/Boat test; v3.4 never had a live test of these three entities.  
+  NOTE: Whether v3.4 would have dropped RSH=Y in live XML is unproven (form initialValue=Y  
+  may have put it in form state regardless), but the any[] pattern is required and correct --  
+  matches FL_FCIC GunQuery and the Attention any[] fix precedent from v2.9.  
+  RESULT: 68P/0F/0W/0LIM. Firearm (QG bare + QG+optionals), Article (QA), Boat (BQ/QB)  
+  all live-confirmed on v3.5. All 5 entities CONFIRMED. Cosmetic pass pending.  
+**REASON:** Pre-live simulator gap detection -- optional fields would not serialize without any[]
+
+## v3.4 -- 2026-06-22 -- M55S any[] RegistrationState removal
+
+**CHANGED:** Removed RegistrationState from M55S any[]. M55S only fires when RegistrationState
+  NOT_EXISTS, so State can never serialize alongside it -- the any[] entry was a semantic  
+  contradiction and caused the test conductor's Build-MinimalData to inject State="NJ",  
+  triggering the NOT_EXISTS condition and blocking M55S (T16 FAIL). M55L UNCHANGED (its  
+  condition is LicensePlateTypeCode, so State rides along on in-state plate queries).  
+**REASON:** T16 test conductor FAIL -- M55S did not fire; root cause = any[]/condition conflict.
+
+## v3.3 -- 2026-06-22 -- conditions[].field sourceField fix
+
+**CHANGED:** M55S conditions field corrected from @('State') to @('RegistrationState'). T5 (RQV
+  OOS VIN) showed VehicleTypeCode still bled because conditions[].field matches the form  
+  sourceField, not the QIDM attribute name. M55L worked (T4) only because LicensePlateTypeCode  
+  is both attribute name and sourceField. Rule corrected in KB. Vehicle tests restart from T1.  
+**REASON:** T5 FAIL -- VehicleTypeCode present in RQV XML (M55S conditions silently no-op'd)
+
+## v3.2 -- 2026-06-22 -- Vehicle State label + minor UX
+
+**CHANGED:** Vehicle State label shortened to 'State (Hawaii = leave blank)' (from longer v3.0
+  label). Minor UX refinement only -- pre-live-test pass.  
+**REASON:** Label clarity pass before first Vehicle live test.
+
+## v3.1 -- 2026-06-22 -- Label pass
+
+**CHANGED:** Vehicle Type ('Auto (Hawaii queries)') and State ('blank for Hawaii; enter state
+  for out-of-state') labels refined. Minor UX iteration.  
+**REASON:** Post-v3.0 routing redesign label pass.
+
+## v3.0 -- 2026-06-22 -- Vehicle OOS-first routing redesign (3-card SEARCH OPTIONS / PLATE / VIN)
+
+**CHANGED:** Reordered VehicleRegistrationQuery combos to OOS-first: RQ-plate, RQV VIN+State,
+  M55L, M55S (dormant QVV/QVP). OOS is now reached by ADDING fields (add Plate Type+Year  
+  for plate; add State for VIN), never by clearing Vehicle Type. RQV now requires VIN+State  
+  (State in set[]); removed Plate Year default so a bare plate routes in-state without a year.  
+  Vehicle Type combo distinction replaced by State presence: State blank = Hawaii (in-state);  
+  State filled = out-of-state. Labels updated to explain the routing.  
+**REASON:** v2.8 3-card design confused officers: "clear Vehicle Type to switch to OOS" UX was
+  backwards (adding fields = OOS, not clearing). Redesigned to additive routing.  
+
+## v2.9 -- 2026-06-22 -- Attention auto-populate RESOLVED (live-proven)
+
+**CHANGED:** Root cause found: platform serializes ONLY fired-combo set[]/any[] fields. Attention
+  handler (CommsysGetLastNameFirstNameInitialRuleHandler) was configured correctly but Attention  
+  was NOT in any KQ/KQN combo any[], so it never reached the wire. Fix: added 'Attention' to  
+  KQ + KQN any[]; hidden gate-feeder InpH 'Attention' initialValue=X on DH card so the handler's  
+  sourceField='Attention' resolves. Live-proven: wire showed <Attention>SGAMBELLONE R</Attention>.  
+**REASON:** T10 FAIL -- Attention blank in XML. Root cause = missing any[] entry, not handler config.
+
+## v2.8 -- 2026-06-22 -- Vehicle 3-card design + entity-aware test block-out tooling
+
+**CHANGED:** Vehicle redesigned as 3 cards (SEARCH OPTIONS / PLATE SEARCH / VIN SEARCH) with
+  in-state-primary combo order (M55L/M55S first, RQ-plate/RQV-VIN after). Removed Plate  
+  Type/Year form defaults so a bare plate routes in-state. RegistrationState added to any[]  
+  on M55L/M55S/QVV (State rides along on in-state queries). QVP/QVV dormant (CommSys  
+  auto-generates QV). Pointed labels. Also added tooling: entity-aware test block-out  
+  (get_entity_fingerprints.ps1 / block_entity.ps1 / .test_state.json) -- per-entity  
+  fingerprint reset so rebuilds that touch one entity don't re-open others.  
+**REASON:** v2.7 had confusing routing; v2.8 moved to additive OOS selection.
+
+## v2.7 -- 2026-06-22 -- Hidden Attention gate-feeder (experimental, superseded by v2.9)
+
+**CHANGED:** Added InpH 'Attention' initialValue=X on DH card so the auto-Attention handler's
+  sourceField resolves when the platform serializes. EXPERIMENTAL -- handler behavior  
+  (emit officer name vs echo 'X') was unverified at import. Re-import + re-test from T1.  
+  SUPERSEDED: v2.9 proved live that the handler emits the officer RMS profile name, not 'X'.  
+**REASON:** v2.6 hypothesis -- hidden gate-feeder needed for handler sourceField to resolve.
+
+## v2.6 -- 2026-06-22 -- REVERT Attention sourceField to @('Attention') (v2.5 unimportable)
+
+**CHANGED:** sourceField on Attention attribute reverted from @() (empty array) back to
+  @('Attention'). ConnectCic REJECTED v2.5 at import with "Invalid attributes ... [Attention]"  
+  -- empty sourceField is not accepted on this platform. KB RULE_HANDLERS entry 13 corrected.  
+  Attention auto-populate believed still INERT (real fix came in v2.9). Re-import + re-test.  
+**REASON:** v2.5 import rejection -- platform requires non-empty sourceField[].
+
+## v2.5 -- 2026-06-22 -- PascalCase USx fieldIds + Attention empty-sourceField attempt (UNIMPORTABLE)
+
+**CHANGED:** (1) NATIVE PascalCase USx fieldIds (was camelCase through v2.3). 22 USx CAD tokens
+  authored PascalCase; RMS via Build-RmsBundle -PascalCaseUsxFields. (2) Attention sourceField  
+  set to @() (empty) based on hypothesis handler doesn't need a form field. FAILED AT IMPORT:  
+  ConnectCic rejected with "Invalid attributes ... [Attention]". Superseded by v2.6.  
+**REASON:** PascalCase migration + Attention hypothesis test (proved that empty sourceField is rejected).
+
+## v2.4 -- 2026-06-18 -- NATIVE PascalCase USx fieldIds (consolidated single JSON)
+
+**CHANGED:** USx CAD field names (22 tokens) changed from camelCase to PascalCase throughout --
+  form fieldIds, QIDM sourceFields, combo set[]/any[]. RMS via Build-RmsBundle -PascalCaseUsxFields  
+  so RMS form-fed sourceFields match. Mark43-internal targetFields stay camelCase. Was camelCase  
+  through v2.3 (pre-PascalCase conversion). Single JSON model (consolidated v1.8).  
+**REASON:** PascalCase migration for CAD/OnScene auto-populate alignment.
+
+## v2.3 -- 2026-06-17 -- DQ primaryFieldReference fix + docs cleanup
+
+**CHANGED:** DQ primaryFieldReference corrected from 'Name' to 'SexCode' (metadata-aligned).
+  Stale docs subdirectory removed. Single JSON model reinforced.  
+**REASON:** Metadata alignment audit found primaryFieldReference mismatch on DQ combo.
+
+## v2.2 -- 2026-06-17 -- RegistrationState in any[] for OOS queries
+
+**CHANGED:** RegistrationState added to any[] on M55L, M55S, QVV, and DL/DH combos. State now
+  rides along on in-state queries (can be filled by officer or CAD; not required for in-state).  
+**REASON:** State was absent from any[], silently dropped when filled even if officer entered it.
+
+## v2.1 -- 2026-06-17 -- Vehicle 3-card design iteration
+
+**CHANGED:** Minor layout/label iteration on 3-card Vehicle design.
+**REASON:** Post-v2.0 UX pass.
+
+## v2.0 -- 2026-06-17 -- Vehicle 3-card design (initial)
+
+**CHANGED:** Initial implementation of 3-card Vehicle layout (SEARCH OPTIONS / PLATE SEARCH /
+  VIN SEARCH). First version with entity-separate cards.  
+**REASON:** v1.x single-card Vehicle was not scalable for complex routing.
+
+## v1.9 -- 2026-06-17 -- Post-consolidation iteration
+
+**CHANGED:** Build iteration after single-JSON consolidation. Minor fixes.
+**REASON:** Post-consolidation stabilization.
+
+## v1.8 -- 2026-06-17 -- Single-JSON consolidation
+
+**CHANGED:** Consolidated the dual build variants into a single HI_HCJDC_OFML.json. Build
+  script merged. No separate per-variant scripts or JSON files from this version onward.  
+**REASON:** Single JSON build model adopted repo-wide 2026-06-17.
+
+## v1.1 -- 2026-05-07 -- Add VehicleStolenQuery
+
+**CHANGED**
+  - Added VehicleStolenQuery QIDM with 2 combos: QV.P (plate), QV.V (VIN)  
+  - Added queriesToDeselect mutual exclusion between VehicleRegistrationQuery and VehicleStolenQuery  
+  - VehicleRegistrationQuery: autoSelect=true, queriesToDeselect=VehicleStolenQuery  
+  - VehicleStolenQuery: autoSelect=false (officer must manually check), queriesToDeselect=VehicleRegistrationQuery  
+  - Invented keyRefs QV.P and QV.V per LIMITATION #21 (metadata has duplicate QV)  
+  - 7 transactions, 17 combos total (was 6 transactions, 15 combos)  
+  - Validator: 70P/0F/1W/4LIM (was 65P/0F/1W/4LIM)  
+
+## v1.0 -- 2026-04-28 -- Initial build
+
+**CHANGED**
+  - Full build from XML metadata + HIDLE RMS reference  
+  - 6 transactions, 15 combos, NCIC state pattern  
+  - QV stolen + QW wanted combos included per metadata  
+  - VehicleTypeCode default=1 (Auto) for in-state routing  
+  - Empty any[] on all combos (XML <Any> inside <Set> = optional)  
+  - Patch 1+3+6 applied to RMS  
+
+## v1.5 -- 2026-05-11 -- LIMITATION elimination pass
+
+
+## v1.7 -- 2026-05-27 -- Remove unauthorized VehicleStolenQuery
+
+
+## v1.6 -- 2026-05-11 -- purposeCodeDH field type fix
+

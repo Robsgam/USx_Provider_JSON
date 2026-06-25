@@ -535,15 +535,15 @@ $combosCovered = @{}
 $comboTestRefs = @{}
 
 # ── Header ──
-[void]$sb.AppendLine("$providerName $Variant v$version -- TEST MATRIX")
+[void]$sb.AppendLine("$providerName v$version -- TEST MATRIX")
 [void]$sb.AppendLine("=" * 50)
 [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd')")
-[void]$sb.AppendLine("Variant: $Variant $(if ($Variant -eq 'MC') { '(multi-card per entity)' } else { '(single-card per entity)' })")
+[void]$sb.AppendLine("Layout: $(if ($Variant -eq 'MC') { 'multi-card per entity' } else { 'single-card per entity' })")
 [void]$sb.AppendLine("Validator: $validatorScore")
 [void]$sb.AppendLine("")
 
 # ── Form Fields (follows entity test order) ──
-[void]$sb.AppendLine("FORM FIELDS ($Variant layout)")
+[void]$sb.AppendLine("FORM FIELDS")
 [void]$sb.AppendLine("-" * 40)
 $formFieldOrder = @($entityData.Keys | Sort-Object { switch ($_) { 'Vehicle' { 0 } 'Person' { 1 } 'Firearm' { 2 } 'Article' { 3 } 'Boat' { 4 } default { 5 } } })
 foreach ($ent in $formFieldOrder) {

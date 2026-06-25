@@ -356,7 +356,7 @@ if ($otherPath -and (Test-Path $otherPath)) {
 } elseif ($otherPath) {
     Info "No $( if ($isBase) {'MC'} else {'BASE'} ) JSON found -- skipping cross-variant check"
 } else {
-    Info "Not a BASE/MC variant -- skipping cross-variant check"
+    Info "Single-JSON provider -- skipping cross-variant check"
 }
 
 # ── CHECK 8: Visible-First Mandate (no hidden/auto-populated fields) ──────────

@@ -6,16 +6,7 @@ Every iteration saved. Never overwrite.
 
 | File | Version | Status | Notes |
 |---|---|---|---|
-| HI_HCJDC_OFML.json | v4.0 | Current | 68P/0F/0W/0LIM. 6 QIDMs, 17 combos. All 5 entities blocked v4.0 (2026-06-23). |
-
-## BASE/MC era (v1.0–v1.7, pre-consolidation)
-
-Single JSON consolidated at v1.8 (2026-06-17). BASE/MC files deleted from root; phases/base/ and phases/mc/ in git history.
-
-| Version | Date | Description |
-|---|---|---|
-| v1.1 | 2026-05-07 | Last BASE+MC era version. 70P/0F/1W/4LIM. 17 FIRE. +VehicleStolenQuery. |
-| v1.0 | 2026-05-07 | Monorepo rebuild (baseline). |
+| HI_HCJDC_OFML_v4.3.json | v4.3 | Current | 68P/0F/0W/0LIM. 6 QIDMs, 17 combos. All 5 entities blocked. Versioned filename; top-level version field removed; version marker in all 3 bundles. |
 
 ## Changelog (auto-appended by sync_version_docs.ps1)
 
@@ -43,6 +34,12 @@ Single JSON consolidated at v1.8 (2026-06-17). BASE/MC files deleted from root; 
 
 
 
+
+## v4.3 (2026-06-25)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML_v4.3.json | v4.3 | Current | 68P/0F/0W/0LIM. |
 ## v4.2 (2026-06-24)
 
 | File | Version | Status | Notes |
@@ -174,19 +171,16 @@ Single JSON consolidated at v1.8 (2026-06-17). BASE/MC files deleted from root; 
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| HI_HCJDC_OFML_BASE.json | v1.7 | Current | 72P/0F/0W/0LIM. |
-| HI_HCJDC_OFML_MC.json | v1.7 | Current | 72P/0F/0W/0LIM. |
+| HI_HCJDC_OFML (pre-consolidation) | v1.7 | Superseded | 72P/0F/0W/0LIM. |
 ## v1.5 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| HI_HCJDC_OFML_BASE.json | v1.5 | Superseded | 72P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
-| HI_HCJDC_OFML_MC.json | v1.5 | Superseded | 72P/0F/0W/0LIM. MC variant. |
+| HI_HCJDC_OFML (pre-consolidation) | v1.5 | Superseded | 72P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
 
 ## v1.6 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| HI_HCJDC_OFML_BASE.json | v1.6 | Current | 72P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
-| HI_HCJDC_OFML_MC.json | v1.6 | Current | 72P/0F/0W/0LIM. MC variant (version sync). |
+| HI_HCJDC_OFML (pre-consolidation) | v1.6 | Superseded | 72P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
 

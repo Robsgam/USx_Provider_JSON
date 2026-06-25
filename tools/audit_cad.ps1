@@ -188,7 +188,7 @@ foreach ($jf in $jsonFiles) {
 
     Out ''
     Out '========================================'
-    Out " CAD AUDIT: $provName ($Variant)"
+    Out " CAD AUDIT: $provName"
     Out '========================================'
 
     $data = Get-Content $jf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -312,7 +312,7 @@ foreach ($jf in $jsonFiles) {
                     # camelCase found in MC -- that's fine (some fields weren't renamed)
                     Out-Pass "${cadField}: in QIF and CAD list"
                 } elseif ($hitPascal) {
-                    Out-Pass "${cadField}: in QIF as '$hitPascal' (MC PascalCase)"
+                    Out-Pass "${cadField}: in QIF as '$hitPascal' (PascalCase USx fieldIds)"
                 } else {
                     # Check for wrong case
                     $wrongCase = $null
@@ -406,7 +406,7 @@ foreach ($jf in $jsonFiles) {
     Out '--- CHECK 4: Patch 8 Completeness ---'
 
     if ($Variant -eq 'MC') {
-        Out-Info "Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)"
+        Out-Info "Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)"
     } elseif (-not $rmsBundle) {
         Out-Warn "No RMS bundle found -- cannot check Patch 8"
     } else {

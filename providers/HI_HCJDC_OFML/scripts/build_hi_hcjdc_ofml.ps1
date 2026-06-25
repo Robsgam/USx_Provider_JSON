@@ -83,10 +83,10 @@
 #   reached by ADDING fields (Plate Type+Year for plate, State for VIN) -- never by clearing
 #   Vehicle Type. RQV now requires VIN+State (State in set[], NY pattern). Removed Plate Year
 #   default. Relabeled Vehicle Type / State for the new workflow. Person UNCHANGED (stays blocked).
-# v1.8 (2026-06-17): consolidated BASE/MC split -> single JSON; Person split to 2 cards
+# v1.8 (2026-06-17): consolidated to a single JSON; Person split to 2 cards
 #   (Driver License / Driver History); added ImageIndicator=N combo defaults to all 6
 #   VehicleRegistrationQuery combos (the real CAD failure -- CAD ignores form initialValue).
-#   Card count is NOT the CAD cause (BASE single-card and MC multi-card failed identically).
+#   Card count is NOT the CAD cause (single-card and multi-card layouts failed identically).
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_hi_hcjdc_ofml.ps1
 #
@@ -138,7 +138,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "4.2",
+    [string]$Version = "4.3",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -165,7 +165,9 @@ if ($AttnDiagnostic) {
     $VEROUT = $null
     New-Item -ItemType Directory -Force -Path "$DIR\diagnostics" | Out-Null
 } else {
-    $OUT    = "$DIR\HI_HCJDC_OFML.json"
+    # Root JSON name carries the version (<PROVIDER>_v<X.Y>.json). Write-ProviderJson
+    # removes any stale bare/versioned sibling so one-JSON-in-root holds on every bump.
+    $OUT    = "$DIR\HI_HCJDC_OFML_v${Version}.json"
     $VEROUT = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
 }
 
@@ -593,8 +595,8 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $provBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for HI_HCJDC_OFML v${Version}"
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     name           = 'HI_HCJDC_OFML'
     type           = 'BUNDLE'
     provider       = 'HI_HCJDC_OFML'
@@ -835,12 +837,14 @@ $boatForm = [PSCustomObject]@{
 }
 
 $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm)
+        $firearmsForm, $articleForm, $boatForm) `
+        -Description "Provider configuration for HI_HCJDC_OFML v${Version} -- entity forms"
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs)
 # =====================================================================
-$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields `
+        -Description "Provider configuration for HI_HCJDC_OFML v${Version} -- RMS bundle"
 # WRITE OUTPUT
 # =====================================================================
 $output = [PSCustomObject]@{

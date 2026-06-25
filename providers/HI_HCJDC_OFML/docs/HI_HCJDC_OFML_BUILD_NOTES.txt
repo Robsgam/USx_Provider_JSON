@@ -3,6 +3,18 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.3  2026-06-25  Versioned filename + version-marker cleanup (NJ-parity galvanization)
+  CHANGED: Root JSON now versioned (HI_HCJDC_OFML_v4.3.json). Removed the top-level
+    "version" field (platform rejects it as java.lang.Integer; superseded the v4.2 note
+    below). Stamped "Provider configuration for HI_HCJDC_OFML v4.3" into all 3 bundle
+    descriptions (ENTITIES/PROVIDER/RMS) with description-first ordering for near-the-top
+    visibility. Build-EntitiesBundle/Build-RmsBundle now receive -Description. Added the
+    per-provider CHANGELOG; pruned stale phase snapshot dirs; removed legacy split wording.
+  REASON: Match the NJ_NJCJIS standard (versioned filenames, version-in-all-bundles, auto
+    changelog) and drop the import-breaking version field.
+  RESULT: Metadata/structure-cosmetic only -- no QIF/QIDM/query change; entity fingerprints
+    unchanged, so the 5 confirmed entities carry over (no retest).
+
 v4.2  2026-06-24  Adopt version field + VehicleMakeName QRDM fix (shared-module currency)
   CHANGED: Native rebuild on current shared modules. (1) Top-level "version":"4.2" now
     emitted by Write-ProviderJson. (2) VehicleMakeName QRDM attribute codeType corrected
@@ -166,9 +178,9 @@ v2.4  2026-06-18  NATIVE PascalCase USx fieldIds (consolidated single JSON)
     through v2.3 (pre-PascalCase conversion). Single JSON model (consolidated v1.8).
   REASON: PascalCase migration for CAD/OnScene auto-populate alignment.
 
-v2.3  2026-06-17  DQ primaryFieldReference fix + docs/mc cleanup
+v2.3  2026-06-17  DQ primaryFieldReference fix + docs cleanup
   CHANGED: DQ primaryFieldReference corrected from 'Name' to 'SexCode' (metadata-aligned).
-    docs/mc/ directory removed. Single JSON model reinforced.
+    Stale docs subdirectory removed. Single JSON model reinforced.
   REASON: Metadata alignment audit found primaryFieldReference mismatch on DQ combo.
 
 v2.2  2026-06-17  RegistrationState in any[] for OOS queries
@@ -189,9 +201,9 @@ v1.9  2026-06-17  Post-consolidation iteration
   CHANGED: Build iteration after single-JSON consolidation. Minor fixes.
   REASON: Post-consolidation stabilization.
 
-v1.8  2026-06-17  Single-JSON consolidation (BASE+MC -> unified)
-  CHANGED: Consolidated BASE and MC variants into a single HI_HCJDC_OFML.json. Build script
-    merged. No separate BASE/MC scripts or JSON files from this version onward.
+v1.8  2026-06-17  Single-JSON consolidation
+  CHANGED: Consolidated the dual build variants into a single HI_HCJDC_OFML.json. Build
+    script merged. No separate per-variant scripts or JSON files from this version onward.
   REASON: Single JSON build model adopted repo-wide 2026-06-17.
 
 
@@ -242,7 +254,7 @@ v1.1  2026-05-07  Add VehicleStolenQuery
     - 7 transactions, 17 combos total (was 6 transactions, 15 combos)
     - Validator: 70P/0F/1W/4LIM (was 65P/0F/1W/4LIM)
 
-v1.0  2026-04-28  Initial BASE build
+v1.0  2026-04-28  Initial build
   CHANGED
     - Full build from XML metadata + HIDLE RMS reference
     - 6 transactions, 15 combos, NCIC state pattern
@@ -256,13 +268,13 @@ v1.0  2026-04-28  Initial BASE build
 v1.5 (2026-05-11) -- LIMITATION elimination pass
 ================================================================================
 CHANGED: DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed
-RESULT: BASE 72P/0F/0W/0LIM | MC 72P/0F/0W/0LIM
+RESULT: 72P/0F/0W/0LIM
 
 ================================================================================
 v1.7 (2026-05-27) -- Remove unauthorized VehicleStolenQuery
 ================================================================================
 CHANGED: Removed VehicleStolenQuery QIDM (2 combos: QV.P plate, QV.V VIN) from
-         both BASE and MC build scripts. Removed queriesToDeselect from
+         the build scripts. Removed queriesToDeselect from
          VehicleRegistrationQuery QIDM (was pointing to VehicleStolenQuery).
          QVP/QVV combos in VehicleRegistrationQuery QIDM retained (authorized
          message keys). 6 QIDMs, combo count reduced by 2 per variant.
@@ -275,5 +287,5 @@ REASON:  Devdoc "Basic Queries Supported" lists 6 queries (ArticleSingle, Boat,
 v1.6 (2026-05-11) -- purposeCodeDH field type fix
 ================================================================================
 CHANGED: purposeCodeDH changed from FormSelect (attributeTypeId=DEX_INQUIRY_PURPOSE_CODE) to FormInput (maxLength=1, initialValue=C) -- cross-provider consistency fix matching FL/NM/OH/TN/TX pattern
-RESULT: BASE 72P/0F/0W/0LIM | MC 72P/0F/0W/0LIM
+RESULT: 72P/0F/0W/0LIM
 
