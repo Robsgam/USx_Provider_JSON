@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Firearm GunQuery
+Combo: QG + all optionals (GunQuery QG with all optional fields -- GunSerialNumber=SER783 + GunMake=AAB + GunCaliber=11 + GunModel=REER (dropdowns resolved) + RSH=Y, all serialize via any[].)
+Date: 2026-06-25 14:50:49
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+GunSerialNumber=ser783, GunMake=AAB, GunCaliber=11, GunModel=reer
+
+XML REQUEST
+-----------
+<Request><MessageType>GunQuery</MessageType><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator><GunSerialNumber>SER783</GunSerialNumber><GunCaliber>11</GunCaliber><GunMake>AAB</GunMake><GunModel>REER</GunModel></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  RelatedSearchHitIndicator      Y
+  GunSerialNumber                SER783
+  GunCaliber                     11
+  GunMake                        AAB
+  GunModel                       REER
+
+NOTES
+-----
+
+
+RESULT: PASS

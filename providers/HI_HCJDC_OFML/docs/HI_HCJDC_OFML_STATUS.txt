@@ -130,3 +130,39 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Boat       Boat:Guardrail Hull>Reg PASS     Hull>Reg guardrail (v3.9): Hull=332423 + Reg=3123423 entered together -> only BoatHullIdNumber serializes, RegistrationNumber DROPPED from wire (BQ exits pool via BoatHullIdNumber NOT_EXISTS). Holds with State=AK too (6th fire).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Firearm    RENDER:RENDER        PASS     Firearm RENDER (1 card FIREARM; Serial req; Make/Caliber/Model optional no default; RSH=Y default)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Firearm    NEGATIVE:NEGATIVE    PASS     Firearm negative -- empty form, no Send button, no request fired
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Boat       RENDER:RENDER        PASS     Boat RENDER (1 card BOAT SEARCH; RegistrationNumber/Hull/State; RSH=Y default; State no default)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Boat       NEGATIVE:NEGATIVE    PASS     Boat negative -- empty form, no Send button, no request fired
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     RENDER:RENDER        PASS     Person RENDER (3 cards SEARCH OPTIONS/DRIVER LICENSE/DRIVER HISTORY; purposeCodeDH=C default; Attention auto-populated; State/Sex no default)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     NEGATIVE:NEGATIVE    PASS     Person negative -- empty form, no Send button, no request fired
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    RENDER:RENDER        PASS     Vehicle RENDER (3 cards SEARCH OPTIONS/PLATE SEARCH/VIN SEARCH; VehicleType=1 + ImageIndicator=N defaults; State/PlateType/Make no default)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    NEGATIVE:NEGATIVE    PASS     Vehicle negative -- empty form, no Send button, no request fired
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Firearm    Gun:QG + all optionals PASS     GunQuery QG with all optional fields -- GunSerialNumber=SER783 + GunMake=AAB + GunCaliber=11 + GunModel=REER (dropdowns resolved) + RSH=Y, all serialize via any[].
