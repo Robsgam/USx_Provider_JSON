@@ -179,6 +179,13 @@ TOOLS
     via Edge headless. A transform of QIDM combos + queryLabel + QIF field labels.
     Usage: -Path <json> -OutFile <html> [-PdfFile <pdf>]
 
+  tools/generate_changelog.ps1
+    Per-provider changelog (Markdown) rendered from docs/<PROVIDER>_BUILD_NOTES.txt ->
+    docs/CHANGELOG_<PROVIDER>.md. Deterministic (pure function of BUILD_NOTES). Step 16
+    of build_report; also re-run by sync_version_docs.ps1 after the BUILD_NOTES date sync.
+    sync_version_docs.ps1 additionally refreshes the repo-root CHANGELOG.md "Current:" line.
+    Usage: -Path <json> | -Provider <name> [-OutFile <path>]
+
   tools/new_test_log.ps1
     Creates a stub test log in tests/. Required by GATE 2 before every test.
     Usage: -Provider <name> -Version <ver> -Entity <entity> -Combo <combo>
@@ -448,7 +455,7 @@ TOOLS
       2. Build report (11 tools via build_report.ps1)
       3. Extract metadata reference (METADATA_REFERENCE.txt)
       4. Sync CLAUDE.md provider table (sync_provider_table.ps1)
-      5. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES)
+      5. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES, CHANGELOG)
       6. Cross-provider audit (audit_cross_provider.ps1 — ALL providers)
       7. Repo audit (audit_repo.ps1 — full monorepo)
       8. Enforce (enforce.ps1 — final gate)

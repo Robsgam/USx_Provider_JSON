@@ -248,6 +248,9 @@ if (Test-Path $invFile) {
     $changed = $false
     $vEsc = [regex]::Escape($version)
 
+    # Active root JSON leaf name (versioned <PROVIDER>_v<X.Y>.json, or bare/legacy)
+    $activeLeaf = if ($activeJson) { Split-Path $activeJson -Leaf } else { "${Provider}.json" }
+
     # Update ONLY the Root section (between "## Root" and the next "##")
     if ($text -match '(?ms)(## Root[^\r\n]*\r?\n)(.*?)((?=\r?\n## )|$)') {
         $rootHeader = $Matches[1]
@@ -255,7 +258,7 @@ if (Test-Path $invFile) {
         $provEscInv = [regex]::Escape($Provider)
 
         if ($hasSingle -and $score) {
-            $rootBody = $rootBody -replace "(\|\s*${provEscInv}(?:_MC)?\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
+            $rootBody = $rootBody -replace "(\|\s*${provEscInv}(?:_v[\d.]+|_MC)?\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
                 "`$1 v${version} | Current | $score. |"
         } else {
             if ($baseScore) {
@@ -275,7 +278,7 @@ if (Test-Path $invFile) {
     # Add version section if not present
     if ($text -notmatch "## v$vEsc") {
         if ($hasSingle -and $score) {
-            $fileRow = "| ${Provider}.json | v${version} | Current | $score. |"
+            $fileRow = "| ${activeLeaf} | v${version} | Current | $score. |"
         } else {
             $fileRow = "| ${Provider}_BASE.json | v${version} | Current | $baseScore. |"
             if ($hasMc -and $mcScore) {
@@ -402,6 +405,58 @@ if (Test-Path $notesFile) {
     }
 } else {
     Skipped "BUILD_NOTES.txt -- not found"
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  6. CHANGELOG -- per-provider (generated) + repo-root (refresh Current line)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# 6a. Per-provider changelog: regenerate from the just-synced BUILD_NOTES.
+$genTool = Join-Path $toolDir "generate_changelog.ps1"
+$clProvFile = Join-Path $provDir "docs\CHANGELOG_${Provider}.md"
+if ((Test-Path $genTool) -and -not $DryRun) {
+    & powershell -ExecutionPolicy Bypass -File $genTool -Provider $Provider | Out-Null
+    if (Test-Path $clProvFile) {
+        Updated "CHANGELOG_${Provider}.md -- regenerated from BUILD_NOTES"
+    } else {
+        Skipped "CHANGELOG_${Provider}.md -- generator produced no file"
+    }
+} elseif ($DryRun) {
+    Updated "(dry) CHANGELOG_${Provider}.md"
+}
+
+# 6b. Repo-root CHANGELOG.md: refresh ONLY the provider's "Current:" line tokens
+#     (version, score, import filename). Curated milestone bullets are untouched.
+#     Skips providers that have no section (the file is curated; sections aren't auto-created).
+$changelog   = Join-Path $repoRoot "CHANGELOG.md"
+$activeLeafCl = if ($activeJson) { Split-Path $activeJson -Leaf } else { "${Provider}.json" }
+$scoreTok    = if ($score) { $score } elseif ($mcScore) { $mcScore } elseif ($baseScore) { $baseScore } else { $null }
+if (Test-Path $changelog) {
+    $cl = [System.IO.File]::ReadAllText($changelog)
+    $provEscCl = [regex]::Escape($Provider)
+    if ($cl -match "(?ms)(^##\s+${provEscCl}\b.*?)(?=^##\s|\z)") {
+        $sec  = $Matches[1]
+        $orig = $sec
+        $sec = $sec -replace '(\*\*v)[\d.]+(\*\*)', "`${1}${version}`$2"
+        if ($scoreTok) {
+            $sec = $sec -replace '(?m)(^Current:.*?)\d+P/\d+F/\d+W(?:/\d+LIM)?', "`${1}$scoreTok"
+        }
+        $sec = $sec -replace '(import:\s*`)[^`]+(`)', "`${1}${activeLeafCl}`$2"
+        if ($sec -ne $orig -and -not $DryRun) {
+            $cl = $cl.Substring(0, $cl.IndexOf($orig)) + $sec + $cl.Substring($cl.IndexOf($orig) + $orig.Length)
+            $enc = New-Object System.Text.UTF8Encoding($false)
+            [System.IO.File]::WriteAllText($changelog, $cl, $enc)
+            Updated "CHANGELOG.md -- $Provider Current -> v${version} ($activeLeafCl)"
+        } elseif ($sec -ne $orig) {
+            Updated "(dry) CHANGELOG.md -- $Provider Current -> v${version}"
+        } else {
+            Skipped "CHANGELOG.md -- $Provider Current already v${version}"
+        }
+    } else {
+        Write-Host "  [INFO] CHANGELOG.md -- no '## $Provider' section (skipped)" -ForegroundColor Gray
+    }
+} else {
+    Skipped "CHANGELOG.md -- not found"
 }
 
 # ── Summary ──────────────────────────────────────────────────────────────────

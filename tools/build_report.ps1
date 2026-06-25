@@ -44,7 +44,7 @@ if (-not (Test-Path $DocsDir)) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 15
+$stepCount = 16
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -436,6 +436,19 @@ if (Test-Path $supportedQAPath) {
     if (Test-Path $supportedQAFile) { Write-Host "  [15/$stepCount] Saved: $supportedQAFile" -ForegroundColor Green }
 } else {
     Write-Host "  [15/$stepCount] SKIPPED (audit_supported_queries.ps1 not found)" -ForegroundColor Gray
+}
+
+# ── Step 16: Per-provider changelog (Markdown from BUILD_NOTES) ──
+Write-Host ""
+Write-Host "  [16/$stepCount] Generating changelog..." -ForegroundColor Yellow
+$changelogToolPath = Join-Path $toolDir "generate_changelog.ps1"
+$changelogFile = Join-Path $DocsDir "CHANGELOG_$jsonName.md"
+if (Test-Path $changelogToolPath) {
+    & powershell -ExecutionPolicy Bypass -File $changelogToolPath -Path $resolvedStr -OutFile $changelogFile 2>&1 | Out-Null
+    if (Test-Path $changelogFile) { Write-Host "  [16/$stepCount] Saved: $changelogFile" -ForegroundColor Green }
+    else { Write-Host "  [16/$stepCount] Changelog not produced (advisory)" -ForegroundColor Gray }
+} else {
+    Write-Host "  [16/$stepCount] SKIPPED (generate_changelog.ps1 not found)" -ForegroundColor Gray
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

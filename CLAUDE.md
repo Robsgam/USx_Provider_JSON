@@ -13,7 +13,7 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-06-24)
+## Provider Status (updated 2026-06-25)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
@@ -321,7 +321,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (33 scripts + 5 shared modules in `tools/`)
+## Tools (34 scripts + 5 shared modules in `tools/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -360,7 +360,8 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
 | `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
 | `sync_provider_table.ps1` | Auto-updates CLAUDE.md provider table scores from validator reports | `-DryRun` `-OutFile` |
-| `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md, REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum) with current version and scores | `-Provider <name>` `-DryRun` |
+| `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md (versioned filename), REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum), per-provider CHANGELOG_<PROVIDER>.md, and the repo-root CHANGELOG.md "Current:" line, with current version and scores | `-Provider <name>` `-DryRun` |
+| `generate_changelog.ps1` | Renders per-provider `docs/CHANGELOG_<PROVIDER>.md` (Markdown) from `<PROVIDER>_BUILD_NOTES.txt`. Deterministic. Step 16 of build_report; re-run by sync_version_docs | `-Path <json>` `-Provider <name>` `-OutFile <path>` |
 | `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
 
 ### Metadata & Extraction
@@ -467,9 +468,11 @@ Three commands run everything. No manual checklists.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 
-`build_report.ps1` runs 11 tools. Steps 1-9 execute in parallel (all read-only on the JSON), step 10 (test conductor) runs after step 9, step 11 (response simulator + missing-field test) runs last.
+`build_report.ps1` runs 16 steps. Steps 1-9 execute in parallel (all read-only on the JSON); step 10 (test conductor), 11 (response simulator), 12 (label review), 13 (officer guide), 14 (test sheet), 15 (supported-query audit), and 16 (per-provider changelog) run after.
 
-`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (6 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
+`enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (8 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER, per-provider CHANGELOG_<PROVIDER>.md, repo-root CHANGELOG.md Current line), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
+
+**Same-date docs:** the FULL `pipeline.ps1` (not `build_report` alone) is what stamps every doc to the same date in one run — build_report regenerates the 16 report/guide/changelog artifacts, then step 5 `sync_version_docs` stamps STATUS/SQVR/JSON_INVENTORY/CHANGELOG and the BUILD_NOTES date checksum. Running pieces by hand can leave docs on mixed dates; run `pipeline.ps1 -Provider <name>` to refresh them together.
 
 **If enforce.ps1 passes, the work is done. If it doesn't, fix what it flags.**
 
@@ -503,7 +506,8 @@ providers/<PROVIDER>/
 ├── <PROVIDER>_v<X.Y>.json                 # Current JSON (single, version-named output per provider)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
-│   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version
+│   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version (source of truth)
+│   ├── CHANGELOG_<PROVIDER>.md            # Auto-generated Markdown changelog (from BUILD_NOTES)
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced

@@ -7,7 +7,7 @@ not every build bump. Routine pipeline rebuilds are omitted unless they carry fu
 
 ## NJ_NJCJIS
 
-Current: **v4.5** — 61P/0F/0W | 29/29 live tests PASS | 5 entities blocked | import: `NJ_NJCJIS_v4.5.json`
+Current: **v4.6** — 61P/0F/0W/0LIM | 29/29 live tests PASS | 5 entities blocked | import: `NJ_NJCJIS_v4.6.json`
 
 ### v4.3–v4.5 (2026-06-22 – 2026-06-24) — Identifier-priority guardrails + pipeline rebuild
 - Added `NOT_EXISTS` conditions to VehicleRegistrationQuery (Plate>VIN guardrail: `RQN` exits union pool when plate present)

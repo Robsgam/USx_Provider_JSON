@@ -610,6 +610,45 @@ foreach ($pd in $providers) {
         }
     }
 
+    # Check 3g2: per-provider changelog (auto-generated from BUILD_NOTES).
+    # Adopted per-provider on next build -- if the file exists it must be current;
+    # if absent it's an Info (provider hasn't been rebuilt under the new pipeline yet).
+    $clProvFile = Join-Path $pd.FullName "docs\CHANGELOG_${docPrefix}.md"
+    if (Test-Path $clProvFile) {
+        $clProvText = [System.IO.File]::ReadAllText($clProvFile)
+        if ($clProvText -match "v$([regex]::Escape($version))") {
+            Pass "$provName -- CHANGELOG_${docPrefix}.md has v${version}"
+        } else {
+            Fail "$provName -- CHANGELOG_${docPrefix}.md missing v${version} (run build_report/generate_changelog)"
+        }
+    } else {
+        Info "$provName -- CHANGELOG_${docPrefix}.md not present (adopts on next build)"
+    }
+
+    # Check 3g3: repo-root CHANGELOG.md -- if the provider has a section, its Current
+    # line must reflect the current version. Providers without a section are skipped
+    # (the repo CHANGELOG is curated; sections are not auto-created).
+    $repoChangelog = Join-Path $repoRoot "CHANGELOG.md"
+    if (Test-Path $repoChangelog) {
+        $repoClText = [System.IO.File]::ReadAllText($repoChangelog)
+        $provEscCl = [regex]::Escape($provName)
+        $secMatch = [regex]::Match($repoClText, "(?ms)^##\s+${provEscCl}\b.*?(?=^##\s|\z)")
+        if ($secMatch.Success) {
+            $curMatch = [regex]::Match($secMatch.Value, '(?m)^Current:\s*\*\*v([\d.]+)\*\*')
+            if ($curMatch.Success) {
+                if ($curMatch.Groups[1].Value -eq $version) {
+                    Pass "$provName -- CHANGELOG.md Current = v${version}"
+                } else {
+                    Fail "$provName -- CHANGELOG.md Current = v$($curMatch.Groups[1].Value), expected v${version}"
+                }
+            } else {
+                Info "$provName -- CHANGELOG.md section has no parseable 'Current: **vX.Y**' line (skipped)"
+            }
+        } else {
+            Info "$provName -- no '## $provName' section in CHANGELOG.md (skipped)"
+        }
+    }
+
     # Check 3h: test package aligned to current version (rebuild restarts testing).
     # Entity-aware when tests/.test_state.json exists: a 'blocked' entity is OK only
     # while its structural fingerprint matches the built JSON -- a drift means the
