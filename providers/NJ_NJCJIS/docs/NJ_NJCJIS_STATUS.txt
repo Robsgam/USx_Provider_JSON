@@ -121,7 +121,7 @@ IMPORT HISTORY:
   ---   2026-06-25 Person     DL:DQ                PASS     Name+DOB -> DriverLicenseQuery (DQ). Name=DOE JOHN, BirthDate=01011985, Image=Y, State=NJ in XML.
     T14  Person   DQ       DL Name+DOB                  PASS  (Name=DOEA,JOE+DOB+state+image=Y)
     Phase 4 - Boat combos:
-    T15  Boat     QBN      Boat hull ID                 PASS  (hullId+image)
+  ---   2026-06-25 Boat       Boat:QB              PASS     Reg=TEST -> BoatQuery (QB). RegistrationNumber=TEST, Image=N in XML.
     T16  Boat     QBR      Boat reg number              PASS  (regNumber+image)
     Phase 5 - Firearm:
     T17  Firearm  QG       Firearm serial               PASS  (serial+image)
@@ -269,4 +269,10 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   ---   2026-06-25 Person     DL:DQN-guardrail     PASS     Guardrail DQN>DQ: OLN+Name+DOB+Sex+State filled -> DQN fires. XML: OLN=OLNTEST, State=NJ, Image=Y. Name/BirthDate/SexCode ABSENT (guardrail confirmed).
   ---   2026-06-25 Person     DL:NEGATIVE          PASS     Empty form: no Send button, no request generated.
   ---   2026-06-25 Person     DL:DQN-guardrail-nostate PASS     Extra: Guardrail DQN>DQ without State in form. OLN+Name+DOB+Sex -> DQN fires. XML: OLN=OLNTEST, Image=Y. Name/DOB/Sex ABSENT. Guardrail holds without State.
+  ---   2026-06-25 Boat       Boat:RENDER          PASS     Boat render: 1 card BOAT SEARCH. Reg Number, Hull ID Number, Image=N default.
+  ---   2026-06-25 Boat       Boat:QBN-any         PASS     QBN any[]: Hull+Image=Y -> Image=Y in XML. ImageIndicator is the only any[] field for QBN.
+  ---   2026-06-25 Boat       Boat:QB-any          PASS     QB any[]: Reg+Image=Y -> Image=Y in XML. ImageIndicator is the only any[] field for QB.
+  ---   2026-06-25 Boat       Boat:QBN-guardrail   PASS     Guardrail QBN>QB: Hull+Reg filled -> QBN fires. XML: Hull=TWTAA, Image=N. RegistrationNumber ABSENT (guardrail confirmed).
+  ---   2026-06-25 Boat       Boat:QBN-guardrail-img PASS     Extra: Guardrail QBN>QB with Image=Y. Hull+Reg+Image -> QBN fires with Image=Y. Reg ABSENT. Guardrail holds across Image states.
+  ---   2026-06-25 Boat       Boat:NEGATIVE        PASS     Empty form: no Send button, no request generated.
   (none yet -- v4.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.5/)
