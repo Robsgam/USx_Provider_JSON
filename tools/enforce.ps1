@@ -180,8 +180,14 @@ foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
 
-    # Find JSON: new naming (<PROVIDER>.json) or legacy (_BASE/_MC)
+    # Find JSON: new naming (<PROVIDER>.json or <PROVIDER>_vX.Y.json) or legacy (_BASE/_MC)
     $provJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}.json" -File -ErrorAction SilentlyContinue
+    if (-not $provJson) {
+        $provJsonVer = @(Get-ChildItem $pd.FullName -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match "^${docPrefix}_v[\d.]+\.json$" })
+        if ($provJsonVer.Count -gt 1) { Fail "$provName -- multiple versioned JSONs in root (keep only one)" }
+        $provJson = $provJsonVer | Select-Object -First 1
+    }
     $baseJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}_BASE.json" -File -ErrorAction SilentlyContinue
     $mcJson   = Get-ChildItem $pd.FullName -Filter "${docPrefix}_MC.json" -File -ErrorAction SilentlyContinue
 
@@ -469,6 +475,10 @@ if ($Reproducible) {
         foreach ($pd in $providers) {
             $provName = $pd.Name
             $rjson = Get-ChildItem $pd.FullName -Filter "${provName}.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $rjson) {
+                $rjson = @(Get-ChildItem $pd.FullName -File -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Name -match "^${provName}_v[\d.]+\.json$" }) | Select-Object -First 1
+            }
             if (-not $rjson) { Info "$provName -- no <PROVIDER>.json (legacy); reproducibility skipped"; continue }
             if (-not (Test-Path (Join-Path $pd.FullName 'scripts'))) { Info "$provName -- no scripts/; reproducibility skipped"; continue }
             $rout = & powershell -ExecutionPolicy Bypass -File $reproTool -Path $rjson.FullName 2>&1 | Out-String
@@ -610,7 +620,9 @@ foreach ($pd in $providers) {
     if (Test-Path $testStateFile) {
         $activeJson = Join-Path $pd.FullName "$provName.json"
         if (-not (Test-Path $activeJson)) {
-            $altJ = Get-ChildItem $pd.FullName -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            $altJ = Get-ChildItem $pd.FullName -File -ErrorAction SilentlyContinue |
+                Where-Object { $_.Name -match "^${provName}_v[\d.]+\.json$" } | Select-Object -First 1
+            if (-not $altJ) { $altJ = Get-ChildItem $pd.FullName -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
             if (-not $altJ) { $altJ = Get-ChildItem $pd.FullName -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
             if ($altJ) { $activeJson = $altJ.FullName }
         }

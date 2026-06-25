@@ -41,7 +41,9 @@ if (-not (Test-Path $stateJsonPath)) {
 # Locate active JSON for the fingerprint.
 $activeJson = Join-Path $provDir "$Provider.json"
 if (-not (Test-Path $activeJson)) {
-    $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    $alt = Get-ChildItem $provDir -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match "^${Provider}_v[\d.]+\.json$" } | Select-Object -First 1
+    if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if ($alt) { $activeJson = $alt.FullName }
 }

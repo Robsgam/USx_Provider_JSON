@@ -25,7 +25,7 @@ $toolDir = $PSScriptRoot
 
 $resolved = Resolve-Path $Path
 $jsonDir = Split-Path $resolved -Parent
-$jsonName = [System.IO.Path]::GetFileNameWithoutExtension($resolved)
+$jsonName = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$', ''
 $jsonFile = Split-Path $resolved -Leaf
 
 if (-not $DocsDir) {
