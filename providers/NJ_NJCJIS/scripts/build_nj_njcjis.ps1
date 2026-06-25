@@ -48,7 +48,7 @@ $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $PHASEDIR = "$DIR\phases"
-$OUT      = "$DIR\NJ_NJCJIS_v${Version}.json"
+$OUT      = "$DIR\NJ_NJCJIS.json"
 $VEROUT   = "$PHASEDIR\NJ_NJCJIS_v${Version}_${DATE}.json"
 
 New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
