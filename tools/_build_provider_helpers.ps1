@@ -146,13 +146,10 @@ function Write-ProviderJson {
         [string]$Label,
         [string]$Version
     )
-    if ($Version) {
-        $wrapped = [ordered]@{ version = $Version }
-        $BundleObject.PSObject.Properties | ForEach-Object { $wrapped[$_.Name] = $_.Value }
-        $json = $wrapped | ConvertTo-Json -Depth 100
-    } else {
-        $json = $BundleObject | ConvertTo-Json -Depth 100
-    }
+    # NOTE: top-level `version` field omitted -- platform deserializes it as java.lang.Integer
+    # and rejects the dotted string format (e.g. "4.5"). Version tracked in bundle description
+    # and all docs; enforce CHECK 3i reads from description regex, not this field.
+    $json = $BundleObject | ConvertTo-Json -Depth 100
 
     # SCRATCH-BUILD HOOK (reproducibility audit): when $env:REPRO_OUTPATH is set, any
     # build script writes to that scratch path instead of the committed JSON, skips the

@@ -2,9 +2,11 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
-v4.5  2026-06-24  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v4.5  2026-06-25  Remove top-level version field (platform Integer validation)
+  CHANGED: Removed "version" field from JSON output (Write-ProviderJson); platform now
+    deserializes this as java.lang.Integer and rejects dotted string format ("4.5").
+    Version tracked in bundle description and all docs; enforce reads from description regex.
+  REASON: Platform update tightened version field validation; import failed post-platform-deploy.
 
 v4.4  2026-06-23  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
