@@ -206,3 +206,27 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Vehicle    VehReg:Guardrail RQ>M55L PASS     RQ>M55L guardrail: vehicleTypeCode=1 in form + Plate Type AP entered -> RQ fires, VehicleTypeCode DROPPED from wire (M55L exits pool via LicensePlateTypeCode NOT_EXISTS). Confirmed fires 3+4.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:M55S          PASS     In-state VIN: VehicleRegistrationQuery fires M55S; VehicleIdentificationNumber=34534534 + VehicleTypeCode=1 (default) + ImageIndicator=N. No State (bare VIN routes in-state).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:RQV           PASS     OOS VIN: VehicleRegistrationQuery fires RQV; VIN=34534534 + State=MD (Maryland reverse-lookup) + ImageIndicator=N; VehicleYear=2020 rides along (any[]). VehicleTypeCode DROPPED (M55S exits pool via RegistrationState NOT_EXISTS when State present).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:Guardrail Plate>VIN (M55L over M55S/RQV) PASS     Plate>VIN guardrail: Plate=122344 + VIN=34534534 + State=MD, no Plate Type/Year -> M55L fires (in-state plate), VehicleIdentificationNumber DROPPED (M55S/RQV exit pool via LicensePlateNumber NOT_EXISTS). State rides along.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    VehReg:Guardrail RQ over RQV/M55S/M55L PASS     RQ-wins all-fields stress: Plate+Type=AP+Year=2020+State=WV+VIN+VehType=1+vehicleYear all entered -> RQ fires; VIN + VehicleTypeCode + vehicleYear ALL dropped (M55S/RQV exit via LicensePlateNumber NOT_EXISTS; M55L exits via LicensePlateTypeCode NOT_EXISTS; vehicleYear is VIN-path any[] only). State=WV rides along (RQ any[]).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    RENDER:RENDER        PASS     Vehicle RENDER v4.5 (3 cards SEARCH OPTIONS/PLATE SEARCH/VIN SEARCH; VehicleType=1 + ImageIndicator=N defaults; Make field REMOVED from VIN card -- now VIN + Vehicle Year only; State/PlateType no default)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    NEGATIVE:NEGATIVE    PASS     Vehicle negative -- empty form, no Send button, no request fired

@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQV (OOS VIN: VehicleRegistrationQuery fires RQV; VIN=34534534 + State=MD (Maryland reverse-lookup) + ImageIndicator=N; VehicleYear=2020 rides along (any[]). VehicleTypeCode DROPPED (M55S exits pool via RegistrationState NOT_EXISTS when State present).)
+Date: 2026-06-25 16:26:41
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+VehicleIdentificationNumber=34534534, RegistrationState=Maryland, vehicleTypeCode=1, vehicleYear=2020
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><VehicleIdentificationNumber>34534534</VehicleIdentificationNumber><ImageIndicator>N</ImageIndicator><State>MD</State><VehicleYear>2020</VehicleYear></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  VehicleIdentificationNumber    34534534
+  ImageIndicator                 N
+  State                          MD
+  VehicleYear                    2020
+
+NOTES
+-----
+
+
+RESULT: PASS

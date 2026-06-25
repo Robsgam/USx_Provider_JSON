@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: Guardrail RQ over RQV/M55S/M55L (RQ-wins all-fields stress: Plate+Type=AP+Year=2020+State=WV+VIN+VehType=1+vehicleYear all entered -> RQ fires; VIN + VehicleTypeCode + vehicleYear ALL dropped (M55S/RQV exit via LicensePlateNumber NOT_EXISTS; M55L exits via LicensePlateTypeCode NOT_EXISTS; vehicleYear is VIN-path any[] only). State=WV rides along (RQ any[]).)
+Date: 2026-06-25 16:26:41
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Plate=122344, Type=AP, Year=2020, State=West Virginia, VIN=34534534, vehicleTypeCode=1, vehicleYear=2020
+
+XML REQUEST
+-----------
+<Request><MessageType>VehicleRegistrationQuery</MessageType><ImageIndicator>N</ImageIndicator><LicensePlateYear>2020</LicensePlateYear><State>WV</State><LicensePlateTypeCode>AP</LicensePlateTypeCode><LicensePlateNumber>122344</LicensePlateNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  LicensePlateYear               2020
+  State                          WV
+  LicensePlateTypeCode           AP
+  LicensePlateNumber             122344
+
+NOTES
+-----
+Only plate-OOS fields on wire = RQ wins over all VIN/in-state combos simultaneously.
+
+RESULT: PASS

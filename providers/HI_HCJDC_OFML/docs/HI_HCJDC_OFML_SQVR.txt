@@ -59,7 +59,7 @@ Architecture notes:
     Live v3.6 T6 (DECISIVE -- plate-wins): All fields simultaneously (+ VIN+Make) ->
       CommSys XML = plate only. VehicleIdentificationNumber+VehicleMakeCode ABSENT.
 
-  RQV -- OOS VIN (VIN + State) [PENDING]
+  RQV -- OOS VIN (VIN + State) [CONFIRMED]
     set: VehicleIdentificationNumber, RegistrationState
     any: ImageIndicator, vehicleYear
     conditions: LicensePlateNumber NOT_EXISTS (plate-wins guardrail, v3.6)
@@ -82,7 +82,7 @@ Architecture notes:
     Live v3.6 T7 (DECISIVE -- plate-wins): Plate+VIN (no State, no PlateType/Year) ->
       M55L fires; VehicleIdentificationNumber ABSENT. M55S exits on LicensePlateNumber NOT_EXISTS.
 
-  M55S -- in-state VIN (VehicleTypeCode + VIN) [PENDING]
+  M55S -- in-state VIN (VehicleTypeCode + VIN) [CONFIRMED]
     set: vehicleTypeCode, VehicleIdentificationNumber
     any: ImageIndicator, vehicleYear
     conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (v3.6)
