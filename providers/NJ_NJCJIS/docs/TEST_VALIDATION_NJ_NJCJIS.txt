@@ -1,7 +1,7 @@
 ================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS.json
-  Generated: 2026-06-25 09:07
+  Generated: 2026-06-25 09:32
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
@@ -17,33 +17,41 @@ data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: VEHICLE (5 tests -- 3 cards, 2 combos)
+ENTITY: VEHICLE (7 tests -- 3 cards, 2 combos)
   T1  Vehicle    [PASS] 3 cards, 7 fields, defaults verified
-  T2  Vehicle    [PASS] VehicleRegistrationQuery fires (RQN)
-  T3  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
-  T4  Vehicle    [PASS] any[] fields verified: RandomRequest, RegistrationState, LicensePlateTypeCode
-  T5  Vehicle    [PASS] empty form: no combos fire
-ENTITY: PERSON (5 tests -- 3 cards, 2 combos)
-  T6  Person     [PASS] 3 cards, 7 fields, defaults verified
-  T7  Person     [PASS] DriverLicenseQuery fires (DQN)
-  T8  Person     [PASS] DriverLicenseQuery fires (DQ)
-  T9  Person     [PASS] any[] fields verified: SexCode, RegistrationState
-  T10  Person     [PASS] empty form: no combos fire
-ENTITY: BOAT (4 tests -- 1 card, 2 combos)
-  T11  Boat       [PASS] 1 cards, 3 fields, defaults verified
-  T12  Boat       [PASS] BoatQuery fires (QBN)
-  T13  Boat       [PASS] BoatQuery fires (QB)
-  T14  Boat       [PASS] empty form: no combos fire
+  T2  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T3  Vehicle    [PASS] any[] fields verified: RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator
+  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (RQN)
+  T5  Vehicle    [PASS] any[] fields verified: RandomRequest, RegistrationState, ImageIndicator
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T7  Vehicle    [PASS] empty form: no combos fire
+ENTITY: PERSON (7 tests -- 3 cards, 2 combos)
+  T8  Person     [PASS] 3 cards, 7 fields, defaults verified
+  T9  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T10  Person     [PASS] any[] fields verified: ImageIndicator, RegistrationState
+  T11  Person     [PASS] DriverLicenseQuery fires (DQ)
+  T12  Person     [PASS] any[] fields verified: ImageIndicator, SexCode, RegistrationState
+  T13  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T14  Person     [PASS] empty form: no combos fire
+ENTITY: BOAT (7 tests -- 1 card, 2 combos)
+  T15  Boat       [PASS] 1 cards, 3 fields, defaults verified
+  T16  Boat       [PASS] BoatQuery fires (QBN)
+  T17  Boat       [PASS] any[] fields verified: ImageIndicator
+  T18  Boat       [PASS] BoatQuery fires (QB)
+  T19  Boat       [PASS] any[] fields verified: ImageIndicator
+  T20  Boat       [PASS] BoatQuery fires (QBN)
+  T21  Boat       [PASS] empty form: no combos fire
 ENTITY: FIREARM (4 tests -- 1 card, 1 combo)
-  T15  Firearm    [PASS] 1 cards, 5 fields, defaults verified
-  T16  Firearm    [PASS] GunQuery fires (QG)
-  T17  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, GunModel
-  T18  Firearm    [PASS] empty form: no combos fire
-ENTITY: ARTICLE (3 tests -- 1 card, 1 combo)
-  T19  Article    [PASS] 1 cards, 3 fields, defaults verified
-  T20  Article    [PASS] ArticleSingleQuery fires (QA)
-  T21  Article    [PASS] empty form: no combos fire
+  T22  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T23  Firearm    [PASS] GunQuery fires (QG)
+  T24  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, GunModel, ImageIndicator
+  T25  Firearm    [PASS] empty form: no combos fire
+ENTITY: ARTICLE (4 tests -- 1 card, 1 combo)
+  T26  Article    [PASS] 1 cards, 3 fields, defaults verified
+  T27  Article    [PASS] ArticleSingleQuery fires (QA)
+  T28  Article    [PASS] any[] fields verified: ImageIndicator
+  T29  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 21/21 PASS, 0 FAIL
+SUMMARY: 29/29 PASS, 0 FAIL
 
 

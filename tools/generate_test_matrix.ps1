@@ -339,9 +339,84 @@ function Get-ShortFieldLabel($suffix) {
         '(?i)^OwnerAppliedNumber'            { return 'OAN' }
         '(?i)^NCICNumber'                    { return 'NCIC' }
         '(?i)^ProcessControlNumber'          { return 'PCN' }
+        '(?i)^BirthDate'                     { return 'DOB' }
+        '(?i)^NameLast'                      { return 'LastName' }
+        '(?i)^NameFirst'                     { return 'FirstName' }
         '(?i)^Name'                          { return 'Name' }
         default                              { return $suffix }
     }
+}
+
+# Returns form fieldIds that are in a combo's any[] but NOT in set[] of any combo for this entity.
+# These are the "auxiliary" fields: optional context that serializes but doesn't drive routing.
+function Get-AuxAnyFields($combo, $qidm, $allSetAttrNames, $allEntityFields) {
+    $anyAttrNames = @()
+    if ($combo.requirements -and $combo.requirements.any) { $anyAttrNames = @($combo.requirements.any) }
+    $comboSetNames = @()
+    if ($combo.requirements -and $combo.requirements.set) { $comboSetNames = @($combo.requirements.set) }
+    $result = @()
+    foreach ($af in $anyAttrNames) {
+        if ($af -in $comboSetNames) { continue }
+        if ($allSetAttrNames.ContainsKey($af)) { continue }
+        $formFid = $null
+        foreach ($attr in $qidm.attributes) {
+            if ($attr.name -eq $af) {
+                $sfs = @()
+                if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
+                elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
+                if ($sfs.Count -gt 0) { $formFid = $sfs[0] }
+                break
+            }
+        }
+        if (-not $formFid) { $formFid = $af }
+        $result += $formFid
+    }
+    return $result
+}
+
+# Returns guardrail test descriptors for combos that have NOT_EXISTS conditions.
+# A NOT_EXISTS condition means: "this combo exits the pool when field X is present."
+# The guardrail test fills X + this combo's set[] → verifies the higher-priority combo fires.
+# Conditions live at requirements.conditions (NOT top-level), and field is an array.
+function Get-GuardrailTests($entQidms, $allEntityFields) {
+    $seen = @{}; $result = @()
+    foreach ($q in $entQidms) {
+        foreach ($c in $q.combinations) {
+            if (-not $c.requirements -or -not $c.requirements.conditions) { continue }
+            $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
+            $notExistsConds = @($c.requirements.conditions | Where-Object { $_.operator -eq 'NOT_EXISTS' })
+            foreach ($cond in $notExistsConds) {
+                # field is an array (e.g. ["LicensePlateNumber"]); take first element
+                $fieldArr = @($cond.field)
+                $excludedFid = $fieldArr[0]
+                $key = "${kr}|${excludedFid}"
+                if ($seen.ContainsKey($key)) { continue }
+                $seen[$key] = $true
+                # Find winner: combo that has excludedFid in its set[]
+                $winnerCombo = $null; $winnerQidm = $null; $winnerKr = $null
+                foreach ($pq in $entQidms) {
+                    foreach ($pc in $pq.combinations) {
+                        $pcSetNames = @()
+                        if ($pc.requirements -and $pc.requirements.set) { $pcSetNames = @($pc.requirements.set) }
+                        $pkr = if ($pc.keyReference) { $pc.keyReference } else { $pc.keyRef }
+                        $found = $pcSetNames | Where-Object { $_ -ieq $excludedFid }
+                        if ($found -and $pkr -ne $kr) {
+                            $winnerCombo = $pc; $winnerQidm = $pq; $winnerKr = $pkr; break
+                        }
+                    }
+                    if ($winnerCombo) { break }
+                }
+                if ($winnerCombo) {
+                    $result += [PSCustomObject]@{
+                        loserQidm=$q; loserCombo=$c; loserKr=$kr
+                        winnerQidm=$winnerQidm; winnerCombo=$winnerCombo; winnerKr=$winnerKr
+                        excludedFid=$excludedFid
+                    }
+                }
+            }
+        }
+    }
+    return $result
 }
 
 function Get-ComboSortKey($keyRef, [switch]$FieldFirst) {
@@ -539,57 +614,15 @@ foreach ($q in $qidms) {
 #  written test process are identical.
 # ════════════════════════════════════════════════════════════════════════
 
-# ── Precompute the best auxiliary any[] candidate per entity ──
-# An entity gets one any[] serialization test when a combo exposes a truly
-# auxiliary any[] field (not ImageIndicator, and not a field that is set[] in
-# another combo of the same entity).
-$anyByEntity = @{}
-foreach ($ent in $entityOrder) {
-    $ed = $entityData[$ent]
-    $bestCandidate = $null; $bestScore = -1
-    foreach ($q in $ed.qidms) {
-        foreach ($c in $q.combinations) {
-            $anyFields = @()
-            if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
-            $setFields = @()
-            if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
-            $auxiliary = @()
-            foreach ($af in $anyFields) {
-                if ($af -in $setFields) { continue }
-                $formFid = $null
-                foreach ($attr in $q.attributes) {
-                    if ($attr.name -eq $af) {
-                        $sfs = @()
-                        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
-                        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
-                        if ($sfs.Count -gt 0) { $formFid = $sfs[0] }
-                        break
-                    }
-                }
-                if (-not $formFid) { $formFid = $af }
-                if ($formFid -match '(?i)^imageIndicator$') { continue }
-                if ($ed.allSetAttrNames.ContainsKey($af)) { continue }
-                $auxiliary += $formFid
-            }
-            if ($auxiliary.Count -gt 0) {
-                $score = $auxiliary.Count * 100 - $setFields.Count
-                if ($score -gt $bestScore) {
-                    $bestScore = $score
-                    $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
-                    $bestCandidate = [PSCustomObject]@{ qidm = $q; combo = $c; kr = $kr; anyFields = $auxiliary }
-                }
-            }
-        }
-    }
-    if ($bestCandidate) { $anyByEntity[$ent] = $bestCandidate }
-}
+# (Per-combo any[] and guardrail tests are generated inline in the entity loop via
+#  Get-AuxAnyFields / Get-GuardrailTests helper functions defined above.)
 
 [void]$sb.AppendLine("=" * 80)
 [void]$sb.AppendLine("TEST MATRIX")
 [void]$sb.AppendLine("=" * 80)
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish")
-[void]$sb.AppendLine("(render -> combos -> any[] -> deselect/routing -> negative), then blocked out.")
+[void]$sb.AppendLine("(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.")
 [void]$sb.AppendLine("")
 
 $testNum = 0
@@ -648,7 +681,13 @@ foreach ($ent in $entityOrder) {
             }
             [void]$phaseSb.AppendLine("         CHECK: do any combo defaults trigger a constraint that has no default/handler?")
         }
-        $sortedCombos = @($q.combinations | Sort-Object { Get-ComboSortKey $(if ($_.keyReference) { $_.keyReference } else { $_.keyRef }) -FieldFirst:$fieldFirst })
+        # Secondary sort: unconditional combos (no NOT_EXISTS) before conditional (NOT_EXISTS) ones.
+        # This ensures OLN-before-Name, Hull-before-Reg, Plate-before-VIN in test order.
+        $sortedCombos = @($q.combinations | Sort-Object {
+            $kr = if ($_.keyReference) { $_.keyReference } else { $_.keyRef }
+            $hasGuard = if ($_.requirements -and $_.requirements.conditions) { 1 } else { 0 }
+            (Get-ComboSortKey $kr -FieldFirst:$fieldFirst) * 2 + $hasGuard
+        })
         foreach ($c in $sortedCombos) {
             $testNum++; $phaseTestCount++
             $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
@@ -737,6 +776,16 @@ foreach ($ent in $entityOrder) {
                 $expected += ". Check for $($ch.query) co-fire"
             }
             [void]$phaseSb.AppendLine("              Expected: $expected")
+
+            # Per-combo any[] test: verify auxiliary optional fields serialize
+            $auxFids = Get-AuxAnyFields $c $q $ed.allSetAttrNames $ed.allFields
+            if ($auxFids.Count -gt 0) {
+                $testNum++; $phaseTestCount++
+                $anyStr = ($auxFids | Select-Object -First 4) -join ', '
+                [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
+                [void]$phaseSb.AppendLine("[    ]")
+                [void]$phaseSb.AppendLine("              Expected: any[] fields present in XML output.")
+            }
         }
     }
 
@@ -827,7 +876,13 @@ foreach ($ent in $entityOrder) {
             }
             [void]$phaseSb.AppendLine("         CHECK: do any combo defaults trigger a constraint that has no default/handler?")
         }
-        $sortedCombos = @($q.combinations | Sort-Object { Get-ComboSortKey $(if ($_.keyReference) { $_.keyReference } else { $_.keyRef }) -FieldFirst:$fieldFirst })
+        # Secondary sort: unconditional combos (no NOT_EXISTS) before conditional (NOT_EXISTS) ones.
+        # This ensures OLN-before-Name, Hull-before-Reg, Plate-before-VIN in test order.
+        $sortedCombos = @($q.combinations | Sort-Object {
+            $kr = if ($_.keyReference) { $_.keyReference } else { $_.keyRef }
+            $hasGuard = if ($_.requirements -and $_.requirements.conditions) { 1 } else { 0 }
+            (Get-ComboSortKey $kr -FieldFirst:$fieldFirst) * 2 + $hasGuard
+        })
         foreach ($c in $sortedCombos) {
             $testNum++; $phaseTestCount++
             $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
@@ -872,25 +927,62 @@ foreach ($ent in $entityOrder) {
             [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  {3,-32} " -f $testNum, $ent, $comboLabel, $fillStr))
             [void]$phaseSb.AppendLine("[    ]")
             [void]$phaseSb.AppendLine("              Expected: $($q.query) fires ($kr)")
+
+            # Per-combo any[] test for deselect combos
+            $auxFidsD = Get-AuxAnyFields $c $q $ed.allSetAttrNames $ed.allFields
+            if ($auxFidsD.Count -gt 0) {
+                $testNum++; $phaseTestCount++
+                $anyStr = ($auxFidsD | Select-Object -First 4) -join ', '
+                [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
+                [void]$phaseSb.AppendLine("[    ]")
+                [void]$phaseSb.AppendLine("              Expected: any[] fields present in XML output.")
+            }
         }
     }
 
-    # ── 3. ANY[] (auxiliary serialization test) ──
-    if ($anyByEntity.ContainsKey($ent)) {
-        $at = $anyByEntity[$ent]
+    # ── 3. GUARDRAIL tests: NOT_EXISTS priority routing ──
+    # For combos with NOT_EXISTS conditions: fill the excluded field + loser's set[] → winner fires.
+    $guardrails = Get-GuardrailTests $ed.qidms $ed.allFields
+    foreach ($gr in $guardrails) {
         $testNum++; $phaseTestCount++
-        $shortName = Get-ComboShortName $at.kr
-        $setNames = @()
-        if ($at.combo.requirements -and $at.combo.requirements.set) { $setNames = @($at.combo.requirements.set) }
-        $primaryField = Get-PrimaryField $at.kr $setNames
-        $comboLabel = "$shortName+$(Get-ShortFieldLabel $primaryField)"
-        $anyStr = ($at.anyFields | Select-Object -First 3) -join ', '
-        [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
+        # Use full keyRef in label so "RQ>RQN" (not "RQ>RQ") and loser set[] for Expected.
+        $guardLabel = "Guardrail: $($gr.winnerKr)>$($gr.loserKr)"
+        $loserSetShortFields = @($gr.loserCombo.requirements.set | ForEach-Object { Get-ShortFieldLabel $_ })
+        $loserFieldStr = $loserSetShortFields -join '+'
+
+        # Fill: winner's excluded field + loser's set[] fields
+        $fillInstrs = @()
+        $winnerFf = $ed.allFields | Where-Object { $_.fieldId -ieq $gr.excludedFid } | Select-Object -First 1
+        if ($winnerFf) {
+            $val = Get-TestValue $winnerFf $false
+            if ($val) { $fillInstrs += "$($gr.excludedFid)=$val" }
+        }
+        $loserSetNames = @()
+        if ($gr.loserCombo.requirements -and $gr.loserCombo.requirements.set) { $loserSetNames = @($gr.loserCombo.requirements.set) }
+        foreach ($sf in $loserSetNames) {
+            $ff = $ed.allFields | Where-Object { $_.fieldId -eq $sf } | Select-Object -First 1
+            if (-not $ff) {
+                foreach ($attr in $gr.loserQidm.attributes) {
+                    if ($attr.name -eq $sf) {
+                        $sfs2 = @()
+                        if ($attr.sourceField -is [System.Array]) { $sfs2 = $attr.sourceField }
+                        elseif ($attr.sourceField) { $sfs2 = @($attr.sourceField) }
+                        foreach ($s in $sfs2) { $ff = $ed.allFields | Where-Object { $_.fieldId -eq $s } | Select-Object -First 1; if ($ff) { break } }
+                        break
+                    }
+                }
+            }
+            if ($ff) { $val = Get-TestValue $ff $false; if ($val) { $fillInstrs += "$($ff.fieldId)=$val" } }
+        }
+        $fillStr = $fillInstrs -join ', '
+        if ($fillStr.Length -gt 40) { $fillStr = $fillStr.Substring(0, 37) + '...' }
+
+        [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  {3,-32} " -f $testNum, $ent, $guardLabel, $fillStr))
         [void]$phaseSb.AppendLine("[    ]")
-        [void]$phaseSb.AppendLine("              Expected: any[] fields present in XML output.")
+        [void]$phaseSb.AppendLine("              Expected: $($gr.winnerQidm.query) fires ($($gr.winnerKr)). $loserFieldStr absent from XML.")
     }
 
-    # ── 4. DESELECT / PRIORITY-ROUTING verification (this entity only) ──
+    # ── 4. DESELECT verification (this entity only) ──
     if ($deselectQidms.Count -gt 0) {
         $dq = $deselectQidms[0]
         $fromShort = Get-QueryAbbrev $dq.query
