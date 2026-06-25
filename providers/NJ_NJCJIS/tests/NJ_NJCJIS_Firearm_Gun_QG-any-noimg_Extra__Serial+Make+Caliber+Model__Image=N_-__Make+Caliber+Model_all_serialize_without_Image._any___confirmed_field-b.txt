@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: NJ_NJCJIS Firearm GunQuery
+Combo: QG-any-noimg (Extra: Serial+Make+Caliber+Model, Image=N -> Make+Caliber+Model all serialize without Image. any[] confirmed field-by-field.)
+Date: 2026-06-25 09:53:33
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVZGSMEK93EQNJE3XS0X0PNG"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KVZGSMEK93EQNJE3XS0X0PNG</Id><ImageIndicator>N</ImageIndicator><GunSerialNumber>SER888</GunSerialNumber><GunCaliber>11</GunCaliber><GunMake>01</GunMake><GunModel>TEST</GunModel></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVZGSMEK93EQNJE3XS0X0PNG
+  ImageIndicator                 N
+  GunSerialNumber                SER888
+  GunCaliber                     11
+  GunMake                        01
+  GunModel                       TEST
+
+NOTES
+-----
+
+
+RESULT: PASS
