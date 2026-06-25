@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQ (DH Name+Sex+DOB: DriverHistoryQuery fires KQ; Name='LAST, FIRSDT M SUF' (comma-space Last-first, DH-suffix fields), SexCodeDH=F (Female), BirthDateDH 01011985; PurposeCode=C; Attention auto 'SGAMBELLONE R'. State=AL rides along on variant.)
+Date: 2026-06-25 15:28:16
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NameLastDH=last, NameFirstDH=firsdt, nameMiddleDH=m, nameSuffixDH=suf, SexCodeDH=Female, BirthDateDH=1985-01-01, purposeCodeDH=C
+
+XML REQUEST
+-----------
+<Request><MessageType>DriverHistoryQuery</MessageType><Attention>SGAMBELLONE R</Attention><SexCode>F</SexCode><PurposeCode>C</PurposeCode><BirthDate>01011985</BirthDate><Name>LAST, FIRSDT M SUF</Name></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Attention                      SGAMBELLONE R
+  SexCode                        F
+  PurposeCode                    C
+  BirthDate                      01011985
+  Name                           LAST, FIRSDT M SUF
+
+NOTES
+-----
+
+
+RESULT: PASS

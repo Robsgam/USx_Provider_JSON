@@ -178,3 +178,15 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Person     DL:Guardrail OLN>Name (DL) PASS     OLN>Name guardrail: OLN=55856576 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AR) on wire; Name/SexCode/BirthDate DROPPED (DQ/QW exit pool via OperatorLicenseNumber NOT_EXISTS). RMS elastic still gets all fields.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DH:KQN               PASS     DH OLN path: DriverHistoryQuery fires KQN; OperatorLicenseNumberDH=4235234 -> OperatorLicenseNumber on wire; PurposeCode=C; Attention auto-populated 'SGAMBELLONE R' (officer RMS name, NOT literal X); State=AL rides along (Alabama reverse-lookup).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DH:KQ                PASS     DH Name+Sex+DOB: DriverHistoryQuery fires KQ; Name='LAST, FIRSDT M SUF' (comma-space Last-first, DH-suffix fields), SexCodeDH=F (Female), BirthDateDH 01011985; PurposeCode=C; Attention auto 'SGAMBELLONE R'. State=AL rides along on variant.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DH:Guardrail OLN>Name (DH) PASS     DH OLN>Name guardrail: OperatorLicenseNumberDH=111202255 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AL) on wire; Name/Sex/DOB DROPPED (KQ exits pool via OperatorLicenseNumberDH NOT_EXISTS).

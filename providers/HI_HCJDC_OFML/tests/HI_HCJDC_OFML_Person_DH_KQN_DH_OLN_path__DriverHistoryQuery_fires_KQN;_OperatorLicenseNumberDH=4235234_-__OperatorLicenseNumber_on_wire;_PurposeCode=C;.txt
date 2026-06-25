@@ -1,0 +1,32 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQN (DH OLN path: DriverHistoryQuery fires KQN; OperatorLicenseNumberDH=4235234 -> OperatorLicenseNumber on wire; PurposeCode=C; Attention auto-populated 'SGAMBELLONE R' (officer RMS name, NOT literal X); State=AL rides along (Alabama reverse-lookup).)
+Date: 2026-06-25 15:28:16
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OperatorLicenseNumberDH=4235234, purposeCodeDH=C, RegistrationState=Alabama
+
+XML REQUEST
+-----------
+<Request><MessageType>DriverHistoryQuery</MessageType><State>AL</State><Attention>SGAMBELLONE R</Attention><OperatorLicenseNumber>4235234</OperatorLicenseNumber><PurposeCode>C</PurposeCode></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  State                          AL
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          4235234
+  PurposeCode                    C
+
+NOTES
+-----
+Attention handler confirmed live v4.5: emitted officer name, not the X gate-feeder default.
+
+RESULT: PASS
