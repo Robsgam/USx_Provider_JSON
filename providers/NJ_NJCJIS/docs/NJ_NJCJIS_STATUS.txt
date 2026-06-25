@@ -1,7 +1,7 @@
 NJ_NJCJIS STATUS
 =================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-06-24
+Last updated    : 2026-06-25
 
   *** TENANT STATE: NJ consolidated to ONE mainline JSON on 2026-06-17 (v4.0). The
       VehStolenRemoved design is now the mainline (NJ_NJCJIS.json); the Separate/Pascal/
@@ -110,8 +110,8 @@ IMPORT HISTORY:
     T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
     T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
     Phase 2 - Vehicle combos:
-  ---   2026-06-24 Vehicle    VehReg:RQ            PASS     OOS plate: plate=TEST1 + State=MA + PlateType=PC + PlateYear=2026 + RandomRequest=N + Image=N; RQ fires; State=MA serialized (OOS routing confirmed)
-  ---   2026-06-24 Vehicle    VehReg:RQN           PASS     T6 RQN: VIN=343GFFGDFG + State=NJ + RandomRequest=N + Image=N; RQN fires; no plate in XML (guardrail passive confirm)
+  ---   2026-06-25 Vehicle    VehReg:RQ            PASS     Plate search -- LicensePlateNumber fires RQ; PlateType/Year/State/Image/Random all serialize
+  ---   2026-06-25 Vehicle    VehReg:RQN           PASS     VIN search -- VehicleIdentificationNumber fires RQN; plate fields absent from XML (guardrail confirmed)
     T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
     T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
     T10  Vehicle  QVV      VehStolen VIN                PASS  (VIN+image, queriesToDeselect)
@@ -257,4 +257,10 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-06-25 Vehicle    RENDER:RENDER        PASS     Vehicle RENDER gate -- 3 cards: Search Options (State/Random/Image), PLATE SEARCH, VIN SEARCH
+  ---   2026-06-25 Vehicle    VehReg:RQ-any        PASS     RQ any[] -- Plate with Image=Y, Random=Y; all 5 any[] fields (Image/Random/State/PlateType/PlateYear) serialize
+  ---   2026-06-25 Vehicle    VehReg:RQ-guardrail  PASS     Plate>VIN guardrail -- Plate+VIN both filled; XML shows only Plate (VIN absent -- RQ wins, guardrail live-confirmed)
+  ---   2026-06-25 Vehicle    VehReg:RQ-any-defaults PASS     RQ any[] defaults -- PlateType/PlateYear at initialValue (not explicitly set); confirm they serialize from defaults in XML
+  ---   2026-06-25 Vehicle    VehReg:RQN-any       PASS     RQN any[] -- VIN with Image=Y, Random=Y; all any[] fields serialize (no plate fields)
+  ---   2026-06-25 Vehicle    NEGATIVE:NEGATIVE    PASS     Empty form -- no Send button visible, no request fires
   (none yet -- v4.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.5/)
