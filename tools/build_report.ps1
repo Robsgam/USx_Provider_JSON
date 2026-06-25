@@ -487,3 +487,47 @@ $manifestFile = Join-Path $DocsDir "BUILD_MANIFEST_$jsonName.json"
 [System.IO.File]::WriteAllText($manifestFile, ($manifest | ConvertTo-Json -Depth 10), [System.Text.UTF8Encoding]::new($false))
 Write-Host "  [manifest] $manifestFile (source SHA $($manifest.sourceSha256.Substring(0,12))...)" -ForegroundColor Gray
 Write-Host ""
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  ORPHANED-REPORT PRUNE -- keep this docs folder clean.
+#  build_report owns a fixed set of report prefixes. When a provider drops a JSON
+#  variant (e.g. NJ's VehStolenRemoved/Separate branches, or a legacy _BASE/_MC),
+#  the reports for that variant linger forever because nothing deletes them.
+#  Canonical-diff: any build-owned report (or *_TEST_MATRIX.txt) for THIS provider
+#  base whose name is NOT one this build would produce is an orphan -> remove it.
+#  The expected set is derived deterministically from $jsonName (NOT from which
+#  tools happened to run), so a transiently-skipped tool never deletes a good file.
+#  Scans only $DocsDir -- legacy docs/base|mc subfolders are never touched here.
+#  Manual docs (TEST_PLAN_*, *_FIELD_CASING_REVIEW.md, *_SUPPORTED_QUERIES.txt,
+#  FIRST_RESPONDER_*) don't match an owned prefix and are left alone.
+# ══════════════════════════════════════════════════════════════════════════════
+$ownedPrefixes = @(
+    'RESPONSE_SIMULATION','SUPPORTED_QUERY_AUDIT','VALIDATOR_REPORT','LAYOUT_REPORT',
+    'QUERY_REPORT','PICKLIST_REPORT','VERIFY_REPORT','METADATA_AUDIT','TEST_VALIDATION',
+    'LABEL_REVIEW','BUILD_MANIFEST','OFFICER_GUIDE','LINT_REPORT','TEST_SHEET',
+    'CAD_AUDIT','CHANGELOG','LAYOUT'
+)
+$canonicalLeaves = @(
+    "LINT_REPORT_$jsonName.txt","VALIDATOR_REPORT_$jsonName.txt","RESPONSE_SIMULATION_$jsonName.txt",
+    "LAYOUT_REPORT_$jsonName.txt","QUERY_REPORT_$jsonName.txt","PICKLIST_REPORT_$jsonName.txt",
+    "LAYOUT_$jsonName.html","VERIFY_REPORT_$jsonName.txt","METADATA_AUDIT_$jsonName.txt",
+    "CAD_AUDIT_$jsonName.txt","TEST_VALIDATION_$jsonName.txt","LABEL_REVIEW_$jsonName.txt",
+    "OFFICER_GUIDE_$jsonName.html","OFFICER_GUIDE_$jsonName.pdf","TEST_SHEET_$jsonName.html",
+    "TEST_SHEET_$jsonName.pdf","SUPPORTED_QUERY_AUDIT_$jsonName.txt","CHANGELOG_$jsonName.md",
+    "BUILD_MANIFEST_$jsonName.json","${jsonName}_TEST_MATRIX.txt"
+)
+$baseEsc    = [regex]::Escape($jsonName)
+$ownedRe    = '^(?:' + ($ownedPrefixes -join '|') + ')_' + $baseEsc + '(?:_.+)?\.(?:txt|html|pdf|json|md)$'
+$matrixRe   = '^' + $baseEsc + '_.+_TEST_MATRIX\.txt$'
+$prunedCount = 0
+Get-ChildItem $DocsDir -File -ErrorAction SilentlyContinue |
+    Where-Object {
+        ($_.Name -match $ownedRe -or $_.Name -match $matrixRe) -and ($canonicalLeaves -notcontains $_.Name)
+    } |
+    ForEach-Object {
+        Write-Host "  [cleanup] removing orphaned report: $($_.Name)" -ForegroundColor DarkYellow
+        Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
+        $prunedCount++
+    }
+if ($prunedCount -gt 0) { Write-Host "  [cleanup] pruned $prunedCount orphaned report file(s) from $DocsDir" -ForegroundColor Yellow }
+Write-Host ""

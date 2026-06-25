@@ -123,7 +123,8 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator).
+    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator) plus label review, officer guide, test sheet, supported-query audit, and per-provider changelog.
+    After writing the manifest it PRUNES orphaned variant reports: any build-owned report file (or *_TEST_MATRIX.txt) for this provider whose name is not one this build produces (e.g. left over from a removed JSON variant) is deleted from the docs folder. Manual docs (TEST_PLAN_*, *_FIELD_CASING_REVIEW.md, *_SUPPORTED_QUERIES.txt, FIRST_RESPONDER_*) are never touched.
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
 

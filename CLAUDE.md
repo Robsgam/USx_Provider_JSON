@@ -342,7 +342,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
 | 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
 | 11 | `simulate_response.ps1` | CJIS response handler simulator: executes all QRDM handler transformations (Height, Name, VehicleYear, truncate, AttributeMapping) against comprehensive synthetic test data per entity. Target: 0 MISSING / 0 UNMAPPED. No live data required. | `-Path <json>` `-Entity` `-RunEdgeCases` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — runs all 11 above + saves reports to docs/ | `-Path <json>` |
+| -- | `build_report.ps1` | **Master orchestrator** — runs all 11 above + saves reports to docs/, then prunes orphaned variant reports (build-owned report files for a JSON variant no longer present — e.g. after consolidating branches) | `-Path <json>` |
 
 ### Auditors (repo-wide checks)
 
