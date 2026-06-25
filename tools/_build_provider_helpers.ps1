@@ -68,11 +68,15 @@ function Build-EntitiesBundle {
         [Parameter(Mandatory)][array]$Configurations,
         [string[]]$DefaultOrder  = @('Vehicle','Person','Firearm','Article','Boat'),
         [string[]]$CadOrder      = @('Vehicle','Person','Firearm','Article','Boat'),
-        [string[]]$FrOrder       = @('Vehicle','Person','Firearm','Article','Boat')
+        [string[]]$FrOrder       = @('Vehicle','Person','Firearm','Article','Boat'),
+        # Pass a version-stamped string (e.g. "Provider configuration for X v4.6 -- entity forms")
+        # to embed the version near the top. Defaults to the generic label (no change for callers
+        # that don't pass it). `description` is emitted FIRST so it renders at the top of the bundle.
+        [string]$Description = 'Entity form configurations'
     )
     [PSCustomObject]@{
+        description    = $Description
         configurations = $Configurations
-        description    = 'Entity form configurations'
         name           = 'ENTITIES'
         type           = 'BUNDLE'
         order          = [PSCustomObject]@{

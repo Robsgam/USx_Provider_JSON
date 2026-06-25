@@ -343,8 +343,8 @@ $boatQuery = [PSCustomObject]@{
 
 # BRANCH DELTA: $vehStolenQuery omitted from configurations
 $njBundle = [PSCustomObject]@{
+    description    = "Provider configuration for NJ_NJCJIS v${Version}"
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for NJ_NJCJIS v${Version} MC"
     name           = 'NJ_NJCJIS'
     type           = 'BUNDLE'
     provider       = 'NJ_NJCJIS'
@@ -531,7 +531,8 @@ $boatForm = [PSCustomObject]@{
 }
 
 $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm)
+        $firearmsForm, $articleForm, $boatForm) `
+        -Description "Provider configuration for NJ_NJCJIS v${Version} -- entity forms"
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — PascalCase USx fields, registrationState, autoSelect)
@@ -539,7 +540,8 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
 # -PascalCaseUsxFields switch recases the form-fed sourceField/set/any to match
 # the PascalCase form fieldIds (Mark43 internal targetFields stay camelCase).
 # =====================================================================
-$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields `
+        -Description "Provider configuration for NJ_NJCJIS v${Version} -- RMS bundle"
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================

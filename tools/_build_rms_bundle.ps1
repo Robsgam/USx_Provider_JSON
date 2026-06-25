@@ -65,7 +65,10 @@ function Build-RmsBundle {
     param(
         [switch]$KeepSsn,             # AZ, TN: include socialSecurityNumber attr + combo
         [switch]$SkipRace,            # TX, LA, MD, CA_CONTRA_COSTA: exclude race attr + raceCode from any[]
-        [switch]$PascalCaseUsxFields  # NJ, FL, HI: form-fed sourceField/set/any in PascalCase (match PascalCase form fieldIds)
+        [switch]$PascalCaseUsxFields, # NJ, FL, HI: form-fed sourceField/set/any in PascalCase (match PascalCase form fieldIds)
+        # Pass a version-stamped string (e.g. "Provider configuration for X v4.6 -- RMS bundle")
+        # to embed the version. Defaults to the generic label (no change for callers that don't pass it).
+        [string]$Description = 'Provider configuration for RMS'
     )
 
     # --- RMS AUTHENTICATION (REST) ---
@@ -407,11 +410,11 @@ function Build-RmsBundle {
         providerType    = 'RMS'
     }
 
-    # --- ASSEMBLE BUNDLE ---
+    # --- ASSEMBLE BUNDLE (description first for near-the-top version visibility) ---
     return [PSCustomObject]@{
+        description    = $Description
         name           = 'RMS'
         type           = 'BUNDLE'
-        description    = 'Provider configuration for RMS'
         provider       = 'RMS'
         configurations = @($rmsAuth, $rmsQmf, $rmsPer, $rmsVeh, $rmsQrdm, $rmsLayout)
     }
