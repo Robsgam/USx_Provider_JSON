@@ -7,6 +7,8 @@ PENDING (post once v4.4 live test passes): add a follow-up comment with the
 v4.3 -> v4.4 diff and the import/test release line. Draft:
 
 --------------------------------------------------------------------
+> 🤖 Auto-generated and posted by Claude Code from the repo changelog (docs/CHANGELOG_HI_HCJDC_OFML.md). Not a manual entry.
+
 **HI_HCJDC_OFML v4.4 — what changed vs v4.3** (post-test update)
 
 - **Vehicle / VehicleRegistrationQuery:** removed the two dormant stolen combos
