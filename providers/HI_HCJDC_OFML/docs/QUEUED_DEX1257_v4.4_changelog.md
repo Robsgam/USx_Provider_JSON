@@ -1,27 +1,21 @@
-DEX-1257 Jira follow-up — POST AFTER v4.4 live testing completes.
-====================================================================
+DEX-1257 Jira posting log + pending release line.
+==================================================
 
-DONE 2026-06-25: Initial full changelog dump posted to DEX-1257 (comment id 767719).
+POSTED:
+- 2026-06-25  Initial full changelog dump            -> comment 767719 (edited to add 🤖 attribution)
+- 2026-06-25  v4.5 changelog update (Make removal)   -> comment 767758
 
-PENDING (post once v4.4 live test passes): add a follow-up comment with the
-v4.3 -> v4.4 diff and the import/test release line. Draft:
+PENDING (post once v4.5 live testing PASSES all entities):
+Add a follow-up comment (lead with the 🤖 attribution line) carrying the release line:
 
---------------------------------------------------------------------
-> 🤖 Auto-generated and posted by Claude Code from the repo changelog (docs/CHANGELOG_HI_HCJDC_OFML.md). Not a manual entry.
+  "HI_HCJDC_OFML USx JSON v4.5 imported to USx HI TEST tenant; all entities PASS
+   (Article/Boat/Firearm/Person/Vehicle). Handed to @Leo Hisoire for evaluation."
 
-**HI_HCJDC_OFML v4.4 — what changed vs v4.3** (post-test update)
+Current test status (v4.5): Article / Boat / Firearm BLOCKED (PASS).
+Remaining before release line: Person (all combos) + Vehicle (RQ/RQV/M55L/M55S +
+plate-wins guardrails + clear-Vehicle-Type-fires-nothing regression + confirm Make
+field gone from VIN card).
 
-- **Vehicle / VehicleRegistrationQuery:** removed the two dormant stolen combos
-  **QVP** (plate+state) and **QVV** (VIN+MakeCode). QIDM now has **4 combos**
-  (RQ / RQV / M55L / M55S) vs 6 in v4.3.
-- **Why:** v4.3 live test showed that clearing the Vehicle Type dropdown on a
-  Plate+State query made QVP the only matching combo, firing an unintended
-  QV (stolen). The form should never emit a stolen query directly — the state
-  CommSys server auto-generates QV from supplied fields (data-mined via QRDM).
-- **Behavior change:** a Plate+State query with Vehicle Type cleared and no
-  Plate Type/Year now matches no combo and fires nothing (unsupported path).
-- **Scope:** Vehicle QIDM only. Article / Boat / Firearm / Person fingerprints
-  unchanged (carried over as CONFIRMED; not retested).
-- _Imported to USx HI TEST tenant — v4.4, [fill in test result] ._
---------------------------------------------------------------------
-(Confirm the diff against the repo CHANGELOG before posting; fill the release line with the actual v4.4 test outcome.)
+Pattern (Rob, 2026-06-25): update the DEX ticket on EVERY version bump (dump first,
+then per-version diff), lead with the 🤖 auto-update attribution line; release line
+added only after that version's live testing passes. Applies to all providers.
