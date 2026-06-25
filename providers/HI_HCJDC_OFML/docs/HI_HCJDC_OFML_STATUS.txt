@@ -190,3 +190,7 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Person     DH:Guardrail OLN>Name (DH) PASS     DH OLN>Name guardrail: OperatorLicenseNumberDH=111202255 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AL) on wire; Name/Sex/DOB DROPPED (KQ exits pool via OperatorLicenseNumberDH NOT_EXISTS).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DH:DH deselects DL (one-directional) PASS     One-directional deselect: both DL OLN (12345) and DH OLN (67980) filled; clicking the DH checkbox deselects DL -> SINGLE DriverHistoryQuery fires (OperatorLicenseNumber=67980, PurposeCode=C, Attention=SGAMBELLONE R). No DriverLicenseQuery transaction. Config verified one-directional (only DH has queriesToDeselect=[DriverLicenseQuery]).
