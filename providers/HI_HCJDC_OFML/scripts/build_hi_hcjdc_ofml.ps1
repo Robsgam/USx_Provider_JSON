@@ -660,15 +660,12 @@ $vehicleForm = [PSCustomObject]@{
     targetEntity = 'Vehicle'
 }
 
-# Person -- 1 card
-# Serves BOTH DriverLicenseQuery (DQN/DQ/QW) and DriverHistoryQuery (KQN/KQ)
-# DL/DH share fields. DH adds Attention + PurposeCode.
-# autoSelect on DL, queriesToDeselect bidirectional.
-# Person -- 2 cards: DRIVER LICENSE (DL: DQ/QW/DQN) and DRIVER HISTORY (DH: KQ/KQN).
-# DL and DH are distinct queries with bidirectional autoSelect + queriesToDeselect, so they
-# get distinct cards (clarifies which query the officer runs). One QIF, two visual cards;
-# DH uses DH-suffix fieldIds. registrationState lives on the DL card and is shared by the
-# DH State attr (cards are visual only -- field population is form-wide, not card-scoped).
+# Person -- 3 cards (current design; full note below). Serves DriverLicenseQuery
+# (DQN/DQ/QW) and DriverHistoryQuery (KQN/KQ); DH adds Attention + PurposeCode and uses
+# DH-suffix fieldIds. Deselect is ONE-DIRECTIONAL: only DriverHistoryQuery carries
+# queriesToDeselect=['DriverLicenseQuery'] (DH deselects DL; DL never deselects DH --
+# live-confirmed v4.5). Cards are visual only -- field population is form-wide, not
+# card-scoped; registrationState on the SEARCH OPTIONS card is shared by the DH State attr.
 # Person -- 3 cards: SEARCH OPTIONS (shared State) + DRIVER LICENSE (DQ/QW/DQN, plain
 # fieldIds) + DRIVER HISTORY (KQ/KQN, DH-suffix + Purpose Code). Separate cards need
 # distinct fieldIds (duplicate fieldId across cards = ISE), hence DH-suffix on the DH card.

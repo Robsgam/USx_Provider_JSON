@@ -251,13 +251,10 @@ function Get-MatrixCount($matrixPath) {
 $matrixPath = Join-Path $docsDir "${Provider}_TEST_MATRIX.txt"
 $oldMatrixCount = Get-MatrixCount $matrixPath
 
-# Locate the active JSON: single-JSON <PROVIDER>.json, then legacy _MC / _BASE.
-$activeJson = Join-Path $provDir "$Provider.json"
-if (-not (Test-Path $activeJson)) {
-    $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
-    if ($alt) { $activeJson = $alt.FullName }
-}
+# Locate the active JSON via the shared resolver (versioned <PROVIDER>_v<X.Y>.json -> bare
+# -> _MC -> _BASE). Matches the resolution used at the top of this script (line ~70).
+$activeJson = Get-ProviderRootJson -ProvDir $provDir -Provider $Provider
+if (-not $activeJson) { $activeJson = Join-Path $provDir "$Provider.json" }
 
 $matrixRegenerated = $false
 $matrixDelta = $null

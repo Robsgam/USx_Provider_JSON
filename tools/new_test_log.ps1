@@ -16,7 +16,7 @@
 
 param(
     [Parameter(Mandatory)][string]$Provider,
-    [Parameter(Mandatory)][ValidateSet('BASE','MC')][string]$Variant,
+    [ValidateSet('BASE','MC','')][string]$Variant = '',   # legacy split builds only; omit for single-JSON
     [Parameter(Mandatory)][string]$Version,
     [Parameter(Mandatory)][string]$Entity,
     [Parameter(Mandatory)][string]$Combo,
@@ -42,7 +42,15 @@ $OUTPATH   = "$LOGDIR\$FILENAME"
 
 New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 
-$JSON_FILE = "${Provider}_${Variant}.json"
+# Resolve the JSON filename for the log header. Single-JSON (versioned) is the standard;
+# -Variant is only for legacy _BASE/_MC split builds.
+if ($Variant) {
+    $JSON_FILE = "${Provider}_${Variant}.json"
+} else {
+    . "$PSScriptRoot\_resolve_provider_json.ps1"
+    $resolved  = Get-ProviderRootJson -ProvDir $ProviderDir -Provider $Provider
+    $JSON_FILE = if ($resolved) { Split-Path $resolved -Leaf } else { "${Provider}.json" }
+}
 
 if ($Expected) {
     $EXPECTED_BODY = $Expected
@@ -57,8 +65,9 @@ if ($Expected) {
 '@
 }
 
+$VARLABEL = if ($Variant) { " $Variant" } else { "" }
 $CONTENT = @"
-$Provider $Variant v$Version -- Test Log
+$Provider$VARLABEL v$Version -- Test Log
 ============================================================
 Date       : $DATE
 JSON       : $JSON_FILE
