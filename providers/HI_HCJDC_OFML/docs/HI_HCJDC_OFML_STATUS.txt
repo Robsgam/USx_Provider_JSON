@@ -230,3 +230,7 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Vehicle    NEGATIVE:NEGATIVE    PASS     Vehicle negative -- empty form, no Send button, no request fired
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Vehicle    NEGATIVE:Regression: clear Vehicle Type fires nothing (QVP/QVV removed) PASS     v4.4/v4.5 regression: Plate + State entered, Vehicle Type CLEARED, no Plate Type/Year -> NO SEND POSSIBLE, no request fires. Confirms QVP/QVV removal: this path matched the stolen QVP in v4.3 (fired MessageKey=QV); now no combo matches (M55L needs VehicleType, RQ needs Plate Type/Year, RQV/M55S need VIN) so nothing fires.
