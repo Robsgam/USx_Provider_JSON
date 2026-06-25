@@ -27,42 +27,6 @@ set[] -- it is any[] only. State absent from wire when blank. CONFIRMED v4.0.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Person     Render:Render        PASS     T1 Person render: 3 cards (SEARCH OPTIONS/DRIVER LICENSE/DRIVER HISTORY) render; purposeCodeDH=C default; no Send at default/empty state (also satisfies T27 Person negative)
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Boat       Render:Render        PASS     T3 Boat render: 1 card (BOAT SEARCH); RegistrationNumber/Hull/State; relatedSearchHitIndicator=Y default; State no default
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Firearm    Render:Render        PASS     T4 Firearm render: 1 card (FIREARM); Serial req; Make/Caliber/Model; relatedSearchHitIndicator=Y default
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Article    Render:Render        PASS     T5 Article render: 1 card (ARTICLE); Serial req; ArticleType req no default; relatedSearchHitIndicator=Y default
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Person     DL:DQN               PASS     T6 DL OLN path: DriverLicenseQuery fires DQN with only OperatorLicenseNumber on wire; OLN>Name guardrail confirmed (no Name/Sex/DOB bleed); Attention/purposeCodeDH in form state did NOT serialize onto DL wire (correct)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Person     DL:DQ                PASS     T7 DL Name path: DriverLicenseQuery fires DQ; Name=DOE, JON (v4.0 LAST,FIRST comma-space confirmed); SexCode M reverse-lookup from Male; BirthDate MMddyyyy 01011985; no OLN; Attention/purposeCodeDH not serialized
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Person     DL:QW                PASS     T8 DL Name+DOB path: DriverLicenseQuery fires QW with Name=DOE, JON + BirthDate 01011985; no SexCode, no OLN; Attention/purposeCodeDH not serialized
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Person     DH:KQN               PASS     T9 DH OLN path: DriverHistoryQuery fires KQN; Attention auto-populated SGAMBELLONE R (officer RMS name, NOT literal X) - v4.1 CAD/Attention default confirmed; OperatorLicenseNumber DH6735383; PurposeCode C default; no DH Name/Sex/DOB (OLN>Name DH guardrail v3.8)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-24 Person     DH:KQ                PASS     T10 DH Name+Sex+DOB path: DriverHistoryQuery fires KQ; Name=DOE, JON; SexCode M; BirthDate 01011985; PurposeCode C; Attention auto SGAMBELLONE R; no OperatorLicenseNumber. Closes DriverHistoryQuery 2/2 + Person Phase 2
 
 LIVE TEST RESULTS (v3.4)
 ========================
@@ -84,31 +48,60 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Boat       Boat:BQ              PASS     T17 Boat Reg path: BoatQuery fires BQ; RegistrationNumber + RelatedSearchHitIndicator=Y default; no BoatHullIdNumber
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Boat       Boat:QB              PASS     T18 Boat Hull path + Hull>Reg guardrail (v3.9): BoatQuery fires QB with BoatHullIdNumber + RelatedSearchHitIndicator=Y; RegistrationNumber filled in form state but NOT serialized (BQ dropped via BoatHullIdNumber NOT_EXISTS) - guardrail confirmed live. Closes Boat 2/2
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Firearm    Gun:QG               PASS     T19 Firearm: GunQuery fires QG; GunSerialNumber + RelatedSearchHitIndicator=Y default
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Article    Article:QA           PASS     T20 Article: ArticleSingleQuery fires QA; ArticleSerialNumber + ArticleTypeCode=BBICYCL (NCIC_ARTICLE_TYPE/CA_CLETS dropdown resolved) + RelatedSearchHitIndicator=Y
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Firearm    Gun:QG               PASS     T24 Firearm any[]: GunQuery QG with all optional fields - GunMake=AAC, GunCaliber=11, GunModel=M16 (dropdowns resolved) + Serial + RelatedSearchHitIndicator=Y. any[] confirmed
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Person     DH:KQN               PASS     T26 one-directional deselect (v3.8): both DL+DH OLN filled; only ONE CommSys transaction = DriverHistoryQuery (DH OLN DL63563); NO DriverLicenseQuery transaction (DL deselected by DH). RMS dlNumber elastic is separate RMS layer, not CommSys co-fire. Deselect confirmed live
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-24 Boat       Boat:Negative        PASS     T28 Boat negative: empty form (no Reg#/Hull) = no Send button, no request fired despite relatedSearchHitIndicator=Y default. Closes matrix
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
 
 LIVE TEST RESULTS (v3.4)
 ========================
@@ -120,4 +113,8 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Article    Article:QA           PASS     ArticleSingleQuery fires QA; ArticleSerialNumber=TEST + ArticleTypeCode=BBICYCL + RelatedSearchHitIndicator=Y default (2nd fire omitted RSH from input, Y still serialized -- any[] default confirmed). v4.4 re-import smoke.
+  ---   2026-06-25 Article    Article:QA           PASS     ArticleSingleQuery fires QA; ArticleSerialNumber=TEST + ArticleTypeCode=BBICYCL + RelatedSearchHitIndicator=Y default (2nd fire omitted RSH from input, Y still serialized)
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Firearm    Gun:QG               PASS     GunQuery fires QG; GunSerialNumber=SER783 bare + escalating optionals GunMake=AAB / GunCaliber=11 / GunModel=REER all serialize (any[]); RelatedSearchHitIndicator=Y default holds even when omitted from input (4th fire). 5 fires all QG. v4.4 full re-test.
