@@ -37,11 +37,18 @@ All JSON versions produced for this provider.
 
 
 
+## v4.6 (2026-06-25)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS.json | v4.6 | Current | 61P/0F/0W/0LIM. Top-level version field removed (platform Integer validation). T1-T29 all PASS. |
+
 ## v4.5 (2026-06-24)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS.json | v4.5 | Current | 61P/0F/0W/0LIM. |
+| NJ_NJCJIS.json | v4.5 | Superseded | 61P/0F/0W/0LIM. Pipeline rebuild. |
+
 ## v4.4 (2026-06-23)
 
 | File | Version | Status | Notes |

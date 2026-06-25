@@ -41,7 +41,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.5"
+    [string]$Version = "4.6"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
