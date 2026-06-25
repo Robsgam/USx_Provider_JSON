@@ -264,14 +264,20 @@ $pass = 0; $fail = 0; $failures = @()
 [void]$sb.AppendLine("checked separately against the devdoc by audit_supported_queries.ps1.")
 [void]$sb.AppendLine("")
 
-$currentPhase = ""; $currentPhaseNum = 0
+# Section grouping works for BOTH the entity-grouped matrix ("ENTITY 1: VEHICLE ...")
+# and legacy phase-grouped matrices ("PHASE 2: VEHICLE COMBOS ..."). Each test is
+# classified by CONTENT (action/expected), not by a phase number, so the conductor
+# no longer depends on the matrix being phase-ordered.
+$currentSection = ""
 $tests = @()
 $i = 0
 while ($i -lt $matrixLines.Count) {
     $line = $matrixLines[$i]
-    if ($line -match '^PHASE\s+(\d+)') {
-        $currentPhaseNum = [int]$Matches[1]
-        $currentPhase = $line.Trim()
+    if ($line -match '^ENTITY\s+\d+:\s*(.+)$') {
+        $currentSection = "ENTITY: " + ($Matches[1].Trim())
+    }
+    elseif ($line -match '^PHASE\s+\d+:\s*(.+)$') {
+        $currentSection = $Matches[1].Trim()
     }
     elseif ($line -match '^\s*(\d+)\s+(\w+)\s+(.+)$') {
         $tNum = [int]$Matches[1]
@@ -284,26 +290,33 @@ while ($i -lt $matrixLines.Count) {
             if ($detail -match '^Expected:\s*(.+)') { $tExpected = $Matches[1] }
             $j++
         }
+        if     ($tAction -match '^Render form')              { $kind = 'render' }
+        elseif ($tAction -match '^Empty form')               { $kind = 'negative' }
+        elseif ($tAction -match '^Deselect')                 { $kind = 'deselect' }
+        elseif ($tAction -match '^Priority routing')         { $kind = 'routing' }
+        elseif ($tExpected -match 'any\[\] fields present')   { $kind = 'any' }
+        elseif ($tExpected -match '(\w+Query)\s+fires\s+\((\w+)\)') { $kind = 'combo' }
+        else { $kind = 'structural' }
         $tests += [PSCustomObject]@{
             num=$tNum; entity=$tEntity; action=$tAction; expected=$tExpected
-            phase=$currentPhaseNum; phaseLabel=$currentPhase
+            kind=$kind; section=$currentSection
         }
     }
     $i++
 }
 
-$lastPhase = 0
+$lastSection = $null
 foreach ($t in $tests) {
-    if ($t.phase -ne $lastPhase) {
-        [void]$sb.AppendLine("PHASE $($t.phase): $($t.phaseLabel -replace '^PHASE\s+\d+:\s*','')")
-        $lastPhase = $t.phase
+    if ($t.section -ne $lastSection) {
+        if ($t.section) { [void]$sb.AppendLine($t.section) }
+        $lastSection = $t.section
     }
 
     $entity = $t.entity
     $formData = $testData[$entity]
     if (-not $formData) { $formData = @{} }
 
-    if ($t.phase -eq 1) {
+    if ($t.kind -eq 'render') {
         $qif = $qifs | Where-Object { $_.targetEntity -eq $entity } | Select-Object -First 1
         if (-not $qif) {
             $fail++; $failures += "T$($t.num) [$entity] No QIF found"
@@ -327,7 +340,7 @@ foreach ($t in $tests) {
         $pass++
         [void]$sb.AppendLine("  T$($t.num)  $($entity.PadRight(10)) [PASS] $cardCount cards, $visFieldCount fields, defaults verified")
     }
-    elseif ($t.phase -ge 2 -and $t.phase -le 6 -and $t.expected -match '(\w+Query)\s+fires\s+\((\w+)\)') {
+    elseif ($t.kind -eq 'combo' -and $t.expected -match '(\w+Query)\s+fires\s+\((\w+)\)') {
         $expectedQuery = $Matches[1]
         $expectedPrefix = $Matches[2]
         $targetQidm = $qidms | Where-Object { $entityMap[$_.name] -eq $entity -and $_.query -eq $expectedQuery } | Select-Object -First 1
@@ -390,7 +403,7 @@ foreach ($t in $tests) {
             }
         }
     }
-    elseif ($t.phase -eq 7) {
+    elseif ($t.kind -eq 'any') {
         $anyOk = $true; $missingAny = @()
         $anyFields = @()
         if ($t.action -match '\+\s+(\S.+?)(?:\s*\[|\s{2,})') {
@@ -430,7 +443,7 @@ foreach ($t in $tests) {
             [void]$sb.AppendLine("  T$($t.num)  $($entity.PadRight(10)) [FAIL] any[] not in requirements: $($missingAny -join ', ')")
         }
     }
-    elseif ($t.phase -eq 8) {
+    elseif ($t.kind -eq 'deselect' -or $t.kind -eq 'routing') {
         if ($t.action -match 'Deselect') {
             $deselectOk = $true; $deselectDetail = ""
             $entQidms = @($qidms | Where-Object { $entityMap[$_.name] -eq $entity })
@@ -485,7 +498,7 @@ foreach ($t in $tests) {
             $pass++; [void]$sb.AppendLine("  T$($t.num)  $($entity.PadRight(10)) [PASS] co-fire/deselect verified (structural)")
         }
     }
-    elseif ($t.phase -eq 9) {
+    elseif ($t.kind -eq 'negative') {
         $emptyData = @{}
         $entQidms = @($qidms | Where-Object { $entityMap[$_.name] -eq $entity })
         $anyFired = $false

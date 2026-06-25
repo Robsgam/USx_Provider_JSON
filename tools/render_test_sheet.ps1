@@ -236,22 +236,24 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.Append("<table><colgroup><col><col><col><col><col></colgroup>")
 [void]$sb.Append("<thead><tr><th>T#</th><th>Entity</th><th>Combo / Action</th><th>Fill / Verify</th><th>&#10003;</th></tr></thead><tbody>")
 
-$lastPhaseKey = ''
-$phaseLabels  = @{
-    'RENDER'   = 'PHASE 1 &mdash; RENDER (verify card structure, fields, defaults)'
-    'COMBO'    = 'PHASE 2+ &mdash; COMBO TESTS (enter set[] fields, submit, verify XML keyRef)'
-    'ANY'      = 'PHASE 7 &mdash; ANY[] FIELD TESTS (fire combo + add any[] field, verify in XML)'
-    'DESELECT' = 'PHASE 8 &mdash; DESELECT VERIFICATION'
-    'NEGATIVE' = 'PHASE 9 &mdash; NEGATIVES (empty form = no send button)'
+# Group rows by ENTITY. The matrix is already entity-grouped (render -> combos ->
+# any[] -> deselect/routing -> negative per entity), and $tests preserves that order,
+# so the printed sheet matches the written test process exactly: one entity at a time.
+$entityTestCounts = @{}
+foreach ($et in $tests) {
+    if (-not $entityTestCounts.ContainsKey($et.entity)) { $entityTestCounts[$et.entity] = 0 }
+    $entityTestCounts[$et.entity]++
 }
+$lastEntity = ''
+$entSecNum  = 0
 
 foreach ($t in $tests) {
-    $phaseKey = if ($t.type -eq 'COMBO') { 'COMBO' } else { $t.type }
-
-    if ($phaseKey -ne $lastPhaseKey) {
-        $pl = if ($phaseLabels.ContainsKey($phaseKey)) { $phaseLabels[$phaseKey] } else { Esc $phaseKey }
-        [void]$sb.Append("<tr class='phase'><td colspan='5'>$pl</td></tr>")
-        $lastPhaseKey = $phaseKey
+    if ($t.entity -ne $lastEntity) {
+        $entSecNum++
+        $cnt = $entityTestCounts[$t.entity]
+        $entName = Esc ($t.entity.ToUpper())
+        [void]$sb.Append("<tr class='phase'><td colspan='5'>ENTITY $entSecNum &mdash; $entName ($cnt tests: render &rarr; combos &rarr; any[] &rarr; negative)</td></tr>")
+        $lastEntity = $t.entity
     }
 
     $rowClass = switch ($t.type) {

@@ -532,28 +532,88 @@ foreach ($q in $qidms) {
 [void]$sb.AppendLine("")
 
 # ════════════════════════════════════════════════════════════════════════
-#  PHASES
+#  TEST MATRIX -- ENTITY-GROUPED
+#  Each entity is tested start-to-finish (render -> combos -> any[] ->
+#  deselect/routing -> negative), then blocked out. The test conductor and the
+#  printable test sheet group by this SAME entity order, so the PDF and the
+#  written test process are identical.
 # ════════════════════════════════════════════════════════════════════════
 
-$testNum = 0
+# ── Precompute the best auxiliary any[] candidate per entity ──
+# An entity gets one any[] serialization test when a combo exposes a truly
+# auxiliary any[] field (not ImageIndicator, and not a field that is set[] in
+# another combo of the same entity).
+$anyByEntity = @{}
+foreach ($ent in $entityOrder) {
+    $ed = $entityData[$ent]
+    $bestCandidate = $null; $bestScore = -1
+    foreach ($q in $ed.qidms) {
+        foreach ($c in $q.combinations) {
+            $anyFields = @()
+            if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
+            $setFields = @()
+            if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
+            $auxiliary = @()
+            foreach ($af in $anyFields) {
+                if ($af -in $setFields) { continue }
+                $formFid = $null
+                foreach ($attr in $q.attributes) {
+                    if ($attr.name -eq $af) {
+                        $sfs = @()
+                        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
+                        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
+                        if ($sfs.Count -gt 0) { $formFid = $sfs[0] }
+                        break
+                    }
+                }
+                if (-not $formFid) { $formFid = $af }
+                if ($formFid -match '(?i)^imageIndicator$') { continue }
+                if ($ed.allSetAttrNames.ContainsKey($af)) { continue }
+                $auxiliary += $formFid
+            }
+            if ($auxiliary.Count -gt 0) {
+                $score = $auxiliary.Count * 100 - $setFields.Count
+                if ($score -gt $bestScore) {
+                    $bestScore = $score
+                    $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
+                    $bestCandidate = [PSCustomObject]@{ qidm = $q; combo = $c; kr = $kr; anyFields = $auxiliary }
+                }
+            }
+        }
+    }
+    if ($bestCandidate) { $anyByEntity[$ent] = $bestCandidate }
+}
 
-# ── PHASE 1: RENDER ──
 [void]$sb.AppendLine("=" * 80)
 [void]$sb.AppendLine("TEST MATRIX")
 [void]$sb.AppendLine("=" * 80)
 [void]$sb.AppendLine("")
-[void]$sb.AppendLine("PHASE 1: RENDER (verify card structure, fields, picklists, defaults)")
-[void]$sb.AppendLine("-" * 72)
-[void]$sb.AppendLine("#   Entity      Action                                              Result")
-[void]$sb.AppendLine("--  ----------  --------------------------------------------------  ------")
+[void]$sb.AppendLine("Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish")
+[void]$sb.AppendLine("(render -> combos -> any[] -> deselect/routing -> negative), then blocked out.")
+[void]$sb.AppendLine("")
+
+$testNum = 0
+$entSecNum = 0
 
 foreach ($ent in $entityOrder) {
     $ed = $entityData[$ent]
-    $testNum++
-    [void]$sb.Append(("{0,2}  {1,-10}  Render form. Verify {2} card{3}:" -f $testNum, $ent, $ed.cardCount, $(if ($ed.cardCount -ne 1){'s'} else {''})))
-    [void]$sb.AppendLine("                        [    ]")
+    $entSecNum++
+
+    # Classify this entity's QIDMs
+    $primaryQidms  = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'PRIMARY' })
+    $deselectQidms = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'DESELECT' })
+    $cofireQidms   = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'COFIRE' })
+
+    # All of this entity's test rows go into one buffer (need the count for the header)
+    $phaseSb = [System.Text.StringBuilder]::new()
+    $phaseTestCount = 0
+
+    # ── 1. RENDER ──
+    $testNum++; $phaseTestCount++
+    [void]$phaseSb.Append(("{0,2}  {1,-10}  Render form. Verify {2} card{3}:" -f $testNum, $ent, $ed.cardCount, $(if ($ed.cardCount -ne 1){'s'} else {''})))
+    [void]$phaseSb.AppendLine("                        [    ]")
     foreach ($card in $ed.cards.Values) {
-        [void]$sb.AppendLine("              $($card.id): titled `"$($card.title)`".")
+        [void]$phaseSb.AppendLine("              $($card.id): titled `"$($card.title)`".")
         foreach ($row in $card.rows) {
             $fds = @()
             foreach ($f in $row.fields) {
@@ -564,27 +624,11 @@ foreach ($ent in $entityOrder) {
                 elseif ($f.type -eq 'Sel' -and -not $f.default_) { $d += " (no default)" }
                 $fds += $d
             }
-            if ($fds.Count -gt 0) { [void]$sb.AppendLine("              $($fds -join ', ').") }
+            if ($fds.Count -gt 0) { [void]$phaseSb.AppendLine("              $($fds -join ', ').") }
         }
     }
-}
 
-# ── COMBO PHASES (one per entity, co-fire folded as annotations) ──
-$phaseNum = 1
-foreach ($ent in $entityOrder) {
-    $ed = $entityData[$ent]
-    if ($ed.combos -eq 0) { continue }
-    $phaseNum++
-
-    # Classify this entity's QIDMs
-    $primaryQidms  = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'PRIMARY' })
-    $deselectQidms = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'DESELECT' })
-    $cofireQidms   = @($ed.qidms | Where-Object { $qidmRoles[$_.name] -eq 'COFIRE' })
-
-    # Generate combo tests into buffer (need count for header)
-    $phaseSb = [System.Text.StringBuilder]::new()
-    $phaseTestCount = 0
-
+    # ── 2. COMBOS ──
     # Process PRIMARY QIDMs → one test per combo, with co-fire annotations
     # Options-card entities sort by prefix (FRQ→RQ), others sort by field (OLN→Name)
     $fieldFirst = -not $ed.hasOptionsCard
@@ -831,167 +875,65 @@ foreach ($ent in $entityOrder) {
         }
     }
 
-    # Write phase header + body
-    $cofireNote = ''
-    if ($cofireQidms.Count -gt 0) {
-        $cfLabels = ($cofireQidms | ForEach-Object { Get-QueryAbbrev $_.query }) -join '/'
-        $pLabels  = ($primaryQidms | ForEach-Object { Get-QueryAbbrev $_.query }) -join '/'
-        $cofireNote = " -- $cfLabels co-fires with $pLabels"
-    }
-
-    [void]$sb.AppendLine("")
-    [void]$sb.AppendLine("PHASE $phaseNum`: $($ent.ToUpper()) COMBOS ($phaseTestCount tests, $($ed.combos) combos$cofireNote)")
-    [void]$sb.AppendLine("-" * 72)
-    [void]$sb.AppendLine("#   Entity      Combo              Fields to fill                   Result")
-    [void]$sb.AppendLine("--  ----------  -----------------  -------------------------------- ------")
-    [void]$sb.Append($phaseSb.ToString())
-}
-
-# ── ANY[] PHASE ──
-# Only entities with truly auxiliary any[] fields (not ImageIndicator, not set[] in other combos)
-$phaseNum++
-$anyByEntity = @{}
-foreach ($ent in $entityOrder) {
-    $ed = $entityData[$ent]
-    $bestCandidate = $null; $bestScore = -1
-
-    foreach ($q in $ed.qidms) {
-        foreach ($c in $q.combinations) {
-            $anyFields = @()
-            if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
-            $setFields = @()
-            if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
-
-            $auxiliary = @()
-            foreach ($af in $anyFields) {
-                if ($af -in $setFields) { continue }
-                # Resolve to form fieldId
-                $formFid = $null
-                foreach ($attr in $q.attributes) {
-                    if ($attr.name -eq $af) {
-                        $sfs = @()
-                        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
-                        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
-                        if ($sfs.Count -gt 0) { $formFid = $sfs[0] }
-                        break
-                    }
-                }
-                if (-not $formFid) { $formFid = $af }
-                # Skip ImageIndicator
-                if ($formFid -match '(?i)^imageIndicator$') { continue }
-                # Skip fields that are set[] in other combos (not truly auxiliary)
-                if ($ed.allSetAttrNames.ContainsKey($af)) { continue }
-                $auxiliary += $formFid
-            }
-
-            if ($auxiliary.Count -gt 0) {
-                $score = $auxiliary.Count * 100 - $setFields.Count
-                if ($score -gt $bestScore) {
-                    $bestScore = $score
-                    $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
-                    $bestCandidate = [PSCustomObject]@{ qidm = $q; combo = $c; kr = $kr; anyFields = $auxiliary }
-                }
-            }
-        }
-    }
-    if ($bestCandidate) { $anyByEntity[$ent] = $bestCandidate }
-}
-
-if ($anyByEntity.Count -gt 0) {
-    [void]$sb.AppendLine("")
-    [void]$sb.AppendLine("PHASE $phaseNum`: ANY[] FIELD TESTS ($($anyByEntity.Count) tests)")
-    [void]$sb.AppendLine("-" * 72)
-    [void]$sb.AppendLine("#   Entity      Combo              any[] field tested               Result")
-    [void]$sb.AppendLine("--  ----------  -----------------  -------------------------------- ------")
-
-    $anyEntityOrder = @($anyByEntity.Keys | Sort-Object { -$anyByEntity[$_].qidm.combinations.Count })
-    foreach ($ent in $anyEntityOrder) {
+    # ── 3. ANY[] (auxiliary serialization test) ──
+    if ($anyByEntity.ContainsKey($ent)) {
         $at = $anyByEntity[$ent]
-        $testNum++
+        $testNum++; $phaseTestCount++
         $shortName = Get-ComboShortName $at.kr
         $setNames = @()
         if ($at.combo.requirements -and $at.combo.requirements.set) { $setNames = @($at.combo.requirements.set) }
         $primaryField = Get-PrimaryField $at.kr $setNames
         $comboLabel = "$shortName+$(Get-ShortFieldLabel $primaryField)"
         $anyStr = ($at.anyFields | Select-Object -First 3) -join ', '
-        [void]$sb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
-        [void]$sb.AppendLine("[    ]")
-        [void]$sb.AppendLine("              Expected: any[] fields present in XML output.")
+        [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
+        [void]$phaseSb.AppendLine("[    ]")
+        [void]$phaseSb.AppendLine("              Expected: any[] fields present in XML output.")
     }
-}
 
-# ── CO-FIRE / DESELECT PHASE ──
-$anyCofire = $false; $anyDeselect = $false
-foreach ($ent in $entityOrder) {
-    foreach ($q in $entityData[$ent].qidms) {
-        if ($qidmRoles[$q.name] -eq 'COFIRE')  { $anyCofire = $true }
-        if ($qidmRoles[$q.name] -eq 'DESELECT') { $anyDeselect = $true }
+    # ── 4. DESELECT / PRIORITY-ROUTING verification (this entity only) ──
+    if ($deselectQidms.Count -gt 0) {
+        $dq = $deselectQidms[0]
+        $fromShort = Get-QueryAbbrev $dq.query
+        $toShort = ''
+        if ($deselectMap.ContainsKey($dq.name)) {
+            $toShort = ($deselectMap[$dq.name] | ForEach-Object { Get-QueryAbbrev $_ }) -join ', '
+        }
+        $testNum++; $phaseTestCount++
+        [void]$phaseSb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
+        [void]$phaseSb.AppendLine("Deselect: $fromShort deselects $toShort.            [    ]")
+        [void]$phaseSb.AppendLine("              Fill both query fields. Check deselect behavior.")
     }
-}
+    if ($cofireQidms.Count -gt 0) {
+        $testNum++; $phaseTestCount++
+        [void]$phaseSb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
+        [void]$phaseSb.AppendLine("Priority routing: verify more-specific combo wins.  [    ]")
+        [void]$phaseSb.AppendLine("              Fill fields that match multiple combos, verify correct one fires.")
+    }
 
-if ($anyCofire -or $anyDeselect) {
-    $phaseNum++
-    $cfTests = 0
-    if ($anyDeselect) { $cfTests++ }
-    if ($anyCofire) { $cfTests++ }
+    # ── 5. NEGATIVE (empty form = no send) ──
+    $testNum++; $phaseTestCount++
+    [void]$phaseSb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
+    [void]$phaseSb.AppendLine("Empty form, verify no Send button / no request.    [    ]")
+
+    # ── Write the entity section header + all of its rows ──
+    $cardWord  = if ($ed.cardCount -ne 1) { 'cards' } else { 'card' }
+    $comboWord = if ($ed.combos -ne 1) { 'combos' } else { 'combo' }
+    $cofireNote = ''
+    if ($cofireQidms.Count -gt 0) {
+        $cfLabels = ($cofireQidms | ForEach-Object { Get-QueryAbbrev $_.query }) -join '/'
+        $pLabels  = ($primaryQidms | ForEach-Object { Get-QueryAbbrev $_.query }) -join '/'
+        $cofireNote = " -- $cfLabels co-fires with $pLabels"
+    }
     [void]$sb.AppendLine("")
-    [void]$sb.AppendLine("PHASE $phaseNum`: CO-FIRE / DESELECT VERIFICATION ($cfTests tests)")
+    [void]$sb.AppendLine("ENTITY ${entSecNum}: $($ent.ToUpper()) ($phaseTestCount tests -- $($ed.cardCount) $cardWord, $($ed.combos) $comboWord$cofireNote)")
     [void]$sb.AppendLine("-" * 72)
-    [void]$sb.AppendLine("#   Entity      Action                                              Result")
+    [void]$sb.AppendLine("#   Entity      Action / Combo                                      Result")
     [void]$sb.AppendLine("--  ----------  --------------------------------------------------  ------")
-
-    if ($anyDeselect) {
-        $testNum++
-        foreach ($qn in $deselectMap.Keys) {
-            $q = $qidms | Where-Object { $_.name -eq $qn } | Select-Object -First 1
-            if ($q) {
-                $ent = $entityMap[$qn]
-                $fromShort = Get-QueryAbbrev $q.query
-                $toShort = ($deselectMap[$qn] | ForEach-Object { Get-QueryAbbrev $_ }) -join ', '
-                [void]$sb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
-                [void]$sb.AppendLine("Deselect: $fromShort deselects $toShort.     [    ]")
-                [void]$sb.AppendLine("              Fill both query fields. Check deselect behavior.")
-                break
-            }
-        }
-    }
-
-    if ($anyCofire) {
-        $testNum++
-        # Pick entity with Options card + multiple QIDMs for routing test
-        $routingEnt = $null
-        foreach ($e in $entityOrder) {
-            if ($entityData[$e].hasOptionsCard -and $entityData[$e].qidms.Count -gt 1) { $routingEnt = $e; break }
-        }
-        if (-not $routingEnt) {
-            foreach ($e in $entityOrder) {
-                if ($entityData[$e].qidms.Count -gt 1) { $routingEnt = $e; break }
-            }
-        }
-        if ($routingEnt) {
-            [void]$sb.Append(("{0,2}  {1,-10}  " -f $testNum, $routingEnt))
-            [void]$sb.AppendLine("Priority routing: verify more-specific combo wins.  [    ]")
-            [void]$sb.AppendLine("              Fill fields that match multiple combos, verify correct one fires.")
-        }
-    }
+    [void]$sb.Append($phaseSb.ToString())
 }
 
-# ── NEGATIVES ──
-$phaseNum++
-[void]$sb.AppendLine("")
-[void]$sb.AppendLine("PHASE $phaseNum`: NEGATIVES (empty forms = no send)")
-[void]$sb.AppendLine("-" * 72)
-[void]$sb.AppendLine("#   Entity      Action                                              Result")
-[void]$sb.AppendLine("--  ----------  --------------------------------------------------  ------")
-# Pick 1st and 3rd entities for variety (e.g., Vehicle + Person, not Vehicle + Boat)
-$negEntities = @($entityOrder[0])
-if ($entityOrder.Count -ge 3) { $negEntities += $entityOrder[2] }
-elseif ($entityOrder.Count -ge 2) { $negEntities += $entityOrder[1] }
-foreach ($ent in $negEntities) {
-    $testNum++
-    [void]$sb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
-    [void]$sb.AppendLine("Empty form, verify no Send button / no request.    [    ]")
-}
+# (any[], deselect/routing, and negative tests are now emitted per entity above,
+#  inside the entity-grouped loop -- no separate phase sections.)
 
 # ── FOOTER ──
 [void]$sb.AppendLine("")
@@ -1036,8 +978,11 @@ $result = $sb.ToString()
 
 if ($OutFile -and (Test-Path $OutFile)) {
     $existingContent = [System.IO.File]::ReadAllText($OutFile)
-    # Collect all result field values in order: [PASS], [FAIL], [SKIP], [    ], etc.
-    $existingResults = [regex]::Matches($existingContent, '\[([^\]]{0,8})\]') |
+    # Collect ONLY result-column values in order: [PASS], [FAIL], [SKIP], [BLOCK],
+    # [N/A], or a blank [    ]. Restricting to these tokens is critical: a loose
+    # `[^\]]` pattern also matches FORM FIELDS brackets like [Inp 10], [Sel STATE, NJ],
+    # [FormDate] and bleeds them into the result column on regeneration.
+    $existingResults = [regex]::Matches($existingContent, '\[(PASS|FAIL|SKIP|BLOCK|N/A|[ ]{1,6})\]') |
         ForEach-Object { $_.Groups[1].Value }
     if ($existingResults.Count -gt 0) {
         $idx = 0
