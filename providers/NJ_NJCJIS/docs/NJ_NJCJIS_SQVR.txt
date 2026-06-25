@@ -102,14 +102,14 @@ USER-APPROVED SKIPS:
   Note: No State field on Boat entity
   guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QBN -- Hull ID search [PENDING]
+  QBN -- Hull ID search [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
     B2: HullID=FL1234AB56H7 -- QBN fires.
     B3 (guardrail): Reg + Hull filled -- QBN fires, Reg absent (hull wins).
 
-  QB -- Registration Number search [PENDING]
+  QB -- Registration Number search [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
