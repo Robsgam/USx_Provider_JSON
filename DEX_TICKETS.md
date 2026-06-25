@@ -16,7 +16,7 @@ after live testing passes). See `providers/<PROVIDER>/docs/DEX_TICKET.md` once l
 | NY_NYSPIN_EJUSTICE | [DEX-969](https://mark43.atlassian.net/browse/DEX-969) | In Progress | (link on rebuild) |
 | AZ_AZDPS | [DEX-974](https://mark43.atlassian.net/browse/DEX-974) | In Progress | (link on rebuild) |
 | CA_CLETS | [DEX-976](https://mark43.atlassian.net/browse/DEX-976) | In Progress | (link on rebuild) |
-| FL_FCIC | [DEX-971](https://mark43.atlassian.net/browse/DEX-971) | In Progress (reopened 2026-06-25) | (link on rebuild) |
+| FL_FCIC | [DEX-971](https://mark43.atlassian.net/browse/DEX-971) | In Progress (reopened 2026-06-25) | ✅ docs/DEX_TICKET.md |
 | CA_eSUN | [DEX-978](https://mark43.atlassian.net/browse/DEX-978) | Done | (link on rebuild) |
 | LA_LEMS | [DEX-985](https://mark43.atlassian.net/browse/DEX-985) | Done | (link on rebuild) |
 | CA_CONTRA_COSTA | [DEX-977](https://mark43.atlassian.net/browse/DEX-977) | Backlog | (link on rebuild) |

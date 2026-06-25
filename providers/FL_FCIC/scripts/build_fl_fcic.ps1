@@ -94,12 +94,12 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.6"
+    [string]$Version = "6.7"
 )
 
 $ErrorActionPreference = 'Stop'
 $provider = 'FL_FCIC'
-$outPath  = "$PSScriptRoot\..\FL_FCIC.json"
+$outPath  = "$PSScriptRoot\..\FL_FCIC_v${Version}.json"   # versioned root (NJ/HI parity); Write-ProviderJson removes stale siblings
 
 $currentYear = [string](Get-Date).Year
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
@@ -924,12 +924,14 @@ $boatForm = [PSCustomObject]@{
 }
 
 $entitiesBundle = Build-EntitiesBundle -Configurations @($personForm, $vehicleForm, $firearmsForm, $articleForm, $boatForm) `
-    -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat')
+    -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat') `
+    -Description "Provider configuration for FL_FCIC v${Version} -- entity forms"
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields `
+    -Description "Provider configuration for FL_FCIC v${Version} -- RMS bundle"
 
 # =====================================================================
 # FINAL ASSEMBLY + WRITE

@@ -3,6 +3,25 @@ FL_FCIC -- Build Notes
 Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
+v6.7  2026-06-25  NJ/HI-parity galvanization (drop import-breaking version field; versioned filename)
+  CHANGED: Structural/cosmetic galvanization to match the NJ v4.6 / HI v4.3 standard. (1) Removed
+    the top-level "version" field (v6.6 had adopted it) -- the platform deserializes it as
+    java.lang.Integer and rejects the dotted string, so v6.6 was unimportable. Now omitted by the
+    patched Write-ProviderJson. (2) Root JSON now versioned: FL_FCIC_v6.7.json (was bare
+    FL_FCIC.json); stale sibling removed by Write-ProviderJson. (3) Version stamped into all 3
+    bundle descriptions (ENTITIES/PROVIDER/RMS) via -Description on Build-EntitiesBundle and
+    Build-RmsBundle (PROVIDER bundle was already versioned). (4) Per-provider CHANGELOG_FL_FCIC.md
+    generated. No QIF/QIDM/combo/conditions change -- query behavior and entity fingerprints are
+    identical to v6.6.
+  REASON: FL reopened (DEX-971) for re-import; v6.6 carried the import-breaking top-level version
+    field. Bring FL to NJ/HI parity (versioned filename, version-in-all-bundles, auto changelog)
+    and make it importable again. FL already had the rest of the NJ/HI suite (identifier-priority
+    guardrails v6.0, native PascalCase v5.2, VehicleMakeName QRDM VehicleType/VEHICLE v6.6,
+    Last-first comma-space Name v6.1) -- no behavior changes needed.
+  RESULT: Importable v6.7; structural only. Per the full-retest mandate, all 5 entities re-opened
+    for a full live re-test from Test 1 (re-import + re-validate). HI-specific fixes NOT applied
+    (QVP/QVV removal, Make-field removal, First->Last name order -- all N/A to FL).
+
 v6.6  2026-06-24  Adopt version field + VehicleMakeName QRDM fix (shared-module currency)
   CHANGED: Native rebuild on current shared modules. (1) Top-level "version":"6.6" now
     emitted by Write-ProviderJson. (2) VehicleMakeName QRDM attribute codeType corrected

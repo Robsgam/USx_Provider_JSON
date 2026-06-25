@@ -1,74 +1,116 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC.json
-  Generated: 2026-06-24 16:31
+  Source: FL_FCIC_v6.7.json
+  Generated: 2026-06-25 17:14
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC
+TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v6.7
 ============================================================
-Source: FL_FCIC.json
+Source: FL_FCIC_v6.7.json
 Matrix: FL_FCIC_TEST_MATRIX.txt
-Generated: 2026-06-24
+Generated: 2026-06-25
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+ENTITY: VEHICLE (20 tests -- 2 cards, 6 combos)
   T1  Vehicle    [PASS] 2 cards, 10 fields, defaults verified
-  T2  Boat       [PASS] 2 cards, 13 fields, defaults verified
-  T3  Person     [PASS] 2 cards, 17 fields, defaults verified
-  T4  Firearm    [PASS] 1 cards, 5 fields, defaults verified
-  T5  Article    [PASS] 1 cards, 6 fields, defaults verified
-PHASE 2: VEHICLE COMBOS (6 tests, 6 combos)
-  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
-  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
-  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
-  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQTitleLienInformation)
+  T2  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+  T3  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
+  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
+  T5  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T7  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQTitleLienInformation)
+  T9  Vehicle    [PASS] any[] fields verified: ImageIndicator
   T10  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T11  Vehicle    [PASS] VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
-PHASE 3: BOAT COMBOS (12 tests, 12 combos)
-  T12  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
-  T13  Boat       [PASS] BoatQuery fires (FBQRegistrationNumber)
-  T14  Boat       [PASS] BoatQuery fires (FBQDecalNumber)
-  T15  Boat       [PASS] BoatQuery fires (FBQTitleLienInformation)
-  T16  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
-  T17  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T18  Boat       [PASS] BoatQuery fires (BQName)
-  T19  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T20  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T21  Boat       [PASS] BoatQuery fires (QBCoastGuardDocumentNumber)
-  T22  Boat       [PASS] BoatQuery fires (QBNCICNumber)
-  T23  Boat       [PASS] BoatQuery fires (QBProcessControlNumber)
-PHASE 4: PERSON COMBOS (6 tests, 6 combos)
-  T24  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T25  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
-  T26  Person     [PASS] DriverLicenseQuery fires (FDQName)
-  T27  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T28  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
-  T29  Person     [PASS] DriverHistoryQuery fires (KQName)
-PHASE 5: FIREARM COMBOS (3 tests, 3 combos)
-  T30  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T31  Firearm    [PASS] GunQuery fires (QGNCICNumber)
-  T32  Firearm    [PASS] GunQuery fires (QGProcessControlNumber)
-PHASE 6: ARTICLE COMBOS (4 tests, 4 combos)
-  T33  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T34  Article    [PASS] ArticleSingleQuery fires (QAOwnerAppliedNumber)
-  T35  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
-  T36  Article    [PASS] ArticleSingleQuery fires (QAProcessControlNumber)
-PHASE 7: ANY[] FIELD TESTS (3 tests)
-  T37  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
-  T38  Firearm    [PASS] any[] fields verified: GunMake
-  T39  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
-PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T40  Person     [PASS] queriesToDeselect verified
-PHASE 9: NEGATIVES (empty forms = no send)
-  T41  Vehicle    [PASS] empty form: no combos fire
-  T42  Person     [PASS] empty form: no combos fire
+  T11  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T12  Vehicle    [PASS] VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
+  T13  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
+  T14  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T16  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T17  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+  T20  Vehicle    [PASS] empty form: no combos fire
+ENTITY: BOAT (30 tests -- 2 cards, 12 combos)
+  T21  Boat       [PASS] 2 cards, 13 fields, defaults verified
+  T22  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T23  Boat       [PASS] any[] fields verified: ImageIndicator
+  T24  Boat       [PASS] BoatQuery fires (FBQRegistrationNumber)
+  T25  Boat       [PASS] any[] fields verified: ImageIndicator
+  T26  Boat       [PASS] BoatQuery fires (FBQDecalNumber)
+  T27  Boat       [PASS] any[] fields verified: ImageIndicator
+  T28  Boat       [PASS] BoatQuery fires (FBQTitleLienInformation)
+  T29  Boat       [PASS] any[] fields verified: ImageIndicator
+  T30  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T31  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T32  Boat       [PASS] BoatQuery fires (BQName)
+  T33  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T34  Boat       [PASS] any[] fields verified: ImageIndicator
+  T35  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T36  Boat       [PASS] any[] fields verified: ImageIndicator
+  T37  Boat       [PASS] BoatQuery fires (QBCoastGuardDocumentNumber)
+  T38  Boat       [PASS] any[] fields verified: ImageIndicator
+  T39  Boat       [PASS] BoatQuery fires (QBNCICNumber)
+  T40  Boat       [PASS] any[] fields verified: ImageIndicator
+  T41  Boat       [PASS] BoatQuery fires (QBProcessControlNumber)
+  T42  Boat       [PASS] any[] fields verified: ImageIndicator
+  T43  Boat       [PASS] BoatQuery fires (BQName)
+  T44  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T45  Boat       [PASS] BoatQuery fires (BQName)
+  T46  Boat       [PASS] BoatQuery fires (BQName)
+  T47  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T48  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T49  Boat       [PASS] BoatQuery fires (BQName)
+  T50  Boat       [PASS] empty form: no combos fire
+ENTITY: PERSON (20 tests -- 2 cards, 6 combos)
+  T51  Person     [PASS] 2 cards, 17 fields, defaults verified
+  T52  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T53  Person     [PASS] any[] fields verified: ImageIndicator
+  T54  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
+  T55  Person     [PASS] any[] fields verified: ImageIndicator
+  T56  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T57  Person     [PASS] any[] fields verified: ImageIndicator
+  T58  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T59  Person     [PASS] any[] fields verified: ImageIndicator
+  T60  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T61  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
+  T62  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T63  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
+  T64  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T65  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T66  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T67  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T68  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T69  Person     [PASS] queriesToDeselect verified
+  T70  Person     [PASS] empty form: no combos fire
+ENTITY: FIREARM (8 tests -- 1 card, 3 combos)
+  T71  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T72  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T73  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T74  Firearm    [PASS] GunQuery fires (QGNCICNumber)
+  T75  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T76  Firearm    [PASS] GunQuery fires (QGProcessControlNumber)
+  T77  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T78  Firearm    [PASS] empty form: no combos fire
+ENTITY: ARTICLE (10 tests -- 1 card, 4 combos)
+  T79  Article    [PASS] 1 cards, 6 fields, defaults verified
+  T80  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T81  Article    [PASS] any[] fields verified: ImageIndicator
+  T82  Article    [PASS] ArticleSingleQuery fires (QAOwnerAppliedNumber)
+  T83  Article    [PASS] any[] fields verified: ImageIndicator
+  T84  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
+  T85  Article    [PASS] any[] fields verified: ImageIndicator
+  T86  Article    [PASS] ArticleSingleQuery fires (QAProcessControlNumber)
+  T87  Article    [PASS] any[] fields verified: ImageIndicator
+  T88  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 42/42 PASS, 0 FAIL
+SUMMARY: 88/88 PASS, 0 FAIL
 
 
