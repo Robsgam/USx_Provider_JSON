@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQN (DL OLN path: DriverLicenseQuery fires DQN with OperatorLicenseNumber only; State=AR rides along (any[], reverse-lookup Arkansas). purposeCodeDH/Attention (DH fields) correctly absent from DL wire.)
+Date: 2026-06-25 15:25:14
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OperatorLicenseNumber=342342, RegistrationState=Arkansas
+
+XML REQUEST
+-----------
+<Request><MessageType>DriverLicenseQuery</MessageType><State>AR</State><OperatorLicenseNumber>342342</OperatorLicenseNumber></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  State                          AR
+  OperatorLicenseNumber          342342
+
+NOTES
+-----
+
+
+RESULT: PASS

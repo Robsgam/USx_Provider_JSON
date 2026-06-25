@@ -162,3 +162,19 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Firearm    Gun:QG + all optionals PASS     GunQuery QG with all optional fields -- GunSerialNumber=SER783 + GunMake=AAB + GunCaliber=11 + GunModel=REER (dropdowns resolved) + RSH=Y, all serialize via any[].
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DL:DQN               PASS     DL OLN path: DriverLicenseQuery fires DQN with OperatorLicenseNumber only; State=AR rides along (any[], reverse-lookup Arkansas). purposeCodeDH/Attention (DH fields) correctly absent from DL wire.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DL:DQ                PASS     DL Name+Sex+DOB: DriverLicenseQuery fires DQ; Name='LAST, FIRSDT M SUF' (comma-space Last-first, 4-part), SexCode=F (Female reverse-lookup), BirthDate 01011985 (yyyy-MM-dd -> MMddyyyy).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DL:QW                PASS     DL Name+DOB (no Sex): DriverLicenseQuery fires QW; Name='LAST, FIRSDT' + BirthDate 01011985; no SexCode, no OLN. State=AR rides along on variant.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Person     DL:Guardrail OLN>Name (DL) PASS     OLN>Name guardrail: OLN=55856576 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AR) on wire; Name/SexCode/BirthDate DROPPED (DQ/QW exit pool via OperatorLicenseNumber NOT_EXISTS). RMS elastic still gets all fields.
