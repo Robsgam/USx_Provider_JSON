@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Boat BoatQuery
+Combo: Guardrail Hull>Reg (Hull>Reg guardrail (v3.9): Hull=332423 + Reg=3123423 entered together -> only BoatHullIdNumber serializes, RegistrationNumber DROPPED from wire (BQ exits pool via BoatHullIdNumber NOT_EXISTS). Holds with State=AK too (6th fire).)
+Date: 2026-06-25 14:48:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+BoatHullIdNumber=332423, RegistrationNumber=3123423 (+State=Alaska)
+
+XML REQUEST
+-----------
+<Request><MessageType>BoatQuery</MessageType><BoatHullIdNumber>332423</BoatHullIdNumber><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BoatHullIdNumber               332423
+  RelatedSearchHitIndicator      Y
+
+NOTES
+-----
+Reg absent from XML despite being entered = guardrail confirmed live.
+
+RESULT: PASS

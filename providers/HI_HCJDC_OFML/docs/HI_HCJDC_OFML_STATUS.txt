@@ -118,3 +118,15 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-25 Firearm    Gun:QG               PASS     GunQuery fires QG; GunSerialNumber=SER783 bare + escalating optionals GunMake=AAB / GunCaliber=11 / GunModel=REER all serialize (any[]); RelatedSearchHitIndicator=Y default holds even when omitted from input (4th fire). 5 fires all QG. v4.4 full re-test.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Boat       Boat:BQ              PASS     BoatQuery fires BQ (Reg path); RegistrationNumber=7597523 + State=WV (reverse-lookup West Virginia) + RSH=Y. No Hull present.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Boat       Boat:QB              PASS     BoatQuery fires QB (Hull path); BoatHullIdNumber=WE23R542 bare + with State=ID (reverse-lookup Idaho); RSH=Y default holds when omitted from input (4th fire).
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-25 Boat       Boat:Guardrail Hull>Reg PASS     Hull>Reg guardrail (v3.9): Hull=332423 + Reg=3123423 entered together -> only BoatHullIdNumber serializes, RegistrationNumber DROPPED from wire (BQ exits pool via BoatHullIdNumber NOT_EXISTS). Holds with State=AK too (6th fire).

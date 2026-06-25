@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Boat BoatQuery
+Combo: QB (BoatQuery fires QB (Hull path); BoatHullIdNumber=WE23R542 bare + with State=ID (reverse-lookup Idaho); RSH=Y default holds when omitted from input (4th fire).)
+Date: 2026-06-25 14:48:55
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+BoatHullIdNumber=we23r542, RegistrationState=Idaho
+
+XML REQUEST
+-----------
+<Request><MessageType>BoatQuery</MessageType><BoatHullIdNumber>WE23R542</BoatHullIdNumber><RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator><State>ID</State></Request>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BoatHullIdNumber               WE23R542
+  RelatedSearchHitIndicator      Y
+  State                          ID
+
+NOTES
+-----
+
+
+RESULT: PASS
