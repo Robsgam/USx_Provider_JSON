@@ -153,7 +153,7 @@ function Test-ReportTrusted($provName, $reportPath) {
     $entry = $man.reports.$leaf
     if (-not $entry)                { return @{ ok=$false; reason="'$leaf' not in manifest" } }
     $liveSha = (Get-FileHash -Path $reportPath -Algorithm SHA256).Hash
-    if ($liveSha -ne $entry.sha256) { return @{ ok=$false; reason='report SHA != manifest (edited/stale)' } }
+    if ($liveSha -ne $entry.sha256) { return @{ ok=$false; reason='report SHA != manifest (edited/stale) -- Recovery: run build_report.ps1 -Path <provider>.json' } }
     if ([int]$entry.checksRun -le 0){ return @{ ok=$false; reason='report contentless (0 checks)' } }
     return @{ ok=$true; reason='' }
 }
