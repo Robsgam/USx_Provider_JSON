@@ -35,6 +35,9 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path $PSScriptRoot -Parent
 
+# Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
+. "$PSScriptRoot\_resolve_provider_json.ps1"
+
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -297,23 +300,17 @@ if ($Path) {
         $provName = $dir.Name
         if ($provName -eq 'CA_CONTRA_COSTA') { continue }
 
-        # Prefer single-JSON <PROVIDER>.json (merged providers), then MC.json (more
-        # combos than BASE), then BASE.json. The single-JSON branch is required: merged
-        # providers (NJ, FL, CA_CLETS, ...) have no _MC/_BASE suffix and were otherwise
-        # silently skipped, so the gate never saw the shipped JSON.
-        $singleJson = Get-ChildItem $dir.FullName -Filter "${provName}.json" -File | Select-Object -First 1
-        $mcJson   = Get-ChildItem $dir.FullName -Filter "*_MC.json" -File | Select-Object -First 1
-        $baseJson = Get-ChildItem $dir.FullName -Filter "*_BASE.json" -File | Select-Object -First 1
-
-        $jsonFile = $null
-        if ($singleJson) { $jsonFile = $singleJson }
-        elseif ($mcJson) { $jsonFile = $mcJson }
-        elseif ($baseJson) { $jsonFile = $baseJson }
-        else { continue }
+        # Resolve the active root JSON: bare <PROVIDER>.json, versioned
+        # <PROVIDER>_v<X.Y>.json (current standard), then legacy _MC/_BASE. The
+        # single/versioned branch is required: merged providers (NJ, FL, CA_CLETS,
+        # ...) have no _MC/_BASE suffix and were otherwise silently skipped, so the
+        # gate never saw the shipped JSON.
+        $jsonPath = Get-ProviderRootJson -ProvDir $dir.FullName -Provider $provName
+        if (-not $jsonPath) { continue }
 
         $providerJsons += [PSCustomObject]@{
             Name = $provName
-            Path = $jsonFile.FullName
+            Path = $jsonPath
             Dir  = $dir.FullName
         }
     }

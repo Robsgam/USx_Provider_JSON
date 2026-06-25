@@ -18,7 +18,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $resolved = (Resolve-Path $Path).Path
 $data     = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
-$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '(?i)_(BASE|MC)$',''
+$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $genDate  = Get-Date -Format 'yyyy-MM-dd'
 
 # Auto-locate matrix

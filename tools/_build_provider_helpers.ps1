@@ -162,6 +162,28 @@ function Write-ProviderJson {
         return
     }
 
+    # ONE-JSON-IN-ROOT cleanup: the root JSON name carries the version
+    # (<PROVIDER>_v<X.Y>.json). On a version bump (or a switch from the old bare
+    # name) the prior root JSON would otherwise linger, leaving two JSONs in root
+    # and tripping enforce's one-JSON-in-root rule. Remove every sibling that is
+    # the bare name or a versioned name for THIS provider, except the file we are
+    # about to write. Phase archives live in phases/ and are never touched here.
+    $outDir  = Split-Path $OutPath -Parent
+    $outName = Split-Path $OutPath -Leaf
+    # Provider prefix = output leaf minus any _v<X.Y> suffix and .json
+    $prefix  = [System.IO.Path]::GetFileNameWithoutExtension($outName) -replace '_v[\d.]+$', ''
+    if ($outDir -and (Test-Path $outDir)) {
+        Get-ChildItem $outDir -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.Name -ne $outName -and
+                ($_.Name -eq "$prefix.json" -or $_.Name -match "^$([regex]::Escape($prefix))_v[\d.]+\.json$")
+            } |
+            ForEach-Object {
+                Write-Host "  -> removing stale root JSON: $($_.Name)" -ForegroundColor DarkYellow
+                Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
+            }
+    }
+
     [System.IO.File]::WriteAllText($OutPath, $json, [System.Text.UTF8Encoding]::new($false))
     if ($PhasePath) {
         [System.IO.File]::WriteAllText($PhasePath, $json, [System.Text.UTF8Encoding]::new($false))

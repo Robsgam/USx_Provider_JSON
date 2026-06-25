@@ -512,6 +512,15 @@ AUTHORITATIVE SOURCE FILES (read-only)
   tools/_build_provider_helpers.ps1
     Provider boilerplate (Build-Auth, Build-Qmf, Build-ProviderQrdm, Build-EntitiesBundle, Write-ProviderJson).
 
+  tools/_resolve_provider_json.ps1
+    Shared active-JSON resolver (Get-ProviderRootJson). Locates a provider's
+    active root JSON via the canonical chain: bare <PROVIDER>.json -> versioned
+    <PROVIDER>_v<X.Y>.json (current standard) -> legacy _MC -> legacy _BASE.
+    Dot-sourced by pipeline.ps1, reset_test_package.ps1, audit_test_coverage.ps1,
+    sync_version_docs.ps1, audit_structure.ps1 so a versioned filename is found
+    everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
+    equivalent fallbacks.)
+
   tools/_json_canonical.ps1
     Shared canonical JSON serialization + hashing (ConvertTo-Canonical,
     Get-Sha256Hex, New-NormalizedClone, Get-CanonicalJsonString). Key-sorted,

@@ -16,6 +16,9 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 
+# Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
+. "$PSScriptRoot\_resolve_provider_json.ps1"
+
 # ── Output helpers ────────────────────────────────────────────────────────────
 
 # Buffer for file output (captures everything if -OutFile is used)
@@ -172,24 +175,26 @@ foreach ($provFolder in $providerFolders) {
     Out-Line ""
     Out-Line "--- CHECK 3: Required Files -- JSON ---" 'Yellow'
 
+    # Active root JSON: bare <PROVIDER>.json, versioned <PROVIDER>_v<X.Y>.json
+    # (current standard), or legacy _MC/_BASE. Exactly one should be present.
     $baseJson = Join-Path $provRoot "${provName}_BASE.json"
     $mcJson = Join-Path $provRoot "${provName}_MC.json"
+    $activeJson = Get-ProviderRootJson -ProvDir $provRoot -Provider $provName
 
-    if (Test-Path $baseJson) {
-        Write-Pass "${provName}_BASE.json exists"
+    if ($activeJson) {
+        Write-Pass "root JSON present: $(Split-Path $activeJson -Leaf)"
     } else {
-        Write-Fail "${provName}_BASE.json missing"
+        Write-Fail "no provider JSON in root (expected ${provName}_v<X.Y>.json or ${provName}.json)"
     }
 
-    if (Test-Path $mcJson) {
-        Write-Pass "${provName}_MC.json exists"
-    } else {
-        Write-Warn "${provName}_MC.json missing (MC not yet built)"
+    # Legacy split-build note (informational; converts to single versioned JSON on rebuild)
+    if ((Test-Path $baseJson) -and (Test-Path $mcJson)) {
+        Write-Info "${provName} -- legacy _BASE + _MC pair in root (convert to single versioned JSON on rebuild)"
     }
 
-    # Check for mis-named JSON files (JSON files in root that don't match folder name)
+    # Check for mis-named JSON files (root JSONs that don't start with the folder name)
     $rootJsonFiles = @(Get-ChildItem $provRoot -Filter '*.json' -File |
-        Where-Object { $_.Name -match '_(BASE|MC)' })
+        Where-Object { $_.Name -match '_(BASE|MC)\.json$' -or $_.Name -match '_v[\d.]+\.json$' })
     foreach ($jf in $rootJsonFiles) {
         if ($jf.Name -notmatch "^${provName}_") {
             Write-Fail "JSON file '$($jf.Name)' does not match folder name '$provName'"

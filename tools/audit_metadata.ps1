@@ -159,8 +159,8 @@ function Audit-Provider {
     param([string]$JsonPath)
 
     $jsonFile = [System.IO.Path]::GetFileNameWithoutExtension($JsonPath)
-    # Derive provider name: strip _BASE, _MC suffixes
-    $providerName = $jsonFile -replace '(?i)_(BASE|MC)$', ''
+    # Derive provider name: strip versioned (_v<X.Y>) and legacy _BASE/_MC suffixes
+    $providerName = $jsonFile -replace '_v[\d.]+$', '' -replace '(?i)_(BASE|MC)$', ''
 
     Out-Line ""
     Out-Line ("=" * 60)

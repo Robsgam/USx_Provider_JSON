@@ -26,7 +26,7 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot '_json_canonical.ps1')
 
 $resolved = (Resolve-Path $Path).Path
-$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '(?i)_(BASE|MC)$',''
+$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $provDir  = Split-Path $resolved -Parent
 $scriptDir = Join-Path $provDir 'scripts'
 

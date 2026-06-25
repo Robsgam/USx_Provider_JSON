@@ -36,7 +36,7 @@ param(
 $ErrorActionPreference = "Stop"
 $resolved = (Resolve-Path $Path).Path
 $json = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
-$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '(?i)_(BASE|MC)$',''
+$provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $jsonDir  = Split-Path $resolved -Parent
 $docsDir  = Join-Path $jsonDir "docs"
 $extractFile = Join-Path $docsDir "${provider}_SUPPORTED_QUERIES.txt"

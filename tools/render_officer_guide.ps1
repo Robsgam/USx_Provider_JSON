@@ -22,7 +22,7 @@ $ErrorActionPreference = 'Stop'
 
 $resolved = (Resolve-Path $Path).Path
 $data = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
-$providerName = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '(?i)_(BASE|MC)$',''
+$providerName = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $genDate = Get-Date -Format 'yyyy-MM-dd'
 
 $entitiesBundle = $data.bundles | Where-Object { $_.name -eq 'ENTITIES' } | Select-Object -First 1

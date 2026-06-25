@@ -321,9 +321,11 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (33 scripts + 3 shared modules in `tools/`)
+## Tools (33 scripts + 5 shared modules in `tools/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
+
+Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_layout_helpers.ps1`, `_build_provider_helpers.ps1`, `_json_canonical.ps1`, `_resolve_provider_json.ps1` (active-JSON resolver `Get-ProviderRootJson` — bare → versioned → `_MC` → `_BASE`).
 
 ### Core Build Pipeline (run every build via build_report.ps1)
 
@@ -403,10 +405,21 @@ See `knowledge-base/IMPORT_ERRORS.txt` for error-to-fix mapping.
 ## Versioning Policy
 
 - **NEVER overwrite a tested JSON.** Save every iteration.
-- Name format: `<PROVIDER>_v<X.Y>_<date>.json` or `<PROVIDER>_v<X.Y>.json`
-- Document every JSON in `docs/JSON_INVENTORY.md`
-- Keep all JSONs in project root
-- Build scripts handle version archiving. Phase snapshots are saved to phases/.
+- **Root JSON name carries the version: `<PROVIDER>_v<X.Y>.json` (STANDARD).** The build
+  script sets `$OUT = "$DIR\<PROVIDER>_v${Version}.json"`. `Write-ProviderJson` removes any
+  stale sibling root JSON (bare `<PROVIDER>.json` or an older `<PROVIDER>_v*.json`) before
+  writing, so the one-JSON-in-root rule holds on every bump. The bare `<PROVIDER>.json` name
+  is still accepted (legacy) but new/rebuilt providers should emit the versioned name.
+- **Why the filename — not a top-level `version` field — carries the version:** the platform
+  deserializes a top-level `version` as `java.lang.Integer` and rejects dotted strings ("4.6").
+  So version lives (a) in the filename and (b) inside the bundle `description`
+  ("Provider configuration for <PROVIDER> v<X.Y> ..."), which is what enforce CHECK 3i reads.
+  Do NOT re-add a top-level `version` field.
+- Phase snapshots are saved to `phases/` as `<PROVIDER>_v<X.Y>_<date>.json`.
+- Document every JSON in `docs/JSON_INVENTORY.md`. Keep all JSONs in project root.
+- **Tools resolve the active JSON via `tools/_resolve_provider_json.ps1`
+  (`Get-ProviderRootJson`)** — bare → versioned → `_MC` → `_BASE` — never by hardcoding
+  `<PROVIDER>.json`.
 
 ---
 
@@ -479,13 +492,15 @@ Every provider under `providers/` MUST have this structure. All new providers fo
 **NAMING RULE**: `<PROVIDER>` MUST match the metadata XML filename minus `.xml`. Verify before creating the folder. See `BUILD_RULES.txt` Section 0.
 
 **ONE JSON IN ROOT RULE**: Exactly one JSON in the provider root folder at all times.
-- New providers: `<PROVIDER>.json` (no suffix)
+- New/rebuilt providers: `<PROVIDER>_v<X.Y>.json` (versioned name is the standard). Bare
+  `<PROVIDER>.json` is still accepted (legacy).
 - Legacy providers may still have `<PROVIDER>_MC.json` or `<PROVIDER>_BASE.json` until rebuild
-- NEVER multiple JSONs in root simultaneously. Enforce checks this.
+- NEVER multiple JSONs in root simultaneously. `Write-ProviderJson` deletes stale siblings on
+  build; enforce FAILs if more than one versioned JSON is present.
 
 ```
 providers/<PROVIDER>/
-├── <PROVIDER>.json                        # Current JSON (single output per provider)
+├── <PROVIDER>_v<X.Y>.json                 # Current JSON (single, version-named output per provider)
 ├── docs/
 │   ├── <PROVIDER>_STATUS.txt              # Live test matrix + current state
 │   ├── <PROVIDER>_BUILD_NOTES.txt         # Change log with CHANGED/REASON per version

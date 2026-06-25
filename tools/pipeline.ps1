@@ -41,6 +41,9 @@ $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provRoot = Join-Path $repoRoot "providers"
 
+# Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
+. "$toolDir\_resolve_provider_json.ps1"
+
 # ── Validate params ──────────────────────────────────────────────────────────
 $modeCount = 0
 if ($Provider)  { $modeCount++ }
@@ -79,9 +82,8 @@ function Find-ProviderFiles($provName) {
             Select-Object -First 1
     }
 
-    $provJson = Join-Path $provDir "${provName}.json"
-    if (-not (Test-Path $provJson)) { $provJson = Join-Path $provDir "${provName}_MC.json" }
-    if (-not (Test-Path $provJson)) { $provJson = Join-Path $provDir "${provName}_BASE.json" }
+    $provJson = Get-ProviderRootJson -ProvDir $provDir -Provider $provName
+    if (-not $provJson) { $provJson = Join-Path $provDir "${provName}.json" }  # fall back to expected name for messaging
 
     $xmlFile = Get-ChildItem (Join-Path $provDir "source") -Filter "*.xml" -File -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -notmatch 'HIDLE' } | Select-Object -First 1
@@ -140,9 +142,8 @@ if (-not $batchMode) {
             $output = & powershell -ExecutionPolicy Bypass -File $files.BuildScript.FullName 2>&1 | Out-String
             if ($output -match '0 FAIL') {
                 StepPass "Built successfully"
-                $files.Json = Join-Path $files.Dir "${provName}.json"
-                if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_MC.json" }
-                if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_BASE.json" }
+                $resolvedJson = Get-ProviderRootJson -ProvDir $files.Dir -Provider $provName
+                if ($resolvedJson) { $files.Json = $resolvedJson }
 
                 # Rebuild restarts testing: a version bump invalidates prior live logs.
                 # Archive them + reset SQVR/STATUS so all logs line up with the new JSON.
@@ -344,9 +345,8 @@ foreach ($provName in $providerList) {
             $output = & powershell -ExecutionPolicy Bypass -File $files.BuildScript.FullName 2>&1 | Out-String
             if ($output -match '0 FAIL') {
                 StepPass "Built"
-                $files.Json = Join-Path $files.Dir "${provName}.json"
-                if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_MC.json" }
-                if (-not (Test-Path $files.Json)) { $files.Json = Join-Path $files.Dir "${provName}_BASE.json" }
+                $resolvedJson = Get-ProviderRootJson -ProvDir $files.Dir -Provider $provName
+                if ($resolvedJson) { $files.Json = $resolvedJson }
 
                 # Rebuild restarts testing (see reset_test_package.ps1)
                 $resetOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\reset_test_package.ps1" -Provider $provName 2>&1 | Out-String

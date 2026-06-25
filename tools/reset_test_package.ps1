@@ -34,6 +34,9 @@ $provDir  = Join-Path $repoRoot "providers\$Provider"
 $testsDir = Join-Path $provDir "tests"
 $docsDir  = Join-Path $provDir "docs"
 
+# Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
+. "$toolDir\_resolve_provider_json.ps1"
+
 function Say($msg, $color = "White") { if (-not $Quiet) { Write-Host $msg -ForegroundColor $color } }
 
 if (-not (Test-Path $provDir)) {
@@ -52,8 +55,8 @@ if ($buildScript) {
 }
 if (-not $version) {
     # Fallback: read version from the JSON bundle description
-    $json = Join-Path $provDir "$Provider.json"
-    if (Test-Path $json) {
+    $json = Get-ProviderRootJson -ProvDir $provDir -Provider $Provider
+    if ($json -and (Test-Path $json)) {
         $jText = Get-Content $json -Raw
         if ($jText -match "$Provider v([0-9]+\.[0-9]+)") { $version = $Matches[1] }
     }
@@ -64,12 +67,8 @@ if (-not $version) {
 }
 
 # ── Locate active JSON (needed for per-entity fingerprints) ───────────────────
-$activeJson = Join-Path $provDir "$Provider.json"
-if (-not (Test-Path $activeJson)) {
-    $alt = Get-ChildItem $provDir -Filter "*_MC.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $alt) { $alt = Get-ChildItem $provDir -Filter "*_BASE.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1 }
-    if ($alt) { $activeJson = $alt.FullName }
-}
+$activeJson = Get-ProviderRootJson -ProvDir $provDir -Provider $Provider
+if (-not $activeJson) { $activeJson = Join-Path $provDir "$Provider.json" }
 
 # ── Per-entity fingerprints + state (entity-aware "block out") ────────────────
 # A "blocked" entity whose fingerprint is unchanged is PRESERVED across a rebuild;

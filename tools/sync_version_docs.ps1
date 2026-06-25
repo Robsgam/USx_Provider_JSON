@@ -28,6 +28,9 @@ $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
 $today    = Get-Date -Format "yyyy-MM-dd"
 
+# Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
+. "$toolDir\_resolve_provider_json.ps1"
+
 if (-not (Test-Path $provDir)) {
     Write-Host "  [ERROR] Provider not found: $provDir" -ForegroundColor Red
     exit 1
@@ -96,9 +99,12 @@ $score = Get-ValidatorScore $null
 $baseScore = Get-ValidatorScore "base"
 $mcScore   = Get-ValidatorScore "mc"
 
-$hasSingle = Test-Path (Join-Path $provDir "${Provider}.json")
+# Active root JSON may be bare <PROVIDER>.json or versioned <PROVIDER>_v<X.Y>.json;
+# both count as "single" (vs legacy _MC/_BASE variants).
+$activeJson = Get-ProviderRootJson -ProvDir $provDir -Provider $Provider
 $hasMc = Test-Path (Join-Path $provDir "${Provider}_MC.json")
 $hasBase = Test-Path (Join-Path $provDir "${Provider}_BASE.json")
+$hasSingle = [bool]$activeJson -and ($activeJson -notmatch '_(MC|BASE)\.json$')
 
 # For single-variant providers, use the docs/ score as the primary
 if ($hasSingle -and $score -and -not $baseScore -and -not $mcScore) {
