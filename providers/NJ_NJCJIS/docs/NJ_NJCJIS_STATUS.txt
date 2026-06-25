@@ -118,7 +118,7 @@ IMPORT HISTORY:
     T11  Vehicle  QVP      VehStolen plate              PASS  (plate+state+image, queriesToDeselect)
     T12  Vehicle  QVN      VehStolen NCIC#              PASS  (NCICNumber+image, exclusive field)
     Phase 3 - Person combos:
-  ---   2026-06-24 Person     DL:DQ                PASS     P4-any[]: SexCode=M serialized (reverse-lookup from Male dropdown); Name+DOB+Sex+State+Image all present; BirthDate=01151985
+  ---   2026-06-25 Person     DL:DQ                PASS     Name+DOB -> DriverLicenseQuery (DQ). Name=DOE JOHN, BirthDate=01011985, Image=Y, State=NJ in XML.
     T14  Person   DQ       DL Name+DOB                  PASS  (Name=DOEA,JOE+DOB+state+image=Y)
     Phase 4 - Boat combos:
     T15  Boat     QBN      Boat hull ID                 PASS  (hullId+image)
@@ -159,7 +159,7 @@ IMPORT HISTORY:
     T6   Vehicle  QVP    VehStolen plate         PASS  (plate+state+image, queriesToDeselect confirmed)
     T7   Vehicle  QVN    VehStolen NCIC#         PASS  (NCICNumber+image, no State; auto-selected Stolen for exclusive field)
     T8   Vehicle  QVV    VehStolen VIN           PASS  (VIN+image, no State; RMS co-fire vinNumber)
-    T9   Person   DQN    DL OLN                  PASS  (OLN+state+image=Y, RMS dlNumber+registrationStateAttrId)
+  ---   2026-06-25 Person     DL:DQN               PASS     OLN=786237 -> DriverLicenseQuery (DQN). Image=Y+State=NJ in XML (any[] confirmed).
     T10  Person   DQ     DL Name+DOB             PASS  (Name=DOE,JOHN+DOB=01151985+state+image=Y, FormatString+ParseDate)
     T11  Firearm  QG     Firearm serial          PASS  (serial+image)
     T12  Article  QA     Article serial+type      PASS  (serial+typeCode+image, both set[] required)
@@ -263,4 +263,10 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   ---   2026-06-25 Vehicle    VehReg:RQ-any-defaults PASS     RQ any[] defaults -- PlateType/PlateYear at initialValue (not explicitly set); confirm they serialize from defaults in XML
   ---   2026-06-25 Vehicle    VehReg:RQN-any       PASS     RQN any[] -- VIN with Image=Y, Random=Y; all any[] fields serialize (no plate fields)
   ---   2026-06-25 Vehicle    NEGATIVE:NEGATIVE    PASS     Empty form -- no Send button visible, no request fires
+  ---   2026-06-25 Person     DL:RENDER            PASS     Person render: 3 cards (Search Options, LICENSE NUMBER, NAME SEARCH). State=NJ, Image=Y defaults correct.
+  ---   2026-06-25 Person     DL:DQN-any           PASS     DQN any[]: OLN only filled -> Image=Y serializes from default. T9 XML shows Image+State both present when State default active.
+  ---   2026-06-25 Person     DL:DQ-any            PASS     DQ any[]: Name+DOB+Sex+State+Image all in XML. SexCode=M, State=NJ, Image=Y confirm all DQ any[] fields serialize.
+  ---   2026-06-25 Person     DL:DQN-guardrail     PASS     Guardrail DQN>DQ: OLN+Name+DOB+Sex+State filled -> DQN fires. XML: OLN=OLNTEST, State=NJ, Image=Y. Name/BirthDate/SexCode ABSENT (guardrail confirmed).
+  ---   2026-06-25 Person     DL:NEGATIVE          PASS     Empty form: no Send button, no request generated.
+  ---   2026-06-25 Person     DL:DQN-guardrail-nostate PASS     Extra: Guardrail DQN>DQ without State in form. OLN+Name+DOB+Sex -> DQN fires. XML: OLN=OLNTEST, Image=Y. Name/DOB/Sex ABSENT. Guardrail holds without State.
   (none yet -- v4.5 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.5/)

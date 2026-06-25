@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ-any-defaults (RQ any[] defaults -- PlateType/PlateYear at initialValue (not explicitly set); confirm they serialize from defaults in XML)
+Date: 2026-06-25 09:19:42
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Plate=TEST, Image=Y, Random=Y, State=NJ (PlateType/Year at defaults)
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KVZEN6VWJTHXPHDEV215N5E6"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KVZEN6VWJTHXPHDEV215N5E6</Id><ImageIndicator>Y</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><RandomRequest>Y</RandomRequest><LicensePlateNumber>TEST</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KVZEN6VWJTHXPHDEV215N5E6
+  ImageIndicator                 Y
+  LicensePlateYear               2026
+  State                          NJ
+  LicensePlateTypeCode           PC
+  RandomRequest                  Y
+  LicensePlateNumber             TEST
+
+NOTES
+-----
+
+
+RESULT: PASS
