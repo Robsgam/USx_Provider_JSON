@@ -1,7 +1,7 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 JSON version: v4.5
 Validator: 69 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: IN PROGRESS (entity-by-entity block-out; v4.5 first full live run)
@@ -25,7 +25,7 @@ USER-APPROVED SKIPS:
   Combos: RQ (plate), RQN (VIN)
   Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
 
-  RQ -- Plate search [PENDING]
+  RQ -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
@@ -33,7 +33,7 @@ USER-APPROVED SKIPS:
     V3 (2026-06-24): Plate=TEST123 + VIN filled -- RQ fired, VIN absent (guardrail confirmed).
     V4 (2026-06-24): any[] fields -- RandomRequest=Y, PlateTypeCode=PC, State=NJ all serialized.
 
-  RQN -- VIN search [PENDING]
+  RQN -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
