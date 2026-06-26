@@ -2,9 +2,12 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.9** | Generated: 2026-06-26
+Current: **v2.10** | Generated: 2026-06-26
 
 ---
+
+## v2.10 -- 2026-06-26 -- : VehicleMakeName code source VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present). Shared module; result-mapping only, request-side combos unchanged.
+
 
 ## v2.9 -- 2026-06-26 -- Pipeline rebuild
 

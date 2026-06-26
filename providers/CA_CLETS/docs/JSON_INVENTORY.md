@@ -6,7 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_CLETS.json | v2.4 | Current | 91P/0F/0W/0LIM. 6 QIDMs, 40 combos. Imported USx Provider 2026-05-21. Live-tested all 5 entities. |
+| CA_CLETS_v2.10.json | v2.10 | Current | 77P/0F/0W/0LIM. VehicleMakeName code-source fix (RND-62365). Live test PENDING (full re-test from T1). |
 
 ## phases/current/
 
@@ -27,6 +27,11 @@ All JSON versions produced for this provider.
 
 
 
+## v2.10 (2026-06-26)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_v2.10.json | v2.10 | Current | 77P/0F/0W/0LIM. VehicleMakeName code-source fix (RND-62365). |
 ## v2.9 (2026-06-26)
 
 | File | Version | Status | Notes |

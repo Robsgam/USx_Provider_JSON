@@ -543,3 +543,19 @@ See BUILD_RULES.txt Section 13 for full checklist.
   state codes, or version strings. $currentYear already enforced for PlateYear; extend
   to catch accidental hardcodes elsewhere (e.g., hardcoded '2025' in a year field).
   Track: add during TX rebuild cycle.
+
+## RND-62365: VehicleMakeName code-source + CHECK 15 State-label (2026-06-26)
+
+- VehicleMakeName VEHICLE_MAKE/NCIC correction (was VEHICLE/VehicleType, absent on Newark
+  instance, broke NJ v4.6 vehicle queries; probe-confirmed VEHICLE_MAKE/NCIC present; matches
+  RND-54190 + sibling VehicleModelName). Shared module tools/_build_rms_bundle.ps1.
+  STATUS: NJ done (v4.7), CA_CLETS done (v2.10), HI in progress (v4.6).
+  **FL_FCIC (v6.7) and TX_TLETS still carry the wrong VEHICLE/VehicleType in their built JSONs
+  -> fixed automatically on their next rebuild; verify VehicleMakeName=VEHICLE_MAKE/NCIC after.**
+
+- CHECK 15 State-label gate refined 2026-06-26 (verify_build.ps1) to accept "change for
+  out-of-state" (defaulted-State providers) in addition to "leave blank for".
+  STATUS: NJ + CA pass; HI being fixed (label "State (Hawaii = leave blank)" -> defaulted-State
+  wording).
+  **FL_FCIC + TX_TLETS need a State-label routing hint at their next rebuild (TX label is a bare
+  "State"; FL verify current label).**

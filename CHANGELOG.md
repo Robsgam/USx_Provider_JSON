@@ -100,7 +100,12 @@ Current: **v4.5** — 66P/0F/0W/0LIM | all 5 entities blocked | import: `HI_HCJD
 
 ## CA_CLETS (CA_CLETS_OFML)
 
-Current: **v5.x** — DONE. Identifier-priority guardrails CONFIRMED. See REBUILD_TRACKER.
+Current: **v2.10** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.10.json`
+
+### v2.10 (2026-06-26) — VehicleMakeName code source corrected (RND-62365)
+- VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present)
+- Shared module `tools/_build_rms_bundle.ps1`; result-mapping only, request-side combos unchanged
+- Identifier-priority guardrails CONFIRMED (prior). See REBUILD_TRACKER.
 
 ---
 

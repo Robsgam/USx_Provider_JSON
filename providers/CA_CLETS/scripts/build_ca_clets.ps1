@@ -1,4 +1,8 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.10 (2026-06-26): VehicleMakeName code-source correction (RND-62365, shared module
+#   tools/_build_rms_bundle.ps1): VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC
+#   (probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName). Result-mapping
+#   only; request-side combos unchanged. Full re-test from T1 per rebuild mandate.
 # Builds CA_CLETS.json from source\CA_CLETS.xml metadata + KB specs.
 # QIDMs expanded to cover ALL 40 metadata combos (40 built, 0 LIMITATION).
 # Layout: Vehicle(2), Person(3), Firearm(1), Article(1), Boat(1) -- 8 cards total
@@ -20,7 +24,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.9"
+    [string]$Version = "2.10"
 )
 
 $ErrorActionPreference = "Stop"
