@@ -417,6 +417,7 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-26 Vehicle    VehReg:FRQ+TitleLien -- FL DHSMV (Title/Lien) PASS     FRQTitleLienInformation fires; TitleLienInformation=23423 (set[]) + ImageIndicator=N (any[]); no State (FL in-state); no LicensePlateYear (not in combo). T9 any[] proven: ImageIndicator serialized in same query.
   ---   2026-06-26 Vehicle    VehReg:FRQ+Plate -- FL DHSMV Registration (Plate) PASS     FRQLicensePlateNumber fires; LicensePlateNumber=344234 (set[]) + LicensePlateYear=2026 default + ImageIndicator=N default (any[]); no State (FL in-state); LicensePlateTypeCode absent (not in FRQ combo -- correct, only in RQ set[]).
   ---   2026-06-26 Vehicle    VehReg:FRQ+VIN -- FL DHSMV Registration (VIN) PASS     FRQVehicleIdentificationNumber fires; VIN=3423423423 (set[]) + ImageIndicator=N default (any[]); no State, no Plate (both NOT_EXISTS conditions satisfied).
+  ---   2026-06-26 Vehicle    VehReg:FRQ+Plate -- FL DHSMV Registration (Plate) PASS     FRQLicensePlateNumber any[] verified; Plate=2342342 + VehicleMakeCode=ACURA(->TRCK_ACUR QRDM) + vehicleYear=2020 + LicensePlateYear=2026 + ImageIndicator=N all serialized. T3 any[] pass.
   (none yet -- v6.7 live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v6.7/)
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
