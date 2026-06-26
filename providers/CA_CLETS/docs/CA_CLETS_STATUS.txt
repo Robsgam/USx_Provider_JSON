@@ -24,7 +24,7 @@ CommSys combos (40):
 
 Cross-entity combos:
   VehicleRegistrationQuery  -- IN.VP (Name fields on Vehicle card)
-  GunQuery                  -- IG.QGH (Name fields on Firearm card)
+  ---   2026-06-26 Firearm    Gun:IG.QGH           PASS     IG.QGH any[] - BirthDate+Age serialize
   BoatQuery                 -- NLTS.BQ.N (Name+DOB fields on Boat card)
 
 Conditions routing (IV.4*):
@@ -96,7 +96,7 @@ v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
   T8  | Person  | IN.L1           | PASS -- DriverLicenseQuery by Name, FormatStringRuleHandler=DOE,JOHN
   T9  | Person  | NLTS.KQ.O       | PASS -- DriverHistoryQuery by OLN, DH auto-checks! (v1.8 fix confirmed)
   T10 | Person  | NLTS.KQ.N       | PASS -- DriverHistoryQuery by Name+DOB+Sex, BirthDate=19850101 yyyyMMdd
-  ---   2026-06-26 Firearm    Gun:IG.QGB           PASS     Serial Number combo - GunSerialNumber fires GunQuery
+  ---   2026-06-26 Firearm    Gun:IG.QGB           PASS     IG.QGB any[] - Make/Caliber/Type serialize
   T12 | Article | IP.QA.S         | PASS -- ArticleSingleQuery by serial
   T13 | Article | IP.QA.O         | PASS -- ArticleSingleQuery by OAN
   T14 | Boat    | IA.QB.R         | PASS -- BoatQuery by RegistrationNumber in-state
