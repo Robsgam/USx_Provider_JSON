@@ -1,14 +1,14 @@
-================================================================
+﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS.json
-  Generated: 2026-06-14 22:55
+  Source: CA_CLETS_v2.6.json
+  Generated: 2026-06-26 08:31
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS
+ POST-BUILD VERIFICATION: CA_CLETS_v2.6
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 28 [addressCity, addressStreetNumber, purposeCode, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, raceCode, socialSecurityNumber, birthDateDH, purposeCodeDH, nameLastDH, nameFirstDH, operatorLicenseNumberDH, sexCodeDH, gunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleTypeCode, ownerAppliedNumber, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 29 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, raceCode, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, gunCaliber, GunMake, GunSerialNumber, gunTypeCode, articleBrand, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -33,22 +33,31 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 7: Cross-Variant Consistency ---
-  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+  [INFO] Single-JSON provider -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [PASS] Visible-First Mandate: no hidden or auto-populated fields outside approved exceptions
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
-  [WARN] QIDM 'CA_CLETS_GunQuery' has 2 combos but build script has no LIMITATION #21/#36 comment before keyRef 'IG.QGH' -- add synthetic keyRef block (BUILD_RULES Section 15)
+  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (36) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (37) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
 
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
 ========================================
- VERIFICATION PASSED (with warnings): 9 PASS / 1 WARN / 0 FAIL
+ VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

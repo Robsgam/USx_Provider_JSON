@@ -23,6 +23,12 @@ All JSON versions produced for this provider.
 | v1.0-v2.1 | Pre-merge BASE/MC snapshots. Deleted 2026-06-03. Available in git history. |
 
 
+
+## v2.6 (2026-06-26)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_v2.6.json | v2.6 | Current | 76P/0F/0W/0LIM. |
 ## v2.5 (2026-06-14)
 
 | File | Version | Status | Notes |

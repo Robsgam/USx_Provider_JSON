@@ -1,22 +1,22 @@
-================================================================
+﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS.json
-  Generated: 2026-06-14 22:55
+  Source: CA_CLETS_v2.6.json
+  Generated: 2026-06-26 08:31
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS.json
+  CommSys Query Simulator -- CA_CLETS_v2.6.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 5
 
     [FIRES first-match] NLTS.RQ.P
-      set: [purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
+      set: [purposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      any: [VehicleMakeCode, vehicleYear] -> matched: [VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -29,23 +29,10 @@ QUERY SIMULATION
         <VehicleMakeCode>FORD</VehicleMakeCode>
         <VehicleYear>2023</VehicleYear>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] NLTS.RQ.V
-      set: [purposeCode, vehicleIdentificationNumber, registrationState]
-      any: [vehicleMakeCode, vehicleYear] -> matched: [vehicleMakeCode, vehicleYear]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.RQ.V</MessageKey>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
-      </Transaction>
+    [SKIP] NLTS.RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     [FIRES shadowed -- first match above wins] IN.VP
-      set: [purposeCode, nameLast, nameFirst]
+      set: [purposeCode, NameLast, NameFirst]
       any: [addressCity, addressStreetNumber] -> matched: [addressCity, addressStreetNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -56,23 +43,11 @@ QUERY SIMULATION
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <Name>Doe, John</Name>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] IA.QVK
-      set: [purposeCode, vehicleIdentificationNumber]
-      any: [vehicleMakeCode, registrationState] -> matched: [vehicleMakeCode, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IA.QVK</MessageKey>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <State>NJ</State>
-        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-      </Transaction>
+    [SKIP] IA.QVK -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     [FIRES shadowed -- first match above wins] IA.QV
-      set: [purposeCode, licensePlateNumber]
-      any: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear] -> matched: [registrationState, licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear]
+      set: [purposeCode, LicensePlateNumber]
+      any: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -87,28 +62,16 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: NLTS.RQ.P (first matching combo)
-    >> UNION POOL (platform serializes): AddressCity=Los Angeles, AddressStreetNumber=123, CaRequestPurposeCode=C, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, Name=Doe, John, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleYear=2023
+    >> UNION POOL (platform serializes): AddressCity=Los Angeles, AddressStreetNumber=123, CaRequestPurposeCode=C, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, Name=Doe, John, State=NJ, VehicleMakeCode=FORD, VehicleYear=2023
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
+    [SKIP] NLTS.DQ.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] NLTS.DQ.N
-      set: [purposeCode, nameLast, nameFirst, registrationState]
-      any: [birthDate] -> matched: [birthDate]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.DQ.N</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] NLTS.DQ
-      set: [purposeCode, operatorLicenseNumber, registrationState]
+    [FIRES first-match] NLTS.DQ
+      set: [purposeCode, OperatorLicenseNumber, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -117,38 +80,11 @@ QUERY SIMULATION
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] IR.QVC.N
-      set: [purposeCode, nameLast, nameFirst, sexCode]
-      any: [birthDate, age, addressCounty, height, raceCode] -> matched: [birthDate, age, height, raceCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IR.QVC.N</MessageKey>
-        <Age>30</Age>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <Height>510</Height>
-        <Name>Doe, John</Name>
-        <RaceCode>W</RaceCode>
-        <SexCode>M</SexCode>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] IN.L1
-      set: [purposeCode, nameLast, nameFirst]
-      any: [birthDate, registrationState] -> matched: [birthDate, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IN.L1</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <State>NJ</State>
-      </Transaction>
+    [SKIP] IR.QVC.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] IN.L1 -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES shadowed -- first match above wins] IR.QVC.O
-      set: [purposeCode, operatorLicenseNumber, criminalIdNumber]
+      set: [purposeCode, OperatorLicenseNumber, criminalIdNumber]
       any: [socialSecurityNumber, age] -> matched: [socialSecurityNumber, age]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
@@ -162,8 +98,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] ID.L1
-      set: [purposeCode, operatorLicenseNumber]
-      any: [registrationState, socialSecurityNumber, age] -> matched: [registrationState, socialSecurityNumber, age]
+      set: [purposeCode, OperatorLicenseNumber]
+      any: [RegistrationState, socialSecurityNumber, age] -> matched: [RegistrationState, socialSecurityNumber, age]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -177,7 +113,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IR.QVC.C
       set: [purposeCode, criminalIdNumber]
-      any: [operatorLicenseNumber, socialSecurityNumber, age] -> matched: [operatorLicenseNumber, socialSecurityNumber, age]
+      any: [OperatorLicenseNumber, socialSecurityNumber, age] -> matched: [OperatorLicenseNumber, socialSecurityNumber, age]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -191,7 +127,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IR.QVC.S
       set: [purposeCode, socialSecurityNumber]
-      any: [criminalIdNumber, operatorLicenseNumber, age] -> matched: [criminalIdNumber, operatorLicenseNumber, age]
+      any: [criminalIdNumber, OperatorLicenseNumber, age] -> matched: [criminalIdNumber, OperatorLicenseNumber, age]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -203,32 +139,18 @@ QUERY SIMULATION
         <SocialSecurityNumber>123456789</SocialSecurityNumber>
       </Transaction>
 
-    >> PLATFORM FIRES: NLTS.DQ.N (first matching combo)
-    >> UNION POOL (platform serializes): Age=30, BirthDate=19900115, CaRequestPurposeCode=D, CriminalIdNumber=CA12345678, Height=510, Name=Doe, John, OperatorLicenseNumber=D123456789, RaceCode=W, SexCode=M, SocialSecurityNumber=123456789, State=NJ
+    >> PLATFORM FIRES: NLTS.DQ (first matching combo)
+    >> UNION POOL (platform serializes): Age=30, CaRequestPurposeCode=D, CriminalIdNumber=CA12345678, OperatorLicenseNumber=D123456789, SocialSecurityNumber=123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+    [SKIP] NLTS.KQ.N -- conditions failed: OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] NLTS.KQ.N
-      set: [purposeCodeDH, birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.KQ.N</MessageKey>
-        <BirthDate>19900115</BirthDate>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <Name>Doe, John</Name>
-        <PurposeCode>C</PurposeCode>
-        <SexCode>M</SexCode>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] NLTS.KQ.O
-      set: [purposeCodeDH, operatorLicenseNumberDH]
-      any: [registrationState] -> matched: [registrationState]
+    [FIRES first-match] NLTS.KQ.O
+      set: [purposeCodeDH, OperatorLicenseNumberDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -239,8 +161,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: NLTS.KQ.N (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=19900115, CaRequestPurposeCode=C, Name=Doe, John, OperatorLicenseNumber=D123456789, PurposeCode=C, SexCode=M, State=NJ
+    >> PLATFORM FIRES: NLTS.KQ.O (first matching combo)
+    >> UNION POOL (platform serializes): CaRequestPurposeCode=C, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -248,7 +170,7 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES first-match] IG.QGH
-      set: [purposeCode, nameLast, nameFirst]
+      set: [purposeCode, NameLast, NameFirst]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -258,8 +180,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] IG.QGB
-      set: [purposeCode, serialNumber]
-      any: [gunCaliber, firearmMake, gunTypeCode] -> matched: [gunCaliber, firearmMake]
+      set: [purposeCode, GunSerialNumber]
+      any: [gunCaliber, GunMake, gunTypeCode] -> matched: [gunCaliber, GunMake]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -279,8 +201,8 @@ QUERY SIMULATION
     Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
 
     [FIRES first-match] IP.QA.S
-      set: [purposeCode, serialNumber]
-      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      set: [purposeCode, ArticleSerialNumber]
+      any: [articleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -292,7 +214,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IP.QA.O
       set: [purposeCode, ownerAppliedNumber]
-      any: [articleBrand, articleTypeCode] -> matched: [articleTypeCode]
+      any: [articleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -311,7 +233,7 @@ QUERY SIMULATION
     Query: BoatQuery  |  Attrs: 7  |  Combos: 6
 
     [FIRES first-match] NLTS.BQ.N
-      set: [purposeCode, nameLast, nameFirst, birthDate, registrationState]
+      set: [purposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -323,7 +245,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] NLTS.BQ.H
-      set: [purposeCode, boatHullIdNumber, registrationState]
+      set: [purposeCode, BoatHullIdNumber, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -332,21 +254,11 @@ QUERY SIMULATION
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <State>FL</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] NLTS.BQ.R
-      set: [purposeCode, registrationNumber, registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>NLTS.BQ.R</MessageKey>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-      </Transaction>
+    [SKIP] NLTS.BQ.R -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
     [FIRES shadowed -- first match above wins] IA.QB.H
-      set: [purposeCode, boatHullIdNumber]
-      any: [registrationState] -> matched: [registrationState]
+      set: [purposeCode, BoatHullIdNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -358,7 +270,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IA.QB.O
       set: [purposeCode, ownerAppliedNumber]
-      any: [registrationState] -> matched: [registrationState]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -367,21 +279,10 @@ QUERY SIMULATION
         <OwnerAppliedNumber>OAN12345</OwnerAppliedNumber>
         <State>FL</State>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] IA.QB.R
-      set: [purposeCode, registrationNumber]
-      any: [registrationState] -> matched: [registrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IA.QB.R</MessageKey>
-        <CaRequestPurposeCode>C</CaRequestPurposeCode>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-      </Transaction>
+    [SKIP] IA.QB.R -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
     >> PLATFORM FIRES: NLTS.BQ.N (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=19900115, BoatHullIdNumber=FL1234AB56H7, CaRequestPurposeCode=C, Name=Doe, John, OwnerAppliedNumber=OAN12345, RegistrationNumber=FL1234AB, State=FL
+    >> UNION POOL (platform serializes): BirthDate=19900115, BoatHullIdNumber=FL1234AB56H7, CaRequestPurposeCode=C, Name=Doe, John, OwnerAppliedNumber=OAN12345, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -389,26 +290,26 @@ QUERY SIMULATION
     Query: Person  |  Attrs: 6  |  Combos: 4
 
     [FIRES first-match] firstNameLastNameDriversLicenseNumber
-      set: [operatorLicenseNumber, nameFirst, nameLast]
-      any: [sexCode, registrationState] -> matched: [sexCode, registrationState]
+      set: [OperatorLicenseNumber, NameFirst, NameLast]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
-      set: [nameFirst, nameLast, birthDate]
-      any: [sexCode, registrationState] -> matched: [sexCode, registrationState]
+      set: [NameFirst, NameLast, BirthDate]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastName
-      set: [nameFirst, nameLast]
-      any: [sexCode, registrationState] -> matched: [sexCode, registrationState]
+      set: [NameFirst, NameLast]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"firstName":"John","lastName":"Doe","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] driversLicenseNumber
-      set: [operatorLicenseNumber]
-      any: [sexCode, registrationState] -> matched: [sexCode, registrationState]
+      set: [OperatorLicenseNumber]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
@@ -421,14 +322,14 @@ QUERY SIMULATION
     Query: Vehicle  |  Attrs: 3  |  Combos: 2
 
     [FIRES first-match] vehicleIdentificationNumber
-      set: [vehicleIdentificationNumber]
-      any: [licensePlateNumber, registrationState] -> matched: [licensePlateNumber, registrationState]
+      set: [VehicleIdentificationNumber]
+      any: [LicensePlateNumber, RegistrationState] -> matched: [LicensePlateNumber, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"vehicle.vinNumber":"1HGCM82633A123456","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
 
     [FIRES shadowed -- first match above wins] licensePlateIn
-      set: [licensePlateNumber]
-      any: [registrationState] -> matched: [registrationState]
+      set: [LicensePlateNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- RMS elastic payload (combo-scoped) --
       {"elasticQuery":{"vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
 

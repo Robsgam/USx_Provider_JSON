@@ -1,7 +1,7 @@
-CA_CLETS METADATA REFERENCE
-============================
-Generated: 2026-06-14
-Source: CA_CLETS.xml (metadata) + CA_CLETS.json
+﻿CA_CLETS_v2.6 METADATA REFERENCE
+=================================
+Generated: 2026-06-26
+Source: CA_CLETS.xml (metadata) + CA_CLETS_v2.6.json
 Metadata: 179 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -27,7 +27,7 @@ METADATA COMBINATIONS (2 total):
   IP.QA         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleBrand, ArticleCatego...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   IP.QA.S        set[purposeCode, serialNumber]
+  BUILT   IP.QA.S        set[purposeCode, ArticleSerialNumber]
   BUILT   IP.QA.O        set[purposeCode, ownerAppliedNumber]
 
 ================================================================================
@@ -55,12 +55,12 @@ METADATA COMBINATIONS (7 total):
   NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
 BUILD COVERAGE (6 of 7 built):
-  BUILT   NLTS.BQ.N      set[purposeCode, nameLast, nameFirst, birthDate, registrationState]
-  BUILT   NLTS.BQ.H      set[purposeCode, boatHullIdNumber, registrationState]
-  BUILT   NLTS.BQ.R      set[purposeCode, registrationNumber, registrationState]
-  BUILT   IA.QB.H        set[purposeCode, boatHullIdNumber]
+  BUILT   NLTS.BQ.N      set[purposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+  BUILT   NLTS.BQ.H      set[purposeCode, BoatHullIdNumber, RegistrationState]
+  BUILT   NLTS.BQ.R      set[purposeCode, RegistrationNumber, RegistrationState]
+  BUILT   IA.QB.H        set[purposeCode, BoatHullIdNumber]
   BUILT   IA.QB.O        set[purposeCode, ownerAppliedNumber]
-  BUILT   IA.QB.R        set[purposeCode, registrationNumber]
+  BUILT   IA.QB.R        set[purposeCode, RegistrationNumber]
   UNBUILT IV.4B          RegistrationNumber
 
 ================================================================================
@@ -84,8 +84,8 @@ METADATA COMBINATIONS (2 total):
   NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   NLTS.KQ.N      set[purposeCodeDH, birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
-  BUILT   NLTS.KQ.O      set[purposeCodeDH, operatorLicenseNumberDH]
+  BUILT   NLTS.KQ.N      set[purposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  BUILT   NLTS.KQ.O      set[purposeCodeDH, OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 36)
@@ -118,12 +118,12 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
 BUILD COVERAGE (8 of 8 built):
-  BUILT   NLTS.DQ.N      set[purposeCode, nameLast, nameFirst, registrationState]
-  BUILT   NLTS.DQ        set[purposeCode, operatorLicenseNumber, registrationState]
-  BUILT   IR.QVC.N       set[purposeCode, nameLast, nameFirst, sexCode]
-  BUILT   IN.L1          set[purposeCode, nameLast, nameFirst]
-  BUILT   IR.QVC.O       set[purposeCode, operatorLicenseNumber, criminalIdNumber]
-  BUILT   ID.L1          set[purposeCode, operatorLicenseNumber]
+  BUILT   NLTS.DQ.N      set[purposeCode, NameLast, NameFirst, RegistrationState]
+  BUILT   NLTS.DQ        set[purposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   IR.QVC.N       set[purposeCode, NameLast, NameFirst, SexCode]
+  BUILT   IN.L1          set[purposeCode, NameLast, NameFirst]
+  BUILT   IR.QVC.O       set[purposeCode, OperatorLicenseNumber, criminalIdNumber]
+  BUILT   ID.L1          set[purposeCode, OperatorLicenseNumber]
   BUILT   IR.QVC.C       set[purposeCode, criminalIdNumber]
   BUILT   IR.QVC.S       set[purposeCode, socialSecurityNumber]
 
@@ -148,8 +148,8 @@ METADATA COMBINATIONS (2 total):
   IG.QGH        Name                    CaRequestPurposeCode, Name                             --
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   IG.QGH         set[purposeCode, nameLast, nameFirst]
-  BUILT   IG.QGB         set[purposeCode, serialNumber]
+  BUILT   IG.QGH         set[purposeCode, NameLast, NameFirst]
+  BUILT   IG.QGB         set[purposeCode, GunSerialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 59)
@@ -204,11 +204,11 @@ METADATA COMBINATIONS (19 total):
   IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
 BUILD COVERAGE (5 of 19 built):
-  BUILT   NLTS.RQ.P      set[purposeCode, licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState]
-  BUILT   NLTS.RQ.V      set[purposeCode, vehicleIdentificationNumber, registrationState]
-  BUILT   IN.VP          set[purposeCode, nameLast, nameFirst]
-  BUILT   IA.QVK         set[purposeCode, vehicleIdentificationNumber]
-  BUILT   IA.QV          set[purposeCode, licensePlateNumber]
+  BUILT   NLTS.RQ.P      set[purposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   NLTS.RQ.V      set[purposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   IN.VP          set[purposeCode, NameLast, NameFirst]
+  BUILT   IA.QVK         set[purposeCode, VehicleIdentificationNumber]
+  BUILT   IA.QV          set[purposeCode, LicensePlateNumber]
   UNBUILT IV.4I          LicensePlateNumber
   UNBUILT IV.4C          LicensePlateNumber
   UNBUILT IV.4M          LicensePlateNumber

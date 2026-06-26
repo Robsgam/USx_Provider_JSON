@@ -1,44 +1,44 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_CLETS
-  Source: CA_CLETS.json
-  Generated: 2026-06-14 22:55
+  PICKLIST / DROPDOWN REPORT: CA_CLETS_v2.6
+  Source: CA_CLETS_v2.6.json
+  Generated: 2026-06-26 08:31
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    articleTypeCode [Article Type]
+    ArticleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
 
   Entity: Boat
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
 
   Entity: Firearm
-    firearmMake [Make]
-      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
     gunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
+    GunMake [Make]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
     gunTypeCode [Type]
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
 
   Entity: Person
     raceCode [Race]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
-    sexCode [Sex]
+    SexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    sexCodeDH [Sex (DH)]
+    SexCodeDH [Sex (DH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    licensePlateTypeCode [Plate Type] (default=PC)
+    LicensePlateTypeCode [Plate Type] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    registrationState [State (leave blank for CA)]
+    RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
-    vehicleMakeCode [Vehicle Make]
+    VehicleMakeCode [Vehicle Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
@@ -79,7 +79,7 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
       VehicleColorCode -> VehicleColorCode
         attributeType=ITEM_COLOR | codeTypeSource=NCIC
       VehicleMakeName -> VehicleMakeName
-        codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+        codeTypeCategory=VehicleType, codeTypeSource=VEHICLE
       VehicleStyleCode -> BodyStyle
         codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
       VehicleModelName -> VehicleModelName
