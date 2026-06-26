@@ -1,21 +1,21 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.8.json
-  Generated: 2026-06-26 09:44
+  Source: CA_CLETS_v2.9.json
+  Generated: 2026-06-26 12:22
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-26 09:44
+ Generated: 2026-06-26 12:23
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_CLETS
 ============================================================
   XML: CA_CLETS.xml
-  JSON: CA_CLETS_v2.8.json
+  JSON: CA_CLETS_v2.9.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -102,6 +102,7 @@ METADATA AUDIT
   DmvDriverLicenseQuery: (not built in JSON -- see CHECK 1)
   DmvVehicleRegistrationQuery: (not built in JSON -- see CHECK 1)
   DriverHistoryQuery:
+  [PASS]   Attention: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   Name: in XML and QIDM
@@ -189,10 +190,12 @@ METADATA AUDIT
   [PASS]   keyRef NLTS.KQ: set field 'BirthDate' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: set field 'Name' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: set field 'SexCode' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
+  [PASS]   keyRef NLTS.KQ: any field 'Attention' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: any field 'PurposeCode' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: any field 'State' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: set field 'CaRequestPurposeCode' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: set field 'OperatorLicenseNumber' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
+  [PASS]   keyRef NLTS.KQ: any field 'Attention' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: any field 'PurposeCode' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   [PASS]   keyRef NLTS.KQ: any field 'State' covered by invented variants (NLTS.KQ.N,NLTS.KQ.O)
   DriverLicenseQuery:
@@ -338,6 +341,7 @@ METADATA AUDIT
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] ownerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
   [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] Attention: maxLength 30 matches XML (Attention)
   [PASS] purposeCodeDH: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] NameLastDH: maxLength 30 matches XML (Name)
   [PASS] NameFirstDH: maxLength 30 matches XML (Name)
@@ -354,7 +358,7 @@ METADATA AUDIT
   [PASS] socialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
   [PASS] age: maxLength 2 matches XML (Age)
   [PASS] purposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] GunSerialNumber: maxLength 20 matches XML (GunSerialNumber)
+  [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] addressCity: maxLength 13 matches XML (AddressCity)
@@ -369,6 +373,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 254 PASS / 0 FAIL / 0 WARN
+Total: 258 PASS / 0 FAIL / 0 WARN
 ============================================================
 

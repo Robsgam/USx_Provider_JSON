@@ -20,7 +20,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.8"
+    [string]$Version = "2.9"
 )
 
 $ErrorActionPreference = "Stop"
@@ -384,14 +384,19 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{
+            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+        }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCodeDH','BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH')
-                any        = @('RegistrationState')
+                any        = @('RegistrationState','Attention')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
+                    [PSCustomObject]@{ field = 'Attention';      value = 'X' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
@@ -404,9 +409,10 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCodeDH','OperatorLicenseNumberDH')
-                any      = @('RegistrationState')
+                any      = @('RegistrationState','Attention')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
+                    [PSCustomObject]@{ field = 'Attention';      value = 'X' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -414,7 +420,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). DH-suffix fields. All via Nlets. v2.6: PascalCase fieldIds, OLN>Name guardrail on NLTS.KQ.N, CAD defaults on all combos.'
+    description     = 'DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). DH-suffix fields. All via Nlets. v2.9: Attention auto-populate (CommsysGetLastNameFirstNameInitialRuleHandler, size 30, gate-feeder on DH card).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverHistoryQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -442,7 +448,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('GunMake');               targetField = 'GunMake' }
-        [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('GunSerialNumber');       targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'GunTypeCode';          size = 2;  sourceField = @('gunTypeCode');           targetField = 'GunTypeCode' }
         [PSCustomObject]@{
             name = 'Name'
@@ -466,7 +472,7 @@ $gunQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','GunSerialNumber')
+                set      = @('purposeCode','serialNumber')
                 any      = @('gunCaliber','GunMake','gunTypeCode')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
@@ -477,7 +483,7 @@ $gunQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'GunQuery -- IG.QGH (name) + IG.QGB (serial). Most-specific first. MC cross-entity. v2.6: PascalCase fieldIds (GunSerialNumber, GunMake, NameLast/NameFirst), CAD defaults on all combos.'
+    description     = 'GunQuery -- IG.QGH (name) + IG.QGB (serial). Most-specific first. MC cross-entity. v2.9: serialNumber fieldId (was GunSerialNumber) enables CAD-triggered IG.QGB; GunSerialNumber targetField (XML element) unchanged.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_GunQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -782,6 +788,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name'                                   'ROW_PER_DH_2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
             )}
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); fields = @(
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
+            )}
         )
     }
 )
@@ -804,7 +813,7 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM SEARCH'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (or search by Owner Name)' '20' 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number (or search by Owner Name)' '20' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';  node = Sel 'GunMake'  'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
                 @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
                 @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type (optional)'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
@@ -822,7 +831,7 @@ $faLayout = MakeLayouts @(
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- MC collapsed: OPTIONS (Purpose) + SEARCH (Serial/Make/Caliber/Type/Name). v2.6: PascalCase fieldIds (GunSerialNumber, GunMake), CAD defaults on all combos.'
+    description  = 'Firearm query -- MC collapsed: OPTIONS (Purpose) + SEARCH (Serial/Make/Caliber/Type/Name). v2.9: serialNumber fieldId (was GunSerialNumber) enables CAD-triggered IG.QGB.'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'

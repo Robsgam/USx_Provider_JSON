@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.8** | Generated: 2026-06-26
+Current: **v2.9** | Generated: 2026-06-26
 
 ---
+
+## v2.9 -- 2026-06-26 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.8 -- 2026-06-26 -- Pipeline rebuild
 

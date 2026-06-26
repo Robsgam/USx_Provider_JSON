@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.8.json
-  Generated: 2026-06-26 09:44
+  Source: CA_CLETS_v2.9.json
+  Generated: 2026-06-26 12:22
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_CLETS_v2.8
+ CAD AUDIT: CA_CLETS_v2.9
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -41,7 +41,7 @@ CAD AUDIT
     [PASS] raceCode: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
-    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] attention: in QIF as 'Attention' (PascalCase USx fieldIds)
     [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] socialSecurityNumber: in QIF and CAD list
@@ -67,7 +67,7 @@ CAD AUDIT
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
-    [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] gunCaliber: in QIF and CAD list
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -83,7 +83,6 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] age: in QIF and CAD list
-    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
     [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -179,6 +178,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 89 PASS / 0 FAIL / 0 WARN / 58 INFO
+Total: 91 PASS / 0 FAIL / 0 WARN / 55 INFO
 
 

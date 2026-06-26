@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.8.json
-  Generated: 2026-06-26 09:44
+  Source: CA_CLETS_v2.9.json
+  Generated: 2026-06-26 12:22
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_v2.8
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_v2.9
 ============================================================
-Source: CA_CLETS_v2.8.json
+Source: CA_CLETS_v2.9.json
 Matrix: CA_CLETS_TEST_MATRIX.txt
 Generated: 2026-06-26
 
@@ -17,8 +17,8 @@ data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (29 tests -- 3 cards, 10 combos)
-  T1  Person     [PASS] 3 cards, 20 fields, defaults verified
+ENTITY: PERSON (31 tests -- 3 cards, 10 combos)
+  T1  Person     [PASS] 3 cards, 21 fields, defaults verified
   T2  Person     [PASS] (structural check)
   T3  Person     [PASS] (structural check)
   T4  Person     [PASS] any[] fields verified: age
@@ -35,9 +35,9 @@ ENTITY: PERSON (29 tests -- 3 cards, 10 combos)
   T15  Person     [PASS] (structural check)
   T16  Person     [PASS] any[] fields verified: BirthDate
   T17  Person     [PASS] (structural check)
-  T18  Person     [PASS] (structural check)
+  T18  Person     [PASS] any[] fields verified: Attention
   T19  Person     [PASS] (structural check)
-  T20  Person     [PASS] (structural check)
+  T20  Person     [PASS] any[] fields verified: Attention
   T21  Person     [PASS] (structural check)
   T22  Person     [PASS] (structural check)
   T23  Person     [PASS] (structural check)
@@ -45,49 +45,51 @@ ENTITY: PERSON (29 tests -- 3 cards, 10 combos)
   T25  Person     [PASS] (structural check)
   T26  Person     [PASS] (structural check)
   T27  Person     [PASS] (structural check)
-  T28  Person     [PASS] queriesToDeselect verified
-  T29  Person     [PASS] empty form: no combos fire
+  T28  Person     [PASS] (structural check)
+  T29  Person     [PASS] (structural check)
+  T30  Person     [PASS] queriesToDeselect verified
+  T31  Person     [PASS] empty form: no combos fire
 ENTITY: VEHICLE (14 tests -- 2 cards, 5 combos)
-  T30  Vehicle    [PASS] 2 cards, 12 fields, defaults verified
-  T31  Vehicle    [PASS] (structural check)
-  T32  Vehicle    [PASS] any[] fields verified: addressCity, addressStreetNumber
+  T32  Vehicle    [PASS] 2 cards, 12 fields, defaults verified
   T33  Vehicle    [PASS] (structural check)
-  T34  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T34  Vehicle    [PASS] any[] fields verified: addressCity, addressStreetNumber
   T35  Vehicle    [PASS] (structural check)
   T36  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T37  Vehicle    [PASS] (structural check)
   T38  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T39  Vehicle    [PASS] (structural check)
-  T40  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
+  T40  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T41  Vehicle    [PASS] (structural check)
-  T42  Vehicle    [PASS] (structural check)
-  T43  Vehicle    [PASS] empty form: no combos fire
+  T42  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
+  T43  Vehicle    [PASS] (structural check)
+  T44  Vehicle    [PASS] (structural check)
+  T45  Vehicle    [PASS] empty form: no combos fire
 ENTITY: BOAT (10 tests -- 1 card, 6 combos)
-  T44  Boat       [PASS] 1 cards, 8 fields, defaults verified
-  T45  Boat       [PASS] (structural check)
-  T46  Boat       [PASS] (structural check)
+  T46  Boat       [PASS] 1 cards, 8 fields, defaults verified
   T47  Boat       [PASS] (structural check)
   T48  Boat       [PASS] (structural check)
   T49  Boat       [PASS] (structural check)
   T50  Boat       [PASS] (structural check)
   T51  Boat       [PASS] (structural check)
   T52  Boat       [PASS] (structural check)
-  T53  Boat       [PASS] empty form: no combos fire
+  T53  Boat       [PASS] (structural check)
+  T54  Boat       [PASS] (structural check)
+  T55  Boat       [PASS] empty form: no combos fire
 ENTITY: FIREARM (6 tests -- 1 card, 2 combos)
-  T54  Firearm    [PASS] 1 cards, 9 fields, defaults verified
-  T55  Firearm    [PASS] (structural check)
-  T56  Firearm    [PASS] any[] fields verified: gunCaliber, GunMake, gunTypeCode
+  T56  Firearm    [PASS] 1 cards, 9 fields, defaults verified
   T57  Firearm    [PASS] (structural check)
-  T58  Firearm    [PASS] any[] fields verified: BirthDate, age
-  T59  Firearm    [PASS] empty form: no combos fire
+  T58  Firearm    [PASS] any[] fields verified: gunCaliber, GunMake, gunTypeCode
+  T59  Firearm    [PASS] (structural check)
+  T60  Firearm    [PASS] any[] fields verified: BirthDate, age
+  T61  Firearm    [PASS] empty form: no combos fire
 ENTITY: ARTICLE (6 tests -- 1 card, 2 combos)
-  T60  Article    [PASS] 1 cards, 6 fields, defaults verified
-  T61  Article    [PASS] (structural check)
-  T62  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T62  Article    [PASS] 1 cards, 6 fields, defaults verified
   T63  Article    [PASS] (structural check)
   T64  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
-  T65  Article    [PASS] empty form: no combos fire
+  T65  Article    [PASS] (structural check)
+  T66  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T67  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 65/65 PASS, 0 FAIL
+SUMMARY: 67/67 PASS, 0 FAIL
 
 

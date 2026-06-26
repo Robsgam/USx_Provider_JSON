@@ -248,6 +248,14 @@ TOOLS
     completeness, and QIDM sourceField case alignment.
     Usage: .\audit_cad.ps1 [-Path <json>] [-Variant <BASE|MC>] [-OutFile <path>]
 
+  tools/test_cad_dispatch.ps1
+    CAD Dispatch Coverage Validator. Algorithmically determines which CommSys
+    combos CAD auto-populate can trigger (set[] covered by CAD fields + combo
+    defaults[]), builds a minimal CAD form state for each, runs the combo
+    simulator, and verifies the expected combo fires first. Reports PASS / FAIL /
+    SKIP (SKIP = not CAD-triggerable by design). Provider-agnostic.
+    Usage: .\test_cad_dispatch.ps1 -Provider <name> [-OutFile <path>]
+
   tools/audit_simulator_parity.ps1
     Tool-integrity gate. Confirms test_commsys.ps1 and run_test_matrix.ps1 both
     dot-source _sim_helpers.ps1 and use Test-ComboConditionsCore (no private/

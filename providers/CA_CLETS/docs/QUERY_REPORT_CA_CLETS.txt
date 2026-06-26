@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.8.json
-  Generated: 2026-06-26 09:44
+  Source: CA_CLETS_v2.9.json
+  Generated: 2026-06-26 12:22
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_v2.8.json
+  CommSys Query Simulator -- CA_CLETS_v2.9.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
@@ -93,12 +93,12 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_DriverHistoryQuery [Person] ---
-    Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
+    Query: DriverHistoryQuery  |  Attrs: 8  |  Combos: 2
     [SKIP] NLTS.KQ.N -- conditions failed: OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] NLTS.KQ.O
       set: [purposeCodeDH, OperatorLicenseNumberDH]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      any: [RegistrationState, Attention] -> matched: [RegistrationState, Attention]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -107,10 +107,11 @@ QUERY SIMULATION
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
         <State>NJ</State>
+        <Attention>DOE J</Attention>
       </Transaction>
 
     >> PLATFORM FIRES: NLTS.KQ.O (first matching combo)
-    >> UNION POOL (platform serializes): CaRequestPurposeCode=C, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
+    >> UNION POOL (platform serializes): CaRequestPurposeCode=C, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ, Attention=DOE J
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -129,7 +130,7 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] IG.QGB
-      set: [purposeCode, GunSerialNumber]
+      set: [purposeCode, serialNumber]
       any: [gunCaliber, GunMake, gunTypeCode] -> matched: [gunCaliber, GunMake]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>

@@ -1,4 +1,4 @@
-CA_CLETS v2.8 -- TEST MATRIX
+CA_CLETS v2.9 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-26
 Layout: multi-card per entity
@@ -14,7 +14,7 @@ Vehicle (2 cards, 12 fields):
     ROW 2: VehicleIdentificationNumber [Inp 30], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: NameFirst [Inp 30], NameLast [Inp 30], addressCity [Inp 13], addressStreetNumber [Inp 3]
 
-Person (3 cards, 20 fields):
+Person (3 cards, 21 fields):
   CARD_PER_OPT (Search Options):
     RegistrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_PER_DL (DRIVER LICENSE SEARCH):
@@ -24,10 +24,11 @@ Person (3 cards, 20 fields):
   CARD_PER_DH (DRIVER HISTORY SEARCH):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 3: Attention [Inp X, 30]
 
 Firearm (1 card, 9 fields):
   CARD_GUN_SEARCH (FIREARM SEARCH):
-    ROW 1: GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate], age [Inp 2]
     ROW 3: purposeCode [Inp C, 1]
 
@@ -59,7 +60,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
 
 
-ENTITY 1: PERSON (29 tests -- 3 cards, 10 combos)
+ENTITY 1: PERSON (31 tests -- 3 cards, 10 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -73,6 +74,7 @@ ENTITY 1: PERSON (29 tests -- 3 cards, 10 combos)
               CARD_PER_DH: titled "DRIVER HISTORY SEARCH".
               License Number (DH) - or Name + DOB + Sex, Purpose Code (DH)=C.
               First Name (DH), Last Name (DH), Date of Birth (DH) - required with Name, Sex (DH) - required with Name dropdown (no default).
+              Attention (auto-populated from officer profile)=X.
  2  Person      NLTS+.DQ+State     purposeCode=C, OperatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ)
  3  Person      ID.L1+ID.L1        purposeCode=C, OperatorLicenseNumber=... [    ]
@@ -105,140 +107,144 @@ ENTITY 1: PERSON (29 tests -- 3 cards, 10 combos)
               Expected: any[] fields present in XML output.
 17  Person      NLTS+.KQ.O         purposeCodeDH=C, OperatorLicenseNumbe... [    ]
               Expected: DriverHistoryQuery fires (NLTS.KQ.O)
-18  Person      NLTS+.KQ.N         purposeCodeDH=C, BirthDateDH=01/15/19... [    ]
+18  Person      NLTS+.KQ.O         + Attention                     [    ]
+              Expected: any[] fields present in XML output.
+19  Person      NLTS+.KQ.N         purposeCodeDH=C, BirthDateDH=01/15/19... [    ]
               Expected: DriverHistoryQuery fires (NLTS.KQ.N)
-19  Person      Guardrail: NLTS.DQ>NLTS.DQ.N  OperatorLicenseNumber=D999888777, pur... [    ]
+20  Person      NLTS+.KQ.N         + Attention                     [    ]
+              Expected: any[] fields present in XML output.
+21  Person      Guardrail: NLTS.DQ>NLTS.DQ.N  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName+RegistrationState absent from XML.
-20  Person      Guardrail: NLTS.DQ>IR.QVC.N  OperatorLicenseNumber=D999888777, pur... [    ]
+22  Person      Guardrail: NLTS.DQ>IR.QVC.N  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName+SexCode absent from XML.
-21  Person      Guardrail: NLTS.DQ>IN.L1  OperatorLicenseNumber=D999888777, pur... [    ]
+23  Person      Guardrail: NLTS.DQ>IN.L1  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName absent from XML.
-22  Person      Guardrail: NLTS.DQ.N>IR.QVC.O  purposeCode=C, OperatorLicenseNumber=... [    ]
+24  Person      Guardrail: NLTS.DQ.N>IR.QVC.O  purposeCode=C, OperatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ.N). purposeCode+OLN+criminalIdNumber absent from XML.
-23  Person      Guardrail: NLTS.DQ.N>ID.L1  purposeCode=C, OperatorLicenseNumber=... [    ]
+25  Person      Guardrail: NLTS.DQ.N>ID.L1  purposeCode=C, OperatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ.N). purposeCode+OLN absent from XML.
-24  Person      Guardrail: IR.QVC.O>ID.L1  criminalIdNumber=TEST, purposeCode=C,... [    ]
+26  Person      Guardrail: IR.QVC.O>ID.L1  criminalIdNumber=TEST, purposeCode=C,... [    ]
               Expected: DriverLicenseQuery fires (IR.QVC.O). purposeCode+OLN absent from XML.
-25  Person      Guardrail: NLTS.DQ>IR.QVC.C  OperatorLicenseNumber=D999888777, pur... [    ]
+27  Person      Guardrail: NLTS.DQ>IR.QVC.C  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+criminalIdNumber absent from XML.
-26  Person      Guardrail: NLTS.DQ>IR.QVC.S  OperatorLicenseNumber=D999888777, pur... [    ]
+28  Person      Guardrail: NLTS.DQ>IR.QVC.S  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+socialSecurityNumber absent from XML.
-27  Person      Guardrail: NLTS.KQ.O>NLTS.KQ.N  OperatorLicenseNumberDH=D999888777, p... [    ]
+29  Person      Guardrail: NLTS.KQ.O>NLTS.KQ.N  OperatorLicenseNumberDH=D999888777, p... [    ]
               Expected: DriverHistoryQuery fires (NLTS.KQ.O). purposeCodeDH+DOB+LastName+FirstName+SexCodeDH absent from XML.
-28  Person      Deselect: DH deselects DL.            [    ]
+30  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
-29  Person      Empty form, verify no Send button / no request.    [    ]
+31  Person      Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 2: VEHICLE (14 tests -- 2 cards, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-30  Vehicle     Render form. Verify 2 cards:                        [    ]
+32  Vehicle     Render form. Verify 2 cards:                        [    ]
               CARD_VEH_OPT: titled "Search Options".
               State (leave blank for CA) dropdown (no default), Purpose Code=C.
               CARD_VEH_SEARCH: titled "VEHICLE SEARCH".
               Plate Number (or search by VIN or Owner Name), Plate Type (out-of-state plates) dropdown=PC, Plate Year (out-of-state plates)=2026.
               VIN (Plate wins if both entered), Vehicle Make (optional) dropdown (no default), Vehicle Year (optional).
               First Name (vehicle owner search), Last Name (vehicle owner search), City (optional), Street Number (optional).
-31  Vehicle     IN+.VP             purposeCode=C, NameLast=DOE, NameFirs... [    ]
+33  Vehicle     IN+.VP             purposeCode=C, NameLast=DOE, NameFirs... [    ]
               Expected: VehicleRegistrationQuery fires (IN.VP)
-32  Vehicle     IN+.VP             + addressCity, addressStreetNumber [    ]
+34  Vehicle     IN+.VP             + addressCity, addressStreetNumber [    ]
               Expected: any[] fields present in XML output.
-33  Vehicle     IA.QV+IA.QV        purposeCode=C, LicensePlateNumber=TES... [    ]
+35  Vehicle     IA.QV+IA.QV        purposeCode=C, LicensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QV)
-34  Vehicle     IA.QV+IA.QV        + VehicleMakeCode, vehicleYear  [    ]
+36  Vehicle     IA.QV+IA.QV        + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-35  Vehicle     NLTS+.RQ.P+State   purposeCode=C, LicensePlateNumber=TES... [    ]
+37  Vehicle     NLTS+.RQ.P+State   purposeCode=C, LicensePlateNumber=TES... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS.RQ.P)
-36  Vehicle     NLTS+.RQ.P+State   + VehicleMakeCode, vehicleYear  [    ]
+38  Vehicle     NLTS+.RQ.P+State   + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-37  Vehicle     NLTS+.RQ.V+State   purposeCode=C, VehicleIdentificationN... [    ]
+39  Vehicle     NLTS+.RQ.V+State   purposeCode=C, VehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS.RQ.V)
-38  Vehicle     NLTS+.RQ.V+State   + VehicleMakeCode, vehicleYear  [    ]
+40  Vehicle     NLTS+.RQ.V+State   + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-39  Vehicle     IA.QVK+IA.QVK      purposeCode=C, VehicleIdentificationN... [    ]
+41  Vehicle     IA.QVK+IA.QVK      purposeCode=C, VehicleIdentificationN... [    ]
               Expected: VehicleRegistrationQuery fires (IA.QVK)
-40  Vehicle     IA.QVK+IA.QVK      + VehicleMakeCode               [    ]
+42  Vehicle     IA.QVK+IA.QVK      + VehicleMakeCode               [    ]
               Expected: any[] fields present in XML output.
-41  Vehicle     Guardrail: NLTS.RQ.P>NLTS.RQ.V  LicensePlateNumber=TEST123, purposeCo... [    ]
+43  Vehicle     Guardrail: NLTS.RQ.P>NLTS.RQ.V  LicensePlateNumber=TEST123, purposeCo... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS.RQ.P). purposeCode+VIN+RegistrationState absent from XML.
-42  Vehicle     Guardrail: NLTS.RQ.P>IA.QVK  LicensePlateNumber=TEST123, purposeCo... [    ]
+44  Vehicle     Guardrail: NLTS.RQ.P>IA.QVK  LicensePlateNumber=TEST123, purposeCo... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS.RQ.P). purposeCode+VIN absent from XML.
-43  Vehicle     Empty form, verify no Send button / no request.    [    ]
+45  Vehicle     Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 3: BOAT (10 tests -- 1 card, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-44  Boat        Render form. Verify 1 card:                        [    ]
+46  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA_SEARCH: titled "BOAT SEARCH".
               Hull ID (or Reg Number; Hull wins if both), Registration Number (or Hull ID), Owner Applied Number (OAN).
               First Name (out-of-state only; State + DOB required), Last Name (out-of-state only; State + DOB required), Date of Birth (required with Name).
               State (leave blank for CA; required with Name) dropdown (no default), Purpose Code=C.
-45  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
+47  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: BoatQuery fires (IA.QB.O)
-46  Boat        IA.QB.+IA.QB.H     purposeCode=C, BoatHullIdNumber=FL123... [    ]
+48  Boat        IA.QB.+IA.QB.H     purposeCode=C, BoatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (IA.QB.H)
-47  Boat        NLTS+.BQ.N+State   purposeCode=C, NameLast=DOE, NameFirs... [    ]
+49  Boat        NLTS+.BQ.N+State   purposeCode=C, NameLast=DOE, NameFirs... [    ]
               Expected: BoatQuery fires (NLTS.BQ.N)
-48  Boat        NLTS+.BQ.H+State   purposeCode=C, BoatHullIdNumber=FL123... [    ]
+50  Boat        NLTS+.BQ.H+State   purposeCode=C, BoatHullIdNumber=FL123... [    ]
               Expected: BoatQuery fires (NLTS.BQ.H)
-49  Boat        IA.QB.+IA.QB.R     purposeCode=C, RegistrationNumber=FL1... [    ]
+51  Boat        IA.QB.+IA.QB.R     purposeCode=C, RegistrationNumber=FL1... [    ]
               Expected: BoatQuery fires (IA.QB.R)
-50  Boat        NLTS+.BQ.R+State   purposeCode=C, RegistrationNumber=FL1... [    ]
+52  Boat        NLTS+.BQ.R+State   purposeCode=C, RegistrationNumber=FL1... [    ]
               Expected: BoatQuery fires (NLTS.BQ.R)
-51  Boat        Guardrail: NLTS.BQ.H>NLTS.BQ.R  BoatHullIdNumber=FL1234AB56H7, purpos... [    ]
+53  Boat        Guardrail: NLTS.BQ.H>NLTS.BQ.R  BoatHullIdNumber=FL1234AB56H7, purpos... [    ]
               Expected: BoatQuery fires (NLTS.BQ.H). purposeCode+Reg+RegistrationState absent from XML.
-52  Boat        Guardrail: NLTS.BQ.H>IA.QB.R  BoatHullIdNumber=FL1234AB56H7, purpos... [    ]
+54  Boat        Guardrail: NLTS.BQ.H>IA.QB.R  BoatHullIdNumber=FL1234AB56H7, purpos... [    ]
               Expected: BoatQuery fires (NLTS.BQ.H). purposeCode+Reg absent from XML.
-53  Boat        Empty form, verify no Send button / no request.    [    ]
+55  Boat        Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 4: FIREARM (6 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-54  Firearm     Render form. Verify 1 card:                        [    ]
+56  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN_SEARCH: titled "FIREARM SEARCH".
               Serial Number (or search by Owner Name), Make (optional) dropdown (no default), Caliber (optional) dropdown (no default), Type (optional) dropdown (no default).
               First Name (owner search), Last Name (owner search), Date of Birth (optional), Age (optional).
               Purpose Code=C.
-55  Firearm     IG+.QGB            purposeCode=C, GunSerialNumber=GUN12345 [    ]
+57  Firearm     IG+.QGB            purposeCode=C, serialNumber=TEST [    ]
               Expected: GunQuery fires (IG.QGB)
-56  Firearm     IG+.QGB            + gunCaliber, GunMake, gunTypeCode [    ]
+58  Firearm     IG+.QGB            + gunCaliber, GunMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
-57  Firearm     IG+.QGH            purposeCode=C, NameLast=DOE, NameFirs... [    ]
+59  Firearm     IG+.QGH            purposeCode=C, NameLast=DOE, NameFirs... [    ]
               Expected: GunQuery fires (IG.QGH)
-58  Firearm     IG+.QGH            + BirthDate, age                [    ]
+60  Firearm     IG+.QGH            + BirthDate, age                [    ]
               Expected: any[] fields present in XML output.
-59  Firearm     Empty form, verify no Send button / no request.    [    ]
+61  Firearm     Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 5: ARTICLE (6 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-60  Article     Render form. Verify 1 card:                        [    ]
+62  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART_SEARCH: titled "ARTICLE SEARCH".
               Serial Number (or Owner Applied Number), Owner Applied Number (OAN), Purpose Code=C.
               Article Type (optional) dropdown (no default), Brand (optional), Category (optional).
-61  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
+63  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: ArticleSingleQuery fires (IP.QA.O)
-62  Article     IP.QA.+IP.QA.O     + articleBrand, ArticleTypeCode, articleCategory [    ]
+64  Article     IP.QA.+IP.QA.O     + articleBrand, ArticleTypeCode, articleCategory [    ]
               Expected: any[] fields present in XML output.
-63  Article     IP.QA.+IP.QA.S     purposeCode=C, ArticleSerialNumber=AR... [    ]
+65  Article     IP.QA.+IP.QA.S     purposeCode=C, ArticleSerialNumber=AR... [    ]
               Expected: ArticleSingleQuery fires (IP.QA.S)
-64  Article     IP.QA.+IP.QA.S     + articleBrand, ArticleTypeCode, articleCategory [    ]
+66  Article     IP.QA.+IP.QA.S     + articleBrand, ArticleTypeCode, articleCategory [    ]
               Expected: any[] fields present in XML output.
-65  Article     Empty form, verify no Send button / no request.    [    ]
+67  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 65 tests
+TOTAL: 67 tests
 
 COMBO COVERAGE (25/25):
-  VehicleRegistrationQuery: 5/5 -- T31(IN+.VP), T33(IA.QV+IA.QV), T35(NLTS+.RQ.P), T37(NLTS+.RQ.V), T39(IA.QVK+IA.QVK)
+  VehicleRegistrationQuery: 5/5 -- T33(IN+.VP), T35(IA.QV+IA.QV), T37(NLTS+.RQ.P), T39(NLTS+.RQ.V), T41(IA.QVK+IA.QVK)
   DriverLicenseQuery: 8/8 -- T2(NLTS+.DQ), T3(ID.L1+ID.L1), T5(IR.QVC+IR.QVC.C), T7(IR.QVC+IR.QVC.S), T9(IR.QVC+IR.QVC.O), T11(NLTS+.DQ.N), T13(IR.QVC+IR.QVC.N), T15(IN+.L1)
-  DriverHistoryQuery: 2/2 -- T17(NLTS+.KQ.O), T18(NLTS+.KQ.N)
-  GunQuery: 2/2 -- T55(.QGB), T57(.QGH)
-  ArticleSingleQuery: 2/2 -- T61(IP.QA.O), T63(IP.QA.S)
-  BoatQuery: 6/6 -- T45(IA.QB.+IA.QB.O), T46(IA.QB.+IA.QB.H), T47(NLTS+.BQ.N), T48(NLTS+.BQ.H), T49(IA.QB.+IA.QB.R), T50(NLTS+.BQ.R)
+  DriverHistoryQuery: 2/2 -- T17(NLTS+.KQ.O), T19(NLTS+.KQ.N)
+  GunQuery: 2/2 -- T57(.QGB), T59(.QGH)
+  ArticleSingleQuery: 2/2 -- T63(IP.QA.O), T65(IP.QA.S)
+  BoatQuery: 6/6 -- T47(IA.QB.+IA.QB.O), T48(IA.QB.+IA.QB.H), T49(NLTS+.BQ.N), T50(NLTS+.BQ.H), T51(IA.QB.+IA.QB.R), T52(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.8.json
+IMPORT FILE: CA_CLETS_v2.9.json

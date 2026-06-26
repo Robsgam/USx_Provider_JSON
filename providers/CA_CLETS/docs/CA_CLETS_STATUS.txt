@@ -3,8 +3,8 @@ CA_CLETS -- Build Status
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-06-26
 
-Current: v2.8 | 77P/0F/0W/0LIM | Updated 2026-06-26
-Current version : v2.8
+Current: v2.9 | 77P/0F/0W/0LIM | Updated 2026-06-26
+Current version : v2.9
 Provider: CA_CLETS
 
 ARCHITECTURE
@@ -177,7 +177,6 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Firearm    Gun:NEGATIVE         PASS     Empty form - no request fires
 
 LIVE TEST RESULTS (v3.4)
 ========================
@@ -193,32 +192,24 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:RENDER            PASS     3 cards: Search Options (State no default, PurposeCode=C), Driver License Search (OLN/CII/SSN/Name/DOB/Sex/APPS=N), Driver History Search (OLN-DH/PurposeCode=C/Name-DH/DOB-DH/Sex-DH). Labels and defaults correct.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:NEGATIVE          PASS     Empty form: no Send button, no query fires.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:IR.QVC.C          PASS     CII only, no OLN -> IR.QVC.C fires. CriminalIdNumber in XML, no OLN.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:IR.QVC.S          PASS     SSN only, no OLN/CII -> IR.QVC.S fires. SSN in XML, no OLN or CII.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:IR.QVC.O          PASS     OLN+CII, no State -> IR.QVC.O fires. OLN+CriminalIdNumber in XML, no State.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:NLTS.DQ.N         PASS     Guardrail T23: Name+State, no OLN -> NLTS.DQ.N fires. ID.L1 blocked (RegistrationState NOT_EXISTS + no OLN). Same form fill as T11.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:NLTS.DQ.N         PASS     NLTS.DQ.N any[]: Name+State+BirthDate -> BirthDate=19850115 in XML (yyyyMMdd).
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-26 Person     DL:IR.QVC.N          PASS     Name+Sex, State blank, no OLN -> IR.QVC.N fires. Name+SexCode=M in XML, no State.

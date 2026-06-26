@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.8.json
-  Generated: 2026-06-26 09:44
+  Source: CA_CLETS_v2.9.json
+  Generated: 2026-06-26 12:22
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.8
+ POST-BUILD VERIFICATION: CA_CLETS_v2.9
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 31 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, appsRequestIndicator, criminalIdNumber, height, raceCode, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, gunCaliber, GunMake, GunSerialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 32 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, appsRequestIndicator, criminalIdNumber, height, raceCode, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, Attention, gunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -36,13 +36,15 @@ POST-BUILD VERIFICATION
   [INFO] Single-JSON provider -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
+  [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
+  [INFO] QIDM 'CA_CLETS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (39) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (40) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -57,7 +59,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned)
 
 ========================================
  VERIFICATION PASSED: 14 PASS / 0 WARN / 0 FAIL
