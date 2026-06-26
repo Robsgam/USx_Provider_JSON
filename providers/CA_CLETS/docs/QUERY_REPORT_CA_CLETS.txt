@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.6.json
-  Generated: 2026-06-26 08:31
+  Source: CA_CLETS_v2.7.json
+  Generated: 2026-06-26 09:16
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_v2.6.json
+  CommSys Query Simulator -- CA_CLETS_v2.7.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
@@ -67,7 +67,7 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 8
+    Query: DriverLicenseQuery  |  Attrs: 13  |  Combos: 8
     [SKIP] NLTS.DQ.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] NLTS.DQ
@@ -82,65 +82,13 @@ QUERY SIMULATION
       </Transaction>
     [SKIP] IR.QVC.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] IN.L1 -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
-
-    [FIRES shadowed -- first match above wins] IR.QVC.O
-      set: [purposeCode, OperatorLicenseNumber, criminalIdNumber]
-      any: [socialSecurityNumber, age] -> matched: [socialSecurityNumber, age]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IR.QVC.O</MessageKey>
-        <Age>30</Age>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <CriminalIdNumber>CA12345678</CriminalIdNumber>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SocialSecurityNumber>123456789</SocialSecurityNumber>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] ID.L1
-      set: [purposeCode, OperatorLicenseNumber]
-      any: [RegistrationState, socialSecurityNumber, age] -> matched: [RegistrationState, socialSecurityNumber, age]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>ID.L1</MessageKey>
-        <Age>30</Age>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SocialSecurityNumber>123456789</SocialSecurityNumber>
-        <State>NJ</State>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] IR.QVC.C
-      set: [purposeCode, criminalIdNumber]
-      any: [OperatorLicenseNumber, socialSecurityNumber, age] -> matched: [OperatorLicenseNumber, socialSecurityNumber, age]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IR.QVC.C</MessageKey>
-        <Age>30</Age>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <CriminalIdNumber>CA12345678</CriminalIdNumber>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SocialSecurityNumber>123456789</SocialSecurityNumber>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] IR.QVC.S
-      set: [purposeCode, socialSecurityNumber]
-      any: [criminalIdNumber, OperatorLicenseNumber, age] -> matched: [criminalIdNumber, OperatorLicenseNumber, age]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>IR.QVC.S</MessageKey>
-        <Age>30</Age>
-        <CaRequestPurposeCode>D</CaRequestPurposeCode>
-        <CriminalIdNumber>CA12345678</CriminalIdNumber>
-        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SocialSecurityNumber>123456789</SocialSecurityNumber>
-      </Transaction>
+    [SKIP] IR.QVC.O -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
+    [SKIP] ID.L1 -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; criminalIdNumber NOT_EXISTS [value='CA12345678']
+    [SKIP] IR.QVC.C -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] IR.QVC.S -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     >> PLATFORM FIRES: NLTS.DQ (first matching combo)
-    >> UNION POOL (platform serializes): Age=30, CaRequestPurposeCode=D, CriminalIdNumber=CA12345678, OperatorLicenseNumber=D123456789, SocialSecurityNumber=123456789, State=NJ
+    >> UNION POOL (platform serializes): CaRequestPurposeCode=D, OperatorLicenseNumber=D123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -167,10 +115,11 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_GunQuery [Firearm] ---
-    Query: GunQuery  |  Attrs: 6  |  Combos: 2
+    Query: GunQuery  |  Attrs: 8  |  Combos: 2
 
     [FIRES first-match] IG.QGH
       set: [purposeCode, NameLast, NameFirst]
+      any: [BirthDate, age] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -198,11 +147,11 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_ArticleSingleQuery [Article] ---
-    Query: ArticleSingleQuery  |  Attrs: 5  |  Combos: 2
+    Query: ArticleSingleQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES first-match] IP.QA.S
       set: [purposeCode, ArticleSerialNumber]
-      any: [articleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      any: [articleBrand, ArticleTypeCode, articleCategory] -> matched: [ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -214,7 +163,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IP.QA.O
       set: [purposeCode, ownerAppliedNumber]
-      any: [articleBrand, ArticleTypeCode] -> matched: [ArticleTypeCode]
+      any: [articleBrand, ArticleTypeCode, articleCategory] -> matched: [ArticleTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>

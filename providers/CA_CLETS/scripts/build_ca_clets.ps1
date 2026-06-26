@@ -20,7 +20,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.6"
+    [string]$Version = "2.7"
 )
 
 $ErrorActionPreference = "Stop"
@@ -188,6 +188,7 @@ $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'AddressCounty';        size = 3;  sourceField = @('addressCounty');        targetField = 'AddressCounty' }
         [PSCustomObject]@{ name = 'Age';                   size = 2;  sourceField = @('age');                   targetField = 'Age' }
+        [PSCustomObject]@{ name = 'APPSRequestIndicator';  size = 1;  sourceField = @('appsRequestIndicator');  targetField = 'APPSRequestIndicator' }
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
@@ -238,15 +239,17 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # --- IR.QVC.Name: criminal/demographic name search. Devdoc combos #3/#4 require
-        #     Name + SexCode (+ BirthDate/Age). v2.5 fix: sexCode PROMOTED to set[] so this is
-        #     MORE specific than IN.L1 (name-only) and ordered FIRST -> reachable, no shadow.
+        #     Name + SexCode (+ BirthDate/Age + optional APPSRequestIndicator). v2.5 fix: sexCode
+        #     PROMOTED to set[] so this is MORE specific than IN.L1 (name-only) and ordered FIRST.
+        #     APPSRequestIndicator (devdoc Optional, size 1): triggers APPS prohibited-person check.
         #     (keyRef IR.QVC = server-routed Supervised Release Super Inquiry; basic per devdoc DL.) ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','SexCode')
-                any        = @('BirthDate','age','addressCounty','height','raceCode')
+                any        = @('BirthDate','age','addressCounty','height','raceCode','appsRequestIndicator')
                 defaults   = @(
-                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                    [PSCustomObject]@{ field = 'purposeCode';           value = 'C' }
+                    [PSCustomObject]@{ field = 'appsRequestIndicator';  value = 'N' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -272,52 +275,71 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IN.L1'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.OLN: Criminal records by OLN + CII (set=3, before ID.L1 set=2) ---
+        # --- IR.QVC.OLN: Criminal records by OLN + CII (set=3, before ID.L1 set=2).
+        #     OLN wins: RegistrationState NOT_EXISTS so NLTS.DQ (OLN+State) always fires first
+        #     when State is present; IR.QVC.O only fires OLN+CII when no State. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','OperatorLicenseNumber','criminalIdNumber')
-                any      = @('socialSecurityNumber','age')
-                defaults = @(
+                set        = @('purposeCode','OperatorLicenseNumber','criminalIdNumber')
+                any        = @('socialSecurityNumber','age')
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'IR.QVC.O'
             state                 = 'In/Out'
         }
-        # --- ID.L1: In-state OLN search (set=2) ---
+        # --- ID.L1: In-state OLN search (set=2). Fires only when OLN alone -- no State
+        #     (NLTS.DQ covers OLN+State) and no CII (IR.QVC.O covers OLN+CII).
+        #     RegistrationState removed from any[] -- NOT_EXISTS XOR guard; SSN/Age stay. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','OperatorLicenseNumber')
-                any      = @('RegistrationState','socialSecurityNumber','age')
-                defaults = @(
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @('socialSecurityNumber','age')
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');    operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ID.L1'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.CriminalId: Criminal records by CII (set=2) ---
+        # --- IR.QVC.CriminalId: Criminal records by CII only. Blocked when OLN present.
+        #     OperatorLicenseNumber removed from any[] -- NOT_EXISTS XOR guard; SSN/Age stay. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','criminalIdNumber')
-                any      = @('OperatorLicenseNumber','socialSecurityNumber','age')
-                defaults = @(
+                set        = @('purposeCode','criminalIdNumber')
+                any        = @('socialSecurityNumber','age')
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'CriminalIdNumber'
             keyReference          = 'IR.QVC.C'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.SSN: Criminal records by SSN (set=2) ---
+        # --- IR.QVC.SSN: Criminal records by SSN only. Blocked when OLN present.
+        #     OperatorLicenseNumber removed from any[] -- NOT_EXISTS XOR guard; CII/Age stay. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','socialSecurityNumber')
-                any      = @('criminalIdNumber','OperatorLicenseNumber','age')
-                defaults = @(
+                set        = @('purposeCode','socialSecurityNumber')
+                any        = @('criminalIdNumber','age')
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'SocialSecurityNumber'
@@ -325,7 +347,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- 8 combos: NLTS.DQ (OOS name/OLN), IN.L1 (name), ID.L1 (OLN), IR.QVC (OLN+CII/CII/SSN/Name). 100% metadata coverage. v2.6: PascalCase fieldIds, OLN>Name guardrail on NLTS.DQ.N+IR.QVC.N+IN.L1, CAD defaults on all combos.'
+    description     = 'DriverLicenseQuery -- 8 combos: NLTS.DQ (OOS name/OLN), IN.L1 (name), ID.L1 (OLN), IR.QVC (OLN+CII/CII/SSN/Name). 100% metadata coverage. v2.7: APPSRequestIndicator added (devdoc O field, any[] on IR.QVC.N); mutual-exclusion conditions for OLN-wins routing (IR.QVC.O/ID.L1/IR.QVC.C/IR.QVC.S); OLN cascade: OLN+State->NLTS.DQ, OLN+CII->IR.QVC.O, OLN->ID.L1, CII->IR.QVC.C, SSN->IR.QVC.S.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverLicenseQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -411,6 +433,12 @@ $dhQuery = [PSCustomObject]@{
 # See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $gunQuery = [PSCustomObject]@{
     attributes = @(
+        [PSCustomObject]@{ name = 'Age'; size = 2; sourceField = @('age'); targetField = 'Age' }
+        [PSCustomObject]@{
+            name = 'BirthDate'
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
+            size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
+        }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('GunMake');               targetField = 'GunMake' }
@@ -423,10 +451,11 @@ $gunQuery = [PSCustomObject]@{
         }
     )
     combinations = @(
+        # IG.QGH: owner name search. Devdoc combos 2+3 add Age or BirthDate optionally.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','NameLast','NameFirst')
-                any      = @()
+                any      = @('BirthDate','age')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -467,6 +496,7 @@ $gunQuery = [PSCustomObject]@{
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleBrand';        size = 6;  sourceField = @('articleBrand');        targetField = 'ArticleBrand' }
+        [PSCustomObject]@{ name = 'ArticleCategory';     size = 1;  sourceField = @('articleCategory');     targetField = 'ArticleCategory' }
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('ArticleSerialNumber'); targetField = 'ArticleSerialNumber' }
         [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 6;  sourceField = @('ArticleTypeCode');     targetField = 'ArticleTypeCode' }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1; sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -476,7 +506,7 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','ArticleSerialNumber')
-                any      = @('articleBrand','ArticleTypeCode')
+                any      = @('articleBrand','ArticleTypeCode','articleCategory')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -488,7 +518,7 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','ownerAppliedNumber')
-                any      = @('articleBrand','ArticleTypeCode')
+                any      = @('articleBrand','ArticleTypeCode','articleCategory')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -735,6 +765,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County' '3' 'ROW_PER_DL_3' }
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
+            @{ id = 'ROW_PER_DL_4'; cols = @('4'); fields = @(
+                @{ id = 'AppsRequestIndicator_Input'; node = Sel 'appsRequestIndicator' 'APPS Check (prohibited persons)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_PER_DL_4' }
+            )}
         )
     }
     @{
@@ -778,10 +811,14 @@ $faLayout = MakeLayouts @(
                 @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
                 @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_GUN_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_2' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_2' @{ initialValue = 'C' } }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'               'ROW_GUN_2' }
+                @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'                     'ROW_GUN_2' }
+            )}
+            @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_3' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -809,9 +846,10 @@ $artLayout = MakeLayouts @(
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';    node = Inp 'articleBrand'    'Brand'        '6'                                                                     'ROW_ART_2' }
+            @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand'        '6'                                                                     'ROW_ART_2' }
+                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category'     '1'                                                                     'ROW_ART_2' }
             )}
         )
     }

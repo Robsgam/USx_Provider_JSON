@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_CLETS_v2.6
-  Source: CA_CLETS_v2.6.json
-  Generated: 2026-06-26 08:31
+  PICKLIST / DROPDOWN REPORT: CA_CLETS_v2.7
+  Source: CA_CLETS_v2.7.json
+  Generated: 2026-06-26 09:16
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -24,6 +24,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
 
   Entity: Person
+    appsRequestIndicator [APPS Check (prohibited persons)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
     RegistrationState [State (leave blank for CA)]
@@ -112,5 +114,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 12
+  Form dropdowns: 13
   QRDM code type attrs: 16

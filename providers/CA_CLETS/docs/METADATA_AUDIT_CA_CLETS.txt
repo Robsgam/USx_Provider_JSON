@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.6.json
-  Generated: 2026-06-26 08:31
+  Source: CA_CLETS_v2.7.json
+  Generated: 2026-06-26 09:16
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-26 08:31
+ Generated: 2026-06-26 09:16
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_CLETS
 ============================================================
   XML: CA_CLETS.xml
-  JSON: CA_CLETS_v2.6.json
+  JSON: CA_CLETS_v2.7.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -42,6 +42,7 @@ METADATA AUDIT
   APPSSerialNumberQuery: (not built in JSON -- see CHECK 1)
   ArticleSingleQuery:
   [PASS]   ArticleBrand: in XML and QIDM
+  [PASS]   ArticleCategory: in XML and QIDM
   [PASS]   ArticleSerialNumber: in XML and QIDM
   [PASS]   ArticleTypeCode: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
@@ -123,6 +124,8 @@ METADATA AUDIT
   [PASS]   State: in XML and QIDM
   EISDriverQuery: (not built in JSON -- see CHECK 1)
   GunQuery:
+  [PASS]   Age: in XML and QIDM
+  [PASS]   BirthDate: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   GunCaliber: in XML and QIDM
   [PASS]   GunMake: in XML and QIDM
@@ -154,10 +157,12 @@ METADATA AUDIT
   [PASS]   keyRef IP.QA: set field 'CaRequestPurposeCode' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: set field 'ArticleSerialNumber' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: any field 'ArticleBrand' covered by invented variants (IP.QA.S,IP.QA.O)
+  [PASS]   keyRef IP.QA: any field 'ArticleCategory' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: any field 'ArticleTypeCode' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: set field 'CaRequestPurposeCode' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: set field 'OwnerAppliedNumber' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: any field 'ArticleBrand' covered by invented variants (IP.QA.S,IP.QA.O)
+  [PASS]   keyRef IP.QA: any field 'ArticleCategory' covered by invented variants (IP.QA.S,IP.QA.O)
   [PASS]   keyRef IP.QA: any field 'ArticleTypeCode' covered by invented variants (IP.QA.S,IP.QA.O)
   BoatQuery:
   [PASS]   keyRef IA.QB: set field 'CaRequestPurposeCode' covered by invented variants (NLTS.BQ.N,NLTS.BQ.H,NLTS.BQ.R,IA.QB.H,IA.QB.O,IA.QB.R)
@@ -323,6 +328,7 @@ METADATA AUDIT
 
 --- CHECK 5: Field maxLength Alignment ---
   [PASS] articleBrand: maxLength 6 matches XML (ArticleBrand)
+  [PASS] articleCategory: maxLength 1 matches XML (ArticleCategory)
   [PASS] ArticleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
   [PASS] purposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] ownerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
@@ -346,6 +352,7 @@ METADATA AUDIT
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] socialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
+  [PASS] age: maxLength 2 matches XML (Age)
   [PASS] purposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] GunSerialNumber: maxLength 20 matches XML (GunSerialNumber)
   [PASS] NameLast: maxLength 30 matches XML (Name)
@@ -362,6 +369,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 247 PASS / 0 FAIL / 0 WARN
+Total: 254 PASS / 0 FAIL / 0 WARN
 ============================================================
 

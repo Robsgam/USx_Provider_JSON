@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.6.json
-  Generated: 2026-06-26 08:31
+  Source: CA_CLETS_v2.7.json
+  Generated: 2026-06-26 09:16
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_CLETS_v2.6
+ CAD AUDIT: CA_CLETS_v2.7
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -59,6 +59,7 @@ CAD AUDIT
     [PASS] height: in QIF and CAD list
     [INFO] criminalIdNumber: in QIF, not in CAD list (provider-specific)
     [INFO] addressCounty: in QIF, not in CAD list (provider-specific)
+    [INFO] appsRequestIndicator: in QIF, not in CAD list (provider-specific)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
@@ -76,19 +77,19 @@ CAD AUDIT
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] age: in QIF and CAD list
     [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
     [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
     [PASS] articleBrand: in QIF and CAD list
-    [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] articleCategory: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -178,6 +179,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 86 PASS / 0 FAIL / 0 WARN / 60 INFO
+Total: 89 PASS / 0 FAIL / 0 WARN / 58 INFO
 
 
