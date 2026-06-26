@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
+Combo: IA.QV (Guardrail IA.QV>IA.QVK - Plate+VIN no State: IA.QV fires, VIN absent)
+Date: 2026-06-26 10:41:16
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KW260KV2VW5TMNMYA03MM7FB"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KW260KV2VW5TMNMYA03MM7FB</Id><VehicleMakeCode>TRLR_LONR</VehicleMakeCode><LicensePlateYear>2026</LicensePlateYear><LicensePlateTypeCode>PC</LicensePlateTypeCode><LicensePlateNumber>TEST123</LicensePlateNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KW260KV2VW5TMNMYA03MM7FB
+  VehicleMakeCode                TRLR_LONR
+  LicensePlateYear               2026
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+
+
+RESULT: PASS

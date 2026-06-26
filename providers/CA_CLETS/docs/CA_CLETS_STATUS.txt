@@ -15,7 +15,7 @@ QIDMs:    6 CommSys + 2 RMS = 8 total
 Combos:   40 CommSys (single JSON, multi-card)
 
 CommSys combos (40):
-  VehicleRegistrationQuery  -- 19: NLTS.RQ.P, NLTS.RQ.V, IN.VP, IA.QVK, IA.QV, 13 IV.4* conditions, IL.A1
+  ---   2026-06-26 Vehicle    VehReg:IN.VP         PASS     IN.VP any[] - AddressCity+AddressStreetNumber serialize
   DriverLicenseQuery        --  8: NLTS.DQ, NLTS.DQ.N, ID.L1, IN.L1, IR.QVC.O, IR.QVC.C, IR.QVC.S, IR.QVC.N
   DriverHistoryQuery        --  2: NLTS.KQ.N, NLTS.KQ.O
   GunQuery                  --  2: IG.QGH, IG.QGB
@@ -87,10 +87,10 @@ Import: v1.8 BASE IMPORTED 2026-05-12
 
 v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
   T1  | Vehicle | UI CHECK        | PASS -- Registration auto-checks, State blank, PurposeCode hidden
-  T2  | Vehicle | IA.QV           | PASS -- VehicleRegistrationQuery, LicensePlateNumber=ABC1234, CaRequestPurposeCode=C
-  T3  | Vehicle | NLTS.RQ.P       | PASS -- VehicleRegistrationQuery, Plate+State+PlateType+PlateYear, OOS
-  T4  | Vehicle | IA.QVK          | PASS -- VehicleRegistrationQuery, VIN in-state
-  T5  | Vehicle | NLTS.RQ.V       | PASS -- VehicleRegistrationQuery, VIN+State OOS
+  ---   2026-06-26 Vehicle    VehReg:IA.QV         PASS     Guardrail IA.QV>IA.QVK - Plate+VIN no State: IA.QV fires, VIN absent
+  ---   2026-06-26 Vehicle    VehReg:NLTS.RQ.P     PASS     Guardrail NLTS.RQ.P>NLTS.RQ.V - Plate+VIN+State: Plate wins, VIN absent
+  ---   2026-06-26 Vehicle    VehReg:IA.QVK        PASS     IA.QVK any[] - VehicleMakeCode serializes
+  ---   2026-06-26 Vehicle    VehReg:NLTS.RQ.V     PASS     NLTS.RQ.V any[] - VehicleMakeCode serializes
   T6  | Person  | ID.L1           | PASS -- DriverLicenseQuery by OLN, DL auto-checks, DH greyed out (v1.8 fix confirmed)
   T7  | Person  | NLTS.DQ         | PASS -- DriverLicenseQuery by OLN+State OOS
   T8  | Person  | IN.L1           | PASS -- DriverLicenseQuery by Name, FormatStringRuleHandler=DOE,JOHN
@@ -186,3 +186,7 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-26 Boat       Boat:NEGATIVE        PASS     Empty form - no request fires
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Vehicle    VehReg:NEGATIVE      PASS     Empty form - no request fires
