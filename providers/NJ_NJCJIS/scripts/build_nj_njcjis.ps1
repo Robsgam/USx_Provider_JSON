@@ -1,5 +1,14 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.7 (2026-06-26): VehicleMakeName code-source correction (RND-62365). v4.5's
+#   codeTypeCategory='VehicleType'/codeTypeSource='VEHICLE' was WRONG: the CODETYPE_TEST probe
+#   proved that table is ABSENT on the Newark instance (empty), which broke v4.6 vehicle result
+#   mapping ("Mock results processed"). Corrected in tools/_build_rms_bundle.ps1 Build-CommsysQrdm
+#   to attributeType='VEHICLE_MAKE'/codeTypeSource='NCIC' (probe-confirmed present VM04; matches
+#   RND-54190 runbook + sibling VehicleModelName). Shared-module change but ONLY NJ rebuilt this
+#   pass (others tabled). Re-opens Vehicle response mapping; full re-test + re-import required.
+#   Detail: providers/NJ_NJCJIS/RND-62365/CATALOG_RND-62365.md.
+# =====================================================================
 # v4.5 (2026-06-24): VehicleMakeName QRDM fix (shared module). VehicleMakeName resolved against
 #   the wrong code table -- codeTypeCategory=NCIC_FIREARM_MAKE/codeTypeSource=NJ_NIBRS (FIREARM
 #   makes, AP #24) -- so vehicle make mis-resolved (only the regex fallback saved it). Corrected
@@ -41,7 +50,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.6"
+    [string]$Version = "4.7"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')

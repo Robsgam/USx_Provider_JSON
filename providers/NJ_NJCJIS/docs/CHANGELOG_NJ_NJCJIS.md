@@ -2,9 +2,18 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.6** | Generated: 2026-06-25
+Current: **v4.7** | Generated: 2026-06-26
 
 ---
+
+## v4.7 -- 2026-06-26 -- VehicleMakeName code source corrected (RND-62365)
+
+**CHANGED:** VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType ->
+  attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present on the  
+  Newark instance; matches RND-54190 runbook + sibling VehicleModelName). Shared module  
+  tools/_build_rms_bundle.ps1; NJ rebuilt only (other 4 live providers tabled).  
+**REASON:** v4.6's VehicleType/VEHICLE pairing is absent on the Newark instance, breaking vehicle
+  queries (Newark vehicle "Mock results processed"). Re-import + full re-test from T1 required.  
 
 ## v4.6 -- 2026-06-25 -- Remove top-level version field (platform Integer validation)
 

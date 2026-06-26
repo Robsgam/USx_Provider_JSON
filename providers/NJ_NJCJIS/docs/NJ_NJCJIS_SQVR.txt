@@ -1,10 +1,10 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-06-25
-JSON version: v4.6
+Last updated: 2026-06-26
+JSON version: v4.7
 Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: COMPLETE (entity-by-entity block-out; v4.5 full live run 2026-06-25 T1-T29 all PASS)
+Live test: PENDING -- full re-test from T1 required (v4.7 rebuild: VehicleMakeName codeType fix)
 
 KNOWN LIMITATIONS (1):
   1. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
@@ -25,7 +25,7 @@ USER-APPROVED SKIPS:
   Combos: RQ (plate), RQN (VIN)
   Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
 
-  RQ -- Plate search [CONFIRMED]
+  RQ -- Plate search [PENDING]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
@@ -33,7 +33,7 @@ USER-APPROVED SKIPS:
     V3 (2026-06-24): Plate=TEST123 + VIN filled -- RQ fired, VIN absent (guardrail confirmed).
     V4 (2026-06-24): any[] fields -- RandomRequest=Y, PlateTypeCode=PC, State=NJ all serialized.
 
-  RQN -- VIN search [CONFIRMED]
+  RQN -- VIN search [PENDING]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
@@ -50,13 +50,13 @@ USER-APPROVED SKIPS:
   Combos: DQN (OLN), DQ (Name+DOB)
   Note: DQN before DQ by operational priority (OLN wins); OLN NOT_EXISTS guardrail on DQ
 
-  DQN -- OLN search [CONFIRMED]
+  DQN -- OLN search [PENDING]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
     P2: OLN=D999888777 + State=NJ + Image=Y. OLN + State serialized.
 
-  DQ -- Name + DOB search [CONFIRMED]
+  DQ -- Name + DOB search [PENDING]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ
@@ -72,7 +72,7 @@ USER-APPROVED SKIPS:
   QIF:  Firearm
   Combos: QG
 
-  QG -- Serial Number [CONFIRMED]
+  QG -- Serial Number [PENDING]
     set: gunSerialNumber
     any: gunCaliber, gunMake, gunModel, imageIndicator
     keyReference: QG
@@ -86,7 +86,7 @@ USER-APPROVED SKIPS:
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [CONFIRMED]
+  QA -- Serial + ArticleType [PENDING]
     set: articleSerialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
@@ -102,14 +102,14 @@ USER-APPROVED SKIPS:
   Note: No State field on Boat entity
   guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QBN -- Hull ID search [CONFIRMED]
+  QBN -- Hull ID search [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
     B2: HullID=FL1234AB56H7 -- QBN fires.
     B3 (guardrail): Reg + Hull filled -- QBN fires, Reg absent (hull wins).
 
-  QB -- Registration Number search [CONFIRMED]
+  QB -- Registration Number search [PENDING]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
@@ -128,5 +128,5 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: RQ, RQN (Vehicle -- 2/2)
-  PENDING:   DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 6/8
+  CONFIRMED: none (v4.7 rebuild restarts testing from T1)
+  PENDING:   RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 8/8

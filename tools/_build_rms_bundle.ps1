@@ -627,11 +627,14 @@ function Build-CommsysQrdm {
             rule = _R 'CommsysResultAttributeMappingRuleHandler' $null
             sourceField = @('VehicleMakeCode')
             targetField = 'VehicleMakeName'
-            # Vehicle MAKE resolves against the platform VehicleType code table under the VEHICLE
-            # source (user-verified vs the code-type registry 2026-06-24). The prior
-            # NCIC_FIREARM_MAKE/NJ_NIBRS pair was a firearm-make table (AP #24) -- wrong for vehicles.
-            codeTypeCategory = 'VehicleType'
-            codeTypeSource   = 'VEHICLE'
+            # Vehicle MAKE resolves via AttributesDataMapping under attributeType=VEHICLE_MAKE + NCIC.
+            # RND-62365: the CODETYPE_TEST probe proved VehicleType/VEHICLE is ABSENT on the Newark
+            # instance (empty dropdown / no such code table) -- it broke v4.6 vehicle result mapping.
+            # VEHICLE_MAKE/NCIC is probe-confirmed present (VM04) and matches the RND-54190 runbook and
+            # the sibling VehicleModelName. Prior NCIC_FIREARM_MAKE/NJ_NIBRS was a firearm-make table
+            # (AP #24) -- also wrong for vehicles. See providers/NJ_NJCJIS/RND-62365/CATALOG_RND-62365.md.
+            attributeType  = 'VEHICLE_MAKE'
+            codeTypeSource = 'NCIC'
         }
         [PSCustomObject]@{ name = 'VehicleMakeCode'; sourceField = @('VehicleMakeCode'); targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'RegistrationStateCode'; sourceField = @('RegistrationState'); targetField = 'RegistrationStateCode' }

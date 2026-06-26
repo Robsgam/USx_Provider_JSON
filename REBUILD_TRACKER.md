@@ -226,7 +226,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v4.6 |  | 61P/0F/0W/0LIM | 0 | v4.6: top-level version field removed (platform Integer validation). T1-T29 all PASS. All 3 identifier-priority guardrails live-proven. COMPLETE. |
+| 1 | NJ_NJCJIS | v4.7 |  | 61P/0F/0W/0LIM | 0 | v4.7 (2026-06-26): VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; fixes Newark vehicle "Mock results processed"). Shared module _build_rms_bundle.ps1; NJ rebuilt only. Re-import + full re-test from T1 PENDING. |
 | 2 | HI_HCJDC_OFML | v4.5 |  | 66P/0F/0W/0LIM | 0 | v3.6: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on RQV/QVV/M55S) + vehicleYear any[] gap fixed. All 5 entities PENDING re-test on v3.6 (Person/Firearm/Article/Boat fingerprints preserved from v3.5; Vehicle blocked at v3.4 routing only). Cosmetic label pass pending. |
 | 3 | NY_NYSPIN_EJUSTICE | v3.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults. FLAG: plate-wins guardrail -- has RVEHOUT (OOS plate) and VIN combos; audit plate/VIN pool isolation at next rebuild |
 | 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
@@ -446,7 +446,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 
 | Provider | Version | Score | Status |
 |---|---|---|---|
-| NJ_NJCJIS | v4.6 |  | v4.6 2026-06-25: version field removed (platform Integer validation). T1-T29 PASS. COMPLETE. |
+| NJ_NJCJIS | v4.7 |  | v4.7 2026-06-26: VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365). Re-import + full re-test from T1 PENDING. |
 | CA_CLETS | v2.9 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
 | FL_FCIC | v6.7 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
 

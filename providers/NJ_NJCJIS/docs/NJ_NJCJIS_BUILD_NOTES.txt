@@ -2,6 +2,14 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
+v4.7  2026-06-26  VehicleMakeName code source corrected (RND-62365)
+  CHANGED: VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType ->
+    attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present on the
+    Newark instance; matches RND-54190 runbook + sibling VehicleModelName). Shared module
+    tools/_build_rms_bundle.ps1; NJ rebuilt only (other 4 live providers tabled).
+  REASON: v4.6's VehicleType/VEHICLE pairing is absent on the Newark instance, breaking vehicle
+    queries (Newark vehicle "Mock results processed"). Re-import + full re-test from T1 required.
+
 v4.6  2026-06-25  Remove top-level version field (platform Integer validation)
   CHANGED: Removed "version" field from JSON output (Write-ProviderJson); platform now
     deserializes this as java.lang.Integer and rejects dotted string format ("4.5").

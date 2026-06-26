@@ -180,6 +180,12 @@ TOOLS
     via Edge headless. A transform of QIDM combos + queryLabel + QIF field labels.
     Usage: -Path <json> -OutFile <html> [-PdfFile <pdf>]
 
+  tools/render_cad_guide.ps1
+    Provider CAD auto-dispatch reference: documents the CAD-dispatched query paths and the
+    fields CAD auto-populates per combo, in plain English. HTML + best-effort PDF via Edge
+    headless. A transform of QIDM combos + combo defaults + CAD field alignment.
+    Usage: -Path <providerJson> -OutFile <html> [-PdfFile <pdf>]
+
   tools/generate_changelog.ps1
     Per-provider changelog (Markdown) rendered from docs/<PROVIDER>_BUILD_NOTES.txt ->
     docs/CHANGELOG_<PROVIDER>.md. Deterministic (pure function of BUILD_NOTES). Step 16

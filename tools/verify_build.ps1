@@ -848,11 +848,18 @@ if ($entitiesBundle) {
 
 $labelViolations = 0
 
-# Rule 1: State fields must have 'leave blank for'
+# Rule 1: State fields must give OOS routing guidance. TWO valid patterns:
+#   - State NOT defaulted (blank routes to the OOS keyRef): label says 'leave blank for'.
+#   - State defaulted to home in combo defaults[] (the approved pattern, e.g. NJ State=NJ): the officer
+#     CHANGES it for OOS, so 'leave blank for' would be WRONG guidance; label says 'change for
+#     out-of-state'. (Refined 2026-06-26, RND-62365: the old rule demanded 'leave blank for' on every
+#     State field and FAILed NJ's design-correct label. Accept either hint -- purely permissive, so no
+#     previously-passing provider regresses.)
 foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match '(?i)State$' })) {
     $lbl = $formFieldLabels[$fid]
-    if ($lbl -notmatch 'leave blank for') {
-        Fail "Field '$fid' label='$lbl' missing 'leave blank for' hint (State routing context -- BUILD_RULES Section 11)"
+    $hasStateHint = ($lbl -match 'leave blank for') -or ($lbl -match '(?i)out[- ]of[- ]state') -or ($lbl -match '(?i)change\b.*\bfor\b')
+    if (-not $hasStateHint) {
+        Fail "Field '$fid' label='$lbl' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11"
         $labelViolations++
     }
 }

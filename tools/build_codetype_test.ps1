@@ -88,6 +88,22 @@ $cardDefs = [ordered]@{
             @{ id="VH09"; label="attrType=VEHICLE_MODEL"; attributeTypeId="VEHICLE_MODEL" }
         )
     }
+    # RND-62365: contested vehicle MAKE/MODEL result-mapping pairings. VM01 is exactly what the
+    # shared module (_build_rms_bundle.ps1) currently ships for VehicleMakeName; VM02/VM04 are the
+    # RND-54190 runbook spec. Whichever populates on the target instance is the correct pairing.
+    VEHICLE_MAKE_MODEL = @{
+        title = "VEHICLE MAKE/MODEL RESOLUTION (RND-62365)"
+        fields = @(
+            @{ id="VM01"; label="MAKE: VehicleType / VEHICLE (SHIPPED)"; codeTypeCategory="VehicleType"; codeTypeSource="VEHICLE" }
+            @{ id="VM02"; label="MAKE: VEHICLE_MAKE / NCIC (cat)"; codeTypeCategory="VEHICLE_MAKE"; codeTypeSource="NCIC" }
+            @{ id="VM03"; label="MAKE: attrType=VEHICLE_MAKE (no provider)"; attributeTypeId="VEHICLE_MAKE" }
+            @{ id="VM04"; label="MAKE: attrType=VEHICLE_MAKE + provider=NCIC (RUNBOOK)"; attributeTypeId="VEHICLE_MAKE"; codeTypeProvider="NCIC" }
+            @{ id="VM05"; label="MAKE: VEHICLE_MAKE / VEHICLE (cat)"; codeTypeCategory="VEHICLE_MAKE"; codeTypeSource="VEHICLE" }
+            @{ id="VM06"; label="MODEL: attrType=VEHICLE_MODEL + provider=NCIC (SHIPPED/RUNBOOK)"; attributeTypeId="VEHICLE_MODEL"; codeTypeProvider="NCIC" }
+            @{ id="VM07"; label="MODEL: VEHICLE_MODEL / NCIC (cat)"; codeTypeCategory="VEHICLE_MODEL"; codeTypeSource="NCIC" }
+            @{ id="VM08"; label="MODEL: attrType=VEHICLE_MODEL (no provider)"; attributeTypeId="VEHICLE_MODEL" }
+        )
+    }
     FA_MISC = @{
         title = "FIREARM / ARTICLE / MISC"
         fields = @(
@@ -332,37 +348,32 @@ $providerBundle = [ordered]@{
 }
 
 # --- Bundle 2: ENTITIES (one QIF with all test dropdowns) ---
+# QIF must be named ENTITY_<Entity> (platform keys the form to the entity by this name).
 $qifConfig = [ordered]@{
     description = "Code type test form - all known codeTypeCategory/codeTypeSource and attributeTypeId combinations"
-    label = "Code Type Test"
+    label = "Vehicle"
     layout = [ordered]@{
         default         = $layout
         CAD_DISPATCH    = $layout
         FIRST_RESPONDER = $layout
     }
-    name = "${Provider}_CodeTypeTest"
-    query = "VehicleRegistrationQuery"
+    name = "ENTITY_Vehicle"
     targetEntity = "Vehicle"
     type = "QUERYINPUTFORM"
 }
 
+# Entity display order is a BUNDLE-LEVEL property, NOT a separate configuration.
+# (A config with type=ENTITY_DISPLAY_ORDER is rejected: "Unknown ConfigurationType".)
 $entitiesBundle = [ordered]@{
-    configurations = @(
-        $qifConfig,
-        [ordered]@{
-            description = "Entity display order"
-            name = "order"
-            type = "ENTITY_DISPLAY_ORDER"
-            order = [ordered]@{
-                default         = @("Vehicle")
-                CAD_DISPATCH    = @("Vehicle")
-                FIRST_RESPONDER = @("Vehicle")
-            }
-        }
-    )
+    configurations = @($qifConfig)
     description = "ENTITIES for $Provider code type test"
     name = "ENTITIES"
     type = "BUNDLE"
+    order = [ordered]@{
+        default         = @("Vehicle")
+        CAD_DISPATCH    = @("Vehicle")
+        FIRST_RESPONDER = @("Vehicle")
+    }
     provider = "MARK43"
 }
 

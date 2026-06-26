@@ -7,7 +7,12 @@ not every build bump. Routine pipeline rebuilds are omitted unless they carry fu
 
 ## NJ_NJCJIS
 
-Current: **v4.6** — 61P/0F/0W/0LIM | 29/29 live tests PASS | 5 entities blocked | import: `NJ_NJCJIS_v4.6.json`
+Current: **v4.7** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.7.json`
+
+### v4.7 (2026-06-26) — VehicleMakeName code source corrected (RND-62365)
+- VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName)
+- Fixes Newark vehicle "Mock results processed" (v4.6 VehicleType/VEHICLE pairing absent on Newark instance)
+- Shared module `tools/_build_rms_bundle.ps1`; NJ rebuilt only (other 4 live providers tabled); re-import + full re-test from T1
 
 ### v4.3–v4.5 (2026-06-22 – 2026-06-24) — Identifier-priority guardrails + pipeline rebuild
 - Added `NOT_EXISTS` conditions to VehicleRegistrationQuery (Plate>VIN guardrail: `RQN` exits union pool when plate present)

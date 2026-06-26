@@ -838,11 +838,17 @@ See also:
          "First Name (out-of-state only; State + DOB required)"
        Pattern: <Field Name> (<context qualifier>)
 
-    4. IN-STATE DEFAULT (existing "LEAVE BLANK FOR" rule, extended):
-       Standard: "State (leave blank for [STATE])"
-       Boat exception: "State (leave blank for [STATE]; required with Name)"
-       ENFORCED: verify_build CHECK 15 FAILs if a State-suffix fieldId label
-       lacks "leave blank for".
+    4. IN-STATE DEFAULT (State routing hint -- TWO valid patterns):
+       a. State NOT defaulted (blank routes to the OOS keyRef):
+          "State (leave blank for [STATE])"
+          Boat exception: "State (leave blank for [STATE]; required with Name)"
+       b. State DEFAULTED to home in combo defaults[] (approved pattern, e.g. NJ State=NJ):
+          the officer CHANGES it for OOS, so "leave blank for" is WRONG guidance -- use
+          "State (default [STATE] - change for out-of-state)".
+       ENFORCED: verify_build CHECK 15 FAILs if a State-suffix fieldId label lacks BOTH a
+       "leave blank for" hint AND an out-of-state/"change for" hint. (Refined 2026-06-26,
+       RND-62365: the old rule demanded "leave blank for" on every State field and FAILed
+       NJ's design-correct defaulted-State label. Now accepts either valid pattern.)
 
     5. OPTIONAL INDICATOR -- on every any[]-only field (never in set[]):
          "Vehicle Make (optional)"

@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.6.json
-  Generated: 2026-06-25 12:39
+  Source: NJ_NJCJIS_v4.7.json
+  Generated: 2026-06-26 16:38
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: NJ_NJCJIS_v4.6
+ POST-BUILD VERIFICATION: NJ_NJCJIS_v4.7
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -35,7 +35,7 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 7: Cross-Variant Consistency ---
-  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+  [INFO] Single-JSON provider -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
@@ -58,8 +58,11 @@ POST-BUILD VERIFICATION
 --- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
+--- CHECK 15: Form Field Label Hints ---
+  [PASS] All form field labels have required routing hint qualifiers (23 fields scanned)
+
 ========================================
- VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 14 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

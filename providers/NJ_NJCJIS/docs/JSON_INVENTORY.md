@@ -37,11 +37,17 @@ All JSON versions produced for this provider.
 
 
 
+## v4.7 (2026-06-26)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS_v4.7.json | v4.7 | Current | 61P/0F/0W/0LIM. VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; fixes Newark vehicle "Mock results processed"). Re-import + full re-test from T1. |
+
 ## v4.6 (2026-06-25)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_v4.6.json | v4.6 | Current | 61P/0F/0W/0LIM. Versioned root filename; top-level version field removed (platform Integer validation). T1-T29 all PASS. |
+| NJ_NJCJIS_v4.6.json | v4.6 | Superseded | 61P/0F/0W/0LIM. Versioned root filename; top-level version field removed (platform Integer validation). T1-T29 all PASS. |
 
 ## v4.5 (2026-06-24)
 
