@@ -118,7 +118,8 @@ DRIVER LICENSE (DriverLicenseQuery)
 
   ID.L1 -- In-state OLN query
     set: PurposeCode, OperatorLicenseNumber
-    any: BirthDate, RegistrationState
+    any: socialSecurityNumber, age
+    NOTE: BirthDate/RegistrationState removed from any[] -- NOT_EXISTS XOR guards; SSN+Age stay.
     Status: [PENDING]
 
   IN.L1 -- In-state Name query
@@ -133,27 +134,32 @@ DRIVER LICENSE (DriverLicenseQuery)
 
   NLTS.DQ.N -- OOS Name query (Nlets)
     set: PurposeCode, NameLast, NameFirst, RegistrationState
-    any: (none)
+    any: BirthDate
+    conditions: OLN NOT_EXISTS
     Status: [PENDING]
 
   IR.QVC.O -- Criminal records by OLN
     set: PurposeCode, OperatorLicenseNumber, CriminalIdNumber
-    any: SocialSecurityNumber
+    any: socialSecurityNumber, age
+    conditions: RegistrationState NOT_EXISTS
     Status: [PENDING]
 
   IR.QVC.C -- Criminal records by CII
     set: PurposeCode, CriminalIdNumber
-    any: OperatorLicenseNumber, SocialSecurityNumber
+    any: socialSecurityNumber, age
+    conditions: OLN NOT_EXISTS
     Status: [PENDING]
 
   IR.QVC.S -- Criminal records by SSN
     set: PurposeCode, SocialSecurityNumber
-    any: CriminalIdNumber, OperatorLicenseNumber
+    any: criminalIdNumber, age
+    conditions: OLN NOT_EXISTS
     Status: [PENDING]
 
-  IR.QVC.N -- Criminal records by Name
-    set: PurposeCode, NameLast, NameFirst
-    any: AddressCounty, Height, RaceCode, SexCode, Age, BirthDate
+  IR.QVC.N -- Criminal records by Name+Sex
+    set: PurposeCode, NameLast, NameFirst, SexCode
+    any: BirthDate, age, addressCounty, height, raceCode, appsRequestIndicator
+    conditions: OLN NOT_EXISTS
     Status: [PENDING]
 
 DRIVER HISTORY (DriverHistoryQuery)
@@ -167,7 +173,8 @@ DRIVER HISTORY (DriverHistoryQuery)
 
   NLTS.KQ.O -- OLN query
     set: PurposeCodeDH, OperatorLicenseNumberDH
-    any: BirthDateDH, RegistrationState
+    any: RegistrationState
+    NOTE: BirthDateDH not in any[]; NLTS.KQ.N (Name path) requires BirthDateDH in set[].
     Status: [PENDING]
 
 GUN QUERY (GunQuery)
