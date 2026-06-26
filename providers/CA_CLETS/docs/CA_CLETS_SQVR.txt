@@ -20,97 +20,97 @@ VEHICLE REGISTRATION (VehicleRegistrationQuery)
   NLTS.RQ.P -- OOS Plate query (Nlets)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS] 2026-06-26
 
   NLTS.RQ.V -- OOS VIN query (Nlets)
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS] 2026-06-26
 
   IA.QV -- In-state Plate query (catchall)
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
-    Status: [PENDING]
+    Status: [PASS] 2026-06-26
 
   IA.QVK -- In-state VIN query
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
-    Status: [PENDING]
+    Status: [PASS] 2026-06-26
 
   IN.VP -- Owner Name query (cross-entity)
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
-    Status: [PENDING]
+    Status: [PASS] 2026-06-26
 
   IV.4P -- DMV Plate (PlateType=PC passenger)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4K -- DMV Plate (PlateType=KK)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IL.A1 -- DMV Plate (PlateType=A1)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4H -- DMV Plate (PlateType=HH)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4A -- DMV Plate (general, PlateType in any[])
     set: PurposeCode, LicensePlateNumber
     any: LicensePlateTypeCode
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4V -- DMV VIN query
     set: PurposeCode, VehicleIdentificationNumber
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4C -- DMV Plate (PlateType=CC)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4I -- DMV Plate (PlateType=II)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4M -- DMV Plate (PlateType=MM)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4L -- DMV Plate (PlateType=LL)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4T -- DMV Plate (PlateType=TT)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4F -- DMV Plate (PlateType=FF)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4S -- DMV Plate (PlateType=SS)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
   IV.4E -- DMV Plate (PlateType=EE)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     conditions: NOT_EQUALS routing by LicensePlateTypeCode value
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- poisoned-array; server routes via IA.QV
 
 DRIVER LICENSE (DriverLicenseQuery)
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
@@ -235,7 +235,7 @@ BOAT QUERY (BoatQuery)
   IV.4B -- DMV Vessel Registration query
     set: PurposeCode, RegistrationNumber
     any: (none)
-    Status: [PENDING]
+    Status: [DELETED] v2.5 -- identical wire to IA.QB.R; server routes
 
 SUMMARY
 -------
