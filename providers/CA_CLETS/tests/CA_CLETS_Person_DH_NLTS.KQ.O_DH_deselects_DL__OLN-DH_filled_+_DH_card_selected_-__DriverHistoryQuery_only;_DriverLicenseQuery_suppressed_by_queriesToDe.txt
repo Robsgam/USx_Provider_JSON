@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.O (DH deselects DL: OLN-DH filled + DH card selected -> DriverHistoryQuery only; DriverLicenseQuery suppressed by queriesToDeselect)
+Date: 2026-06-26 11:54:23
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+OLN=ol3636383, OLN-DH=343h847863, PurposeCode=C, PurposeCodeDH=C
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KW29Y7RWN42XJ79ZN429RFVZ"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KW29Y7RWN42XJ79ZN429RFVZ</Id><OperatorLicenseNumber>343H847863</OperatorLicenseNumber><CaRequestPurposeCode>C</CaRequestPurposeCode></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KW29Y7RWN42XJ79ZN429RFVZ
+  OperatorLicenseNumber          343H847863
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Two-step test: (1) DL card only -> DriverLicenseQuery fires (ID.L1). (2) DH card selected -> DriverHistoryQuery only; DL suppressed. Checkbox visual state does not change on OLN-DH entry -- expected platform behavior.
+
+RESULT: PASS
