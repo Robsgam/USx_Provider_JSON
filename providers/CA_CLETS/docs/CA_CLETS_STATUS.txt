@@ -96,7 +96,7 @@ v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
   ---   2026-06-26 Person     DL:IN.L1             PASS     IN.L1 any[]: Name+BirthDate -> BirthDate=19850101 in XML.
   ---   2026-06-26 Person     DH:NLTS.KQ.O         PASS     DH deselects DL: OLN-DH filled + DH card selected -> DriverHistoryQuery only; DriverLicenseQuery suppressed by queriesToDeselect
   ---   2026-06-26 Person     DH:NLTS.KQ.N         PASS     Name-DH+DOB-DH+Sex-DH, no OLN-DH -> NLTS.KQ.N fires. Name+BirthDate=19980115+SexCode in XML, DL deselected.
-  ---   2026-06-26 Firearm    Gun:IG.QGB           PASS     IG.QGB any[] - Make/Caliber/Type serialize
+  ---   2026-06-26 Firearm    Gun:IG.QGB           PASS     IG.QGB any[] - GunCaliber+GunTypeCode serialize alongside GunSerialNumber
   ---   2026-06-26 Article    Article:IP.QA.S      PASS     IP.QA.S any[] - ArticleType/Brand(max6)/Category(max1) serialize per metadata
   T13 | Article | IP.QA.O         | PASS -- ArticleSingleQuery by OAN
   ---   2026-06-26 Boat       Boat:IA.QB.R         PASS     In-state Registration - RegistrationNumber fires BoatQuery no Hull/State
@@ -213,3 +213,11 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Firearm    Gun:RENDER           PASS     1 card (FIREARM SEARCH); Serial Number / Make / Caliber / Type / Name / DOB / Age fields; Purpose=C default; no visible Attention field
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Firearm    Gun:NEGATIVE         PASS     Empty form - no request fires
