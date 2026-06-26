@@ -1,4 +1,4 @@
-CA_CLETS v2.7 -- TEST MATRIX
+CA_CLETS v2.8 -- TEST MATRIX
 ==================================================
 Generated: 2026-06-26
 Layout: multi-card per entity
@@ -19,9 +19,8 @@ Person (3 cards, 20 fields):
     RegistrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_PER_DL (DRIVER LICENSE SEARCH):
     ROW 1: OperatorLicenseNumber [Inp 20], criminalIdNumber [Inp 11], socialSecurityNumber [Inp 9]
-    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate]
-    ROW 3: SexCode [Sel SEX], age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel NIBRS_RACE/NIBRS]
-    ROW 4: appsRequestIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 3: age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel NIBRS_RACE/NIBRS], appsRequestIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
   CARD_PER_DH (DRIVER HISTORY SEARCH):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
@@ -68,13 +67,12 @@ ENTITY 1: PERSON (29 tests -- 3 cards, 10 combos)
               CARD_PER_OPT: titled "Search Options".
               State (leave blank for CA) dropdown (no default), Purpose Code=C.
               CARD_PER_DL: titled "DRIVER LICENSE SEARCH".
-              License Number, Criminal ID (CII), SSN.
-              First Name, Last Name, Date of Birth.
-              Sex dropdown (no default), Age, Height, County, Race dropdown (no default).
-              APPS Check (prohibited persons) dropdown=N.
+              License Number (or search by Name + Sex), Criminal ID (CII) - criminal records, SSN - criminal records (no OLN).
+              First Name, Last Name, Date of Birth (optional), Sex (required with Name) dropdown (no default).
+              Age (optional), Height (optional), County (optional), Race (optional) dropdown (no default), APPS Check - prohibited persons (Name search) dropdown=N.
               CARD_PER_DH: titled "DRIVER HISTORY SEARCH".
-              License Number (DH), Purpose Code (DH)=C.
-              First Name (DH), Last Name (DH), DOB (DH), Sex (DH) dropdown (no default).
+              License Number (DH) - or Name + DOB + Sex, Purpose Code (DH)=C.
+              First Name (DH), Last Name (DH), Date of Birth (DH) - required with Name, Sex (DH) - required with Name dropdown (no default).
  2  Person      NLTS+.DQ+State     purposeCode=C, OperatorLicenseNumber=... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ)
  3  Person      ID.L1+ID.L1        purposeCode=C, OperatorLicenseNumber=... [    ]
@@ -139,9 +137,9 @@ ENTITY 2: VEHICLE (14 tests -- 2 cards, 5 combos)
               CARD_VEH_OPT: titled "Search Options".
               State (leave blank for CA) dropdown (no default), Purpose Code=C.
               CARD_VEH_SEARCH: titled "VEHICLE SEARCH".
-              Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              VIN, Vehicle Make dropdown (no default), Vehicle Year.
-              First Name, Last Name, City, Street Number.
+              Plate Number (or search by VIN or Owner Name), Plate Type (out-of-state plates) dropdown=PC, Plate Year (out-of-state plates)=2026.
+              VIN (Plate wins if both entered), Vehicle Make (optional) dropdown (no default), Vehicle Year (optional).
+              First Name (vehicle owner search), Last Name (vehicle owner search), City (optional), Street Number (optional).
 31  Vehicle     IN+.VP             purposeCode=C, NameLast=DOE, NameFirs... [    ]
               Expected: VehicleRegistrationQuery fires (IN.VP)
 32  Vehicle     IN+.VP             + addressCity, addressStreetNumber [    ]
@@ -174,9 +172,9 @@ ENTITY 3: BOAT (10 tests -- 1 card, 6 combos)
 --  ----------  --------------------------------------------------  ------
 44  Boat        Render form. Verify 1 card:                        [    ]
               CARD_BOA_SEARCH: titled "BOAT SEARCH".
-              Hull ID Number, Registration Number, Owner Applied Number.
-              First Name, Last Name, Date of Birth.
-              State (leave blank for CA) dropdown (no default), Purpose Code=C.
+              Hull ID (or Reg Number; Hull wins if both), Registration Number (or Hull ID), Owner Applied Number (OAN).
+              First Name (out-of-state only; State + DOB required), Last Name (out-of-state only; State + DOB required), Date of Birth (required with Name).
+              State (leave blank for CA; required with Name) dropdown (no default), Purpose Code=C.
 45  Boat        IA.QB.+IA.QB.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: BoatQuery fires (IA.QB.O)
 46  Boat        IA.QB.+IA.QB.H     purposeCode=C, BoatHullIdNumber=FL123... [    ]
@@ -201,8 +199,8 @@ ENTITY 4: FIREARM (6 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 54  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN_SEARCH: titled "FIREARM SEARCH".
-              Serial Number, Make dropdown (no default), Caliber dropdown (no default), Type dropdown (no default).
-              First Name, Last Name, Date of Birth, Age.
+              Serial Number (or search by Owner Name), Make (optional) dropdown (no default), Caliber (optional) dropdown (no default), Type (optional) dropdown (no default).
+              First Name (owner search), Last Name (owner search), Date of Birth (optional), Age (optional).
               Purpose Code=C.
 55  Firearm     IG+.QGB            purposeCode=C, GunSerialNumber=GUN12345 [    ]
               Expected: GunQuery fires (IG.QGB)
@@ -220,8 +218,8 @@ ENTITY 5: ARTICLE (6 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 60  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART_SEARCH: titled "ARTICLE SEARCH".
-              Serial Number, Owner Applied Number, Purpose Code=C.
-              Article Type dropdown (no default), Brand, Category.
+              Serial Number (or Owner Applied Number), Owner Applied Number (OAN), Purpose Code=C.
+              Article Type (optional) dropdown (no default), Brand (optional), Category (optional).
 61  Article     IP.QA.+IP.QA.O     purposeCode=C, ownerAppliedNumber=OAN999 [    ]
               Expected: ArticleSingleQuery fires (IP.QA.O)
 62  Article     IP.QA.+IP.QA.O     + articleBrand, ArticleTypeCode, articleCategory [    ]
@@ -243,4 +241,4 @@ COMBO COVERAGE (25/25):
   ArticleSingleQuery: 2/2 -- T61(IP.QA.O), T63(IP.QA.S)
   BoatQuery: 6/6 -- T45(IA.QB.+IA.QB.O), T46(IA.QB.+IA.QB.H), T47(NLTS+.BQ.N), T48(NLTS+.BQ.H), T49(IA.QB.+IA.QB.R), T50(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.7.json
+IMPORT FILE: CA_CLETS_v2.8.json

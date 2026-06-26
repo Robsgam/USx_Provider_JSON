@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.7.json
-  Generated: 2026-06-26 09:16
+  Source: CA_CLETS_v2.8.json
+  Generated: 2026-06-26 09:44
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_CLETS_v2.7.json ===
+=== CA_CLETS_v2.8.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=2 fields=9
   Person | entity=Person | qidm= | cards=3 fields=13
@@ -60,17 +60,16 @@ LAYOUT DETAIL
         OperatorLicenseNumber (Text | maxLen=20)
         criminalIdNumber (Text | maxLen=11)
         socialSecurityNumber (Text | maxLen=9)
-      ROW ROW_PER_DL_2 [4 4 4]
+      ROW ROW_PER_DL_2 [3 3 3 3]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
         BirthDate (FormDate)
-      ROW ROW_PER_DL_3 [3 2 2 2 3]
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DL_3 [2 2 2 3 3]
         age (Text | maxLen=2)
         height (Text | maxLen=3)
         addressCounty (Text | maxLen=3)
         raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
-      ROW ROW_PER_DL_4 [4]
         appsRequestIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [6 4]

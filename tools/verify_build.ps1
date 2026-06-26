@@ -813,6 +813,88 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping gate-xor-companion check"
 }
 
+# ── CHECK 15: Form field label hints ─────────────────────────────────────────
+# BUILD_RULES.txt Section 11. Three rules enforced:
+#   1. State fields (fieldId ends in 'State'): label must contain 'leave blank for'
+#      (tells officers to leave blank for in-state vs fill for OOS)
+#   2. DH-suffix fields (fieldId ends in 'DH'): label must contain '(DH)'
+#      (disambiguates DH from DL fields when both are on the same card)
+#   3. any[]-only sourceFields (never appear in set[]): label must contain '(' or ' - '
+#      (at minimum an '(optional)' qualifier or a routing context hint)
+Write-Host ""
+Write-Host "--- CHECK 15: Form Field Label Hints ---" -ForegroundColor Yellow
+
+# Collect fieldId -> label from all QIF layouts (first occurrence wins; all variants share same labels)
+$formFieldLabels = [System.Collections.Generic.Dictionary[string,string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+if ($entitiesBundle) {
+    foreach ($cfg in $entitiesBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTFORM') { continue }
+        if (-not $cfg.layout) { continue }
+        foreach ($layoutProp in $cfg.layout.PSObject.Properties) {
+            $layoutObj = $layoutProp.Value
+            if (-not $layoutObj) { continue }
+            foreach ($nodeProp in $layoutObj.PSObject.Properties) {
+                $node = $nodeProp.Value
+                if (-not ($node -is [psobject]) -or -not $node.props) { continue }
+                $fid = $node.props.fieldId
+                $lbl = $node.props.label
+                if ($fid -and $lbl -and -not $formFieldLabels.ContainsKey($fid)) {
+                    $formFieldLabels[$fid] = $lbl
+                }
+            }
+        }
+    }
+}
+
+$labelViolations = 0
+
+# Rule 1: State fields must have 'leave blank for'
+foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match '(?i)State$' })) {
+    $lbl = $formFieldLabels[$fid]
+    if ($lbl -notmatch 'leave blank for') {
+        Fail "Field '$fid' label='$lbl' missing 'leave blank for' hint (State routing context -- BUILD_RULES Section 11)"
+        $labelViolations++
+    }
+}
+
+# Rule 2: DH-suffix fields must have '(DH)' in label
+foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match 'DH$' })) {
+    $lbl = $formFieldLabels[$fid]
+    if ($lbl -notmatch '\(DH\)') {
+        Fail "Field '$fid' label='$lbl' missing '(DH)' qualifier (DH disambiguation -- BUILD_RULES Section 11)"
+        $labelViolations++
+    }
+}
+
+# Rule 3: any[]-only sourceFields must have a hint qualifier ('(' or ' - ')
+# Collect fields that appear in any[] and those that appear in set[]; pure any[] = in any[], never in set[]
+$everInSet  = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$everInAny  = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        foreach ($combo in $cfg.combinations) {
+            if ($combo.requirements.set) { foreach ($f in @($combo.requirements.set)) { [void]$everInSet.Add($f) } }
+            if ($combo.requirements.any) { foreach ($f in @($combo.requirements.any)) { [void]$everInAny.Add($f) } }
+        }
+    }
+}
+$pureAnyFields = @($everInAny | Where-Object { -not $everInSet.Contains($_) })
+foreach ($fid in $pureAnyFields) {
+    if (-not $formFieldLabels.ContainsKey($fid)) { continue }
+    $lbl = $formFieldLabels[$fid]
+    if ($lbl -notmatch '\(' -and $lbl -notmatch ' - ') {
+        Warn "Field '$fid' (any[]-only) label='$lbl' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)"
+        $labelViolations++
+    }
+}
+
+if ($labelViolations -eq 0) {
+    Pass "All form field labels have required routing hint qualifiers ($($formFieldLabels.Count) fields scanned)"
+} else {
+    Info "$labelViolations field(s) need label hint fixes"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

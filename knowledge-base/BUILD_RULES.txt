@@ -810,6 +810,71 @@ See also:
     in-state vs OOS routing must have it. Officers expect uniform labeling.
     FL_FCIC v4.1 confirmed: inconsistent labels confused the workflow.
 
+  FIELD LABEL HINT STANDARD (ENFORCED by verify_build CHECK 15, 2026-06-26):
+    Labels are the ONLY hint mechanism. The platform renders no helperText or
+    placeholder attributes on form fields. Every label must carry enough context
+    for an officer to understand routing without reading documentation.
+
+    SEVEN CANONICAL HINT TYPES (required on applicable fields):
+
+    1. ROUTING ALTERNATIVES -- on any primary identifier where an alternative
+       search path exists:
+         "Plate Number (or search by VIN or Owner Name)"
+         "License Number (or search by Name + Sex)"
+         "Serial Number (or search by Owner Name)"
+         "Hull ID (or Reg Number; Hull wins if both)"
+       Pattern: <Field Name> (or search by <alternative>)
+
+    2. IDENTIFIER PRIORITY -- on the lower-priority field when a guardrail exists:
+         "VIN (Plate wins if both entered)"
+         "Registration Number (or Hull ID)"
+       Pattern: <Field Name> (<higher-priority field> wins if both entered)
+       Note: always pair with a "routing alternatives" hint on the higher-priority field.
+
+    3. ROUTING CONTEXT -- on fields that only apply to a specific search path:
+         "Plate Type (out-of-state plates)"
+         "Plate Year (out-of-state plates)"
+         "First Name (vehicle owner search)"
+         "First Name (out-of-state only; State + DOB required)"
+       Pattern: <Field Name> (<context qualifier>)
+
+    4. IN-STATE DEFAULT (existing "LEAVE BLANK FOR" rule, extended):
+       Standard: "State (leave blank for [STATE])"
+       Boat exception: "State (leave blank for [STATE]; required with Name)"
+       ENFORCED: verify_build CHECK 15 FAILs if a State-suffix fieldId label
+       lacks "leave blank for".
+
+    5. OPTIONAL INDICATOR -- on every any[]-only field (never in set[]):
+         "Vehicle Make (optional)"
+         "Age (optional)"
+         "Brand (optional)"
+       Pattern: <Field Name> (optional)
+       ENFORCED: verify_build CHECK 15 WARNs if a pure any[] field has no '('
+       or ' - ' qualifier.
+
+    6. CONDITIONAL REQUIREMENT -- on set[] fields that only fire with a co-field:
+         "Sex (required with Name)"
+         "Date of Birth (DH) - required with Name"
+         "APPS Check - prohibited persons (Name search)"
+       Pattern: <Field Name> (required with <co-field>) or
+                <Field Name> - <qualifier> (<context>)
+
+    7. ABBREVIATION EXPANSION -- when the field name uses an abbreviation:
+         "Criminal ID (CII) - criminal records"
+         "SSN - criminal records (no OLN)"
+         "Owner Applied Number (OAN)"
+         "License Number (DH) - or Name + DOB + Sex"
+       DH suffix ENFORCED: verify_build CHECK 15 FAILs if a DH-suffix fieldId
+       label lacks "(DH)".
+
+    IMPLEMENTATION NOTES:
+    - Hints embedded in the label string only -- no separate helperText/placeholder
+    - One-sentence max per label; avoid redundancy
+    - "Purpose Code" fields need no hint (auto-filled, not officer-entered)
+    - "First Name" / "Last Name" on a primary entity (Person) need no hint;
+      only cross-entity or context-specific uses need qualifiers
+    - All verified as of CA_CLETS v2.8; prior providers need label audit on rebuild
+
   OPTIONS CARD TITLE:
     Use "Options" as the card title. Keep it simple and generic.
     The "leave blank for [STATE]" hint belongs on the FIELD LABEL, not the card title.
