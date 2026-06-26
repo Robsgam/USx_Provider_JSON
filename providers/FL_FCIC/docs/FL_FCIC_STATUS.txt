@@ -3,7 +3,7 @@ FL_FCIC Build Status
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Current: v6.7 | 92P/0F/0W/0LIM | Updated 2026-06-25
 Current version : v6.7
-Last updated    : 2026-06-25
+Last updated    : 2026-06-26
 Output file     : FL_FCIC.json
 Build script    : scripts/build_fl_fcic.ps1
 Backup          : phases/FL_FCIC_BASE_2026-05-01_backup.json (v2.6 pre-rebuild)
@@ -94,7 +94,7 @@ LIVE TEST STATUS -- BASE v3.1
   Test Matrix:
   #   Phase     Entity    Combo              Result  Notes
   --  --------  --------  -----------------  ------  -----
-  ---   2026-06-24 Vehicle    Render:Render        PASS     T1 Vehicle render: 2 cards (Search Options / Vehicle Search); PlateType=PC + PlateYear=2026 + ImageIndicator=N defaults present; State no default (blank=FL); no Send at empty
+  ---   2026-06-26 Vehicle    RENDER:RENDER        PASS     Vehicle RENDER -- 2 cards: Search Options (State dropdown no default, Image=N default) + Vehicle Search (Plate/PlateType=PC/PlateYear=2026/VIN/Make/VehicleYear/Decal/TitleLien). All fields and defaults confirmed.
   ---   2026-06-24 Person     Render:Render        PASS     T3 Person render: 2 cards (Driver License / Driver History Out-of-State Only); DL ImageIndicator=Y default; State + SexCode no default; DH has Attention auto-populate field + RegistrationStateDH no default; no Send at empty
   ---   2026-06-23 Firearm    Gun:RENDER           PASS     T4 Firearm RENDER v6.3: 1 card (FIREARM QUERY); Serial/Make/NCIC/PCN/Image fields; default Image=N.
   ---   2026-06-23 Article    Article:RENDER       PASS     T5 Article RENDER v6.3: 1 card (ARTICLE QUERY); Serial/ArticleType/OAN/NCIC/PCN/Image fields; default Image=N.
