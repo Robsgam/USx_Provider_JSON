@@ -91,11 +91,11 @@ v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
   ---   2026-06-26 Vehicle    VehReg:NLTS.RQ.P     PASS     Guardrail NLTS.RQ.P>NLTS.RQ.V - Plate+VIN+State: Plate wins, VIN absent
   ---   2026-06-26 Vehicle    VehReg:IA.QVK        PASS     IA.QVK any[] - VehicleMakeCode serializes
   ---   2026-06-26 Vehicle    VehReg:NLTS.RQ.V     PASS     NLTS.RQ.V any[] - VehicleMakeCode serializes
-  ---   2026-06-26 Person     DL:ID.L1             PASS     ID.L1 any[]: OLN+Age=35, no State -> Age=35 in XML.
-  ---   2026-06-26 Person     DL:NLTS.DQ           PASS     Guardrail T26: OLN+SSN+State -> NLTS.DQ fires only. IR.QVC.S blocked (OLN NOT_EXISTS). No SSN in XML.
-  ---   2026-06-26 Person     DL:IN.L1             PASS     IN.L1 any[]: Name+BirthDate -> BirthDate=19850101 in XML.
-  ---   2026-06-26 Person     DH:NLTS.KQ.O         PASS     DH deselects DL: OLN-DH filled + DH card selected -> DriverHistoryQuery only; DriverLicenseQuery suppressed by queriesToDeselect
-  ---   2026-06-26 Person     DH:NLTS.KQ.N         PASS     Name-DH+DOB-DH+Sex-DH, no OLN-DH -> NLTS.KQ.N fires. Name+BirthDate=19980115+SexCode in XML, DL deselected.
+  ---   2026-06-26 Person     DL:ID.L1             PASS     ID.L1 any[] - OLN+SSN, no State - SSN=123456789 in XML.
+  ---   2026-06-26 Person     DL:NLTS.DQ           PASS     Guardrail - OLN+Name+State - NLTS.DQ fires only. IN.L1 blocked (OLN NOT_EXISTS). Same XML as T6.
+  ---   2026-06-26 Person     DL:IN.L1             PASS     IN.L1 any[] - Name+BirthDate - BirthDate=19850101 in XML.
+  ---   2026-06-26 Person     DH:NLTS.KQ.O         PASS     DH deselects DL - OLN-DH filled + DH card selected - DriverHistoryQuery only; DriverLicenseQuery suppressed by queriesToDeselect.
+  ---   2026-06-26 Person     DH:NLTS.KQ.N         PASS     Name-DH+DOB-DH+Sex-DH, no OLN-DH - NLTS.KQ.N fires. Name+BirthDate=19850101+SexCode+Attention=SGAMBELLONE R in XML. DL deselected.
   ---   2026-06-26 Firearm    Gun:IG.QGB           PASS     IG.QGB any[] - GunCaliber+GunTypeCode serialize alongside GunSerialNumber
   ---   2026-06-26 Article    Article:IP.QA.S      PASS     IP.QA.S any[] - ArticleType/Brand(max6)/Category(max1) serialize per metadata
   T13 | Article | IP.QA.O         | PASS -- ArticleSingleQuery by OAN
@@ -123,9 +123,9 @@ LIVE TEST STATUS -- v2.4 (40 combos, 38 tests)
    6  New         Vehicle   IN.VP                PASS    Cross-entity Name, VehReg fires, Name=DOE,JOHN
    7  New         Firearm   IG.QGH               PASS    Cross-entity Name, GunQuery fires, Name=DOE,JOHN
    8  New         Boat      NLTS.BQ.N            PASS    Cross-entity Name+DOB OOS, BirthDate=19800115 yyyyMMdd
-  ---   2026-06-26 Person     DL:IR.QVC.C          PASS     IR.QVC.C any[]: CII+SSN -> SSN=123456789 in XML.
-  ---   2026-06-26 Person     DL:IR.QVC.S          PASS     IR.QVC.S any[]: SSN+CII -> CriminalIdNumber in XML.
-  ---   2026-06-26 Person     DL:IR.QVC.N          PASS     IR.QVC.N any[]: Name+Sex+BirthDate+Age -> BirthDate=19850101+Age=35 in XML.
+  ---   2026-06-26 Person     DL:IR.QVC.C          PASS     IR.QVC.C any[] - CII+SSN - SSN=123456789 in XML.
+  ---   2026-06-26 Person     DL:IR.QVC.S          PASS     IR.QVC.S any[] - SSN+CII - CriminalIdNumber in XML alongside SSN.
+  ---   2026-06-26 Person     DL:IR.QVC.N          PASS     IR.QVC.N any[] - Name+Sex+BirthDate+Age - BirthDate=19850101+Age=55 in XML.
   ---   2026-06-26 Person     DL:IR.QVC.O          PASS     Guardrail T24: OLN+CII, no State -> IR.QVC.O fires. ID.L1 blocked (CII NOT_EXISTS). OLN+CII in XML, no State.
   13  IV.4*       Vehicle   IA.QV                PASS    In-state plate catchall, PlateType=PC PlateYear=2026 CAD defaults
   14  IV.4*       Vehicle   IV.4* (TK)           PASS    Conditions routing, PlateType=TK ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ VehReg fires
@@ -221,3 +221,35 @@ LIVE TEST RESULTS (v3.4)
 LIVE TEST RESULTS (v3.4)
 ========================
   ---   2026-06-26 Firearm    Gun:NEGATIVE         PASS     Empty form - no request fires
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:RENDER            PASS     3 cards: SEARCH OPTIONS (State no default), DRIVER LICENSE SEARCH (OLN/CII/SSN/Name/DOB/Sex/APPS=N), DRIVER HISTORY SEARCH (DH-suffix fields, Purpose=C); no visible Attention
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:NEGATIVE          PASS     Empty form - no request fires
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:NLTS.DQ.N         PASS     Guardrail - Name+State, no OLN - NLTS.DQ.N fires. ID.L1 blocked (RegistrationState NOT_EXISTS). Same form fill as T9.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:NLTS.DQ.N         PASS     NLTS.DQ.N any[] - Name+State+BirthDate - BirthDate=19850101 in XML.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:IR.QVC.N          PASS     Name+Sex, State blank, no OLN - IR.QVC.N fires. Name+SexCode=M+APPSRequestIndicator=N in XML, no State.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:IR.QVC.S          PASS     SSN only, no OLN - IR.QVC.S fires. SSN in XML, no OLN or CII.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:IR.QVC.C          PASS     CII only, no OLN - IR.QVC.C fires. CriminalIdNumber in XML, no OLN.
+
+LIVE TEST RESULTS (v3.4)
+========================
+  ---   2026-06-26 Person     DL:IR.QVC.O          PASS     OLN+CII, no State - IR.QVC.O fires. OLN+CriminalIdNumber in XML, no State.
