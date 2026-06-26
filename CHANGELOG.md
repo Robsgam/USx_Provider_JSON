@@ -65,7 +65,12 @@ Current: **v4.7** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) 
 
 ## HI_HCJDC_OFML
 
-Current: **v4.5** — 66P/0F/0W/0LIM | all 5 entities blocked | import: `HI_HCJDC_OFML_v4.5.json`
+Current: **v4.6** — 66P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `HI_HCJDC_OFML_v4.6.json`
+
+### v4.6 (2026-06-26) — VehicleMakeName code source corrected (RND-62365) + State label (CHECK 15)
+- VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName)
+- Vehicle State label → `State (leave blank for Hawaii)` to satisfy verify_build CHECK 15
+- Shared module `tools/_build_rms_bundle.ps1`; result-mapping only (request-side combos/QIDMs unchanged); re-import + full re-test from T1
 
 ### v4.0–v4.2 (2026-06-23 – 2026-06-25) — Pipeline rebuild + 50-test matrix
 - Reproducibility rebuild (behavior-identical to v3.9); entity fingerprints preserved

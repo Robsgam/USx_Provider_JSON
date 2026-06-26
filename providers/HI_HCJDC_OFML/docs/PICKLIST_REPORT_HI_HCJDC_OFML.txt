@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML_v4.5
-  Source: HI_HCJDC_OFML_v4.5.json
-  Generated: 2026-06-25 15:00
+  PICKLIST / DROPDOWN REPORT: HI_HCJDC_OFML_v4.6
+  Source: HI_HCJDC_OFML_v4.6.json
+  Generated: 2026-06-26 17:02
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -40,7 +40,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     LicensePlateTypeCode [Plate Type - out-of-state plates only]
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    RegistrationState [State (Hawaii = leave blank)]
+    RegistrationState [State (leave blank for Hawaii)]
       Config: attributeTypeId=STATE
     vehicleTypeCode [Vehicle Type - Auto (Hawaii queries)] (default=1)
       Config: codeTypeCategory=VEHICLE_TYPE, codeTypeSource=HI_NIBRS
@@ -81,7 +81,7 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
       VehicleColorCode -> VehicleColorCode
         attributeType=ITEM_COLOR | codeTypeSource=NCIC
       VehicleMakeName -> VehicleMakeName
-        codeTypeCategory=VehicleType, codeTypeSource=VEHICLE
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
       VehicleStyleCode -> BodyStyle
         codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
       VehicleModelName -> VehicleModelName

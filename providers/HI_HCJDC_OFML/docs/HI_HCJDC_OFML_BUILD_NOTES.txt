@@ -3,6 +3,19 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.6 (2026-06-26): VehicleMakeName VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; shared module; result-mapping only). Vehicle State label -> 'State (leave blank for Hawaii)' for verify CHECK 15.
+  CHANGED: (1) VehicleMakeName result-mapping (QRDM response) code source corrected from
+    attributeType=VEHICLE / codeTypeSource=VehicleType to attributeType=VEHICLE_MAKE /
+    codeTypeSource=NCIC (shared module tools/_build_rms_bundle.ps1; RND-62365). (2) Vehicle
+    State field label changed from 'State (Hawaii = leave blank)' to 'State (leave blank for
+    Hawaii)' to satisfy verify_build CHECK 15 wording.
+  REASON: (1) RND-62365 -- VEHICLE/VehicleType pairing was absent on the platform registry
+    (probe-confirmed VEHICLE_MAKE/NCIC present; matches RND-54190 runbook + sibling
+    VehicleModelName). Result-mapping only -- request-side combos/QIDMs unchanged. (2) CHECK 15
+    refined 2026-06-26 to require the "leave blank for" phrasing on the State label.
+  RESULT: 66P/0F/0W, verify CLEAN. No QIF/QIDM/combo/conditions change (entity request
+    fingerprints identical to v4.5). Rebuild un-confirms all entities -- full re-test from T1.
+
 v4.5  2026-06-25  Remove orphaned VehicleMakeCode (Make) field -- dead config after QVP/QVV removal
   CHANGED: Removed the VehicleMakeCode QIDM attribute and the "Make - optional" dropdown from
     the Vehicle VIN SEARCH card (Vehicle Year now full-width on its row). Vehicle QIDM only.

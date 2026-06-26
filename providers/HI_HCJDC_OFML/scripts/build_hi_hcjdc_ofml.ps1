@@ -1,5 +1,11 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.6 (2026-06-26): (1) VehicleMakeName code-source correction (RND-62365, shared module
+#   tools/_build_rms_bundle.ps1): VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC
+#   (probe-confirmed present; matches RND-54190 + sibling VehicleModelName). Result-mapping only.
+#   (2) Vehicle State label fixed for verify_build CHECK 15 (refined gate): 'State (Hawaii = leave blank)'
+#   -> 'State (leave blank for Hawaii)' -- the field has NO initialValue (blank-default routes in-state),
+#   so "leave blank for" is the accurate hint. Full re-test from T1 per rebuild mandate.
 # v4.1 (2026-06-23): Gap-audit remediation. (1) CAD Attention-default gap -- KQ/KQN carry
 #   'Attention' in any[] (auto-populate handler) but had no defaults[] entry; added Attention=X
 #   to both (audit_cad CHECK 6). (2) CAD vehicleTypeCode gap -- M55L/M55S require vehicleTypeCode
@@ -138,7 +144,7 @@
 # NAME FORMAT: "First Last Middle Suffix" with space separators
 
 param(
-    [string]$Version = "4.5",
+    [string]$Version = "4.6",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -620,7 +626,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type - Auto (Hawaii queries)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (Hawaii = leave blank)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
                 @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - include image (Y/N)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
         )

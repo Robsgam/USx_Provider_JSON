@@ -871,7 +871,9 @@ See also:
          "Owner Applied Number (OAN)"
          "License Number (DH) - or Name + DOB + Sex"
        DH suffix ENFORCED: verify_build CHECK 15 FAILs if a DH-suffix fieldId
-       label lacks "(DH)".
+       label lacks a "(DH..." qualifier. Accepts "(DH)" and richer forms like
+       "(DH, optional)" or "(DH) - required with Name" (matched at a word boundary,
+       so "(DHL)" or a bare "DH" still fail). (Refined 2026-06-26, RND-62365.)
 
     IMPLEMENTATION NOTES:
     - Hints embedded in the label string only -- no separate helperText/placeholder

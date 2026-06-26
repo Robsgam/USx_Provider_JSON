@@ -864,11 +864,15 @@ foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match '(?i)State$'
     }
 }
 
-# Rule 2: DH-suffix fields must have '(DH)' in label
+# Rule 2: DH-suffix fields must carry a '(DH...' qualifier in the label.
+# Accept '(DH)' AND richer forms like '(DH, optional)' / '(DH) - required with Name' -- the goal is
+# DH-vs-DL disambiguation, which '(DH, optional)' satisfies. Match '(DH' at a word boundary so '(DHL)'
+# or a bare 'DH' (no paren) still fail. (Refined 2026-06-26, RND-62365: old '\(DH\)' rejected HI's
+# design-correct '(DH, optional)' labels; purely permissive -- no previously-passing provider regresses.)
 foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match 'DH$' })) {
     $lbl = $formFieldLabels[$fid]
-    if ($lbl -notmatch '\(DH\)') {
-        Fail "Field '$fid' label='$lbl' missing '(DH)' qualifier (DH disambiguation -- BUILD_RULES Section 11)"
+    if ($lbl -notmatch '\(DH\b') {
+        Fail "Field '$fid' label='$lbl' missing '(DH...' qualifier (DH disambiguation -- BUILD_RULES Section 11)"
         $labelViolations++
     }
 }

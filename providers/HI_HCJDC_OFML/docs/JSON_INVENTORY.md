@@ -6,9 +6,15 @@ Every iteration saved. Never overwrite.
 
 | File | Version | Status | Notes |
 |---|---|---|---|
-| HI_HCJDC_OFML_v4.3.json | v4.3 | Current | 68P/0F/0W/0LIM. 6 QIDMs, 17 combos. All 5 entities blocked. Versioned filename; top-level version field removed; version marker in all 3 bundles. |
+| HI_HCJDC_OFML_v4.6.json | v4.6 | Current | 66P/0F/0W/0LIM. 6 QIDMs, 17 combos. VehicleMakeName code-source fix (RND-62365) + Vehicle State label (CHECK 15). Full re-test from T1 PENDING. |
 
 ## Changelog (auto-appended by sync_version_docs.ps1)
+
+## v4.6 (2026-06-26)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML_v4.6.json | v4.6 | Current | 66P/0F/0W/0LIM. VehicleMakeName VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365); Vehicle State label -> 'State (leave blank for Hawaii)' (CHECK 15). |
 
 
 
