@@ -4,7 +4,7 @@ LABELS PROVISIONAL -- refine wording during manual form use; not a graded test c
 Last updated: 2026-06-29
 JSON version: v2.11
 Validator: 91 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: PENDING -- full re-test from T1 required (v2.10 rebuild: VehicleMakeName code-source fix; result-mapping only)
+Live test: PASS -- v2.11 full re-test complete 2026-06-29; all 5 entities confirmed
 
 NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39/40 matched.
 - 13 IV.4* plate-type conditions combos: covered by T14 log (IV.4_T14_ConditionsRouting_PlateType).
@@ -20,28 +20,28 @@ VEHICLE REGISTRATION (VehicleRegistrationQuery)
   NLTS.RQ.P -- OOS Plate query (Nlets)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.RQ.V -- OOS VIN query (Nlets)
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
-    Status: [PENDING]
+    Status: [PASS]
 
   IA.QV -- In-state Plate query (catchall)
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
-    Status: [PENDING]
+    Status: [PASS]
 
   IA.QVK -- In-state VIN query
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   IN.VP -- Owner Name query (cross-entity)
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
-    Status: [PENDING]
+    Status: [PASS]
 
   IV.4P -- DMV Plate (PlateType=PC passenger)
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
@@ -120,47 +120,47 @@ DRIVER LICENSE (DriverLicenseQuery)
     set: PurposeCode, OperatorLicenseNumber
     any: socialSecurityNumber, age
     NOTE: BirthDate/RegistrationState removed from any[] -- NOT_EXISTS XOR guards; SSN+Age stay.
-    Status: [PENDING]
+    Status: [PASS]
 
   IN.L1 -- In-state Name query
     set: PurposeCode, NameLast, NameFirst
     any: BirthDate, RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.DQ -- OOS OLN query (Nlets)
     set: PurposeCode, OperatorLicenseNumber, RegistrationState
     any: (none)
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.DQ.N -- OOS Name query (Nlets)
     set: PurposeCode, NameLast, NameFirst, RegistrationState
     any: BirthDate
     conditions: OLN NOT_EXISTS
-    Status: [PENDING]
+    Status: [PASS]
 
   IR.QVC.O -- Criminal records by OLN
     set: PurposeCode, OperatorLicenseNumber, CriminalIdNumber
     any: socialSecurityNumber, age
     conditions: RegistrationState NOT_EXISTS
-    Status: [PENDING]
+    Status: [PASS]
 
   IR.QVC.C -- Criminal records by CII
     set: PurposeCode, CriminalIdNumber
     any: socialSecurityNumber, age
     conditions: OLN NOT_EXISTS
-    Status: [PENDING]
+    Status: [PASS]
 
   IR.QVC.S -- Criminal records by SSN
     set: PurposeCode, SocialSecurityNumber
     any: criminalIdNumber, age
     conditions: OLN NOT_EXISTS
-    Status: [PENDING]
+    Status: [PASS]
 
   IR.QVC.N -- Criminal records by Name+Sex
     set: PurposeCode, NameLast, NameFirst, SexCode
     any: BirthDate, age, addressCounty, height, raceCode, appsRequestIndicator
     conditions: OLN NOT_EXISTS
-    Status: [PENDING]
+    Status: [PASS]
 
 DRIVER HISTORY (DriverHistoryQuery)
   Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true | queriesToDeselect: DriverLicenseQuery
@@ -169,13 +169,13 @@ DRIVER HISTORY (DriverHistoryQuery)
   NLTS.KQ.N -- Name+DOB+Sex query
     set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.KQ.O -- OLN query
     set: PurposeCodeDH, OperatorLicenseNumberDH
     any: RegistrationState
     NOTE: BirthDateDH not in any[]; NLTS.KQ.N (Name path) requires BirthDateDH in set[].
-    Status: [PENDING]
+    Status: [PASS]
 
 GUN QUERY (GunQuery)
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
@@ -184,12 +184,12 @@ GUN QUERY (GunQuery)
   IG.QGH -- Owner Name query (cross-entity)
     set: PurposeCode, NameLast, NameFirst
     any: (none)
-    Status: [PENDING]
+    Status: [PASS]
 
   IG.QGB -- Serial Number query
     set: PurposeCode, SerialNumber
     any: FirearmMake, GunCaliber, GunTypeCode
-    Status: [PENDING]
+    Status: [PASS]
 
 ARTICLE QUERY (ArticleSingleQuery)
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
@@ -198,12 +198,12 @@ ARTICLE QUERY (ArticleSingleQuery)
   IP.QA.S -- Serial Number query
     set: PurposeCode, SerialNumber
     any: ArticleTypeCode, ArticleBrand
-    Status: [PENDING]
+    Status: [PASS]
 
   IP.QA.O -- OAN query
     set: PurposeCode, OwnerAppliedNumber
     any: ArticleTypeCode, ArticleBrand
-    Status: [PENDING]
+    Status: [PASS]
 
 BOAT QUERY (BoatQuery)
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
@@ -212,32 +212,32 @@ BOAT QUERY (BoatQuery)
   NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity)
     set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.BQ.H -- OOS Hull ID query
     set: PurposeCode, BoatHullIdNumber, RegistrationState
     any: (none)
-    Status: [PENDING]
+    Status: [PASS]
 
   NLTS.BQ.R -- OOS Registration query
     set: PurposeCode, RegistrationNumber, RegistrationState
     any: (none)
-    Status: [PENDING]
+    Status: [PASS]
 
   IA.QB.H -- In-state Hull ID query
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   IA.QB.O -- In-state OAN query
     set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   IA.QB.R -- In-state Registration query
     set: PurposeCode, RegistrationNumber
     any: RegistrationState
-    Status: [PENDING]
+    Status: [PASS]
 
   IV.4B -- DMV Vessel Registration query
     set: PurposeCode, RegistrationNumber
@@ -254,5 +254,5 @@ Total combos: 40
   ArticleSingleQuery: 2 (1 serial + 1 OAN)
   BoatQuery: 7 (3 NLTS + 3 IA + 1 IV.4B)
 
-Tested (v2.4): 40/40
-Status: [PENDING] -- full re-test from T1 required (v2.10 rebuild: VehicleMakeName code-source fix; result-mapping only)
+Tested (v2.11): 40/40
+Status: [PASS] -- v2.11 full re-test complete 2026-06-29; all 5 entities confirmed
