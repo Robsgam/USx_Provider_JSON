@@ -1,10 +1,10 @@
 NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-06-26
+Last updated: 2026-06-29
 JSON version: v4.7
 Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: PENDING -- full re-test from T1 required (v4.7 rebuild: VehicleMakeName codeType fix)
+Live test: PASS -- full re-test from T1 complete 2026-06-29 (v4.7: VehicleMakeName codeType fix confirmed)
 
 KNOWN LIMITATIONS (1):
   1. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
@@ -75,11 +75,12 @@ USER-APPROVED SKIPS:
   QIF:  Firearm
   Combos: QG
 
-  QG -- Serial Number [PENDING]
+  QG -- Serial Number [CONFIRMED]
     set: gunSerialNumber
     any: gunCaliber, gunMake, gunModel, imageIndicator
     keyReference: QG
-    F2: Serial=GUN12345 + any[] (Make, Caliber, Model) -- QG fires, all any[] serialize.
+    T23 (2026-06-29 v4.7): Serial=GUN12345 -- GunQuery/QG fired. ImageIndicator=N default.
+    T24 (2026-06-29 v4.7): any[] -- GunCaliber=11, GunMake=05, GunModel=M$, ImageIndicator=Y all serialize.
 
 ================================================================================
 4. ArticleSingleQuery -- Article Entity
@@ -89,11 +90,12 @@ USER-APPROVED SKIPS:
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [PENDING]
+  QA -- Serial + ArticleType [CONFIRMED]
     set: articleSerialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
-    A2: Serial=ART99999 + ArticleTypeCode (any) -- QA fires.
+    T27 (2026-06-29 v4.7): Serial=ART99999 + ArticleTypeCode=BBICYCL -- ArticleSingleQuery/QA fired. ImageIndicator=N default.
+    T28 (2026-06-29 v4.7): any[] -- ImageIndicator=Y serializes.
 
 ================================================================================
 5. BoatQuery -- Boat Entity
@@ -133,5 +135,5 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat) -- 6/8 (2026-06-29 v4.7)
-  PENDING:   QG (Firearm), QA (Article) -- 2/8
+  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 8/8 (2026-06-29 v4.7)
+  PENDING:   none
