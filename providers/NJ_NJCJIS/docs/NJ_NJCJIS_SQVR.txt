@@ -25,20 +25,22 @@ USER-APPROVED SKIPS:
   Combos: RQ (plate), RQN (VIN)
   Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
 
-  RQ -- Plate search [PENDING]
+  RQ -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
     guardrail: VIN combo gated on LicensePlateNumber NOT_EXISTS (plate wins)
-    V3 (2026-06-24): Plate=TEST123 + VIN filled -- RQ fired, VIN absent (guardrail confirmed).
-    V4 (2026-06-24): any[] fields -- RandomRequest=Y, PlateTypeCode=PC, State=NJ all serialized.
+    T2 (2026-06-29 v4.7): Plate=TEST123 -- VehicleRegistrationQuery/RQ fired. Defaults serialized: State=NJ, LicensePlateTypeCode=PC, LicensePlateYear=2026, RandomRequest=N, ImageIndicator=N.
+    T3 (2026-06-29 v4.7): any[] -- RandomRequest=Y, Image=Y, State=NJ (from "New Jersey" dropdown; NCIC reverse-lookup confirmed). All serialize.
 
-  RQN -- VIN search [PENDING]
+  RQN -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
     guardrail: default combo; fires when no plate present
-    V2 (2026-06-24): VIN=1HGCM82633A123456 -- RQN fired, plate fields absent.
+    T4 (2026-06-29 v4.7): VIN=1HGCM82633A123456 -- VehicleRegistrationQuery/RQN fired. Plate fields absent (LicensePlateTypeCode/Year correctly not in RQN any[]). Defaults: State=NJ, RandomRequest=N, Image=N.
+    T5 (2026-06-29 v4.7): any[] -- RandomRequest=Y, Image=Y, State=NJ. All serialize. Plate fields still absent.
+    T6 (2026-06-29 v4.7): Guardrail Plate>VIN -- Plate=TEST123 + VIN=1HGCM82633A123456 co-entered. RQ fires, VIN absent from ConnectCIC XML. Plate wins confirmed.
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -128,5 +130,5 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: none (v4.7 rebuild restarts testing from T1)
-  PENDING:   RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 8/8
+  CONFIRMED: RQ, RQN (Vehicle) -- 2/8 (2026-06-29 v4.7; guardrail Plate>VIN confirmed)
+  PENDING:   DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 6/8
