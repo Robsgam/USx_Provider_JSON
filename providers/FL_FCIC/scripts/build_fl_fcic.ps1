@@ -1,6 +1,10 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.8 (2026-06-29): VehicleMakeName QRDM code source corrected VEHICLE/VehicleType ->
+#   attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; shared module propagation;
+#   matches NJ v4.7/HI v4.6/CA v2.10 fix). Fixes FL vehicle "Mock results processed" in RMS.
+#   Re-import + full re-test from T1.
 # v6.5 (2026-06-23): Gap-audit remediation. (1) CAD Attention-default gap -- KQName and
 #   KQOperatorLicenseNumber (DH) carry 'Attention' in any[] (auto-populate handler) but had NO
 #   defaults[] entry, so CAD-dispatched DH queries dropped the officer's Attention value. Added
@@ -94,7 +98,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.7"
+    [string]$Version = "6.8"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -945,3 +949,7 @@ Write-ProviderJson -BundleObject $output -OutPath $outPath `
     -PhasePath "$PSScriptRoot\..\phases\FL_FCIC_v${Version}_${phaseDate}.json" `
     -Label "Built FL_FCIC v${Version}" `
     -Version $Version
+
+# Clear pending-updates gate so enforce.ps1 does not block testing after this rebuild
+$pendingPath = Join-Path $PSScriptRoot "..\docs\PENDING_UPDATES.txt"
+if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }

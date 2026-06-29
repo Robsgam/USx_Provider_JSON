@@ -180,6 +180,16 @@ foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
 
+    # ── Pending-updates gate (blocks testing when a rebuild is required) ──
+    $pendingFile = Join-Path $pd.FullName "docs\PENDING_UPDATES.txt"
+    if (Test-Path $pendingFile) {
+        $pendingLines = Get-Content $pendingFile | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
+        if ($pendingLines) {
+            Fail "$provName -- PENDING_UPDATES.txt has unresolved items (rebuild before testing):"
+            foreach ($ln in $pendingLines) { Out "      $ln" }
+        }
+    }
+
     # Find JSON: new naming (<PROVIDER>.json or <PROVIDER>_vX.Y.json) or legacy (_BASE/_MC)
     $provJson = Get-ChildItem $pd.FullName -Filter "${docPrefix}.json" -File -ErrorAction SilentlyContinue
     if (-not $provJson) {
