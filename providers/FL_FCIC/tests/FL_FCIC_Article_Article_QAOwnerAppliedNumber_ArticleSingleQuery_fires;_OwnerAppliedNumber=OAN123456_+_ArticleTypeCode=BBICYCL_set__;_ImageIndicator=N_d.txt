@@ -1,0 +1,36 @@
+﻿================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAOwnerAppliedNumber (ArticleSingleQuery fires; OwnerAppliedNumber=OAN123456 + ArticleTypeCode=BBICYCL set[]; ImageIndicator=N default)
+Date: 2026-06-29 15:16:53
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWACZJ9SGHM9ZRMMESR4VC66"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><Id>01KWACZJ9SGHM9ZRMMESR4VC66</Id><ImageIndicator>N</ImageIndicator><ArticleTypeCode>BBICYCL</ArticleTypeCode><OwnerAppliedNumber>OAN123456</OwnerAppliedNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWACZJ9SGHM9ZRMMESR4VC66
+  ImageIndicator                 N
+  ArticleTypeCode                BBICYCL
+  OwnerAppliedNumber             OAN123456
+
+NOTES
+-----
+
+
+RESULT: PASS
