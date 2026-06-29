@@ -233,7 +233,7 @@ and NO visible form field — same pattern fixed on FL_FCIC v4.0.
 | 5 | FL_FCIC | v6.7 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next FL rebuild; FL has both plate and VIN paths in VehicleRegistrationQuery |
 | 6 | TX_TLETS | v3.13 |  | 83P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next TX rebuild |
 | 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v2.9 |  | 77P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-21, 40/40 combos, 6 QIDMs, live-tested |
+| 8 | CA_CLETS | v2.10 |  | 91P/0F/0W/0LIM | 0 | v2.10 (2026-06-26): VehicleMakeName code-source fix (RND-62365). Re-import + full re-test from T1 PENDING. |
 | 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
 | 10 | CA_CLETS_OCATS | v1.2 |  | 63P/0F/0W/0LIM | 0 | |
 | 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | NEW SOURCE (2026-06-12): updated metadata XML + devdoc PDF received (old CA_eSUN.4.17.26.pdf removed). v1.5 build predates new source. On next rebuild: regen DEVDOC text, re-run extract_metadata_reference + extract_queries, diff_docs vs KB, rebuild against new XML |
@@ -447,7 +447,7 @@ of duplication eliminated. Migration completed 2026-05-14 with 5 verification bu
 | Provider | Version | Score | Status |
 |---|---|---|---|
 | NJ_NJCJIS | v4.7 |  | v4.7 2026-06-26: VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365). RELEASED 2026-06-29: 8/8 combos confirmed. |
-| CA_CLETS | v2.9 |  | Single-JSON merged 2026-05-21, 40/40 combos, live-tested |
+| CA_CLETS | v2.10 |  | v2.10 (2026-06-26): VehicleMakeName code-source fix (RND-62365). Re-import + full re-test from T1 PENDING. |
 | FL_FCIC | v6.7 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
 
 ### Flagged for Full Rebuild on Next Test (16)
