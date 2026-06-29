@@ -1,6 +1,15 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.0 (2026-06-29): OOS-gate symmetry hardening (defense-in-depth, NO behavior/XML change).
+#   Added RegistrationState EXISTS to the 3 zero-condition OOS combos -- RQLicensePlateNumber +
+#   DQOperatorLicenseNumber (RegistrationState) and KQOperatorLicenseNumber (RegistrationStateDH).
+#   These were the only combos in Vehicle/Person relying on set[] alone with no condition; set[] is
+#   NOT a firing gate, so making the OOS-routing explicit mirrors the in-state combos' State NOT_EXISTS
+#   and the Boat QB relatedHit EXISTS (v6.9). Rule: in-state => State NOT_EXISTS; OOS => State EXISTS.
+#   Reevaluation found Vehicle (Plate>VIN) + Person (OLN>Name) had NO bleed and NO active shadow
+#   (CHECK 12/14/16 already PASS); this is reorder-safety insurance, not a fix. Sim-verified routing
+#   unchanged. Rebuild -> Vehicle/Person/Boat re-test from T1; Article/Firearm preserved.
 # v6.9 (2026-06-29): Boat Hull>Reg guardrail EXTENDED to QB (stolen) + BQ (OOS) families.
 #   QBRegistrationNumber and BQRegistrationNumber were "companion" combos (carried Hull in any[],
 #   CHECK 12 exempt) -- but their set[] is satisfied by the same Hull+Reg input that fires the Hull
@@ -113,7 +122,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.9"
+    [string]$Version = "7.0"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -223,6 +232,10 @@ $vehRegQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState')
                 any      = @('ImageIndicator')
+                # v7.0: RegistrationState EXISTS -- explicit OOS gate (mirror of FRQ's State NOT_EXISTS).
+                # set[] is not a firing gate; this makes RQ-by-plate require a destination State rather
+                # than relying on array order + FRQ's NOT_EXISTS. No XML/behavior change. CHECK 16 parity.
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
                 # PlateType/PlateYear are in set[] with form initialValues; CAD ignores initialValue,
                 # so combo defaults are required for CAD-dispatched RQ-by-plate to fire (CHECK 6).
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
@@ -326,7 +339,8 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
+            # v7.0: RegistrationState EXISTS -- explicit OOS gate (mirror of FDQ's State NOT_EXISTS).
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQOperatorLicenseNumber'
             state                 = 'In/Out'
@@ -421,7 +435,9 @@ $dhQuery = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumberDH','RegistrationStateDH')
                 any        = @('purposeCodeDH','Attention')
                 defaults   = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
-                conditions = $null
+                # v7.0: RegistrationStateDH EXISTS -- explicit OOS gate. DH is OOS-only (destination
+                # state mandatory); makes the requirement explicit rather than set[]-implicit. Existence-only.
+                conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'OperatorLicenseNumberDH'
             keyReference          = 'KQOperatorLicenseNumber'

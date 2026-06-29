@@ -2,9 +2,14 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v6.9** | Generated: 2026-06-29
+Current: **v7.0** | Generated: 2026-06-29
 
 ---
+
+## v7.0 -- 2026-06-29 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v6.9 -- 2026-06-29 -- Pipeline rebuild
 
