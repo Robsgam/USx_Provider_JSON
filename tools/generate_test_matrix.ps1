@@ -950,16 +950,44 @@ foreach ($ent in $entityOrder) {
         $loserSetShortFields = @($gr.loserCombo.requirements.set | ForEach-Object { Get-ShortFieldLabel $_ })
         $loserFieldStr = $loserSetShortFields -join '+'
 
-        # Fill: winner's excluded field + loser's set[] fields
+        # Build winner's NOT_EXISTS field set -- loser set[] fields in this set must NOT be filled
+        # (filling them would violate winner's conditions and cause a different combo to fire).
+        $winnerNotExistsFields = @()
+        if ($gr.winnerCombo.requirements -and $gr.winnerCombo.requirements.conditions) {
+            foreach ($wc in @($gr.winnerCombo.requirements.conditions)) {
+                if ($wc.operator -eq 'NOT_EXISTS') {
+                    $wf = @($wc.field)
+                    foreach ($wff in $wf) {
+                        # Resolve sourceField aliases via QIDM attributes
+                        $resolvedSrc = @()
+                        foreach ($attr in $gr.winnerQidm.attributes) {
+                            if ($attr.name -ieq $wff) {
+                                if ($attr.sourceField -is [System.Array]) { $resolvedSrc = $attr.sourceField }
+                                elseif ($attr.sourceField) { $resolvedSrc = @($attr.sourceField) }
+                                break
+                            }
+                        }
+                        if ($resolvedSrc.Count -gt 0) { $winnerNotExistsFields += $resolvedSrc }
+                        else { $winnerNotExistsFields += $wff }
+                    }
+                }
+            }
+        }
+
+        # Fill: winner's excluded field + loser's set[] fields (skip fields blocked by winner's NOT_EXISTS)
         $fillInstrs = @()
+        $skippedLoserFields = @()  # fields NOT filled — these are genuinely absent from XML
         $winnerFf = $ed.allFields | Where-Object { $_.fieldId -ieq $gr.excludedFid } | Select-Object -First 1
         if ($winnerFf) {
-            $val = Get-TestValue $winnerFf $false
+            # isOOS=$true: excluded field in a guardrail is a routing discriminator (e.g. State for NLTS);
+            # must return a non-null value so the fill instruction is actually emitted.
+            $val = Get-TestValue $winnerFf $true
             if ($val) { $fillInstrs += "$($gr.excludedFid)=$val" }
         }
         $loserSetNames = @()
         if ($gr.loserCombo.requirements -and $gr.loserCombo.requirements.set) { $loserSetNames = @($gr.loserCombo.requirements.set) }
         foreach ($sf in $loserSetNames) {
+            # Resolve loser set[] name to form fieldId via allFields or QIDM attribute sourceField
             $ff = $ed.allFields | Where-Object { $_.fieldId -eq $sf } | Select-Object -First 1
             if (-not $ff) {
                 foreach ($attr in $gr.loserQidm.attributes) {
@@ -972,14 +1000,30 @@ foreach ($ent in $entityOrder) {
                     }
                 }
             }
-            if ($ff) { $val = Get-TestValue $ff $false; if ($val) { $fillInstrs += "$($ff.fieldId)=$val" } }
+            if ($ff) {
+                # Skip this field if it would violate winner's NOT_EXISTS conditions
+                $blockedByWinner = $winnerNotExistsFields | Where-Object { $_ -ieq $ff.fieldId }
+                if ($blockedByWinner) {
+                    $skippedLoserFields += $sf
+                    continue
+                }
+                $val = Get-TestValue $ff $false
+                if ($val) { $fillInstrs += "$($ff.fieldId)=$val" }
+            } else {
+                $skippedLoserFields += $sf
+            }
         }
         $fillStr = $fillInstrs -join ', '
         if ($fillStr.Length -gt 40) { $fillStr = $fillStr.Substring(0, 37) + '...' }
 
+        # "Absent from XML" = only the loser fields that were NOT filled (skipped due to winner NOT_EXISTS)
+        $absentFields = if ($skippedLoserFields.Count -gt 0) {
+            ($skippedLoserFields | ForEach-Object { Get-ShortFieldLabel $_ }) -join '+'
+        } else { $loserFieldStr }
+
         [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  {3,-32} " -f $testNum, $ent, $guardLabel, $fillStr))
         [void]$phaseSb.AppendLine("[    ]")
-        [void]$phaseSb.AppendLine("              Expected: $($gr.winnerQidm.query) fires ($($gr.winnerKr)). $loserFieldStr absent from XML.")
+        [void]$phaseSb.AppendLine("              Expected: $($gr.winnerQidm.query) fires ($($gr.winnerKr)). $absentFields absent from XML.")
     }
 
     # ── 4. DESELECT verification (this entity only) ──

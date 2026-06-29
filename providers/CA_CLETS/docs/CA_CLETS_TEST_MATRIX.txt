@@ -109,8 +109,8 @@ ENTITY 1: PERSON (24 tests -- 3 cards, 8 combos)
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName+RegistrationState absent from XML.
 18  Person      Guardrail: NLTS.DQ>IR.QVC.N  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName+SexCode absent from XML.
-19  Person      Guardrail: NLTS.DQ.N>IR.QVC.O  purposeCode=C, OperatorLicenseNumber=... [    ]
-              Expected: DriverLicenseQuery fires (NLTS.DQ.N). purposeCode+OLN+criminalIdNumber absent from XML.
+19  Person      Guardrail: NLTS.DQ.N>IR.QVC.O  RegistrationState=GA, purposeCode=C, ... [    ]
+              Expected: DriverLicenseQuery fires (NLTS.DQ.N). OLN absent from XML.
 20  Person      Guardrail: NLTS.DQ>IR.QVC.C  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+criminalIdNumber absent from XML.
 21  Person      Guardrail: NLTS.DQ>IR.QVC.S  OperatorLicenseNumber=D999888777, pur... [    ]
