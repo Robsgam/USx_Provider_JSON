@@ -105,18 +105,20 @@ USER-APPROVED SKIPS:
   Note: No State field on Boat entity
   guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QBN -- Hull ID search [PENDING]
+  QBN -- Hull ID search [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
-    B2: HullID=FL1234AB56H7 -- QBN fires.
-    B3 (guardrail): Reg + Hull filled -- QBN fires, Reg absent (hull wins).
+    T16 (2026-06-29 v4.7): Hull=REG367393 -- BoatQuery/QBN fired. Image=N default.
+    T17 (2026-06-29 v4.7): any[] -- Image=Y serializes on QBN.
+    T20 (2026-06-29 v4.7): Guardrail Hull>Reg -- Hull=REG367393 + Reg=FL1234AB56H7 co-filled. QBN fires, RegistrationNumber absent from XML. Hull wins confirmed.
 
-  QB -- Registration Number search [PENDING]
+  QB -- Registration Number search [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
-    B4: Reg=FL1234AB -- QB fires.
+    T18 (2026-06-29 v4.7): Reg=FL1234AB56H7 -- BoatQuery/QB fired. Hull absent. Image=N default.
+    T19 (2026-06-29 v4.7): any[] -- Reg=FL1234AB + Image=Y. QB fires, ImageIndicator=Y serializes.
 
 ================================================================================
 UI BEHAVIOR
@@ -131,5 +133,5 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person) -- 4/8 (2026-06-29 v4.7)
-  PENDING:   QBN, QB (Boat), QG (Firearm), QA (Article) -- 4/8
+  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat) -- 6/8 (2026-06-29 v4.7)
+  PENDING:   QG (Firearm), QA (Article) -- 2/8
