@@ -906,6 +906,82 @@ if ($labelViolations -eq 0) {
     Info "$labelViolations field(s) need label hint fixes"
 }
 
+# ── CHECK 16: Combo Reachability (shadow detection) ──────────────────────────
+# Platform fires first-match combo in array order. A combo B with conditions can be
+# permanently shadowed by an earlier combo A that fires on B's minimal set[] input
+# without any conditions blocking it. set[] membership is NOT a firing gate — the
+# platform fires a combo when its primaryFieldReference is present regardless of
+# whether all set[] fields have values. This check runs each combo's minimal payload
+# (only its own set[] fields) against all earlier combos and FAILs if any earlier
+# combo fires. LIVE-FOUND: CA_CLETS NLTS.DQ shadowed ID.L1 because NLTS.DQ had no
+# conditions; corrected by adding RegistrationState EXISTS to NLTS.DQ (v2.11).
+Write-Host ""
+Write-Host "--- CHECK 16: Combo Reachability (shadow detection) ---" -ForegroundColor Yellow
+
+$shadowFails = 0
+if ($providerBundle) {
+    foreach ($cfg in $providerBundle.configurations) {
+        if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+        $combos = @($cfg.combinations)
+
+        # Build attribute-name → sourceField[] map for this QIDM.
+        # Platform fires a combo when its primaryFieldReference (attribute name) has a
+        # value — NOT when all set[] fields are present. set[] controls serialization, not
+        # triggering. Conditions are the actual trigger gates.
+        $attrToSrc = @{}
+        foreach ($attr in $cfg.attributes) {
+            if ($attr.sourceField) { $attrToSrc[$attr.name] = @($attr.sourceField) }
+        }
+
+        for ($bi = 1; $bi -lt $combos.Count; $bi++) {
+            $B = $combos[$bi]
+            if (-not $B.requirements.conditions -or $B.requirements.conditions.Count -eq 0) { continue }
+
+            # Build minimal payload: only B's set[] sourceFields, each with a sentinel value
+            $payload = @{}
+            foreach ($f in @($B.requirements.set)) { $payload[$f] = 'TEST' }
+
+            # Check if any earlier combo A fires on this payload.
+            # A fires when: A.primaryFieldReference source field is in payload
+            #               AND all A.conditions pass against the payload.
+            for ($ai = 0; $ai -lt $bi; $ai++) {
+                $A = $combos[$ai]
+
+                # Resolve A.primaryFieldReference → sourceField name(s)
+                $primSrc = if ($attrToSrc.ContainsKey($A.primaryFieldReference)) {
+                    @($attrToSrc[$A.primaryFieldReference])
+                } else {
+                    @($A.primaryFieldReference)  # same name fallback
+                }
+                $primaryInPayload = $primSrc | Where-Object { $payload.ContainsKey($_) -and $payload[$_] }
+                if (-not $primaryInPayload) { continue }
+
+                # Check A's conditions against the payload
+                $aConditionsPass = $true
+                foreach ($cond in @($A.requirements.conditions)) {
+                    if (-not $cond -or -not $cond.field) { continue }
+                    $condField = if ($cond.field -is [array]) { $cond.field[0] } else { [string]$cond.field }
+                    if ([string]::IsNullOrEmpty($condField)) { continue }
+                    $fieldPresent = $payload.ContainsKey($condField) -and $payload[$condField] -ne $null -and $payload[$condField] -ne ''
+                    if ($cond.operator -eq 'NOT_EXISTS' -and $fieldPresent)  { $aConditionsPass = $false; break }
+                    if ($cond.operator -eq 'EXISTS'     -and -not $fieldPresent) { $aConditionsPass = $false; break }
+                }
+                if (-not $aConditionsPass) { continue }
+
+                # A fires on B's minimal payload → B is shadowed
+                Fail "SHADOW: '$($A.keyReference)' fires before '$($B.keyReference)' on $($cfg.name) minimal set[] payload -- add EXISTS condition to '$($A.keyReference)' or reorder so '$($B.keyReference)' comes first"
+                $shadowFails++
+                break
+            }
+        }
+    }
+    if ($shadowFails -eq 0) {
+        Pass "Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)"
+    }
+} else {
+    Info "No provider bundle -- skipping combo reachability check"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

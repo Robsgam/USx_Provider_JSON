@@ -1,4 +1,9 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.11 (2026-06-29): RegistrationState EXISTS condition added to all 6 NLTS combos
+#   (NLTS.DQ, NLTS.DQ.N, NLTS.RQ.V, NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R). Platform fires
+#   combos on primaryFieldReference presence -- NOT on all-set[] presence. Without this
+#   condition, NLTS combos shadowed in-state equivalents (ID.L1, IN.L1, IA.QVK, IA.QB.R)
+#   when State was left blank. Caught by new verify_build CHECK 16 (combo reachability).
 # v2.10 (2026-06-26): VehicleMakeName code-source correction (RND-62365, shared module
 #   tools/_build_rms_bundle.ps1): VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC
 #   (probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName). Result-mapping
@@ -13,8 +18,8 @@
 #     wire = MessageType=VehicleRegistrationQuery, keyRef internal) + removed inert State NOT_EQUALS.
 #     v2.6: PascalCase USx fieldIds, identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg),
 #           CAD defaults on all combos (CAD ignores form initialValue; combo defaults[] required).
-#   DriverLicenseQuery         NLTS.DQ(N/O) + IN.L1 + ID.L1 + IR.QVC(OLN/Name/CriminalId/SSN) = 8 combos
-#     IR.QVC OLN: criminalIdNumber promoted from any[] to set[] as routing differentiator vs ID.L1
+#   DriverLicenseQuery         NLTS.DQ(N/O) + IR.QVC(OLN/Name/CriminalId/SSN) = 6 combos
+#     Pure (In) combos IN.L1/ID.L1 removed -- auto-dispatched by CommSys (same as Vehicle (In) combos)
 #   DriverHistoryQuery         NLTS.KQ(N/O) = 2 combos, DH-suffix fields
 #   GunQuery                   IG.QGH (name) + IG.QGB (serial) = 2 combos
 #   ArticleSingleQuery         IP.QA(S/O) = 2 combos
@@ -24,7 +29,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.10"
+    [string]$Version = "2.11"
 )
 
 $ErrorActionPreference = "Stop"
@@ -103,6 +108,7 @@ $vehRegQuery = [PSCustomObject]@{
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -177,16 +183,13 @@ $vehRegQuery = [PSCustomObject]@{
     targetEntity       = 'Vehicle'
 }
 
-# --- 2. DriverLicenseQuery -- 8 combos ---
-# NLTS.DQ(N/O) = OOS name/OLN, IN.L1 = name in-state, ID.L1 = OLN in-state,
-# IR.QVC(OLN/CriminalId/SSN/Name) = criminal records search.
-# IR.QVC OLN: criminalIdNumber promoted from any[] to set[] — differentiates from ID.L1.
-#   OLN alone → ID.L1 (DL lookup). OLN + CII → IR.QVC.O (criminal records).
-# IR.QVC.Name: broadest fallback (set=[purposeCode] only), fires when no specific combo matches.
+# --- 2. DriverLicenseQuery -- 6 combos ---
+# NLTS.DQ(N/O) = OOS name/OLN, IR.QVC(OLN/CriminalId/SSN/Name) = criminal records search.
+# Pure (In) combos IN.L1 (name) + ID.L1 (OLN) removed v2.11 -- CommSys auto-dispatches them,
+# consistent with Vehicle pattern (Vehicle (In) combos 1-3 also not built in JSON).
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'NLTS.DQ' for OOS combos (synthetic: NLTS.DQ.N=name, NLTS.DQ=OLN)
 # and 'IR.QVC' for criminal records combos (synthetic: IR.QVC.O/.N/.C/.S per field path).
-# IN.L1, ID.L1 are real CLETS codes. NOT real CA CLETS transaction codes where synthetic.
 # See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -223,6 +226,7 @@ $dlQuery = [PSCustomObject]@{
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -232,10 +236,13 @@ $dlQuery = [PSCustomObject]@{
         # --- NLTS.DQ: OOS OLN search ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','OperatorLicenseNumber','RegistrationState')
-                any      = @()
-                defaults = @(
+                set        = @('purposeCode','OperatorLicenseNumber','RegistrationState')
+                any        = @()
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -243,8 +250,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # --- IR.QVC.Name: criminal/demographic name search. Devdoc combos #3/#4 require
-        #     Name + SexCode (+ BirthDate/Age + optional APPSRequestIndicator). v2.5 fix: sexCode
-        #     PROMOTED to set[] so this is MORE specific than IN.L1 (name-only) and ordered FIRST.
+        #     Name + SexCode (+ BirthDate/Age + optional APPSRequestIndicator).
         #     APPSRequestIndicator (devdoc Optional, size 1): triggers APPS prohibited-person check.
         #     (keyRef IR.QVC = server-routed Supervised Release Super Inquiry; basic per devdoc DL.) ---
         [PSCustomObject]@{
@@ -263,25 +269,8 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.N'
             state                 = 'In/Out'
         }
-        # --- IN.L1: In-state DMV name search (plain name; devdoc combo #1) ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','NameLast','NameFirst')
-                any        = @('BirthDate','RegistrationState')
-                defaults   = @(
-                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
-                )
-                conditions = @(
-                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'Name'
-            keyReference          = 'IN.L1'
-            state                 = 'In/Out'
-        }
-        # --- IR.QVC.OLN: Criminal records by OLN + CII (set=3, before ID.L1 set=2).
-        #     OLN wins: RegistrationState NOT_EXISTS so NLTS.DQ (OLN+State) always fires first
-        #     when State is present; IR.QVC.O only fires OLN+CII when no State. ---
+        # --- IR.QVC.OLN: Criminal records by OLN + CII. NLTS.DQ fires first when State present
+        #     (RegistrationState EXISTS condition); IR.QVC.O fires OLN+CII when no State. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','OperatorLicenseNumber','criminalIdNumber')
@@ -295,25 +284,6 @@ $dlQuery = [PSCustomObject]@{
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'IR.QVC.O'
-            state                 = 'In/Out'
-        }
-        # --- ID.L1: In-state OLN search (set=2). Fires only when OLN alone -- no State
-        #     (NLTS.DQ covers OLN+State) and no CII (IR.QVC.O covers OLN+CII).
-        #     RegistrationState removed from any[] -- NOT_EXISTS XOR guard; SSN/Age stay. ---
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','OperatorLicenseNumber')
-                any        = @('socialSecurityNumber','age')
-                defaults   = @(
-                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
-                )
-                conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('criminalIdNumber');    operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'ID.L1'
             state                 = 'In/Out'
         }
         # --- IR.QVC.CriminalId: Criminal records by CII only. Blocked when OLN present.
@@ -351,7 +321,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- 8 combos: NLTS.DQ (OOS name/OLN), IN.L1 (name), ID.L1 (OLN), IR.QVC (OLN+CII/CII/SSN/Name). 100% metadata coverage. v2.7: APPSRequestIndicator added (devdoc O field, any[] on IR.QVC.N); mutual-exclusion conditions for OLN-wins routing (IR.QVC.O/ID.L1/IR.QVC.C/IR.QVC.S); OLN cascade: OLN+State->NLTS.DQ, OLN+CII->IR.QVC.O, OLN->ID.L1, CII->IR.QVC.C, SSN->IR.QVC.S.'
+    description     = 'DriverLicenseQuery -- 6 combos: NLTS.DQ.N/NLTS.DQ (OOS name/OLN), IR.QVC.N/IR.QVC.O/IR.QVC.C/IR.QVC.S (criminal records by name/OLN+CII/CII/SSN). Pure (In) combos IN.L1/ID.L1 removed v2.11 (CommSys auto-dispatches; consistent with Vehicle pattern). OLN cascade: OLN+State->NLTS.DQ, OLN+CII->IR.QVC.O, CII->IR.QVC.C, SSN->IR.QVC.S, Name+Sex->IR.QVC.N.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverLicenseQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -576,10 +546,13 @@ $boatQuery = [PSCustomObject]@{
         # --- NLTS.BQ OOS combos ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','NameLast','NameFirst','BirthDate','RegistrationState')
-                any      = @()
-                defaults = @(
+                set        = @('purposeCode','NameLast','NameFirst','BirthDate','RegistrationState')
+                any        = @()
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -588,10 +561,13 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','BoatHullIdNumber','RegistrationState')
-                any      = @()
-                defaults = @(
+                set        = @('purposeCode','BoatHullIdNumber','RegistrationState')
+                any        = @()
+                defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -607,6 +583,7 @@ $boatQuery = [PSCustomObject]@{
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'RegistrationNumber'

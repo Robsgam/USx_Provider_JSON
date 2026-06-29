@@ -27,6 +27,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.11 (2026-06-29)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_v2.11.json | v2.11 | Current | 75P/0F/0W/0LIM. |
 ## v2.10 (2026-06-26)
 
 | File | Version | Status | Notes |

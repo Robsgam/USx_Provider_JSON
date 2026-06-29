@@ -105,7 +105,7 @@ Current: **v4.6** — 66P/0F/0W/0LIM | live test PENDING (full re-test from T1) 
 
 ## CA_CLETS (CA_CLETS_OFML)
 
-Current: **v2.10** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.10.json`
+Current: **v2.11** — 75P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.11.json`
 
 ### v2.10 (2026-06-26) — VehicleMakeName code source corrected (RND-62365)
 - VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present)
