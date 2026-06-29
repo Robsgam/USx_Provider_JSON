@@ -52,19 +52,20 @@ USER-APPROVED SKIPS:
   Combos: DQN (OLN), DQ (Name+DOB)
   Note: DQN before DQ by operational priority (OLN wins); OLN NOT_EXISTS guardrail on DQ
 
-  DQN -- OLN search [PENDING]
+  DQN -- OLN search [CONFIRMED]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
-    P2: OLN=D999888777 + State=NJ + Image=Y. OLN + State serialized.
+    T9 (2026-06-29 v4.7): OLN=D999888777 -- DriverLicenseQuery/DQN fired. State=NJ (set[]), ImageIndicator=Y (only any[], confirms T10 covered).
 
-  DQ -- Name + DOB search [PENDING]
+  DQ -- Name + DOB search [CONFIRMED]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ
     guardrail: OLN NOT_EXISTS on this combo
-    P3 (guardrail): OLN + Name + DOB filled -- DQN fires, name fields absent (OLN wins).
-    P4: Name=DOE/JOHN + DOB=01/15/1990 -- DQ fires, OLN absent.
+    T11 (2026-06-29 v4.7): Name=DOE/JON + DOB=1985-01-15 -- DriverLicenseQuery/DQ fired. Name=DOE, JON (Last-first comma-space confirmed). BirthDate=01151985 (MMddyyyy conversion confirmed). OLN absent.
+    T12 (2026-06-29 v4.7): any[] -- added SexCode=Male -> M (reverse-lookup confirmed), ImageIndicator=Y, State=NJ all serialize.
+    T13 (2026-06-29 v4.7): Guardrail OLN>Name -- OLN=D999888777 + Name+DOB all filled. DQN fires, Name+BirthDate absent from ConnectCIC XML. OLN wins confirmed.
 
 ================================================================================
 3. GunQuery -- Firearm Entity
@@ -130,5 +131,5 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: RQ, RQN (Vehicle) -- 2/8 (2026-06-29 v4.7; guardrail Plate>VIN confirmed)
-  PENDING:   DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 6/8
+  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person) -- 4/8 (2026-06-29 v4.7)
+  PENDING:   QBN, QB (Boat), QG (Firearm), QA (Article) -- 4/8
