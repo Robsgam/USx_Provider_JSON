@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN_MC
   Source: CA_eSUN_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:34
+ Generated: 2026-06-29 08:36
 ============================================================
 
 ============================================================
@@ -69,7 +69,6 @@ METADATA AUDIT
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  eSunSuperPersonQuery: (not built in JSON -- see CHECK 1)
   GunQuery:
   [PASS]   Age: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
@@ -83,7 +82,6 @@ METADATA AUDIT
   VehicleRegistrationQuery:
   [PASS]   AddressCity: in XML and QIDM
   [PASS]   AddressStreetNumber: in XML and QIDM
-  [PASS]   BirthDate: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   LicensePlateNumber: in XML and QIDM
   [PASS]   LicensePlateTypeCode: in XML and QIDM
@@ -190,11 +188,12 @@ METADATA AUDIT
   [PASS]   keyRef RQ: any field 'VehicleYear' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
   [PASS]   keyRef VP: set field 'CaRequestPurposeCode' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
   [PASS]   keyRef VP: set field 'Name' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
-  [PASS]   keyRef VP: set field 'BirthDate' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
-  [PASS]   keyRef VP: set field 'CaRequestPurposeCode' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
-  [PASS]   keyRef VP: set field 'Name' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
   [PASS]   keyRef VP: any field 'AddressCity' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
   [PASS]   keyRef VP: any field 'AddressStreetNumber' covered by invented variants (RQ.P,VP.D,RQ.V,VP.N,QV.V,QV.P)
+
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef RQ.P (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQ.V (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -213,8 +212,7 @@ METADATA AUDIT
   GunQuery: 2 metadata search paths
   [PASS]   GunSerialNumber: at least one combo built (e.g. QGB)
   [PASS]   Name: at least one combo built (e.g. QGH)
-  VehicleRegistrationQuery: 4 metadata search paths
-  [PASS]   BirthDate: at least one combo built (e.g. VP)
+  VehicleRegistrationQuery: 3 metadata search paths
   [PASS]   LicensePlateNumber: at least one combo built (e.g. QV)
   [PASS]   Name: at least one combo built (e.g. VP)
   [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. QV)
@@ -259,6 +257,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 188 PASS / 0 FAIL / 1 WARN
+Total: 183 PASS / 2 FAIL / 1 WARN
 ============================================================
 

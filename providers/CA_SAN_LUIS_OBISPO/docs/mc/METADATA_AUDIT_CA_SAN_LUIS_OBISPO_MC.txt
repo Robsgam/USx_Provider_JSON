@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_MC
   Source: CA_SAN_LUIS_OBISPO_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:34
+ Generated: 2026-06-29 08:36
 ============================================================
 
 ============================================================
@@ -94,13 +94,11 @@ METADATA AUDIT
   [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef DQ: set field 'BirthDate' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef DQ: set field 'Name' covered by invented variants (L1.N,DQ.O,L1.O)
-  [WARN]   keyRef DQ: XML set field 'SexCode' not covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef DQ: set field 'State' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef DQ: set field 'State' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef QVC: set field 'Name' covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef QVC: set field 'BirthDate' covered by invented variants (L1.N,DQ.O,L1.O)
-  [WARN]   keyRef QVC: XML set field 'SexCode' not covered by invented variants (L1.N,DQ.O,L1.O)
   [PASS]   keyRef QVC: set field 'OperatorLicenseNumber' covered by invented variants (L1.N,DQ.O,L1.O)
   GunQuery:
   [PASS]   keyRef QGB: set field 'GunSerialNumber' present
@@ -125,6 +123,9 @@ METADATA AUDIT
   [PASS]   keyRef 4#: set field 'LicensePlateNumber' covered by invented variants (RQ.P,RQ.V,QV.P,QV.V)
   [PASS]   keyRef 4#: set field 'LicensePlateTypeCode' covered by invented variants (RQ.P,RQ.V,QV.P,QV.V)
   [PASS]   keyRef 4V: set field 'VehicleIdentificationNumber' covered by invented variants (RQ.P,RQ.V,QV.P,QV.V)
+
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [PASS]   No fields over-promoted from metadata any[] to set[]
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -169,6 +170,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 113 PASS / 0 FAIL / 3 WARN
+Total: 114 PASS / 0 FAIL / 1 WARN
 ============================================================
 

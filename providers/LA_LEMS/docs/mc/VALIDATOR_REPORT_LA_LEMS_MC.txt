@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-06-08 14:35
+  Generated: 2026-06-29 08:37
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -34,19 +34,31 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' -> Vehicle : 6 attrs, 2 combos
   [PASS] QIDM 'LA_LEMS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [WARN] QIDM 'LA_LEMS_VehicleRegistrationQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_VehicleRegistrationQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' -> Person : 8 attrs, 4 combos
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' ImageIndicator size=1
+  [WARN] QIDM 'LA_LEMS_DriverLicenseQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_DriverLicenseQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [WARN] QIDM 'LA_LEMS_DriverHistoryQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_DriverHistoryQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'LA_LEMS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'LA_LEMS_GunQuery' -> Firearm : 4 attrs, 1 combos
+  [WARN] QIDM 'LA_LEMS_GunQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_GunQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'LA_LEMS_ArticleSingleQuery' -> Article : 3 attrs, 1 combos
+  [WARN] QIDM 'LA_LEMS_ArticleSingleQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_ArticleSingleQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'LA_LEMS_BoatQuery' -> Boat : 4 attrs, 2 combos
   [PASS] QIDM 'LA_LEMS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [WARN] QIDM 'LA_LEMS_BoatQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'LA_LEMS_BoatQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
 
@@ -85,8 +97,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 63 PASS / 0 FAIL / 0 WARN
+  RESULTS: 63 PASS / 0 FAIL / 6 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

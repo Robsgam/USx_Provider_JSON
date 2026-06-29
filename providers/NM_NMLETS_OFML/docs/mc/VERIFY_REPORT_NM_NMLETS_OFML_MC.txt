@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_MC
   Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-29 08:38
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -37,8 +37,44 @@ POST-BUILD VERIFICATION
 --- CHECK 7: Cross-Variant Consistency ---
   [INFO] No BASE JSON found -- skipping cross-variant check
 
+--- CHECK 8: Visible-First Mandate ---
+  [WARN] Hidden field 'AttentionDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [WARN] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'Attention' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per automated-Attention standard (BUILD_RULES Visible-First Mandate)
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [FAIL] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverHistoryQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'NM_NMLETS_OFML_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [WARN] RMS combo field(s) not used by any CommSys combo (RMS/CommSys drift): VehicleModelCode
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [FAIL] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' VIN combo 'RQ.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'NM_NMLETS_OFML_VehicleRegistrationQuery' VIN combo 'QV.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' Name combo 'DL.NAME' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
+--- CHECK 15: Form Field Label Hints ---
+  [FAIL] Field 'RegistrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
+  [WARN] Field 'RegistrationState' (any[]-only) label='State' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ImageIndicator' (any[]-only) label='Image Indicator' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'FirearmMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunModel' (any[]-only) label='Model' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 6 field(s) need label hint fixes
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION FAILED: 8 FAIL / 8 WARN / 9 PASS
 ========================================
 
 

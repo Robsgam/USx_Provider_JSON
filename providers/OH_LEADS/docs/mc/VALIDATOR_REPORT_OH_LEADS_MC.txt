@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-29 08:39
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -32,20 +32,26 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'OH_LEADS_VehicleRegistrationQuery' combo 'QV.V' is unreachable: earlier unconditioned combo 'RV' set[] is a subset of its set[] (first match fires; add routing conditions to 'RV' or reorder)
   [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 9 combos
   [PASS] QIDM 'OH_LEADS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [LIMITATION] QIDM 'OH_LEADS_DriverLicenseQuery' combo 'DL' is unreachable: earlier unconditioned combo 'DQ.O' set[] is a subset of its set[] (first match fires; add routing conditions to 'DQ.O' or reorder)
   [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' -> Person : 6 attrs, 4 combos
   [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'OH_LEADS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [LIMITATION] QIDM 'OH_LEADS_DriverHistoryQuery' combo 'BMVIMS' is unreachable: earlier unconditioned combo 'KQ.O' set[] is a subset of its set[] (first match fires; add routing conditions to 'KQ.O' or reorder)
   [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' -> Person : 8 attrs, 3 combos
   [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [WARN] QIDM 'OH_LEADS_DriverHistoryQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'OH_LEADS_DriverHistoryQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'OH_LEADS_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'OH_LEADS_GunQuery' -> Firearm : 4 attrs, 1 combos
   [PASS] QIDM 'OH_LEADS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
   [PASS] QIDM 'OH_LEADS_ArticleSingleQuery' ImageIndicator size=1
+  [LIMITATION] QIDM 'OH_LEADS_BoatQuery' combo 'QB.R' is unreachable: earlier unconditioned combo 'BQ.R' set[] is a subset of its set[] (first match fires; add routing conditions to 'BQ.R' or reorder)
   [PASS] QIDM 'OH_LEADS_BoatQuery' -> Boat : 5 attrs, 4 combos
   [PASS] QIDM 'OH_LEADS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'OH_LEADS_BoatQuery' ImageIndicator size=1
@@ -101,8 +107,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'OH_LEADS_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 77 PASS / 0 FAIL / 0 WARN
+  RESULTS: 77 PASS / 0 FAIL / 1 WARN / 4 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

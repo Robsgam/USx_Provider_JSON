@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS_MC
   Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -39,6 +39,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'CA_CLETS_OCATS_GunQuery' -> Firearm : 5 attrs, 1 combos
   [PASS] QIDM 'CA_CLETS_OCATS_ArticleSingleQuery' -> Article : 5 attrs, 2 combos
+  [LIMITATION] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 'QB.H' is unreachable: earlier unconditioned combo '4V.B' set[] is a subset of its set[] (first match fires; add routing conditions to '4V.B' or reorder)
   [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' -> Boat : 5 attrs, 7 combos
   [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -85,8 +86,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 63 PASS / 0 FAIL / 0 WARN
+  RESULTS: 63 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

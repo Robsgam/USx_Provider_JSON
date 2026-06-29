@@ -1,11 +1,16 @@
-﻿================================================================
-  Build Report: CA_CLETS_OCATS_MC
-  Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-06-08 14:34
-================================================================
-BUILD SCRIPT LINT
-=================
 
-build_ca_clets_ocats.ps1: CLEAN
-build_ca_clets_ocats_mc.ps1: CLEAN
+================================================================
+  Build Script Lint -- 2026-06-29
+================================================================
+
+  providers\CA_CLETS_OCATS\scripts\build_ca_clets_ocats.ps1
+    [PASS] No issues found
+
+  providers\CA_CLETS_OCATS\scripts\build_ca_clets_ocats_mc.ps1
+    [WARN] Line 342: VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE
+    [FIX]  Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }
+
+================================================================
+  TOTAL: 2 scripts | 1 clean | 1 with issues | 1 warnings | 0 failures
+================================================================
 

@@ -1,59 +1,73 @@
 ﻿================================================================
   Build Report: CA_eSUN_MC
   Source: CA_eSUN_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX VALIDATION -- CA_eSUN_MC
+TEST MATRIX <-> JSON CONSISTENCY -- CA_eSUN_MC
 ============================================================
 Source: CA_eSUN_MC.json
 Matrix: CA_eSUN_TEST_MATRIX.txt
-Generated: 2026-06-08
+Generated: 2026-06-29
 
-PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: VEHICLE (14 tests -- 4 cards, 6 combos)
   T1  Vehicle    [PASS] 4 cards, 13 fields, defaults verified
-  T2  Boat       [PASS] 3 cards, 4 fields, defaults verified
-  T3  Person     [PASS] 3 cards, 12 fields, defaults verified
-  T4  Firearm    [PASS] 3 cards, 10 fields, defaults verified
-  T5  Article    [PASS] 1 cards, 5 fields, defaults verified
-PHASE 2: VEHICLE COMBOS (6 tests, 6 combos)
-  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ.P)
-  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ.P)
-  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (QV.V)
-  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (QV.V)
+  T2  Vehicle    [PASS] (structural check)
+  T3  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, VehicleYear
+  T4  Vehicle    [PASS] (structural check)
+  T5  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, VehicleYear
+  T6  Vehicle    [PASS] (structural check)
+  T7  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, VehicleYear
+  T8  Vehicle    [PASS] (structural check)
+  T9  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, VehicleYear
   T10  Vehicle    [PASS] (structural check)
-  T11  Vehicle    [PASS] (structural check)
-PHASE 3: BOAT COMBOS (2 tests, 2 combos)
-  T12  Boat       [PASS] BoatQuery fires (BQ.H)
-  T13  Boat       [PASS] BoatQuery fires (BQ.H)
-PHASE 4: PERSON COMBOS (8 tests, 8 combos)
-  T14  Person     [PASS] DriverLicenseQuery fires (DQ.N)
-  T15  Person     [PASS] DriverLicenseQuery fires (DQ.N)
-  T16  Person     [PASS] (structural check)
-  T17  Person     [PASS] (structural check)
-  T18  Person     [PASS] DriverHistoryQuery fires (KQ.N)
-  T19  Person     [PASS] DriverHistoryQuery fires (KQ.N)
-  T20  Person     [PASS] (structural check)
-  T21  Person     [PASS] (structural check)
-PHASE 5: FIREARM COMBOS (2 tests, 2 combos)
-  T22  Firearm    [PASS] GunQuery fires (QGH)
-  T23  Firearm    [PASS] GunQuery fires (QGH)
-PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
-  T24  Article    [PASS] ArticleSingleQuery fires (QA)
-PHASE 7: ANY[] FIELD TESTS (5 tests)
-  T25  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, VehicleYear
-  T26  Person     [PASS] any[] fields verified: RegistrationState
-  T27  Firearm    [PASS] any[] fields verified: GunCaliber, FirearmMake, GunTypeCode
-  T28  Boat       [PASS] any[] fields verified: RegistrationState
-  T29  Article    [PASS] any[] fields verified: ArticleBrand, ArticleCategory, ArticleTypeCode
-PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-  T30  Person     [PASS] queriesToDeselect verified
-PHASE 9: NEGATIVES (empty forms = no send)
-  T31  Vehicle    [PASS] empty form: no combos fire
-  T32  Person     [PASS] empty form: no combos fire
+  T11  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber
+  T12  Vehicle    [PASS] (structural check)
+  T13  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber
+  T14  Vehicle    [PASS] empty form: no combos fire
+ENTITY: BOAT (6 tests -- 3 cards, 2 combos)
+  T15  Boat       [PASS] 3 cards, 4 fields, defaults verified
+  T16  Boat       [PASS] (structural check)
+  T17  Boat       [PASS] any[] fields verified: RegistrationState
+  T18  Boat       [PASS] (structural check)
+  T19  Boat       [PASS] any[] fields verified: RegistrationState
+  T20  Boat       [PASS] empty form: no combos fire
+ENTITY: PERSON (15 tests -- 3 cards, 8 combos)
+  T21  Person     [PASS] 3 cards, 12 fields, defaults verified
+  T22  Person     [PASS] (structural check)
+  T23  Person     [PASS] any[] fields verified: RegistrationState
+  T24  Person     [PASS] (structural check)
+  T25  Person     [PASS] any[] fields verified: RegistrationState
+  T26  Person     [PASS] (structural check)
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] (structural check)
+  T29  Person     [PASS] any[] fields verified: RegistrationState
+  T30  Person     [PASS] (structural check)
+  T31  Person     [PASS] any[] fields verified: RegistrationState
+  T32  Person     [PASS] (structural check)
+  T33  Person     [PASS] (structural check)
+  T34  Person     [PASS] queriesToDeselect verified
+  T35  Person     [PASS] empty form: no combos fire
+ENTITY: FIREARM (6 tests -- 3 cards, 2 combos)
+  T36  Firearm    [PASS] 3 cards, 10 fields, defaults verified
+  T37  Firearm    [PASS] GunQuery fires (QGB)
+  T38  Firearm    [PASS] any[] fields verified: GunCaliber, FirearmMake, GunTypeCode, RelatedSearchHitIndicator
+  T39  Firearm    [PASS] GunQuery fires (QGH)
+  T40  Firearm    [PASS] any[] fields verified: GunBirthDate, GunAge
+  T41  Firearm    [PASS] empty form: no combos fire
+ENTITY: ARTICLE (4 tests -- 1 card, 1 combo)
+  T42  Article    [PASS] 1 cards, 5 fields, defaults verified
+  T43  Article    [PASS] ArticleSingleQuery fires (QA)
+  T44  Article    [PASS] any[] fields verified: ArticleBrand, ArticleCategory, ArticleTypeCode
+  T45  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 32/32 PASS, 0 FAIL
+SUMMARY: 45/45 PASS, 0 FAIL
 
 

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-06-08 14:35
+  Generated: 2026-06-29 08:37
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:35
+ Generated: 2026-06-29 08:38
 ============================================================
 
 ============================================================
@@ -151,6 +151,9 @@ METADATA AUDIT
   [PASS]   keyRef RQS: set field 'VehicleIdentificationNumber' covered by invented variants (RQSLicensePlateNumber,RQSVehicleIdentificationNumber)
   [PASS]   keyRef RQS: set field 'State' covered by invented variants (RQSLicensePlateNumber,RQSVehicleIdentificationNumber)
 
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef BQ (BoatQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in LA_LEMS_ACCEPTED_DIVERGENCES.txt
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -194,6 +197,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 112 PASS / 0 FAIL / 7 WARN
+Total: 112 PASS / 1 FAIL / 7 WARN
 ============================================================
 

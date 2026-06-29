@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-09 14:09
+  Generated: 2026-06-29 08:38
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: NY_NYSPIN_EJUSTICE (MC)
+ CAD AUDIT: NY_NYSPIN_EJUSTICE
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -135,7 +135,7 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [INFO] Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)
+    [INFO] Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -154,9 +154,9 @@ CAD AUDIT
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' combo DLICN -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' combo DLIC -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' combo DGRP -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALHOUT -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALHOUT -- missing default for PurposeCode (form default='C')
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALH -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALLOUT -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALLOUT -- missing default for PurposeCode (form default='C')
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo DALL -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery' combo GINQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'NY_NYSPIN_EJUSTICE_ArticleSingleQuery' combo AINQ -- defaults cover all initialValue any[] fields
@@ -171,6 +171,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 69 PASS / 0 FAIL / 0 WARN / 70 INFO
+Total: 67 PASS / 2 FAIL / 0 WARN / 70 INFO
 
 

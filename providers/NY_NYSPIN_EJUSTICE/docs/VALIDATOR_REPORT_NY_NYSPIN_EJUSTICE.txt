@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-09 14:09
+  Generated: 2026-06-29 08:38
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -47,6 +47,14 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' -> Person : 3 attrs, 1 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALHOUT' has POISONED-ARRAY condition(s) [State NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALH' has POISONED-ARRAY condition(s) [State IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALLOUT' has POISONED-ARRAY condition(s) [State NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALL' has POISONED-ARRAY condition(s) [State IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' -> Person : 9 attrs, 4 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -105,8 +113,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo 'RCAR': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 81 PASS / 0 FAIL / 0 WARN
+  RESULTS: 81 PASS / 0 FAIL / 4 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

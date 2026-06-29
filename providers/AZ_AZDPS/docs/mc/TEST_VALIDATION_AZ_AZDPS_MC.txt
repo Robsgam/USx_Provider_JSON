@@ -1,58 +1,73 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_MC
   Source: AZ_AZDPS_MC.json
-  Generated: 2026-06-08 14:33
+  Generated: 2026-06-29 08:35
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX VALIDATION -- AZ_AZDPS_MC
+TEST MATRIX <-> JSON CONSISTENCY -- AZ_AZDPS_MC
 ============================================================
 Source: AZ_AZDPS_MC.json
 Matrix: AZ_AZDPS_TEST_MATRIX.txt
-Generated: 2026-06-08
+Generated: 2026-06-29
 
-PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: PERSON (21 tests -- 7 cards, 10 combos -- WMPIWantedPersonInquiry co-fires with WMPIMissingPersonInquiry)
   T1  Person     [PASS] 7 cards, 32 fields, defaults verified
-  T2  Vehicle    [PASS] 3 cards, 8 fields, defaults verified
-  T3  Boat       [PASS] 3 cards, 5 fields, defaults verified
-  T4  Firearm    [PASS] 1 cards, 6 fields, defaults verified
-  T5  Article    [PASS] 1 cards, 4 fields, defaults verified
-PHASE 2: PERSON COMBOS (9 tests, 10 combos -- WMPIWantedPersonInquiry co-fires with WMPIMissingPersonInquiry)
+  T2  Person     [PASS] (structural check)
+  T3  Person     [PASS] any[] fields verified: AreaCode, ExpandedNameSearchCode, FormORI, nameMiddle
+  T4  Person     [PASS] (structural check)
+  T5  Person     [PASS] any[] fields verified: AreaCode, ExpandedNameSearchCode, FormORI, nameMiddle
   T6  Person     [PASS] (structural check)
-  T7  Person     [PASS] (structural check)
-  T8  Person     [PASS] (structural check)
-  T9  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
-  T10  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
+  T7  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQ)
+  T8  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
+  T9  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQSS)
+  T10  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
   T11  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
-  T12  Person     [PASS] AzAzdpsDriverLicenseQuery fires (ACWL)
-  T13  Person     [PASS] DriverHistoryQuery fires (KQH)
-  T14  Person     [PASS] DriverHistoryQuery fires (KQH)
-PHASE 3: VEHICLE COMBOS (2 tests, 2 combos)
-  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
-  T16  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
-PHASE 4: BOAT COMBOS (4 tests, 4 combos)
-  T17  Boat       [PASS] BoatQuery fires (BQ)
-  T18  Boat       [PASS] BoatQuery fires (BQ)
-  T19  Boat       [PASS] BoatQuery fires (ACQB)
-  T20  Boat       [PASS] BoatQuery fires (ACQBH)
-PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
-  T21  Firearm    [PASS] GunQuery fires (ACQG)
-PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
-  T22  Article    [PASS] ArticleSingleQuery fires (ACQA)
-PHASE 7: ANY[] FIELD TESTS (5 tests)
-  T23  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
-  T24  Vehicle    [PASS] any[] fields verified: licensePlateYear, licensePlateTypeCode, registrationState
-  T25  Person     [PASS] any[] fields verified: AreaCode, ExpandedNameSearchCode, FormORI
-  T26  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, gunModel
-  T27  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
-PHASE 8: CO-FIRE / DESELECT VERIFICATION (2 tests)
-  T28  Person     [PASS] queriesToDeselect verified
-  T29  Person     [PASS] priority routing: multiple combos present
-PHASE 9: NEGATIVES (empty forms = no send)
-  T30  Person     [PASS] empty form: no combos fire
-  T31  Boat       [PASS] empty form: no combos fire
+  T12  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
+  T13  Person     [PASS] AzAzdpsDriverLicenseQuery fires (ACWL)
+  T14  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
+  T15  Person     [PASS] DriverHistoryQuery fires (KQ)
+  T16  Person     [PASS] any[] fields verified: attention, NameMiddleDH, NameSuffixDH, purposeCode
+  T17  Person     [PASS] DriverHistoryQuery fires (KQH)
+  T18  Person     [PASS] any[] fields verified: attention, NameMiddleDH, NameSuffixDH, purposeCode
+  T19  Person     [PASS] queriesToDeselect verified
+  T20  Person     [PASS] priority routing: multiple combos present
+  T21  Person     [PASS] empty form: no combos fire
+ENTITY: VEHICLE (6 tests -- 3 cards, 2 combos)
+  T22  Vehicle    [PASS] 3 cards, 8 fields, defaults verified
+  T23  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
+  T24  Vehicle    [PASS] any[] fields verified: licensePlateTypeCode, licensePlateYear, registrationState, vehicleMakeCode
+  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
+  T26  Vehicle    [PASS] any[] fields verified: licensePlateYear, licensePlateTypeCode, registrationState, vehicleMakeCode
+  T27  Vehicle    [PASS] empty form: no combos fire
+ENTITY: BOAT (10 tests -- 3 cards, 4 combos)
+  T28  Boat       [PASS] 3 cards, 5 fields, defaults verified
+  T29  Boat       [PASS] BoatQuery fires (BQ)
+  T30  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
+  T31  Boat       [PASS] BoatQuery fires (BQH)
+  T32  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
+  T33  Boat       [PASS] BoatQuery fires (ACQB)
+  T34  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
+  T35  Boat       [PASS] BoatQuery fires (ACQBH)
+  T36  Boat       [PASS] any[] fields verified: registrationState, relatedHitSearchIndicator
+  T37  Boat       [PASS] empty form: no combos fire
+ENTITY: FIREARM (4 tests -- 1 card, 1 combo)
+  T38  Firearm    [PASS] 1 cards, 6 fields, defaults verified
+  T39  Firearm    [PASS] GunQuery fires (ACQG)
+  T40  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, gunModel, relatedHitSearchIndicator
+  T41  Firearm    [PASS] empty form: no combos fire
+ENTITY: ARTICLE (4 tests -- 1 card, 1 combo)
+  T42  Article    [PASS] 1 cards, 4 fields, defaults verified
+  T43  Article    [PASS] ArticleSingleQuery fires (ACQA)
+  T44  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
+  T45  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 31/31 PASS, 0 FAIL
+SUMMARY: 45/45 PASS, 0 FAIL
 
 

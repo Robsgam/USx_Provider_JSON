@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-24 14:43
+  Generated: 2026-06-29 08:41
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: TX_TLETS (MC)
+ CAD AUDIT: TX_TLETS
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -44,7 +44,7 @@ CAD AUDIT
     [PASS] raceCode: in QIF and CAD list
     [PASS] imageIndicator: in QIF and CAD list
     [PASS] registrationState: in QIF and CAD list
-    [PASS] attention: in QIF as 'Attention' (MC PascalCase)
+    [PASS] attention: in QIF as 'Attention' (PascalCase USx fieldIds)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -143,7 +143,7 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [INFO] Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)
+    [INFO] Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)

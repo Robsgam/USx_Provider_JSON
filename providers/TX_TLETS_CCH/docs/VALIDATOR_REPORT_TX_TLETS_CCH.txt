@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
   Source: TX_TLETS_CCH.json
-  Generated: 2026-06-09 16:18
+  Generated: 2026-06-29 08:42
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -35,13 +35,24 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 9 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber' is unreachable: earlier unconditioned combo 'RQVehicleIdentificationNumber' set[] is a subset of its set[] (first match fires; add routing conditions to 'RQVehicleIdentificationNumber' or reorder)
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [WARN] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQNameImg' has POISONED-ARRAY condition(s) [ImageIndicator EQUALS; ReasonCode EQUALS; EmailAddress REGEX] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLNameImg' has POISONED-ARRAY condition(s) [ImageIndicator EQUALS; ReasonCode EQUALS; EmailAddress REGEX] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLNImg' has POISONED-ARRAY condition(s) [ImageIndicator EQUALS; ReasonCode EQUALS; EmailAddress REGEX] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' -> Person : 11 attrs, 7 combos
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [WARN] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQNameImg' has POISONED-ARRAY condition(s) [ImageIndicator EQUALS; ReasonCode EQUALS; EmailAddress REGEX] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLNImg' has POISONED-ARRAY condition(s) [ImageIndicator EQUALS; ReasonCode EQUALS; EmailAddress REGEX] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' -> Person : 10 attrs, 4 combos
   [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -143,8 +154,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery' combo 'ZR.SID': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 119 PASS / 0 FAIL / 0 WARN
+  RESULTS: 119 PASS / 0 FAIL / 5 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

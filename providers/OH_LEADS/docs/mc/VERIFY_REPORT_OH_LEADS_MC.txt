@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: OH_LEADS_MC
   Source: OH_LEADS_MC.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-29 08:39
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -37,8 +37,58 @@ POST-BUILD VERIFICATION
 --- CHECK 7: Cross-Variant Consistency ---
   [INFO] No BASE JSON found -- skipping cross-variant check
 
+--- CHECK 8: Visible-First Mandate ---
+  [WARN] Hidden field 'NameFirstDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [WARN] Hidden field 'NameLastDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [WARN] Hidden field 'OperatorLicenseNumberDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [WARN] Hidden field 'PurposeCodeDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [WARN] Hidden field 'ReasonCodeDH' (FormInput) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [INFO] Hidden field 'RegistrationStateDH' (FormSelect) -- documented exception, allowed
+  [WARN] Hidden field 'SexCodeDH' (FormSelect) not on approved-exception list -- expose visible (hidden=false) or get approval (BUILD_RULES Visible-First Mandate)
+  [INFO] QIDM 'OH_LEADS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [FAIL] QIDM 'OH_LEADS_VehicleRegistrationQuery' has 9 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'OH_LEADS_DriverLicenseQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'OH_LEADS_DriverHistoryQuery' has 3 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverHistoryQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'OH_LEADS_ArticleSingleQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'ArticleSingleQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'OH_LEADS_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [WARN] RMS combo field(s) not used by any CommSys combo (RMS/CommSys drift): VehicleModelCode
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [FAIL] QIDM 'OH_LEADS_VehicleRegistrationQuery' VIN combo 'RQ.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'OH_LEADS_VehicleRegistrationQuery' VIN combo 'RV' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'OH_LEADS_VehicleRegistrationQuery' VIN combo 'QV.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'OH_LEADS_DriverLicenseQuery' Name combo 'DQ.N' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'OH_LEADS_DriverLicenseQuery' Name combo 'DN' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'OH_LEADS_DriverHistoryQuery' Name combo 'KQ.N' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'OH_LEADS_BoatQuery' Reg combo 'BQ.R' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
+--- CHECK 15: Form Field Label Hints ---
+  [WARN] Field 'AddressCounty' (any[]-only) label='County Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ImageIndicator' (any[]-only) label='Image Indicator' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'FirearmMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'RelatedHitSearchIndicator' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ImageIndicatorArticle' (any[]-only) label='Image Indicator' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'RelatedHitSearchIndicatorArticle' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ImageIndicatorBoat' (any[]-only) label='Image Indicator' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'RelatedHitSearchIndicatorBoat' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 9 field(s) need label hint fixes
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION FAILED: 12 FAIL / 16 WARN / 9 PASS
 ========================================
 
 

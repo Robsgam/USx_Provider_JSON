@@ -1,28 +1,28 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS_MC
   Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_CLETS_OCATS (MC)
+ CAD AUDIT: CA_CLETS_OCATS
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
   Vehicle:
-    [FAIL] LicensePlateNumber: wrong case (expected 'licensePlateNumber' or 'LicensePlateNumberIn')
-    [FAIL] LicensePlateTypeCode: wrong case (expected 'licensePlateTypeCode' or '')
-    [FAIL] LicensePlateYear: wrong case (expected 'licensePlateYear' or '')
-    [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (MC PascalCase)
-    [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (MC PascalCase)
-    [PASS] vehicleYear: in QIF as 'VehicleYear' (MC PascalCase)
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] licensePlateNumber: in QIF as 'LicensePlateNumber' (PascalCase USx fieldIds)
+    [PASS] licensePlateTypeCode: in QIF as 'LicensePlateTypeCode' (PascalCase USx fieldIds)
+    [PASS] licensePlateYear: in QIF as 'LicensePlateYear' (PascalCase USx fieldIds)
+    [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (PascalCase USx fieldIds)
+    [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (PascalCase USx fieldIds)
+    [PASS] vehicleYear: in QIF as 'VehicleYear' (PascalCase USx fieldIds)
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
+    [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -32,16 +32,16 @@ CAD AUDIT
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Person:
-    [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (MC PascalCase)
-    [PASS] nameFirst: in QIF as 'NameFirst' (MC PascalCase)
-    [PASS] nameLast: in QIF as 'NameLast' (MC PascalCase)
+    [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
+    [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
+    [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] birthDate: in QIF as 'BirthDate' (MC PascalCase)
-    [PASS] sexCode: in QIF as 'SexCode' (MC PascalCase)
+    [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
+    [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -60,11 +60,11 @@ CAD AUDIT
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Firearm:
-    [FAIL] SerialNumber: wrong case (expected 'serialNumber' or '')
-    [FAIL] FirearmMake: wrong case (expected 'firearmMake' or '')
-    [FAIL] GunCaliber: wrong case (expected 'gunCaliber' or '')
+    [PASS] serialNumber: in QIF as 'SerialNumber' (PascalCase USx fieldIds)
+    [PASS] firearmMake: in QIF as 'FirearmMake' (PascalCase USx fieldIds)
+    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] GunTypeCode: wrong case (expected 'gunTypeCode' or '')
+    [PASS] gunTypeCode: in QIF as 'GunTypeCode' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -78,9 +78,9 @@ CAD AUDIT
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Article:
-    [FAIL] SerialNumber: wrong case (expected 'serialNumber' or '')
-    [FAIL] ArticleTypeCode: wrong case (expected 'articleTypeCode' or '')
-    [FAIL] ArticleBrand: wrong case (expected 'articleBrand' or '')
+    [PASS] serialNumber: in QIF as 'SerialNumber' (PascalCase USx fieldIds)
+    [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
+    [PASS] articleBrand: in QIF as 'ArticleBrand' (PascalCase USx fieldIds)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -94,9 +94,9 @@ CAD AUDIT
     [INFO] CaRequestPurposeCode: in QIF, not in CAD list (provider-specific)
     [INFO] OwnerAppliedNumber: in QIF, not in CAD list (provider-specific)
   Boat:
-    [FAIL] BoatHullIdNumber: wrong case (expected 'boatHullIdNumber' or '')
-    [FAIL] RegistrationNumber: wrong case (expected 'registrationNumber' or '')
-    [PASS] registrationState: in QIF as 'RegistrationState' (MC PascalCase)
+    [PASS] boatHullIdNumber: in QIF as 'BoatHullIdNumber' (PascalCase USx fieldIds)
+    [PASS] registrationNumber: in QIF as 'RegistrationNumber' (PascalCase USx fieldIds)
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -129,7 +129,7 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [INFO] Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)
+    [INFO] Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -141,25 +141,27 @@ CAD AUDIT
 --- CHECK 6: CAD Defaults Coverage ---
     [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateTypeCode (form default='PC')
     [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateYear (form default='2026')
-    [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo VP -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4V -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.P -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.V -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo VP -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4V -- missing default for CaRequestPurposeCode (form default='C')
     [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4 -- missing default for LicensePlateTypeCode (form default='PC')
     [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4 -- missing default for LicensePlateYear (form default='2026')
-    [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.O -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo L1.N -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo L1.O -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_GunQuery' combo QGB -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_ArticleSingleQuery' combo QA.S -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_ArticleSingleQuery' combo QA.O -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo BQ.H -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo BQ.R -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 4V.B -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.O -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 4B -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.H -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.R -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4 -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.N -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.O -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo L1.N -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo L1.O -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_GunQuery' combo QGB -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_ArticleSingleQuery' combo QA.S -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_ArticleSingleQuery' combo QA.O -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo BQ.H -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo BQ.R -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 4V.B -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.O -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo 4B -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.H -- missing default for CaRequestPurposeCode (form default='C')
+    [FAIL] QIDM 'CA_CLETS_OCATS_BoatQuery' combo QB.R -- missing default for CaRequestPurposeCode (form default='C')
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -167,6 +169,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 52 PASS / 16 FAIL / 0 WARN / 67 INFO
+Total: 47 PASS / 23 FAIL / 0 WARN / 67 INFO
 
 

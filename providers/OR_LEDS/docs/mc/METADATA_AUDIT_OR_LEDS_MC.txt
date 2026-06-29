@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS_MC
   Source: OR_LEDS_MC.json
-  Generated: 2026-06-08 14:37
+  Generated: 2026-06-29 08:39
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:37
+ Generated: 2026-06-29 08:39
 ============================================================
 
 ============================================================
@@ -109,6 +109,14 @@ METADATA AUDIT
   [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by invented variants (RQ.PO,RQ.VO,RQ.V,RQ.P)
   [PASS]   keyRef RQ: any field 'State' covered by invented variants (RQ.PO,RQ.VO,RQ.V,RQ.P)
 
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef RQ.PO (VehicleRegistrationQuery): 'LicensePlateTypeCode' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQ.PO (VehicleRegistrationQuery): 'LicensePlateYear' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQ.PO (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQ.VO (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQ.NO (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQ.OO (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -142,6 +150,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 65 PASS / 0 FAIL / 2 WARN
+Total: 65 PASS / 6 FAIL / 2 WARN
 ============================================================
 

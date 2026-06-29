@@ -1,11 +1,17 @@
-﻿================================================================
-  Build Report: OH_LEADS_MC
-  Source: OH_LEADS_MC.json
-  Generated: 2026-06-08 14:36
-================================================================
-BUILD SCRIPT LINT
-=================
 
-build_oh_leads.ps1: CLEAN
-build_oh_leads_mc.ps1: CLEAN
+================================================================
+  Build Script Lint -- 2026-06-29
+================================================================
+
+  providers\OH_LEADS\scripts\build_oh_leads.ps1
+    [WARN] Line 476: VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE
+    [FIX]  Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }
+
+  providers\OH_LEADS\scripts\build_oh_leads_mc.ps1
+    [WARN] Line 474: VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE
+    [FIX]  Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }
+
+================================================================
+  TOTAL: 2 scripts | 0 clean | 2 with issues | 2 warnings | 0 failures
+================================================================
 

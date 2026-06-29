@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_MC
   Source: AZ_AZDPS_MC.json
-  Generated: 2026-06-08 14:33
+  Generated: 2026-06-29 08:35
 ================================================================
 QUERY SIMULATION
 ================
@@ -14,7 +14,7 @@ QUERY SIMULATION
 --- QIDM: AZ_AZDPS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 2
 
-    [FIRES] ACVR
+    [FIRES first-match] ACVR
       set: [dexStateUserId, licensePlateNumber]
       any: [licensePlateYear, licensePlateTypeCode, registrationState, vehicleIdentificationNumber, vehicleMakeCode, vehicleYear] -> matched: [licensePlateYear, licensePlateTypeCode, registrationState, vehicleIdentificationNumber, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
@@ -31,7 +31,7 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
-    [FIRES] ACVRV
+    [FIRES shadowed -- first match above wins] ACVRV
       set: [dexStateUserId, vehicleIdentificationNumber]
       any: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState, vehicleMakeCode, vehicleYear] -> matched: [licensePlateNumber, licensePlateTypeCode, licensePlateYear, registrationState, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
@@ -48,10 +48,15 @@ QUERY SIMULATION
         <VehicleYear>2023</VehicleYear>
       </Transaction>
 
+    >> PLATFORM FIRES: ACVR (first matching combo)
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleYear=2023
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery [Person] ---
     Query: AzAzdpsDriverLicenseQuery  |  Attrs: 7  |  Combos: 4
 
-    [FIRES] ACWL
+    [FIRES first-match] ACWL
       set: [dexStateUserId, birthDate, nameLast, nameFirst, sexCode]
       any: [nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, SocialSecurityNumber] -> matched: [nameMiddle, operatorLicenseNumber, registrationState, SocialSecurityNumber]
       -- CommSys XML --
@@ -67,7 +72,7 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQN
+    [FIRES shadowed -- first match above wins] DQN
       set: [nameLast, nameFirst, sexCode, birthDate]
       any: [dexStateUserId, nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, SocialSecurityNumber] -> matched: [dexStateUserId, nameMiddle, operatorLicenseNumber, registrationState, SocialSecurityNumber]
       -- CommSys XML --
@@ -83,7 +88,7 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQ
+    [FIRES shadowed -- first match above wins] DQ
       set: [operatorLicenseNumber]
       any: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, nameSuffix, registrationState, sexCode, SocialSecurityNumber] -> matched: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, registrationState, sexCode, SocialSecurityNumber]
       -- CommSys XML --
@@ -99,7 +104,7 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DQSS
+    [FIRES shadowed -- first match above wins] DQSS
       set: [SocialSecurityNumber]
       any: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, nameSuffix, operatorLicenseNumber, registrationState, sexCode] -> matched: [dexStateUserId, birthDate, nameFirst, nameLast, nameMiddle, operatorLicenseNumber, registrationState, sexCode]
       -- CommSys XML --
@@ -115,10 +120,15 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
+    >> PLATFORM FIRES: ACWL (first matching combo)
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, BirthDate=19900115, Name=Doe, John A, OperatorLicenseNumber=D123456789, SexCode=M, SocialSecurityNumber=123456789, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 7  |  Combos: 2
 
-    [FIRES] KQH
+    [FIRES first-match] KQH
       set: [StateDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH]
       any: [attention, NameMiddleDH, NameSuffixDH, operatorLicenseNumberDH, purposeCode] -> matched: [attention, NameMiddleDH, operatorLicenseNumberDH, purposeCode]
       -- CommSys XML --
@@ -134,7 +144,7 @@ QUERY SIMULATION
         <State>AZ</State>
       </Transaction>
 
-    [FIRES] KQ
+    [FIRES shadowed -- first match above wins] KQ
       set: [StateDH, operatorLicenseNumberDH]
       any: [attention, birthDateDH, nameFirstDH, nameLastDH, NameMiddleDH, NameSuffixDH, purposeCode, sexCodeDH] -> matched: [attention, birthDateDH, nameFirstDH, nameLastDH, NameMiddleDH, purposeCode, sexCodeDH]
       -- CommSys XML --
@@ -150,10 +160,15 @@ QUERY SIMULATION
         <State>AZ</State>
       </Transaction>
 
+    >> PLATFORM FIRES: KQH (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DISPATCHER JONES, BirthDate=19900115, Name=Doe, John A, OperatorLicenseNumber=D123456789, PurposeCode=D, SexCode=M, State=AZ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 6  |  Combos: 1
 
-    [FIRES] ACQG
+    [FIRES first-match] ACQG
       set: [dexStateUserId, gunSerialNumber]
       any: [gunCaliber, gunMake, gunModel, relatedHitSearchIndicator] -> matched: [gunCaliber, gunMake, gunModel, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -168,10 +183,15 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
+    >> PLATFORM FIRES: ACQG (first matching combo)
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, GunCaliber=9MM, GunMake=SMTH, GunModel=M&P, GunSerialNumber=ABC12345, RelatedHitSearchIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
 
-    [FIRES] ACQA
+    [FIRES first-match] ACQA
       set: [dexStateUserId, articleTypeCode, articleSerialNumber]
       any: [relatedHitSearchIndicator] -> matched: [relatedHitSearchIndicator]
       -- CommSys XML --
@@ -184,10 +204,15 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
+    >> PLATFORM FIRES: ACQA (first matching combo)
+    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP, BadgeNumber=BADG, RelatedHitSearchIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 5  |  Combos: 4
 
-    [FIRES] ACQB
+    [FIRES first-match] ACQB
       set: [dexStateUserId, registrationNumber]
       any: [boatHullIdNumber, registrationState, relatedHitSearchIndicator] -> matched: [boatHullIdNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -201,7 +226,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    [FIRES] ACQBH
+    [FIRES shadowed -- first match above wins] ACQBH
       set: [dexStateUserId, boatHullIdNumber]
       any: [registrationNumber, registrationState, relatedHitSearchIndicator] -> matched: [registrationNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -215,7 +240,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    [FIRES] BQ
+    [FIRES shadowed -- first match above wins] BQ
       set: [registrationNumber]
       any: [dexStateUserId, boatHullIdNumber, registrationState, relatedHitSearchIndicator] -> matched: [dexStateUserId, boatHullIdNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -229,7 +254,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    [FIRES] BQH
+    [FIRES shadowed -- first match above wins] BQH
       set: [boatHullIdNumber]
       any: [dexStateUserId, registrationNumber, registrationState, relatedHitSearchIndicator] -> matched: [dexStateUserId, registrationNumber, registrationState, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -243,10 +268,15 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
+    >> PLATFORM FIRES: ACQB (first matching combo)
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y, State=FL
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_WMPIWantedPersonInquiry [Person] ---
     Query: WMPIWantedPersonInquiry  |  Attrs: 8  |  Combos: 2
 
-    [FIRES] ACQW
+    [FIRES first-match] ACQW
       set: [nameLast, nameFirst, birthDate, sexCode, RaceCode]
       any: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, nameMiddle, nameSuffix, ncicNumber, relatedHitSearchIndicator] -> matched: [ExpandedBirthDateSearchCode, ExpandedNameSearchCode, nameMiddle, ncicNumber, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -263,7 +293,7 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
       </Transaction>
 
-    [FIRES] ACQWN
+    [FIRES shadowed -- first match above wins] ACQWN
       set: [ncicNumber]
       any: [birthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, nameFirst, nameLast, nameMiddle, nameSuffix, RaceCode, relatedHitSearchIndicator, sexCode] -> matched: [birthDate, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, nameFirst, nameLast, nameMiddle, RaceCode, relatedHitSearchIndicator, sexCode]
       -- CommSys XML --
@@ -280,10 +310,15 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
       </Transaction>
 
+    >> PLATFORM FIRES: ACQW (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=19900115, ExpandedBirthDateSearchCode=E, ExpandedNameSearchCode=E, Name=Doe, John A, NCICNumber=W123456789, RaceCode=W, RelatedHitSearchIndicator=Y, SexCode=M
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: AZ_AZDPS_WMPIMissingPersonInquiry [Person] ---
     Query: WMPIMissingPersonInquiry  |  Attrs: 13  |  Combos: 2
 
-    [FIRES] ACQM
+    [FIRES first-match] ACQM
       set: [Age, sexCode, RaceCode, Height, Weight, EyeColorCode, HairColorCode, nameLast, nameFirst]
       any: [AreaCode, ExpandedNameSearchCode, FormORI, nameMiddle, nameSuffix, ncicNumber, relatedHitSearchIndicator] -> matched: [AreaCode, ExpandedNameSearchCode, FormORI, nameMiddle, ncicNumber, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -305,7 +340,7 @@ QUERY SIMULATION
         <Weight>180</Weight>
       </Transaction>
 
-    [FIRES] ACQMN
+    [FIRES shadowed -- first match above wins] ACQMN
       set: [ncicNumber]
       any: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, nameFirst, nameLast, nameMiddle, nameSuffix, RaceCode, relatedHitSearchIndicator, sexCode, Weight] -> matched: [Age, AreaCode, ExpandedNameSearchCode, EyeColorCode, FormORI, HairColorCode, Height, nameFirst, nameLast, nameMiddle, RaceCode, relatedHitSearchIndicator, sexCode, Weight]
       -- CommSys XML --
@@ -326,6 +361,69 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
         <Weight>180</Weight>
       </Transaction>
+
+    >> PLATFORM FIRES: ACQM (first matching combo)
+    >> UNION POOL (platform serializes): Age=30, AreaCode=602, ExpandedNameSearchCode=E, EyeColorCode=BRO, FormORI=MK1234567, HairColorCode=BLK, Height=510, Name=Doe, John A, NCICNumber=W123456789, RaceCode=W, RelatedHitSearchIndicator=Y, SexCode=M, Weight=180
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Person Search query [Person] ---
+    Query: Person  |  Attrs: 8  |  Combos: 5
+
+    [FIRES first-match] firstNameLastNameSocialSecurityNumber
+      set: [SocialSecurityNumber, nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ","ssn":"123456789"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastNameDriversLicenseNumber
+      set: [operatorLicenseNumber, nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
+      set: [nameFirst, nameLast, birthDate]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastName
+      set: [nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] driversLicenseNumber
+      set: [operatorLicenseNumber]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    >> PLATFORM FIRES: firstNameLastNameSocialSecurityNumber (first matching combo)
+    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, raceAttrIds=W, sexAttrId=M, registrationStateAttrId=NJ, ssn=123456789
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Vehicle search query [Vehicle] ---
+    Query: Vehicle  |  Attrs: 6  |  Combos: 2
+
+    [FIRES first-match] vehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [vehicleYear, vehicleMakeCode, vehicleModelCode, licensePlateNumber, registrationState] -> matched: [vehicleYear, vehicleMakeCode, licensePlateNumber, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.yearOfManufacture":"2023","vehicle.vinNumber":"1HGCM82633A123456","vehicle.makeNcicCode":"FORD","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] licensePlateIn
+      set: [licensePlateNumber]
+      any: [vehicleYear, vehicleMakeCode, vehicleModelCode, registrationState] -> matched: [vehicleYear, vehicleMakeCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.yearOfManufacture":"2023","vehicle.makeNcicCode":"FORD","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    >> PLATFORM FIRES: vehicleIdentificationNumber (first matching combo)
+    >> UNION POOL (platform serializes): vehicle.yearOfManufacture=2023, vehicle.vinNumber=1HGCM82633A123456, vehicle.makeNcicCode=FORD, vehicle.tag=ABC1234, vehicle.registrationStateAttrIds=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TN_TIES_MC
   Source: TN_TIES_MC.json
-  Generated: 2026-06-08 14:37
+  Generated: 2026-06-29 08:40
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -32,8 +32,10 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.P' is unreachable: earlier unconditioned combo 'RV' set[] is a subset of its set[] (first match fires; add routing conditions to 'RV' or reorder)
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 13 combos
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [LIMITATION] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ02' is unreachable: earlier unconditioned combo 'QWA' set[] is a subset of its set[] (first match fires; add routing conditions to 'QWA' or reorder)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' -> Person : 11 attrs, 6 combos
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -42,9 +44,12 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' -> Person : 7 attrs, 3 combos
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [WARN] QIDM 'TN_TIES_DriverHistoryQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
+    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'TN_TIES_DriverHistoryQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'TN_TIES_GunQuery' -> Firearm : 3 attrs, 1 combos
   [PASS] QIDM 'TN_TIES_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [LIMITATION] QIDM 'TN_TIES_BoatQuery' combo 'QB.H' is unreachable: earlier unconditioned combo 'BB.H' set[] is a subset of its set[] (first match fires; add routing conditions to 'BB.H' or reorder)
   [PASS] QIDM 'TN_TIES_BoatQuery' -> Boat : 4 attrs, 4 combos
   [PASS] QIDM 'TN_TIES_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -104,8 +109,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 80 PASS / 0 FAIL / 0 WARN
+  RESULTS: 80 PASS / 0 FAIL / 1 WARN / 3 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 

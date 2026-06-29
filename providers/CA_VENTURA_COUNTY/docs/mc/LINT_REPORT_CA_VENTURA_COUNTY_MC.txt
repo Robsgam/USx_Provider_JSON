@@ -1,11 +1,17 @@
-﻿================================================================
-  Build Report: CA_VENTURA_COUNTY_MC
-  Source: CA_VENTURA_COUNTY_MC.json
-  Generated: 2026-06-08 14:34
-================================================================
-BUILD SCRIPT LINT
-=================
 
-build_ca_ventura_county.ps1: CLEAN
-build_ca_ventura_county_mc.ps1: CLEAN
+================================================================
+  Build Script Lint -- 2026-06-29
+================================================================
+
+  providers\CA_VENTURA_COUNTY\scripts\build_ca_ventura_county.ps1
+    [WARN] Line 464: VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE
+    [FIX]  Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }
+
+  providers\CA_VENTURA_COUNTY\scripts\build_ca_ventura_county_mc.ps1
+    [WARN] Line 466: VehicleMakeCode uses FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE
+    [FIX]  Change to: Sel 'vehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' }
+
+================================================================
+  TOTAL: 2 scripts | 0 clean | 2 with issues | 2 warnings | 0 failures
+================================================================
 

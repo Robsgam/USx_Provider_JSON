@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS_MC
   Source: CA_CLETS_OCATS_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:34
+ Generated: 2026-06-29 08:36
 ============================================================
 
 ============================================================
@@ -122,7 +122,6 @@ METADATA AUDIT
   [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
   [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
   [PASS]   keyRef OCNAMQ: set field 'CaRequestPurposeCode' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
-  [WARN]   keyRef OCNAMQ: XML set field 'UserId' not covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
   [PASS]   keyRef OCNAMQ: set field 'SexCode' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
   [PASS]   keyRef OCNAMQ: set field 'BirthDate' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
   [PASS]   keyRef OCNAMQ: set field 'Name' covered by invented variants (DQ.N,DQ.O,L1.N,L1.O)
@@ -150,7 +149,6 @@ METADATA AUDIT
   [PASS]   keyRef 4V: set field 'VehicleIdentificationNumber' present
   [PASS]   keyRef AWVEHQ: set field 'CaRequestPurposeCode' covered by invented variants (RQ.P,RQ.V)
   [PASS]   keyRef AWVEHQ: set field 'LicensePlateNumber' covered by invented variants (RQ.P,RQ.V)
-  [WARN]   keyRef AWVEHQ: XML set field 'UserId' not covered by invented variants (RQ.P,RQ.V)
   [PASS]   keyRef AWVEHQ: any field 'VehicleYear' covered by invented variants (RQ.P,RQ.V)
   [PASS]   keyRef AWVEHQ: any field 'VehicleMakeCode' covered by invented variants (RQ.P,RQ.V)
   [PASS]   keyRef RQ: set field 'CaRequestPurposeCode' covered by invented variants (RQ.P,RQ.V)
@@ -171,8 +169,14 @@ METADATA AUDIT
   [PASS]   keyRef VP: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef VP: set field 'Name' present
   [PASS]   keyRef VC: set field 'CaRequestPurposeCode' covered by invented variants (RQ.P,RQ.V)
-  [WARN]   keyRef VC: XML set field 'Name' not covered by invented variants (RQ.P,RQ.V)
-  [WARN]   keyRef VC: XML set field 'BusinessIndicator' not covered by invented variants (RQ.P,RQ.V)
+
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef RQ.P (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQ.V (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQ.N (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQ.O (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef BQ.H (BoatQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef BQ.R (BoatQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_CLETS_OCATS_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -220,6 +224,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 146 PASS / 0 FAIL / 5 WARN
+Total: 146 PASS / 6 FAIL / 1 WARN
 ============================================================
 

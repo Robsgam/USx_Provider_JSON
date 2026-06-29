@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_MC
   Source: CA_SAN_LUIS_OBISPO_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -37,6 +37,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [LIMITATION] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' combo 'B2.O' is unreachable: earlier unconditioned combo 'KQ.O' set[] is a subset of its set[] (first match fires; add routing conditions to 'KQ.O' or reorder)
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' -> Person : 6 attrs, 4 combos
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -89,8 +90,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_SAN_LUIS_OBISPO_BoatQuery' combo 'QB': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 65 PASS / 0 FAIL / 0 WARN
+  RESULTS: 65 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

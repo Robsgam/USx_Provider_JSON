@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO_MC
   Source: CA_SAN_LUIS_OBISPO_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:36
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -37,8 +37,49 @@ POST-BUILD VERIFICATION
 --- CHECK 7: Cross-Variant Consistency ---
   [INFO] No BASE JSON found -- skipping cross-variant check
 
+--- CHECK 8: Visible-First Mandate ---
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery' has 3 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverHistoryQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_BoatQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [WARN] RMS combo field(s) not used by any CommSys combo (RMS/CommSys drift): SexCode, VehicleModelCode
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery' VIN combo 'RQ.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery' VIN combo 'QV.V' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery' Name combo 'L1.N' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' Name combo 'KQ.N' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' Name combo 'B2.N' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'CA_SAN_LUIS_OBISPO_BoatQuery' Reg combo 'QB' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
+--- CHECK 15: Form Field Label Hints ---
+  [WARN] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'VehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'BirthDate' (any[]-only) label='Date of Birth' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'FirearmMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunTypeCode' (any[]-only) label='Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleBrand' (any[]-only) label='Brand' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleCategory' (any[]-only) label='Category' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleTypeCode' (any[]-only) label='Article Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 9 field(s) need label hint fixes
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION FAILED: 10 FAIL / 10 WARN / 10 PASS
 ========================================
 
 

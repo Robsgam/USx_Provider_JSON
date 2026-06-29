@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
   Source: TX_TLETS_CCH.json
-  Generated: 2026-06-09 16:18
+  Generated: 2026-06-29 08:42
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-09 16:19
+ Generated: 2026-06-29 08:42
 ============================================================
 
 ============================================================
@@ -395,6 +395,12 @@ METADATA AUDIT
   [PASS]   keyRef VIN: set field 'FinancialResponsibilityType' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
   [PASS]   keyRef VIN: any field 'State' covered by invented variants (REGLicensePlateNumber,RQLicensePlateNumber,VINVehicleIdentificationNumber,DPSIStickerNumber,QVLicensePlateNumber,RQVehicleIdentificationNumber,QVVehicleIdentificationNumber)
 
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef BQRegistrationNumber (BoatQuery): 'registrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in TX_TLETS_CCH_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef BQBoatHullIdNumber (BoatQuery): 'registrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in TX_TLETS_CCH_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef QH.NAME.SSN (CCHCriminalHistoryQHQuery): 'socialSecurityNumberCCH' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in TX_TLETS_CCH_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef QH.NAME.MISC (CCHCriminalHistoryQHQuery): 'miscellaneousNumberCCH' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in TX_TLETS_CCH_ACCEPTED_DIVERGENCES.txt
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -556,6 +562,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 458 PASS / 0 FAIL / 6 WARN
+Total: 458 PASS / 4 FAIL / 6 WARN
 ============================================================
 

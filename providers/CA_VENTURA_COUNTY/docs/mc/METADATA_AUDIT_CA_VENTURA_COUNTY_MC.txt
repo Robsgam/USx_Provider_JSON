@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY_MC
   Source: CA_VENTURA_COUNTY_MC.json
-  Generated: 2026-06-08 14:34
+  Generated: 2026-06-29 08:37
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-06-08 14:35
+ Generated: 2026-06-29 08:37
 ============================================================
 
 ============================================================
@@ -202,7 +202,6 @@ METADATA AUDIT
   [PASS]   keyRef IV.4V: set field 'VehicleIdentificationNumber' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef IV.4: set field 'CaRequestPurposeCode' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef IV.4: set field 'LicensePlateNumber' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
-  [WARN]   keyRef IV.4: XML set field 'MessageKeyModifier' not covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef NLTS.RQ: set field 'CaRequestPurposeCode' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef NLTS.RQ: set field 'LicensePlateNumber' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef NLTS.RQ: set field 'LicensePlateTypeCode' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
@@ -217,6 +216,12 @@ METADATA AUDIT
   [PASS]   keyRef NLTS.RQ: any field 'VehicleYear' covered by invented variants (NLTS.RQ.P,NLTS.RQ.V)
   [PASS]   keyRef IN.VP: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef IN.VP: set field 'Name' present
+
+--- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [FAIL]   keyRef NLTS.KQ.N (DriverHistoryQuery): 'CaRequestPurposeCodeDH' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef IN.B2 (DriverHistoryQuery): 'CaRequestPurposeCodeDH' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef NLTS.KQ.O (DriverHistoryQuery): 'CaRequestPurposeCodeDH' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef ID.B2 (DriverHistoryQuery): 'CaRequestPurposeCodeDH' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -233,10 +238,8 @@ METADATA AUDIT
   [PASS]   Name: at least one combo built (e.g. IN.B2)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. ID.B2)
   DriverLicenseQuery: 4 metadata search paths
-  [WARN]   CriminalIdNumber: metadata search path not built -- no attribute, no combo (keyRef IR.QVC)
   [PASS]   Name: at least one combo built (e.g. IN.L1)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. ID.L1)
-  [WARN]   SocialSecurityNumber: metadata search path not built -- no attribute, no combo (keyRef IR.QVC)
   GunQuery: 2 metadata search paths
   [PASS]   GunSerialNumber: at least one combo built (e.g. IG.QGB)
   [PASS]   Name: at least one combo built (e.g. IG.QGH)
@@ -283,6 +286,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 227 PASS / 0 FAIL / 3 WARN
+Total: 227 PASS / 4 FAIL / 0 WARN
 ============================================================
 

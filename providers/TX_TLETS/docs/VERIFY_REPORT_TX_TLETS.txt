@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
   Source: TX_TLETS.json
-  Generated: 2026-06-24 14:43
+  Generated: 2026-06-29 08:41
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -26,14 +26,15 @@ POST-BUILD VERIFICATION
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
-  [INFO] camelCase check skipped (use -CamelCase to enable)
+  [FAIL] QIF fieldIds starting with uppercase (should be camelCase): Attention
+  [FAIL] CommSys QIDM sourceFields starting with uppercase: TX_TLETS_DriverHistoryQuery.Attention
 
 --- CHECK 6: Reference Pattern Check ---
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 7: Cross-Variant Consistency ---
-  [INFO] Not a BASE/MC variant -- skipping cross-variant check
+  [INFO] Single-JSON provider -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
   [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
@@ -58,8 +59,24 @@ POST-BUILD VERIFICATION
 --- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
+--- CHECK 15: Form Field Label Hints ---
+  [FAIL] Field 'registrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
+  [WARN] Field 'vehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'regionId' (any[]-only) label='Region ID' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'vehicleMakeCode' (any[]-only) label='Vehicle Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'imageIndicator' (any[]-only) label='Image' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'nameMiddle' (any[]-only) label='Middle Name' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'nameSuffix' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'reasonCode' (any[]-only) label='Reason Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'expandedBirthDateSearchCode' (any[]-only) label='Expanded DOB' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'raceCode' (any[]-only) label='Race' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'gunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'gunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'relatedHitSearchIndicator' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 13 field(s) need label hint fixes
+
 ========================================
- VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
+ VERIFICATION FAILED: 3 FAIL / 12 WARN / 13 PASS
 ========================================
 
 

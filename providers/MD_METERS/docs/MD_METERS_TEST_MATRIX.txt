@@ -1,10 +1,10 @@
-MD_METERS MC v1.3 -- TEST MATRIX
+MD_METERS v1.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-08
-Variant: MC (multi-card per entity)
+Generated: 2026-06-29
+Layout: multi-card per entity
 Validator: unknown
 
-FORM FIELDS (MC layout)
+FORM FIELDS
 ----------------------------------------
 Vehicle (3 cards, 7 fields):
   CARD_VEH_OPT (OPTIONS):
@@ -17,19 +17,19 @@ Vehicle (3 cards, 7 fields):
     VehicleMakeCode [Inp 24]
 
 Person (4 cards, 15 fields):
+  CARD_PER_OPT (OPTIONS):
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], SexCode [Sel SEX]
+    RaceCode [Sel NIBRS_RACE/NIBRS]
+  CARD_PER_OLN (OLN SEARCH):
+    OperatorLicenseNumber [Inp 20]
+    OperatorLicenseExpirationYear [Inp 4], YearsPastViolationsWanted [Inp 2]
+  CARD_PER_NAME (NAME SEARCH):
+    NameFirst [Inp 30], NameLast [Inp 30]
+    BirthDate [FormDate]
   CARD_DH (Driver History):
     ROW 1: OperatorLicenseNumberDH [Inp 20], SexCodeDH [Sel SEX]
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30]
     ROW 3: BirthDateDH [FormDate]
-  CARD_PER_NAME (NAME SEARCH):
-    NameFirst [Inp 30], NameLast [Inp 30]
-    BirthDate [FormDate]
-  CARD_PER_OLN (OLN SEARCH):
-    OperatorLicenseNumber [Inp 20]
-    OperatorLicenseExpirationYear [Inp 4], YearsPastViolationsWanted [Inp 2]
-  CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], SexCode [Sel SEX]
-    RaceCode [Sel NIBRS_RACE/NIBRS]
 
 Firearm (1 card, 3 fields):
   CARD_GUN (FIREARM SEARCH):
@@ -40,10 +40,10 @@ Article (1 card, 2 fields):
     SerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
 
 Boat (3 cards, 3 fields):
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
   CARD_BOA_OPT (OPTIONS):
     ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_BOA_HULL (HULL SEARCH):
+    BoatHullIdNumber [Inp 20]
   CARD_BOA_REG (REG SEARCH):
     RegistrationNumber [Inp 8]
 
@@ -60,9 +60,13 @@ QIDM SUMMARY (6 QIDMs, 14 combos)
 TEST MATRIX
 ================================================================================
 
-PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
+Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
+(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
+
+
+ENTITY 1: VEHICLE (10 tests -- 3 cards, 4 combos)
 ------------------------------------------------------------------------
-#   Entity      Action                                              Result
+#   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     Render form. Verify 3 cards:                        [    ]
               CARD_VEH_OPT: titled "OPTIONS".
@@ -73,119 +77,122 @@ PHASE 1: RENDER (verify card structure, fields, picklists, defaults)
               CARD_VEH_VIN: titled "VIN SEARCH".
               VIN.
               Vehicle Make.
- 2  Boat        Render form. Verify 3 cards:                        [    ]
-              CARD_BOA_HULL: titled "HULL SEARCH".
-              Hull ID Number.
+ 2  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (ZVEH.V)
+ 3  Vehicle     ZVEH+.V            + VehicleMakeCode, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+ 4  Vehicle     ZVEH+.P            LicensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (ZVEH.P)
+ 5  Vehicle     ZVEH+.P            + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+ 6  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.P)
+ 7  Vehicle     ZLRG+.P            + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+ 8  Vehicle     ZLRG+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.V)
+ 9  Vehicle     ZLRG+.V            + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+10  Vehicle     Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 2: BOAT (6 tests -- 3 cards, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+11  Boat        Render form. Verify 3 cards:                        [    ]
               CARD_BOA_OPT: titled "OPTIONS".
               Image dropdown=N.
+              CARD_BOA_HULL: titled "HULL SEARCH".
+              Hull ID Number.
               CARD_BOA_REG: titled "REG SEARCH".
               Registration Number.
- 3  Person      Render form. Verify 4 cards:                        [    ]
+12  Boat        ZBOA.R+ZBOA.R      RegistrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (ZBOA.R)
+13  Boat        ZBOA.R+ZBOA.R      + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+14  Boat        ZBOA.H+ZBOA.H      BoatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (ZBOA.H)
+15  Boat        ZBOA.H+ZBOA.H      + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+16  Boat        Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 3: PERSON (15 tests -- 4 cards, 6 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+17  Person      Render form. Verify 4 cards:                        [    ]
+              CARD_PER_OPT: titled "OPTIONS".
+              State dropdown (no default), Image dropdown=Y, Sex dropdown (no default).
+              Race dropdown (no default).
+              CARD_PER_OLN: titled "OLN SEARCH".
+              License Number.
+              License Expiration Year, Years Past Violations.
+              CARD_PER_NAME: titled "NAME SEARCH".
+              First Name, Last Name.
+              Date of Birth.
               CARD_DH: titled "Driver History".
               OLN (DH), Sex (DH) dropdown (no default).
               Last Name (DH), First Name (DH).
               DOB (DH).
-              CARD_PER_NAME: titled "NAME SEARCH".
-              First Name, Last Name.
-              Date of Birth.
-              CARD_PER_OLN: titled "OLN SEARCH".
-              License Number.
-              License Expiration Year, Years Past Violations.
-              CARD_PER_OPT: titled "OPTIONS".
-              State dropdown (no default), Image dropdown=Y, Sex dropdown (no default).
-              Race dropdown (no default).
- 4  Firearm     Render form. Verify 1 card:                        [    ]
+18  Person      ZLDR.N+ZLDR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (ZLDR.N)
+19  Person      ZLDR.N+ZLDR.N      + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+20  Person      ZLDR.O+ZLDR.O      OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (ZLDR.O)
+21  Person      ZLDR.O+ZLDR.O      + RegistrationState, ImageIndicator, YearsPastViolationsWanted [    ]
+              Expected: any[] fields present in XML output.
+22  Person      ZWAR.N+ZWAR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (ZWAR.N)
+23  Person      ZWAR.N+ZWAR.N      + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+24  Person      ZWAR.O+ZWAR.O      NameLast=DOE, NameFirst=JOHN, Operato... [    ]
+              Expected: DriverLicenseQuery fires (ZWAR.O)
+25  Person      ZWAR.O+ZWAR.O      + OperatorLicenseExpirationYear, RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+26  Person      ZDRV+.O            OperatorLicenseNumberDH=D999888777 [    ]
+              Expected: DriverHistoryQuery fires (ZDRV.O)
+27  Person      ZDRV+.O            + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+28  Person      ZDRV+.N            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (ZDRV.N)
+29  Person      ZDRV+.N            + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+30  Person      Deselect: DL deselects DH.            [    ]
+              Fill both query fields. Check deselect behavior.
+31  Person      Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 4: FIREARM (3 tests -- 1 card, 1 combo)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+32  Firearm     Render form. Verify 1 card:                        [    ]
               CARD_GUN: titled "FIREARM SEARCH".
               Serial Number, Make dropdown (no default), Caliber dropdown (no default).
- 5  Article     Render form. Verify 1 card:                        [    ]
+33  Firearm     ZGUN+ZGUN          GunCaliber=9MM, FirearmMake=TEST, Ser... [    ]
+              Expected: GunQuery fires (ZGUN)
+34  Firearm     Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 5: ARTICLE (3 tests -- 1 card, 1 combo)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+35  Article     Render form. Verify 1 card:                        [    ]
               CARD_ART: titled "ARTICLE SEARCH".
               Serial Number, Article Type dropdown (no default).
-
-PHASE 2: VEHICLE COMBOS (4 tests, 4 combos)
-------------------------------------------------------------------------
-#   Entity      Combo              Fields to fill                   Result
---  ----------  -----------------  -------------------------------- ------
- 6  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (ZVEH)
- 7  Vehicle     ZVEH+.P            LicensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (ZVEH)
- 8  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG)
- 9  Vehicle     ZLRG+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG)
-
-PHASE 3: BOAT COMBOS (2 tests, 2 combos)
-------------------------------------------------------------------------
-#   Entity      Combo              Fields to fill                   Result
---  ----------  -----------------  -------------------------------- ------
-10  Boat        ZBOA.R+ZBOA.R      RegistrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (ZBOA.R)
-11  Boat        ZBOA.H+ZBOA.H      BoatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (ZBOA.H)
-
-PHASE 4: PERSON COMBOS (6 tests, 6 combos)
-------------------------------------------------------------------------
-#   Entity      Combo              Fields to fill                   Result
---  ----------  -----------------  -------------------------------- ------
-12  Person      ZLDR.N+ZLDR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (ZLDR.N)
-13  Person      ZLDR.O+ZLDR.O      OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (ZLDR.O)
-14  Person      ZWAR.N+ZWAR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (ZWAR.N)
-15  Person      ZWAR.O+ZWAR.O      NameLast=DOE, NameFirst=JOHN, Operato... [    ]
-              Expected: DriverLicenseQuery fires (ZWAR.O)
-16  Person      ZDRV+.O            OperatorLicenseNumberDH=D999888777 [    ]
-              Expected: DriverHistoryQuery fires (ZDRV)
-17  Person      ZDRV+.N            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
-              Expected: DriverHistoryQuery fires (ZDRV)
-
-PHASE 5: FIREARM COMBOS (1 tests, 1 combos)
-------------------------------------------------------------------------
-#   Entity      Combo              Fields to fill                   Result
---  ----------  -----------------  -------------------------------- ------
-18  Firearm     ZGUN+ZGUN          GunCaliber=9MM, FirearmMake=TEST, Ser... [    ]
-              Expected: GunQuery fires (ZGUN)
-
-PHASE 6: ARTICLE COMBOS (1 tests, 1 combos)
-------------------------------------------------------------------------
-#   Entity      Combo              Fields to fill                   Result
---  ----------  -----------------  -------------------------------- ------
-19  Article     ZART+ZART          SerialNumber=TEST, ArticleTypeCode=BB... [    ]
+36  Article     ZART+ZART          SerialNumber=TEST, ArticleTypeCode=BB... [    ]
               Expected: ArticleSingleQuery fires (ZART)
-
-PHASE 7: ANY[] FIELD TESTS (2 tests)
-------------------------------------------------------------------------
-#   Entity      Combo              any[] field tested               Result
---  ----------  -----------------  -------------------------------- ------
-20  Person      ZLDR.O+ZLDR.O      + RegistrationState, YearsPastViolationsWanted [    ]
-              Expected: any[] fields present in XML output.
-21  Vehicle     ZLRG+.V            + RegistrationState             [    ]
-              Expected: any[] fields present in XML output.
-
-PHASE 8: CO-FIRE / DESELECT VERIFICATION (1 tests)
-------------------------------------------------------------------------
-#   Entity      Action                                              Result
---  ----------  --------------------------------------------------  ------
-22  Person      Deselect: DH deselects DL.     [    ]
-              Fill both query fields. Check deselect behavior.
-
-PHASE 9: NEGATIVES (empty forms = no send)
-------------------------------------------------------------------------
-#   Entity      Action                                              Result
---  ----------  --------------------------------------------------  ------
-23  Vehicle     Empty form, verify no Send button / no request.    [    ]
-24  Person      Empty form, verify no Send button / no request.    [    ]
+37  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 24 tests
+TOTAL: 37 tests
 
 COMBO COVERAGE (14/14):
-  VehicleRegistrationQuery: 4/4 -- T6(ZVEH+.V), T7(ZVEH+.P), T8(ZLRG+.P), T9(ZLRG+.V)
-  DriverLicenseQuery: 4/4 -- T12(ZLDR.N+ZLDR.N), T13(ZLDR.O+ZLDR.O), T14(ZWAR.N+ZWAR.N), T15(ZWAR.O+ZWAR.O)
-  DriverHistoryQuery: 2/2 -- T16(ZDRV+.O), T17(ZDRV+.N)
-  GunQuery: 1/1 -- T18(ZGUN)
-  ArticleSingleQuery: 1/1 -- T19(ZART)
-  BoatQuery: 2/2 -- T10(ZBOA.R+ZBOA.R), T11(ZBOA.H+ZBOA.H)
+  VehicleRegistrationQuery: 4/4 -- T2(ZVEH+.V), T4(ZVEH+.P), T6(ZLRG+.P), T8(ZLRG+.V)
+  DriverLicenseQuery: 4/4 -- T18(ZLDR.N+ZLDR.N), T20(ZLDR.O+ZLDR.O), T22(ZWAR.N+ZWAR.N), T24(ZWAR.O+ZWAR.O)
+  DriverHistoryQuery: 2/2 -- T26(ZDRV+.O), T28(ZDRV+.N)
+  GunQuery: 1/1 -- T33(ZGUN)
+  ArticleSingleQuery: 1/1 -- T36(ZART)
+  BoatQuery: 2/2 -- T12(ZBOA.R+ZBOA.R), T14(ZBOA.H+ZBOA.H)
 
 IMPORT FILE: MD_METERS_MC.json

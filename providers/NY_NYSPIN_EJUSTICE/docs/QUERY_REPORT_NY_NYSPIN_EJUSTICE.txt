@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-09 14:09
+  Generated: 2026-06-29 08:38
 ================================================================
 QUERY SIMULATION
 ================
@@ -14,7 +14,7 @@ QUERY SIMULATION
 --- QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 8  |  Combos: 4
 
-    [FIRES] RVIN
+    [FIRES first-match] RVIN
       set: [vehicleIdentificationNumber, registrationState]
       any: [imageIndicator, vehicleMakeCode, vehicleYear] -> matched: [imageIndicator, vehicleMakeCode, vehicleYear]
       -- CommSys XML --
@@ -28,7 +28,7 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-    [FIRES] RVEHOUT
+    [FIRES shadowed -- first match above wins] RVEHOUT
       set: [licensePlateNumber, registrationState]
       any: [imageIndicator, licensePlateTypeCode, licensePlateYear] -> matched: [imageIndicator, licensePlateTypeCode, licensePlateYear]
       -- CommSys XML --
@@ -42,7 +42,7 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-    [FIRES] RVEH
+    [FIRES shadowed -- first match above wins] RVEH
       set: [licensePlateNumber]
       any: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState] -> matched: [imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState]
       -- CommSys XML --
@@ -56,7 +56,7 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
-    [FIRES] RCAR
+    [FIRES shadowed -- first match above wins] RCAR
       set: [vehicleIdentificationNumber]
       any: [imageIndicator] -> matched: [imageIndicator]
       -- CommSys XML --
@@ -67,10 +67,15 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
 
+    >> PLATFORM FIRES: RVIN (first matching combo)
+    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, VehicleYear=2023, ImageIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
 
-    [FIRES] DLICN
+    [FIRES first-match] DLICN
       set: [birthDate, nameLast, nameFirst, sexCode]
       any: [imageIndicator, registrationState, nameMiddle, nameSuffix] -> matched: [imageIndicator, registrationState, nameMiddle]
       -- CommSys XML --
@@ -84,7 +89,7 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
-    [FIRES] DLIC
+    [FIRES shadowed -- first match above wins] DLIC
       set: [operatorLicenseNumber]
       any: [imageIndicator, registrationState] -> matched: [imageIndicator, registrationState]
       -- CommSys XML --
@@ -96,10 +101,15 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
 
+    >> PLATFORM FIRES: DLICN (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, ImageIndicator=Y, Name=Doe, John A, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery [Person] ---
     Query: NyNyspinDriverLicenseNameQuery  |  Attrs: 3  |  Combos: 1
 
-    [FIRES] DGRP
+    [FIRES first-match] DGRP
       set: [nameLast, nameFirst]
       any: [nameMiddle, nameSuffix, birthDate, sexCode] -> matched: [nameMiddle, birthDate, sexCode]
       -- CommSys XML --
@@ -111,12 +121,18 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
       </Transaction>
 
+    >> PLATFORM FIRES: DGRP (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, Name=Doe, John A, SexCode=M
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 9  |  Combos: 4
 
-    [FIRES] DALHOUT
+    [FIRES first-match] DALHOUT
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState]
       any: [imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, nameMiddleDH]
+      [!] POISONED ARRAY: value-comparison condition(s) [State NOT_EQUALS NY] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12.
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -130,9 +146,10 @@ QUERY SIMULATION
         <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
 
-    [FIRES] DALH
+    [FIRES shadowed -- first match above wins] DALH
       set: [birthDateDH, nameLastDH, nameFirstDH, sexCodeDH]
       any: [imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH] -> matched: [imageIndicator, nameMiddleDH]
+      [!] POISONED ARRAY: value-comparison condition(s) [State IN NY,null] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12.
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -143,9 +160,10 @@ QUERY SIMULATION
         <SexCode>M</SexCode>
       </Transaction>
 
-    [FIRES] DALLOUT
+    [FIRES shadowed -- first match above wins] DALLOUT
       set: [operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState]
       any: [imageIndicator, nyNyspinTransactionNameDH] -> matched: [imageIndicator]
+      [!] POISONED ARRAY: value-comparison condition(s) [State NOT_EQUALS NY] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12.
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -157,9 +175,10 @@ QUERY SIMULATION
         <Requestor>DISPATCHER JONES</Requestor>
       </Transaction>
 
-    [FIRES] DALL
+    [FIRES shadowed -- first match above wins] DALL
       set: [operatorLicenseNumberDH]
       any: [imageIndicator, nyNyspinTransactionNameDH] -> matched: [imageIndicator]
+      [!] POISONED ARRAY: value-comparison condition(s) [State IN NY,null] disable this combo's ENTIRE conditions array (incl. any EXISTS/NOT_EXISTS) -- combo treated as UNCONDITIONED. Live-proven FL v4.9 T-A/T-B 2026-06-12.
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
@@ -168,10 +187,15 @@ QUERY SIMULATION
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
       </Transaction>
 
+    >> PLATFORM FIRES: DALHOUT (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, ImageIndicator=Y, Name=Doe, John A, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ, PurposeCode=C, Requestor=DISPATCHER JONES
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
-    [FIRES] GINQ
+    [FIRES first-match] GINQ
       set: [gunSerialNumber]
       any: [imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator] -> matched: [imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -185,10 +209,15 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
+    >> PLATFORM FIRES: GINQ (first matching combo)
+    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunSerialNumber=ABC12345, ImageIndicator=Y, RelatedHitSearchIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_ArticleSingleQuery [Article] ---
     Query: ArticleSingleQuery  |  Attrs: 4  |  Combos: 1
 
-    [FIRES] AINQ
+    [FIRES first-match] AINQ
       set: [articleSerialNumber, articleTypeCode]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -201,10 +230,15 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
+    >> PLATFORM FIRES: AINQ (first matching combo)
+    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP, ImageIndicator=Y, RelatedHitSearchIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
 --- QIDM: NY_NYSPIN_EJUSTICE_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 5  |  Combos: 4
 
-    [FIRES] BVEH
+    [FIRES first-match] BVEH
       set: [registrationNumber, registrationState]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -217,7 +251,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    [FIRES] BVIN
+    [FIRES shadowed -- first match above wins] BVIN
       set: [boatHullIdNumber, registrationState]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -230,7 +264,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    [FIRES] RVEH
+    [FIRES shadowed -- first match above wins] RVEH
       set: [registrationNumber]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -242,7 +276,7 @@ QUERY SIMULATION
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
-    [FIRES] RCAR
+    [FIRES shadowed -- first match above wins] RCAR
       set: [boatHullIdNumber]
       any: [imageIndicator, relatedHitSearchIndicator] -> matched: [imageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -253,6 +287,63 @@ QUERY SIMULATION
         <ImageIndicator>Y</ImageIndicator>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
+
+    >> PLATFORM FIRES: BVEH (first matching combo)
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y, State=FL
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Person Search query [Person] ---
+    Query: Person  |  Attrs: 7  |  Combos: 4
+
+    [FIRES first-match] firstNameLastNameDriversLicenseNumber
+      set: [operatorLicenseNumber, nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
+      set: [nameFirst, nameLast, birthDate]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastName
+      set: [nameFirst, nameLast]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] driversLicenseNumber
+      set: [operatorLicenseNumber]
+      any: [raceCode, sexCode, registrationState] -> matched: [raceCode, sexCode, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    >> PLATFORM FIRES: firstNameLastNameDriversLicenseNumber (first matching combo)
+    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, raceAttrIds=W, sexAttrId=M, registrationStateAttrId=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Vehicle search query [Vehicle] ---
+    Query: Vehicle  |  Attrs: 3  |  Combos: 2
+
+    [FIRES first-match] vehicleIdentificationNumber
+      set: [vehicleIdentificationNumber]
+      any: [licensePlateNumber, registrationState] -> matched: [licensePlateNumber, registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.vinNumber":"1HGCM82633A123456","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] licensePlateIn
+      set: [licensePlateNumber]
+      any: [registrationState] -> matched: [registrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    >> PLATFORM FIRES: vehicleIdentificationNumber (first matching combo)
+    >> UNION POOL (platform serializes): vehicle.vinNumber=1HGCM82633A123456, vehicle.tag=ABC1234, vehicle.registrationStateAttrIds=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>

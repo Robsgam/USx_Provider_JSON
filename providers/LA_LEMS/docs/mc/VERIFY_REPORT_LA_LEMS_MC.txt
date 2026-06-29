@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS_MC
   Source: LA_LEMS_MC.json
-  Generated: 2026-06-08 14:35
+  Generated: 2026-06-29 08:37
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -37,8 +37,50 @@ POST-BUILD VERIFICATION
 --- CHECK 7: Cross-Variant Consistency ---
   [INFO] No BASE JSON found -- skipping cross-variant check
 
+--- CHECK 8: Visible-First Mandate ---
+  [INFO] QIDM 'LA_LEMS_VehicleRegistrationQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [INFO] QIDM 'LA_LEMS_DriverLicenseQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [INFO] QIDM 'LA_LEMS_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [INFO] QIDM 'LA_LEMS_GunQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [INFO] QIDM 'LA_LEMS_ArticleSingleQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [INFO] QIDM 'LA_LEMS_BoatQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
+
+--- CHECK 9: Synthetic keyRef Documentation ---
+  [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+
+--- CHECK 10: RMS combos subset of CommSys combos ---
+  [WARN] RMS combo field(s) not used by any CommSys combo (RMS/CommSys drift): VehicleYear, VehicleMakeCode, VehicleModelCode, licensePlateNumber
+
+--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+  [PASS] No value-comparison routing conditions (existence-only or none)
+
+--- CHECK 12: Identifier-Priority Guardrail ---
+  [FAIL] QIDM 'LA_LEMS_VehicleRegistrationQuery' VIN combo 'RQSVehicleIdentificationNumber' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
+  [FAIL] QIDM 'LA_LEMS_DriverLicenseQuery' Name combo 'QWDN' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'LA_LEMS_DriverLicenseQuery' Name combo 'QWA' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'LA_LEMS_DriverHistoryQuery' Name combo 'KQName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'LA_LEMS_BoatQuery' Reg combo 'BQ' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+
+--- CHECK 13: conditions[].field references a valid QIF sourceField ---
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
+
+--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+
+--- CHECK 15: Form Field Label Hints ---
+  [FAIL] Field 'RegistrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
+  [WARN] Field 'LicensePlateTypeCode' (any[]-only) label='Plate Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'LicensePlateYear' (any[]-only) label='Plate Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'NameMiddle' (any[]-only) label='Middle Name' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'NameSuffix' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunTypeCode' (any[]-only) label='Firearm Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleTypeCode' (any[]-only) label='Article Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 8 field(s) need label hint fixes
+
 ========================================
- VERIFICATION PASSED: 6 PASS / 0 FAIL
+ VERIFICATION FAILED: 6 FAIL / 8 WARN / 11 PASS
 ========================================
 
 

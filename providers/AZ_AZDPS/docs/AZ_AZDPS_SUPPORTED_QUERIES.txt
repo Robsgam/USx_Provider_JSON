@@ -1,0 +1,23 @@
+STATUS: PROVISIONAL
+# AZ_AZDPS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
+# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
+#   - remove any line the devdoc does NOT authorize
+#   - add any devdoc-supported query intentionally not built (document as a skip)
+# Then change STATUS to CONFIRMED to turn this into a hard gate.
+# Format: <QueryLabel> | <PrimaryFieldReference>
+
+Article | ArticleTypeCode
+Boat | BoatHullIdNumber
+Boat | RegistrationNumber
+Driver History | Name
+Driver History | OperatorLicenseNumber
+Driver License | Name
+Driver License | OperatorLicenseNumber
+Driver License | SocialSecurityNumber
+Firearm | GunSerialNumber
+Missing Person | Name
+Missing Person | NCICNumber
+Vehicle Registration | LicensePlateNumber
+Vehicle Registration | VehicleIdentificationNumber
+Wanted Person | Name
+Wanted Person | NCICNumber

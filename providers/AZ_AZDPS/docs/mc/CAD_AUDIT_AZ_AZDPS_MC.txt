@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS_MC
   Source: AZ_AZDPS_MC.json
-  Generated: 2026-06-08 14:33
+  Generated: 2026-06-29 08:35
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: AZ_AZDPS (MC)
+ CAD AUDIT: AZ_AZDPS
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -39,13 +39,13 @@ CAD AUDIT
     [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF and CAD list
     [PASS] sexCode: in QIF and CAD list
-    [PASS] raceCode: in QIF as 'RaceCode' (MC PascalCase)
+    [PASS] raceCode: in QIF as 'RaceCode' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF and CAD list
     [PASS] attention: in QIF and CAD list
     [PASS] purposeCode: in QIF and CAD list
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
-    [FAIL] SocialSecurityNumber: wrong case (expected 'socialSecurityNumber' or '')
+    [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -54,10 +54,10 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZipCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZone: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] Age: wrong case (expected 'age' or '')
+    [PASS] age: in QIF as 'Age' (PascalCase USx fieldIds)
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [FAIL] Height: wrong case (expected 'height' or '')
+    [PASS] height: in QIF as 'Height' (PascalCase USx fieldIds)
     [INFO] dexStateUserId: in QIF, not in CAD list (provider-specific)
     [INFO] StateDH: in QIF, not in CAD list (provider-specific)
     [INFO] operatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
@@ -146,7 +146,7 @@ CAD AUDIT
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 
 --- CHECK 4: Patch 8 Completeness ---
-    [INFO] Skipped for MC variant (MC uses PascalCase, Patch 8 not applied)
+    [INFO] Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)
 
 --- CHECK 5: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -169,8 +169,8 @@ CAD AUDIT
     [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQN -- missing default for State (form default='AZ')
     [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQ -- missing default for State (form default='AZ')
     [FAIL] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQSS -- missing default for State (form default='AZ')
-    [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQH -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQ -- defaults cover all initialValue any[] fields
+    [FAIL] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQH -- missing default for State (form default='AZ')
+    [FAIL] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQ -- missing default for State (form default='AZ')
     [PASS] QIDM 'AZ_AZDPS_GunQuery' combo ACQG -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' combo ACQA -- defaults cover all initialValue any[] fields
     [FAIL] QIDM 'AZ_AZDPS_BoatQuery' combo ACQB -- missing default for State (form default='AZ')
@@ -188,6 +188,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 60 PASS / 18 FAIL / 0 WARN / 78 INFO
+Total: 61 PASS / 17 FAIL / 0 WARN / 78 INFO
 
 

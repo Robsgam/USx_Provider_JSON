@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML_MC
   Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-29 08:38
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -45,6 +45,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' -> Firearm : 4 attrs, 1 combos
   [PASS] QIDM 'NM_NMLETS_OFML_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [LIMITATION] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.H' is unreachable: earlier unconditioned combo 'BQ.H' set[] is a subset of its set[] (first match fires; add routing conditions to 'BQ.H' or reorder)
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' -> Boat : 3 attrs, 4 combos
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -90,8 +91,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 66 PASS / 0 FAIL / 0 WARN
+  RESULTS: 66 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

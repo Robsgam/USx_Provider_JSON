@@ -1,0 +1,156 @@
+# NY_NYSPIN_EJUSTICE -- Changelog
+
+Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
+
+Current: **v3.0** | Generated: 2026-06-29
+
+---
+
+## v3.0 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.9 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.8 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.7 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.6 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.5 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.4 -- 2026-06-09 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.3 -- 2026-06-08 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.2 -- 2026-06-08 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v2.1 -- 2026-06-03 -- Layout tightening + DGRP QIDM
+
+
+## v2.0 -- 2026-05-22 -- Single JSON rebuild (BASE/MC merge, 7 fixes)
+
+
+## v1.6 -- 2026-05-18 -- Single JSON output + shared tooling rebuild
+
+**CHANGED**
+  - Single pretty-printed JSON output (READABLE files eliminated)  
+  - Rebuilt with current shared tooling improvements  
+  - No functional QIDM or layout changes  
+**REASON**
+  - Repo-wide elimination of dual JSON output (minified + readable)  
+  - Shared module updates (_build_provider_helpers.ps1, _build_rms_bundle.ps1)  
+VALIDATOR  
+  - BASE: 74 PASS / 0 FAIL / 0 WARN  
+  - MC:   74 PASS / 0 FAIL / 0 WARN  
+
+## v1.5 -- 2026-05-11 -- LIMITATION elimination pass
+
+**CHANGED**
+  - DH-suffix fieldIds, queriesToDeselect, combo ordering  
+  - DGRP removed, DLICN restored in DL QIDM for single checkbox  
+VALIDATOR  
+  - BASE: 74 PASS / 0 FAIL / 0 WARN / 0 LIMITATION  
+  - MC:   74 PASS / 0 FAIL / 0 WARN / 0 LIMITATION  
+
+## v1.2 -- 2026-05-07 -- Monorepo rebuild + Patch 8
+
+**CHANGED**
+  - Patch 8: LicensePlateNumberIn -> licensePlateNumber (CAD auto-populate)  
+  - Rebuilt with current validate.ps1/build_report.ps1 toolchain  
+  - Reports regenerated at docs/base/ and docs/mc/  
+**REASON**
+  - CAD auto-populate standardization (Patch 8, all providers)  
+  - Monorepo migration standardization  
+VALIDATOR  
+  - BASE: 72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION  
+  - MC:   72 PASS / 0 FAIL / 0 WARN / 5 LIMITATION  
+
+## v1.1 -- 2026-04-30 -- NJ cross-reference rebuild (GATE 7)
+
+**CHANGED**
+  - ImageIndicator FormSelect added to ALL entities (Vehicle, Firearm, Article, Boat forms)  
+    Person already had ImageIndicator; changed from FormInput to FormSelect (NIBRS/YES_NO_UNKNOWN)  
+  - ImageIndicator QIDM attribute + combo any[] added to ALL QIDMs that support it  
+    Vehicle (RVIN/RVEH/RCAR), Gun (GINQ), Article (AINQ), Boat (BVEH/BVIN/RVEH/RCAR)  
+  - AUTH keyReference='AUTH' added to authentication combination  
+  - RMS autoSelect=true added to both Vehicle and Person RMS QIDMs (Patch 7)  
+  - MC build script: same fixes mirrored in multi-card layout (OPTIONS cards + entity cards)  
+**REASON**
+  - Cross-reference against NJ_NJCJIS baseline (GATE 7) revealed 11 warnings:  
+    ImageIndicator missing from 4 entities, Person Image was FormInput not FormSelect,  
+    AUTH had no keyReference, RMS QIDMs missing autoSelect  
+  - Validator updated same session: WARN/LIMITATION taxonomy, Write-Limitation function  
+  - v1.0 was declared DONE without NJ cross-reference — this rebuild corrects that  
+VALIDATOR  
+  - BASE: 71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP  
+  - MC:   71 PASS / 0 FAIL / 0 WARN / 5 LIMITATION / 13 FIRE / 0 SKIP  
+
+## v1.0 -- 2026-04-24 -- Phase 1 + MC confirmed build
+
+**CHANGED**
+  - Both BASE and MC variants live-tested: BASE 15/15 PASS, MC 19/19 PASS  
+  - Patch 6 (RMS cleanup) applied  
+  - DGRP removed, DLICN handles Name path within DriverLicenseQuery  
+  - queryLabel standard applied  
+  - NCIC state pattern and NIBRS sex reverse-lookup confirmed  
+  - PlateType=PC, PlateYear=2026 defaults (retested 2026-04-28)  
+
+## v1.1-old -- 2026-04-20 -- Fix RMS import error: sexcodeoos missing attribute
+
+**CHANGED**
+  - build_ny_nyspin_ejustice.ps1: RMS sex removal patch now strips 'SexCodeOOS'  
+    from combination any[] in addition to 'SexCode'.  
+  - Filter condition changed from name-based to targetField-based (targetField -ne 'sexAttrId')  
+    so both 'sex' (sourceField=SexCode) and 'sexOOS' (sourceField=SexCodeOOS) attrs are removed.  
+**REASON**
+  - Import failed: "Missing attributes found in query input data mapping: [sexcodeoos]"  
+  - HIDLE RMS Person QIDM has 4 OOS combinations (driversLicenseNumberOOS etc.) that include  
+    'SexCodeOOS' in any[]. When we removed the sexOOS attribute but not the combination  
+    reference, the platform rejected the bundle (unresolved sourceField reference).  
+  - Fix: filter both SexCode and SexCodeOOS from combination any[]/set[].  
+
+## v1.0 -- 2026-04-20 -- Phase 1 reboot -- single-card single-entity build from XML metadata
+
+**CHANGED**
+  - Complete rewrite of build_ny_nyspin_ejustice.ps1 (Phase 1 architecture).  
+  - 5 QIFs (single card each): Vehicle, Person, Firearm, Article, Boat.  
+  - 7 QIDMs: VehicleRegistrationQuery (RVEH/RVIN/RCAR), BoatQuery (BVEH/BVIN/RVEH/RCAR),  
+    DriverLicenseQuery (DLIC), NyNyspinDriverLicenseNameQuery (DGRP),  
+    DriverHistoryQuery (DALL+DALH), GunQuery (GINQ), ArticleSingleQuery (AINQ).  
+  - WINQ/MINQ excluded (no Transaction XML in metadata).  
+  - State: blank-default NJ_NIBRS_STATE + hidden SelH RegistrationState (RMS).  
+  - Sex: NIBRS_SEX CommSys-only, removed from RMS Person QIDM.  
+  - DH-suffix fieldIds on all DH fields.  
+**REASON**
+  - Prior builds (v1.0-v1.21) built multi-card/split-entity before QIDMs were confirmed.  
+    Phase 1 single-card isolates QIDM problems from layout problems (NJ lesson).  
+
+## v1.5 -- 2026-05-11 -- LIMITATION elimination pass
+

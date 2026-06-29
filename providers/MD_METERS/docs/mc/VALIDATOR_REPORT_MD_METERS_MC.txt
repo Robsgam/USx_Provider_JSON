@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: MD_METERS_MC
   Source: MD_METERS_MC.json
-  Generated: 2026-06-08 14:36
+  Generated: 2026-06-29 08:38
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -34,6 +34,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
 
 === PHASE 3: QIDM Validation ===
+  [LIMITATION] QIDM 'MD_METERS_VehicleRegistrationQuery' combo 'ZVEH.V' is unreachable: earlier unconditioned combo 'ZLRG.V' set[] is a subset of its set[] (first match fires; add routing conditions to 'ZLRG.V' or reorder)
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' ImageIndicator size=1
@@ -93,8 +94,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'MD_METERS_BoatQuery' combo 'ZBOA.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 69 PASS / 0 FAIL / 0 WARN
+  RESULTS: 69 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 
