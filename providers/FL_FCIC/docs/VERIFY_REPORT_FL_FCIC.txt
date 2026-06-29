@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v6.7.json
-  Generated: 2026-06-25 17:14
+  Source: FL_FCIC_v6.8.json
+  Generated: 2026-06-29 14:41
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: FL_FCIC_v6.7
+ POST-BUILD VERIFICATION: FL_FCIC_v6.8
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -60,8 +60,14 @@ POST-BUILD VERIFICATION
 --- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
+--- CHECK 15: Form Field Label Hints ---
+  [PASS] All form field labels have required routing hint qualifiers (39 fields scanned)
+
+--- CHECK 16: Combo Reachability (shadow detection) ---
+  [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
+
 ========================================
- VERIFICATION PASSED: 13 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

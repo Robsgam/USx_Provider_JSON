@@ -1,4 +1,4 @@
-FIELD LABEL SUGGESTIONS -- FL_FCIC_v6.7.json
+FIELD LABEL SUGGESTIONS -- FL_FCIC_v6.8.json
 Derived from QIDM combo set[]/any[]. Structural hint only; [HUMAN] = needs semantic wording.
 fieldId (entity)               current label                      suggested role -> hint"
 --------------------------------------------------------------------------------------------------------------
@@ -6,7 +6,7 @@ ArticleSerialNumber (Article)  Serial Number (with Article Type)  (required for 
 ArticleTypeCode (Article)      Article Type (required)            (required for QAArticleSerialNumber/QAOwnerAppliedNumber)
 Attention (Person)             Attention (auto-populated from officer profile) (optional)
 BirthDate (Person)             Date of Birth (required with Name) (required for BQName/DQName/FDQName)
-BirthDateDH (Person)           DOB (required with Name)           (required for KQName)
+BirthDateDH (Person)           DOB (DH, required with Name)       (required for KQName)
 BoatHullIdNumber (Boat)        Hull ID Number                     (required for BQBoatHullIdNumber/FBQBoatHullIdNumber/QBBoatHullIdNumber)
 coastGuardDocumentNumber (Boat) Coast Guard Doc #                  (required for QBCoastGuardDocumentNumber)
 decalNumber (Vehicle)          Decal Number                       (required for FBQDecalNumber/FRQDecalNumber)
@@ -27,10 +27,10 @@ OperatorLicenseNumber (Person) License Number (or search by Name + DOB) (require
 OperatorLicenseNumberDH (Person) License Number (DH) - or Name + DOB + Sex (required for KQOperatorLicenseNumber)
 ownerAppliedNumber (Article)   Owner Applied Number (with Article Type) (required for QAOwnerAppliedNumber)
 processControlNumber (Firearm) PCN                                (required for QAProcessControlNumber/QBProcessControlNumber/QGProcessControlNumber)
-purposeCodeDH (Person)         Purpose Code (optional)            (optional)
+purposeCodeDH (Person)         Purpose Code (DH, optional)        (optional)
 RegistrationNumber (Boat)      Registration Number (or use Hull ID) (required for BQRegistrationNumber/FBQRegistrationNumber/QBRegistrationNumber)
 RegistrationState (Person)     State (leave blank for FL)         (required for BQBoatHullIdNumber/BQName/BQRegistrationNumber/DQName/DQOperatorLicenseNumber/RQLicensePlateNumber/RQVehicleIdentificationNumber)   [HUMAN: value meaning / OOS]
-RegistrationStateDH (Person)   Destination State (not FL)         (required)
+RegistrationStateDH (Person)   Destination State (DH, not FL)     (required)
 relatedHitSearchIndicator (Boat) Stolen Search (Y for NCIC stolen-boat check) (required for QBBoatHullIdNumber/QBRegistrationNumber)
 SexCode (Person)               Sex (required with Name)           (required for DQName/FDQName)
 SexCodeDH (Person)             Sex (DH) - required with Name      (required for KQName)

@@ -4,6 +4,8 @@
 # v6.8 (2026-06-29): VehicleMakeName QRDM code source corrected VEHICLE/VehicleType ->
 #   attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; shared module propagation;
 #   matches NJ v4.7/HI v4.6/CA v2.10 fix). Fixes FL vehicle "Mock results processed" in RMS.
+#   DH label qualification fix: RegistrationStateDH/purposeCodeDH/BirthDateDH labels now
+#   include '(DH, ...)' qualifier (verify_build DH disambiguation rule, BUILD_RULES Sec 11).
 #   Re-import + full re-test from T1.
 # v6.5 (2026-06-23): Gap-audit remediation. (1) CAD Attention-default gap -- KQName and
 #   KQOperatorLicenseNumber (DH) carry 'Attention' in any[] (auto-populate handler) but had NO
@@ -795,13 +797,13 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'Destination State (not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
-                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code (optional)' '1' 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'Destination State (DH, not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
+                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code (DH, optional)' '1' 'ROW_DH1' }
             )}
             @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (required with Name)' 'ROW_DH2' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH, required with Name)' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention

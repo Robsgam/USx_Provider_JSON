@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: FL_FCIC_v6.7
-  Source: FL_FCIC_v6.7.json
-  Generated: 2026-06-25 17:14
+  PICKLIST / DROPDOWN REPORT: FL_FCIC_v6.8
+  Source: FL_FCIC_v6.8.json
+  Generated: 2026-06-29 14:41
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -32,7 +32,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     RegistrationState [State (leave blank for FL)]
       Config: attributeTypeId=STATE
-    RegistrationStateDH [Destination State (not FL)]
+    RegistrationStateDH [Destination State (DH, not FL)]
       Config: attributeTypeId=STATE
     SexCode [Sex (required with Name)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
@@ -85,7 +85,7 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
       VehicleColorCode -> VehicleColorCode
         attributeType=ITEM_COLOR | codeTypeSource=NCIC
       VehicleMakeName -> VehicleMakeName
-        codeTypeCategory=VehicleType, codeTypeSource=VEHICLE
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
       VehicleStyleCode -> BodyStyle
         codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
       VehicleModelName -> VehicleModelName

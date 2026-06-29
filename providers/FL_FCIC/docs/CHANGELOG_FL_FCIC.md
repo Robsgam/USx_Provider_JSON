@@ -2,9 +2,14 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v6.7** | Generated: 2026-06-25
+Current: **v6.8** | Generated: 2026-06-29
 
 ---
+
+## v6.8 -- 2026-06-29 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v6.7 -- 2026-06-25 -- NJ/HI-parity galvanization (drop import-breaking version field; versioned filename)
 

@@ -1,0 +1,38 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQ+Plate -- FL DHSMV Registration (Plate) (FRQLicensePlateNumber any[] verified; Plate=2342342 + VehicleMakeCode=ACURA(->TRCK_ACUR QRDM) + vehicleYear=2020 + LicensePlateYear=2026 + ImageIndicator=N all serialized. T3 any[] pass.)
+Date: 2026-06-26 07:59:14
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KW1WB2G6WWW6AHR2P8P20H19"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KW1WB2G6WWW6AHR2P8P20H19</Id><VehicleMakeCode>TRCK_ACUR</VehicleMakeCode><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><VehicleYear>2020</VehicleYear><LicensePlateNumber>2342342</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KW1WB2G6WWW6AHR2P8P20H19
+  VehicleMakeCode                TRCK_ACUR
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  VehicleYear                    2020
+  LicensePlateNumber             2342342
+
+NOTES
+-----
+
+
+RESULT: PASS

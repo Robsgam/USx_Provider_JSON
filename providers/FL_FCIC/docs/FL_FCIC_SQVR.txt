@@ -1,8 +1,8 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-06-26
-JSON version: v6.7
+Last updated: 2026-06-29
+JSON version: v6.8
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v4.8 IMPORTED to USx Tenant 2026-06-12. T1-priority NOT_EXISTS check
 PASSED: full DL card -> XML contained ONLY OLN+ImageIndicator (FDQ+OLN CONFIRMED;
@@ -37,22 +37,22 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: Plate, PlateType(PC), PlateYear(current year), VehicleYear, VIN, Make,
           Decal, TitleLien, RegistrationState(no default), ImageIndicator(N)
 
-  FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
+  FRQ+Decal -- FL DHSMV (Decal Number) [PENDING]
     keyReference: FRQDecalNumber
     set: [DecalNumber, LicensePlateYear]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
+  FRQ+Plate -- FL DHSMV Registration (Plate) [PENDING]
     keyReference: FRQLicensePlateNumber
     set: [LicensePlateNumber]   any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+TitleLien -- FL DHSMV (Title/Lien) [CONFIRMED]
+  FRQ+TitleLien -- FL DHSMV (Title/Lien) [PENDING]
     keyReference: FRQTitleLienInformation
     set: [TitleLienInformation]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
+  FRQ+VIN -- FL DHSMV Registration (VIN) [PENDING]
     keyReference: FRQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber]   any: [VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
