@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v6.8.json
-  Generated: 2026-06-29 14:41
+  Source: FL_FCIC_v6.9.json
+  Generated: 2026-06-29 17:50
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v6.8
+TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v6.9
 ============================================================
-Source: FL_FCIC_v6.8.json
+Source: FL_FCIC_v6.9.json
 Matrix: FL_FCIC_TEST_MATRIX.txt
 Generated: 2026-06-29
 
@@ -38,7 +38,7 @@ ENTITY: VEHICLE (20 tests -- 2 cards, 6 combos)
   T18  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
   T19  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
   T20  Vehicle    [PASS] empty form: no combos fire
-ENTITY: BOAT (30 tests -- 2 cards, 12 combos)
+ENTITY: BOAT (32 tests -- 2 cards, 12 combos)
   T21  Boat       [PASS] 2 cards, 13 fields, defaults verified
   T22  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
   T23  Boat       [PASS] any[] fields verified: ImageIndicator
@@ -68,49 +68,51 @@ ENTITY: BOAT (30 tests -- 2 cards, 12 combos)
   T47  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
   T48  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
   T49  Boat       [PASS] BoatQuery fires (BQName)
-  T50  Boat       [PASS] empty form: no combos fire
+  T50  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T51  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T52  Boat       [PASS] empty form: no combos fire
 ENTITY: PERSON (20 tests -- 2 cards, 6 combos)
-  T51  Person     [PASS] 2 cards, 17 fields, defaults verified
-  T52  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T53  Person     [PASS] any[] fields verified: ImageIndicator
-  T54  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
+  T53  Person     [PASS] 2 cards, 17 fields, defaults verified
+  T54  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
   T55  Person     [PASS] any[] fields verified: ImageIndicator
-  T56  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T56  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
   T57  Person     [PASS] any[] fields verified: ImageIndicator
-  T58  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T58  Person     [PASS] DriverLicenseQuery fires (FDQName)
   T59  Person     [PASS] any[] fields verified: ImageIndicator
-  T60  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
-  T61  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
-  T62  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T60  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T61  Person     [PASS] any[] fields verified: ImageIndicator
+  T62  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
   T63  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
-  T64  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T65  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T64  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T65  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
   T66  Person     [PASS] DriverLicenseQuery fires (DQName)
   T67  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T68  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
-  T69  Person     [PASS] queriesToDeselect verified
-  T70  Person     [PASS] empty form: no combos fire
+  T68  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T69  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T70  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T71  Person     [PASS] queriesToDeselect verified
+  T72  Person     [PASS] empty form: no combos fire
 ENTITY: FIREARM (8 tests -- 1 card, 3 combos)
-  T71  Firearm    [PASS] 1 cards, 5 fields, defaults verified
-  T72  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T73  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
-  T74  Firearm    [PASS] GunQuery fires (QGNCICNumber)
+  T73  Firearm    [PASS] 1 cards, 5 fields, defaults verified
+  T74  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
   T75  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
-  T76  Firearm    [PASS] GunQuery fires (QGProcessControlNumber)
+  T76  Firearm    [PASS] GunQuery fires (QGNCICNumber)
   T77  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
-  T78  Firearm    [PASS] empty form: no combos fire
+  T78  Firearm    [PASS] GunQuery fires (QGProcessControlNumber)
+  T79  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T80  Firearm    [PASS] empty form: no combos fire
 ENTITY: ARTICLE (10 tests -- 1 card, 4 combos)
-  T79  Article    [PASS] 1 cards, 6 fields, defaults verified
-  T80  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T81  Article    [PASS] any[] fields verified: ImageIndicator
-  T82  Article    [PASS] ArticleSingleQuery fires (QAOwnerAppliedNumber)
+  T81  Article    [PASS] 1 cards, 6 fields, defaults verified
+  T82  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
   T83  Article    [PASS] any[] fields verified: ImageIndicator
-  T84  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
+  T84  Article    [PASS] ArticleSingleQuery fires (QAOwnerAppliedNumber)
   T85  Article    [PASS] any[] fields verified: ImageIndicator
-  T86  Article    [PASS] ArticleSingleQuery fires (QAProcessControlNumber)
+  T86  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
   T87  Article    [PASS] any[] fields verified: ImageIndicator
-  T88  Article    [PASS] empty form: no combos fire
+  T88  Article    [PASS] ArticleSingleQuery fires (QAProcessControlNumber)
+  T89  Article    [PASS] any[] fields verified: ImageIndicator
+  T90  Article    [PASS] empty form: no combos fire
 
-SUMMARY: 88/88 PASS, 0 FAIL
+SUMMARY: 90/90 PASS, 0 FAIL
 
 

@@ -1,6 +1,19 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v6.9 (2026-06-29): Boat Hull>Reg guardrail EXTENDED to QB (stolen) + BQ (OOS) families.
+#   QBRegistrationNumber and BQRegistrationNumber were "companion" combos (carried Hull in any[],
+#   CHECK 12 exempt) -- but their set[] is satisfied by the same Hull+Reg input that fires the Hull
+#   combo, making them latent shadows that stay dormant only by array order (live-proven single
+#   dispatch, Boat T43). Converted both to "gated": added BoatHullIdNumber NOT_EXISTS condition +
+#   removed Hull from their any[]. Also de-bled the Hull combos (QBBoatHullIdNumber/BQBoatHullIdNumber)
+#   by removing RegistrationNumber from their any[]. FBQ family already gated (v6.0). Hull = unique
+#   permanent identifier (HIN), Reg = reassignable -> Hull wins. Per BUILD_RULES GATE-XOR-COMPANION
+#   + verify_build CHECK 12. ALSO (CHECK 16 shadow exposed by the new conditions): added
+#   relatedHitSearchIndicator EXISTS to QBBoatHullIdNumber + QBRegistrationNumber -- set[] is not a
+#   firing gate, so the QB combos were latently shadowing the BQ OOS Hull/Reg combos; the EXISTS
+#   gate makes Stolen-routing explicit (mirrors FBQ relatedHit NOT_EXISTS). Same fix pattern as
+#   CA_CLETS NLTS.DQ v2.11. Rebuild -> Boat entity re-test from start (full re-test mandate).
 # v6.8 (2026-06-29): VehicleMakeName QRDM code source corrected VEHICLE/VehicleType ->
 #   attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; shared module propagation;
 #   matches NJ v4.7/HI v4.6/CA v2.10 fix). Fixes FL vehicle "Mock results processed" in RMS.
@@ -100,7 +113,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "6.8"
+    [string]$Version = "6.9"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -635,7 +648,14 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BoatHullIdNumber','relatedHitSearchIndicator')
-                any        = @('ImageIndicator','RegistrationNumber')
+                # v6.9: RegistrationNumber removed from any[] -- Hull>Reg guardrail de-bleed.
+                # Hull is the priority identifier; the Hull query must not carry Reg on the wire.
+                any        = @('ImageIndicator')
+                # v6.9: relatedHitSearchIndicator EXISTS -- explicit Stolen gate. set[] membership
+                # is NOT a firing gate (platform fires on primaryFieldReference); without this, the
+                # QB combo would shadow the BQ OOS Hull combo on a Hull+State payload. Mirrors FBQ's
+                # relatedHit NOT_EXISTS (FBQ<->QB routing symmetry). verify_build CHECK 16.
+                conditions = @([PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -663,7 +683,18 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('RegistrationNumber','relatedHitSearchIndicator')
-                any        = @('ImageIndicator','BoatHullIdNumber')
+                any        = @('ImageIndicator')
+                # Two conditions (v6.9):
+                #  - BoatHullIdNumber NOT_EXISTS: Hull>Reg identifier-priority guardrail. Hull ID (HIN)
+                #    is the unique permanent identifier; when Hull is also entered, this Reg combo exits
+                #    and QBBoatHullIdNumber wins alone (kills the bleed).
+                #  - relatedHitSearchIndicator EXISTS: explicit Stolen gate. set[] is not a firing gate;
+                #    without this, QBRegistrationNumber shadows the BQ OOS Reg combo on a Reg+State
+                #    payload (verify_build CHECK 16). Mirrors FBQ's relatedHit NOT_EXISTS.
+                conditions = @(
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' }
+                )
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
             primaryFieldReference = 'RegistrationNumber'
@@ -684,7 +715,8 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BoatHullIdNumber','RegistrationState')
-                any        = @('RegistrationNumber')
+                # v6.9: RegistrationNumber removed from any[] -- Hull>Reg guardrail de-bleed (BQ OOS family).
+                any        = @()
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQBoatHullIdNumber'
@@ -693,7 +725,10 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('RegistrationNumber','RegistrationState')
-                any        = @('BoatHullIdNumber')
+                any        = @()
+                # Hull>Reg identifier-priority guardrail (BQ OOS family, v6.9). When Hull+Reg+State
+                # are all entered, this Reg combo exits and BQBoatHullIdNumber wins (kills the shadow).
+                conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
