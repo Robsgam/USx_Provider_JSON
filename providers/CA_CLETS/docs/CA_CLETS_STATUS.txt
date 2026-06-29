@@ -92,7 +92,7 @@ v1.8 BASE Test Matrix (18/18 PASS -- 2026-05-12)
   ---   2026-06-26 Vehicle    VehReg:IA.QVK        PASS     IA.QVK any[] - VehicleMakeCode serializes
   ---   2026-06-26 Vehicle    VehReg:NLTS.RQ.V     PASS     NLTS.RQ.V any[] - VehicleMakeCode serializes
   ---   2026-06-26 Person     DL:ID.L1             PASS     ID.L1 any[] - OLN+SSN, no State - SSN=123456789 in XML.
-  ---   2026-06-26 Person     DL:NLTS.DQ           PASS     Guardrail - OLN+Name+State - NLTS.DQ fires only. IN.L1 blocked (OLN NOT_EXISTS). Same XML as T6.
+  ---   2026-06-29 Person     DL:NLTS.DQ           PASS     OLN=D999888777 + State=Nevada -- NLTS.DQ fires. OLN+State=NV+CaRequestPurposeCode=C in XML, no Name fields.
   ---   2026-06-26 Person     DL:IN.L1             PASS     IN.L1 any[] - Name+BirthDate - BirthDate=19850101 in XML.
   ---   2026-06-26 Person     DH:NLTS.KQ.O         PASS     DH deselects DL - OLN-DH filled + DH card selected - DriverHistoryQuery only; DriverLicenseQuery suppressed by queriesToDeselect.
   ---   2026-06-26 Person     DH:NLTS.KQ.N         PASS     Name-DH+DOB-DH+Sex-DH, no OLN-DH - NLTS.KQ.N fires. Name+BirthDate=19850101+SexCode+Attention=SGAMBELLONE R in XML. DL deselected.
