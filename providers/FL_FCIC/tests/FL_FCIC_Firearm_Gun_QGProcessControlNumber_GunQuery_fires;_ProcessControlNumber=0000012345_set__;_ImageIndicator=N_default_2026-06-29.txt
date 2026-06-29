@@ -1,0 +1,35 @@
+﻿================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGProcessControlNumber (GunQuery fires; ProcessControlNumber=0000012345 set[]; ImageIndicator=N default)
+Date: 2026-06-29 14:58:35
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Not captured
+
+XML REQUEST
+-----------
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWABY130H9DC4PCKHVTH3H97"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>GunQuery</MessageType><Id>01KWABY130H9DC4PCKHVTH3H97</Id><ImageIndicator>N</ImageIndicator><ProcessControlNumber>0000012345</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWABY130H9DC4PCKHVTH3H97
+  ImageIndicator                 N
+  ProcessControlNumber           0000012345
+
+NOTES
+-----
+
+
+RESULT: PASS
