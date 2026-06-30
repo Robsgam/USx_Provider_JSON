@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGGunSerialNumber (Firearm Serial Image=N)
+Date: 2026-06-30 08:26:23
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Serial=GUN123, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7P2PF5S8G4F6XE2DCVJ7Z"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>GunQuery</MessageType><ImageIndicator>N</ImageIndicator><GunSerialNumber>GUN123</GunSerialNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  GunSerialNumber                GUN123
+
+NOTES
+-----
+
+
+RESULT: PASS
