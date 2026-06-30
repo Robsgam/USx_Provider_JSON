@@ -34,6 +34,42 @@ $QueryEntity = @{
     'GunQuery' = 'Firearm'; 'ArticleSingleQuery' = 'Article'; 'BoatQuery' = 'Boat'
 }
 
+# Combo inference for captures that carry no combo (e.g. recovered existing dex-log entries):
+# the firing combo is the one whose ENTIRE set[] appears as elements in the request XML; the
+# most-specific (most set fields) wins. Lets us recover arbitrary tenant queries.
+. "$toolDir\_resolve_provider_json.ps1"
+$script:jsonCache = @{}
+function Get-ProviderJsonCached($provider) {
+    if ($script:jsonCache.ContainsKey($provider)) { return $script:jsonCache[$provider] }
+    $pd = Join-Path $repoRoot "providers\$provider"
+    $jp = Get-ProviderRootJson -ProvDir $pd -Provider $provider
+    $o = $null; if ($jp) { try { $o = Get-Content $jp -Raw -Encoding UTF8 | ConvertFrom-Json } catch {} }
+    $script:jsonCache[$provider] = $o; return $o
+}
+function Infer-ComboFromXml($provider, $query, $xml) {
+    $o = Get-ProviderJsonCached $provider; if (-not $o) { return $null }
+    $qidm = $null
+    foreach ($b in $o.bundles) { foreach ($c in $b.configurations) {
+        if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and $c.handlerFunction -eq 'CommsysTransactionRequestHandler' -and $c.query -eq $query) { $qidm = $c; break }
+    } if ($qidm) { break } }
+    if (-not $qidm) { return $null }
+    $present = @{}; foreach ($mt in [regex]::Matches($xml, '<(\w+)>')) { $present[$mt.Groups[1].Value.ToLower()] = $true }
+    $best = $null; $bestScore = -1
+    foreach ($c in $qidm.combinations) {
+        $set = @($c.requirements.set); if (-not $set) { continue }
+        $allPresent = $true; $score = 0
+        foreach ($s in $set) {
+            $elem = $s
+            $attr = $qidm.attributes | Where-Object { $_.name -ieq $s -or (@($_.sourceField) -contains $s) } | Select-Object -First 1
+            if ($attr) { $elem = $attr.name }
+            if ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower())) { $score++ } else { $allPresent = $false }
+        }
+        if ($allPresent -and $score -gt $bestScore) { $best = $c; $bestScore = $score }
+    }
+    if ($best) { if ($best.keyReference) { return $best.keyReference } else { return $best.keyRef } }
+    return $null
+}
+
 # --- Resolve input files ---
 if (-not $Path) { $Path = Join-Path $env:USERPROFILE 'Downloads' }
 $files = @()
@@ -56,8 +92,13 @@ foreach ($file in $files) {
 
     foreach ($r in $records) {
         $entity = $r.entity; if (-not $entity -and $r.query -and $QueryEntity.ContainsKey($r.query)) { $entity = $QueryEntity[$r.query] }
-        if (-not ($r.provider -and $entity -and $r.query -and $r.combo -and $r.requestXml)) {
-            Write-Host "  [SKIP] record missing provider/entity/query/combo/requestXml (combo=$($r.combo))" -ForegroundColor DarkYellow
+        $combo = $r.combo
+        if (-not $combo -and $r.requestXml -and $r.query) {
+            $combo = Infer-ComboFromXml $r.provider $r.query $r.requestXml
+            if ($combo) { Write-Host "  [infer] combo=$combo (from XML)" -ForegroundColor DarkCyan }
+        }
+        if (-not ($r.provider -and $entity -and $r.query -and $combo -and $r.requestXml)) {
+            Write-Host "  [SKIP] record missing provider/entity/query/combo/requestXml (query=$($r.query) combo=$combo)" -ForegroundColor DarkYellow
             $skipped++; continue
         }
 
@@ -65,18 +106,18 @@ foreach ($file in $files) {
         $fired = $r.messageType
         $result = if ($fired -and ($fired -eq $r.query)) { 'PASS' } else { 'FAIL' }
         $note = "Automated capture (txId $($r.transactionId)). expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
-        $desc = "$($r.combo) (auto)"
+        $desc = "$combo (auto)"
 
         $ptArgs = @{
             Provider = $r.provider; Entity = $entity; Query = $r.query
-            Combo = $r.combo; Result = $result; Description = $desc
+            Combo = $combo; Result = $result; Description = $desc
             XmlRequest = $r.requestXml; Notes = $note; NoCommit = $true
         }
         if ($r.formState) { $ptArgs['FormState'] = $r.formState }
         if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
 
         $color = if ($result -eq 'PASS') { 'Green' } else { 'Red' }
-        Write-Host "  -> $($r.provider)/$entity $($r.query) $($r.combo) => $result" -ForegroundColor $color
+        Write-Host "  -> $($r.provider)/$entity $($r.query) $combo => $result" -ForegroundColor $color
         & (Join-Path $toolDir 'post_test.ps1') @ptArgs | Out-Null
         if ($result -eq 'PASS') { $imported++ } else { $failed++ }
     }
