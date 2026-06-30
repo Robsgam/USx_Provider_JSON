@@ -113,7 +113,7 @@ IMPORT HISTORY:
     T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
     T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
     Phase 2 - Vehicle combos:
-  ---   2026-06-25 Vehicle    VehReg:RQ            PASS     Plate search -- LicensePlateNumber fires RQ; PlateType/Year/State/Image/Random all serialize
+  ---   2026-06-30 Vehicle    VehReg:RQ            PASS     RQ (auto)
   ---   2026-06-30 Vehicle    VehReg:RQN           PASS     RQN (auto)
     T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
     T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
@@ -260,4 +260,6 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-06-30 Vehicle    VehReg:RENDER        PASS     Vehicle render -- 3 cards (Search Options, PLATE SEARCH, VIN SEARCH); State=NJ default, Image=N default, Random=N default
+  ---   2026-06-30 Vehicle    VehReg:NEGATIVE      PASS     Vehicle negative -- empty form, no Send button visible, no request fires
   (none yet -- v4.7 USx Tenant Testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.7/)
