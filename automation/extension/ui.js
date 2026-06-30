@@ -23,10 +23,19 @@
 
     if (kind === 'dex') {
       const cnt = el('div', 'margin-bottom:6px;color:#7cf', 'captured: 0'); cnt.id = 'usx-cnt'; p.appendChild(cnt);
-      // Zero-click API bulk fetch
+      const batchStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); batchStatus.id = 'usx-batch-status'; p.appendChild(batchStatus);
+      const fetchBatch = el('button', BTN, '⚡ Fetch batch');
+      fetchBatch.onclick = () => {
+        let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {}
+        const today = new Date().toISOString().slice(0,10);
+        const o = { maxPages: 3, since: today }; if (n > 0) o.maxNew = n;
+        window.__usxBulkFetch(o);
+      };
+      p.appendChild(fetchBatch);
+      // Manual override
       const bulkWrap = el('div', 'margin:4px 0;color:#ccc');
-      const pages = el('input', 'width:42px'); pages.id = 'usx-pages'; pages.type = 'number'; pages.value = '2'; pages.title = 'list pages (~20 queries each)';
-      const since = el('input', 'width:104px;margin-left:4px;box-sizing:border-box'); since.id = 'usx-since'; since.placeholder = 'since YYYY-MM-DD';
+      const pages = el('input', 'width:42px'); pages.id = 'usx-pages'; pages.type = 'number'; pages.value = '1'; pages.title = 'list pages (~20 queries each)';
+      const since = el('input', 'width:104px;margin-left:4px;box-sizing:border-box'); since.id = 'usx-since'; since.value = new Date().toISOString().slice(0,10); since.placeholder = 'since YYYY-MM-DD';
       bulkWrap.appendChild(document.createTextNode('pages ')); bulkWrap.appendChild(pages); bulkWrap.appendChild(since);
       p.appendChild(bulkWrap);
       const bulk = el('button', BTN, '⚡ Bulk fetch (API, no clicks)');
@@ -108,6 +117,8 @@
     if (want === 'dex') {
       const c = document.getElementById('usx-cnt');
       if (c) { let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_captured') || '[]').length; } catch (e) {} c.textContent = 'captured: ' + n; }
+      const bs = document.getElementById('usx-batch-status');
+      if (bs) { let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {} bs.textContent = n > 0 ? 'batch: ' + n + ' submitted' : ''; }
       const w = document.getElementById('usx-watch');
       if (w) w.textContent = window.__usxWatchTimer ? '⏹ Watching… (click to stop)' : '▶ Start Watch';
     }

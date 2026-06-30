@@ -383,6 +383,7 @@
     const maxPages = opts.maxPages || 1;
     const since = opts.since ? Date.parse(opts.since) : null;
     const limit = opts.limit || Infinity;
+    const maxNew = opts.maxNew != null ? opts.maxNew : null;
     const provider = L.providerFromHost();
 
     // Gather query items -- page the API with the captured search request if available, else use
@@ -425,8 +426,9 @@
       let xml = null;
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
-      out.push({ provider, entity: null, query: xml.messageType, combo: null, tier: null, expectedKeyRef: null, messageType: xml.messageType, transactionId: xml.transactionId || q.id, requestXml: xml.xml, formState: null, capturedAt: new Date().toISOString(), ok: true });
+      out.push({ provider, entity: null, query: xml.messageType, combo: null, tier: null, expectedKeyRef: null, messageType: xml.messageType, transactionId: xml.transactionId || q.id, requestXml: xml.xml, formState: q.parsedRawQuery || null, capturedAt: new Date().toISOString(), ok: true });
       have.add(q.id); added++;
+      if (maxNew !== null && added >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
       if (added % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${added}...`);
     }
     saveCaptured(out);
