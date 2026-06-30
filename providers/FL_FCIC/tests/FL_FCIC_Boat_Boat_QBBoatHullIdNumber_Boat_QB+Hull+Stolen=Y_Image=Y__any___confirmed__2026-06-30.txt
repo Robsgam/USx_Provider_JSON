@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBBoatHullIdNumber (Boat QB+Hull+Stolen=Y Image=Y (any[] confirmed))
+Date: 2026-06-30 08:32:27
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Hull=3423423423, Stolen=Y, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7ZZDSAFJAA67TXDWDF64Z"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><BoatHullIdNumber>3423423423</BoatHullIdNumber><ImageIndicator>Y</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  RelatedHitSearchIndicator      Y
+  BoatHullIdNumber               3423423423
+  ImageIndicator                 Y
+
+NOTES
+-----
+
+
+RESULT: PASS
