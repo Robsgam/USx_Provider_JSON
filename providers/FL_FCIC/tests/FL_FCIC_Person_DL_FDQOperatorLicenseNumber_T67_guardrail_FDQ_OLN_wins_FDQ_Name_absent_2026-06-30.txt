@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber (T67_guardrail_FDQ_OLN_wins_FDQ_Name_absent)
+Date: 2026-06-30 10:50:29
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"Attention":"X","BirthDate":"1985-01-15","ImageIndicator":"Y","NameFirst":"first","NameLast":"last","OperatorLicenseNumber":"863778033","SexCode":"Male"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCG08KT48QXJN3ZQVCJ0XGV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KWCG08KT48QXJN3ZQVCJ0XGV</Id><ImageIndicator>Y</ImageIndicator><OperatorLicenseNumber>863778033</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCG08KT48QXJN3ZQVCJ0XGV
+  ImageIndicator                 Y
+  OperatorLicenseNumber          863778033
+
+NOTES
+-----
+FDQOLNr>FDQName: OLN + Name+DOB+Sex entered, no State. FDQOperatorLicenseNumber fires (OLN identifier priority). Name/DOB/Sex/State ABSENT from XML. Context: Name+DOB+Sex alone (no OLN, no State) fires FDQName (tx id 01KWCFZZC3Z3TYJJ00A8PH6601 — confirmed as expected baseline).
+
+RESULT: PASS
