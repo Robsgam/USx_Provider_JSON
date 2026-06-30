@@ -44,12 +44,42 @@
       const r = el('button', BTN + ';' + RED, '✕ Reset captures'); r.onclick = () => window.__usxCaptureWatchReset(); p.appendChild(r);
       p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', 'Watch on, then click each "View request and return". Page through freely.'));
     } else {
-      const ta = el('textarea', 'width:100%;height:64px;font:11px monospace;box-sizing:border-box'); ta.id = 'usx-plan'; ta.placeholder = 'paste TEST_PLAN JSON'; p.appendChild(ta);
+      // File picker — primary UX
+      const fileRow = el('div', 'margin:4px 0');
+      const fileLbl = el('label', 'display:block;padding:6px;border:1px dashed #555;border-radius:5px;color:#aaa;font:11px system-ui;cursor:pointer;text-align:center', '📂 Load TEST_PLAN JSON…');
+      const fileIn = el('input'); fileIn.type = 'file'; fileIn.accept = '.json'; fileIn.style.cssText = 'display:none';
+      fileLbl.appendChild(fileIn);
+      fileRow.appendChild(fileLbl);
+      p.appendChild(fileRow);
+      // Status line shows loaded plan info
+      const planStatus = el('div', 'font:11px system-ui;color:#7cf;margin:2px 0;min-height:14px'); planStatus.id = 'usx-plan-status'; p.appendChild(planStatus);
+      // Hidden store for loaded plan
+      let _loadedPlan = null;
+      fileIn.onchange = () => {
+        const f = fileIn.files[0]; if (!f) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          try {
+            _loadedPlan = JSON.parse(ev.target.result);
+            const tests = _loadedPlan.tests || _loadedPlan;
+            const count = Array.isArray(tests) ? tests.length : '?';
+            const entities = Array.isArray(tests) ? [...new Set(tests.map(t => t.entity).filter(Boolean))] : [];
+            planStatus.textContent = `✔ ${f.name.replace(/^.*[/\\]/,'')} — ${count} tests`;
+            document.getElementById('usx-ent').value = entities[0] || '';
+            window.__usxLoadedPlan = _loadedPlan;
+          } catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '✖ parse error: ' + e.message; }
+        };
+        r.readAsText(f);
+      };
       const ent = el('input', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box'); ent.id = 'usx-ent'; ent.placeholder = 'entity (e.g. Vehicle)'; p.appendChild(ent);
       const run = el('button', BTN, '▶ Run Plan');
-      run.onclick = () => { try { const plan = JSON.parse(document.getElementById('usx-plan').value); window.__usxRunPlan(plan, document.getElementById('usx-ent').value || undefined); } catch (e) { alert('bad plan JSON: ' + e); } };
+      run.onclick = () => {
+        const plan = window.__usxLoadedPlan;
+        if (!plan) { alert('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
+        window.__usxRunPlan(plan, document.getElementById('usx-ent').value || undefined);
+      };
       p.appendChild(run);
-      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', 'Render the entity form first. Fills + Send & Clear per combo.'));
+      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '1. Load plan file  2. Set entity  3. Render form  4. Run Plan'));
     }
     return p;
   }
