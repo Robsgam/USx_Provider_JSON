@@ -98,7 +98,7 @@ LIVE TEST STATUS -- BASE v3.1
   ---   2026-06-24 Person     Render:Render        PASS     T3 Person render: 2 cards (Driver License / Driver History Out-of-State Only); DL ImageIndicator=Y default; State + SexCode no default; DH has Attention auto-populate field + RegistrationStateDH no default; no Send at empty
   ---   2026-06-30 Firearm    RENDER:RENDER        PASS     Firearm RENDER gate: 1 card FIREARM QUERY, Gun Make dropdown no default, Image default N
   ---   2026-06-30 Article    RENDER:RENDER        PASS     Article RENDER gate: 1 card ARTICLE QUERY, all fields correct, no default on Article Type, Image default N
-  ---   2026-06-30 Boat       RENDER:RENDER        PASS     Boat RENDER gate: 2 cards (BOAT OPTIONS + BOAT SEARCH), Stolen checkbox, RegState dropdown, Image default N
+  ---   2026-06-30 Boat       Boat:Render          PASS     Boat RENDER gate: 2 cards (BOAT OPTIONS + BOAT SEARCH), Stolen dropdown no default, RegState dropdown no default, Image default N
   ---   2026-06-15 Vehicle    VehReg:FRQ+Plate     PASS     T37 Vehicle FRQ+Plate +any vehicleMakeCode vehicleYear
   ---   2026-06-15 Vehicle    VehReg:RQ+Plate+State PASS     T10 Vehicle RQ+Plate+State OOS (State=OH)
   ---   2026-06-15 Person     DL:DQ+OLN            PASS     T25 Person DQ+OLN+State OOS (DL card, State=MT)
@@ -441,6 +441,9 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-30 Boat       Boat:QBRegistrationNumber PASS     any[] verified: ImageIndicator=Y+RelatedHitSearchIndicator=Y alongside RegistrationNumber
   ---   2026-06-30 Boat       Boat:QBCoastGuardDocumentNumber PASS     QB+CG Image=N: CoastGuardDocumentNumber fires without Stolen (relatedHit in any[], not set[])
   ---   2026-06-30 Boat       Boat:QBCoastGuardDocumentNumber PASS     any[] verified: ImageIndicator=Y+RelatedHitSearchIndicator=Y present alongside CoastGuardDocumentNumber
+  ---   2026-06-30 Boat       Boat:Negative        PASS     Empty form -- no Send button / no request fired
+  ---   2026-06-30 Boat       Boat:FBQTitleLienInformation PASS     FBQ+TitleLien Image=N: TitleLienInformation+ImageIndicator in XML
+  ---   2026-06-30 Boat       Boat:FBQTitleLienInformation PASS     any[] verified: ImageIndicator=Y present alongside TitleLienInformation
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
