@@ -66,13 +66,13 @@ foreach ($file in $files) {
         $note = "Automated capture (txId $($r.transactionId)). expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
         $desc = "$($r.combo) (auto)"
 
-        $ptArgs = @(
-            '-Provider', $r.provider, '-Entity', $entity, '-Query', $r.query,
-            '-Combo', $r.combo, '-Result', $result, '-Description', $desc,
-            '-XmlRequest', $r.requestXml, '-Notes', $note, '-NoCommit'
-        )
-        if ($r.formState) { $ptArgs += @('-FormState', $r.formState) }
-        if ($r.tier)      { $ptArgs += @('-Tier', $r.tier) }
+        $ptArgs = @{
+            Provider = $r.provider; Entity = $entity; Query = $r.query
+            Combo = $r.combo; Result = $result; Description = $desc
+            XmlRequest = $r.requestXml; Notes = $note; NoCommit = $true
+        }
+        if ($r.formState) { $ptArgs['FormState'] = $r.formState }
+        if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
 
         $color = if ($result -eq 'PASS') { 'Green' } else { 'Red' }
         Write-Host "  -> $($r.provider)/$entity $($r.query) $($r.combo) => $result" -ForegroundColor $color

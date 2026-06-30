@@ -72,14 +72,30 @@
 
   // Pull the ConnectCic request XML out of arbitrary page text.
   function extractConnectCicXml(text) {
-    const m = (text || '').match(/<\?xml[\s\S]*?<\/api:ConnectCicApi>/) ||
-              (text || '').match(/<api:ConnectCicApi[\s\S]*?<\/api:ConnectCicApi>/);
-    if (!m) return null;
-    const xml = m[0];
-    const txId = (xml.match(/<api:Transaction\s+id="([^"]+)"/) || [])[1] ||
-                 (xml.match(/<Id>([^<]+)<\/Id>/) || [])[1] || null;
-    const messageType = (xml.match(/<MessageType>([^<]+)<\/MessageType>/) || [])[1] || null;
-    return { xml, transactionId: txId, messageType };
+    if (!text) return null;
+    // If the text is a JSON body (network capture), find the raw (already-unescaped) XML
+    // string value inside it -- avoids the double-escaped \" damage from regexing JSON.
+    let candidates = [text];
+    try {
+      const j = JSON.parse(text);
+      const found = [];
+      (function walk(o) {
+        if (typeof o === 'string') { if (o.includes('ConnectCicApi')) found.push(o); }
+        else if (o && typeof o === 'object') { for (const k in o) walk(o[k]); }
+      })(j);
+      if (found.length) candidates = found;
+    } catch (e) {}
+    for (const c of candidates) {
+      const m = c.match(/<\?xml[\s\S]*?<\/api:ConnectCicApi>/) || c.match(/<api:ConnectCicApi[\s\S]*?<\/api:ConnectCicApi>/);
+      if (!m) continue;
+      const xml = m[0];
+      // Prefer the transaction id; the <Id> fallback must be the ULID, NOT the Session <Id>.
+      const txId = (xml.match(/<api:Transaction\s+id="([^"]+)"/) || [])[1] ||
+                   (xml.match(/<Id>(01[0-9A-HJKMNP-TV-Z]{20,})<\/Id>/) || [])[1] || null;
+      const messageType = (xml.match(/<MessageType>([^<]+)<\/MessageType>/) || [])[1] || null;
+      return { xml, transactionId: txId, messageType };
+    }
+    return null;
   }
 
   function triggerDownload(filename, obj) {
