@@ -76,7 +76,9 @@
     const manifest = []; const results = [];
     for (const t of tests) {
       const fr = [];
-      for (const f of (t.fills || [])) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(dField); }
+      // Normalize fills: PowerShell ConvertTo-Json collapses single-element arrays to bare objects
+      const fills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
+      for (const f of fills) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(dField); }
       await L.sleep(dSettle);
       manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, fills: t.fills, n: t.n });
       const sent = clickSendClear();
