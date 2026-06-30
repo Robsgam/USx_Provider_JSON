@@ -97,7 +97,69 @@
     return out;
   };
 
+  // ---- Dialog-walk capture (the real, hands-off path) -------------------------
+  // The list rows carry the submitted fields as JSON; the full ConnectCic XML is
+  // behind each row's "View request and return" dialog. This opens that dialog,
+  // scrapes the XML, and closes it -- read-only (no submit).
+  function rowFieldJson(rowEl) {
+    const m = (rowEl.textContent || '').match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    try { return JSON.parse(m[0]); } catch (e) { return null; }
+  }
+  async function closeDialog() {
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+    await L.sleep(250);
+    if ([...document.querySelectorAll('textarea')].some((t) => /ConnectCic/.test(t.value || t.textContent || ''))) {
+      const x = [...document.querySelectorAll('button')]
+        .find((b) => /^(close|cancel)$/i.test((b.textContent || '').trim()) || /close/i.test(b.getAttribute('aria-label') || ''));
+      if (x) { try { x.click(); } catch (e) {} await L.sleep(200); }
+    }
+  }
+  async function captureRowEl(rowEl) {
+    const fields = rowFieldJson(rowEl);
+    const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
+    if (!link) return { ok: false, err: 'no "View request" link in row', fields };
+    link.click();
+    await L.sleep(500);
+    let x = null;
+    for (const ta of document.querySelectorAll('textarea')) { x = L.extractConnectCicXml(ta.value || ta.textContent || ''); if (x) break; }
+    if (!x) { for (const el of document.querySelectorAll('div,pre,code')) { x = L.extractConnectCicXml(el.textContent || ''); if (x) break; } }
+    await closeDialog();
+    return { ok: !!x, fields, requestXml: x ? x.xml : null, transactionId: x ? x.transactionId : null, messageType: x ? x.messageType : null };
+  }
+
+  // Test ONE row (default: the first list row).
+  window.__usxCaptureRow = async function (index) {
+    const rows = [...document.querySelectorAll('.arc-table_row')];
+    const row = rows[index || 0];
+    if (!row) { console.warn('[USx-CAP] no row at index', index || 0); return null; }
+    const rec = await captureRowEl(row);
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'row capture:', rec);
+    return rec;
+  };
+
+  // Walk rows (optionally filtered by a substring, across up to maxPages) and download all.
+  window.__usxCaptureAll = async function (opts) {
+    opts = opts || {};
+    const filter = opts.filter || null;
+    const maxPages = opts.maxPages || 1;
+    const out = []; let page = 0;
+    while (page < maxPages) {
+      const rows = [...document.querySelectorAll('.arc-table_row')];
+      for (const r of rows) {
+        if (filter && !(r.textContent || '').includes(filter)) continue;
+        out.push(await captureRowEl(r));
+        await L.sleep(300);
+      }
+      const next = [...document.querySelectorAll('[aria-label]')].find((b) => /next page/i.test(b.getAttribute('aria-label') || ''));
+      if (next && !next.disabled) { next.click(); await L.sleep(900); page++; } else break;
+    }
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'captured', out.length, out);
+    L.triggerDownload('usx_captured_batch.json', out);
+    return out;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. Run __usxLogRecon() (recon) or __usxCapture() (one entry).');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureRow() = test one row; __usxCaptureAll({filter:"TEST123"}) = walk; __usxLogRecon() = recon.');
   }
 })();
