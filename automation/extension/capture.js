@@ -132,11 +132,39 @@
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
-    link.click();
-    const x = await waitForXml(8000);
-    const closed = closePopup();
-    await L.sleep(400);
-    return { ok: !!x, fields, requestXml: x ? x.xml : null, transactionId: x ? x.transactionId : null, messageType: x ? x.messageType : null, popupClosed: closed };
+    // Retry once -- the popup occasionally doesn't render its XML within the window.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      closePopup();             // ensure nothing stale is open
+      await L.sleep(200);
+      link.click();
+      const x = await waitForXml(8000);
+      const closed = closePopup();
+      await L.sleep(500);
+      if (x) return { ok: true, fields, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType, popupClosed: closed, attempt };
+    }
+    return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true };
+  }
+
+  // Merge a captured row with the driver's test context (stashed in localStorage by
+  // __usxRunOne, same origin) into one import-ready, labeled record.
+  function labelRecord(rec) {
+    let pending = {};
+    try { pending = JSON.parse(localStorage.getItem('__usx_pending') || '{}'); } catch (e) {}
+    const fs = rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ')
+      : (Array.isArray(pending.fills) ? pending.fills.map((f) => f.fieldId + '=' + f.value).join(', ') : null);
+    return {
+      provider: pending.provider || 'NJ_NJCJIS',
+      entity: pending.entity || null,
+      query: pending.query || rec.messageType || null,
+      combo: pending.combo || null,
+      tier: pending.tier || null,
+      expectedKeyRef: pending.expectedKeyRef || null,
+      messageType: rec.messageType,
+      transactionId: rec.transactionId,
+      requestXml: rec.requestXml,
+      formState: fs,
+      capturedAt: new Date().toISOString()
+    };
   }
 
   // Data rows only (skip the header: keep rows that actually have a "View request" link).
@@ -176,7 +204,21 @@
     return out;
   };
 
+  // Labeled capture of the NEWEST entry (the query the driver just submitted): captures
+  // the top data row + merges the driver's localStorage context, downloads ONE import-ready
+  // record. This is the per-test loop: __usxRunOne(...) on universal-search, then this here.
+  window.__usxCaptureLatest = async function () {
+    const rows = dataRows();
+    if (!rows.length) { console.warn('[USx-CAP] no data rows'); return null; }
+    const rec = await captureRowEl(rows[0]);
+    const full = labelRecord(rec);
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'labeled record:', full);
+    if (!rec.ok) { console.warn('[USx-CAP] XML not captured even after retry -- re-run __usxCaptureLatest()'); return full; }
+    L.triggerDownload('usx_captured_' + (rec.transactionId || 'rec') + '.json', [full]);
+    return full;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureRow() = test one row; __usxCaptureAll({filter:"TEST123"}) = walk; __usxLogRecon() = recon.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureLatest() = labeled newest (per-test loop); __usxCaptureAll({filter}) = raw walk; __usxLogRecon() = recon.');
   }
 })();
