@@ -53,7 +53,51 @@
     return rec;
   };
 
+  // Scrape EVERY distinct ConnectCic request XML currently in the page DOM (no dialogs
+  // opened). Dedupes the repeated DIV/TEXTAREA copies by transactionId+messageType.
+  // If the list renders XML per row, this returns many; if only an open dialog has it,
+  // it returns what's open; if 0, the XML is only behind per-row dialogs.
+  window.__usxScrapeAll = function () {
+    const blocks = []; const seen = new Set();
+    document.querySelectorAll('textarea, pre, code, div').forEach((el) => {
+      const r = L.extractConnectCicXml(el.value || el.textContent || '');
+      if (!r) return;
+      const key = (r.transactionId || '?') + '|' + (r.messageType || '?');
+      if (seen.has(key)) return;
+      seen.add(key);
+      blocks.push({ tag: el.tagName, transactionId: r.transactionId, messageType: r.messageType, xmlLen: r.xml.length });
+    });
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'scrapeAll found', blocks.length, blocks);
+    return blocks;
+  };
+
+  // One-shot recon of the dex-log page: distinct XML blocks in the DOM now, sample row
+  // structure (correlation keys), pagination controls, and whether any network response
+  // carried the XML. Lives in the extension so a full-page reload re-arms it.
+  window.__usxLogRecon = function () {
+    const rows = [...document.querySelectorAll('tr, [role=row]')].slice(1, 4).map((r) => ({
+      cls: (r.className || '').toString().slice(0, 50),
+      dataAttrs: [...r.attributes].filter((a) => a.name.startsWith('data-')).map((a) => a.name + '=' + a.value).join(','),
+      text: (r.textContent || '').trim().slice(0, 140),
+      links: [...r.querySelectorAll('button,a')].map((b) => ((b.textContent || '').trim() || b.getAttribute('aria-label') || '').slice(0, 24)).filter(Boolean)
+    }));
+    const xmlBlocks = window.__usxScrapeAll();
+    const pager = [...new Set([...document.querySelectorAll('button,[aria-label]')]
+      .map((b) => ((b.textContent || '').trim() || b.getAttribute('aria-label') || ''))
+      .filter((t) => /next|prev|page|rows per|^\d+$/i.test(t)))].slice(0, 10);
+    const out = {
+      xmlBlocksInDomNow: xmlBlocks.length,
+      xmlBlocks,
+      sampleRows: rows,
+      paginationControls: pager,
+      networkRequestsSeen: (window.__usxNetAll || []).length,
+      networkWithXml: (window.__usxNetAll || []).filter((n) => n.hasXml).slice(0, 10)
+    };
+    console.log('%c[USx-RECON]', 'color:#a0a;font-weight:bold', out);
+    return out;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. Open a DEX entry, then run __usxCapture().');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. Run __usxLogRecon() (recon) or __usxCapture() (one entry).');
   }
 })();
