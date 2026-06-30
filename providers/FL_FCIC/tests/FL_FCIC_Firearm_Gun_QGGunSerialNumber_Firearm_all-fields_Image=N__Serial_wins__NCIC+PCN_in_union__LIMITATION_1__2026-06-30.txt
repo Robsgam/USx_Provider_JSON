@@ -1,0 +1,33 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGGunSerialNumber (Firearm all-fields Image=N: Serial wins, NCIC+PCN in union (LIMITATION 1))
+Date: 2026-06-30 08:26:53
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Serial=3242342, Make=AAL, NCIC=23423, PCN=342342, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7QA18ZM0121Y45X3WMA23"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>GunQuery</MessageType><ImageIndicator>N</ImageIndicator><GunSerialNumber>3242342</GunSerialNumber><NCICNumber>23423</NCICNumber><GunMake>AAL</GunMake><ProcessControlNumber>342342</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  GunSerialNumber                3242342
+  NCICNumber                     23423
+  GunMake                        AAL
+  ProcessControlNumber           342342
+
+NOTES
+-----
+
+
+RESULT: PASS
