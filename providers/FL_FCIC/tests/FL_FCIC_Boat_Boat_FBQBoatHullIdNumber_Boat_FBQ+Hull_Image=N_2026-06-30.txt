@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQBoatHullIdNumber (Boat FBQ+Hull Image=N)
+Date: 2026-06-30 08:32:17
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Hull=3423423423, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7ZQ8H40Y0RSVFG1WXR3R2"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><BoatHullIdNumber>3423423423</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BoatHullIdNumber               3423423423
+  ImageIndicator                 N
+
+NOTES
+-----
+
+
+RESULT: PASS
