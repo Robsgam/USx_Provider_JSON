@@ -6,16 +6,24 @@
   Co-fire QIDMs (VehicleStolenQuery, WantedPersonQuery) are folded as
   annotations on primary QIDM tests, not listed as separate tests.
 
-  Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>]
+  Two tiers (the body of the matrix differs; combo COVERAGE is identical):
+    Final (default) -- render + every combo + per-combo any[] + guardrails + deselect
+                       + negative. The full FL_FCIC standard.
+    Preliminary     -- render + every combo fired with required (set[]) fields only +
+                       negative. No any[]/guardrail/deselect rows. A strict subset of Final.
+
+  Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>] [-Tier <Preliminary|Final>]
 #>
 
 param(
     [Parameter(Mandatory=$true)][string]$Path,
     [string]$OutFile,
-    [ValidateSet('BASE','MC')][string]$Variant = 'MC'
+    [ValidateSet('BASE','MC')][string]$Variant = 'MC',
+    [ValidateSet('Preliminary','Final')][string]$Tier = 'Final'
 )
 
 $ErrorActionPreference = "Stop"
+$isPrelim = ($Tier -eq 'Preliminary')
 
 # ── Parse JSON ──
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
@@ -538,6 +546,7 @@ $comboTestRefs = @{}
 [void]$sb.AppendLine("$providerName v$version -- TEST MATRIX")
 [void]$sb.AppendLine("=" * 50)
 [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd')")
+[void]$sb.AppendLine("Tier: $Tier $(if ($isPrelim) { '-- render + every combo (required fields only) + negative' } else { '-- full standard: combos + any[] + guardrails + deselect + negative' })")
 [void]$sb.AppendLine("Layout: $(if ($Variant -eq 'MC') { 'multi-card per entity' } else { 'single-card per entity' })")
 [void]$sb.AppendLine("Validator: $validatorScore")
 [void]$sb.AppendLine("")
@@ -777,9 +786,9 @@ foreach ($ent in $entityOrder) {
             }
             [void]$phaseSb.AppendLine("              Expected: $expected")
 
-            # Per-combo any[] test: verify auxiliary optional fields serialize
+            # Per-combo any[] test: verify auxiliary optional fields serialize (Final only)
             $auxFids = Get-AuxAnyFields $c $q $ed.allSetAttrNames $ed.allFields
-            if ($auxFids.Count -gt 0) {
+            if (-not $isPrelim -and $auxFids.Count -gt 0) {
                 $testNum++; $phaseTestCount++
                 $anyStr = ($auxFids | Select-Object -First 4) -join ', '
                 [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
@@ -928,9 +937,9 @@ foreach ($ent in $entityOrder) {
             [void]$phaseSb.AppendLine("[    ]")
             [void]$phaseSb.AppendLine("              Expected: $($q.query) fires ($kr)")
 
-            # Per-combo any[] test for deselect combos
+            # Per-combo any[] test for deselect combos (Final only)
             $auxFidsD = Get-AuxAnyFields $c $q $ed.allSetAttrNames $ed.allFields
-            if ($auxFidsD.Count -gt 0) {
+            if (-not $isPrelim -and $auxFidsD.Count -gt 0) {
                 $testNum++; $phaseTestCount++
                 $anyStr = ($auxFidsD | Select-Object -First 4) -join ', '
                 [void]$phaseSb.Append(("{0,2}  {1,-10}  {2,-17}  + {3,-29} " -f $testNum, $ent, $comboLabel, $anyStr))
@@ -940,9 +949,9 @@ foreach ($ent in $entityOrder) {
         }
     }
 
-    # ── 3. GUARDRAIL tests: NOT_EXISTS priority routing ──
+    # ── 3. GUARDRAIL tests: NOT_EXISTS priority routing (Final only) ──
     # For combos with NOT_EXISTS conditions: fill the excluded field + loser's set[] → winner fires.
-    $guardrails = Get-GuardrailTests $ed.qidms $ed.allFields
+    $guardrails = if ($isPrelim) { @() } else { Get-GuardrailTests $ed.qidms $ed.allFields }
     foreach ($gr in $guardrails) {
         $testNum++; $phaseTestCount++
         # Use full keyRef in label so "RQ>RQN" (not "RQ>RQ") and loser set[] for Expected.
@@ -1026,8 +1035,8 @@ foreach ($ent in $entityOrder) {
         [void]$phaseSb.AppendLine("              Expected: $($gr.winnerQidm.query) fires ($($gr.winnerKr)). $absentFields absent from XML.")
     }
 
-    # ── 4. DESELECT verification (this entity only) ──
-    if ($deselectQidms.Count -gt 0) {
+    # ── 4. DESELECT verification (this entity only; Final only) ──
+    if (-not $isPrelim -and $deselectQidms.Count -gt 0) {
         $dq = $deselectQidms[0]
         $fromShort = Get-QueryAbbrev $dq.query
         $toShort = ''
@@ -1039,7 +1048,7 @@ foreach ($ent in $entityOrder) {
         [void]$phaseSb.AppendLine("Deselect: $fromShort deselects $toShort.            [    ]")
         [void]$phaseSb.AppendLine("              Fill both query fields. Check deselect behavior.")
     }
-    if ($cofireQidms.Count -gt 0) {
+    if (-not $isPrelim -and $cofireQidms.Count -gt 0) {
         $testNum++; $phaseTestCount++
         [void]$phaseSb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
         [void]$phaseSb.AppendLine("Priority routing: verify more-specific combo wins.  [    ]")

@@ -631,14 +631,35 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   enforce.ps1 PHASE 6 runs two BLOCKING checks so "tested/DONE" is computed, not
   remembered:
     * audit_test_coverage.ps1 -Gate  -> per-provider verdict CLOSED /
-      INCOMPLETE-consistent / INCONSISTENT. INCONSISTENT (stale [CONFIRMED] vs
-      tests/.test_version, a [CONFIRMED] with fewer XML-bearing logs than markers,
-      or TEST_MATRIX combo count != JSON) fails enforce. INCOMPLETE-consistent
+      INCOMPLETE-consistent / INCONSISTENT. INCONSISTENT fails enforce. It is
+      INCONSISTENT when a [CONFIRMED] combo has NO valid current-version backing
+      log -- "valid" = a log STAMPED (by post_test.ps1) with JSON Version == the
+      current build version AND Entity Fingerprint == the entity's current
+      fingerprint AND carrying XML. A stale (prior-version) or unstamped or
+      hand-edited log does NOT count. (This closes the NJ v4.7 hole, where a SQVR
+      hand-stamped [CONFIRMED] passed on 4-day-old pre-rebuild logs.) Also
+      INCONSISTENT if TEST_MATRIX combo count != JSON. INCOMPLETE-consistent
       (fresh all-PENDING build) is NOT a failure but is NOT "done" either.
     * verify_claims.ps1  -> every KB/simulator "live-proven" claim must cite a
       committed test log (the STATUS convention, GATE 4). Unbacked = block.
   Markers below are [TOOL] (enforced by a script) or [OP] (operator must do it;
   the tool can only check the artifact after the fact).
+
+  GATE 0 -- CHOOSE THE TIER (BEFORE STARTING A SESSION):
+  [OP]   Pick the USx Tenant Testing tier and set it:
+           powershell.exe -ExecutionPolicy Bypass -File tools/set_tier.ps1 -Provider <NAME> -Tier <Preliminary|Final>
+         PRELIMINARY = render per entity + EVERY combo fired with required (set[])
+           fields only + a negative per entity. All routing paths, cheaply.
+         FINAL = Preliminary PLUS each combo's optional (any[]) permutations +
+           guardrail/priority tests + deselect tests. The full FL_FCIC standard.
+         The tier is written to tests/.test_tier (persists across rebuilds, default
+         Final) and drives: which matrix to run (docs/<P>_TEST_MATRIX_PRELIMINARY.txt
+         vs <P>_TEST_MATRIX.txt), what post_test.ps1 stamps, and what block_entity.ps1
+         requires. Preliminary is a strict subset of Final, so escalating later reuses
+         the base logs and only adds the any[]/guardrail/deselect tests.
+  [TOOL] post_test.ps1 STAMPS every log with JSON Version + Entity Fingerprint +
+         Tier. Never hand-write a [CONFIRMED] marker or a log "PASS" -- a marker with
+         no stamped current-version XML log fails enforce (audit_test_coverage -Gate).
 
   GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
   [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package

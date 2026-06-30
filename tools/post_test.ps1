@@ -36,12 +36,18 @@ param(
     [string]$XmlResponse,
     [string]$FormState,
     [string]$Notes,
+    [ValidateSet('Preliminary','Final')][string]$Tier,
     [switch]$NoCommit,
     [switch]$Negative,
     [switch]$Render
 )
 
 $ErrorActionPreference = "Stop"
+
+# Shared provenance helpers (version/fingerprint/tier resolution + stamp parsing).
+. "$PSScriptRoot\_test_provenance.ps1"
+. "$PSScriptRoot\get_entity_fingerprints.ps1"
+. "$PSScriptRoot\_resolve_provider_json.ps1"
 
 # ============================================================================
 # HARD GATE: No XML = No PASS (unless negative test)
@@ -160,6 +166,26 @@ if (-not (Test-Path $docsDir)) {
 Write-Ok "Provider: $providerDir"
 Write-Ok "Tests:    $testsDir"
 
+# ── Resolve provenance stamp: build version + this entity's fingerprint + tier ──
+# Stamped into the log so a [CONFIRMED] combo can later be proven to rest on a log
+# run against THIS JSON version + entity structure (not a stale or hand-edited log).
+$buildVersion = Get-BuildVersionForProvider $providerDir
+if (-not $buildVersion) { $buildVersion = "unknown" }
+
+$entityFingerprint = $null
+$activeJsonPath = Get-ProviderRootJson -ProvDir $providerDir -Provider $Provider
+if ($activeJsonPath -and (Test-Path $activeJsonPath)) {
+    try {
+        $fpMap = Get-EntityFingerprints -Path $activeJsonPath
+        if ($fpMap.Contains($Entity)) { $entityFingerprint = $fpMap[$Entity] }
+    } catch { }
+}
+if (-not $entityFingerprint) { $entityFingerprint = "unknown" }
+
+if (-not $Tier) { $Tier = Get-ActiveTier $providerDir }
+
+Write-Ok "Stamp:    v$buildVersion / $($entityFingerprint.Substring(0,[Math]::Min(12,$entityFingerprint.Length))) / $Tier"
+
 # ============================================================================
 # STEP 2: CREATE OR UPDATE TEST LOG
 # ============================================================================
@@ -220,6 +246,9 @@ TEST LOG: $Provider $Entity $Query
 Combo: $Combo ($Description)
 Date: $timestamp
 Result: $Result
+JSON Version: $buildVersion
+Entity Fingerprint: $entityFingerprint
+Tier: $Tier
 ================================================================
 
 FORM STATE
@@ -492,7 +521,7 @@ if (-not $NoCommit) {
         $commitMsg = @"
 Test: $Provider $Entity $Query $Combo - $Result
 
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 "@
         try {
             $commitOutput = & git -C $repoRoot commit -m $commitMsg 2>&1 | Out-String

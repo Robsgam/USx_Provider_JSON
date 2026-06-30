@@ -1,0 +1,197 @@
+FL_FCIC v7.1 -- TEST MATRIX
+==================================================
+Generated: 2026-06-30
+Tier: Preliminary -- render + every combo (required fields only) + negative
+Layout: multi-card per entity
+Validator: unknown
+
+FORM FIELDS
+----------------------------------------
+Vehicle (2 cards, 10 fields):
+  CARD_VEH_OPT (Search Options):
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_VEH_SEARCH (Vehicle Search):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
+
+Person (2 cards, 17 fields):
+  CARD_DL (Driver License):
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], nameSuffix [Inp 10]
+  CARD_DH (Driver History (Out-of-State Only)):
+    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
+    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 3: Attention [Inp X, 30]
+
+Firearm (1 card, 5 fields):
+  CARD_GUN (FIREARM QUERY):
+    ROW 1: GunSerialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+
+Article (1 card, 6 fields):
+  CARD_ART (ARTICLE QUERY):
+    ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ownerAppliedNumber [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10]
+
+Boat (2 cards, 13 fields):
+  CARD_BOA_OPT (Search Options):
+    RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+  CARD_BOA_SEARCH (Boat Search):
+    ROW 1: BoatHullIdNumber [Inp 62], RegistrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
+    ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
+    ROW 3: NameLast [Inp 30], NameFirst [Inp 30], BirthDate [FormDate]
+
+QIDM SUMMARY (6 QIDMs, 31 combos)
+----------------------------------------
+  VehicleRegistrationQuery: 6 combos (RQ x2, FRQ x4)
+  DriverLicenseQuery: 4 combos (DQ x2, FDQ x2), autoSelect=true
+  DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
+  GunQuery: 3 combos (QG x3)
+  ArticleSingleQuery: 4 combos (QA x4)
+  BoatQuery: 12 combos (BQ x3, FBQ x4, QB x5)
+
+================================================================================
+TEST MATRIX
+================================================================================
+
+Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
+(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
+
+
+ENTITY 1: VEHICLE (8 tests -- 2 cards, 6 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+ 1  Vehicle     Render form. Verify 2 cards:                        [    ]
+              CARD_VEH_OPT: titled "Search Options".
+              State (leave blank for FL) dropdown (no default), Image (optional) dropdown=N.
+              CARD_VEH_SEARCH: titled "Vehicle Search".
+              Plate Number (or search by VIN/Decal), Plate Type (out-of-state plates) dropdown=PC, Plate Year (out-of-state plates)=2026.
+              VIN (or search by Plate), Vehicle Make (optional) dropdown (no default), Vehicle Year (optional).
+              Decal Number, Title/Lien Info.
+ 2  Vehicle     FRQ+Plate          LicensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+ 3  Vehicle     FRQ+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
+ 4  Vehicle     FRQ+Decal          decalNumber=FL12345678, LicensePlateY... [    ]
+              Expected: VehicleRegistrationQuery fires (FRQDecalNumber)
+ 5  Vehicle     FRQ+TitleLien      titleLienInformation=ABCD1234    [    ]
+              Expected: VehicleRegistrationQuery fires (FRQTitleLienInformation)
+ 6  Vehicle     RQ+Plate+State     LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber)
+ 7  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
+ 8  Vehicle     Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 2: BOAT (14 tests -- 2 cards, 12 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+ 9  Boat        Render form. Verify 2 cards:                        [    ]
+              CARD_BOA_OPT: titled "Search Options".
+              Destination State (blank for FL, required for name/DOB) dropdown (no default), Stolen Search (Y for NCIC stolen-boat check) dropdown (no default), Image (optional) dropdown=N.
+              CARD_BOA_SEARCH: titled "Boat Search".
+              Hull ID Number, Registration Number (or use Hull ID), Coast Guard Doc #.
+              Decal Number, Title/Lien Info, NCIC Number, PCN.
+              Owner Last Name (out-of-state), Owner First Name (out-of-state), Owner DOB (out-of-state).
+10  Boat        FBQ+Hull           BoatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (FBQBoatHullIdNumber)
+11  Boat        FBQ+Reg            RegistrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (FBQRegistrationNumber)
+12  Boat        FBQ+Decal          decalNumber=FL12345678           [    ]
+              Expected: BoatQuery fires (FBQDecalNumber)
+13  Boat        FBQ+TitleLien      titleLienInformation=ABCD1234    [    ]
+              Expected: BoatQuery fires (FBQTitleLienInformation)
+14  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (BQBoatHullIdNumber)
+15  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
+              Expected: BoatQuery fires (BQRegistrationNumber)
+16  Boat        BQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: BoatQuery fires (BQName)
+17  Boat        QB+Hull+Stolen     BoatHullIdNumber=FL1234AB56H7, relate... [    ]
+              Expected: BoatQuery fires (QBBoatHullIdNumber)
+18  Boat        QB+Reg+Stolen      RegistrationNumber=FL1234AB, relatedH... [    ]
+              Expected: BoatQuery fires (QBRegistrationNumber)
+19  Boat        QB+CG              coastGuardDocumentNumber=CG123456 [    ]
+              Expected: BoatQuery fires (QBCoastGuardDocumentNumber)
+20  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
+              Expected: BoatQuery fires (QBNCICNumber)
+21  Boat        QB+PCN             processControlNumber=0000012345  [    ]
+              Expected: BoatQuery fires (QBProcessControlNumber)
+22  Boat        Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 3: PERSON (8 tests -- 2 cards, 6 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+23  Person      Render form. Verify 2 cards:                        [    ]
+              CARD_DL: titled "Driver License".
+              License Number (or search by Name + DOB), State (leave blank for FL) dropdown (no default), Image (optional) dropdown=Y.
+              Last Name, First Name, Middle Name.
+              Date of Birth (required with Name), Sex (required with Name) dropdown (no default), Suffix.
+              CARD_DH: titled "Driver History (Out-of-State Only)".
+              License Number (DH) - or Name + DOB + Sex, Destination State (DH, not FL) dropdown (no default), Purpose Code (DH, optional).
+              Last Name (DH), First Name (DH), DOB (DH, required with Name), Sex (DH) - required with Name dropdown (no default).
+              Attention (auto-populated from officer profile)=X.
+24  Person      FDQ+OLN            OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+25  Person      DQ+OLN+State       OperatorLicenseNumber=D999888777, Reg... [    ]
+              Expected: DriverLicenseQuery fires (DQOperatorLicenseNumber)
+26  Person      FDQ+Name           BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (FDQName)
+27  Person      DQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (DQName)
+28  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
+              Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber)
+29  Person      KQ+Name            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (KQName)
+30  Person      Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 4: FIREARM (5 tests -- 1 card, 3 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+31  Firearm     Render form. Verify 1 card:                        [    ]
+              CARD_GUN: titled "FIREARM QUERY".
+              Serial Number (or use NCIC#/PCN), Gun Make (optional) dropdown (no default).
+              NCIC Number, PCN, Image (optional) dropdown=N.
+32  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+              Expected: GunQuery fires (QGGunSerialNumber)
+33  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
+              Expected: GunQuery fires (QGNCICNumber)
+34  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
+              Expected: GunQuery fires (QGProcessControlNumber)
+35  Firearm     Empty form, verify no Send button / no request.    [    ]
+
+ENTITY 5: ARTICLE (6 tests -- 1 card, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+36  Article     Render form. Verify 1 card:                        [    ]
+              CARD_ART: titled "ARTICLE QUERY".
+              Serial Number (with Article Type), Article Type (required) dropdown (no default), Owner Applied Number (with Article Type), Image (optional) dropdown=N.
+              NCIC Number, PCN.
+37  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+              Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
+38  Article     QA+OAN             ArticleTypeCode=BBICYCL, ownerApplied... [    ]
+              Expected: ArticleSingleQuery fires (QAOwnerAppliedNumber)
+39  Article     QA+NCIC            NCICNumber=X123456789            [    ]
+              Expected: ArticleSingleQuery fires (QANCICNumber)
+40  Article     QA+PCN             processControlNumber=0000012345  [    ]
+              Expected: ArticleSingleQuery fires (QAProcessControlNumber)
+41  Article     Empty form, verify no Send button / no request.    [    ]
+
+================================================================================
+TOTAL: 41 tests
+
+COMBO COVERAGE (31/31):
+  VehicleRegistrationQuery: 6/6 -- T2(FRQ+Plate), T3(FRQ+VIN), T4(FRQ+Decal), T5(FRQ+TitleLien), T6(RQ+Plate), T7(RQ+VIN)
+  DriverLicenseQuery: 4/4 -- T24(FDQ+OLN), T25(DQ+OLN), T26(FDQ+Name), T27(DQ+Name)
+  DriverHistoryQuery: 2/2 -- T28(KQ+OLN), T29(KQ+Name)
+  GunQuery: 3/3 -- T32(Serial), T33(NCIC), T34(PCN)
+  ArticleSingleQuery: 4/4 -- T37(Serial), T38(OAN), T39(NCIC), T40(PCN)
+  BoatQuery: 12/12 -- T10(FBQ+Hull), T11(FBQ+Reg), T12(FBQ+Decal), T13(FBQ+TitleLien), T14(BQ+Hull), T15(BQ+Reg), T16(BQ+Name), T17(QB+Hull), T18(QB+Reg), T19(QB+CG), T20(QB+NCIC), T21(QB+PCN)
+
+IMPORT FILE: FL_FCIC_v7.1.json

@@ -3,10 +3,14 @@
 # Updated: 2026-06-29
 #
 # Columns: Provider | DEX Ticket | Status | Last Comment ID | Testing Tier
-# Testing Tiers:
-#   Preliminary = build clean + enforce 0F + imported + entity-level smoke (1-2 combos/entity)
-#   Final       = FL_FCIC standard: every combo + every any[] permutation + negatives +
-#                 guardrails + XML evidence per test + SQVR fingerprinting + block_entity
+# Testing Tiers (selected per provider via tools/set_tier.ps1; written to tests/.test_tier):
+#   Preliminary = render per entity + EVERY combo fired with required (set[]) fields only
+#                 + a negative per entity. Proves all routing paths cheaply. Subset of Final.
+#   Final       = Preliminary PLUS each combo's optional (any[]) field permutations +
+#                 guardrail/priority tests + deselect tests. The full FL_FCIC standard.
+# Both tiers require, per test, an XML-bearing log STAMPED with the current JSON version +
+# entity fingerprint (post_test.ps1 stamps automatically). A [CONFIRMED] combo or a blocked
+# entity with no valid current-version backing log FAILS enforce.ps1 -- no hand-stamping.
 #
 NJ_NJCJIS          | DEX-988   | In Progress | 768537 | Preliminary (v4.7)
 CA_CLETS           | DEX-976   | In Progress | 769415 | Preliminary (v2.11)

@@ -37,6 +37,16 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$PSScriptRoot\_resolve_provider_json.ps1"
+# Shared combo extraction + test-log matching (kept in sync with block_entity.ps1).
+. "$PSScriptRoot\_combo_match.ps1"
+# Shared provenance + tier helpers (version/fingerprint stamp validation).
+. "$PSScriptRoot\_test_provenance.ps1"
+# get_entity_fingerprints.ps1 begins with its own param($Path,$OutFile); dot-sourcing
+# it executes that param block in THIS scope and would reset our $Path/$OutFile to null.
+# Preserve and restore them around the dot-source.
+$__savedPath = $Path; $__savedOutFile = $OutFile
+. "$PSScriptRoot\get_entity_fingerprints.ps1"
+$Path = $__savedPath; $OutFile = $__savedOutFile
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
@@ -47,174 +57,9 @@ function Get-ProviderName($jsonPath) {
     return Split-Path $dir -Leaf
 }
 
-function Get-CommSysQidms($json) {
-    $qidms = @()
-    foreach ($bundle in $json.bundles) {
-        if ($bundle.provider -eq 'RMS') { continue }
-        if ($bundle.name -eq 'RMS') { continue }
-        foreach ($cfg in $bundle.configurations) {
-            if ($cfg.type -eq "QUERYINPUTDATAMAPPING" -and
-                $cfg.handlerFunction -eq "CommsysTransactionRequestHandler") {
-                $qidms += $cfg
-            }
-        }
-    }
-    return $qidms
-}
-
-function Get-ComboInfo($qidm) {
-    $combos = @()
-    foreach ($c in $qidm.combinations) {
-        $kr = $c.keyReference
-        if (-not $kr) { $kr = $c.keyRef }
-        $setFields = @()
-        if ($c.requirements -and $c.requirements.set) { $setFields = @($c.requirements.set) }
-        $anyFields = @()
-        if ($c.requirements -and $c.requirements.any) { $anyFields = @($c.requirements.any) }
-        $combos += [PSCustomObject]@{
-            KeyReference = $kr
-            Entity       = $qidm.targetEntity
-            Query        = $qidm.query
-            QidmName     = $qidm.name
-            Set          = $setFields
-            Any          = $anyFields
-            State        = $c.state
-        }
-    }
-    return $combos
-}
-
-# Build a short label for a combo (e.g., "FRQ+Plate", "KQ+OLN", "IA.QV")
-# This is what test log filenames typically contain.
-function Get-ComboShortLabel($combo) {
-    $kr = $combo.KeyReference
-    if (-not $kr) { return $null }
-
-    # For dotted keyRefs (CA providers: IA.QV, NLTS.RQ.P, etc.) return as-is
-    if ($kr -match '\.') { return $kr }
-
-    # Extract prefix (FRQ, DQ, KQ, QG, QA, QB, BQ, RQ, QV, QW, FDQ, FBQ, etc.)
-    $prefix = ""
-    if ($kr -match '^(FRQ|FDQ|FBQ|NLTS|QB|QV|QW|QG|QA|BQ|RQ|DQ|KQ)') {
-        $prefix = $Matches[1]
-    } elseif ($kr -match '^([A-Z]{2,4})') {
-        $prefix = $Matches[1]
-    }
-    if (-not $prefix) { return $kr }
-
-    # Determine the field keyword from what remains after the prefix
-    $remainder = $kr.Substring($prefix.Length)
-    $fieldWord = ""
-
-    # Map common field names to their test-log abbreviations
-    if ($remainder -match 'LicensePlateNumber') { $fieldWord = "Plate" }
-    elseif ($remainder -match 'VehicleIdentificationNumber') { $fieldWord = "VIN" }
-    elseif ($remainder -match 'OperatorLicenseNumber') { $fieldWord = "OLN" }
-    elseif ($remainder -match '^Name$') { $fieldWord = "Name" }
-    elseif ($remainder -match 'GunSerialNumber|ArticleSerialNumber|serialNumber') { $fieldWord = "Serial" }
-    elseif ($remainder -match 'NCICNumber') { $fieldWord = "NCIC" }
-    elseif ($remainder -match 'ProcessControlNumber') { $fieldWord = "PCN" }
-    elseif ($remainder -match 'BoatHullIdNumber') { $fieldWord = "Hull" }
-    elseif ($remainder -match 'RegistrationNumber') { $fieldWord = "Reg" }
-    elseif ($remainder -match 'CoastGuardDocumentNumber') { $fieldWord = "CG" }
-    elseif ($remainder -match 'DecalNumber') { $fieldWord = "Decal" }
-    elseif ($remainder -match 'TitleLienInformation') { $fieldWord = "Title" }
-    elseif ($remainder -match 'OwnerAppliedNumber') { $fieldWord = "OAN" }
-    else { $fieldWord = $remainder }
-
-    return "$prefix+$fieldWord"
-}
-
-function Match-TestLogToCombo($logName, $combo, $providerName) {
-    $kr = $combo.KeyReference
-    if (-not $kr) { return $false }
-
-    $logUpper = $logName.ToUpper()
-    $entity = $combo.Entity
-
-    # ── TIER 0: Wildcard keyReference prefix match ──
-    # keyRefs like "IV.4*" (conditions combos) use * as a wildcard — match any log
-    # containing the prefix before the asterisk (e.g. "IV.4*" matches "IV.4A", "IV.4B")
-    if ($kr.Contains('*')) {
-        $prefix0 = $kr.Substring(0, $kr.IndexOf('*')).ToUpper()
-        if ($prefix0 -and $logUpper.Contains($prefix0)) { return $true }
-    }
-
-    # ── TIER 1: Exact keyReference in filename ──
-    # e.g., "IA.QV" or "FRQLicensePlateNumber" literally in the filename
-    if ($logUpper.Contains($kr.ToUpper())) { return $true }
-
-    # ── TIER 1b: Trailing-suffix strip fallback ──
-    # Handles conditions-routing combos like IV.4I, IV.4PC, IA.QB.H where a single
-    # test log covers all variants under a shared prefix (e.g. IV.4_ConditionsRouting
-    # covers IV.4I, IV.4C, IV.4M... and IA.QB covers IA.QB.H, IA.QB.O, IA.QB.R).
-    # Strategy: try progressively shorter truncations of the keyRef (drop last 1 char,
-    # then last 2 chars) and check if the shortened version appears in the log filename.
-    $krU = $kr.ToUpper()
-    for ($trim = 1; $trim -le 2; $trim++) {
-        if ($krU.Length - $trim -ge 3) {
-            $shortKr = $krU.Substring(0, $krU.Length - $trim)
-            if ($logUpper.Contains($shortKr)) { return $true }
-        }
-    }
-
-    # ── TIER 2: Short label match (PREFIX+FIELD) ──
-    # Test logs commonly use format: DATE_Entity_PREFIX+Field_Description.txt
-    # e.g., "2026-05-01_Vehicle_FRQ+Plate_..." matches combo with label "FRQ+Plate"
-    # Use boundary-aware match to prevent "RQ+Plate" matching inside "FRQ+Plate"
-    $shortLabel = Get-ComboShortLabel $combo
-    if ($shortLabel) {
-        $escaped = [regex]::Escape($shortLabel.ToUpper())
-        if ($logUpper -match "(^|[_\.\s])${escaped}([_\.\+\s]|$)") { return $true }
-    }
-
-    # ── TIER 3: Entity + exact prefix match ──
-    # Must match entity AND the combo prefix with appropriate delimiters
-    if (-not $entity) { return $false }
-    if (-not $logUpper.Contains($entity.ToUpper())) { return $false }
-
-    # Extract the combo prefix (FRQ, DQ, KQ, QG, QA, QB, BQ, RQ, QV, QW, FDQ, FBQ, etc.)
-    $prefix = ""
-    if ($kr -match '^(FRQ|FDQ|FBQ|NLTS|QB|QV|QW|QG|QA|BQ|RQ|DQ|KQ)') {
-        $prefix = $Matches[1]
-    }
-    # For dotted keyRefs, extract the dotted prefix
-    $dottedPrefix = ""
-    if ($kr -match '^([A-Z]+\.[A-Z]+(?:\.[A-Z]+)?)') {
-        $dottedPrefix = $Matches[1]
-    }
-
-    if ($prefix) {
-        $pUpper = $prefix.ToUpper()
-        # Match prefix with delimiter boundaries: _FRQ+ _FRQ_ .FRQ. _FRQ.
-        if ($logUpper -match "[\._]${pUpper}[\+\._]|[\._]${pUpper}\b") {
-            # Prefix matched inside the entity's filename. Now verify field alignment
-            # to avoid FRQ+Plate matching a FRQ+VIN test log when they share prefix.
-            $shortLabel2 = Get-ComboShortLabel $combo
-            if ($shortLabel2) {
-                $fieldPart = ($shortLabel2 -split '\+', 2)[1]
-                if ($fieldPart) {
-                    $fUpper = $fieldPart.ToUpper()
-                    # Check if the field keyword is also in the filename
-                    if ($logUpper.Contains($fUpper)) { return $true }
-                }
-            }
-            # If we could not determine a specific field, the prefix alone is not enough
-            # to avoid false positives. Fall through to tier 4.
-        }
-    }
-    if ($dottedPrefix) {
-        if ($logUpper.Contains($dottedPrefix.ToUpper())) { return $true }
-    }
-
-    # ── TIER 4: Entity + primary set field keyword ──
-    # Last resort: match entity + a distinctive keyword from the first set[] field
-    # Only use this if there is exactly one distinguishing set field pattern
-    # (to avoid false positives between combos sharing entity)
-    # We intentionally do NOT match here -- tiers 1-3 should cover standard naming.
-
-    return $false
-}
+# Get-CommSysQidms / Get-ComboInfo / Get-ComboShortLabel / Match-TestLogToCombo
+# now live in _combo_match.ps1 (dot-sourced above) so the coverage gate and the
+# block_entity gate share one matcher and cannot drift.
 
 # ══════════════════════════════════════════════════════════════════════════════
 # GATE HELPERS (used only in -Gate mode)
@@ -574,26 +419,46 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     # ── GATE VERDICT (only computed in -Gate mode) ──
     $verdict = $null
     if ($Gate) {
-        $buildVer    = Get-BuildVersion $provDir
+        $buildVer    = Get-BuildVersionForProvider $provDir
         $testVer     = Get-TestVersion $provDir
         $matrixCount = Get-MatrixComboCount $provDir $provName
+        $activeTier  = Get-ActiveTier $provDir
 
-        # Count non-negative test logs that carry real XML evidence.
-        $xmlLogs = 0
-        foreach ($log in $testLogs) {
-            if (Test-IsNegativeLog $log.Name) { continue }
-            if (Test-LogHasXml $log.FullName) { $xmlLogs++ }
+        # Per-entity current fingerprints (for provenance match).
+        $entFp = @{}
+        try { $entFp = Get-EntityFingerprints -Path $jsonPath } catch { $entFp = @{} }
+
+        # PROVENANCE PASS -- the core integrity fix. A combo is "validly backed" only
+        # when at least one log matching it passes Test-LogProvenance: stamped version ==
+        # build version, stamped fingerprint == the entity's current fingerprint, and XML
+        # present. Stale or unstamped logs do NOT count, so a [CONFIRMED] marker can never
+        # rest on a pre-rebuild or hand-edited log again (the NJ v4.7 failure mode).
+        $validBackedCombos = 0
+        $staleBackedCombos = 0
+        $provenanceNotes = @()
+        foreach ($ent in ($combosByEntity.Keys | Sort-Object)) {
+            $fpE = $null; if ($entFp.Contains($ent)) { $fpE = $entFp[$ent] }
+            foreach ($c in $combosByEntity[$ent]) {
+                $matched = @($testLogs | Where-Object { Match-TestLogToCombo $_.Name $c $provName })
+                if ($matched.Count -eq 0) { continue }
+                $valid = $false; $firstReason = $null
+                foreach ($log in $matched) {
+                    $pr = Test-LogProvenance $log.FullName $buildVer $fpE
+                    if ($pr.Valid) { $valid = $true; break }
+                    elseif (-not $firstReason) { $firstReason = ($pr.Reasons -join '; ') }
+                }
+                if ($valid) { $validBackedCombos++ }
+                else {
+                    $staleBackedCombos++
+                    $lbl = Get-ComboShortLabel $c
+                    $provenanceNotes += "$ent $($c.KeyReference) ($lbl): $firstReason"
+                }
+            }
         }
-
-        # .test_version unset (e.g. NJ 4-JSON state) -> can't prove staleness, don't block on it.
-        $versionAligned = ($null -eq $testVer) -or ($testVer -eq $buildVer)
 
         $gateReasons = @()
-        if ($sqvrConfirmed -gt 0 -and -not $versionAligned) {
-            $gateReasons += "stale [CONFIRMED]: tests/.test_version (v$testVer) != build (v$buildVer) -- rebuild bypassed reset_test_package"
-        }
-        if ($sqvrConfirmed -gt 0 -and $xmlLogs -lt $sqvrConfirmed) {
-            $gateReasons += "$sqvrConfirmed [CONFIRMED] but only $xmlLogs test log(s) carry XML evidence (no-XML PASS forbidden)"
+        if ($sqvrConfirmed -gt 0 -and $validBackedCombos -lt $sqvrConfirmed) {
+            $gateReasons += "$sqvrConfirmed [CONFIRMED] but only $validBackedCombos combo(s) have a valid current-version XML backing log ($staleBackedCombos matched only stale/unstamped logs)"
         }
         if ($null -ne $matrixCount -and $matrixCount -ne $totalCombos) {
             $gateReasons += "TEST_MATRIX combo count ($matrixCount) != JSON combo count ($totalCombos) -- matrix is stale, regenerate"
@@ -612,9 +477,12 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-LineColor "  GATE VERDICT: $verdict" $vColor
         $tvShow = if ($testVer) { "v$testVer" } else { "(unset)" }
         $mcShow = if ($null -ne $matrixCount) { $matrixCount } else { "n/a" }
-        Out-Line "    build v$buildVer | tests/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
-        Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | XML logs: $xmlLogs"
+        Out-Line "    build v$buildVer | tier $activeTier | tests/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
+        Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | valid-backed combos: $validBackedCombos"
         foreach ($r in $gateReasons) { Out-LineColor "    - $r" "Red" }
+        if ($provenanceNotes.Count -gt 0 -and $verdict -eq 'INCONSISTENT') {
+            foreach ($n in ($provenanceNotes | Select-Object -First 12)) { Out-LineColor "      x $n" "DarkYellow" }
+        }
     }
 
     # ── Store summary row ──

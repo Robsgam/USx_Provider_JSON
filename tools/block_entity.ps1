@@ -50,6 +50,8 @@ if (-not (Test-Path $activeJson)) {
 if (-not (Test-Path $activeJson)) { Write-Host "  [ERROR] No active JSON for $Provider" -ForegroundColor Red; exit 1 }
 
 . "$toolDir\get_entity_fingerprints.ps1"
+. "$toolDir\_combo_match.ps1"
+. "$toolDir\_test_provenance.ps1"
 $fp = Get-EntityFingerprints -Path $activeJson
 if (-not $fp.Contains($Entity)) {
     Write-Host "  [ERROR] Entity '$Entity' not found in $Provider. Known: $($fp.Keys -join ', ')" -ForegroundColor Red
@@ -72,6 +74,62 @@ if (Test-Path $sqvrPath) {
 }
 if (($pending -gt 0 -or $failed -gt 0) -and -not $Force) {
     Write-Host "  [BLOCKED] '$Entity' has $pending [PENDING] + $failed [FAILED] SQVR marker(s) -- validate all combos first, or pass -Force." -ForegroundColor Red
+    exit 1
+}
+
+# ── Evidence gate: every combo of this entity must have a VALID current-version XML
+#    backing log (provenance), and -- at Final tier -- an any[] log per combo with
+#    optional fields plus a render and a negative log. This is what makes a "blocked"
+#    entity mean "evidenced": a hand-edited SQVR or a stale pre-rebuild log can no
+#    longer lock an entity (the NJ v4.7 failure mode). Override with -Force.
+$buildVer   = Get-BuildVersionForProvider $provDir
+$activeTier = Get-ActiveTier $provDir
+$entityFp   = $fp[$Entity]
+$testLogs   = @()
+if (Test-Path $testsDir) { $testLogs = @(Get-ChildItem $testsDir -Filter "*.txt" -File) }
+
+$json = Get-Content $activeJson -Raw -Encoding UTF8 | ConvertFrom-Json
+$entityCombos = @()
+foreach ($q in (Get-CommSysQidms $json)) {
+    if ($q.targetEntity -ne $Entity) { continue }
+    $entityCombos += Get-ComboInfo $q
+}
+
+$evidenceGaps = @()
+foreach ($c in $entityCombos) {
+    $matched = @($testLogs | Where-Object { Match-TestLogToCombo $_.Name $c $Provider })
+    $valid = $false; $reason = "no matching test log"
+    foreach ($log in $matched) {
+        $pr = Test-LogProvenance $log.FullName $buildVer $entityFp
+        if ($pr.Valid) { $valid = $true; break }
+        else { $reason = ($pr.Reasons -join '; ') }
+    }
+    if (-not $valid) {
+        $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): $reason"
+    }
+    elseif ($activeTier -eq 'Final' -and @($c.Any).Count -gt 0) {
+        # Final tier: optional any[] fields must be exercised -> a valid any[] log.
+        $anyLog = $matched | Where-Object {
+            ($_.Name -match '(?i)any') -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid
+        } | Select-Object -First 1
+        if (-not $anyLog) {
+            $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): Final tier requires an any[] test log (optional fields untested)"
+        }
+    }
+}
+
+if ($activeTier -eq 'Final') {
+    $entEsc = [regex]::Escape($Entity)
+    $renderOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*render" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+    if (-not $renderOk) { $evidenceGaps += "Final tier requires a render test log for $Entity" }
+    $negOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*negative" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+    if (-not $negOk) { $evidenceGaps += "Final tier requires a negative test log for $Entity" }
+}
+
+if ($evidenceGaps.Count -gt 0 -and -not $Force) {
+    Write-Host "  [BLOCKED] '$Entity' lacks valid current-version evidence (tier: $activeTier, build v$buildVer, fingerprint $($entityFp.Substring(0,12))):" -ForegroundColor Red
+    foreach ($g in ($evidenceGaps | Select-Object -First 20)) { Write-Host "      x $g" -ForegroundColor DarkYellow }
+    Write-Host "    Run the missing tests via post_test.ps1 (logs auto-stamp version+fingerprint), or pass -Force." -ForegroundColor Red
     exit 1
 }
 
