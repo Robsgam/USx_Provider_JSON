@@ -72,14 +72,27 @@
         r.readAsText(f);
       };
       const ent = el('input', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box'); ent.id = 'usx-ent'; ent.placeholder = 'entity (e.g. Vehicle)'; p.appendChild(ent);
+      const runStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); runStatus.id = 'usx-run-status'; p.appendChild(runStatus);
       const run = el('button', BTN, '▶ Run Plan');
-      run.onclick = () => {
+      run.onclick = async () => {
         const plan = window.__usxLoadedPlan;
         if (!plan) { alert('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
-        window.__usxRunPlan(plan, document.getElementById('usx-ent').value || undefined);
+        if (typeof window.__usxRunPlan !== 'function') { alert('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
+        const entity = (document.getElementById('usx-ent').value || '').trim();
+        const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any') && (!entity || t.entity === entity));
+        if (!tests.length) { alert('No combo tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
+        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} combos for ${entity || 'all'}…`;
+        run.disabled = true;
+        try {
+          const results = await window.__usxRunPlan(plan, entity || undefined);
+          const ok = results ? results.filter(r => r.sent && r.sent.ok).length : 0;
+          runStatus.style.color = '#7cf'; runStatus.textContent = `Done: ${ok}/${tests.length} submitted. Go to dex-log → Bulk Fetch.`;
+        } catch (e) {
+          runStatus.style.color = '#f77'; runStatus.textContent = 'Error: ' + e.message;
+        } finally { run.disabled = false; }
       };
       p.appendChild(run);
-      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '1. Load plan file  2. Set entity  3. Render form  4. Run Plan'));
+      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '1. Load plan  2. Render form  3. Run Plan'));
     }
     return p;
   }
