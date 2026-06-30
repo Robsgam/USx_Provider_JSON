@@ -15,8 +15,14 @@
 
   // Plain Chakra text input: React controlled-input pattern.
   function fillText(fieldId, value) {
-    const el = q(fieldId);
+    let el = q(fieldId);
     if (!el) return { fieldId, kind: 'text', ok: false, err: 'not found' };
+    // If the id landed on a wrapper (e.g. datepicker div), drill to the real input.
+    if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') {
+      const inner = el.querySelector('input, textarea');
+      if (!inner) return { fieldId, kind: 'text', ok: false, err: 'no input inside ' + el.tagName };
+      el = inner;
+    }
     const proto = el.tagName === 'TEXTAREA'
       ? window.HTMLTextAreaElement.prototype
       : window.HTMLInputElement.prototype;
