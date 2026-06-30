@@ -380,6 +380,65 @@ TOOLS
     while unchanged; enforce.ps1 FAILS a blocked entity whose fingerprint drifts.
     Usage: .\block_entity.ps1 -Provider <name> -Entity <entity> [-Force] [-NoCommit]
 
+  tools/watch_captures.ps1
+    Downloads watcher for the automated USx Tenant Testing loop. Start once per session;
+    monitors ~/Downloads for usx_captured_batch_labeled*.json files dropped by the browser
+    extension's __usxBulkFetch, and auto-runs import_captured_tests.ps1 on each new file.
+    Usage: .\tools\watch_captures.ps1            # auto-import + commit
+           .\tools\watch_captures.ps1 -NoCommit  # import only, no git commit
+
+  tools/import_captured_tests.ps1
+    Ingests browser-captured test records (usx_captured_*.json from the extension) into
+    post_test.ps1. Each record carries provider/entity/query/combo/tier/expectedKeyRef +
+    requestXml; result is computed (PASS when firedMessageType matches expected query).
+    Infers combo from XML when no batch context is present (recovered dex-log entries).
+    Usage: .\import_captured_tests.ps1                      # newest file in ~/Downloads
+           .\import_captured_tests.ps1 -Path <file|dir>
+           .\import_captured_tests.ps1 -Commit              # commit+push after importing
+
+  tools/emit_test_plan.ps1
+    Emits a machine-readable TEST_PLAN.json for the browser driver (__usxRunPlan). Converts
+    a provider JSON + tier into an ordered list of tests: render marker, every combo (set[]
+    fields resolved to form fieldId + test value), negative marker. Final tier adds any[]
+    permutations. Mirrors generate_test_matrix.ps1 logic in JSON format the driver consumes.
+    Usage: .\emit_test_plan.ps1 -Path <json> -Tier Preliminary
+           .\emit_test_plan.ps1 -Path <json> -Tier Final -OutFile <path.plan.json>
+
+  tools/set_tier.ps1
+    Sets the active USx Tenant Testing tier for a provider (Preliminary or Final). Writes
+    tests/.test_tier. Preliminary = render + every set[] combo + negative. Final = Preliminary
+    + any[] permutations + guardrail + deselect tests. Drives which matrix is run, what
+    post_test.ps1 stamps, and what block_entity.ps1 requires before blocking.
+    Usage: .\set_tier.ps1 -Provider <name> -Tier Preliminary|Final
+
+  tools/compare_captures.ps1
+    Validation-only tool (no import). For each record in an automation capture file, finds
+    the matching reference -- a committed test log (default) or a second capture file -- and
+    diffs the ConnectCic Request field set (normalizing Transaction id). Reports MATCH/DIFF
+    per combo. Use to prove automation reproduces the same queries as trusted reference logs.
+    Usage: .\compare_captures.ps1 -CaptureFile <auto.json> -Provider <name>
+           .\compare_captures.ps1 -CaptureFile <rerun.json> -ReferenceFile <ref.json>
+
+  tools/backfill_log_stamps.ps1
+    One-time migration tool. Stamps pre-existing test logs (written before provenance stamping
+    existed) with the JSON Version + Entity Fingerprint + Tier header that post_test.ps1 now
+    writes automatically. Run only for providers whose logs were genuinely run against the
+    CURRENT shipped JSON. Never use for providers whose logs predate a rebuild (those must
+    re-test). Idempotent -- never overwrites an existing stamp.
+    Usage: .\backfill_log_stamps.ps1 -Provider <name> [-DryRun]
+
+  tools/_combo_match.ps1
+    Shared module: CommSys combo enumeration + test-log filename matching. Single source of
+    truth so audit_test_coverage.ps1 and block_entity.ps1 use identical matching rules.
+    Dot-source only; defines functions (Get-CommSysQidms, etc.), no side effects.
+
+  tools/_test_provenance.ps1
+    Shared module: test-log provenance + tier helpers. Single source of truth for reading
+    stamped JSON Version / Entity Fingerprint / Tier from a log header and determining
+    whether a log validly backs a [CONFIRMED] combo. Used by post_test.ps1 (writer),
+    audit_test_coverage.ps1, block_entity.ps1, and backfill_log_stamps.ps1 (readers).
+    Dot-source only; defines functions, no side effects.
+
   tools/map_cad_fields.ps1
     Maps CAD field names to provider JSON fieldIds. Reports MATCH,
     CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects variant.
