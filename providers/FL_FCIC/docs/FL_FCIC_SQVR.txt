@@ -37,22 +37,22 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: Plate, PlateType(PC), PlateYear(current year), VehicleYear, VIN, Make,
           Decal, TitleLien, RegistrationState(no default), ImageIndicator(N)
 
-  FRQ+Decal -- FL DHSMV (Decal Number) [PENDING]
+  FRQ+Decal -- FL DHSMV (Decal Number) [CONFIRMED]
     keyReference: FRQDecalNumber
     set: [DecalNumber, LicensePlateYear]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+Plate -- FL DHSMV Registration (Plate) [PENDING]
+  FRQ+Plate -- FL DHSMV Registration (Plate) [CONFIRMED]
     keyReference: FRQLicensePlateNumber
     set: [LicensePlateNumber]   any: [LicensePlateYear, VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+TitleLien -- FL DHSMV (Title/Lien) [PENDING]
+  FRQ+TitleLien -- FL DHSMV (Title/Lien) [CONFIRMED]
     keyReference: FRQTitleLienInformation
     set: [TitleLienInformation]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  FRQ+VIN -- FL DHSMV Registration (VIN) [PENDING]
+  FRQ+VIN -- FL DHSMV Registration (VIN) [CONFIRMED]
     keyReference: FRQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber]   any: [VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
