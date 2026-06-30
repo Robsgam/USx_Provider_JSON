@@ -1093,7 +1093,7 @@ function Audit-Provider {
                         if ($stateInSetForPrimary) { break }
                     }
                     if (-not $stateInSetForPrimary) {
-                        Out-Note "$qName keyRef $kr (primary ${pfr4b}): OOS Choice requires State but no combo with this primary has State in set[] -- OOS path not a distinct firing combo; add an OOS combo with State in set[] (LIMITATION #36) or verify any[] routing on live test"
+                        Out-Note "$qName keyRef $kr (primary ${pfr4b}): OOS Choice requires State but no combo with this primary has State in set[] -- OOS path not a distinct firing combo; add an OOS combo with State in set[] (LIMITATION #36) or verify any[] routing during USx Tenant Testing"
                     }
                 }
             }

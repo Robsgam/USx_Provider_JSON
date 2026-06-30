@@ -362,7 +362,7 @@ if ($otherPath -and (Test-Path $otherPath)) {
 # ── CHECK 8: Visible-First Mandate (no hidden/auto-populated fields) ──────────
 # KB: BUILD_RULES.txt "Visible-First Mandate". All officer-facing query fields
 # MUST be visible (hidden=false). Do NOT hide or auto-populate a field without
-# explicit user approval or live-test evidence. Documented exceptions are
+# explicit user approval or USx Tenant Testing evidence. Documented exceptions are
 # whitelisted below; anything else is a WARN requiring justification.
 Write-Host ""
 Write-Host "--- CHECK 8: Visible-First Mandate ---" -ForegroundColor Yellow

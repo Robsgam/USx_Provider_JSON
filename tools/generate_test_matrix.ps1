@@ -1116,9 +1116,9 @@ foreach ($q in $qidms) {
 [void]$sb.AppendLine("IMPORT FILE: $fileName")
 
 # ── Preserve existing result column values ──
-# If the matrix file already exists, extract live-test results (e.g. [PASS]) by
+# If the matrix file already exists, extract USx Tenant Testing results (e.g. [PASS]) by
 # sequential position and re-inject them into the freshly-generated content.
-# This prevents build_report re-runs from blanking the live-test record.
+# This prevents build_report re-runs from blanking the USx Tenant Testing record.
 $result = $sb.ToString()
 
 if ($OutFile -and (Test-Path $OutFile)) {

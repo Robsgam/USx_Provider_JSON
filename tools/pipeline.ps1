@@ -149,7 +149,7 @@ if (-not $batchMode) {
                 # Archive them + reset SQVR/STATUS so all logs line up with the new JSON.
                 $resetOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\reset_test_package.ps1" -Provider $provName 2>&1 | Out-String
                 if ($resetOut -match 'RESET:') {
-                    Write-Host "  [TESTS] Version changed -- live test package restarted from Test 1:" -ForegroundColor Yellow
+                    Write-Host "  [TESTS] Version changed -- USx Tenant Testing package restarted from Test 1:" -ForegroundColor Yellow
                     $resetOut -split "`n" | Where-Object { $_ -match '^\s+- ' } | ForEach-Object { Write-Host "       $($_.Trim())" -ForegroundColor DarkYellow }
                 } elseif ($resetOut -match 'ALIGNED:') {
                     Write-Host "  [TESTS] Test package already aligned to current version" -ForegroundColor DarkGray

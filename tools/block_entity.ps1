@@ -1,6 +1,6 @@
 <#
   block_entity.ps1 -- "Block out" a validated entity so a later rebuild for a
-  DIFFERENT entity does not wipe its live test results.
+  DIFFERENT entity does not wipe its USx Tenant Testing results.
 
   An entity may be blocked only when every combo marker in its SQVR section(s)
   is [CONFIRMED] (no [PENDING]/[FAILED]) -- unless -Force. Blocking records the

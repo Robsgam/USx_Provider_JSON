@@ -1,7 +1,7 @@
 <#
-  reset_test_package.ps1 -- Restart the live test package when a provider JSON is rebuilt.
+  reset_test_package.ps1 -- Restart the USx Tenant Testing package when a provider JSON is rebuilt.
 
-  PRINCIPLE: A JSON rebuild (version bump) invalidates prior live test logs -- combo
+  PRINCIPLE: A JSON rebuild (version bump) invalidates prior USx Tenant Testing logs -- combo
   routing, set[]/any[], conditions, or defaults may have changed. Logs from a prior
   version no longer line up with the shipped JSON. On every version change we restart
   testing from Test 1 so all logs match the current JSON.
@@ -223,7 +223,7 @@ if (Test-Path $statusPath) {
             if ($line -match '^\s*\(none yet') { continue }
             if ($line -match '^\s+---\s+-{3,}') {
                 $out.Add($line)
-                $out.Add("  (none yet -- v$version live testing restarted from Test 1; prior logs archived to tests/_archive_pre_v$version/)")
+                $out.Add("  (none yet -- v$version USx Tenant Testing restarted from Test 1; prior logs archived to tests/_archive_pre_v$version/)")
                 continue
             }
             if ($line -match '^\s*$' -or $line -match '^[A-Z]') { $inLive = $false }
@@ -277,7 +277,7 @@ if ($preserveEntities.Count) {
 }
 Say "    - archived $archived prior log(s) -> tests/_archive_pre_v$version/" "Gray"
 Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
-Say "    - cleared $statusCleared STATUS live-test row(s)" "Gray"
+Say "    - cleared $statusCleared STATUS USx-Tenant-Testing row(s)" "Gray"
 Say "    - stamped tests/.test_state.json + .test_version = v$version" "Gray"
 if ($matrixRegenerated) {
     Say "    - regenerated docs/${Provider}_TEST_MATRIX.txt" "Gray"
