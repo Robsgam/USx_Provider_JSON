@@ -15,9 +15,12 @@
   const RX = /ConnectCic|LawEnforcement|<\?xml|MessageType/i;
   const flag = (via, url, body) => {
     try {
+      const u = String(url);
       const has = RX.test(body || '');
-      const rec = { via, url: String(url), hasXml: has, len: (body || '').length };
-      if (has) rec.body = String(body).slice(0, 40000);   // keep XML bodies for capture fallback
+      const isList = /\/queries\/search/i.test(u);    // dex-log list endpoint (carries the ids)
+      const rec = { via, url: u, hasXml: has, len: (body || '').length };
+      if (has) rec.body = String(body).slice(0, 40000);          // XML bodies for capture fallback
+      else if (isList) rec.body = String(body).slice(0, 800000); // list body so we can read ids
       window.__usxNetAll.push(rec);
     } catch (e) {}
   };
