@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBProcessControlNumber (Boat QB+PCN Image=Y (any[] confirmed))
+Date: 2026-06-30 08:36:58
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PCN=674545, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8F4SA3Q1TCP26S7FR8Q10"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><ImageIndicator>Y</ImageIndicator><ProcessControlNumber>674545</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  ProcessControlNumber           674545
+
+NOTES
+-----
+
+
+RESULT: PASS
