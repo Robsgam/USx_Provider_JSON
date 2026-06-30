@@ -110,6 +110,46 @@ function Build-Fills($names, $qidm, $fieldIds, $isOOS) {
     return $fills
 }
 
+# Find combos with NOT_EXISTS conditions and return guardrail descriptors.
+# Uses the emit-script QIDM model ($q.combinations, $q.attributes -- no .config wrapper).
+function Get-GuardrailTests($EntQidms, $FieldIds) {
+    $seen = @{}; $results = @()
+    foreach ($q in $EntQidms) {
+        foreach ($c in $q.combinations) {
+            $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
+            $notExists = @($c.requirements.conditions | Where-Object { $_.operator -eq 'NOT_EXISTS' })
+            foreach ($ne in $notExists) {
+                $excludedFid = @($ne.field)[0]
+                if (-not $excludedFid) { continue }
+                $key = "${kr}|${excludedFid}"
+                if ($seen[$key]) { continue }
+                $seen[$key] = $true
+                $winner = $null; $winnerQ = $null; $winnerKr = $null
+                foreach ($q2 in $EntQidms) {
+                    foreach ($c2 in $q2.combinations) {
+                        $kr2 = if ($c2.keyReference) { $c2.keyReference } else { $c2.keyRef }
+                        if ($kr2 -eq $kr) { continue }
+                        if ($c2.requirements.set | Where-Object { $_ -ieq $excludedFid }) {
+                            $winner = $c2; $winnerQ = $q2; $winnerKr = $kr2; break
+                        }
+                    }
+                    if ($winner) { break }
+                }
+                if (-not $winner) { continue }
+                $results += [PSCustomObject]@{
+                    loserQidm   = $q
+                    loserCombo  = $c
+                    loserKr     = $kr
+                    winnerQidm  = $winnerQ
+                    winnerKr    = $winnerKr
+                    excludedFid = $excludedFid
+                }
+            }
+        }
+    }
+    return $results
+}
+
 # ── Collect QIDMs + QIFs, group by entity ─────────────────────────────────────
 $qidms = Get-CommSysQidms $json
 $qifs  = @($json.bundles.configurations | Where-Object { $_.type -eq 'QUERYINPUTFORM' })
@@ -142,10 +182,25 @@ foreach ($ent in $entities) {
                 n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
                 expectedKeyRef = $kr; kind = 'combo'; tier = 'Preliminary'; fills = $fills
             })
-            # FINAL: any[] permutation (base set[] + optional any[] fields)
+            # FINAL: individual any[] field tests + all-together
             if ($isFinal) {
                 $anyNames = @($c.requirements.any)
                 if ($anyNames.Count -gt 0) {
+                    # One test per individual any[] field
+                    foreach ($af in $anyNames) {
+                        $ff  = Resolve-FieldId $af $q $fieldIds
+                        $val = Get-TestValue $ff $isOOS
+                        if ($null -ne $val -and $val -ne '') {
+                            $n++
+                            $tests.Add([ordered]@{
+                                n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
+                                expectedKeyRef = $kr; kind = 'any-field'; tier = 'Final'
+                                anyField = $ff
+                                fills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
+                            })
+                        }
+                    }
+                    # All any[] fields together
                     $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true
                     if (@($anyFills).Count -gt @($fills).Count) {
                         $n++
@@ -159,6 +214,29 @@ foreach ($ent in $entities) {
         }
     }
 
+    # Guardrail tests (Final only) -- after all combos, before negative
+    if ($isFinal) {
+        foreach ($gr in @(Get-GuardrailTests $entQidms $fieldIds)) {
+            $gFills = @()
+            $exFf  = $fieldIds | Where-Object { $_ -ieq $gr.excludedFid } | Select-Object -First 1
+            $exVal = Get-TestValue ($exFf ?? $gr.excludedFid) $false
+            if ($null -ne $exVal -and $exVal -ne '') {
+                $gFills += [ordered]@{ fieldId = ($exFf ?? $gr.excludedFid); value = "$exVal" }
+            }
+            foreach ($sf in @($gr.loserCombo.requirements.set)) {
+                $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds
+                $val = Get-TestValue $ff $false
+                if ($null -ne $val -and $val -ne '') { $gFills += [ordered]@{ fieldId = $ff; value = "$val" } }
+            }
+            $n++
+            $tests.Add([ordered]@{
+                n = $n; entity = $ent; query = $gr.loserQidm.query
+                comboKeyRef = $null; expectedKeyRef = $gr.winnerKr
+                kind = 'guardrail'; tier = 'Final'; fills = $gFills
+            })
+        }
+    }
+
     # negative marker
     $n++; $tests.Add([ordered]@{ n = $n; entity = $ent; kind = 'negative' })
 }
@@ -167,7 +245,7 @@ $plan = [ordered]@{
     provider = $provName
     version  = $version
     tier     = $Tier
-    note     = if ($isFinal) { 'Final: combos + any[]. Guardrail/deselect tests are matrix-only (run manually).' } else { 'Preliminary: render + every combo (required fields) + negative.' }
+    note     = if ($isFinal) { 'Final: combos + individual any[] per field + all-any[] together + guardrail tests. Deselect tests are matrix-only.' } else { 'Preliminary: render + every combo (required fields) + negative.' }
     testCount = $tests.Count
     tests    = $tests
 }
