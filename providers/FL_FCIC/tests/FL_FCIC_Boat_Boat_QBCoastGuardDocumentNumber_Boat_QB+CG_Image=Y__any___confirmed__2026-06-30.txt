@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBCoastGuardDocumentNumber (Boat QB+CG Image=Y (any[] confirmed))
+Date: 2026-06-30 08:36:50
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+CG=23412342, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8EVTPNPZJQ1XFXM3BABFX"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><ImageIndicator>Y</ImageIndicator><CoastGuardDocumentNumber>23412342</CoastGuardDocumentNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  CoastGuardDocumentNumber       23412342
+
+NOTES
+-----
+
+
+RESULT: PASS
