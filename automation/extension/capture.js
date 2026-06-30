@@ -157,15 +157,15 @@
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
-    for (let attempt = 0; attempt < 3; attempt++) {
-      closePopup(); await L.sleep(300);
-      realClick(link);                    // rich gesture -> triggers the app's data load
-      await waitFor(popupOpen, 4000);     // wait for the popup to actually open
-      const x = await waitForXml(10000);  // then poll the portal for the XML
-      const xx = x || scanNetworkForXml();
-      const closed = closePopup(); await L.sleep(500);
-      if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed, attempt };
-    }
+    // One fast attempt -- synthetic clicks usually do NOT make the app load the XML, so don't
+    // hang the popup open for 30s. For reliable capture use __usxCaptureWatch (real clicks).
+    closePopup(); await L.sleep(250);
+    realClick(link);
+    await waitFor(popupOpen, 2500);
+    const x = await waitForXml(3500);
+    const xx = x || scanNetworkForXml();
+    const closed = closePopup(); await L.sleep(300);
+    if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed };
     return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true };
   }
 
@@ -321,7 +321,36 @@
     return out;
   };
 
+  // WATCHER (recommended for batches): you click each row's "View request and return" (a real
+  // click -- the app only loads the XML for trusted clicks), and this auto-scrapes the popup,
+  // matches it to the driver batch by identifier value, closes it, and accumulates. Click through
+  // all rows, then __usxCaptureWatchStop() downloads the labeled array. One real click per row.
+  window.__usxCaptureWatch = function () {
+    if (window.__usxWatchTimer) { console.log('[USx-WATCH] already watching'); return; }
+    let batch = [];
+    try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+    const captured = []; const seen = new Set();
+    console.log('%c[USx-WATCH]', 'color:#a0a;font-weight:bold', `watching. Click each row's "View request and return"; I capture + close each. Batch has ${batch.length}. Run __usxCaptureWatchStop() when done.`);
+    window.__usxWatchTimer = setInterval(() => {
+      if (!popupOpen()) return;
+      const x = scanForXml() || scanNetworkForXml();
+      if (!x || seen.has(x.transactionId || x.xml.length)) return;
+      seen.add(x.transactionId || x.xml.length);
+      const m = batch.find((b) => idFills(b.fills).some((f) => x.xml.includes('>' + f.value + '<')));
+      const rec = { fields: null, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType, ok: true };
+      captured.push(m ? labelFromManifest(m, rec) : labelRecord(rec));
+      console.log('%c[USx-WATCH]', 'color:#a0a', `captured ${x.messageType} ${x.transactionId} ${m ? '=> ' + m.comboKeyRef : '(unmatched)'} [${captured.length}]`);
+      closePopup();
+    }, 700);
+    window.__usxCaptureWatchStop = function () {
+      clearInterval(window.__usxWatchTimer); window.__usxWatchTimer = null;
+      L.triggerDownload('usx_captured_batch_labeled.json', captured);
+      console.log('%c[USx-WATCH]', 'color:#a0a;font-weight:bold', `stopped. captured ${captured.length}`, captured);
+      return captured;
+    };
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureBatch() = correlate+capture a __usxRunPlan batch; __usxCaptureOpen() = scrape the popup YOU opened; __usxCaptureLatest()/__usxCaptureAll() also available.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. RECOMMENDED batch: __usxCaptureWatch() then click each "View request"; __usxCaptureWatchStop() to save. (__usxCaptureOpen/Latest/All/Batch also available.)');
   }
 })();
