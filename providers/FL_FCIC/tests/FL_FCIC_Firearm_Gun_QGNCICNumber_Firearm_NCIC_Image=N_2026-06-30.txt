@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGNCICNumber (Firearm NCIC Image=N)
+Date: 2026-06-30 08:26:36
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NCIC=45234523, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7PGAK6XE5408CCEZMC9ZQ"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>GunQuery</MessageType><ImageIndicator>N</ImageIndicator><NCICNumber>45234523</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  NCICNumber                     45234523
+
+NOTES
+-----
+
+
+RESULT: PASS
