@@ -120,12 +120,29 @@
     for (let i = 0; i < steps; i++) { const r = scanForXml(); if (r) return r; await L.sleep(250); }
     return null;
   }
+  // Full pointer sequence -- a plain .click() often opens the popup shell but the app does NOT
+  // fetch/render the XML; the richer gesture triggers the real handler + data load.
+  function realClick(el) {
+    if (!el) return;
+    for (const t of ['pointerover', 'pointerenter', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+      try { el.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window })); } catch (e) {}
+    }
+  }
+  async function waitFor(predicate, timeoutMs) {
+    const steps = Math.max(1, Math.floor(timeoutMs / 250));
+    for (let i = 0; i < steps; i++) { if (predicate()) return true; await L.sleep(250); }
+    return false;
+  }
+  function popupOpen() {
+    const s = document.querySelector('.chakra-portal');
+    return !!(s && [...s.querySelectorAll('button')].some((b) => /^close$/i.test((b.textContent || '').trim())));
+  }
   // This modal ignores Escape -- click its real "Close" button (scoped to the portal).
   function closePopup() {
     const scope = document.querySelector('.chakra-portal') || document;
     let btn = [...scope.querySelectorAll('button')].find((b) => /^close$/i.test((b.textContent || '').trim()));
     if (!btn) btn = [...scope.querySelectorAll('button')].find((b) => /close/i.test(b.getAttribute('aria-label') || ''));
-    if (btn) { try { btn.click(); return true; } catch (e) {} }
+    if (btn) { realClick(btn); return true; }
     return false;
   }
   // Fallback: the View click may fetch the XML -- nethook keeps XML response bodies.
@@ -140,13 +157,12 @@
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       closePopup(); await L.sleep(300);
-      const netBefore = (window.__usxNetAll || []).length;
-      link.click();                       // plain click opened the popup in earlier success
-      const x = await waitForXml(10000);  // poll the portal (async render)
-      // network fallback: if the View triggered a fetch carrying the XML, take it from there
-      const xx = x || ((window.__usxNetAll || []).length > netBefore ? scanNetworkForXml() : null);
+      realClick(link);                    // rich gesture -> triggers the app's data load
+      await waitFor(popupOpen, 4000);     // wait for the popup to actually open
+      const x = await waitForXml(10000);  // then poll the portal for the XML
+      const xx = x || scanNetworkForXml();
       const closed = closePopup(); await L.sleep(500);
       if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed, attempt };
     }
