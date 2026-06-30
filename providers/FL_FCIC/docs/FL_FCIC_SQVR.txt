@@ -86,22 +86,22 @@ combo-level camelCase scalar style was inert on the platform.)
   Fields: OLN, Last, First, Middle, Suffix, DOB, Sex,
           RegistrationState(no default), ImageIndicator(Y)
 
-  FDQ+Name -- FL DHSMV Driver License (Name) [PENDING]
+  FDQ+Name -- FL DHSMV Driver License (Name) [CONFIRMED]
     keyReference: FDQName
     set: [BirthDate, NameLast, NameFirst, SexCode]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS, operatorLicenseNumber NOT_EXISTS
 
-  FDQ+OLN -- FL DHSMV Driver License (OLN) [PENDING]
+  FDQ+OLN -- FL DHSMV Driver License (OLN) [CONFIRMED]
     keyReference: FDQOperatorLicenseNumber
     set: [OperatorLicenseNumber]   any: [ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  DQ+Name -- Nlets Driver License (Name, In/Out) [PENDING]
+  DQ+Name -- Nlets Driver License (Name, In/Out) [CONFIRMED]
     keyReference: DQName
     set: [BirthDate, NameLast, NameFirst, SexCode, RegistrationState]   any: [ImageIndicator]
     conditions: operatorLicenseNumber NOT_EXISTS
 
-  DQ+OLN -- Nlets Driver License (OLN, In/Out) [PENDING]
+  DQ+OLN -- Nlets Driver License (OLN, In/Out) [CONFIRMED]
     keyReference: DQOperatorLicenseNumber
     set: [OperatorLicenseNumber, RegistrationState]   any: [ImageIndicator]
     conditions: registrationState EXISTS (v7.0 explicit OOS gate; mirror of FDQ State NOT_EXISTS)

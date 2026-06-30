@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DQOperatorLicenseNumber (T56_DQ_OLN_State_base)
+Date: 2026-06-30 10:29:00
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"Attention":"X","ImageIndicator":"Y","OperatorLicenseNumber":"323423423","RegistrationState":"Missouri"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCENZ03VJ8XJ368B45V6WVM"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KWCENZ03VJ8XJ368B45V6WVM</Id><ImageIndicator>Y</ImageIndicator><State>MO</State><OperatorLicenseNumber>323423423</OperatorLicenseNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCENZ03VJ8XJ368B45V6WVM
+  ImageIndicator                 Y
+  State                          MO
+  OperatorLicenseNumber          323423423
+
+NOTES
+-----
+DQOperatorLicenseNumber: OLN + State=MO. State=MO present in XML as <State>MO</State>. ImageIndicator=Y present (any[]). OOS NLETS DL query.
+
+RESULT: PASS
