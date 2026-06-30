@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBNCICNumber (Boat QB+NCIC Image=N)
+Date: 2026-06-30 08:33:01
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NCIC=43534534, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC813F848QXX9053P8Y32YQ"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><ImageIndicator>N</ImageIndicator><NCICNumber>43534534</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  NCICNumber                     43534534
+
+NOTES
+-----
+
+
+RESULT: PASS
