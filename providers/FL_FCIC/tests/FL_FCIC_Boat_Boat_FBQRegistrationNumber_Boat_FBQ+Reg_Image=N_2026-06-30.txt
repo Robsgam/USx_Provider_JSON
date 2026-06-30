@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQRegistrationNumber (Boat FBQ+Reg Image=N)
+Date: 2026-06-30 08:32:31
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Reg=34234234, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC80BA13ZR5YGDQB2NPP3V2"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><ImageIndicator>N</ImageIndicator><RegistrationNumber>34234234</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  RegistrationNumber             34234234
+
+NOTES
+-----
+
+
+RESULT: PASS
