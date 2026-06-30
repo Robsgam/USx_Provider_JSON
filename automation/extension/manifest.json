@@ -5,13 +5,29 @@
   "description": "Drives the universal-search query form and captures dex-log request XML on the Mark43 USx tenant, feeding the post_test pipeline. In-browser; no cert needed.",
   "content_scripts": [
     {
-      "matches": ["https://*.mark43.com/rms/*"],
+      "matches": [
+        "https://usx-nj-njcjis.mark43.com/rms/*",
+        "https://usx-fl-fcic.mark43.com/rms/*",
+        "https://usx-ca-clets.mark43.com/rms/*",
+        "https://usx-tx-tlets.mark43.com/rms/*",
+        "https://usx-ny-nyspin-ejustice.mark43.com/rms/*",
+        "https://usx-hi-hcjdc-ofml.mark43.com/rms/*",
+        "https://usx-az-azdps.mark43.com/rms/*"
+      ],
       "js": ["nethook.js"],
       "world": "MAIN",
       "run_at": "document_start"
     },
     {
-      "matches": ["https://*.mark43.com/rms/*"],
+      "matches": [
+        "https://usx-nj-njcjis.mark43.com/rms/*",
+        "https://usx-fl-fcic.mark43.com/rms/*",
+        "https://usx-ca-clets.mark43.com/rms/*",
+        "https://usx-tx-tlets.mark43.com/rms/*",
+        "https://usx-ny-nyspin-ejustice.mark43.com/rms/*",
+        "https://usx-hi-hcjdc-ofml.mark43.com/rms/*",
+        "https://usx-az-azdps.mark43.com/rms/*"
+      ],
       "js": ["usx_lib.js", "capture.js", "driver.js", "ui.js"],
       "world": "MAIN",
       "run_at": "document_idle"
