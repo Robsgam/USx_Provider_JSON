@@ -74,13 +74,14 @@
             const count = Array.isArray(tests) ? tests.length : '?';
             const entities = Array.isArray(tests) ? [...new Set(tests.map(t => t.entity).filter(Boolean))] : [];
             planStatus.textContent = `✔ ${f.name.replace(/^.*[/\\]/,'')} — ${count} tests`;
-            document.getElementById('usx-ent').value = entities[0] || '';
+            const sel = document.getElementById('usx-ent'); sel.innerHTML = '';
+            entities.forEach((e, i) => { const o = document.createElement('option'); o.value = e; o.textContent = e; if (i === 0) o.selected = true; sel.appendChild(o); });
             window.__usxLoadedPlan = _loadedPlan;
           } catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '✖ parse error: ' + e.message; }
         };
         r.readAsText(f);
       };
-      const ent = el('input', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box'); ent.id = 'usx-ent'; ent.placeholder = 'entity (e.g. Vehicle)'; p.appendChild(ent);
+      const ent = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px'); ent.id = 'usx-ent'; const entPlaceholder = document.createElement('option'); entPlaceholder.value = ''; entPlaceholder.textContent = '— load plan first —'; entPlaceholder.disabled = true; entPlaceholder.selected = true; ent.appendChild(entPlaceholder); p.appendChild(ent);
       const runStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); runStatus.id = 'usx-run-status'; p.appendChild(runStatus);
       const run = el('button', BTN, '▶ Run Plan');
       run.onclick = async () => {
