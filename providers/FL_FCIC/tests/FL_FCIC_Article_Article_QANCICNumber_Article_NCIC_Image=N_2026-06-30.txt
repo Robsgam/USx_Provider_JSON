@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QANCICNumber (Article NCIC Image=N)
+Date: 2026-06-30 08:21:27
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+NCICNumber=3234423, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7EVYBXXV4J675V8WTSPHV"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><ImageIndicator>N</ImageIndicator><NCICNumber>3234423</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 N
+  NCICNumber                     3234423
+
+NOTES
+-----
+
+
+RESULT: PASS
