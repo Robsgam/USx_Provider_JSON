@@ -22,7 +22,7 @@ $watcher.NotifyFilter     = [System.IO.NotifyFilters]::FileName
 $watcher.EnableRaisingEvents = $true
 
 while ($true) {
-    $ev = $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::Created, 30000)
+    $ev = $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::Created -bor [System.IO.WatcherChangeTypes]::Renamed, 30000)
     if ($ev.TimedOut) { continue }
     $path = Join-Path $downloads $ev.Name
     Write-Host "[WATCH] $($ev.Name) detected -- waiting for Chrome to finish..." -ForegroundColor Yellow
