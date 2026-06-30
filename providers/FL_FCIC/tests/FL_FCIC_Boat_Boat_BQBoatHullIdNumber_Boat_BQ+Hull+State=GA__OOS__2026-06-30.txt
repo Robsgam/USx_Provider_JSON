@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQBoatHullIdNumber (Boat BQ+Hull+State=GA (OOS))
+Date: 2026-06-30 08:39:18
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Hull=FL1234AB56H7, State=Georgia, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8J2ZT7SBWMN5RBCCA2DRJ"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber><State>GA</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  BoatHullIdNumber               FL1234AB56H7
+  State                          GA
+
+NOTES
+-----
+
+
+RESULT: PASS
