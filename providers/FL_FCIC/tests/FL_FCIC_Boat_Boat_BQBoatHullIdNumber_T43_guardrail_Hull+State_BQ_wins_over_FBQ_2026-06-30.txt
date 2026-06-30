@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQBoatHullIdNumber (T43_guardrail_Hull+State_BQ_wins_over_FBQ)
+Date: 2026-06-30 09:34:58
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"BoatHullIdNumber":"45423534","ImageIndicator":"N","RegistrationState":"Georgia"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCBC4NMXFW8EZK15DYQWCY1"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KWCBC4NMXFW8EZK15DYQWCY1</Id><BoatHullIdNumber>45423534</BoatHullIdNumber><State>GA</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCBC4NMXFW8EZK15DYQWCY1
+  BoatHullIdNumber               45423534
+  State                          GA
+
+NOTES
+-----
+
+
+RESULT: PASS

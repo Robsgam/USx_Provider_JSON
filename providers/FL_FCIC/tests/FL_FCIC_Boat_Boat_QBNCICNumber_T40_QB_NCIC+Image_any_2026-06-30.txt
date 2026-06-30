@@ -1,0 +1,35 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBNCICNumber (T40_QB_NCIC+Image_any)
+Date: 2026-06-30 09:34:39
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"ImageIndicator":"Y","NCICNumber":"345234"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCBBBS5KEN5J2CQT60TBK7M"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KWCBBBS5KEN5J2CQT60TBK7M</Id><ImageIndicator>Y</ImageIndicator><NCICNumber>345234</NCICNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCBBBS5KEN5J2CQT60TBK7M
+  ImageIndicator                 Y
+  NCICNumber                     345234
+
+NOTES
+-----
+
+
+RESULT: PASS
