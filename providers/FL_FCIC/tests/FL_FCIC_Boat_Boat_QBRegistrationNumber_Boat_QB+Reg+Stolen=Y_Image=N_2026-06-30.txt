@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBRegistrationNumber (Boat QB+Reg+Stolen=Y Image=N)
+Date: 2026-06-30 08:32:39
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Reg=34234234, Stolen=Y, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC80E67W5AQ3D556NNDVZYV"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator><ImageIndicator>N</ImageIndicator><RegistrationNumber>34234234</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  RegistrationNumber             34234234
+
+NOTES
+-----
+
+
+RESULT: PASS
