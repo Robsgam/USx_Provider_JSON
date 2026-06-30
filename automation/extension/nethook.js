@@ -25,11 +25,18 @@
     } catch (e) {}
   };
 
+  // Remember the /queries/search request so a bulk fetcher can re-issue it per page (no UI paging).
+  const capReq = (url, method, body) => {
+    if (/\/queries\/search/i.test(String(url))) {
+      window.__usxSearchReq = { url: String(url), method: method || 'POST', body: body ? String(body) : null };
+    }
+  };
+
   const of = window.fetch;
   if (of) {
     window.fetch = function (...a) {
       const u = (a[0] && a[0].url) || a[0];
-      try { if (a[1] && a[1].body) flag('fetch-req', u, String(a[1].body)); } catch (e) {}
+      try { capReq(u, a[1] && a[1].method, a[1] && a[1].body); if (a[1] && a[1].body) flag('fetch-req', u, String(a[1].body)); } catch (e) {}
       const p = of.apply(this, a);
       p.then((r) => { try { r.clone().text().then((t) => flag('fetch-resp', u, t)).catch(() => {}); } catch (e) {} }).catch(() => {});
       return p;
@@ -37,9 +44,9 @@
   }
 
   const oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (m, u) { this.__u = u; return oo.apply(this, arguments); };
+  XMLHttpRequest.prototype.open = function (m, u) { this.__u = u; this.__m = m; return oo.apply(this, arguments); };
   XMLHttpRequest.prototype.send = function (b) {
-    try { if (b) flag('xhr-req', this.__u, String(b)); } catch (e) {}
+    try { capReq(this.__u, this.__m, b); if (b) flag('xhr-req', this.__u, String(b)); } catch (e) {}
     this.addEventListener('load', () => { try { flag('xhr-resp', this.__u, this.responseText); } catch (e) {} });
     return os.apply(this, arguments);
   };

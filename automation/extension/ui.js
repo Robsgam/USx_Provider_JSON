@@ -23,6 +23,16 @@
 
     if (kind === 'dex') {
       const cnt = el('div', 'margin-bottom:6px;color:#7cf', 'captured: 0'); cnt.id = 'usx-cnt'; p.appendChild(cnt);
+      // Zero-click API bulk fetch
+      const bulkWrap = el('div', 'margin:4px 0;color:#ccc');
+      const pages = el('input', 'width:42px'); pages.id = 'usx-pages'; pages.type = 'number'; pages.value = '2'; pages.title = 'list pages (~20 queries each)';
+      const since = el('input', 'width:104px;margin-left:4px;box-sizing:border-box'); since.id = 'usx-since'; since.placeholder = 'since YYYY-MM-DD';
+      bulkWrap.appendChild(document.createTextNode('pages ')); bulkWrap.appendChild(pages); bulkWrap.appendChild(since);
+      p.appendChild(bulkWrap);
+      const bulk = el('button', BTN, '⚡ Bulk fetch (API, no clicks)');
+      bulk.onclick = () => { const o = { maxPages: parseInt(document.getElementById('usx-pages').value) || 1 }; const s = document.getElementById('usx-since').value.trim(); if (s) o.since = s; window.__usxBulkFetch(o); };
+      p.appendChild(bulk);
+      p.appendChild(el('div', 'border-top:1px solid #333;margin:6px 0'));
       const rawWrap = el('label', 'display:block;margin:2px 0;color:#ccc');
       const raw = el('input'); raw.type = 'checkbox'; raw.id = 'usx-raw'; raw.checked = true;
       rawWrap.appendChild(raw); rawWrap.appendChild(document.createTextNode(' raw (recover existing entries)')); p.appendChild(rawWrap);

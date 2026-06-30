@@ -369,7 +369,69 @@
   };
   window.__usxCaptureWatchReset = function () { saveCaptured([]); console.log('[USx-WATCH] cleared persisted captures.'); };
 
+  // ZERO-CLICK bulk capture via the federated-search API: list (/queries/search) -> ids ->
+  // GET /queries/<id> for each -> ConnectCic XML -> label -> accumulate -> download. No popups,
+  // no clicking, no UI paging. Filter so we don't pull all 1182: opts.maxPages (list pages of ~20),
+  // opts.since ('2026-06-29' -> only entries created on/after), opts.limit.
+  async function fetchJson(url, init) {
+    const r = await fetch(url, Object.assign({ credentials: 'include', headers: { 'accept': 'application/json' } }, init));
+    const t = await r.text();
+    try { return JSON.parse(t); } catch (e) { return t; }
+  }
+  window.__usxBulkFetch = async function (opts) {
+    opts = opts || {};
+    const maxPages = opts.maxPages || 1;
+    const since = opts.since ? Date.parse(opts.since) : null;
+    const limit = opts.limit || Infinity;
+    const provider = L.providerFromHost();
+
+    // Gather query items -- page the API with the captured search request if available, else use
+    // whatever /queries/search bodies nethook already captured (pages you've viewed).
+    let items = [];
+    const req = window.__usxSearchReq;
+    if (req) {
+      let base = {}; try { base = JSON.parse(req.body || '{}'); } catch (e) {}
+      for (let p = 0; p < maxPages; p++) {
+        const body = Object.assign({}, base); body.pagination = Object.assign({}, base.pagination, { pageNumber: p });
+        const j = await fetchJson(req.url, { method: req.method || 'POST', headers: { 'content-type': 'application/json', 'accept': 'application/json' }, body: JSON.stringify(body) });
+        const qs = (j && j.queries) || [];
+        items.push(...qs);
+        console.log('%c[USx-BULK]', 'color:#fa0', `list page ${p}: ${qs.length} (total so far ${items.length})`);
+        if (qs.length < ((j.pagination && j.pagination.pageSize) || 20)) break;
+      }
+    } else {
+      for (const n of (window.__usxNetAll || []).filter((x) => /queries\/search/i.test(x.url) && x.body)) {
+        try { const j = JSON.parse(n.body); items.push(...(j.queries || [])); } catch (e) {}
+      }
+      console.log('%c[USx-BULK]', 'color:#fa0', `no search-request template; using ${items.length} items from captured list bodies`);
+    }
+
+    // Dedupe by id, date/limit filter (newest-first assumed).
+    const seenId = new Set();
+    items = items.filter((q) => q && q.id && !seenId.has(q.id) && seenId.add(q.id));
+    if (since) items = items.filter((q) => { const t = Date.parse((q.auditMetadata && q.auditMetadata.createdDateUtc) || ''); return t && t >= since; });
+    items = items.slice(0, limit);
+    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `fetching detail for ${items.length} queries...`);
+
+    const out = loadCaptured();
+    const have = new Set(out.map((r) => r.transactionId).filter(Boolean));
+    let added = 0;
+    for (const q of items) {
+      if (have.has(q.id)) continue;
+      let xml = null;
+      try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
+      if (!xml) continue;
+      out.push({ provider, entity: null, query: xml.messageType, combo: null, tier: null, expectedKeyRef: null, messageType: xml.messageType, transactionId: xml.transactionId || q.id, requestXml: xml.xml, formState: null, capturedAt: new Date().toISOString(), ok: true });
+      have.add(q.id); added++;
+      if (added % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${added}...`);
+    }
+    saveCaptured(out);
+    L.triggerDownload('usx_captured_batch_labeled.json', out);
+    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json`);
+    return out;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. RECOMMENDED batch: __usxCaptureWatch() then click each "View request"; __usxCaptureWatchStop() to save. (__usxCaptureOpen/Latest/All/Batch also available.)');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage.');
   }
 })();
