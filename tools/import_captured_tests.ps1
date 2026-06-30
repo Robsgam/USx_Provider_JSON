@@ -19,7 +19,8 @@
 
 param(
     [string]$Path,
-    [switch]$Commit
+    [switch]$Commit,
+    [switch]$KeepSource   # copy (not move) the source capture when archiving
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,6 +80,13 @@ foreach ($file in $files) {
         & (Join-Path $toolDir 'post_test.ps1') @ptArgs | Out-Null
         if ($result -eq 'PASS') { $imported++ } else { $failed++ }
     }
+
+    # Archive the raw capture into the repo (timestamped) for traceability; clears Downloads.
+    $arch = Join-Path $repoRoot 'automation\captures'
+    if (-not (Test-Path $arch)) { New-Item -ItemType Directory -Path $arch -Force | Out-Null }
+    $dest = Join-Path $arch ((Get-Date -Format 'yyyy-MM-dd_HHmmss') + '_' + $file.Name)
+    if ($KeepSource) { Copy-Item $file.FullName $dest -Force } else { Move-Item $file.FullName $dest -Force }
+    Write-Host "  archived -> automation/captures/$(Split-Path $dest -Leaf)" -ForegroundColor Gray
 }
 
 Write-Host ""
@@ -87,7 +95,7 @@ Write-Host "  Imported: $imported PASS / $failed FAIL / $skipped skipped" -Foreg
 if ($Commit -and ($imported + $failed) -gt 0) {
     Push-Location $repoRoot
     try {
-        & git add -- providers 2>&1 | Out-Null
+        & git add -- providers automation/captures 2>&1 | Out-Null
         & git commit -m "Import automated USx Tenant Testing captures ($imported PASS / $failed FAIL)`n`nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>" 2>&1 | Out-Null
         & git push 2>&1 | Out-Null
         Write-Host "  Git: committed + pushed" -ForegroundColor Gray
