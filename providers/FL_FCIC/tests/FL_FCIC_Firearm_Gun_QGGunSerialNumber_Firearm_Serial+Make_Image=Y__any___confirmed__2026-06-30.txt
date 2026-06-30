@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGGunSerialNumber (Firearm Serial+Make Image=Y (any[] confirmed))
+Date: 2026-06-30 08:26:32
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Serial=GUN123, Make=AAL, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7P8YDJ28BT0A7YQ5FGC7C"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>GunQuery</MessageType><ImageIndicator>Y</ImageIndicator><GunSerialNumber>GUN123</GunSerialNumber><GunMake>AAL</GunMake></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  GunSerialNumber                GUN123
+  GunMake                        AAL
+
+NOTES
+-----
+
+
+RESULT: PASS
