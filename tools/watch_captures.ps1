@@ -33,5 +33,6 @@ while ($true) {
     } else {
         & $importScript -Path $path -Commit
     }
-    Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
+    Remove-Item $path -Force -ErrorAction SilentlyContinue
+    Write-Host "[WATCH] deleted capture file. Ready for next fetch.`n" -ForegroundColor Green
 }
