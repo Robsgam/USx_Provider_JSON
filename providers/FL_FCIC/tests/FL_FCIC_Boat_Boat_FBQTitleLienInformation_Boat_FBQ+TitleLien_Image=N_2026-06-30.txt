@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQTitleLienInformation (Boat FBQ+TitleLien Image=N)
+Date: 2026-06-30 08:32:56
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+TitleLien=4534534, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC810KWB6N6ED5Y2719JCY0"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><TitleLienInformation>4534534</TitleLienInformation><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  TitleLienInformation           4534534
+  ImageIndicator                 N
+
+NOTES
+-----
+
+
+RESULT: PASS
