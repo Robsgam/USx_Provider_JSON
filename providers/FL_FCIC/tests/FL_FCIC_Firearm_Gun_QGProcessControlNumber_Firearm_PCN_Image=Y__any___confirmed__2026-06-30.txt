@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGProcessControlNumber (Firearm PCN Image=Y (any[] confirmed))
+Date: 2026-06-30 08:26:49
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PCN=342342, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7PSPQYEZQA3HKFFWX574C"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>GunQuery</MessageType><ImageIndicator>Y</ImageIndicator><ProcessControlNumber>342342</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  ProcessControlNumber           342342
+
+NOTES
+-----
+
+
+RESULT: PASS
