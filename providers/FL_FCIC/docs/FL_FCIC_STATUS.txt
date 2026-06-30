@@ -1,4 +1,4 @@
-﻿FL_FCIC Build Status
+FL_FCIC Build Status
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Current: v7.1 | 92P/0F/0W/0LIM | Updated 2026-06-30
@@ -200,8 +200,8 @@ QB ROUTING LIVE TESTS (2026-05-05, MC instance)
 -------------------------------------------------
   #   Scenario                        Expected KeyRef            Result
   --  ------------------------------  -------------------------  ------
-  ---   2026-06-30 Boat       Boat:BQBoatHullIdNumber PASS     Boat BQ+Hull+State=GA (OOS)
-  ---   2026-06-30 Boat       Boat:QBBoatHullIdNumber PASS     Boat QB+Hull+Stolen=Y Image=Y (any[] confirmed)
+  ---   2026-06-30 Boat       Boat:BQBoatHullIdNumber PASS     T30_BQ_OOS_Hull+State
+  ---   2026-06-30 Boat       Boat:QBBoatHullIdNumber PASS     T34_QB_Hull+Stolen+Image_any
   50  Reg only                        FBQRegistrationNumber      PASS
   51  Reg + Stolen=Y                  QBRegistrationNumber       PASS
   52  Hull + State                    BQBoatHullIdNumber         PASS
@@ -432,7 +432,7 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-29 Article    Article:QAProcessControlNumber PASS     any[] verified: ImageIndicator=Y present alongside ProcessControlNumber
   ---   2026-06-30 Boat       Boat:FBQBoatHullIdNumber PASS     T48 FBQ Hull>Reg guardrail PASS: Hull+Reg in-state form, Reg absent from XML (v7.1 any[] fix confirmed)
   ---   2026-06-30 Boat       Boat:FBQBoatHullIdNumber PASS     any[] verified: ImageIndicator=Y present alongside BoatHullIdNumber
-  ---   2026-06-30 Boat       Boat:FBQRegistrationNumber PASS     FBQ+Reg Image=N: RegistrationNumber+ImageIndicator in XML
+  ---   2026-06-30 Boat       Boat:BQRegistrationNumber PASS     T31_BQ_OOS_Reg+State
   ---   2026-06-30 Boat       Boat:FBQRegistrationNumber PASS     any[] verified: ImageIndicator=Y present alongside RegistrationNumber
   ---   2026-06-30 Boat       Boat:FBQDecalNumber  PASS     FBQ+Decal Image=N: DecalNumber+ImageIndicator in XML
   ---   2026-06-30 Boat       Boat:FBQDecalNumber  PASS     any[] verified: ImageIndicator=Y present alongside DecalNumber
@@ -444,6 +444,9 @@ LIVE TEST RESULTS -- BASE (post_test.ps1)
   ---   2026-06-30 Boat       Boat:Negative        PASS     Empty form -- no Send button / no request fired
   ---   2026-06-30 Boat       Boat:FBQTitleLienInformation PASS     FBQ+TitleLien Image=N: TitleLienInformation+ImageIndicator in XML
   ---   2026-06-30 Boat       Boat:FBQTitleLienInformation PASS     any[] verified: ImageIndicator=Y present alongside TitleLienInformation
+  ---   2026-06-30 Boat       Boat:BQName          PASS     T32_BQ_OOS_Name+DOB+State
+  ---   2026-06-30 Boat       Boat:QBNCICNumber    PASS     T39_QB_NCIC_base
+  ---   2026-06-30 Boat       Boat:QBProcessControlNumber PASS     T41_QB_PCN_base
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
