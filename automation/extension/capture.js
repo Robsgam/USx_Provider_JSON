@@ -106,33 +106,50 @@
     if (!m) return null;
     try { return JSON.parse(m[0]); } catch (e) { return null; }
   }
-  async function closeDialog() {
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
-    await L.sleep(250);
-    if ([...document.querySelectorAll('textarea')].some((t) => /ConnectCic/.test(t.value || t.textContent || ''))) {
-      const x = [...document.querySelectorAll('button')]
-        .find((b) => /^(close|cancel)$/i.test((b.textContent || '').trim()) || /close/i.test(b.getAttribute('aria-label') || ''));
-      if (x) { try { x.click(); } catch (e) {} await L.sleep(200); }
+  // Scan the (light) DOM -- including the Chakra portal where the popup renders.
+  function scanForXml() {
+    for (const el of document.querySelectorAll('textarea, pre, code, div, td, span, section')) {
+      const r = L.extractConnectCicXml(el.value || el.textContent || '');
+      if (r) return r;
     }
+    return null;
+  }
+  // The popup loads its XML async -- poll instead of a fixed wait.
+  async function waitForXml(timeoutMs) {
+    const steps = Math.max(1, Math.floor(timeoutMs / 250));
+    for (let i = 0; i < steps; i++) { const r = scanForXml(); if (r) return r; await L.sleep(250); }
+    return null;
+  }
+  // This modal ignores Escape -- click its real "Close" button (scoped to the portal).
+  function closePopup() {
+    const scope = document.querySelector('.chakra-portal') || document;
+    let btn = [...scope.querySelectorAll('button')].find((b) => /^close$/i.test((b.textContent || '').trim()));
+    if (!btn) btn = [...scope.querySelectorAll('button')].find((b) => /close/i.test(b.getAttribute('aria-label') || ''));
+    if (btn) { try { btn.click(); return true; } catch (e) {} }
+    return false;
   }
   async function captureRowEl(rowEl) {
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
     link.click();
-    await L.sleep(500);
-    let x = null;
-    for (const ta of document.querySelectorAll('textarea')) { x = L.extractConnectCicXml(ta.value || ta.textContent || ''); if (x) break; }
-    if (!x) { for (const el of document.querySelectorAll('div,pre,code')) { x = L.extractConnectCicXml(el.textContent || ''); if (x) break; } }
-    await closeDialog();
-    return { ok: !!x, fields, requestXml: x ? x.xml : null, transactionId: x ? x.transactionId : null, messageType: x ? x.messageType : null };
+    const x = await waitForXml(8000);
+    const closed = closePopup();
+    await L.sleep(400);
+    return { ok: !!x, fields, requestXml: x ? x.xml : null, transactionId: x ? x.transactionId : null, messageType: x ? x.messageType : null, popupClosed: closed };
   }
 
-  // Test ONE row (default: the first list row).
+  // Data rows only (skip the header: keep rows that actually have a "View request" link).
+  function dataRows() {
+    return [...document.querySelectorAll('.arc-table_row')]
+      .filter((r) => [...r.querySelectorAll('button,a')].some((b) => /view request/i.test(b.textContent || '')));
+  }
+
+  // Test ONE row (default: the first data row).
   window.__usxCaptureRow = async function (index) {
-    const rows = [...document.querySelectorAll('.arc-table_row')];
+    const rows = dataRows();
     const row = rows[index || 0];
-    if (!row) { console.warn('[USx-CAP] no row at index', index || 0); return null; }
+    if (!row) { console.warn('[USx-CAP] no data row at index', index || 0, '(', rows.length, 'data rows)'); return null; }
     const rec = await captureRowEl(row);
     console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'row capture:', rec);
     return rec;
@@ -145,7 +162,7 @@
     const maxPages = opts.maxPages || 1;
     const out = []; let page = 0;
     while (page < maxPages) {
-      const rows = [...document.querySelectorAll('.arc-table_row')];
+      const rows = dataRows();
       for (const r of rows) {
         if (filter && !(r.textContent || '').includes(filter)) continue;
         out.push(await captureRowEl(r));
