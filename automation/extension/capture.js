@@ -120,27 +120,49 @@
     for (let i = 0; i < steps; i++) { const r = scanForXml(); if (r) return r; await L.sleep(250); }
     return null;
   }
+  // Full pointer sequence -- React/Chakra controls often need mousedown, not just .click().
+  function realClick(el) {
+    if (!el) return;
+    for (const t of ['pointerdown', 'mousedown', 'mouseup', 'click']) {
+      try { el.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window })); } catch (e) {}
+    }
+  }
   // This modal ignores Escape -- click its real "Close" button (scoped to the portal).
   function closePopup() {
     const scope = document.querySelector('.chakra-portal') || document;
     let btn = [...scope.querySelectorAll('button')].find((b) => /^close$/i.test((b.textContent || '').trim()));
     if (!btn) btn = [...scope.querySelectorAll('button')].find((b) => /close/i.test(b.getAttribute('aria-label') || ''));
-    if (btn) { try { btn.click(); return true; } catch (e) {} }
+    if (btn) { realClick(btn); return true; }
     return false;
+  }
+  async function waitFor(predicate, timeoutMs) {
+    const steps = Math.max(1, Math.floor(timeoutMs / 250));
+    for (let i = 0; i < steps; i++) { const v = predicate(); if (v) return v; await L.sleep(250); }
+    return null;
+  }
+  function findCopyButton() {
+    const scope = document.querySelector('.chakra-portal') || document;
+    return [...scope.querySelectorAll('button')].find((b) => /^copy$/i.test((b.textContent || '').trim())) || null;
   }
   async function captureRowEl(rowEl) {
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
-    // Retry once -- the popup occasionally doesn't render its XML within the window.
     for (let attempt = 0; attempt < 2; attempt++) {
-      closePopup();             // ensure nothing stale is open
-      await L.sleep(200);
-      link.click();
-      const x = await waitForXml(8000);
-      const closed = closePopup();
-      await L.sleep(500);
-      if (x) return { ok: true, fields, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType, popupClosed: closed, attempt };
+      closePopup(); await L.sleep(250);
+      window.__usxCopied = null;
+      realClick(link);
+      // Prefer the app's Copy button (its own serializer) -- intercepted via nethook.
+      const copyBtn = await waitFor(findCopyButton, 8000);
+      let x = null;
+      if (copyBtn) {
+        realClick(copyBtn);
+        const copied = await waitFor(() => window.__usxCopied, 2500);
+        if (copied) x = L.extractConnectCicXml(copied);
+      }
+      if (!x) x = scanForXml();          // fallback: DOM scrape of the portal
+      const closed = closePopup(); await L.sleep(500);
+      if (x) return { ok: true, fields, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType, via: copyBtn && window.__usxCopied ? 'copy' : 'scrape', popupClosed: closed, attempt };
     }
     return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true };
   }
