@@ -419,19 +419,44 @@
     items = items.slice(0, limit);
     console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `fetching detail for ${items.length} queries...`);
 
+    let batch = [];
+    try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+
     const out = loadCaptured();
     const have = new Set(out.map((r) => r.transactionId).filter(Boolean));
-    let added = 0;
+    const fresh = []; // new items collected this run, in API order (newest-first)
     for (const q of items) {
       if (have.has(q.id)) continue;
       let xml = null;
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
-      out.push({ provider, entity: null, query: xml.messageType, combo: null, tier: null, expectedKeyRef: null, messageType: xml.messageType, transactionId: xml.transactionId || q.id, requestXml: xml.xml, formState: q.parsedRawQuery || null, capturedAt: new Date().toISOString(), ok: true });
-      have.add(q.id); added++;
-      if (maxNew !== null && added >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
-      if (added % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${added}...`);
+      fresh.push({ qId: q.id, formState: q.parsedRawQuery || null, xml });
+      have.add(q.id);
+      if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
+      if (fresh.length % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${fresh.length}...`);
     }
+    // Correlate with manifest: manifest is oldest-first; API is newest-first.
+    // If counts match exactly, reverse-pair. Otherwise fall back to unlabeled.
+    const usedM = new Set();
+    for (let i = 0; i < fresh.length; i++) {
+      const item = fresh[i];
+      let m = null;
+      if (batch.length === fresh.length) {
+        // Order-based: manifest[N-1-i] ↔ fresh[i] (newest API entry = last manifest entry)
+        const mi = batch.length - 1 - i;
+        if (!usedM.has(mi)) { m = batch[mi]; usedM.add(mi); }
+      } else {
+        // Try identifier-field match (value appears literally in XML)
+        const bi = batch.findIndex((b, idx) => !usedM.has(idx) && idFills(b.fills || []).some((f) => item.xml.xml.includes('>' + f.value + '<')));
+        if (bi >= 0) { m = batch[bi]; usedM.add(bi); }
+      }
+      if (m) {
+        out.push(labelFromManifest(m, { fields: null, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: item.xml.messageType, ok: true }));
+      } else {
+        out.push({ provider, entity: null, query: item.xml.messageType, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: item.xml.messageType, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, capturedAt: new Date().toISOString(), ok: true });
+      }
+    }
+    const added = fresh.length;
     saveCaptured(out);
     L.triggerDownload('usx_captured_batch_labeled.json', out);
     console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json`);

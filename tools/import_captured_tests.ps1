@@ -46,13 +46,15 @@ function Get-ProviderJsonCached($provider) {
     $o = $null; if ($jp) { try { $o = Get-Content $jp -Raw -Encoding UTF8 | ConvertFrom-Json } catch {} }
     $script:jsonCache[$provider] = $o; return $o
 }
-function Infer-ComboFromXml($provider, $query, $xml) {
+function Get-QidmForQuery($provider, $query) {
     $o = Get-ProviderJsonCached $provider; if (-not $o) { return $null }
-    $qidm = $null
     foreach ($b in $o.bundles) { foreach ($c in $b.configurations) {
-        if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and $c.handlerFunction -eq 'CommsysTransactionRequestHandler' -and $c.query -eq $query) { $qidm = $c; break }
-    } if ($qidm) { break } }
-    if (-not $qidm) { return $null }
+        if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and $c.handlerFunction -eq 'CommsysTransactionRequestHandler' -and $c.query -eq $query) { return $c }
+    } }
+    return $null
+}
+function Infer-ComboFromXml($provider, $query, $xml) {
+    $qidm = Get-QidmForQuery $provider $query; if (-not $qidm) { return $null }
     $present = @{}; foreach ($mt in [regex]::Matches($xml, '<(\w+)>')) { $present[$mt.Groups[1].Value.ToLower()] = $true }
     $best = $null; $bestScore = -1
     foreach ($c in $qidm.combinations) {
@@ -68,6 +70,26 @@ function Infer-ComboFromXml($provider, $query, $xml) {
     }
     if ($best) { if ($best.keyReference) { return $best.keyReference } else { return $best.keyRef } }
     return $null
+}
+# Infer whether a captured record is a base combo, any-field, or any test by checking
+# which optional (any[]) fields appear in the XML beyond the required set[] fields.
+# Returns @{ kind; anyField } or null if QIDM / combo not found.
+function Infer-TestKindFromXml($provider, $query, $inferredCombo, $xml) {
+    $qidm = Get-QidmForQuery $provider $query; if (-not $qidm) { return $null }
+    $comboObj = $qidm.combinations | Where-Object { $kr = if ($_.keyReference) { $_.keyReference } else { $_.keyRef }; $kr -eq $inferredCombo } | Select-Object -First 1
+    if (-not $comboObj) { return $null }
+    $anyNames = @($comboObj.requirements.any); if (-not $anyNames) { return @{ kind='combo'; anyField=$null } }
+    $present = @{}; foreach ($mt in [regex]::Matches($xml, '<(\w+)>')) { $present[$mt.Groups[1].Value.ToLower()] = $true }
+    $optPresent = @()
+    foreach ($af in $anyNames) {
+        $elem = $af
+        $attr = $qidm.attributes | Where-Object { $_.name -ieq $af -or (@($_.sourceField) -contains $af) } | Select-Object -First 1
+        if ($attr) { $elem = $attr.name }
+        if ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($af.ToLower())) { $optPresent += $af }
+    }
+    if ($optPresent.Count -eq 0) { return @{ kind='combo'; anyField=$null } }
+    if ($optPresent.Count -eq 1) { return @{ kind='any-field'; anyField=$optPresent[0] } }
+    return @{ kind='any'; anyField=$null }
 }
 
 # --- Resolve input files ---
@@ -105,11 +127,17 @@ foreach ($file in $files) {
         # PASS when the query that actually fired (messageType in the XML) matches intent.
         $fired = $r.messageType
         $result = if ($fired -and ($fired -eq $r.query)) { 'PASS' } else { 'FAIL' }
+        # Resolve test kind: use explicit kind from record (labeled capture), else infer from XML.
+        $testKind = $r.kind; $testAnyField = $r.anyField
+        if (-not $testKind -and $combo -and $r.requestXml) {
+            $ki = Infer-TestKindFromXml $r.provider $r.query $combo $r.requestXml
+            if ($ki) { $testKind = $ki.kind; $testAnyField = $ki.anyField }
+        }
         # Unique combo label per test kind so any-field tests don't overwrite the base combo log.
         $comboLabel = $combo
-        if ($r.kind -eq 'any-field' -and $r.anyField) { $comboLabel = "${combo}_af_$($r.anyField)" }
-        elseif ($r.kind -eq 'any') { $comboLabel = "${combo}_any" }
-        $note = "Automated capture (txId $($r.transactionId)). kind=$($r.kind); anyField=$($r.anyField); expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
+        if ($testKind -eq 'any-field' -and $testAnyField) { $comboLabel = "${combo}_af_${testAnyField}" }
+        elseif ($testKind -eq 'any') { $comboLabel = "${combo}_any" }
+        $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
         $desc = "$comboLabel (auto)"
 
         $ptArgs = @{
