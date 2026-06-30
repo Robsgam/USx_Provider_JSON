@@ -1,0 +1,31 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQName (Boat BQ+Name+State=GA (OOS): Name=DOE,JON date=19900115)
+Date: 2026-06-30 08:39:27
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Last=doe, First=jon, DOB=1990-01-15, State=Georgia
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8JVFFGZX3RY99WXTNQVPW"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><State>GA</State><BirthDate>19900115</BirthDate><Name>DOE, JON</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  State                          GA
+  BirthDate                      19900115
+  Name                           DOE, JON
+
+NOTES
+-----
+
+
+RESULT: PASS
