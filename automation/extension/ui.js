@@ -89,9 +89,9 @@
         if (!plan) { alert('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
         if (typeof window.__usxRunPlan !== 'function') { alert('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
         const entity = (document.getElementById('usx-ent').value || '').trim();
-        const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any') && (!entity || t.entity === entity));
-        if (!tests.length) { alert('No combo tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
-        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} combos for ${entity || 'all'}…`;
+        const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field') && (!entity || t.entity === entity));
+        if (!tests.length) { alert('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
+        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}…`;
         run.disabled = true;
         try {
           const results = await window.__usxRunPlan(plan, entity || undefined);

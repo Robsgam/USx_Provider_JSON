@@ -105,12 +105,16 @@ foreach ($file in $files) {
         # PASS when the query that actually fired (messageType in the XML) matches intent.
         $fired = $r.messageType
         $result = if ($fired -and ($fired -eq $r.query)) { 'PASS' } else { 'FAIL' }
-        $note = "Automated capture (txId $($r.transactionId)). expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
-        $desc = "$combo (auto)"
+        # Unique combo label per test kind so any-field tests don't overwrite the base combo log.
+        $comboLabel = $combo
+        if ($r.kind -eq 'any-field' -and $r.anyField) { $comboLabel = "${combo}_af_$($r.anyField)" }
+        elseif ($r.kind -eq 'any') { $comboLabel = "${combo}_any" }
+        $note = "Automated capture (txId $($r.transactionId)). kind=$($r.kind); anyField=$($r.anyField); expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
+        $desc = "$comboLabel (auto)"
 
         $ptArgs = @{
             Provider = $r.provider; Entity = $entity; Query = $r.query
-            Combo = $combo; Result = $result; Description = $desc
+            Combo = $comboLabel; Result = $result; Description = $desc
             XmlRequest = $r.requestXml; Notes = $note; NoCommit = $true
         }
         if ($r.formState) { $ptArgs['FormState'] = $r.formState }

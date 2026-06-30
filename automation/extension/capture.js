@@ -263,6 +263,7 @@
     return {
       provider: m.provider || L.providerFromHost(), entity: m.entity, query: m.query || rec.messageType,
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
+      kind: m.kind || null, anyField: m.anyField || null,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
       formState: rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null,
       capturedAt: new Date().toISOString(), ok: rec.ok

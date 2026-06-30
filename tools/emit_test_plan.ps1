@@ -245,7 +245,7 @@ $plan = [ordered]@{
     provider = $provName
     version  = $version
     tier     = $Tier
-    note     = if ($isFinal) { 'Final: combos + individual any[] per field + all-any[] together + guardrail tests. Deselect tests are matrix-only.' } else { 'Preliminary: render + every combo (required fields) + negative.' }
+    note     = if ($isFinal) { 'Final: combos + individual any[] per field + all-any[] together + guardrail tests (kind=guardrail, manual). render/negative/guardrail are markers only — driver auto-submits combo/any-field/any kinds.' } else { 'Preliminary: render + every combo (required fields) + negative.' }
     testCount = $tests.Count
     tests    = $tests
 }

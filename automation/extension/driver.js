@@ -71,7 +71,7 @@
     const dField = opts.fieldDelay || 450;   // pause after each field
     const dSettle = opts.settle || 900;      // pause after all fields, before submit (let autoSelect enable)
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
-    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entityFilter || t.entity === entityFilter));
+    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
     const manifest = []; const results = [];
     for (const t of tests) {
@@ -80,7 +80,7 @@
       const fills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
       for (const f of fills) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(dField); }
       await L.sleep(dSettle);
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, fills: t.fills, n: t.n });
+      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: t.fills, n: t.n });
       const sent = clickSendClear();
       results.push({ n: t.n, combo: t.comboKeyRef, filled: fr.every((r) => r.ok), sent });
       console.log('%c[USx-DRV]', 'color:#06c', `T${t.n} ${t.entity} ${t.comboKeyRef}: ${sent.ok ? 'submitted' : 'NOT submitted (' + sent.err + ')'}`);
