@@ -392,12 +392,16 @@
     if (req) {
       let base = {}; try { base = JSON.parse(req.body || '{}'); } catch (e) {}
       for (let p = 0; p < maxPages; p++) {
-        const body = Object.assign({}, base); body.pagination = Object.assign({}, base.pagination, { pageNumber: p });
+        const body = Object.assign({}, base);
+        body.pageable = Object.assign({}, base.pageable, { page: p });          // the real pager
+        body.pagination = Object.assign({}, base.pagination, { pageNumber: p }); // belt-and-suspenders
         const j = await fetchJson(req.url, { method: req.method || 'POST', headers: { 'content-type': 'application/json', 'accept': 'application/json' }, body: JSON.stringify(body) });
         const qs = (j && j.queries) || [];
         items.push(...qs);
         console.log('%c[USx-BULK]', 'color:#fa0', `list page ${p}: ${qs.length} (total so far ${items.length})`);
         if (qs.length < ((j.pagination && j.pagination.pageSize) || 20)) break;
+        // sorted createdDateUtc,desc -> once a page's oldest row is before `since`, stop paging.
+        if (since) { const last = qs[qs.length - 1]; const t = Date.parse((last.auditMetadata && last.auditMetadata.createdDateUtc) || ''); if (t && t < since) break; }
       }
     } else {
       for (const n of (window.__usxNetAll || []).filter((x) => /queries\/search/i.test(x.url) && x.body)) {
