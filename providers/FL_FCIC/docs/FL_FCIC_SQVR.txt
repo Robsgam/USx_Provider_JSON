@@ -134,14 +134,14 @@ combo-level camelCase scalar style was inert on the platform.)
   out of state and would require the destination to be something other than FL."
   Devdoc: State is the only Mandatory field; both combos (Out).
 
-  KQ+Name -- Nlets OOS Driver History (Name) [PENDING]
+  KQ+Name -- Nlets OOS Driver History (Name) [CONFIRMED]
     keyReference: KQName
     set: [BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH]
     any: [PurposeCodeDH, AttentionDH]
     conditions: operatorLicenseNumberDH NOT_EXISTS  (no NOT_EQUALS FL -- value comparison poisons the
                 array; non-FL destination is a LIMITATION, not config-enforced)
 
-  KQ+OLN -- Nlets OOS Driver History (OLN) [PENDING]
+  KQ+OLN -- Nlets OOS Driver History (OLN) [CONFIRMED]
     keyReference: KQOperatorLicenseNumber
     set: [OperatorLicenseNumberDH, RegistrationStateDH]
     any: [PurposeCodeDH, AttentionDH]

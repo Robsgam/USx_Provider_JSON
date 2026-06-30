@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQName (T64_KQ_Name_base)
+Date: 2026-06-30 10:46:15
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"Attention":"X","BirthDateDH":"1985-01-01","ImageIndicator":"Y","NameFirstDH":"first","NameLastDH":"last","RegistrationStateDH":"Iowa","SexCodeDH":"Male","purposeCodeDH":"c"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCF1RQ2XJZ3YDM8PRYJVE81"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KWCF1RQ2XJZ3YDM8PRYJVE81</Id><State>IA</State><Attention>SGAMBELLONE R</Attention><SexCode>M</SexCode><PurposeCode>C</PurposeCode><BirthDate>19850101</BirthDate><Name>LAST, FIRST</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCF1RQ2XJZ3YDM8PRYJVE81
+  State                          IA
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  PurposeCode                    C
+  BirthDate                      19850101
+  Name                           LAST, FIRST
+
+NOTES
+-----
+KQName: Name+DOB+Sex-DH + State-DH=IA, no OLN-DH. Name=LAST, FIRST. SexCode=M. BirthDate=19850101. State=IA. PurposeCode=C + Attention=SGAMBELLONE R (any[]).
+
+RESULT: PASS

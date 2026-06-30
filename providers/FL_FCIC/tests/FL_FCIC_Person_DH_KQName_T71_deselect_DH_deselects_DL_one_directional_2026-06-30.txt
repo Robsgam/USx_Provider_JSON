@@ -1,0 +1,39 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQName (T71_deselect_DH_deselects_DL_one_directional)
+Date: 2026-06-30 10:46:38
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"Attention":"X","BirthDateDH":"1985-01-01","ImageIndicator":"Y","NameFirstDH":"first","NameLastDH":"last","OperatorLicenseNumber":"869832423","RegistrationStateDH":"Iowa","SexCodeDH":"Male","purposeCodeDH":"c"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCF20SCGNJ7CXF7KCC0VH9Q"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverHistoryQuery</MessageType><Id>01KWCF20SCGNJ7CXF7KCC0VH9Q</Id><State>IA</State><Attention>SGAMBELLONE R</Attention><SexCode>M</SexCode><PurposeCode>C</PurposeCode><BirthDate>19850101</BirthDate><Name>LAST, FIRST</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCF20SCGNJ7CXF7KCC0VH9Q
+  State                          IA
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  PurposeCode                    C
+  BirthDate                      19850101
+  Name                           LAST, FIRST
+
+NOTES
+-----
+Deselect behavior: DH (KQName) + DL (FDQOLNr) co-fired when DH filled first then DL entered. queriesToDeselect=[DriverLicenseQuery] on KQ fires on DH-checkbox-check event (DL deselected), but DL re-checks when user enters DL data afterward. One-directional deselect is expected and consistent with HI/TX/CA_CLETS/NY. DL co-fired: DriverLicenseQuery FDQOperatorLicenseNumber (id=01KWCF20PVC4V5N7E6W1Z9JV91).
+
+RESULT: PASS
