@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQRegistrationNumber (Boat BQ+Reg+State=GA (OOS))
+Date: 2026-06-30 08:39:22
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Reg=321231, State=Georgia, Image=N
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8JDQSJW2V8ECZ6QP2J3G4"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><State>GA</State><RegistrationNumber>321231</RegistrationNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  State                          GA
+  RegistrationNumber             321231
+
+NOTES
+-----
+
+
+RESULT: PASS
