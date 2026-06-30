@@ -9,7 +9,7 @@
 //
 //  USAGE in the Console on /universal-search (entity form rendered):
 //    __usxRunOne({
-//      provider:'NJ_NJCJIS', entity:'Vehicle', query:'VehicleRegistrationQuery',
+//      provider:L.providerFromHost(), entity:'Vehicle', query:'VehicleRegistrationQuery',
 //      combo:'RQ+Plate', tier:'Preliminary', expectedKeyRef:'RQ',
 //      fills:[{fieldId:'LicensePlateNumber', value:'TEST123'}]
 //    })
@@ -32,7 +32,7 @@
     // Stash context for the capture page (minus huge data); newest wins.
     try {
       localStorage.setItem('__usx_pending', JSON.stringify({
-        provider: desc.provider || 'NJ_NJCJIS',
+        provider: desc.provider || L.providerFromHost(),
         entity: desc.entity || null,
         query: desc.query || null,
         combo: desc.combo || null,

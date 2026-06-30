@@ -34,7 +34,7 @@
     try { pending = JSON.parse(localStorage.getItem('__usx_pending') || '{}'); } catch (e) {}
 
     const rec = {
-      provider: pending.provider || 'NJ_NJCJIS',
+      provider: pending.provider || L.providerFromHost(),
       entity: pending.entity || null,
       query: pending.query || found.messageType || null,
       combo: pending.combo || null,
@@ -177,7 +177,7 @@
     const fs = rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ')
       : (Array.isArray(pending.fills) ? pending.fills.map((f) => f.fieldId + '=' + f.value).join(', ') : null);
     return {
-      provider: pending.provider || 'NJ_NJCJIS',
+      provider: pending.provider || L.providerFromHost(),
       entity: pending.entity || null,
       query: pending.query || rec.messageType || null,
       combo: pending.combo || null,
@@ -261,7 +261,7 @@
   // by identifier field values, capture each row's XML, label, and download one array for import.
   function labelFromManifest(m, rec) {
     return {
-      provider: m.provider || 'NJ_NJCJIS', entity: m.entity, query: m.query || rec.messageType,
+      provider: m.provider || L.providerFromHost(), entity: m.entity, query: m.query || rec.messageType,
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
       formState: rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null,
@@ -350,7 +350,7 @@
       } else {
         // XML-derived label (recovers arbitrary existing dex-log entries); import infers entity+combo.
         labeled = {
-          provider: 'NJ_NJCJIS', entity: null, query: x.messageType, combo: null, tier: null, expectedKeyRef: null,
+          provider: L.providerFromHost(), entity: null, query: x.messageType, combo: null, tier: null, expectedKeyRef: null,
           messageType: x.messageType, transactionId: x.transactionId, requestXml: x.xml, formState: null,
           capturedAt: new Date().toISOString(), ok: true
         };

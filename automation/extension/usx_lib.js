@@ -106,6 +106,13 @@
     document.body.appendChild(a); a.click(); a.remove();
   }
 
-  window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload };
+  // Derive the provider folder name from the tenant hostname: usx-nj-njcjis -> NJ_NJCJIS,
+  // usx-fl-fcic -> FL_FCIC. Lets one extension serve every USx tenant.
+  function providerFromHost() {
+    const m = location.hostname.match(/usx-([a-z0-9-]+)\.mark43/i);
+    return m ? m[1].toUpperCase().replace(/-/g, '_') : 'UNKNOWN';
+  }
+
+  window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost };
   console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded.');
 })();

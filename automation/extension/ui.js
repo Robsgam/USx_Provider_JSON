@@ -15,7 +15,7 @@
   function build(kind) {
     const p = el('div');
     p.id = 'usx-panel'; p.dataset.kind = kind;
-    p.style.cssText = 'position:fixed;z-index:2147483647;bottom:16px;right:16px;background:#141414;color:#eee;font:12px/1.4 system-ui;padding:10px 12px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);width:248px;opacity:.96';
+    p.style.cssText = 'position:fixed;z-index:2147483647;top:12px;left:12px;background:#141414;color:#eee;font:12px/1.4 system-ui;padding:9px 11px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);width:230px;opacity:.94';
     const head = el('div', 'display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px');
     head.appendChild(el('span', null, 'USx ' + (kind === 'dex' ? 'Capture' : 'Driver')));
     const hide = el('span', 'cursor:pointer;color:#888', '✕'); hide.title = 'hide'; hide.onclick = () => p.remove();
