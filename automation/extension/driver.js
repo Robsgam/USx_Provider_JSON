@@ -64,20 +64,25 @@
   // (emit_test_plan.ps1); entityFilter = e.g. 'Vehicle'. Fills each combo's fields (auto-selects
   // the query), clicks "Send & Clear Form" (clears for the next), and records a batch manifest in
   // localStorage so the capture page can correlate each dex-log row back to its combo.
-  window.__usxRunPlan = async function (plan, entityFilter) {
+  window.__usxRunPlan = async function (plan, entityFilter, opts) {
     if (!plan || !Array.isArray(plan.tests)) { console.error('[USx-DRV] pass the TEST_PLAN object: __usxRunPlan(plan, "Vehicle")'); return; }
+    opts = opts || {};
+    // Deliberately unhurried so React state + autoSelect keep up. Tune via opts if needed.
+    const dField = opts.fieldDelay || 450;   // pause after each field
+    const dSettle = opts.settle || 900;      // pause after all fields, before submit (let autoSelect enable)
+    const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
     const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
     const manifest = []; const results = [];
     for (const t of tests) {
       const fr = [];
-      for (const f of (t.fills || [])) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(150); }
-      await L.sleep(350);
+      for (const f of (t.fills || [])) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(dField); }
+      await L.sleep(dSettle);
       manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, fills: t.fills, n: t.n });
       const sent = clickSendClear();
       results.push({ n: t.n, combo: t.comboKeyRef, filled: fr.every((r) => r.ok), sent });
       console.log('%c[USx-DRV]', 'color:#06c', `T${t.n} ${t.entity} ${t.comboKeyRef}: ${sent.ok ? 'submitted' : 'NOT submitted (' + sent.err + ')'}`);
-      await L.sleep(900);
+      await L.sleep(dBetween);
     }
     try { localStorage.setItem('__usx_batch', JSON.stringify(manifest)); } catch (e) {}
     console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', `plan run complete: ${manifest.length} queries submitted. Go to /admin/dex-log and run __usxCaptureBatch().`, results);

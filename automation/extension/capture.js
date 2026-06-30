@@ -256,28 +256,52 @@
   function idFills(fills) {
     return (fills || []).filter((f) => /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i.test(f.fieldId));
   }
+  // Debug: dump the data rows the page currently shows (count + parsed field JSON).
+  window.__usxDebugRows = function () {
+    const rows = dataRows();
+    const info = rows.slice(0, 8).map((r, i) => ({ i, fields: rowFieldJson(r) }));
+    console.log('%c[USx-DBG]', 'color:#a0a;font-weight:bold', 'dataRows:', rows.length, info);
+    return { count: rows.length, sample: info };
+  };
+
   window.__usxCaptureBatch = async function () {
     let batch = [];
     try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
     if (!batch.length) { console.warn('[USx-CAP] no __usx_batch -- run __usxRunPlan first'); return null; }
     const rows = dataRows();
+    if (!rows.length) { console.warn('[USx-CAP] no data rows -- reload /admin/dex-log so the new queries show, then retry.'); return null; }
+
+    // Pass 1: correlate each manifest entry to a row by identifier field values.
     const used = new Set();
-    const out = [];
-    for (const m of batch) {
+    const pair = new Array(batch.length).fill(null);
+    batch.forEach((m, bi) => {
       const ids = idFills(m.fills);
-      const row = rows.find((r, i) => {
+      const idx = rows.findIndex((r, i) => {
         if (used.has(i)) return false;
         const fj = rowFieldJson(r) || {};
         return ids.length && ids.every((f) => String(fj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase());
       });
-      if (!row) { out.push({ ...labelFromManifest(m, {}), ok: false, err: 'no matching dex-log row' }); continue; }
-      used.add(rows.indexOf(row));
-      const rec = await captureRowEl(row);
+      if (idx >= 0) { used.add(idx); pair[bi] = idx; }
+    });
+
+    // Pass 2 (fallback): if nothing matched, pair by ORDER -- newest rows are the most recent
+    // submissions, so manifest (oldest-first) maps to the top rows in reverse.
+    if (pair.every((p) => p === null) && rows.length >= batch.length) {
+      for (let bi = 0; bi < batch.length; bi++) pair[bi] = batch.length - 1 - bi;
+      console.log('[USx-CAP] field-match found nothing; using order-based pairing (reverse of newest rows).');
+    }
+
+    const out = [];
+    for (let bi = 0; bi < batch.length; bi++) {
+      const m = batch[bi];
+      if (pair[bi] === null || !rows[pair[bi]]) { out.push({ ...labelFromManifest(m, {}), ok: false, err: 'no matching dex-log row' }); continue; }
+      const rec = await captureRowEl(rows[pair[bi]]);
       out.push(labelFromManifest(m, rec));
     }
     L.triggerDownload('usx_captured_batch_labeled.json', out);
     const okN = out.filter((r) => r.ok).length;
     console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', `batch: ${okN}/${out.length} captured`, out);
+    if (okN < out.length) console.log('[USx-CAP] tip: if 0 matched, run __usxDebugRows() and check the row field JSON.');
     return out;
   };
 

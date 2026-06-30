@@ -35,10 +35,10 @@
     input.focus();
     (control || input).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true }));
-    await sleep(180);
+    await sleep(300);
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, value);
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    await sleep(280);
+    await sleep(450);
     const opts = [...document.querySelectorAll('[class*="select__option"], [role=option]')];
     const code = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('^' + code + '\\b', 'i');
