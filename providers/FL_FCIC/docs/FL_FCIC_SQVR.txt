@@ -57,13 +57,13 @@ combo-level camelCase scalar style was inert on the platform.)
     set: [VehicleIdentificationNumber]   any: [VehicleMakeCode, VehicleYear, ImageIndicator]
     conditions: registrationState NOT_EXISTS
 
-  RQ+Plate -- Nlets OOS Registration (Plate) [PENDING]
+  RQ+Plate -- Nlets OOS Registration (Plate) [CONFIRMED]
     keyReference: RQLicensePlateNumber
     set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
     any: [ImageIndicator]
     conditions: registrationState EXISTS (v7.0 explicit OOS gate; mirror of FRQ State NOT_EXISTS)
 
-  RQ+VIN -- Nlets OOS Registration (VIN) [PENDING]
+  RQ+VIN -- Nlets OOS Registration (VIN) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: [VehicleIdentificationNumber, RegistrationState]
     any: [VehicleMakeCode, VehicleYear, ImageIndicator]

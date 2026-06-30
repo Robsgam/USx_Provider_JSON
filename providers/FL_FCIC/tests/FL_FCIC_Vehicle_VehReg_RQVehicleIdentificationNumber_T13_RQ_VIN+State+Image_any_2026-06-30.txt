@@ -1,0 +1,36 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: RQVehicleIdentificationNumber (T13_RQ_VIN+State+Image_any)
+Date: 2026-06-30 10:01:45
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+{"ImageIndicator":"Y","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleIdentificationNumber":"423423423"}
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWCD138T3YBCSGPE78DBW8GV"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KWCD138T3YBCSGPE78DBW8GV</Id><VehicleIdentificationNumber>423423423</VehicleIdentificationNumber><ImageIndicator>Y</ImageIndicator><State>GA</State></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWCD138T3YBCSGPE78DBW8GV
+  VehicleIdentificationNumber    423423423
+  ImageIndicator                 Y
+  State                          GA
+
+NOTES
+-----
+Image=Y in any[]. VehicleMakeCode+vehicleYear not in RQ VIN any[] (not tested with this XML -- no Make/Year in form).
+
+RESULT: PASS
