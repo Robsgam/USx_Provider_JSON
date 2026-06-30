@@ -147,7 +147,7 @@ foreach ($ent in $entities) {
                 $anyNames = @($c.requirements.any)
                 if ($anyNames.Count -gt 0) {
                     $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true
-                    if ($anyFills.Count -gt $fills.Count) {
+                    if (@($anyFills).Count -gt @($fills).Count) {
                         $n++
                         $tests.Add([ordered]@{
                             n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
