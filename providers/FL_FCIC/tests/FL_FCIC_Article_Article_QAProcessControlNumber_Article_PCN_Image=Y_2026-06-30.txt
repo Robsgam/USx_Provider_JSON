@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAProcessControlNumber (Article PCN Image=Y)
+Date: 2026-06-30 08:21:36
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+PCN=323432, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC7F38AAP0PDJTBXV431GAD"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>ArticleSingleQuery</MessageType><ImageIndicator>Y</ImageIndicator><ProcessControlNumber>323432</ProcessControlNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  ProcessControlNumber           323432
+
+NOTES
+-----
+
+
+RESULT: PASS
