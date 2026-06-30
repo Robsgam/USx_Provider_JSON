@@ -241,7 +241,47 @@
     return full;
   };
 
+  // Batch capture: correlate the driver's localStorage manifest (__usx_batch) to dex-log rows
+  // by identifier field values, capture each row's XML, label, and download one array for import.
+  function labelFromManifest(m, rec) {
+    return {
+      provider: m.provider || 'NJ_NJCJIS', entity: m.entity, query: m.query || rec.messageType,
+      combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
+      messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
+      formState: rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null,
+      capturedAt: new Date().toISOString(), ok: rec.ok
+    };
+  }
+  // Identifier fills are the distinctive text fields that pinpoint a row (not shared defaults/dropdowns).
+  function idFills(fills) {
+    return (fills || []).filter((f) => /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i.test(f.fieldId));
+  }
+  window.__usxCaptureBatch = async function () {
+    let batch = [];
+    try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+    if (!batch.length) { console.warn('[USx-CAP] no __usx_batch -- run __usxRunPlan first'); return null; }
+    const rows = dataRows();
+    const used = new Set();
+    const out = [];
+    for (const m of batch) {
+      const ids = idFills(m.fills);
+      const row = rows.find((r, i) => {
+        if (used.has(i)) return false;
+        const fj = rowFieldJson(r) || {};
+        return ids.length && ids.every((f) => String(fj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase());
+      });
+      if (!row) { out.push({ ...labelFromManifest(m, {}), ok: false, err: 'no matching dex-log row' }); continue; }
+      used.add(rows.indexOf(row));
+      const rec = await captureRowEl(row);
+      out.push(labelFromManifest(m, rec));
+    }
+    L.triggerDownload('usx_captured_batch_labeled.json', out);
+    const okN = out.filter((r) => r.ok).length;
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', `batch: ${okN}/${out.length} captured`, out);
+    return out;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureLatest() = auto newest; __usxCaptureOpen() = scrape the popup YOU opened; __usxCaptureAll({filter}) = raw walk.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureBatch() = correlate+capture a __usxRunPlan batch; __usxCaptureOpen() = scrape the popup YOU opened; __usxCaptureLatest()/__usxCaptureAll() also available.');
   }
 })();
