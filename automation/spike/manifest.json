@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "USx Tenant Testing -- Feasibility Spike",
+  "version": "0.1.0",
+  "description": "Proof-of-concept: capture dex-log request XML + probe universal-search fields on the Mark43 USx tenant. Feasibility test only -- does NOT submit queries.",
+  "content_scripts": [
+    {
+      "matches": ["https://usx-nj-njcjis.mark43.com/rms/*"],
+      "js": ["capture.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://usx-nj-njcjis.mark43.com/rms/*"],
+      "js": ["probe.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    }
+  ]
+}
