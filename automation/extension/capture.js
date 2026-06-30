@@ -120,49 +120,35 @@
     for (let i = 0; i < steps; i++) { const r = scanForXml(); if (r) return r; await L.sleep(250); }
     return null;
   }
-  // Full pointer sequence -- React/Chakra controls often need mousedown, not just .click().
-  function realClick(el) {
-    if (!el) return;
-    for (const t of ['pointerdown', 'mousedown', 'mouseup', 'click']) {
-      try { el.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window })); } catch (e) {}
-    }
-  }
   // This modal ignores Escape -- click its real "Close" button (scoped to the portal).
   function closePopup() {
     const scope = document.querySelector('.chakra-portal') || document;
     let btn = [...scope.querySelectorAll('button')].find((b) => /^close$/i.test((b.textContent || '').trim()));
     if (!btn) btn = [...scope.querySelectorAll('button')].find((b) => /close/i.test(b.getAttribute('aria-label') || ''));
-    if (btn) { realClick(btn); return true; }
+    if (btn) { try { btn.click(); return true; } catch (e) {} }
     return false;
   }
-  async function waitFor(predicate, timeoutMs) {
-    const steps = Math.max(1, Math.floor(timeoutMs / 250));
-    for (let i = 0; i < steps; i++) { const v = predicate(); if (v) return v; await L.sleep(250); }
+  // Fallback: the View click may fetch the XML -- nethook keeps XML response bodies.
+  function scanNetworkForXml() {
+    const net = (window.__usxNetAll || []);
+    for (let i = net.length - 1; i >= 0; i--) {
+      if (net[i].hasXml && net[i].body) { const r = L.extractConnectCicXml(net[i].body); if (r) return r; }
+    }
     return null;
-  }
-  function findCopyButton() {
-    const scope = document.querySelector('.chakra-portal') || document;
-    return [...scope.querySelectorAll('button')].find((b) => /^copy$/i.test((b.textContent || '').trim())) || null;
   }
   async function captureRowEl(rowEl) {
     const fields = rowFieldJson(rowEl);
     const link = [...rowEl.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
     if (!link) return { ok: false, err: 'no "View request" link in row', fields };
     for (let attempt = 0; attempt < 2; attempt++) {
-      closePopup(); await L.sleep(250);
-      window.__usxCopied = null;
-      realClick(link);
-      // Prefer the app's Copy button (its own serializer) -- intercepted via nethook.
-      const copyBtn = await waitFor(findCopyButton, 8000);
-      let x = null;
-      if (copyBtn) {
-        realClick(copyBtn);
-        const copied = await waitFor(() => window.__usxCopied, 2500);
-        if (copied) x = L.extractConnectCicXml(copied);
-      }
-      if (!x) x = scanForXml();          // fallback: DOM scrape of the portal
+      closePopup(); await L.sleep(300);
+      const netBefore = (window.__usxNetAll || []).length;
+      link.click();                       // plain click opened the popup in earlier success
+      const x = await waitForXml(10000);  // poll the portal (async render)
+      // network fallback: if the View triggered a fetch carrying the XML, take it from there
+      const xx = x || ((window.__usxNetAll || []).length > netBefore ? scanNetworkForXml() : null);
       const closed = closePopup(); await L.sleep(500);
-      if (x) return { ok: true, fields, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType, via: copyBtn && window.__usxCopied ? 'copy' : 'scrape', popupClosed: closed, attempt };
+      if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed, attempt };
     }
     return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true };
   }
@@ -240,7 +226,22 @@
     return full;
   };
 
+  // Manual-assist: YOU click "View request and return" (a real gesture loads it reliably),
+  // then run this -- it scrapes the OPEN popup, merges driver context, downloads, and closes.
+  // Robust fallback when the programmatic auto-click is flaky.
+  window.__usxCaptureOpen = function () {
+    const x = scanForXml() || scanNetworkForXml();
+    if (!x) { console.warn('[USx-CAP] no XML found -- is the request popup open with XML visible?'); return null; }
+    const top = dataRows()[0];
+    const rec = { fields: top ? rowFieldJson(top) : null, requestXml: x.xml, transactionId: x.transactionId, messageType: x.messageType };
+    const full = labelRecord(rec);
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'labeled record (manual-assist):', full);
+    L.triggerDownload('usx_captured_' + (x.transactionId || 'rec') + '.json', [full]);
+    closePopup();
+    return full;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureLatest() = labeled newest (per-test loop); __usxCaptureAll({filter}) = raw walk; __usxLogRecon() = recon.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. __usxCaptureLatest() = auto newest; __usxCaptureOpen() = scrape the popup YOU opened; __usxCaptureAll({filter}) = raw walk.');
   }
 })();
