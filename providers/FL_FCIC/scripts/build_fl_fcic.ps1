@@ -122,7 +122,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.0"
+    [string]$Version = "7.1"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -603,7 +603,11 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BoatHullIdNumber')
-                any        = @('decalNumber','RegistrationNumber','titleLienInformation','ImageIndicator')
+                # v7.1: RegistrationNumber removed from any[] -- LIMITATION #1 union over-send:
+                # when Hull fires, any[] fields present in the form are sent regardless of conditions.
+                # Reg was in Hull's any[], causing Reg to leak into XML even when Hull>Reg guardrail
+                # correctly blocked FBQRegistrationNumber from firing.
+                any        = @('decalNumber','titleLienInformation','ImageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');             operator = 'NOT_EXISTS' }
                     # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
@@ -619,7 +623,8 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('decalNumber')
-                any        = @('BoatHullIdNumber','RegistrationNumber','titleLienInformation','ImageIndicator')
+                # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
+                any        = @('BoatHullIdNumber','titleLienInformation','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }
@@ -651,7 +656,8 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('titleLienInformation')
-                any        = @('BoatHullIdNumber','decalNumber','RegistrationNumber','ImageIndicator')
+                # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
+                any        = @('BoatHullIdNumber','decalNumber','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
             }

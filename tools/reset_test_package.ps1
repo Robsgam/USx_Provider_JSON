@@ -160,7 +160,7 @@ if ($logs) {
 $provisionalBanner = "LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case."
 function Add-ProvisionalBanner([string]$filePath) {
     if (-not (Test-Path $filePath)) { return }
-    $lines = Get-Content $filePath
+    $lines = Get-Content $filePath -Encoding UTF8
     if ($lines | Where-Object { $_ -eq $provisionalBanner }) { return }
     $insertAt = [Math]::Min(2, $lines.Count)
     $newLines  = [System.Collections.Generic.List[string]]::new()
@@ -208,7 +208,7 @@ Add-ProvisionalBanner $sqvrPath
 $statusCleared = 0
 $statusPath = Join-Path $docsDir "${Provider}_STATUS.txt"
 if (Test-Path $statusPath) {
-    $lines = Get-Content $statusPath
+    $lines = Get-Content $statusPath -Encoding UTF8
     $out = New-Object System.Collections.Generic.List[string]
     $inLive = $false
     foreach ($line in $lines) {

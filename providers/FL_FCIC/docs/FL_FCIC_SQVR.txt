@@ -2,7 +2,7 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-06-30
-JSON version: v7.0
+JSON version: v7.1
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: v4.8 IMPORTED to USx Tenant 2026-06-12. T1-priority NOT_EXISTS check
 PASSED: full DL card -> XML contained ONLY OLN+ImageIndicator (FDQ+OLN CONFIRMED;
@@ -191,32 +191,32 @@ combo-level camelCase scalar style was inert on the platform.)
           Owner Last/First (OOS), Owner DOB (OOS), Destination State (no default),
           Stolen Search (no default), ImageIndicator(N)
 
-  FBQ+Hull  [CONFIRMED]  keyReference: FBQBoatHullIdNumber
+  FBQ+Hull  [PENDING]  keyReference: FBQBoatHullIdNumber
     set: [BoatHullIdNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EXISTS
-  FBQ+Decal [CONFIRMED]  keyReference: FBQDecalNumber
+  FBQ+Decal [PENDING]  keyReference: FBQDecalNumber
     set: [DecalNumber]  conditions: registrationState NOT_EXISTS
-  FBQ+Reg   [CONFIRMED]  keyReference: FBQRegistrationNumber
+  FBQ+Reg   [PENDING]  keyReference: FBQRegistrationNumber
     set: [RegistrationNumber]  conditions: registrationState NOT_EXISTS, relatedHitSearchIndicator NOT_EXISTS,
                                            BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail, v6.0)
-  FBQ+TitleLien [CONFIRMED]  keyReference: FBQTitleLienInformation
+  FBQ+TitleLien [PENDING]  keyReference: FBQTitleLienInformation
     set: [TitleLienInformation]  conditions: registrationState NOT_EXISTS
 
-  QB+Hull   [CONFIRMED]  keyReference: QBBoatHullIdNumber
+  QB+Hull   [PENDING]  keyReference: QBBoatHullIdNumber
     set: [BoatHullIdNumber, relatedHitSearchIndicator]  any: [ImageIndicator]
     conditions: relatedHitSearchIndicator EXISTS (v6.9 explicit Stolen gate; set[] is not a firing gate)
-  QB+CoastGuard [CONFIRMED]  keyReference: QBCoastGuardDocumentNumber  set: [CoastGuardDocumentNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
-  QB+NCIC   [CONFIRMED]  keyReference: QBNCICNumber  set: [NCICNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
-  QB+PCN    [CONFIRMED]  keyReference: QBProcessControlNumber  set: [ProcessControlNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
-  QB+Reg    [CONFIRMED]  keyReference: QBRegistrationNumber
+  QB+CoastGuard [PENDING]  keyReference: QBCoastGuardDocumentNumber  set: [CoastGuardDocumentNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
+  QB+NCIC   [PENDING]  keyReference: QBNCICNumber  set: [NCICNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
+  QB+PCN    [PENDING]  keyReference: QBProcessControlNumber  set: [ProcessControlNumber]  any: [ImageIndicator, relatedHitSearchIndicator]
+  QB+Reg    [PENDING]  keyReference: QBRegistrationNumber
     set: [RegistrationNumber, relatedHitSearchIndicator]  any: [ImageIndicator]
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail, v6.9),
                 relatedHitSearchIndicator EXISTS (v6.9 explicit Stolen gate)
 
-  BQ+Name   [CONFIRMED]  keyReference: BQName  -- RESTORED v4.7
+  BQ+Name   [PENDING]  keyReference: BQName  -- RESTORED v4.7
     set: [BirthDate, NameLast, NameFirst, RegistrationState]  any: [BoatHullIdNumber, RegistrationNumber]
-  BQ+Hull   [CONFIRMED]  keyReference: BQBoatHullIdNumber  -- RESTORED v4.7
+  BQ+Hull   [PENDING]  keyReference: BQBoatHullIdNumber  -- RESTORED v4.7
     set: [BoatHullIdNumber, RegistrationState]  any: []  (v6.9: RegistrationNumber removed -- Hull>Reg de-bleed)
-  BQ+Reg    [CONFIRMED]  keyReference: BQRegistrationNumber  -- RESTORED v4.7
+  BQ+Reg    [PENDING]  keyReference: BQRegistrationNumber  -- RESTORED v4.7
     set: [RegistrationNumber, RegistrationState]  any: []
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail, v6.9)
 
