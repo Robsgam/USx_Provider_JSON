@@ -1,0 +1,30 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQDecalNumber (Boat FBQ+Decal Image=Y (any[] confirmed))
+Date: 2026-06-30 08:35:12
+Result: PASS
+================================================================
+
+FORM STATE
+----------
+Decal=5434534, Image=Y
+
+XML REQUEST
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Transactions><api:Transaction id="01KWC8C7V97P67WPHVX9934DWY"><LawEnforcementTransaction version="1.0"><Transaction><Request><MessageType>BoatQuery</MessageType><ImageIndicator>Y</ImageIndicator><DecalNumber>5434534</DecalNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+XML RESPONSE
+------------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM XML REQUEST:
+  ImageIndicator                 Y
+  DecalNumber                    5434534
+
+NOTES
+-----
+
+
+RESULT: PASS
