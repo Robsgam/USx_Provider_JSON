@@ -102,7 +102,7 @@
         } finally { run.disabled = false; }
       };
       p.appendChild(run);
-      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '1. Load plan  2. Render form  3. Run Plan'));
+      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 once  1. Load plan  2. Pick entity  3. Run Plan  4. Fetch batch'));
     }
     return p;
   }
