@@ -25,7 +25,7 @@ USER-APPROVED SKIPS:
   Combos: RQ (plate), RQN (VIN)
   Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
 
-  RQ -- Plate search [PENDING]
+  RQ -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RQ
@@ -33,7 +33,7 @@ USER-APPROVED SKIPS:
     T2 (2026-06-29 v4.7): Plate=TEST123 -- VehicleRegistrationQuery/RQ fired. Defaults serialized: State=NJ, LicensePlateTypeCode=PC, LicensePlateYear=2026, RandomRequest=N, ImageIndicator=N.
     T3 (2026-06-29 v4.7): any[] -- RandomRequest=Y, Image=Y, State=NJ (from "New Jersey" dropdown; NCIC reverse-lookup confirmed). All serialize.
 
-  RQN -- VIN search [PENDING]
+  RQN -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RQN
@@ -52,13 +52,13 @@ USER-APPROVED SKIPS:
   Combos: DQN (OLN), DQ (Name+DOB)
   Note: DQN before DQ by operational priority (OLN wins); OLN NOT_EXISTS guardrail on DQ
 
-  DQN -- OLN search [PENDING]
+  DQN -- OLN search [CONFIRMED]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
     keyReference: DQN
     T9 (2026-06-29 v4.7): OLN=D999888777 -- DriverLicenseQuery/DQN fired. State=NJ (set[]), ImageIndicator=Y (only any[], confirms T10 covered).
 
-  DQ -- Name + DOB search [PENDING]
+  DQ -- Name + DOB search [CONFIRMED]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
     keyReference: DQ

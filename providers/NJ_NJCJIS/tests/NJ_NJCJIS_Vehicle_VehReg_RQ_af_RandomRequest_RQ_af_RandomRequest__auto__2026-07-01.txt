@@ -1,0 +1,46 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RQ_af_RandomRequest (RQ_af_RandomRequest (auto))
+Date: 2026-07-01 15:10:03
+Result: PASS
+JSON Version: 4.7
+Entity Fingerprint: de6d60bbf03443be2fdb65fcab95de831f0c1e374fa80bda51e7c19975d5b538
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWFHA40B9EK82A2JP0FSCGT8"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>VehicleRegistrationQuery</MessageType><Id>01KWFHA40B9EK82A2JP0FSCGT8</Id><ImageIndicator>N</ImageIndicator><LicensePlateYear>2026</LicensePlateYear><State>NJ</State><LicensePlateTypeCode>PC</LicensePlateTypeCode><RandomRequest>N</RandomRequest><LicensePlateNumber>TEST123</LicensePlateNumber></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWFHA40B9EK82A2JP0FSCGT8
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  LicensePlateTypeCode           PC
+  RandomRequest                  N
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01KWFHA40B9EK82A2JP0FSCGT8). kind=any-field; anyField=RandomRequest; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery.
+
+RESULT: PASS
