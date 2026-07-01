@@ -560,7 +560,43 @@
     items = items.filter((q) => q && q.id && !seenId.has(q.id) && seenId.add(q.id));
     if (since) items = items.filter((q) => { const t = Date.parse((q.auditMetadata && q.auditMetadata.createdDateUtc) || ''); return t && t >= since; });
     items = items.slice(0, limit);
-    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `fetching detail for ${items.length} queries...`);
+
+    // RMS-destination items are SEPARATE, independently-ordered list entries (confirmed live via
+    // __usxRmsNetworkRecon 2026-07-01: q.transaction === 'RMS', own id, own parsedRawQuery
+    // matching its ConnectCic sibling's fields) -- fully fetchable over the network, same as the
+    // ConnectCic detail fetch below. This REPLACES the earlier DOM-click approach
+    // (findRmsRowForFields/captureRmsRow), which was confirmed working but unreliable: it only
+    // found whatever RMS row happened to still be rendered on the current dex-log page, and rows
+    // scroll off-page as the session accumulates entries (2 per query: ConnectCic + RMS) -- live
+    // evidence showed it capturing Person's RMS pair but missing Vehicle's in the same run.
+    const rmsItems = items.filter((q) => q.transaction === 'RMS');
+    const commsysItems = items.filter((q) => q.transaction !== 'RMS');
+    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `fetching detail for ${commsysItems.length} queries (+ ${rmsItems.length} RMS pairs available)...`);
+
+    // /queries/<id> for an RMS item returns { requestContent: "<stringified JSON>",
+    // queryStatus: { queryStatus: "NO_CONTENT"|..., statusMessage: "No results were created"|... } }
+    // -- requestContent is double-encoded (a JSON string inside the JSON response), and
+    // statusMessage is the RAW API response text (may read differently than the DOM's friendlier
+    // rendering of the same status, e.g. "No results were created" vs "No Returns" -- both are
+    // faithful to their own source, not reconciled/translated here).
+    function parseRmsDetail(raw) {
+      let requestJson = null;
+      if (raw && raw.requestContent) {
+        try { requestJson = JSON.parse(raw.requestContent); } catch (e) { requestJson = raw.requestContent; }
+      }
+      const response = raw && raw.queryStatus ? (raw.queryStatus.statusMessage || raw.queryStatus.queryStatus || null) : null;
+      return { requestJson, response };
+    }
+    const rmsDetailCache = new Map(); // rmsItem.id -> {requestJson, response}, fetched lazily once per id
+    async function getRmsPairFor(fieldsObj) {
+      const match = rmsItems.find((r) => fieldsEqual(r.parsedRawQuery, fieldsObj));
+      if (!match) return null;
+      if (rmsDetailCache.has(match.id)) return rmsDetailCache.get(match.id);
+      let parsed = null;
+      try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + match.id); parsed = parseRmsDetail(typeof d === 'string' ? JSON.parse(d) : d); } catch (e) {}
+      rmsDetailCache.set(match.id, parsed);
+      return parsed;
+    }
 
     let batch = [];
     try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
@@ -568,16 +604,12 @@
     const out = loadCaptured();
     const have = new Set(out.map((r) => r.transactionId).filter(Boolean));
     const fresh = []; // new items collected this run, in API order (newest-first)
-    for (const q of items) {
+    for (const q of commsysItems) {
       if (have.has(q.id)) continue;
       let xml = null;
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
-      // RMS pair, if this entity has one (Person/Vehicle only) AND its row happens to still be
-      // rendered on the CURRENT dex-log page (this is a network-fetched list -- older/paginated
-      // items may not be in the live DOM; best-effort, never blocks the main XML result).
-      const rmsRow = findRmsRowForFields(q.parsedRawQuery);
-      const rms = rmsRow ? await captureRmsRow(rmsRow) : null;
+      const rms = await getRmsPairFor(q.parsedRawQuery);
       fresh.push({ qId: q.id, formState: q.parsedRawQuery || null, xml, rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null });
       have.add(q.id);
       if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
