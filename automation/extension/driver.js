@@ -119,7 +119,70 @@
     return results;
   };
 
+  // ---------------------------------------------------------------------------
+  // RMS-SIDE RECON (spike, 2026-07-01): capture.js/usx_lib.js only ever scrape the
+  // CommSys/ConnectCic dex-log wire XML -- nothing touches Mark43 RMS query/result data at
+  // all (e.g. the "Mock results processed" / "Query execution failed" failure class, which so
+  // far has only ever been caught by someone manually screenshotting the RMS UI). Testing
+  // already runs on "USx tenant, RMS client (default bundle)" -- the RMS query fires and its
+  // result/error renders in THIS SAME universal-search page, not a separate system -- but the
+  // exact DOM shape of wherever that renders has never been recon'd (only dex-log XML has).
+  // Run this right after a submit (__usxRunOne / manual Send) to find it from real evidence
+  // instead of guessing a selector (see selectReactSelect's substring-highlight-fragment bug
+  // earlier this session for what guessing costs: a live bug report + a second round-trip).
+  //
+  // USAGE: submit a query (a known repro like NJ Vehicle plate ABC123, which has documented
+  // Mock-results history), then run __usxRmsRecon() and report the full console output.
+  window.__usxRmsRecon = function () {
+    // Outermost-only filter (drops nested duplicates/fragments) -- same pattern as
+    // selectReactSelect's option matching, reused here for the same reason.
+    function outermostOnly(nodes) {
+      const arr = [...nodes];
+      return arr.filter((n) => !arr.some((other) => other !== n && other.contains(n)));
+    }
+    function snap(el) {
+      return {
+        tag: el.tagName,
+        id: el.id || null,
+        cls: (el.className || '').toString().slice(0, 80),
+        testId: el.getAttribute && (el.getAttribute('data-testid') || el.getAttribute('data-test-id')) || null,
+        role: el.getAttribute && el.getAttribute('role') || null,
+        text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 200)
+      };
+    }
+
+    // 1) Toasts/alerts/banners -- likely home for "Mock results processed" / "Query execution
+    // failed" style one-line failure messages (Chakra toasts commonly use role=status/alert).
+    const alertSelectors = '[role="alert"], [role="status"], [aria-live], .chakra-toast, .chakra-alert, [class*="toast"], [class*="Toast"], [class*="alert"], [class*="Alert"]';
+    const alerts = outermostOnly(document.querySelectorAll(alertSelectors)).map(snap).filter((s) => s.text);
+
+    // 2) Any element whose text matches known failure/result phrasing, regardless of container
+    // -- catches the message even if it's NOT in a toast-like element (e.g. inline in a card).
+    const phraseRe = /mock result|execution failed|query execution|no results?|not found|record found|results? \(\d+\)|error/i;
+    const phraseHits = outermostOnly(
+      [...document.querySelectorAll('div, span, p, li, td')].filter((el) => {
+        const t = (el.textContent || '').trim();
+        return t && t.length < 300 && phraseRe.test(t);
+      })
+    ).map(snap).slice(0, 20);
+
+    // 3) Every data-testid on the page right now -- the app already tags form fields this way
+    // (usx_lib's DOM-id-equals-fieldId trick); a results panel may carry similar tags.
+    const testIdEls = outermostOnly(document.querySelectorAll('[data-testid], [data-test-id]')).map(snap).slice(0, 40);
+
+    // 4) Broad structural scan: top-level regions under the main content area, so we can see
+    // what's THERE even if none of the above heuristics hit (e.g. a results panel with no
+    // role/testid/matching phrase -- just a plain rendered record).
+    const main = document.querySelector('main, [role="main"]') || document.body;
+    const topLevel = [...main.children].map(snap).slice(0, 30);
+
+    const out = { alerts, phraseHits, testIdEls, topLevel };
+    console.log('%c[USx-RMS-RECON]', 'color:#c60;font-weight:bold', out);
+    console.log('[USx-RMS-RECON] report the full object above (expand in DevTools or copy via console) so real selectors can be written from evidence.');
+    return out;
+  };
+
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity. After a submit, run __usxRmsRecon() to help find the RMS result/error panel.');
   }
 })();
