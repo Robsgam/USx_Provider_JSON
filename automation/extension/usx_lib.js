@@ -119,33 +119,59 @@
 
   // react-select (Arc): open menu -> filter by CODE -> click matching option.
   // Option labels render as "<CODE> - <Name>"; combo values are CODEs.
+  //
+  // Stage-by-stage [USx-SEL] logging is intentional and always-on (not debug-gated): this
+  // function has failed intermittently on live tenants twice already (SexCode, RegistrationState)
+  // in ways a poll-ceiling increase alone didn't fully resolve. Rather than requiring another
+  // manual diagnostic round-trip, the next failure's exact stage (menu never opened / no options
+  // rendered / no regex match / display never confirmed) shows up directly in the normal
+  // console log the operator already captures.
   async function selectReactSelect(fieldId, value) {
+    const dbg = (...a) => console.log('%c[USx-SEL]', 'color:#a0a', fieldId, ...a);
     const input = q(fieldId);
     if (!input) return { fieldId, kind: 'select', ok: false, err: 'not found' };
     const control = input.closest('.arc-select__control') || input.closest('[class*="control"]');
     input.focus();
     (control || input).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true }));
-    await sleep(300);
+
+    // Poll for the dropdown actually OPENING before typing the filter value -- previously a
+    // blind 300ms sleep with no confirmation it opened at all. A tiny option list (SexCode:
+    // 2-3 options) still failing intermittently even with a 2s option-render poll pointed at
+    // THIS earlier, unconfirmed step rather than option-render speed.
+    let t = Date.now();
+    const opened = await pollFor(() => document.querySelector('[class*="select__menu"], [class*="select__option"], [role=option]'), 1500, 100);
+    dbg(opened ? `menu opened after ${Date.now() - t}ms` : `menu open NOT confirmed after ${Date.now() - t}ms -- proceeding best-effort`);
+
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, value);
     input.dispatchEvent(new Event('input', { bubbles: true }));
     const code = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('^' + code + '\\b', 'i');
-    // Poll up to 2s for the filtered option list to render, instead of one fixed 450ms sleep.
-    const opt = await pollFor(() => {
+
+    // Poll up to 2.5s for the filtered option list to render.
+    t = Date.now();
+    const found = await pollFor(() => {
       const opts = [...document.querySelectorAll('[class*="select__option"], [role=option]')];
       if (!opts.length) return null;
-      return opts.find((o) => re.test((o.textContent || '').trim())) || opts[0];
-    }, 2000, 120);
-    if (!opt) return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value };
+      const m = opts.find((o) => re.test((o.textContent || '').trim()));
+      return { opt: m || opts[0], matched: !!m, count: opts.length };
+    }, 2500, 120);
+    if (!found) { dbg(`no options rendered after ${Date.now() - t}ms -- FAIL`); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
+    const { opt, matched, count } = found;
+    dbg(`${count} option(s) after ${Date.now() - t}ms; using ${matched ? 'regex match' : `opts[0] FALLBACK (no regex match for "${value}")`}: "${(opt.textContent || '').trim()}"`);
+
     opt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     opt.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    // Poll up to 1s for the control's display text to update, instead of one fixed 180ms sleep.
+
+    // Poll up to 1s for the control's display text to update.
+    t = Date.now();
     const display = await pollFor(() => {
       const d = ((input.closest('.arc-select__control') || control)?.textContent || '').trim();
       return re.test(d) ? d : null;
     }, 1000, 100) || ((input.closest('.arc-select__control') || control)?.textContent || '').trim();
-    return { fieldId, kind: 'select', ok: re.test(display), display };
+    const ok = re.test(display);
+    dbg(ok ? `display confirmed "${display}" after ${Date.now() - t}ms` : `display NEVER matched (got "${display}") after ${Date.now() - t}ms -- FAIL`);
+    return { fieldId, kind: 'select', ok, display };
   }
 
   // Auto-detect: react-select inputs carry class arc-select__input; a segmented date field

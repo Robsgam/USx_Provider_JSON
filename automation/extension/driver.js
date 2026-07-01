@@ -19,10 +19,19 @@
   const L = window.__usxLib;
   if (!L) { console.error('[USx-DRV] usx_lib not loaded'); return; }
 
+  // BirthDate's segmented-date stepping (activate + arrow-walk to the target, up to ~dozens of
+  // presses for year) is by far the slowest fill. Filling it last per test means the fast
+  // fields (text, react-select) complete first, and keeps its lengthy operation from
+  // overlapping with -- and possibly destabilizing the timing of -- other fields' fills.
+  function sortFillsDateLast(fills) {
+    return [...fills].sort((a, b) => (/birthdate/i.test(a.fieldId) ? 1 : 0) - (/birthdate/i.test(b.fieldId) ? 1 : 0));
+  }
+
   window.__usxRunOne = async function (desc) {
     if (!desc || !Array.isArray(desc.fills)) { console.error('[USx-DRV] need {fills:[...]}'); return; }
+    const orderedFills = sortFillsDateLast(desc.fills);
     const fillResults = [];
-    for (const f of desc.fills) {
+    for (const f of orderedFills) {
       const r = await L.fillField(f.fieldId, f.value);
       fillResults.push(r);
       await L.sleep(150);
