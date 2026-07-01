@@ -15,7 +15,8 @@
   count is surfaced loudly so the plan is trustworthy before a re-run.
 
   Default output is version-stamped (matches the root-JSON convention, so a rebuild never
-  silently overwrites the prior version's plan): docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json
+  silently overwrites the prior version's plan): logs/<PROVIDER>_TEST_PLAN_v<X.Y>.json (root of
+  the logs/ folder -- the self-contained per-query evidence package)
 
   Usage:
     .\emit_test_plan.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_v4.7.json
@@ -278,9 +279,11 @@ $plan = [ordered]@{
 }
 
 if (-not $OutFile) {
-    $docs = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs'
-    if (-not (Test-Path $docs)) { New-Item -ItemType Directory -Path $docs | Out-Null }
-    $OutFile = Join-Path $docs "${provName}_TEST_PLAN_v${version}.json"
+    # Lives at the root of logs/ (not docs/) -- logs/ is the self-contained per-query evidence
+    # package (plan + logs/<Entity>/ wire files), per the 2026-07-01 capture-pipeline standard.
+    $logsDir = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'logs'
+    if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir | Out-Null }
+    $OutFile = Join-Path $logsDir "${provName}_TEST_PLAN_v${version}.json"
 }
 [System.IO.File]::WriteAllText($OutFile, ($plan | ConvertTo-Json -Depth 8), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "[PASS] Test plan written: $OutFile ($($tests.Count) tests, full pass)" -ForegroundColor Green

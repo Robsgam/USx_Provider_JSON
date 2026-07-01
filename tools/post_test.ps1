@@ -28,8 +28,9 @@
 #   Add -RmsRequestJson (the RMS-side elasticQuery JSON string) and -RmsResponse
 #   (e.g. "No Returns") when captured. Absent is normal for Gun/Article/Boat/DH
 #   (no RMS mapping exists for those entities) -- not a gap to chase.
-#   Writes the log's RMS QUERY section AND a standalone logs/rms/<stem>.json
-#   snippet (paired with logs/xml/<stem>.xml, same filename stem as the log).
+#   Writes the log's RMS QUERY section AND appends to the per-query wire-evidence
+#   file at logs/<Entity>/<Provider>_v<Version>_<Combo>.txt (query string + CommSys
+#   XML always; RMS QUERY section only when this fired).
 
 param(
     [Parameter(Mandatory)][string]$Provider,
@@ -98,6 +99,26 @@ function Get-QueryShort([string]$queryName) {
         'WMPIPersonMINQQuery'           { return 'MINQ' }
         'CAISupervisedReleaseQuery'     { return 'SuperRelease' }
         default                         { return ($queryName -replace 'Query$','') }
+    }
+}
+
+# Wire-captured XML arrives as one minified line -- pretty-print (indented, one element per
+# line) for the COMMSYS XML log section. Falls back to the raw string if it doesn't parse as
+# XML (never blocks saving on a formatting failure).
+function Format-XmlPretty([string]$xml) {
+    if (-not $xml -or $xml.Trim().Length -eq 0) { return $xml }
+    try {
+        $doc = New-Object System.Xml.XmlDocument
+        $doc.LoadXml($xml)
+        $sw = New-Object System.IO.StringWriter
+        $writer = New-Object System.Xml.XmlTextWriter($sw)
+        $writer.Formatting = [System.Xml.Formatting]::Indented
+        $writer.Indentation = 2
+        $doc.WriteContentTo($writer)
+        $writer.Flush()
+        return $sw.ToString()
+    } catch {
+        return $xml
     }
 }
 
@@ -232,7 +253,7 @@ if ($existingLogs.Count -gt 0) {
 $formStateContent = if ($FormState) { $FormState } else { "Not captured" }
 
 # Build XML sections
-$xmlReqContent  = if ($XmlRequest)  { $XmlRequest }  else { "Not captured" }
+$xmlReqContent  = if ($XmlRequest)  { Format-XmlPretty $XmlRequest }  else { "Not captured" }
 $xmlRespContent = if ($XmlResponse) { $XmlResponse } else { "Not captured" }
 
 # Build RMS section. Absent is EXPECTED (not a gap) for entities with no RMS mapping
@@ -303,25 +324,35 @@ RESULT: $Result
 $logContent | Set-Content -LiteralPath $logPath -Encoding UTF8
 Write-Ok "Saved: $logPath"
 
-# Per-query raw snippet files (providers/<PROVIDER>/logs/xml/, logs/rms/) -- byte-faithful
-# passthrough of the same content embedded above, broken out standalone so each side is
-# independently inspectable/diffable without parsing the narrative log. Filename stem matches
-# the test log (minus .txt) so the pair is always findable by name alone.
-$logStem = [System.IO.Path]::GetFileNameWithoutExtension($logFilename)
+# Per-query wire-evidence file: providers/<PROVIDER>/logs/<Entity>/<PROVIDER>_v<Version>_<Combo>.txt
+# One file per query: QUERY STRING + COMMSYS XML, plus RMS QUERY only when an RMS pair actually
+# fired (omitted entirely for Gun/Article/Boat/DH, which have no RMS mapping -- not "Not
+# captured" boilerplate). Focused companion to the full narrative log in tests/, not a
+# replacement -- version-stamped filename so it survives a rebuild without ambiguity.
 if ($XmlRequest) {
-    $xmlLogDir = Join-Path $providerDir "logs\xml"
-    if (-not (Test-Path $xmlLogDir)) { New-Item -ItemType Directory -Path $xmlLogDir -Force | Out-Null }
-    $xmlSnippetPath = Join-Path $xmlLogDir "$logStem.xml"
-    $XmlRequest | Set-Content -LiteralPath $xmlSnippetPath -Encoding UTF8
-}
-if ($RmsRequestJson -or $RmsResponse) {
-    $rmsLogDir = Join-Path $providerDir "logs\rms"
-    if (-not (Test-Path $rmsLogDir)) { New-Item -ItemType Directory -Path $rmsLogDir -Force | Out-Null }
-    $rmsSnippetPath = Join-Path $rmsLogDir "$logStem.json"
-    $rmsRequestObj = $null
-    if ($RmsRequestJson) { try { $rmsRequestObj = $RmsRequestJson | ConvertFrom-Json } catch { $rmsRequestObj = $RmsRequestJson } }
-    ([PSCustomObject]@{ request = $rmsRequestObj; response = $RmsResponse } | ConvertTo-Json -Depth 8) |
-        Set-Content -LiteralPath $rmsSnippetPath -Encoding UTF8
+    $queryLogDir = Join-Path $providerDir "logs\$Entity"
+    if (-not (Test-Path $queryLogDir)) { New-Item -ItemType Directory -Path $queryLogDir -Force | Out-Null }
+    $queryLogName = "${Provider}_v${buildVersion}_${comboSafe}.txt"
+    $queryLogPath = Join-Path $queryLogDir $queryLogName
+    $queryLogContent = @"
+QUERY STRING
+------------
+$formStateContent
+
+COMMSYS XML
+-----------
+$xmlReqContent
+"@
+    if ($RmsRequestJson -or $RmsResponse) {
+        $queryLogContent += @"
+
+
+RMS QUERY
+---------
+$rmsContent
+"@
+    }
+    $queryLogContent | Set-Content -LiteralPath $queryLogPath -Encoding UTF8
 }
 
 # ============================================================================
@@ -576,8 +607,7 @@ if (-not $NoCommit) {
     $filesToAdd = @($logPath)
     if ($sqvrUpdated) { $filesToAdd += $sqvrPath }
     if ($statusUpdated) { $filesToAdd += $statusPath }
-    if ($xmlSnippetPath) { $filesToAdd += $xmlSnippetPath }
-    if ($rmsSnippetPath) { $filesToAdd += $rmsSnippetPath }
+    if ($queryLogPath) { $filesToAdd += $queryLogPath }
 
     $gitOk = $true
     foreach ($f in $filesToAdd) {

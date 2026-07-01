@@ -1,33 +1,37 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
 Combo: DQ_af_ImageIndicator (DQ_af_ImageIndicator (auto))
-Date: 2026-07-01 13:06:40
+Date: 2026-07-01 15:10:06
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: fdce5747acec038180062623b3e2c149a21ceef3de1a9e95134e28813534c600
 Tier: Full
 ================================================================
 
-FORM STATE
-----------
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"New Jersey"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWFHBST7FRZ3MDE9CD9Z5NDH"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KWFHBST7FRZ3MDE9CD9Z5NDH</Id><ImageIndicator>N</ImageIndicator><State>NJ</State><BirthDate>01151990</BirthDate><Name>DOE, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
 Not captured
 
-XML REQUEST
------------
-<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWFA6RHPXQ61XJEJDTMNPV4N"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>DriverLicenseQuery</MessageType><Id>01KWFA6RHPXQ61XJEJDTMNPV4N</Id><ImageIndicator>N</ImageIndicator><State>NJ</State><BirthDate>01151990</BirthDate><Name>DOE, JOHN</Name></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
-
-XML RESPONSE
-------------
+RMS QUERY
+---------
 Not captured
 
 FIELD ANALYSIS
 --------------
-AUTO-EXTRACTED FROM XML REQUEST:
+AUTO-EXTRACTED FROM COMMSYS XML:
   Id                             MK43RS
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFA6RHPXQ61XJEJDTMNPV4N
+  Id                             01KWFHBST7FRZ3MDE9CD9Z5NDH
   ImageIndicator                 N
   State                          NJ
   BirthDate                      01151990
@@ -35,6 +39,6 @@ AUTO-EXTRACTED FROM XML REQUEST:
 
 NOTES
 -----
-Automated capture (txId 01KWFA6RHPXQ61XJEJDTMNPV4N). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWFHBST7FRZ3MDE9CD9Z5NDH). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

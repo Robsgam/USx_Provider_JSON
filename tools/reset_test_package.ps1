@@ -155,6 +155,30 @@ if ($logs) {
     }
 }
 
+# 1b. Archive the per-query wire-evidence files (providers/<PROVIDER>/logs/<Entity>/*.txt) the
+#     same way -- added alongside the test logs above (2026-07-01 capture-pipeline standard) but
+#     reset never knew about them, so they were being silently orphaned (left behind pointing at
+#     an archived/deleted test log) instead of following their paired .txt into the archive.
+#     Entity is the FOLDER name here (filenames are <Provider>_v<Version>_<Combo>.txt, no entity
+#     in the name), so scope by folder rather than by filename pattern like the tests/ archive.
+$snippetsArchived = 0
+$logsRoot = Join-Path $provDir 'logs'
+if (Test-Path $logsRoot) {
+    $entityDirs = Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notlike '_archive_pre_v*' }
+    foreach ($ed in $entityDirs) {
+        if (-not $fullReset -and -not ($resetEntities -contains $ed.Name)) { continue }
+        $snippetFiles = Get-ChildItem $ed.FullName -File -ErrorAction SilentlyContinue
+        if (-not $snippetFiles) { continue }
+        $snippetArchiveDir = Join-Path $ed.FullName "_archive_pre_v$version"
+        foreach ($f in $snippetFiles) {
+            if (-not (Test-Path $snippetArchiveDir)) { New-Item -ItemType Directory -Path $snippetArchiveDir | Out-Null }
+            Move-Item $f.FullName (Join-Path $snippetArchiveDir $f.Name) -Force
+            $snippetsArchived++
+        }
+    }
+}
+
 # Helper: insert provisional-label banner after the first two lines (title + underline)
 # of a doc file. Idempotent -- no second copy if already present.
 $provisionalBanner = "LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case."
@@ -269,20 +293,22 @@ if (Test-Path $activeJson) {
     }
 }
 
-# 6. Version-stamped TEST_PLAN.json (docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json): archive any
-#    stale-version copy (rebuild changed the version, so its plan no longer matches) and
-#    regenerate the current one so the driver never runs against a stale plan.
+# 6. Version-stamped TEST_PLAN.json (logs/<PROVIDER>_TEST_PLAN_v<X.Y>.json, root of the logs/
+#    self-contained evidence package): archive any stale-version copy (rebuild changed the
+#    version, so its plan no longer matches) and regenerate the current one so the driver never
+#    runs against a stale plan.
 $planRegenerated = $false
-$oldPlans = @(Get-ChildItem $docsDir -Filter "${Provider}_TEST_PLAN_v*.json" -File -ErrorAction SilentlyContinue |
+if (-not (Test-Path $logsRoot)) { New-Item -ItemType Directory -Path $logsRoot -Force | Out-Null }
+$oldPlans = @(Get-ChildItem $logsRoot -Filter "${Provider}_TEST_PLAN_v*.json" -File -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -ne "${Provider}_TEST_PLAN_v${version}.json" })
 if ($oldPlans.Count -gt 0) {
-    $archiveDir = Join-Path $testsDir "_archive_pre_v$version"
-    if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
-    foreach ($p in $oldPlans) { Move-Item $p.FullName (Join-Path $archiveDir $p.Name) -Force }
+    $planArchiveDir = Join-Path $logsRoot "_archive_pre_v$version"
+    if (-not (Test-Path $planArchiveDir)) { New-Item -ItemType Directory -Path $planArchiveDir | Out-Null }
+    foreach ($p in $oldPlans) { Move-Item $p.FullName (Join-Path $planArchiveDir $p.Name) -Force }
 }
 if (Test-Path $activeJson) {
     & powershell -ExecutionPolicy Bypass -File (Join-Path $toolDir "emit_test_plan.ps1") -Path $activeJson 2>&1 | Out-Null
-    $planRegenerated = Test-Path (Join-Path $docsDir "${Provider}_TEST_PLAN_v${version}.json")
+    $planRegenerated = Test-Path (Join-Path $logsRoot "${Provider}_TEST_PLAN_v${version}.json")
 }
 
 Say ""
@@ -292,6 +318,9 @@ if ($preserveEntities.Count) {
     Say "    - PRESERVED (blocked, unchanged): $($preserveEntities -join ', ')" "Green"
 }
 Say "    - archived $archived prior log(s) -> tests/_archive_pre_v$version/" "Gray"
+if ($snippetsArchived -gt 0) {
+    Say "    - archived $snippetsArchived per-query wire-evidence file(s) -> logs/<Entity>/_archive_pre_v$version/" "Gray"
+}
 Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
 Say "    - cleared $statusCleared STATUS USx-Tenant-Testing row(s)" "Gray"
 Say "    - stamped tests/.test_state.json + .test_version = v$version" "Gray"
@@ -304,10 +333,10 @@ if ($matrixRegenerated) {
     Say "    [WARN] could not regenerate TEST_MATRIX (no active JSON found at $activeJson)" "Yellow"
 }
 if ($oldPlans.Count -gt 0) {
-    Say "    - archived $($oldPlans.Count) stale-version TEST_PLAN file(s) -> tests/_archive_pre_v$version/" "Gray"
+    Say "    - archived $($oldPlans.Count) stale-version TEST_PLAN file(s) -> logs/_archive_pre_v$version/" "Gray"
 }
 if ($planRegenerated) {
-    Say "    - regenerated docs/${Provider}_TEST_PLAN_v${version}.json" "Gray"
+    Say "    - regenerated logs/${Provider}_TEST_PLAN_v${version}.json" "Gray"
 } else {
     Say "    [WARN] could not regenerate TEST_PLAN (no active JSON found at $activeJson)" "Yellow"
 }

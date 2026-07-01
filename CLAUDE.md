@@ -271,15 +271,21 @@ elasticQuery request + response text — `automation/extension/capture.js` now c
 pairs them by field-map content (order-independent), not by a fragile string/position match.
 
 **Test log section order** (`tools/post_test.ps1`): `QUERY STRING` (the dex-log field-map JSON)
-→ `COMMSYS XML` → `COMMSYS XML RESPONSE` → `RMS QUERY` (request + response together) →
-`FIELD ANALYSIS` → `NOTES`. `RMS QUERY` reads "Not captured" for Gun/Article/Boat/DH — that's the
-**correct, expected** state (no RMS mapping exists for those entities), not evidence of a gap.
+→ `COMMSYS XML` (pretty-printed/indented, not the minified wire string) → `COMMSYS XML RESPONSE`
+→ `RMS QUERY` (request + response together) → `FIELD ANALYSIS` → `NOTES`. `RMS QUERY` reads "Not
+captured" for Gun/Article/Boat/DH — that's the **correct, expected** state (no RMS mapping exists
+for those entities), not evidence of a gap.
 
-**Per-query snippet files**: alongside the narrative `.txt` log, every test also gets
-`providers/<PROVIDER>/logs/xml/<same-stem>.xml` (byte-faithful CommSys request XML) and, when an
-RMS pair exists, `providers/<PROVIDER>/logs/rms/<same-stem>.json` (`{request, response}`) — both
-named by the same filename stem as the test log, so the triple is always findable by name alone
-without parsing the narrative log.
+**`logs/` — the self-contained per-query evidence package.** Alongside the narrative `.txt` log
+in `tests/`, every test also gets a focused companion file at
+`providers/<PROVIDER>/logs/<Entity>/<PROVIDER>_v<X.Y>_<Combo>.txt` — one folder per entity
+(Vehicle, Person, Firearm, Article, Boat), one file per query, containing QUERY STRING → COMMSYS
+XML always, plus an RMS QUERY section only when an RMS pair actually fired (omitted entirely for
+Gun/Article/Boat/DH, not shown as "Not captured" boilerplate). The versioned test plan
+(`docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json`'s replacement) lives at the ROOT of this same folder:
+`providers/<PROVIDER>/logs/<PROVIDER>_TEST_PLAN_v<X.Y>.json` — `emit_test_plan.ps1`'s default
+output. This makes `logs/` a standalone package (plan + every query's wire evidence) that doesn't
+require cross-referencing `docs/` or `tests/` to audit.
 
 **Rollout**: NJ_NJCJIS is the pilot/reference implementation (v4.7, 2026-07-01). Other providers
 (CA_CLETS, FL_FCIC, NY_NYSPIN_EJUSTICE, TX_TLETS, etc.) pick this up automatically the next time
@@ -453,11 +459,13 @@ See `knowledge-base/IMPORT_ERRORS.txt` for error-to-fix mapping.
   duplicated while accumulating same-version-rebuild noise (NJ had 3 separate v3.6 snapshots, 2x
   v4.1, 2x v4.5 before retirement). Providers not yet migrated still use `phases/` as documented —
   don't touch another provider's build script ad hoc; each one drops it on its own next rebuild.
-- **Test plan filename carries the version too: `docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json`** (same
-  reasoning as the root JSON above — a rebuild must never silently overwrite the prior version's
-  plan with no trace). `emit_test_plan.ps1` computes this by default; `reset_test_package.ps1`
-  archives any stale-version copy to `tests/_archive_pre_v<X.Y>/` and regenerates the current one
-  on every reset. Rolled out to NJ_NJCJIS first; other providers pick it up on their next rebuild.
+- **Test plan filename carries the version too: `logs/<PROVIDER>_TEST_PLAN_v<X.Y>.json`** — at the
+  ROOT of `logs/` (the self-contained per-query evidence package, see "Live Test Capture" above),
+  not `docs/`. Same reasoning as the root JSON above — a rebuild must never silently overwrite the
+  prior version's plan with no trace. `emit_test_plan.ps1` computes this by default;
+  `reset_test_package.ps1` archives any stale-version copy to `logs/_archive_pre_v<X.Y>/` and
+  regenerates the current one on every reset. Rolled out to NJ_NJCJIS first; other providers pick
+  it up on their next rebuild.
 - Document every JSON in `docs/JSON_INVENTORY.md`. Keep all JSONs in project root.
 - **Tools resolve the active JSON via `tools/_resolve_provider_json.ps1`
   (`Get-ProviderRootJson`)** — bare → versioned → `_MC` → `_BASE` — never by hardcoding
@@ -552,12 +560,13 @@ providers/<PROVIDER>/
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
-│   ├── <PROVIDER>_TEST_PLAN_v<X.Y>.json    # Machine-readable plan for the browser driver (versioned filename — see Versioning Policy)
 │   ├── VALIDATOR_REPORT_*.txt             # Build reports (10 files from build_report.ps1)
 │   └── ...                                # Other reports (LAYOUT, QUERY, PICKLIST, etc.)
-├── tests/                                 # Per-test log files (one per test executed)
-├── logs/xml/                              # Per-query raw CommSys XML snippets (1:1 with test logs, by filename stem) [NJ_NJCJIS pilot, rolling out]
-├── logs/rms/                              # Per-query raw RMS-side query snippets, paired to the above [NJ_NJCJIS pilot, rolling out]
+├── tests/                                 # Per-test log files (one per test executed, full narrative incl. FIELD ANALYSIS/NOTES)
+├── logs/                                  # Self-contained per-query evidence package [NJ_NJCJIS pilot, rolling out]
+│   ├── <PROVIDER>_TEST_PLAN_v<X.Y>.json    # Machine-readable plan for the browser driver (versioned filename — see Versioning Policy)
+│   └── <Entity>/                          # One folder per entity (Vehicle, Person, Firearm, Article, Boat)
+│       └── <PROVIDER>_v<X.Y>_<Combo>.txt   # QUERY STRING + COMMSYS XML + RMS QUERY (if fired) for one query
 ├── phases/                                # Version snapshots — LEGACY, being retired provider-by-provider (git history is authoritative); NJ_NJCJIS no longer uses this
 ├── scripts/                               # Provider-specific build scripts
 │   └── build_<provider>.ps1               # Single build script per provider
