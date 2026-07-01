@@ -226,6 +226,31 @@
     return out;
   };
 
+  // RMS-ROW RECON round 4: __usxDexTableRecon showed the RMS row ALSO has a "View request and
+  // return" link -- contradicts the old assumption (dataRows() has always filtered these out
+  // assuming no link/no XML). Click it and dump the popup's RAW text (NOT run through
+  // extractConnectCicXml, since RMS content won't be ConnectCic-XML-shaped -- that's likely why
+  // scanForXml() would find nothing there even after a real click).
+  window.__usxRmsPopupRecon = async function () {
+    const allRows = [...document.querySelectorAll('.arc-table_row')].filter((r) => r.querySelector('.arc-table_cell'));
+    const rmsRow = allRows.find((r) => [...r.querySelectorAll('.arc-table_cell')].some((c) => (c.textContent || '').trim() === 'RMS'));
+    if (!rmsRow) { console.warn('[USx-RMS-POPUP-RECON] no RMS row found on this page/view.'); return null; }
+    const link = [...rmsRow.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
+    if (!link) { console.warn('[USx-RMS-POPUP-RECON] RMS row has no "View request" link after all.'); return null; }
+    closePopup(); await L.sleep(250);
+    realClick(link);
+    const opened = await waitFor(popupOpen, 2500);
+    await L.sleep(1000); // let async content finish rendering, whatever shape it is
+    const portal = document.querySelector('.chakra-portal');
+    const raw = portal ? (portal.textContent || '').trim() : null;
+    const textareas = portal ? [...portal.querySelectorAll('textarea')].map((t) => t.value || t.textContent || '') : [];
+    closePopup();
+    const out = { opened, rawTextLength: raw ? raw.length : 0, rawText: raw ? raw.slice(0, 3000) : null, textareas };
+    console.log('%c[USx-RMS-POPUP-RECON]', 'color:#c60;font-weight:bold', out);
+    console.log('[USx-RMS-POPUP-RECON] report rawText (and any textarea content) above -- this is whatever the RMS "View request and return" popup actually shows.');
+    return out;
+  };
+
   // Test ONE row (default: the first data row).
   window.__usxCaptureRow = async function (index) {
     const rows = dataRows();
@@ -523,6 +548,6 @@
   };
 
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row, then __usxRmsPopupRecon() to see what its "View request" popup actually shows.');
   }
 })();
