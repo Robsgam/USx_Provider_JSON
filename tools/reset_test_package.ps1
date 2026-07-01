@@ -269,6 +269,22 @@ if (Test-Path $activeJson) {
     }
 }
 
+# 6. Version-stamped TEST_PLAN.json (docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json): archive any
+#    stale-version copy (rebuild changed the version, so its plan no longer matches) and
+#    regenerate the current one so the driver never runs against a stale plan.
+$planRegenerated = $false
+$oldPlans = @(Get-ChildItem $docsDir -Filter "${Provider}_TEST_PLAN_v*.json" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne "${Provider}_TEST_PLAN_v${version}.json" })
+if ($oldPlans.Count -gt 0) {
+    $archiveDir = Join-Path $testsDir "_archive_pre_v$version"
+    if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
+    foreach ($p in $oldPlans) { Move-Item $p.FullName (Join-Path $archiveDir $p.Name) -Force }
+}
+if (Test-Path $activeJson) {
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $toolDir "emit_test_plan.ps1") -Path $activeJson 2>&1 | Out-Null
+    $planRegenerated = Test-Path (Join-Path $docsDir "${Provider}_TEST_PLAN_v${version}.json")
+}
+
 Say ""
 $scope = if ($fullReset) { "all entities" } else { "entities: $($resetEntities -join ', ')" }
 Say "  RESET: $Provider test package restarted for v$version -- $scope" "Yellow"
@@ -286,6 +302,14 @@ if ($matrixRegenerated) {
     }
 } else {
     Say "    [WARN] could not regenerate TEST_MATRIX (no active JSON found at $activeJson)" "Yellow"
+}
+if ($oldPlans.Count -gt 0) {
+    Say "    - archived $($oldPlans.Count) stale-version TEST_PLAN file(s) -> tests/_archive_pre_v$version/" "Gray"
+}
+if ($planRegenerated) {
+    Say "    - regenerated docs/${Provider}_TEST_PLAN_v${version}.json" "Gray"
+} else {
+    Say "    [WARN] could not regenerate TEST_PLAN (no active JSON found at $activeJson)" "Yellow"
 }
 Say "  Re-run the full test matrix from Test 1 (see docs/${Provider}_TEST_MATRIX.txt)" "Gray"
 exit 0

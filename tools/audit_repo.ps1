@@ -862,8 +862,10 @@ foreach ($pd in $providerDirs) {
     if (-not $scriptVersion) { continue }
 
     $phaseFound = $false
+    $anyPhaseDirExists = $false
     foreach ($phaseDir in @("$($pd.FullName)\phases", "$($pd.FullName)\phases\current", "$($pd.FullName)\phases\base", "$($pd.FullName)\phases\mc")) {
         if (Test-Path $phaseDir) {
+            $anyPhaseDirExists = $true
             $versionedFile = Get-ChildItem $phaseDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
             if ($versionedFile) {
                 $relDir = $phaseDir.Replace($pd.FullName + '\', '')
@@ -874,7 +876,10 @@ foreach ($pd in $providerDirs) {
         }
     }
     if (-not $phaseFound) {
-        if ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} phase snapshot" }
+        # phases/ is being retired provider-by-provider (git history is authoritative instead,
+        # starting with NJ_NJCJIS 2026-07-01) -- no phase dir at all means opted-out, not a gap.
+        if (-not $anyPhaseDirExists) { Pass "${provName} -- phases/ retired for this provider (git history is authoritative)" }
+        elseif ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} phase snapshot" }
         else { Fail "${provName} -- no v${scriptVersion} phase snapshot" }
     }
 }

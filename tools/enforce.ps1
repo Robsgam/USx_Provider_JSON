@@ -260,20 +260,29 @@ foreach ($pd in $providers) {
         Fail "$provName -- build manifest missing or != live JSON after rebuild (reports NOT trustworthy)"
     }
 
-    # Check phase archive exists for current version
+    # Check phase archive exists for current version. `phases/` is being retired provider-by-
+    # provider (git history is authoritative instead, starting with NJ_NJCJIS 2026-07-01) -- if
+    # NONE of the phase dirs exist at all, treat that as an opted-out provider and skip rather
+    # than FAIL; if the dir exists but is just missing this version's snapshot, that's still a
+    # real gap (someone forgot to archive this rebuild).
     $version = Get-ScriptVersion $pd.FullName
     if ($version) {
         # Check phases/ (new), phases/current/ (single-JSON), then phases/base/ and phases/mc/ (legacy)
+        $phaseDirsChecked = @("phases", "phases\current", "phases\base", "phases\mc")
+        $anyPhaseDirExists = $false
         $phaseFile = $null
-        foreach ($phaseDir in @("phases", "phases\current", "phases\base", "phases\mc")) {
+        foreach ($phaseDir in $phaseDirsChecked) {
             $pDir = Join-Path $pd.FullName $phaseDir
             if (Test-Path $pDir) {
+                $anyPhaseDirExists = $true
                 $phaseFile = Get-ChildItem $pDir -Filter "${docPrefix}*v${version}*.json" -File -ErrorAction SilentlyContinue | Select-Object -First 1
                 if ($phaseFile) { break }
             }
         }
         if ($phaseFile) {
             Pass "$provName -- phase archive exists for v${version}"
+        } elseif (-not $anyPhaseDirExists) {
+            Pass "$provName -- phases/ retired for this provider (git history is authoritative)"
         } else {
             Fail "$provName -- no phase archive for v${version}"
         }

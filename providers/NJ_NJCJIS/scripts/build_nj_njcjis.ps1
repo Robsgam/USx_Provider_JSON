@@ -56,13 +56,12 @@ param(
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases"
 # Root JSON name carries the version (<PROVIDER>_v<X.Y>.json). Write-ProviderJson
 # removes any stale bare/versioned sibling so one-JSON-in-root holds on every bump.
 $OUT      = "$DIR\NJ_NJCJIS_v${Version}.json"
-$VEROUT   = "$PHASEDIR\NJ_NJCJIS_v${Version}_${DATE}.json"
-
-New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
+# phases/ snapshot mechanism retired 2026-07-01 (NJ only, pilot for the new standard) -- every
+# version is already fully recoverable from git commit history; phases/ only duplicated that
+# while accumulating same-version-rebuild noise (3 separate v3.6 snapshots, 2x v4.1, 2x v4.5).
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -566,7 +565,7 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $njBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built NJ_NJCJIS v${Version} (VehStolenRemoved mainline, native PascalCase USx fields, restored RMS args)" `
     -Version $Version
 

@@ -416,7 +416,17 @@ See `knowledge-base/IMPORT_ERRORS.txt` for error-to-fix mapping.
   So version lives (a) in the filename and (b) inside the bundle `description`
   ("Provider configuration for <PROVIDER> v<X.Y> ..."), which is what enforce CHECK 3i reads.
   Do NOT re-add a top-level `version` field.
-- Phase snapshots are saved to `phases/` as `<PROVIDER>_v<X.Y>_<date>.json`.
+- Phase snapshots are saved to `phases/` as `<PROVIDER>_v<X.Y>_<date>.json` — **legacy pattern,
+  being retired provider-by-provider starting with NJ_NJCJIS (2026-07-01).** Every version is
+  already fully recoverable from git commit history (`git log`/`git show`), which `phases/` only
+  duplicated while accumulating same-version-rebuild noise (NJ had 3 separate v3.6 snapshots, 2x
+  v4.1, 2x v4.5 before retirement). Providers not yet migrated still use `phases/` as documented —
+  don't touch another provider's build script ad hoc; each one drops it on its own next rebuild.
+- **Test plan filename carries the version too: `docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json`** (same
+  reasoning as the root JSON above — a rebuild must never silently overwrite the prior version's
+  plan with no trace). `emit_test_plan.ps1` computes this by default; `reset_test_package.ps1`
+  archives any stale-version copy to `tests/_archive_pre_v<X.Y>/` and regenerates the current one
+  on every reset. Rolled out to NJ_NJCJIS first; other providers pick it up on their next rebuild.
 - Document every JSON in `docs/JSON_INVENTORY.md`. Keep all JSONs in project root.
 - **Tools resolve the active JSON via `tools/_resolve_provider_json.ps1`
   (`Get-ProviderRootJson`)** — bare → versioned → `_MC` → `_BASE` — never by hardcoding
@@ -511,10 +521,13 @@ providers/<PROVIDER>/
 │   ├── <PROVIDER>_SQVR.txt                # Supported Query Validation Report
 │   ├── <PROVIDER>_METADATA_REFERENCE.txt  # Auto-generated metadata combo requirements
 │   ├── JSON_INVENTORY.md                  # Every JSON version ever produced
+│   ├── <PROVIDER>_TEST_PLAN_v<X.Y>.json    # Machine-readable plan for the browser driver (versioned filename — see Versioning Policy)
 │   ├── VALIDATOR_REPORT_*.txt             # Build reports (10 files from build_report.ps1)
 │   └── ...                                # Other reports (LAYOUT, QUERY, PICKLIST, etc.)
 ├── tests/                                 # Per-test log files (one per test executed)
-├── phases/                                # Version snapshots
+├── logs/xml/                              # Per-query raw CommSys XML snippets (1:1 with test logs, by filename stem) [NJ_NJCJIS pilot, rolling out]
+├── logs/rms/                              # Per-query raw RMS-side query snippets, paired to the above [NJ_NJCJIS pilot, rolling out]
+├── phases/                                # Version snapshots — LEGACY, being retired provider-by-provider (git history is authoritative); NJ_NJCJIS no longer uses this
 ├── scripts/                               # Provider-specific build scripts
 │   └── build_<provider>.ps1               # Single build script per provider
 ├── source/                                # Input materials

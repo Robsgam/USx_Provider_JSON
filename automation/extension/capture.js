@@ -265,7 +265,13 @@
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
       kind: m.kind || null, anyField: m.anyField || null, underFilled: m.underFilled || false,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
-      formState: rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null,
+      // Prefer the raw dex-log field-map JSON (rec.formState, e.g. from __usxBulkFetch's
+      // parsedRawQuery) when present; fall back to deriving from rec.fields for capture paths
+      // that don't have it (rec.formState was previously omitted at the bulk-fetch call site,
+      // silently dropping the scraped JSON -- fixed alongside this).
+      formState: rec.formState != null
+        ? (typeof rec.formState === 'string' ? rec.formState : JSON.stringify(rec.formState))
+        : (rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null),
       capturedAt: new Date().toISOString(), ok: rec.ok
     };
   }
@@ -475,7 +481,7 @@
 
       if (mi >= 0) {
         usedM.add(mi);
-        out.push(labelFromManifest(batch[mi], { fields: null, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true }));
+        out.push(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true }));
       } else {
         out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, capturedAt: new Date().toISOString(), ok: true });
       }

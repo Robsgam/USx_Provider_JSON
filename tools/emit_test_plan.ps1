@@ -14,6 +14,9 @@
   QIDMs carry NOT_EXISTS conditions but produced zero guardrail tests. A non-zero unresolved
   count is surfaced loudly so the plan is trustworthy before a re-run.
 
+  Default output is version-stamped (matches the root-JSON convention, so a rebuild never
+  silently overwrites the prior version's plan): docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json
+
   Usage:
     .\emit_test_plan.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_v4.7.json
     .\emit_test_plan.ps1 -Path <json> -OutFile <path.plan.json>
@@ -277,7 +280,7 @@ $plan = [ordered]@{
 if (-not $OutFile) {
     $docs = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs'
     if (-not (Test-Path $docs)) { New-Item -ItemType Directory -Path $docs | Out-Null }
-    $OutFile = Join-Path $docs "${provName}_TEST_PLAN.json"
+    $OutFile = Join-Path $docs "${provName}_TEST_PLAN_v${version}.json"
 }
 [System.IO.File]::WriteAllText($OutFile, ($plan | ConvertTo-Json -Depth 8), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "[PASS] Test plan written: $OutFile ($($tests.Count) tests, full pass)" -ForegroundColor Green
