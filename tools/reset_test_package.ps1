@@ -93,10 +93,23 @@ if (-not (Test-Path $logsRoot)) { New-Item -ItemType Directory -Path $logsRoot -
 $stateFile     = Join-Path $logsRoot ".test_version"      # legacy scalar (kept = global)
 $stateJsonPath = Join-Path $logsRoot ".test_state.json"   # authority
 
+# READ fallback for providers not yet migrated off the old tests/ folder (tests/ eliminated
+# 2026-07-01, but only for NJ_NJCJIS so far -- every other provider's real blocked-entity state
+# still lives at tests/.test_state.json). Without this fallback, $priorEntities comes up EMPTY
+# for them, every entity looks "never blocked", and a plain (non -Force) reset call would
+# SILENTLY un-confirm all of that provider's already-verified work. Found live auditing CA_CLETS
+# (5/5 entities genuinely blocked in tests/.test_state.json, none yet in logs/). WRITE always
+# targets logs/ (migrates the provider forward the first time this script runs for it).
+$stateJsonReadPath = $stateJsonPath
+if (-not (Test-Path $stateJsonReadPath)) {
+    $legacyStateJsonPath = Join-Path (Join-Path $provDir "tests") ".test_state.json"
+    if (Test-Path $legacyStateJsonPath) { $stateJsonReadPath = $legacyStateJsonPath }
+}
+
 $priorEntities = @{}
-if (Test-Path $stateJsonPath) {
+if (Test-Path $stateJsonReadPath) {
     try {
-        $ps = Get-Content $stateJsonPath -Raw | ConvertFrom-Json
+        $ps = Get-Content $stateJsonReadPath -Raw | ConvertFrom-Json
         if ($ps.entities) { foreach ($p in $ps.entities.PSObject.Properties) { $priorEntities[$p.Name] = $p.Value } }
     } catch { $priorEntities = @{} }
 }

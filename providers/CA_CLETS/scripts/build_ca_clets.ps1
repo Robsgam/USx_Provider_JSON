@@ -37,8 +37,6 @@ $provider = 'CA_CLETS'
 $currentYear = [string](Get-Date).Year
 $outPath  = "$PSScriptRoot\..\CA_CLETS_v${Version}.json"
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
-$phaseDir = "$PSScriptRoot\..\phases\current"
-New-Item -ItemType Directory -Force -Path $phaseDir | Out-Null
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -900,6 +898,5 @@ $output = [PSCustomObject]@{
 }
 
 Write-ProviderJson -BundleObject $output -OutPath $outPath `
-    -PhasePath "$phaseDir\${provider}_v${Version}_${DATE}.json" `
     -Label "Built ${provider} v${Version} MC" `
     -Version $Version

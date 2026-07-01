@@ -1,0 +1,217 @@
+CA_CLETS -- Supported Query Validation Report
+===============================================
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+Last updated: 2026-07-01
+JSON version: v2.11
+Validator: 75 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: PENDING -- full re-test from T1 required (2026-07-01: SQVR format normalized to
+  the [PENDING]/[CONFIRMED]/[FAILED] + keyReference: convention post_test.ps1/reset_test_package.ps1
+  expect -- the prior Status: [PASS] format was never actually machine-matchable, so v2.11's
+  "all 5 entities confirmed" claim was never mechanically re-verifiable by the current toolchain).
+
+DRIFT FOUND DURING NORMALIZATION (2026-07-01): the prior SQVR listed 2 DriverLicenseQuery combos
+  -- ID.L1 (in-state OLN) and IN.L1 (in-state Name) -- that do NOT exist in the shipped
+  CA_CLETS_v2.11.json (confirmed directly against the JSON: DriverLicenseQuery ships exactly 6
+  combos -- NLTS.DQ.N, NLTS.DQ, IR.QVC.N/.O/.C/.S -- no ID.L1/IN.L1). Dropped from this SQVR;
+  the JSON is the single source of truth. Whether these were legitimately removed at some past
+  rebuild (SQVR just never updated) or represent a real coverage gap (in-state OLN/Name driver
+  license lookup no longer built) is unresolved -- flag for follow-up, do not silently assume.
+
+NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39/40 matched.
+- 13 IV.4* plate-type conditions combos: covered by T14 log (IV.4_T14_ConditionsRouting_PlateType).
+  Tool matches via TIER 1b trailing-suffix strip (IV.4I -> IV.4 etc.).
+- IL.A1 (14th plate conditions combo): covered by the SAME T14 test but log is named IV.4_T14
+  (not IL), so tool shows it as NOT TESTED. IL.A1 IS confirmed -- verified in T14 alongside all
+  other plate type conditions routing combos. Naming convention gap in test log filename.
+  (NOTE: IV.4*/IL.A1 are [DELETED] v2.5 -- poisoned-array, server routes via IA.QV -- this
+  historical note describes pre-v2.5 evidence and is not a live requirement.)
+
+================================================================================
+1. VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  Entity: Vehicle | QIDM: CA_CLETS_VehicleRegistrationQuery | autoSelect: true
+  5 live combos (2 NLTS OOS, 2 IA in-state, 1 IN name) + 13 DELETED (IV.4*/IL.A1 conditions
+  plate-type routing, v2.5 poisoned-array, server routes via IA.QV instead)
+
+  NLTS.RQ.P -- OOS Plate query (Nlets) [PENDING]
+    set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    keyReference: NLTS.RQ.P
+
+  NLTS.RQ.V -- OOS VIN query (Nlets) [PENDING]
+    set: PurposeCode, VehicleIdentificationNumber, RegistrationState
+    any: VehicleMakeCode, VehicleYear
+    keyReference: NLTS.RQ.V
+
+  IA.QV -- In-state Plate query (catchall) [PENDING]
+    set: PurposeCode, LicensePlateNumber
+    any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
+    defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
+    keyReference: IA.QV
+
+  IA.QVK -- In-state VIN query [PENDING]
+    set: PurposeCode, VehicleIdentificationNumber
+    any: VehicleMakeCode, RegistrationState
+    keyReference: IA.QVK
+
+  IN.VP -- Owner Name query (cross-entity) [PENDING]
+    set: PurposeCode, NameLast, NameFirst
+    any: AddressCity, AddressStreetNumber
+    keyReference: IN.VP
+
+  DELETED (v2.5, poisoned-array, server routes via IA.QV -- not live, no marker needed):
+    IV.4P (PlateType=PC), IV.4K (KK), IL.A1 (A1), IV.4H (HH), IV.4A (any[]), IV.4V (VIN),
+    IV.4C (CC), IV.4I (II), IV.4M (MM), IV.4L (LL), IV.4T (TT), IV.4F (FF), IV.4S (SS)
+
+================================================================================
+2. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
+  6 combos: 2 NLTS (OOS), 4 IR.QVC (criminal records)
+  (ID.L1/IN.L1 removed -- see DRIFT note above; not in shipped JSON)
+
+  NLTS.DQ -- OOS OLN query (Nlets) [PENDING]
+    set: PurposeCode, OperatorLicenseNumber, RegistrationState
+    any: (none)
+    keyReference: NLTS.DQ
+
+  NLTS.DQ.N -- OOS Name query (Nlets) [PENDING]
+    set: PurposeCode, NameLast, NameFirst, RegistrationState
+    any: BirthDate
+    conditions: OLN NOT_EXISTS
+    keyReference: NLTS.DQ.N
+
+  IR.QVC.O -- Criminal records by OLN [PENDING]
+    set: PurposeCode, OperatorLicenseNumber, CriminalIdNumber
+    any: socialSecurityNumber, age
+    conditions: RegistrationState NOT_EXISTS
+    keyReference: IR.QVC.O
+
+  IR.QVC.C -- Criminal records by CII [PENDING]
+    set: PurposeCode, CriminalIdNumber
+    any: socialSecurityNumber, age
+    conditions: OLN NOT_EXISTS
+    keyReference: IR.QVC.C
+
+  IR.QVC.S -- Criminal records by SSN [PENDING]
+    set: PurposeCode, SocialSecurityNumber
+    any: criminalIdNumber, age
+    conditions: OLN NOT_EXISTS
+    keyReference: IR.QVC.S
+
+  IR.QVC.N -- Criminal records by Name+Sex [PENDING]
+    set: PurposeCode, NameLast, NameFirst, SexCode
+    any: BirthDate, age, addressCounty, height, raceCode, appsRequestIndicator
+    conditions: OLN NOT_EXISTS
+    keyReference: IR.QVC.N
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity
+================================================================================
+
+  Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true | queriesToDeselect: DriverLicenseQuery
+  2 combos
+
+  NLTS.KQ.N -- Name+DOB+Sex query [PENDING]
+    set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
+    any: RegistrationState
+    keyReference: NLTS.KQ.N
+
+  NLTS.KQ.O -- OLN query [PENDING]
+    set: PurposeCodeDH, OperatorLicenseNumberDH
+    any: RegistrationState
+    NOTE: BirthDateDH not in any[]; NLTS.KQ.N (Name path) requires BirthDateDH in set[].
+    keyReference: NLTS.KQ.O
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
+  2 combos
+
+  IG.QGH -- Owner Name query (cross-entity) [PENDING]
+    set: PurposeCode, NameLast, NameFirst
+    any: (none)
+    keyReference: IG.QGH
+
+  IG.QGB -- Serial Number query [PENDING]
+    set: PurposeCode, SerialNumber
+    any: FirearmMake, GunCaliber, GunTypeCode
+    keyReference: IG.QGB
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
+  2 combos
+
+  IP.QA.S -- Serial Number query [PENDING]
+    set: PurposeCode, SerialNumber
+    any: ArticleTypeCode, ArticleBrand
+    keyReference: IP.QA.S
+
+  IP.QA.O -- OAN query [PENDING]
+    set: PurposeCode, OwnerAppliedNumber
+    any: ArticleTypeCode, ArticleBrand
+    keyReference: IP.QA.O
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
+  6 live combos (3 NLTS OOS, 3 IA in-state) + 1 DELETED (IV.4B DMV vessel)
+
+  NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity) [PENDING]
+    set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
+    any: (none)
+    keyReference: NLTS.BQ.N
+
+  NLTS.BQ.H -- OOS Hull ID query [PENDING]
+    set: PurposeCode, BoatHullIdNumber, RegistrationState
+    any: (none)
+    keyReference: NLTS.BQ.H
+
+  NLTS.BQ.R -- OOS Registration query [PENDING]
+    set: PurposeCode, RegistrationNumber, RegistrationState
+    any: (none)
+    keyReference: NLTS.BQ.R
+
+  IA.QB.H -- In-state Hull ID query [PENDING]
+    set: PurposeCode, BoatHullIdNumber
+    any: RegistrationState
+    keyReference: IA.QB.H
+
+  IA.QB.O -- In-state OAN query [PENDING]
+    set: PurposeCode, OwnerAppliedNumber
+    any: RegistrationState
+    keyReference: IA.QB.O
+
+  IA.QB.R -- In-state Registration query [PENDING]
+    set: PurposeCode, RegistrationNumber
+    any: RegistrationState
+    keyReference: IA.QB.R
+
+  DELETED (v2.5, identical wire to IA.QB.R, server routes -- not live, no marker needed):
+    IV.4B (DMV Vessel Registration)
+
+================================================================================
+SUMMARY
+================================================================================
+
+  Total live combos: 23
+    VehicleRegistrationQuery: 5 (2 NLTS + 2 IA + 1 IN) + 13 DELETED
+    DriverLicenseQuery: 6 (2 NLTS + 4 IR.QVC)
+    DriverHistoryQuery: 2 (2 NLTS)
+    GunQuery: 2 (1 IG serial + 1 IG name)
+    ArticleSingleQuery: 2 (1 serial + 1 OAN)
+    BoatQuery: 6 (3 NLTS + 3 IA) + 1 DELETED
+
+  CONFIRMED: none -- full re-test from T1 required (SQVR format normalized 2026-07-01)
+  PENDING:   NLTS.RQ.P, NLTS.RQ.V, IA.QV, IA.QVK, IN.VP, NLTS.DQ, NLTS.DQ.N, IR.QVC.O, IR.QVC.C,
+             IR.QVC.S, IR.QVC.N, NLTS.KQ.N, NLTS.KQ.O, IG.QGH, IG.QGB, IP.QA.S, IP.QA.O,
+             NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R -- 23/23
