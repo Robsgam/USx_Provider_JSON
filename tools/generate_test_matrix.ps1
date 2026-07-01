@@ -267,7 +267,9 @@ function Get-TestValue($field, $isOOS) {
         '(?i)^licensePlateTypeCode'         { $d = $field.default_; if ($d) { return $d } else { return 'PC' } }
         '(?i)^licensePlateYear'             { $d = $field.default_; if ($d) { return $d } else { return (Get-Date).Year.ToString() } }
         '(?i)^vehicleIdentificationNumber'  { return '1HGCM82633A123456' }
-        '(?i)^vehicleMakeCode'              { return 'FORD' }
+        # Make codes are category-prefixed (CNST_FORD/PASS_FORD); usx_lib anchors ^CODE\b, so
+        # bare "FORD" matches nothing. CNST_FORD = documented CA/FL-consistent value.
+        '(?i)^vehicleMakeCode'              { return 'CNST_FORD' }
         '(?i)^vehicleYear'                  { return '2023' }
         '(?i)^decalNumber'                  { return 'FL12345678' }
         '(?i)^titleLienInformation'         { return 'ABCD1234' }

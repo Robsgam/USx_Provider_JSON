@@ -47,7 +47,10 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^licensePlateTypeCode'        { return 'PC' }
         '(?i)^licensePlateYear'            { return (Get-Date).Year.ToString() }
         '(?i)^vehicleIdentificationNumber' { return '1HGCM82633A123456' }
-        '(?i)^vehicleMakeCode'             { return 'FORD' }
+        # Make dropdown codes are category-prefixed (CNST_FORD, PASS_FORD, ...); usx_lib.js
+        # anchors its option match to the leading code (^CODE\b), so a bare "FORD" matches
+        # nothing and falls back to opts[0]. CNST_FORD is the documented CA/FL-consistent value.
+        '(?i)^vehicleMakeCode'             { return 'CNST_FORD' }
         '(?i)^vehicleYear'                 { return '2023' }
         '(?i)^decalNumber'                 { return 'FL12345678' }
         '(?i)^titleLienInformation'        { return 'ABCD1234' }
