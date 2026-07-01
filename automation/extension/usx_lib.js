@@ -13,6 +13,17 @@
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const q = (id) => document.querySelector('#' + CSS.escape(id));
 
+  // Native <input type=date> only accepts ISO yyyy-MM-dd via .value -- any other string
+  // (e.g. MM/DD/YYYY, which is fine for a human typing through the browser's own locale
+  // mask) is silently rejected and .value stays empty. Normalize before assigning.
+  function toIsoDate(v) {
+    if (!v) return v;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    const m = String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) return `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+    return v;
+  }
+
   // Plain Chakra text input: React controlled-input pattern.
   function fillText(fieldId, value) {
     let el = q(fieldId);
@@ -22,6 +33,14 @@
       const inner = el.querySelector('input, textarea');
       if (!inner) return { fieldId, kind: 'text', ok: false, err: 'no input inside ' + el.tagName };
       el = inner;
+    }
+    // Native date input: must be ISO yyyy-MM-dd regardless of the format we were passed.
+    if (el.tagName === 'INPUT' && el.type === 'date') {
+      const iso = toIsoDate(value);
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, iso);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return { fieldId, kind: 'date', ok: el.value === iso, value: el.value };
     }
     const proto = el.tagName === 'TEXTAREA'
       ? window.HTMLTextAreaElement.prototype

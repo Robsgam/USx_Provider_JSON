@@ -94,7 +94,10 @@
       for (const f of fills) { fr.push(await fillWithRetry(f.fieldId, f.value, dSettle)); await L.sleep(dField); }
       await L.sleep(dSettle);
       const filled = fr.every((r) => r && r.ok);
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: t.fills, underFilled: !filled, n: t.n });
+      // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
+      // a single-element array to a bare object, and idFills() downstream (capture.js) expects
+      // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
+      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: fills, underFilled: !filled, n: t.n });
       const sent = clickSendClear();
       results.push({ n: t.n, combo: t.comboKeyRef, filled, sent });
       if (!filled) console.warn(`[USx-DRV] T${t.n} ${t.entity} ${t.comboKeyRef}: submitted UNDER-FILLED (a field failed to fill) -- capture records it, but verify this combo.`);

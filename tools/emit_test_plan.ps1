@@ -54,7 +54,9 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^nameFirst'                   { return 'JOHN' }
         '(?i)^nameMiddle'                  { return $null }
         '(?i)^nameSuffix'                  { return $null }
-        '(?i)^birthDate'                   { return '01/15/1990' }
+        # Native <input type=date> only accepts ISO yyyy-MM-dd via .value (usx_lib.js
+        # fillText also normalizes defensively, but emit the right format at the source).
+        '(?i)^birthDate'                   { return '1990-01-15' }
         '(?i)^sexCode'                     { return 'M' }
         '(?i)^imageIndicator'              { return 'N' }
         '(?i)^randomRequest'               { return 'N' }

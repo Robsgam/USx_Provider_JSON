@@ -270,8 +270,13 @@
     };
   }
   // Identifier fills are the distinctive text fields that pinpoint a row (not shared defaults/dropdowns).
+  // Defensive: PowerShell's ConvertTo-Json collapses a single-element array to a bare object,
+  // so a `fills` producer upstream (or an older cached localStorage batch) may hand us a
+  // non-array here -- normalize instead of throwing (a throw inside a .find()/.findIndex()
+  // predicate aborts the whole __usxBulkFetch batch, not just this one item).
   function idFills(fills) {
-    return (fills || []).filter((f) => /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i.test(f.fieldId));
+    const arr = Array.isArray(fills) ? fills : (fills ? [fills] : []);
+    return arr.filter((f) => f && /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i.test(f.fieldId));
   }
   // Debug: dump the data rows the page currently shows (count + parsed field JSON).
   window.__usxDebugRows = function () {
