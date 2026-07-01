@@ -5,7 +5,8 @@
   An entity may be blocked only when every combo marker in its SQVR section(s)
   is [CONFIRMED] (no [PENDING]/[FAILED]) -- unless -Force. Blocking records the
   entity's current structural fingerprint + the global version in
-  tests/.test_state.json with status='blocked'. reset_test_package.ps1 then
+  logs/.test_state.json (legacy: tests/.test_state.json) with status='blocked'.
+  reset_test_package.ps1 then
   PRESERVES it across rebuilds as long as its fingerprint is unchanged; if the
   entity's QIF/QIDM structure drifts, reset re-opens it and enforce.ps1 FAILs
   the stale block.
@@ -28,15 +29,19 @@ $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
 $testsDir = Join-Path $provDir "tests"
+$logsRoot = Join-Path $provDir "logs"
 $docsDir  = Join-Path $provDir "docs"
 # docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- SQVR is "tracking" category.
 . "$toolDir\_resolve_docs_path.ps1"
 
 if (-not (Test-Path $provDir)) { Write-Host "  [ERROR] Provider not found: $Provider" -ForegroundColor Red; exit 1 }
 
-$stateJsonPath = Join-Path $testsDir ".test_state.json"
+# tests/ folder eliminated 2026-07-01 -- .test_state.json now lives at logs/ root. Legacy
+# fallback to tests/.test_state.json for providers not yet migrated off the old structure.
+$stateJsonPath = Join-Path $logsRoot ".test_state.json"
+if (-not (Test-Path $stateJsonPath)) { $stateJsonPath = Join-Path $testsDir ".test_state.json" }
 if (-not (Test-Path $stateJsonPath)) {
-    Write-Host "  [ERROR] No tests/.test_state.json -- build the provider first (pipeline runs reset_test_package which seeds it)." -ForegroundColor Red
+    Write-Host "  [ERROR] No logs/.test_state.json -- build the provider first (pipeline runs reset_test_package which seeds it)." -ForegroundColor Red
     exit 1
 }
 
@@ -87,8 +92,16 @@ if (($pending -gt 0 -or $failed -gt 0) -and -not $Force) {
 $buildVer   = Get-BuildVersionForProvider $provDir
 $activeTier = Get-ActiveTier $provDir
 $entityFp   = $fp[$Entity]
+# Current standard: providers/<PROVIDER>/logs/<Entity>/*.txt (tests/ eliminated 2026-07-01).
+# Legacy fallback for providers not yet migrated: providers/<PROVIDER>/tests/*.txt.
 $testLogs   = @()
-if (Test-Path $testsDir) { $testLogs = @(Get-ChildItem $testsDir -Filter "*.txt" -File) }
+$entityLogDir = Join-Path $logsRoot $Entity
+$usingNewLogStructure = $false
+if (Test-Path $entityLogDir) {
+    $testLogs = @(Get-ChildItem $entityLogDir -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+    $usingNewLogStructure = $true
+}
+if ($testLogs.Count -eq 0 -and (Test-Path $testsDir)) { $testLogs = @(Get-ChildItem $testsDir -Filter "*.txt" -File) }
 
 $json = Get-Content $activeJson -Raw -Encoding UTF8 | ConvertFrom-Json
 $entityCombos = @()
@@ -120,11 +133,15 @@ foreach ($c in $entityCombos) {
     }
 }
 
-# Full pass always requires a render and a negative log per entity.
-$entEsc = [regex]::Escape($Entity)
-$renderOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*render" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+# Full pass always requires a render and a negative log per entity. Under the current
+# logs/<Entity>/ structure, $testLogs is already entity-scoped by folder, so filenames no
+# longer need to carry the entity name (post_test.ps1 names them <Provider>_v<X.Y>_<Combo>.txt).
+# Legacy tests/ folder is flat across all entities, so its filenames still carry the entity name.
+$renderPattern  = if ($usingNewLogStructure) { "(?i)render" }   else { "(?i)$([regex]::Escape($Entity)).*render" }
+$negativePattern = if ($usingNewLogStructure) { "(?i)negative" } else { "(?i)$([regex]::Escape($Entity)).*negative" }
+$renderOk = @($testLogs | Where-Object { $_.Name -match $renderPattern -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
 if (-not $renderOk) { $evidenceGaps += "full pass requires a render test log for $Entity" }
-$negOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*negative" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+$negOk = @($testLogs | Where-Object { $_.Name -match $negativePattern -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
 if (-not $negOk) { $evidenceGaps += "full pass requires a negative test log for $Entity" }
 
 if ($evidenceGaps.Count -gt 0 -and -not $Force) {

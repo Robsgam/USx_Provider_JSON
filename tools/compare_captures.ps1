@@ -3,7 +3,8 @@
   trusted reference, WITHOUT importing anything. Comparison-only.
 
   For each record in an automation capture file (usx_captured_*.json), find the matching reference
-  -- either an existing committed test log in providers/<P>/tests/ (default) or a second capture
+  -- either an existing committed test log in providers/<P>/logs/<Entity>/ (default; legacy
+  providers/<P>/tests/) or a second capture
   file (-ReferenceFile, e.g. yesterday's recovered NJ logs) -- and diff the ConnectCic <Request>
   field set, normalizing out the per-run Transaction id + <Id>. Reports MATCH / DIFF per combo.
 
@@ -59,8 +60,21 @@ if ($ReferenceFile) {
         if ($x) { $refIndex += @{ key = ("" + $r.comboKeyRef + " " + $r.combo).ToLower(); xml = $x; label = "$($r.comboKeyRef)" } }
     }
 } elseif ($Provider) {
-    $testsDir = Join-Path $repoRoot "providers\$Provider\tests"
-    foreach ($f in (Get-ChildItem $testsDir -Filter '*.txt' -File -ErrorAction SilentlyContinue)) {
+    # Current standard (2026-07-01): providers/<PROVIDER>/logs/<Entity>/*.txt. Legacy
+    # fallback for providers not yet migrated: providers/<PROVIDER>/tests/*.txt.
+    $provDirRef = Join-Path $repoRoot "providers\$Provider"
+    $refFiles = @()
+    $logsRootRef = Join-Path $provDirRef "logs"
+    if (Test-Path $logsRootRef) {
+        foreach ($ed in (Get-ChildItem $logsRootRef -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '_archive_pre_v*' })) {
+            $refFiles += @(Get-ChildItem $ed.FullName -Filter '*.txt' -File -ErrorAction SilentlyContinue)
+        }
+    }
+    if ($refFiles.Count -eq 0) {
+        $testsDir = Join-Path $provDirRef "tests"
+        $refFiles = @(Get-ChildItem $testsDir -Filter '*.txt' -File -ErrorAction SilentlyContinue)
+    }
+    foreach ($f in $refFiles) {
         $x = Get-CicXml ([System.IO.File]::ReadAllText($f.FullName))
         if ($x) { $refIndex += @{ key = $f.Name.ToLower(); xml = $x; label = $f.Name } }
     }

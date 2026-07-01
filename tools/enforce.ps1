@@ -674,12 +674,16 @@ foreach ($pd in $providers) {
     }
 
     # Check 3h: test package aligned to current version (rebuild restarts testing).
-    # Entity-aware when tests/.test_state.json exists: a 'blocked' entity is OK only
+    # Entity-aware when .test_state.json exists: a 'blocked' entity is OK only
     # while its structural fingerprint matches the built JSON -- a drift means the
     # entity changed but kept its CONFIRMED status (stale block) and FAILS. Falls back
     # to the legacy scalar .test_version check for providers that haven't adopted state.
-    $testStateFile = Join-Path $pd.FullName "tests\.test_state.json"
-    $testVerFile   = Join-Path $pd.FullName "tests\.test_version"
+    # tests/ folder eliminated 2026-07-01 -- state now lives at logs/ root; legacy
+    # fallback to tests/ for providers not yet migrated.
+    $testStateFile = Join-Path $pd.FullName "logs\.test_state.json"
+    if (-not (Test-Path $testStateFile)) { $testStateFile = Join-Path $pd.FullName "tests\.test_state.json" }
+    $testVerFile   = Join-Path $pd.FullName "logs\.test_version"
+    if (-not (Test-Path $testVerFile)) { $testVerFile = Join-Path $pd.FullName "tests\.test_version" }
     if (Test-Path $testStateFile) {
         $activeJson = Join-Path $pd.FullName "$provName.json"
         if (-not (Test-Path $activeJson)) {
@@ -704,7 +708,7 @@ foreach ($pd in $providers) {
             }
         }
         if ($st.global -ne $version) {
-            Warn "$provName -- tests/.test_state.json global (v$($st.global)) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
+            Warn "$provName -- .test_state.json global (v$($st.global)) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
         } elseif ($openMisaligned -gt 0) {
             Warn "$provName -- $openMisaligned open entity(ies) not aligned to v${version}; run reset_test_package.ps1 -Provider $provName"
         } elseif ($driftFail -eq 0) {
@@ -716,7 +720,7 @@ foreach ($pd in $providers) {
         if ($testVer -eq $version) {
             Pass "$provName -- test package aligned to v${version}"
         } else {
-            Warn "$provName -- tests/.test_version (v${testVer}) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
+            Warn "$provName -- .test_version (v${testVer}) != build v${version}; rebuild bypassed reset -- run reset_test_package.ps1 -Provider $provName"
         }
     }
 

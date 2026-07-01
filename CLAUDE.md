@@ -270,22 +270,24 @@ query that has an RMS mapping, and its own "View request and return" popup expos
 elasticQuery request + response text — `automation/extension/capture.js` now captures both and
 pairs them by field-map content (order-independent), not by a fragile string/position match.
 
-**Test log section order** (`tools/post_test.ps1`): `QUERY STRING` (the dex-log field-map JSON)
-→ `COMMSYS XML` (pretty-printed/indented, not the minified wire string) → `COMMSYS XML RESPONSE`
-→ `RMS QUERY` (request + response together) → `FIELD ANALYSIS` → `NOTES`. `RMS QUERY` reads "Not
-captured" for Gun/Article/Boat/DH — that's the **correct, expected** state (no RMS mapping exists
-for those entities), not evidence of a gap.
+**Test log section order** (`tools/post_test.ps1`): header stamp (JSON Version/Entity
+Fingerprint/Tier) → `QUERY STRING` (the dex-log field-map JSON) → `COMMSYS XML`
+(pretty-printed/indented, not the minified wire string) → `COMMSYS XML RESPONSE`
+→ `RMS QUERY` (request + response together) → `FIELD ANALYSIS` → `NOTES` → `RESULT`. `RMS QUERY`
+reads "Not captured" for Gun/Article/Boat/DH — that's the **correct, expected** state (no RMS
+mapping exists for those entities), not evidence of a gap.
 
-**`logs/` — the self-contained per-query evidence package.** Alongside the narrative `.txt` log
-in `tests/`, every test also gets a focused companion file at
+**`logs/` — the ONLY test log, self-contained.** The separate narrative `tests/` folder was
+eliminated 2026-07-01 (redundant once `logs/<Entity>/` carried the full FIELD ANALYSIS/NOTES/RESULT
+content, not just wire evidence). Every test now has exactly one file:
 `providers/<PROVIDER>/logs/<Entity>/<PROVIDER>_v<X.Y>_<Combo>.txt` — one folder per entity
-(Vehicle, Person, Firearm, Article, Boat), one file per query, containing QUERY STRING → COMMSYS
-XML always, plus an RMS QUERY section only when an RMS pair actually fired (omitted entirely for
-Gun/Article/Boat/DH, not shown as "Not captured" boilerplate). The versioned test plan
-(`docs/<PROVIDER>_TEST_PLAN_v<X.Y>.json`'s replacement) lives at the ROOT of this same folder:
+(Vehicle, Person, Firearm, Article, Boat), one file per query, containing the full section order
+above. The versioned test plan lives at the ROOT of this same folder:
 `providers/<PROVIDER>/logs/<PROVIDER>_TEST_PLAN_v<X.Y>.json` — `emit_test_plan.ps1`'s default
-output. This makes `logs/` a standalone package (plan + every query's wire evidence) that doesn't
-require cross-referencing `docs/` or `tests/` to audit.
+output. This makes `logs/` a standalone package (plan + every query's full evidence + narrative)
+that doesn't require cross-referencing `docs/` to audit. `logs/.test_state.json` +
+`logs/.test_version` (moved from the old `tests/` folder) are the entity fingerprint/version state
+that `reset_test_package.ps1`/`block_entity.ps1` read and write.
 
 **Rollout**: NJ_NJCJIS is the pilot/reference implementation (v4.7, 2026-07-01). Other providers
 (CA_CLETS, FL_FCIC, NY_NYSPIN_EJUSTICE, TX_TLETS, etc.) pick this up automatically the next time
@@ -414,9 +416,9 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | Tool | Purpose | Key flags |
 |---|---|---|
 | `new_provider.ps1` | Scaffolds new provider (canonical structure, build scripts, doc templates, tool registrations) | `-XmlPath <xml>` `-PdfPath` `-Force` |
-| `new_test_log.ps1` | Creates stub test log in tests/ (GATE 2 requirement) | `-Provider` `-Variant` `-Version` `-Entity` `-Combo` `-Description` |
+| `new_test_log.ps1` | Creates stub test log in logs/<Entity>/ (migrated providers) or legacy tests/ (GATE 2 requirement) | `-Provider` `-Variant` `-Version` `-Entity` `-Combo` `-Description` |
 | `post_test.ps1` | Instant-save after test (artifacts, STATUS, SQVR, commit, push) | `-Provider` `-Entity` `-Query` `-Combo` `-Result` `-Description` |
-| `reset_test_package.ps1` | Rebuild restarts testing: on version change, archives prior logs, resets SQVR→PENDING, clears STATUS rows, stamps tests/.test_version. Auto-run by pipeline after build. | `-Provider` `-Force` |
+| `reset_test_package.ps1` | Rebuild restarts testing: on version change, archives prior logs/<Entity>/ files, resets SQVR→PENDING, clears STATUS rows, stamps logs/.test_version. Auto-run by pipeline after build. | `-Provider` `-Force` |
 
 ### Utilities
 
@@ -511,7 +513,7 @@ Three commands run everything. No manual checklists.
 
 `pipeline.ps1` chains 8 steps: build JSON → build report (steps 1-9 parallel) → extract metadata → sync CLAUDE.md → sync version docs → cross-provider audit → repo audit → enforce. Stops on first failure. Flags: `-SkipBuild` (reports only), `-SkipEnforce` (mid-work), `-DeferAudit` (skip steps 6-7 for mid-work iterations).
 
-**Rebuild restarts testing.** Step 1 calls `reset_test_package.ps1` after a successful build: when the JSON version changes, prior live test logs no longer line up with the shipped JSON, so they are archived to `tests/_archive_pre_v<ver>/`, all SQVR markers reset `[CONFIRMED]→[PENDING]`, STATUS live rows cleared, and `tests/.test_version` stamped. The full test matrix re-runs from Test 1 — never resume mid-matrix across a rebuild. See `knowledge-base/TESTING_REQUIREMENTS.txt` Section 11 GATE 1.
+**Rebuild restarts testing.** Step 1 calls `reset_test_package.ps1` after a successful build: when the JSON version changes, prior live test logs no longer line up with the shipped JSON, so they are archived to `logs/<Entity>/_archive_pre_v<ver>/` (legacy: `tests/_archive_pre_v<ver>/`), all SQVR markers reset `[CONFIRMED]→[PENDING]`, STATUS live rows cleared, and `logs/.test_version` stamped. The full test matrix re-runs from Test 1 — never resume mid-matrix across a rebuild. See `knowledge-base/TESTING_REQUIREMENTS.txt` Section 11 GATE 1.
 
 **MANDATORY before presenting any combo test instruction:** Read `docs/<PROVIDER>_METADATA_REFERENCE.txt` for the QIDM being tested. Find the FIELD CONSTRAINTS section (if any) and verify that no combo default triggers a "Must be filled if X = Y" conditional requirement on a field that has no default and no handler. If a violation exists: STOP, fix the build, rebuild, re-import — do not present the test instruction. This gate applies even if the test matrix has been generated and reviewed. (Rule origin: TX_TLETS T6 — DH ImageIndicator=Y default made EmailAddress silently required per devdoc; violation was not caught at metadata extraction.)
 
@@ -581,11 +583,12 @@ providers/<PROVIDER>/
 │   └── deliverables/                      # Officer/tester-facing, not read by tooling logic
 │       ├── OFFICER_GUIDE_<PROVIDER>.html/.pdf
 │       └── TEST_SHEET_<PROVIDER>.html/.pdf
-├── tests/                                 # Per-test log files (one per test executed, full narrative incl. FIELD ANALYSIS/NOTES)
-├── logs/                                  # Self-contained per-query evidence package [NJ_NJCJIS pilot, rolling out]
+├── logs/                                  # The ONLY test log location [NJ_NJCJIS pilot, rolling out; tests/ eliminated 2026-07-01]
+│   ├── .test_state.json                   # Entity fingerprint/version/block-status (authority; moved from tests/)
+│   ├── .test_version                      # Legacy scalar global version (moved from tests/)
 │   ├── <PROVIDER>_TEST_PLAN_v<X.Y>.json    # Machine-readable plan for the browser driver (versioned filename — see Versioning Policy)
 │   └── <Entity>/                          # One folder per entity (Vehicle, Person, Firearm, Article, Boat)
-│       └── <PROVIDER>_v<X.Y>_<Combo>.txt   # QUERY STRING + COMMSYS XML + RMS QUERY (if fired) for one query
+│       └── <PROVIDER>_v<X.Y>_<Combo>.txt   # Full test log: header stamp + QUERY STRING + COMMSYS XML + RMS QUERY + FIELD ANALYSIS + NOTES + RESULT
 ├── phases/                                # Version snapshots — LEGACY, being retired provider-by-provider (git history is authoritative); NJ_NJCJIS no longer uses this
 ├── scripts/                               # Provider-specific build scripts
 │   └── build_<provider>.ps1               # Single build script per provider

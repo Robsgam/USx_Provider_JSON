@@ -15,10 +15,12 @@
 
   Checks:
     A. Every "STATUS: LIVE-PROVEN <path>" cites a test-log path that EXISTS in the repo.
-       (archived logs under tests/_archive_pre_v*/ count -- they are committed evidence.)
+       (archived logs under logs/<Entity>/_archive_pre_v*/ or legacy tests/_archive_pre_v*/
+       count -- they are committed evidence.)
     B. Every "STATUS: HYPOTHESIS <test>" names a non-empty discriminating test.
-    C. Every concrete test-log path reference (providers/.../tests/....txt) in any scanned
-       file resolves. Catches stale citations after a reset archives the logs.
+    C. Every concrete test-log path reference (providers/.../logs/<Entity>/....txt or legacy
+       providers/.../tests/....txt) in any scanned file resolves. Catches stale citations
+       after a reset archives the logs.
 
   Exit 0 = all claims backed.  Exit 1 = at least one unbacked/stale claim.
 
@@ -55,14 +57,16 @@ function Test-RepoPath($p) {
     $ext = "\\?\" + $full
     if ([System.IO.File]::Exists($ext) -or [System.IO.Directory]::Exists($ext)) { return $true }
     # ARCHIVE FALLBACK (documented intent, Check A/C): a rebuild's reset_test_package moves
-    # tests/<file>.txt -> tests/_archive_pre_v<ver>/<file>.txt. A KB citation to the original
-    # tests/ path is still backed by that committed archived evidence. Resolve it by basename
-    # under any _archive_pre_v*/ sibling so KB provenance survives every provider rebuild.
-    if ($p -match '(?i)(providers[\\/][^\\/]+[\\/]tests)[\\/](.+\.txt)$') {
-        $testsDir = Join-Path $repoRoot ($Matches[1] -replace '/', '\')
+    # tests/<file>.txt -> tests/_archive_pre_v<ver>/<file>.txt (legacy), or
+    # logs/<Entity>/<file>.txt -> logs/<Entity>/_archive_pre_v<ver>/<file>.txt (current standard,
+    # 2026-07-01). A KB citation to the original path is still backed by that committed archived
+    # evidence. Resolve it by basename under any _archive_pre_v*/ sibling so KB provenance
+    # survives every provider rebuild.
+    if ($p -match '(?i)(providers[\\/][^\\/]+[\\/](?:tests|logs[\\/][^\\/]+))[\\/](.+\.txt)$') {
+        $parentDir = Join-Path $repoRoot ($Matches[1] -replace '/', '\')
         $baseName = Split-Path ($Matches[2] -replace '/', '\') -Leaf
-        if (Test-Path -LiteralPath $testsDir) {
-            foreach ($arc in (Get-ChildItem -LiteralPath $testsDir -Directory -Filter '_archive_pre_v*' -ErrorAction SilentlyContinue)) {
+        if (Test-Path -LiteralPath $parentDir) {
+            foreach ($arc in (Get-ChildItem -LiteralPath $parentDir -Directory -Filter '_archive_pre_v*' -ErrorAction SilentlyContinue)) {
                 $cand = Join-Path $arc.FullName $baseName
                 if (Test-Path -LiteralPath $cand) { return $true }
                 if ([System.IO.File]::Exists("\\?\" + $cand)) { return $true }
@@ -85,9 +89,10 @@ foreach ($sim in @("test_commsys.ps1", "run_test_matrix.ps1")) {
     if (Test-Path $simPath) { $scanFiles += Get-Item $simPath }
 }
 
-# Regex for a concrete test-log path: providers\<p>\tests\...\<file>.txt
-# Filenames may contain = + ; ( ) - but never spaces or quotes.
-$pathRegex = '(providers[\\/][^\s''"]*tests[\\/][^\s''"]*\.txt)'
+# Regex for a concrete test-log path: providers\<p>\logs\<Entity>\...\<file>.txt (current
+# standard) or legacy providers\<p>\tests\...\<file>.txt. Filenames may contain = + ; ( ) -
+# but never spaces or quotes.
+$pathRegex = '(providers[\\/][^\s''"]*(?:tests|logs)[\\/][^\s''"]*\.txt)'
 
 # ── CHECK A + B: STATUS convention lines ───────────────────────────────────────
 Out-Line ""

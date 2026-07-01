@@ -9,7 +9,7 @@
 
   Checks:
     1. Combo Inventory     -- extract all CommSys QIDM combos from JSON
-    2. Test Log Inventory  -- scan tests/ directory for .txt files
+    2. Test Log Inventory  -- scan logs/<Entity>/ directories for .txt files (legacy: tests/)
     3. Coverage Matrix     -- match combos to test logs (fuzzy)
     4. SQVR Alignment      -- compare [CONFIRMED] vs test log count
     5. Orphan Test Logs    -- test logs that don't match any combo
@@ -93,13 +93,37 @@ function Get-BuildVersion($provDir) {
     return $null
 }
 
-# Read tests/.test_version (the version the current logs belong to). Empty/absent -> $null.
+# Read logs/.test_version (the version the current logs belong to). Empty/absent -> $null.
+# Legacy fallback: tests/.test_version, for providers not yet migrated off the old tests/ folder.
 function Get-TestVersion($provDir) {
-    $f = Join-Path (Join-Path $provDir "tests") ".test_version"
+    $f = Join-Path (Join-Path $provDir "logs") ".test_version"
+    if (-not (Test-Path $f)) { $f = Join-Path (Join-Path $provDir "tests") ".test_version" }
     if (-not (Test-Path $f)) { return $null }
     $v = ((Get-Content $f -Raw) -replace "^﻿", '').Trim()
     if (-not $v) { return $null }
     return $v
+}
+
+# Collect test logs: current standard is providers/<PROVIDER>/logs/<Entity>/*.txt (one folder per
+# entity, no separate narrative tests/ folder -- eliminated 2026-07-01). Legacy fallback for
+# providers not yet migrated: providers/<PROVIDER>/tests/*.txt.
+function Get-TestLogFiles($provDir) {
+    $logsRoot = Join-Path $provDir "logs"
+    $logs = @()
+    if (Test-Path $logsRoot) {
+        $entityDirs = Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notlike '_archive_pre_v*' }
+        foreach ($ed in $entityDirs) {
+            $logs += @(Get-ChildItem $ed.FullName -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+        }
+    }
+    if ($logs.Count -eq 0) {
+        $testsDir = Join-Path $provDir "tests"
+        if (Test-Path $testsDir) {
+            $logs = @(Get-ChildItem $testsDir -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+        }
+    }
+    return @($logs | Sort-Object Name)
 }
 
 # Parse the combo count the TEST_MATRIX claims: "COMBO COVERAGE (13/13)" -> 13 (denominator),
@@ -247,11 +271,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     Out-Line ""
     Out-LineColor "  CHECK 2: Test Log Inventory" "Yellow"
 
-    $testsDir = Join-Path $provDir "tests"
-    $testLogs = @()
-    if (Test-Path $testsDir) {
-        $testLogs = @(Get-ChildItem $testsDir -Filter "*.txt" -File | Sort-Object Name)
-    }
+    $testLogs = @(Get-TestLogFiles $provDir)
 
     $totalTests = $testLogs.Count
     Out-Line "    Total test logs: $totalTests"
@@ -479,7 +499,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-LineColor "  GATE VERDICT: $verdict" $vColor
         $tvShow = if ($testVer) { "v$testVer" } else { "(unset)" }
         $mcShow = if ($null -ne $matrixCount) { $matrixCount } else { "n/a" }
-        Out-Line "    build v$buildVer | tier $activeTier | tests/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
+        Out-Line "    build v$buildVer | tier $activeTier | logs/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
         Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | valid-backed combos: $validBackedCombos"
         foreach ($r in $gateReasons) { Out-LineColor "    - $r" "Red" }
         if ($provenanceNotes.Count -gt 0 -and $verdict -eq 'INCONSISTENT') {

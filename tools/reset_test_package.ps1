@@ -8,11 +8,16 @@
 
   What it does (provider-agnostic):
     1. Reads the current version from the build script ($Version = "X.Y").
-    2. Compares to tests/.test_version (the version the current logs belong to).
+    2. Compares to logs/.test_version (the version the current logs belong to).
     3. If unchanged (and not -Force): no-op, prints "ALIGNED".
-    4. If changed: archives all tests/*.txt -> tests/_archive_pre_v<version>/,
+    4. If changed: archives all logs/<Entity>/*.txt -> logs/<Entity>/_archive_pre_v<version>/,
        resets every SQVR combo marker ([CONFIRMED]/[FAILED] -> [PENDING]),
-       clears the STATUS "LIVE TEST RESULTS" rows, stamps tests/.test_version.
+       clears the STATUS "LIVE TEST RESULTS" rows, stamps logs/.test_version.
+
+  NOTE (2026-07-01): the old tests/ folder (separate narrative logs) was eliminated --
+  logs/<Entity>/<Provider>_v<X.Y>_<Combo>.txt is now the ONLY test log, and
+  logs/.test_state.json + logs/.test_version (moved from tests/) are the entity
+  fingerprint/version state.
 
   Called automatically by pipeline.ps1 after a successful build; can also be run manually.
 
@@ -31,7 +36,6 @@ $ErrorActionPreference = "Stop"
 $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
-$testsDir = Join-Path $provDir "tests"
 $docsDir  = Join-Path $provDir "docs"
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
@@ -84,8 +88,10 @@ if (Test-Path $activeJson) {
     try { $currentFp = Get-EntityFingerprints -Path $activeJson } catch { $currentFp = @{} }
 }
 
-$stateFile     = Join-Path $testsDir ".test_version"      # legacy scalar (kept = global)
-$stateJsonPath = Join-Path $testsDir ".test_state.json"   # authority
+$logsRoot      = Join-Path $provDir "logs"
+if (-not (Test-Path $logsRoot)) { New-Item -ItemType Directory -Path $logsRoot -Force | Out-Null }
+$stateFile     = Join-Path $logsRoot ".test_version"      # legacy scalar (kept = global)
+$stateJsonPath = Join-Path $logsRoot ".test_state.json"   # authority
 
 $priorEntities = @{}
 if (Test-Path $stateJsonPath) {
@@ -130,44 +136,12 @@ if ($resetEntities.Count -eq 0 -and -not $Force) {
 }
 
 # ── RESET (scoped to $resetEntities; full-file behavior when $fullReset) ───────
-if (-not (Test-Path $testsDir)) { New-Item -ItemType Directory -Path $testsDir | Out-Null }
 
-function Test-EntityInResetSet([string]$name) {
-    foreach ($e in $resetEntities) { if ($name -match "(?i)(^|_)$([regex]::Escape($e))(_|$)") { return $true } }
-    return $false
-}
-
-# 1. Archive prior live/sim logs (only reset-entity logs unless full reset)
-$logs = Get-ChildItem $testsDir -File -Filter "*.txt" -ErrorAction SilentlyContinue
+# 1. Archive prior test logs: providers/<PROVIDER>/logs/<Entity>/*.txt (the ONLY test log
+#    location since 2026-07-01 -- the old separate tests/ narrative log was eliminated).
+#    Entity is the FOLDER name here (filenames are <Provider>_v<Version>_<Combo>.txt, no
+#    entity in the name), so scope by folder rather than a filename regex.
 $archived = 0
-if ($logs) {
-    $archiveDir = Join-Path $testsDir "_archive_pre_v$version"
-    foreach ($f in $logs) {
-        if (-not $fullReset -and -not (Test-EntityInResetSet $f.BaseName)) { continue }
-        if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir | Out-Null }
-        $dest = Join-Path $archiveDir $f.Name
-        # Truncate dest filename if it would exceed MAX_PATH (260).
-        if ($dest.Length -gt 255) {
-            $destDir  = [System.IO.Path]::GetDirectoryName($dest)
-            $ext      = [System.IO.Path]::GetExtension($f.Name)
-            $stem     = [System.IO.Path]::GetFileNameWithoutExtension($f.Name)
-            $maxStem  = 255 - $destDir.Length - 1 - $ext.Length
-            if ($maxStem -lt 8) { $maxStem = 8 }
-            $dest = Join-Path $destDir ($stem.Substring(0, [Math]::Min($stem.Length, $maxStem)) + $ext)
-        }
-        Move-Item $f.FullName $dest -Force
-        $archived++
-    }
-}
-
-# 1b. Archive the per-query wire-evidence files (providers/<PROVIDER>/logs/<Entity>/*.txt) the
-#     same way -- added alongside the test logs above (2026-07-01 capture-pipeline standard) but
-#     reset never knew about them, so they were being silently orphaned (left behind pointing at
-#     an archived/deleted test log) instead of following their paired .txt into the archive.
-#     Entity is the FOLDER name here (filenames are <Provider>_v<Version>_<Combo>.txt, no entity
-#     in the name), so scope by folder rather than by filename pattern like the tests/ archive.
-$snippetsArchived = 0
-$logsRoot = Join-Path $provDir 'logs'
 if (Test-Path $logsRoot) {
     $entityDirs = Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -notlike '_archive_pre_v*' }
@@ -179,7 +153,7 @@ if (Test-Path $logsRoot) {
         foreach ($f in $snippetFiles) {
             if (-not (Test-Path $snippetArchiveDir)) { New-Item -ItemType Directory -Path $snippetArchiveDir | Out-Null }
             Move-Item $f.FullName (Join-Path $snippetArchiveDir $f.Name) -Force
-            $snippetsArchived++
+            $archived++
         }
     }
 }
@@ -252,7 +226,7 @@ if (Test-Path $statusPath) {
             if ($line -match '^\s*\(none yet') { continue }
             if ($line -match '^\s+---\s+-{3,}') {
                 $out.Add($line)
-                $out.Add("  (none yet -- v$version USx Tenant Testing restarted from Test 1; prior logs archived to tests/_archive_pre_v$version/)")
+                $out.Add("  (none yet -- v$version USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v$version/)")
                 continue
             }
             if ($line -match '^\s*$' -or $line -match '^[A-Z]') { $inLive = $false }
@@ -322,13 +296,10 @@ Say "  RESET: $Provider test package restarted for v$version -- $scope" "Yellow"
 if ($preserveEntities.Count) {
     Say "    - PRESERVED (blocked, unchanged): $($preserveEntities -join ', ')" "Green"
 }
-Say "    - archived $archived prior log(s) -> tests/_archive_pre_v$version/" "Gray"
-if ($snippetsArchived -gt 0) {
-    Say "    - archived $snippetsArchived per-query wire-evidence file(s) -> logs/<Entity>/_archive_pre_v$version/" "Gray"
-}
+Say "    - archived $archived prior log(s) -> logs/<Entity>/_archive_pre_v$version/" "Gray"
 Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
 Say "    - cleared $statusCleared STATUS USx-Tenant-Testing row(s)" "Gray"
-Say "    - stamped tests/.test_state.json + .test_version = v$version" "Gray"
+Say "    - stamped logs/.test_state.json + .test_version = v$version" "Gray"
 if ($matrixRegenerated) {
     Say "    - regenerated ${Provider}_TEST_MATRIX.txt" "Gray"
     if ($matrixDelta) {

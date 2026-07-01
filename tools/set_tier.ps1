@@ -7,8 +7,10 @@
   FL_FCIC standard).
 
   This script is retained only so existing references don't break. It ignores any -Tier
-  argument, stamps tests/.test_tier = 'Full', and reports. block_entity.ps1 always enforces
-  full-pass coverage; post_test.ps1 stamps Tier: Full.
+  argument, stamps logs/.test_tier = 'Full' (legacy: tests/.test_tier), and reports.
+  block_entity.ps1 always enforces full-pass coverage; post_test.ps1 stamps Tier: Full.
+  Get-ActiveTier (_test_provenance.ps1) always returns 'Full' unconditionally -- this file
+  is not actually read by anything; kept only for back-compat reporting.
 
   Usage:
     .\set_tier.ps1 -Provider NJ_NJCJIS          # stamp/report (Full)
@@ -23,16 +25,16 @@ $ErrorActionPreference = "Stop"
 $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
-$testsDir = Join-Path $provDir "tests"
+$logsRoot = Join-Path $provDir "logs"
 
 if (-not (Test-Path $provDir)) { Write-Host "  [ERROR] Provider not found: $Provider" -ForegroundColor Red; exit 1 }
-if (-not (Test-Path $testsDir)) { New-Item -ItemType Directory -Path $testsDir | Out-Null }
+if (-not (Test-Path $logsRoot)) { New-Item -ItemType Directory -Path $logsRoot | Out-Null }
 
 if ($Tier -and $Tier -notmatch '^(?i)full') {
     Write-Host "  [DEPRECATED] Tiers removed 2026-07-01 -- '-Tier $Tier' ignored; testing is a single Full pass." -ForegroundColor Yellow
 }
 
-$tierFile = Join-Path $testsDir ".test_tier"
+$tierFile = Join-Path $logsRoot ".test_tier"
 [System.IO.File]::WriteAllText($tierFile, 'Full', (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "  $Provider tier: Full (all-or-nothing; tiers removed)" -ForegroundColor Green
 Write-Host "    Run: docs/${Provider}_TEST_MATRIX.txt" -ForegroundColor Gray

@@ -2,6 +2,13 @@
 # Instant-save tool for test results. After ANY test completes, this script
 # immediately saves all artifacts, updates docs, commits, and pushes.
 #
+# LOG LOCATION (2026-07-01): the ONLY test log is
+# providers/<PROVIDER>/logs/<Entity>/<PROVIDER>_v<Version>_<Combo>.txt -- the old
+# separate tests/<...>.txt narrative log was eliminated (redundant with this file,
+# which already carries the same provenance stamp + FIELD ANALYSIS/NOTES/RESULT).
+# _test_provenance.ps1's stamp parsing is path-agnostic, so block_entity.ps1 and
+# audit_test_coverage.ps1 just point at logs/<Entity>/ instead of tests/ now.
+#
 # ── COMBO TEST (with XML from server logs) ──────────────────────────────────
 #   pwsh -File tools\post_test.ps1 `
 #     -Provider TX_TLETS -Entity Person -Query DriverLicenseQuery `
@@ -28,9 +35,8 @@
 #   Add -RmsRequestJson (the RMS-side elasticQuery JSON string) and -RmsResponse
 #   (e.g. "No Returns") when captured. Absent is normal for Gun/Article/Boat/DH
 #   (no RMS mapping exists for those entities) -- not a gap to chase.
-#   Writes the log's RMS QUERY section AND appends to the per-query wire-evidence
-#   file at logs/<Entity>/<Provider>_v<Version>_<Combo>.txt (query string + CommSys
-#   XML always; RMS QUERY section only when this fired).
+#   Adds the log's RMS QUERY section (query string + CommSys XML always; RMS QUERY
+#   only when this fired).
 
 param(
     [Parameter(Mandatory)][string]$Provider,
@@ -181,12 +187,6 @@ if (-not (Test-Path $providerDir)) {
     }
 }
 
-$testsDir = Join-Path $providerDir "tests"
-if (-not (Test-Path $testsDir)) {
-    New-Item -ItemType Directory -Path $testsDir -Force | Out-Null
-    Write-Warn "Created missing tests/ directory"
-}
-
 $docsDir = Join-Path $providerDir "docs"
 if (-not (Test-Path $docsDir)) {
     New-Item -ItemType Directory -Path $docsDir -Force | Out-Null
@@ -197,8 +197,13 @@ if (-not (Test-Path $docsDir)) {
 . "$PSScriptRoot\_resolve_docs_path.ps1"
 $trackingDir = Get-DocsCategoryDir $providerDir 'tracking'
 
+# logs/.test_state.json + .test_version live at the root of logs/ (moved from the
+# now-eliminated tests/ folder) -- see reset_test_package.ps1/block_entity.ps1.
+$logsRoot = Join-Path $providerDir "logs"
+if (-not (Test-Path $logsRoot)) { New-Item -ItemType Directory -Path $logsRoot -Force | Out-Null }
+
 Write-Ok "Provider: $providerDir"
-Write-Ok "Tests:    $testsDir"
+Write-Ok "Logs:     $logsRoot"
 
 # ── Resolve provenance stamp: build version + this entity's fingerprint + tier ──
 # Stamped into the log so a [CONFIRMED] combo can later be proven to rest on a log
@@ -221,7 +226,7 @@ if (-not $Tier) { $Tier = Get-ActiveTier $providerDir }
 Write-Ok "Stamp:    v$buildVersion / $($entityFingerprint.Substring(0,[Math]::Min(12,$entityFingerprint.Length))) / $Tier"
 
 # ============================================================================
-# STEP 2: CREATE OR UPDATE TEST LOG
+# STEP 2: CREATE OR UPDATE TEST LOG (logs/<Entity>/<Provider>_v<Version>_<Combo>.txt)
 # ============================================================================
 
 Write-Step 2 $totalSteps "Creating test log..."
@@ -229,29 +234,13 @@ Write-Step 2 $totalSteps "Creating test log..."
 $dateStr   = Get-Date -Format 'yyyy-MM-dd'
 $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
 $queryShort = Get-QueryShort $Query
-$descSafe  = $Description -replace '[\\/:*?"<>|,()\[\] ]', '_'
 $comboSafe = $Combo -replace '[\\/:*?"<>|,()\[\] ]', '_'
 
-$logFilename = "${Provider}_${Entity}_${queryShort}_${comboSafe}_${descSafe}_${dateStr}.txt"
-# Truncate to keep total path (with archive subdir) under MAX_PATH=260.
-# Archive adds ~22 chars (_archive_pre_vX.Y\) so cap filename at 155 chars.
-if ($logFilename.Length -gt 155) {
-    $ext  = ".txt"
-    $stem = $logFilename.Substring(0, 155 - $ext.Length)
-    $logFilename = "${stem}${ext}"
-}
-$logPath     = Join-Path $testsDir $logFilename
-
-# Check for existing log for same combo (any date)
-$existingLogs = @(Get-ChildItem $testsDir -Filter "${Provider}_${Entity}_${queryShort}_${comboSafe}_*" -File 2>$null)
-$isUpdate = $false
-if ($existingLogs.Count -gt 0) {
-    # Update the most recent one
-    $existingLog = $existingLogs | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    Write-Warn "Found existing log: $($existingLog.Name)"
-    Write-Warn "Creating new log (preserving old)"
-    $isUpdate = $true
-}
+$queryLogDir = Join-Path $providerDir "logs\$Entity"
+if (-not (Test-Path $queryLogDir)) { New-Item -ItemType Directory -Path $queryLogDir -Force | Out-Null }
+$queryLogName = "${Provider}_v${buildVersion}_${comboSafe}.txt"
+$queryLogPath = Join-Path $queryLogDir $queryLogName
+$isUpdate = Test-Path $queryLogPath   # re-running the same combo overwrites -- latest evidence wins
 
 # Build form state section (the dex-log field-map JSON, e.g. {"ImageIndicator":"N",...})
 $formStateContent = if ($FormState) { $FormState } else { "Not captured" }
@@ -325,39 +314,8 @@ $notesContent
 RESULT: $Result
 "@
 
-$logContent | Set-Content -LiteralPath $logPath -Encoding UTF8
-Write-Ok "Saved: $logPath"
-
-# Per-query wire-evidence file: providers/<PROVIDER>/logs/<Entity>/<PROVIDER>_v<Version>_<Combo>.txt
-# One file per query: QUERY STRING + COMMSYS XML, plus RMS QUERY only when an RMS pair actually
-# fired (omitted entirely for Gun/Article/Boat/DH, which have no RMS mapping -- not "Not
-# captured" boilerplate). Focused companion to the full narrative log in tests/, not a
-# replacement -- version-stamped filename so it survives a rebuild without ambiguity.
-if ($XmlRequest) {
-    $queryLogDir = Join-Path $providerDir "logs\$Entity"
-    if (-not (Test-Path $queryLogDir)) { New-Item -ItemType Directory -Path $queryLogDir -Force | Out-Null }
-    $queryLogName = "${Provider}_v${buildVersion}_${comboSafe}.txt"
-    $queryLogPath = Join-Path $queryLogDir $queryLogName
-    $queryLogContent = @"
-QUERY STRING
-------------
-$formStateContent
-
-COMMSYS XML
------------
-$xmlReqContent
-"@
-    if ($RmsRequestJson -or $RmsResponse) {
-        $queryLogContent += @"
-
-
-RMS QUERY
----------
-$rmsContent
-"@
-    }
-    $queryLogContent | Set-Content -LiteralPath $queryLogPath -Encoding UTF8
-}
+$logContent | Set-Content -LiteralPath $queryLogPath -Encoding UTF8
+Write-Ok "Saved: $queryLogPath"
 
 # ============================================================================
 # STEP 3: UPDATE SQVR
@@ -608,10 +566,9 @@ if (-not $NoCommit) {
     Write-Step 5 $totalSteps "Committing and pushing..."
 
     # Stage the files
-    $filesToAdd = @($logPath)
+    $filesToAdd = @($queryLogPath)
     if ($sqvrUpdated) { $filesToAdd += $sqvrPath }
     if ($statusUpdated) { $filesToAdd += $statusPath }
-    if ($queryLogPath) { $filesToAdd += $queryLogPath }
 
     $gitOk = $true
     foreach ($f in $filesToAdd) {
@@ -663,7 +620,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 $stepLabel = if ($NoCommit) { 5 } else { 6 }
 Write-Step $stepLabel $totalSteps "Summary"
 
-$relLogPath = $logPath.Replace("$repoRoot\", "").Replace("\", "/")
+$relLogPath = $queryLogPath.Replace("$repoRoot\", "").Replace("\", "/")
 $sqvrStatus = if ($sqvrUpdated) {
     if ($Result -eq 'PASS') { "Updated [PENDING] -> [CONFIRMED]" }
     else { "Updated -> [FAILED]" }

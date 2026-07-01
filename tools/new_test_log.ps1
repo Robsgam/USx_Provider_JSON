@@ -6,7 +6,11 @@
 #     -Provider NJ_NJCJIS -Variant BASE -Version 2.0 `
 #     -Entity Vehicle -Combo RQ -Description "plate only"
 #
-# Output: <ProviderDir>\tests\<DATE>_<Entity>_<Combo>_<Description>_v<Version>.txt
+# Output (current standard, 2026-07-01 -- tests/ folder eliminated): a provider that has
+# migrated to logs/<Entity>/ (any entity folder already exists) gets
+#   <ProviderDir>\logs\<Entity>\<Provider>_v<Version>_<Combo>.txt
+# A provider not yet migrated (legacy) gets the old flat-tests/ stub:
+#   <ProviderDir>\tests\<DATE>_<Entity>_<Combo>_<Description>_v<Version>.txt
 #
 # After creating the stub:
 #   1. Run the test in the browser with developer tools open (F12 -> Network tab).
@@ -35,10 +39,22 @@ if (-not $ProviderDir) {
 }
 
 $DATE      = (Get-Date -Format 'yyyy-MM-dd')
-$LOGDIR    = "$ProviderDir\tests"
 $DESC_SAFE = $Description -replace '[\\/:*?"<>| ]', '_'
-$FILENAME  = "${DATE}_${Entity}_${Combo}_${DESC_SAFE}_v${Version}.txt"
-$OUTPATH   = "$LOGDIR\$FILENAME"
+
+# Migrated provider (any logs/<Entity>/ dir already exists) -> new standard naming/location.
+# Legacy provider -> old flat tests/ stub, unchanged.
+$logsRoot = "$ProviderDir\logs"
+$isMigrated = (Test-Path $logsRoot) -and
+    @(Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '_archive_pre_v*' }).Count -gt 0
+
+if ($isMigrated) {
+    $LOGDIR   = "$logsRoot\$Entity"
+    $FILENAME = "${Provider}_v${Version}_${Combo}.txt"
+} else {
+    $LOGDIR   = "$ProviderDir\tests"
+    $FILENAME = "${DATE}_${Entity}_${Combo}_${DESC_SAFE}_v${Version}.txt"
+}
+$OUTPATH = "$LOGDIR\$FILENAME"
 
 New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 

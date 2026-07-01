@@ -37,13 +37,25 @@ $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
 $testsDir = Join-Path $provDir "tests"
+$logsRoot = Join-Path $provDir "logs"
 
 . "$toolDir\_resolve_provider_json.ps1"
 . "$toolDir\get_entity_fingerprints.ps1"
 . "$toolDir\_test_provenance.ps1"
 
-if (-not (Test-Path $provDir))  { Write-Host "  [ERROR] Provider not found: $Provider" -ForegroundColor Red; exit 1 }
-if (-not (Test-Path $testsDir)) { Write-Host "  [ERROR] No tests/ dir for $Provider" -ForegroundColor Red; exit 1 }
+if (-not (Test-Path $provDir)) { Write-Host "  [ERROR] Provider not found: $Provider" -ForegroundColor Red; exit 1 }
+
+# Current standard (2026-07-01): providers/<PROVIDER>/logs/<Entity>/*.txt -- entity is the
+# folder name, no filename parsing needed. Legacy fallback: flat providers/<PROVIDER>/tests/*.txt
+# (entity parsed from the filename prefix).
+$entityLogDirs = @()
+if (Test-Path $logsRoot) {
+    $entityLogDirs = @(Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '_archive_pre_v*' })
+}
+$usingNewLogStructure = $entityLogDirs.Count -gt 0
+if (-not $usingNewLogStructure -and -not (Test-Path $testsDir)) {
+    Write-Host "  [ERROR] No logs/<Entity>/ dirs and no tests/ dir for $Provider" -ForegroundColor Red; exit 1
+}
 
 $buildVer = Get-BuildVersionForProvider $provDir
 if (-not $buildVer) { Write-Host "  [ERROR] Could not resolve build version for $Provider" -ForegroundColor Red; exit 1 }
@@ -54,18 +66,34 @@ if (-not $activeJson) { Write-Host "  [ERROR] No active JSON for $Provider" -For
 $fp = Get-EntityFingerprints -Path $activeJson
 $entities = @($fp.Keys | Sort-Object { -$_.Length })   # longest-first so 'Vehicle' matches before any prefix
 
-$logs = @(Get-ChildItem $testsDir -Filter "*.txt" -File -ErrorAction SilentlyContinue)
-Write-Host ""
-Write-Host "  Backfill stamps: $Provider  (build v$buildVer, tier $Tier)  [$(if ($Apply){'APPLY'}else{'DRY RUN'})]" -ForegroundColor Cyan
-Write-Host "  $($logs.Count) log(s) in tests/" -ForegroundColor Gray
+if ($usingNewLogStructure) {
+    $logs = @()
+    foreach ($ed in $entityLogDirs) {
+        foreach ($f in (Get-ChildItem $ed.FullName -Filter "*.txt" -File -ErrorAction SilentlyContinue)) {
+            $logs += [PSCustomObject]@{ FullName = $f.FullName; Name = $f.Name; Entity = $ed.Name }
+        }
+    }
+    Write-Host ""
+    Write-Host "  Backfill stamps: $Provider  (build v$buildVer, tier $Tier)  [$(if ($Apply){'APPLY'}else{'DRY RUN'})]" -ForegroundColor Cyan
+    Write-Host "  $($logs.Count) log(s) in logs/<Entity>/" -ForegroundColor Gray
+} else {
+    $logs = @(Get-ChildItem $testsDir -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+    Write-Host ""
+    Write-Host "  Backfill stamps: $Provider  (build v$buildVer, tier $Tier)  [$(if ($Apply){'APPLY'}else{'DRY RUN'})]" -ForegroundColor Cyan
+    Write-Host "  $($logs.Count) log(s) in tests/" -ForegroundColor Gray
+}
 
 $stamped = 0; $already = 0; $skipped = 0
 foreach ($log in $logs) {
     $name = $log.Name
-    # Resolve entity from filename: strip the provider prefix, take the leading entity token.
-    $rest = $name -replace "^$([regex]::Escape($Provider))_", ''
-    $ent = $null
-    foreach ($e in $entities) { if ($rest -match "^$([regex]::Escape($e))(_|$)") { $ent = $e; break } }
+    if ($usingNewLogStructure) {
+        $ent = $log.Entity
+    } else {
+        # Resolve entity from filename: strip the provider prefix, take the leading entity token.
+        $rest = $name -replace "^$([regex]::Escape($Provider))_", ''
+        $ent = $null
+        foreach ($e in $entities) { if ($rest -match "^$([regex]::Escape($e))(_|$)") { $ent = $e; break } }
+    }
     if (-not $ent) { Write-Host "    SKIP (no entity match): $name" -ForegroundColor DarkGray; $skipped++; continue }
 
     $existing = Get-LogStamp $log.FullName
