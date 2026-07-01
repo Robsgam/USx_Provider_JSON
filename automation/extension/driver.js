@@ -99,7 +99,8 @@
     for (const t of tests) {
       const fr = [];
       // Normalize fills: PowerShell ConvertTo-Json collapses single-element arrays to bare objects
-      const fills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
+      const rawFills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
+      const fills = sortFillsDateLast(rawFills);
       for (const f of fills) { fr.push(await fillWithRetry(f.fieldId, f.value, dSettle)); await L.sleep(dField); }
       await L.sleep(dSettle);
       const filled = fr.every((r) => r && r.ok);

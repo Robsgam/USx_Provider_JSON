@@ -148,17 +148,28 @@
     const code = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('^' + code + '\\b', 'i');
 
+    // Scope the option lookup to THIS field's own open listbox via aria-controls (the standard
+    // ARIA combobox link from an input to its own menu) instead of querying the whole document.
+    // Live-confirmed root cause (2026-07-01): an unscoped document.querySelectorAll picked up a
+    // stale/leftover [role=option] element from a DIFFERENT field's menu that hadn't fully
+    // unmounted -- SexCode matched a bogus single-char option ("m") and landed on the wrong
+    // final value ("F - Female"); RegistrationState found only 9 "option(s)" (a real US-state
+    // list has 50+) and landed on "MI - Michigan". Both resolved in 0-1ms, too fast to be a
+    // freshly rendered menu -- a second, unrelated open/leftover menu elsewhere in the DOM.
+    const ariaControls = input.getAttribute('aria-controls') || (control && control.getAttribute('aria-controls'));
+    const scopeRoot = () => (ariaControls && document.getElementById(ariaControls)) || document;
+
     // Poll up to 2.5s for the filtered option list to render.
     t = Date.now();
     const found = await pollFor(() => {
-      const opts = [...document.querySelectorAll('[class*="select__option"], [role=option]')];
+      const opts = [...scopeRoot().querySelectorAll('[class*="select__option"], [role=option]')];
       if (!opts.length) return null;
       const m = opts.find((o) => re.test((o.textContent || '').trim()));
       return { opt: m || opts[0], matched: !!m, count: opts.length };
     }, 2500, 120);
-    if (!found) { dbg(`no options rendered after ${Date.now() - t}ms -- FAIL`); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
+    if (!found) { dbg(`no options rendered after ${Date.now() - t}ms (aria-controls=${ariaControls || 'none'}) -- FAIL`); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
     const { opt, matched, count } = found;
-    dbg(`${count} option(s) after ${Date.now() - t}ms; using ${matched ? 'regex match' : `opts[0] FALLBACK (no regex match for "${value}")`}: "${(opt.textContent || '').trim()}"`);
+    dbg(`${count} option(s) (aria-controls=${ariaControls || 'none, unscoped'}) after ${Date.now() - t}ms; using ${matched ? 'regex match' : `opts[0] FALLBACK (no regex match for "${value}")`}: "${(opt.textContent || '').trim()}"`);
 
     opt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     opt.dispatchEvent(new MouseEvent('click', { bubbles: true }));
