@@ -51,6 +51,19 @@
     return { fieldId, kind: 'text', ok: el.value === String(value), value: el.value };
   }
 
+  // Poll a predicate instead of trusting a fixed sleep -- the filtered option list (network-
+  // backed, e.g. State/SexCode) can take longer than a fixed wait on a live tenant, especially
+  // mid-way through a fast automated run. Same pattern as capture.js's waitFor/waitForXml.
+  async function pollFor(fn, timeoutMs, stepMs) {
+    const steps = Math.max(1, Math.floor(timeoutMs / stepMs));
+    for (let i = 0; i < steps; i++) {
+      const r = fn();
+      if (r) return r;
+      await sleep(stepMs);
+    }
+    return fn();
+  }
+
   // react-select (Arc): open menu -> filter by CODE -> click matching option.
   // Option labels render as "<CODE> - <Name>"; combo values are CODEs.
   async function selectReactSelect(fieldId, value) {
@@ -63,16 +76,22 @@
     await sleep(300);
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, value);
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    await sleep(450);
-    const opts = [...document.querySelectorAll('[class*="select__option"], [role=option]')];
     const code = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('^' + code + '\\b', 'i');
-    const opt = opts.find((o) => re.test((o.textContent || '').trim())) || opts[0];
+    // Poll up to 2s for the filtered option list to render, instead of one fixed 450ms sleep.
+    const opt = await pollFor(() => {
+      const opts = [...document.querySelectorAll('[class*="select__option"], [role=option]')];
+      if (!opts.length) return null;
+      return opts.find((o) => re.test((o.textContent || '').trim())) || opts[0];
+    }, 2000, 120);
     if (!opt) return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value };
     opt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     opt.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    await sleep(180);
-    const display = ((input.closest('.arc-select__control') || control)?.textContent || '').trim();
+    // Poll up to 1s for the control's display text to update, instead of one fixed 180ms sleep.
+    const display = await pollFor(() => {
+      const d = ((input.closest('.arc-select__control') || control)?.textContent || '').trim();
+      return re.test(d) ? d : null;
+    }, 1000, 100) || ((input.closest('.arc-select__control') || control)?.textContent || '').trim();
     return { fieldId, kind: 'select', ok: re.test(display), display };
   }
 
