@@ -1,0 +1,39 @@
+CA_CONTRA_COSTA — DEVELOPMENT NEEDED (build-time spec)
+=======================================================
+
+SOURCE / PROVENANCE
+  Jira ticket : DEX-517  "[CA - Contra Costa County SO] Commsys PO Process"
+  Attachment  : DAYQ6051-A - Contra Costa Co SO, CA - Refreshed (1).pdf
+                (Jira attachment id 174946, 171502 bytes)
+  Document    : CommSys Product Quotation DAYQ6051-A, PO dated 2025-04-17
+  Ingested    : 2026-07-01 (extracted with pdftotext; PDF kept in this source/ folder)
+
+VERBATIM — "Notes" section of the PO quote
+  1. Development Required. Aliased to DriverLicenseQuery to include County
+     Warrants JAWS,DMV, WPS, MUPS, CARPOS, CSAR, NCIC, SRF.
+  2. Annual Cost
+  3. One-Time Fees
+
+  (Note #1 is attached to Pricing line-item 3: "PersonSuperQuery",
+   part number PS-CC12-07-021-F, qty 1, $1,500.00.)
+
+INTERPRETATION FOR BUILD TIME
+  The provider's PersonSuperQuery (CLETSPersonSuperQuery, seen in the devdoc but
+  absent from the metadata XML) requires development on the CommSys side: it is
+  ALIASED TO DriverLicenseQuery and bundles these 8 county-warrant / data sources:
+      JAWS, DMV, WPS, MUPS, CARPOS, CSAR, NCIC, SRF
+  This is the missing piece behind the earlier "SuperQuery in devdoc, not in
+  metadata" gap that parked this provider as INCOMPLETE.
+
+DO NOT ACTION YET
+  No QIDM/build work now — one provider at a time. Use this note when
+  CA_CONTRA_COSTA is next scheduled for build. Confirm against the then-current
+  metadata XML (the SuperQuery/alias may appear in a refreshed metadata export)
+  before authoring combos; devdoc "Basic Queries Supported" remains the authority
+  for WHICH queries to build.
+
+RELATED (not ingested here; noted for later)
+  DEX-517 also carries two newer Contra Costa PDFs:
+    - DAYQ6921 - Contra Costa Co SO, CA - Add'l Transactions.pdf   (2025-12-18)
+    - DAYQ7554 - Contra Costa Co SO, CA - Add 5 add'l agencies.pdf (2026-07-01)
+  Review these too at build time — they may add transactions/agencies beyond this quote.
