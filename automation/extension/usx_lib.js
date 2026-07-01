@@ -165,11 +165,15 @@
       const opts = [...scopeRoot().querySelectorAll('[class*="select__option"], [role=option]')];
       if (!opts.length) return null;
       const m = opts.find((o) => re.test((o.textContent || '').trim()));
-      return { opt: m || opts[0], matched: !!m, count: opts.length };
+      return { opt: m || opts[0], matched: !!m, count: opts.length, allTexts: opts.map((o) => (o.textContent || '').trim()) };
     }, 2500, 120);
     if (!found) { dbg(`no options rendered after ${Date.now() - t}ms (aria-controls=${ariaControls || 'none'}) -- FAIL`); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
-    const { opt, matched, count } = found;
+    const { opt, matched, count, allTexts } = found;
     dbg(`${count} option(s) (aria-controls=${ariaControls || 'none, unscoped'}) after ${Date.now() - t}ms; using ${matched ? 'regex match' : `opts[0] FALLBACK (no regex match for "${value}")`}: "${(opt.textContent || '').trim()}"`);
+    // Full option dump whenever the match looks suspicious (anomalously short text, e.g. the
+    // earlier "m" bogus match) -- so the next failure's actual option list is in the log
+    // without a separate manual diagnostic round-trip.
+    if (!matched || (opt.textContent || '').trim().length <= 2) dbg(`all options: [${allTexts.map((t2) => JSON.stringify(t2)).join(', ')}]`);
 
     opt.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     opt.dispatchEvent(new MouseEvent('click', { bubbles: true }));
