@@ -182,7 +182,42 @@
     return out;
   };
 
+  // FOLLOW-UP recon (2026-07-01, round 2): __usxRmsRecon found it -- APP_WRAPPER's flattened
+  // text showed "...1HGCM82633A123456RMS(No Returns)..." -- a per-query search-history list
+  // where each row is IDENTIFIER + "RMS" + a status like "(No Returns)". That confirms RMS DOES
+  // fire alongside every CommSys query and its status renders inline on THIS page. This finds
+  // each row by locating the leaf-most element containing the standalone word "RMS", then walks
+  // up a few ancestor levels dumping outerHTML (truncated) so the real row structure -- how
+  // identifier/RMS/status are split into DOM nodes, what class the row/status carry, whether a
+  // data-* attribute correlates it to a transaction id -- comes from evidence, not another guess.
+  window.__usxRmsRowRecon = function () {
+    // Leaf-most elements whose OWN text (not descendants') contains standalone "RMS".
+    const rmsWordRe = /\bRMS\b/;
+    const candidates = [...document.querySelectorAll('*')].filter((el) => {
+      if (el.children.length > 0) return false; // leaf only -- skip containers
+      return rmsWordRe.test(el.textContent || '');
+    });
+    const rows = candidates.slice(0, 6).map((leaf) => {
+      const chain = [];
+      let node = leaf;
+      for (let i = 0; i < 6 && node; i++) {
+        chain.push({
+          tag: node.tagName,
+          id: node.id || null,
+          cls: (node.className || '').toString().slice(0, 100),
+          dataAttrs: node.attributes ? [...node.attributes].filter((a) => a.name.startsWith('data-')).map((a) => a.name + '=' + a.value).join(', ') : '',
+          outerHTML: (node.outerHTML || '').slice(0, 500)
+        });
+        node = node.parentElement;
+      }
+      return chain;
+    });
+    console.log('%c[USx-RMS-ROW-RECON]', 'color:#c06;font-weight:bold', { matchCount: candidates.length, rows });
+    console.log('[USx-RMS-ROW-RECON] report the full object above -- each entry in "rows" is one RMS-row leaf + 6 ancestor levels (tag/class/data-attrs/outerHTML).');
+    return { matchCount: candidates.length, rows };
+  };
+
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity. After a submit, run __usxRmsRecon() to help find the RMS result/error panel.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();
