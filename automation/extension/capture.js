@@ -435,25 +435,41 @@
       if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
       if (fresh.length % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${fresh.length}...`);
     }
-    // Correlate with manifest: manifest is oldest-first; API is newest-first.
-    // If counts match exactly, reverse-pair. Otherwise fall back to unlabeled.
+    // Correlate fresh captures to manifest entries. Robust to a cleared/re-run session where
+    // stale old-entity rows re-enter `fresh` (loadCaptured() reset -> `have` empty -> previously
+    // captured rows re-collected). Blind reverse-position pairing (old code, gated on
+    // batch.length===fresh.length) then stapled the wrong manifest entry onto a stale capture --
+    // e.g. a Person DriverLicenseQuery label onto a BoatQuery XML -> false-FAIL cross-entity logs.
+    // Match per item in descending confidence, ALWAYS messageType-guarded so a label can never
+    // cross entities: (1) identifier-field content match, (2) messageType-scoped reverse-order
+    // pairing (newest API entry = last manifest entry of its type), (3) unlabeled (import infers
+    // kind from XML). A fresh item never receives a label whose query != its messageType.
     const usedM = new Set();
     for (let i = 0; i < fresh.length; i++) {
       const item = fresh[i];
-      let m = null;
-      if (batch.length === fresh.length) {
-        // Order-based: manifest[N-1-i] ↔ fresh[i] (newest API entry = last manifest entry)
-        const mi = batch.length - 1 - i;
-        if (!usedM.has(mi)) { m = batch[mi]; usedM.add(mi); }
-      } else {
-        // Try identifier-field match (value appears literally in XML)
-        const bi = batch.findIndex((b, idx) => !usedM.has(idx) && idFills(b.fills || []).some((f) => item.xml.xml.includes('>' + f.value + '<')));
-        if (bi >= 0) { m = batch[bi]; usedM.add(bi); }
+      const mt = item.xml.messageType;
+      let mi = -1;
+
+      // 1) identifier-field content match (messageType-guarded)
+      mi = batch.findIndex((b, idx) => {
+        if (usedM.has(idx)) return false;
+        if (b.query && mt && b.query !== mt) return false;
+        const ids = idFills(b.fills || []);
+        return ids.length && ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));
+      });
+
+      // 2) messageType-scoped reverse-order pairing
+      if (mi < 0 && mt) {
+        for (let k = batch.length - 1; k >= 0; k--) {
+          if (!usedM.has(k) && batch[k].query === mt) { mi = k; break; }
+        }
       }
-      if (m) {
-        out.push(labelFromManifest(m, { fields: null, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: item.xml.messageType, ok: true }));
+
+      if (mi >= 0) {
+        usedM.add(mi);
+        out.push(labelFromManifest(batch[mi], { fields: null, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true }));
       } else {
-        out.push({ provider, entity: null, query: item.xml.messageType, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: item.xml.messageType, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, capturedAt: new Date().toISOString(), ok: true });
+        out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, capturedAt: new Date().toISOString(), ok: true });
       }
     }
     const added = fresh.length;
