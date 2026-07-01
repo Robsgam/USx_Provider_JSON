@@ -25,8 +25,9 @@ $baseName = $fileName -replace '\.json$',''
 
 if (-not $Matrix) {
     $jsonDir = Split-Path (Resolve-Path $Path) -Parent
-    $docsDir = Join-Path $jsonDir "docs"
-    $Matrix = Join-Path $docsDir "${baseName}_TEST_MATRIX.txt"
+    # docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- TEST_MATRIX is "reports" category.
+    . (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+    $Matrix = Find-DocsPath $jsonDir 'reports' "${baseName}_TEST_MATRIX.txt"
 }
 
 if (-not (Test-Path $Matrix)) { Write-Error "Test matrix not found: $Matrix"; exit 1 }

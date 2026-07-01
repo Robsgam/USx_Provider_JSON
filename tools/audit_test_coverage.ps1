@@ -37,6 +37,8 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$PSScriptRoot\_resolve_provider_json.ps1"
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first)
+. "$PSScriptRoot\_resolve_docs_path.ps1"
 # Shared combo extraction + test-log matching (kept in sync with block_entity.ps1).
 . "$PSScriptRoot\_combo_match.ps1"
 # Shared provenance + tier helpers (version/fingerprint stamp validation).
@@ -103,7 +105,7 @@ function Get-TestVersion($provDir) {
 # Parse the combo count the TEST_MATRIX claims: "COMBO COVERAGE (13/13)" -> 13 (denominator),
 # fallback "QIDM SUMMARY (6 QIDMs, 13 combos)" -> 13. Returns $null if no matrix / unparseable.
 function Get-MatrixComboCount($provDir, $provName) {
-    $m = Join-Path (Join-Path $provDir "docs") "${provName}_TEST_MATRIX.txt"
+    $m = Find-DocsPath $provDir 'reports' "${provName}_TEST_MATRIX.txt"
     if (-not (Test-Path $m)) { return $null }
     $text = [System.IO.File]::ReadAllText($m)
     if ($text -match 'COMBO COVERAGE\s*\(\s*\d+\s*/\s*(\d+)\s*\)') { return [int]$Matches[1] }
@@ -332,7 +334,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     Out-Line ""
     Out-LineColor "  CHECK 4: SQVR Alignment" "Yellow"
 
-    $sqvrPath = Join-Path (Join-Path $provDir "docs") "${provName}_SQVR.txt"
+    $sqvrPath = Find-DocsPath $provDir 'tracking' "${provName}_SQVR.txt"
     $sqvrConfirmed = 0
     $sqvrPending = 0
     $sqvrApprovedSkip = 0

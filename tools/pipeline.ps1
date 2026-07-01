@@ -43,6 +43,8 @@ $provRoot = Join-Path $repoRoot "providers"
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$toolDir\_resolve_provider_json.ps1"
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first)
+. "$toolDir\_resolve_docs_path.ps1"
 
 # ── Validate params ──────────────────────────────────────────────────────────
 $modeCount = 0
@@ -183,7 +185,7 @@ if (-not $batchMode) {
     # Step 3: Extract metadata reference
     Step "Extract metadata reference"
     if ($files.Xml -and (Test-Path $files.Json)) {
-        $metaOut = Join-Path $files.Dir "docs\${provName}_METADATA_REFERENCE.txt"
+        $metaOut = Get-DocsPath $files.Dir 'reference' "${provName}_METADATA_REFERENCE.txt"
         & powershell -ExecutionPolicy Bypass -File "$toolDir\extract_metadata_reference.ps1" `
             -XmlPath $files.Xml.FullName -Path $files.Json -OutFile $metaOut 2>&1 | Out-Null
         if (Test-Path $metaOut) {
@@ -378,7 +380,7 @@ foreach ($provName in $providerList) {
 
     # Step 3: Extract metadata
     if (-not $provFailed -and $files.Xml -and (Test-Path $files.Json)) {
-        $metaOut = Join-Path $files.Dir "docs\${provName}_METADATA_REFERENCE.txt"
+        $metaOut = Get-DocsPath $files.Dir 'reference' "${provName}_METADATA_REFERENCE.txt"
         & powershell -ExecutionPolicy Bypass -File "$toolDir\extract_metadata_reference.ps1" `
             -XmlPath $files.Xml.FullName -Path $files.Json -OutFile $metaOut 2>&1 | Out-Null
         if (Test-Path $metaOut) {

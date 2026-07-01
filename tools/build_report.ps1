@@ -5,10 +5,12 @@
   Step 10 (test conductor) runs after step 9 completes.
 
   Auto-detects build path from JSON name:
-    <PROVIDER>.json -> docs/
-    *_MC*.json -> docs/mc/ (legacy)
-    *_BASE*.json -> docs/base/ (legacy)
-  Override with -DocsDir.
+    <PROVIDER>.json -> docs/{tracking,reports,reference,deliverables}/ (2026-07-01 reorg
+      pilot -- see _resolve_docs_path.ps1; falls back to flat docs/ for any provider that
+      hasn't migrated yet, which is every provider except NJ_NJCJIS today)
+    *_MC*.json -> docs/mc/ (legacy, unaffected by the reorg)
+    *_BASE*.json -> docs/base/ (legacy, unaffected by the reorg)
+  Override with -DocsDir (forces ALL categories to one flat directory, bypassing the reorg).
 
   Usage: .\build_report.ps1 -Path <provider.json>
          .\build_report.ps1 -Path <provider.json> -DocsDir <output-dir>
@@ -28,6 +30,7 @@ $jsonDir = Split-Path $resolved -Parent
 $jsonName = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$', ''
 $jsonFile = Split-Path $resolved -Leaf
 
+$docsDirWasExplicit = $PSBoundParameters.ContainsKey('DocsDir')
 if (-not $DocsDir) {
     $docsRoot = Join-Path $jsonDir "docs"
     if ($jsonName -match '_MC') {
@@ -40,6 +43,22 @@ if (-not $DocsDir) {
 }
 if (-not (Test-Path $DocsDir)) {
     New-Item -ItemType Directory -Path $DocsDir -Force | Out-Null
+}
+
+# Category dirs (2026-07-01 docs/ reorg pilot, NJ_NJCJIS first -- see _resolve_docs_path.ps1).
+# Only participates for the modern flat-docs/ single-JSON path with no explicit -DocsDir
+# override; legacy MC/BASE variants and any override keep everything collapsed into
+# $DocsDir, unchanged. Get-DocsCategoryDir itself falls back to flat docs/ for any
+# provider that hasn't migrated (all 20 except NJ today), so this is a no-op for them.
+$isModernSingleJson = ($jsonName -notmatch '_MC' -and $jsonName -notmatch '_BASE')
+if ($docsDirWasExplicit -or -not $isModernSingleJson) {
+    $TrackingDir = $DocsDir; $ReportsDir = $DocsDir; $ReferenceDir = $DocsDir; $DeliverablesDir = $DocsDir
+} else {
+    . (Join-Path $toolDir '_resolve_docs_path.ps1')
+    $TrackingDir     = Get-DocsCategoryDir $jsonDir 'tracking'
+    $ReportsDir      = Get-DocsCategoryDir $jsonDir 'reports'
+    $ReferenceDir    = Get-DocsCategoryDir $jsonDir 'reference'
+    $DeliverablesDir = Get-DocsCategoryDir $jsonDir 'deliverables'
 }
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
@@ -67,7 +86,7 @@ $header = @"
 Write-Host ""
 Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
 $scriptsDir = Join-Path $jsonDir "scripts"
-$lintFile = Join-Path $DocsDir "LINT_REPORT_$jsonName.txt"
+$lintFile = Join-Path $ReportsDir "LINT_REPORT_$jsonName.txt"
 if (Test-Path $scriptsDir) {
     $linter = Join-Path $PSScriptRoot "lint_build_scripts.ps1"
     $lintOut = powershell.exe -ExecutionPolicy Bypass -File $linter -Path $scriptsDir -OutFile $lintFile 2>&1 | Out-String
@@ -94,7 +113,7 @@ Write-Host "  Launching steps 1-9 in parallel..." -ForegroundColor Yellow
 $resolvedStr = $resolved.ToString()
 $providerBase = $jsonName -replace '_(BASE|MC)$', ''
 $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
-$matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
+$matrixFile = Join-Path $ReportsDir $matrixFileName
 $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
 
 # Auto-detect casing convention so verify_build's camelCase check (CHECK 5) actually
@@ -126,15 +145,15 @@ try {
 } catch { $useCamelCase = $false }
 Write-Host "  Casing convention: $(if ($useCamelCase) { 'camelCase (CHECK 5 enabled)' } else { 'PascalCase (CHECK 5 N/A)' })" -ForegroundColor Gray
 
-$validatorFile  = Join-Path $DocsDir "VALIDATOR_REPORT_$jsonName.txt"
-$respSimFile    = Join-Path $DocsDir "RESPONSE_SIMULATION_$jsonName.txt"
-$layoutFile    = Join-Path $DocsDir "LAYOUT_REPORT_$jsonName.txt"
-$queryFile     = Join-Path $DocsDir "QUERY_REPORT_$jsonName.txt"
-$picklistFile  = Join-Path $DocsDir "PICKLIST_REPORT_$jsonName.txt"
-$htmlFile      = Join-Path $DocsDir "LAYOUT_$jsonName.html"
-$verifyFile    = Join-Path $DocsDir "VERIFY_REPORT_$jsonName.txt"
-$metadataFile  = Join-Path $DocsDir "METADATA_AUDIT_$jsonName.txt"
-$cadFile       = Join-Path $DocsDir "CAD_AUDIT_$jsonName.txt"
+$validatorFile  = Join-Path $ReportsDir "VALIDATOR_REPORT_$jsonName.txt"
+$respSimFile    = Join-Path $ReportsDir "RESPONSE_SIMULATION_$jsonName.txt"
+$layoutFile    = Join-Path $ReportsDir "LAYOUT_REPORT_$jsonName.txt"
+$queryFile     = Join-Path $ReportsDir "QUERY_REPORT_$jsonName.txt"
+$picklistFile  = Join-Path $ReportsDir "PICKLIST_REPORT_$jsonName.txt"
+$htmlFile      = Join-Path $ReportsDir "LAYOUT_$jsonName.html"
+$verifyFile    = Join-Path $ReportsDir "VERIFY_REPORT_$jsonName.txt"
+$metadataFile  = Join-Path $ReportsDir "METADATA_AUDIT_$jsonName.txt"
+$cadFile       = Join-Path $ReportsDir "CAD_AUDIT_$jsonName.txt"
 
 $validatorPath   = Join-Path $toolDir "validate.ps1"
 $rendererPath    = Join-Path $toolDir "render_layout.ps1"
@@ -328,7 +347,7 @@ Write-Host "  [10/$stepCount] Running test conductor..." -ForegroundColor Yellow
 $testConductorPath = Join-Path $toolDir "run_test_matrix.ps1"
 if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
     $conductorOut = & powershell -ExecutionPolicy Bypass -File $testConductorPath -Path $resolvedStr -Matrix $matrixFile 2>&1 | Out-String
-    $conductorFile = Join-Path $DocsDir "TEST_VALIDATION_$jsonName.txt"
+    $conductorFile = Join-Path $ReportsDir "TEST_VALIDATION_$jsonName.txt"
     ($header + "TEST CONDUCTOR RESULTS`n=====================`n`n" + $conductorOut) | Out-File -FilePath $conductorFile -Encoding utf8
     if ($conductorOut -match '(\d+)/(\d+) PASS, (\d+) FAIL') {
         $tcPass = $Matches[1]; $tcTotal = $Matches[2]; $tcFail = $Matches[3]
@@ -369,7 +388,7 @@ if (Test-Path $respSimPath) {
 Write-Host ""
 Write-Host "  [12/$stepCount] Running label review..." -ForegroundColor Yellow
 $labelReviewPath = Join-Path $toolDir "suggest_field_labels.ps1"
-$labelReviewFile  = Join-Path $DocsDir "LABEL_REVIEW_$jsonName.txt"
+$labelReviewFile  = Join-Path $ReportsDir "LABEL_REVIEW_$jsonName.txt"
 if (Test-Path $labelReviewPath) {
     & pwsh -NoProfile -ExecutionPolicy Bypass -File $labelReviewPath -Path $resolvedStr -OutFile $labelReviewFile 2>&1 | Out-Null
     Write-Host "  [12/$stepCount] Saved: $labelReviewFile" -ForegroundColor Green
@@ -380,8 +399,8 @@ if (Test-Path $labelReviewPath) {
 Write-Host ""
 Write-Host "  [13/$stepCount] Generating officer query guide..." -ForegroundColor Yellow
 $officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
-$officerHtml = Join-Path $DocsDir "OFFICER_GUIDE_$jsonName.html"
-$officerPdf  = Join-Path $DocsDir "OFFICER_GUIDE_$jsonName.pdf"
+$officerHtml = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.html"
+$officerPdf  = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.pdf"
 if (Test-Path $officerGuidePath) {
     & pwsh -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1 | Out-Null
     if (Test-Path $officerHtml) { Write-Host "  [13/$stepCount] Saved: $officerHtml" -ForegroundColor Green }
@@ -397,8 +416,8 @@ if (Test-Path $officerGuidePath) {
 Write-Host ""
 Write-Host "  [14/$stepCount] Generating test sheet..." -ForegroundColor Yellow
 $testSheetPath = Join-Path $toolDir "render_test_sheet.ps1"
-$testSheetHtml = Join-Path $DocsDir "TEST_SHEET_$jsonName.html"
-$testSheetPdf  = Join-Path $DocsDir "TEST_SHEET_$jsonName.pdf"
+$testSheetHtml = Join-Path $DeliverablesDir "TEST_SHEET_$jsonName.html"
+$testSheetPdf  = Join-Path $DeliverablesDir "TEST_SHEET_$jsonName.pdf"
 if (Test-Path $testSheetPath) {
     & pwsh -NoProfile -ExecutionPolicy Bypass -File $testSheetPath -Path $resolvedStr -OutFile $testSheetHtml -PdfFile $testSheetPdf 2>&1 | Out-Null
     if (Test-Path $testSheetHtml) { Write-Host "  [14/$stepCount] Saved: $testSheetHtml" -ForegroundColor Green }
@@ -422,7 +441,7 @@ Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor 
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL / $verifyWarns WARN" } elseif ($verifyWarns -gt 0) { "0 FAIL / $verifyWarns WARN" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } elseif ($verifyWarns -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
 Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
-Write-Host "  Reports:   $DocsDir" -ForegroundColor Gray
+Write-Host "  Reports:   $ReportsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -430,7 +449,7 @@ Write-Host ""
 Write-Host ""
 Write-Host "  [15/$stepCount] Supported-query (devdoc) audit..." -ForegroundColor Yellow
 $supportedQAPath = Join-Path $toolDir "audit_supported_queries.ps1"
-$supportedQAFile = Join-Path $DocsDir "SUPPORTED_QUERY_AUDIT_$jsonName.txt"
+$supportedQAFile = Join-Path $ReportsDir "SUPPORTED_QUERY_AUDIT_$jsonName.txt"
 if (Test-Path $supportedQAPath) {
     & powershell -ExecutionPolicy Bypass -File $supportedQAPath -Path $resolvedStr -OutFile $supportedQAFile 2>&1 | Out-Null
     if (Test-Path $supportedQAFile) { Write-Host "  [15/$stepCount] Saved: $supportedQAFile" -ForegroundColor Green }
@@ -442,7 +461,7 @@ if (Test-Path $supportedQAPath) {
 Write-Host ""
 Write-Host "  [16/$stepCount] Generating changelog..." -ForegroundColor Yellow
 $changelogToolPath = Join-Path $toolDir "generate_changelog.ps1"
-$changelogFile = Join-Path $DocsDir "CHANGELOG_$jsonName.md"
+$changelogFile = Join-Path $TrackingDir "CHANGELOG_$jsonName.md"
 if (Test-Path $changelogToolPath) {
     & powershell -ExecutionPolicy Bypass -File $changelogToolPath -Path $resolvedStr -OutFile $changelogFile 2>&1 | Out-Null
     if (Test-Path $changelogFile) { Write-Host "  [16/$stepCount] Saved: $changelogFile" -ForegroundColor Green }
@@ -483,7 +502,7 @@ $manifest = [ordered]@{
     toolDir      = $toolDir
     reports      = $reportEntries
 }
-$manifestFile = Join-Path $DocsDir "BUILD_MANIFEST_$jsonName.json"
+$manifestFile = Join-Path $TrackingDir "BUILD_MANIFEST_$jsonName.json"
 [System.IO.File]::WriteAllText($manifestFile, ($manifest | ConvertTo-Json -Depth 10), [System.Text.UTF8Encoding]::new($false))
 Write-Host "  [manifest] $manifestFile (source SHA $($manifest.sourceSha256.Substring(0,12))...)" -ForegroundColor Gray
 Write-Host ""
@@ -497,7 +516,10 @@ Write-Host ""
 #  base whose name is NOT one this build would produce is an orphan -> remove it.
 #  The expected set is derived deterministically from $jsonName (NOT from which
 #  tools happened to run), so a transiently-skipped tool never deletes a good file.
-#  Scans only $DocsDir -- legacy docs/base|mc subfolders are never touched here.
+#  Scans $ReportsDir + $DeliverablesDir + $TrackingDir (collapse to $DocsDir for an
+#  unmigrated/legacy provider or explicit -DocsDir override -- unchanged behavior there;
+#  for a migrated provider these are 3 distinct category folders). Legacy docs/base|mc
+#  subfolders are never touched here.
 #  Manual docs (TEST_PLAN_*, *_FIELD_CASING_REVIEW.md, *_SUPPORTED_QUERIES.txt,
 #  FIRST_RESPONDER_*) don't match an owned prefix and are left alone.
 # ══════════════════════════════════════════════════════════════════════════════
@@ -520,14 +542,17 @@ $baseEsc    = [regex]::Escape($jsonName)
 $ownedRe    = '^(?:' + ($ownedPrefixes -join '|') + ')_' + $baseEsc + '(?:_.+)?\.(?:txt|html|pdf|json|md)$'
 $matrixRe   = '^' + $baseEsc + '_.+_TEST_MATRIX\.txt$'
 $prunedCount = 0
-Get-ChildItem $DocsDir -File -ErrorAction SilentlyContinue |
-    Where-Object {
-        ($_.Name -match $ownedRe -or $_.Name -match $matrixRe) -and ($canonicalLeaves -notcontains $_.Name)
-    } |
-    ForEach-Object {
-        Write-Host "  [cleanup] removing orphaned report: $($_.Name)" -ForegroundColor DarkYellow
-        Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
-        $prunedCount++
-    }
-if ($prunedCount -gt 0) { Write-Host "  [cleanup] pruned $prunedCount orphaned report file(s) from $DocsDir" -ForegroundColor Yellow }
+$pruneScanDirs = @($ReportsDir, $DeliverablesDir, $TrackingDir) | Select-Object -Unique
+foreach ($scanDir in $pruneScanDirs) {
+    Get-ChildItem $scanDir -File -ErrorAction SilentlyContinue |
+        Where-Object {
+            ($_.Name -match $ownedRe -or $_.Name -match $matrixRe) -and ($canonicalLeaves -notcontains $_.Name)
+        } |
+        ForEach-Object {
+            Write-Host "  [cleanup] removing orphaned report: $($_.Name)" -ForegroundColor DarkYellow
+            Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
+            $prunedCount++
+        }
+}
+if ($prunedCount -gt 0) { Write-Host "  [cleanup] pruned $prunedCount orphaned report file(s)" -ForegroundColor Yellow }
 Write-Host ""

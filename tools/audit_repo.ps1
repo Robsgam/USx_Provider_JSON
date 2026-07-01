@@ -17,6 +17,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first)
+. "$PSScriptRoot\_resolve_docs_path.ps1"
 
 $failCount = 0
 $passCount = 0
@@ -437,13 +439,15 @@ foreach ($pd in $providerDirs) {
         }
     }
 
-    # Required doc files (prefixed with canonical provider name for STATUS/SQVR/BUILD_NOTES)
+    # Required doc files (prefixed with canonical provider name for STATUS/SQVR/BUILD_NOTES).
+    # These are all "tracking" category (2026-07-01 docs/ reorg pilot) -- Find-DocsPath checks
+    # docs/tracking/ (migrated provider) then flat docs/ (not yet migrated).
     $docsDir = Join-Path $pd.FullName 'docs'
     if (Test-Path $docsDir) {
         foreach ($rd in $requiredDocs) {
             $pattern = if ($rd -eq 'JSON_INVENTORY.md') { $rd } else { "${docPrefix}_$rd" }
-            $found = Get-ChildItem $docsDir -File | Where-Object { $_.Name -eq $pattern }
-            if ($found) {
+            $found = Find-DocsPath $pd.FullName 'tracking' $pattern
+            if (Test-Path $found) {
                 Pass "${provName} -- docs/$pattern exists"
             } else {
                 Fail "${provName} -- docs/$pattern missing"
@@ -473,8 +477,9 @@ foreach ($pd in $providerDirs) {
     $baseDir = Join-Path $pd.FullName 'docs\base'
     $mcDir = Join-Path $pd.FullName 'docs\mc'
 
-    # Reports: check docs/ directly (single-JSON), then docs/base/ (legacy)
-    $docsDir = Join-Path $pd.FullName 'docs'
+    # Reports: check docs/reports/ (migrated) or flat docs/ (single-JSON, not yet migrated),
+    # then docs/base/ (legacy)
+    $docsDir = Get-DocsCategoryDir $pd.FullName 'reports'
     $docsFiles = @(Get-ChildItem $docsDir -File -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })
     $missingSingle = @()
     foreach ($rp in $reportPrefixes) {
@@ -657,7 +662,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Check STATUS.txt version
-    $statusFile = "$($pd.FullName)\docs\${docPrefix}_STATUS.txt"
+    $statusFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_STATUS.txt"
     if (Test-Path $statusFile) {
         $statusText = [System.IO.File]::ReadAllText($statusFile)
         $statusHasVersion = $statusText -match "v$([regex]::Escape($scriptVersion))"
@@ -670,7 +675,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Check SQVR version
-    $sqvrFile = "$($pd.FullName)\docs\${docPrefix}_SQVR.txt"
+    $sqvrFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_SQVR.txt"
     if (Test-Path $sqvrFile) {
         $sqvrText = [System.IO.File]::ReadAllText($sqvrFile)
         $sqvrHasVersion = $sqvrText -match "v$([regex]::Escape($scriptVersion))"
@@ -725,7 +730,7 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { continue }
 
-    $bnFile = "$($pd.FullName)\docs\${docPrefix}_BUILD_NOTES.txt"
+    $bnFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_BUILD_NOTES.txt"
     if (Test-Path $bnFile) {
         $bnText = [System.IO.File]::ReadAllText($bnFile)
         if ($bnText -match '\(no builds yet\)') {
@@ -765,7 +770,7 @@ foreach ($pd in $providerDirs) {
     }
     if (-not $scriptVersion) { continue }
 
-    $jiFile = "$($pd.FullName)\docs\JSON_INVENTORY.md"
+    $jiFile = Find-DocsPath $pd.FullName 'tracking' "JSON_INVENTORY.md"
     if (Test-Path $jiFile) {
         $jiText = [System.IO.File]::ReadAllText($jiFile)
         if ($jiText -match '\(no builds yet\)') {
@@ -795,7 +800,7 @@ foreach ($pd in $providerDirs) {
     $docPrefix = $provName
     $isFlagged = $provName -in $flaggedProviders
 
-    $statusFile = "$($pd.FullName)\docs\${docPrefix}_STATUS.txt"
+    $statusFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_STATUS.txt"
     if (-not (Test-Path $statusFile)) { continue }
 
     $statusText = [System.IO.File]::ReadAllText($statusFile)
@@ -812,7 +817,7 @@ foreach ($pd in $providerDirs) {
     }
 
     # Extract PASS count from validator report (single-JSON first, then legacy base)
-    $reportFile = "$($pd.FullName)\docs\VALIDATOR_REPORT_${docPrefix}.txt"
+    $reportFile = Find-DocsPath $pd.FullName 'reports' "VALIDATOR_REPORT_${docPrefix}.txt"
     if (-not (Test-Path $reportFile)) {
         $reportFile = "$($pd.FullName)\docs\base\VALIDATOR_REPORT_${docPrefix}_BASE.txt"
     }

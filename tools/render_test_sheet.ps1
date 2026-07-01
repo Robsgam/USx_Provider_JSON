@@ -21,10 +21,11 @@ $data     = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
 $provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $genDate  = Get-Date -Format 'yyyy-MM-dd'
 
-# Auto-locate matrix
+# Auto-locate matrix -- "reports" category (2026-07-01 docs/ reorg pilot)
 if (-not $MatrixPath) {
     $provDir    = Split-Path $resolved -Parent
-    $MatrixPath = Join-Path $provDir "docs\${provider}_TEST_MATRIX.txt"
+    . (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+    $MatrixPath = Find-DocsPath $provDir 'reports' "${provider}_TEST_MATRIX.txt"
 }
 if (-not (Test-Path $MatrixPath)) { Write-Error "TEST_MATRIX.txt not found: $MatrixPath"; exit 1 }
 

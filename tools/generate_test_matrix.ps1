@@ -48,7 +48,9 @@ elseif ($fileName -match 'v(\d+\.\d+)') { $version = $Matches[1] }
 # Used to prepend WARN lines before the first test of any QIDM with conditional requirements.
 $qidmConstraints = @{}
 $jsonDir = [System.IO.Path]::GetDirectoryName((Resolve-Path $Path))
-$metaRefPath = [System.IO.Path]::Combine($jsonDir, "docs", "${providerName}_METADATA_REFERENCE.txt")
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- METADATA_REFERENCE is "reference" category.
+. (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+$metaRefPath = Find-DocsPath $jsonDir 'reference' "${providerName}_METADATA_REFERENCE.txt"
 if (Test-Path $metaRefPath) {
     $mrLines = Get-Content $metaRefPath
     $currentQidm = $null

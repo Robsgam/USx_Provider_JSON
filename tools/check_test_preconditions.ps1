@@ -42,8 +42,11 @@ $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 $providerRoot = [System.IO.Path]::Combine($repoRoot, "providers", $Provider)
 if (-not (Test-Path $providerRoot)) { exit 0 }
 
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- METADATA_REFERENCE is "reference" category.
+. "$PSScriptRoot\_resolve_docs_path.ps1"
+
 # ── Load METADATA_REFERENCE.txt to find FIELD CONSTRAINTS ──
-$metaRefPath = [System.IO.Path]::Combine($providerRoot, "docs", "${Provider}_METADATA_REFERENCE.txt")
+$metaRefPath = Find-DocsPath $providerRoot 'reference' "${Provider}_METADATA_REFERENCE.txt"
 if (-not (Test-Path $metaRefPath)) { exit 0 }
 
 $mrLines = Get-Content $metaRefPath

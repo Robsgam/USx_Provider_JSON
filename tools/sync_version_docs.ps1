@@ -30,6 +30,8 @@ $today    = Get-Date -Format "yyyy-MM-dd"
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$toolDir\_resolve_provider_json.ps1"
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first)
+. "$toolDir\_resolve_docs_path.ps1"
 
 if (-not (Test-Path $provDir)) {
     Write-Host "  [ERROR] Provider not found: $provDir" -ForegroundColor Red
@@ -67,7 +69,7 @@ function Get-ValidatorScore($variant) {
     if ($variant) {
         $reportDir = Join-Path $provDir "docs\$variant"
     } else {
-        $reportDir = Join-Path $provDir "docs"
+        $reportDir = Get-DocsCategoryDir $provDir 'reports'
     }
     if (-not (Test-Path $reportDir)) { return $null }
     $report = Get-ChildItem $reportDir -Filter "VALIDATOR_REPORT_*" -File | Select-Object -First 1
@@ -128,7 +130,7 @@ if ($DryRun) { Write-Host "  ** DRY RUN -- no files will be changed **" -Foregro
 # ══════════════════════════════════════════════════════════════════════════════
 #  1. STATUS.txt
 # ══════════════════════════════════════════════════════════════════════════════
-$statusFile = Join-Path $provDir "docs\${Provider}_STATUS.txt"
+$statusFile = Get-DocsPath $provDir 'tracking' "${Provider}_STATUS.txt"
 if (Test-Path $statusFile) {
     $text = [System.IO.File]::ReadAllText($statusFile)
     $changed = $false
@@ -189,7 +191,7 @@ if (Test-Path $statusFile) {
 # ══════════════════════════════════════════════════════════════════════════════
 #  2. SQVR.txt
 # ══════════════════════════════════════════════════════════════════════════════
-$sqvrFile = Join-Path $provDir "docs\${Provider}_SQVR.txt"
+$sqvrFile = Get-DocsPath $provDir 'tracking' "${Provider}_SQVR.txt"
 if (Test-Path $sqvrFile) {
     $text = [System.IO.File]::ReadAllText($sqvrFile)
     $changed = $false
@@ -242,7 +244,7 @@ if (Test-Path $sqvrFile) {
 # ══════════════════════════════════════════════════════════════════════════════
 #  3. JSON_INVENTORY.md
 # ══════════════════════════════════════════════════════════════════════════════
-$invFile = Join-Path $provDir "docs\JSON_INVENTORY.md"
+$invFile = Get-DocsPath $provDir 'tracking' "JSON_INVENTORY.md"
 if (Test-Path $invFile) {
     $text = [System.IO.File]::ReadAllText($invFile)
     $changed = $false
@@ -359,7 +361,7 @@ if (Test-Path $tracker) {
 # ══════════════════════════════════════════════════════════════════════════════
 #  5. BUILD_NOTES.txt -- date checksum (must match JSON file date)
 # ══════════════════════════════════════════════════════════════════════════════
-$notesFile = Join-Path $provDir "docs\${Provider}_BUILD_NOTES.txt"
+$notesFile = Get-DocsPath $provDir 'tracking' "${Provider}_BUILD_NOTES.txt"
 $jsonFile = Join-Path $provDir "${Provider}.json"
 if (-not (Test-Path $jsonFile)) {
     $jsonFile = Get-ChildItem $provDir -Filter "*.json" -File | Select-Object -First 1 -ExpandProperty FullName
@@ -413,7 +415,7 @@ if (Test-Path $notesFile) {
 
 # 6a. Per-provider changelog: regenerate from the just-synced BUILD_NOTES.
 $genTool = Join-Path $toolDir "generate_changelog.ps1"
-$clProvFile = Join-Path $provDir "docs\CHANGELOG_${Provider}.md"
+$clProvFile = Get-DocsPath $provDir 'tracking' "CHANGELOG_${Provider}.md"
 if ((Test-Path $genTool) -and -not $DryRun) {
     & powershell -ExecutionPolicy Bypass -File $genTool -Provider $Provider | Out-Null
     if (Test-Path $clProvFile) {

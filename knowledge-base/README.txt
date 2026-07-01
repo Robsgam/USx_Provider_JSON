@@ -607,6 +607,18 @@ AUTHORITATIVE SOURCE FILES (read-only)
     Get-Sha256Hex, New-NormalizedClone, Get-CanonicalJsonString). Key-sorted,
     array-order-preserving; New-NormalizedClone drops top-level version + plate
     year so reproducibility comparisons don't false-flag intentional variance.
+
+  tools/_resolve_docs_path.ps1
+    docs/ reorg pilot (2026-07-01, NJ_NJCJIS first). Get-DocsCategoryDir /
+    Get-DocsPath / Find-DocsPath resolve a file to one of 4 category folders
+    (tracking/reports/reference/deliverables) for a migrated provider, or the
+    flat legacy docs/ location for any provider that hasn't migrated yet. A
+    provider is "migrated" once ANY of its 4 category folders exists. Dot-
+    sourced by build_report.ps1, post_test.ps1, reset_test_package.ps1,
+    enforce.ps1, audit_repo.ps1, sync_version_docs.ps1, block_entity.ps1,
+    audit_test_coverage.ps1, audit_supported_queries.ps1, run_test_matrix.ps1,
+    generate_changelog.ps1, generate_test_matrix.ps1, diff_docs.ps1,
+    check_test_preconditions.ps1, render_test_sheet.ps1, pipeline.ps1.
     Used by get_entity_fingerprints.ps1 and audit_reproducible.ps1.
 
   tools/audit_reproducible.ps1

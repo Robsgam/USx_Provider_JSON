@@ -39,7 +39,9 @@ $json = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
 $provider = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $jsonDir  = Split-Path $resolved -Parent
 $docsDir  = Join-Path $jsonDir "docs"
-$extractFile = Join-Path $docsDir "${provider}_SUPPORTED_QUERIES.txt"
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- SUPPORTED_QUERIES is "reference" category.
+. (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+$extractFile = Find-DocsPath $jsonDir 'reference' "${provider}_SUPPORTED_QUERIES.txt"
 
 $lines = [System.Collections.Generic.List[string]]::new()
 $fail = 0; $pass = 0; $warn = 0; $info = 0
@@ -87,7 +89,8 @@ if (-not (Test-Path $extractFile)) {
     foreach ($p in ($jsonPairs | Sort-Object query, ident -Unique)) {
         $tmpl.Add("$($p.query) | $($p.ident)")
     }
-    if (-not (Test-Path $docsDir)) { New-Item -ItemType Directory -Path $docsDir -Force | Out-Null }
+    $extractDir = Split-Path $extractFile -Parent
+    if (-not (Test-Path $extractDir)) { New-Item -ItemType Directory -Path $extractDir -Force | Out-Null }
     [System.IO.File]::WriteAllText($extractFile, ($tmpl -join "`r`n"), [System.Text.UTF8Encoding]::new($false))
     Rec 'INFO' "no extract found -- wrote PROVISIONAL template ($($jsonPairs.Count) combos) to ${provider}_SUPPORTED_QUERIES.txt; confirm against devdoc"
     Emit ""

@@ -36,6 +36,11 @@ $docsDir  = Join-Path $provDir "docs"
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$toolDir\_resolve_provider_json.ps1"
+# STATUS/SQVR = "tracking"; TEST_MATRIX = "reports" (2026-07-01 docs/ reorg pilot) --
+# resolves to docs/<category>/ for a migrated provider (NJ_NJCJIS), flat docs/ otherwise.
+. "$toolDir\_resolve_docs_path.ps1"
+$trackingDir = Get-DocsCategoryDir $provDir 'tracking'
+$reportsDirForMatrix = Get-DocsCategoryDir $provDir 'reports'
 
 function Say($msg, $color = "White") { if (-not $Quiet) { Write-Host $msg -ForegroundColor $color } }
 
@@ -199,7 +204,7 @@ function Add-ProvisionalBanner([string]$filePath) {
 #    sections for reset entities (SQVR section headers carry "-- <Entity> Entity";
 #    cross-cutting sections like RMS BUNDLE/SUMMARY reset whenever anything resets).
 $sqvrReset = 0
-$sqvrPath = Join-Path $docsDir "${Provider}_SQVR.txt"
+$sqvrPath = Join-Path $trackingDir "${Provider}_SQVR.txt"
 if (Test-Path $sqvrPath) {
     if ($fullReset) {
         $sqvr = Get-Content $sqvrPath -Raw
@@ -230,7 +235,7 @@ Add-ProvisionalBanner $sqvrPath
 
 # 3. Clear STATUS "LIVE TEST RESULTS" data rows (Entity is column 3 of each row).
 $statusCleared = 0
-$statusPath = Join-Path $docsDir "${Provider}_STATUS.txt"
+$statusPath = Join-Path $trackingDir "${Provider}_STATUS.txt"
 if (Test-Path $statusPath) {
     $lines = Get-Content $statusPath -Encoding UTF8
     $out = New-Object System.Collections.Generic.List[string]
@@ -272,7 +277,7 @@ function Get-MatrixCount($matrixPath) {
     return $null
 }
 
-$matrixPath = Join-Path $docsDir "${Provider}_TEST_MATRIX.txt"
+$matrixPath = Join-Path $reportsDirForMatrix "${Provider}_TEST_MATRIX.txt"
 $oldMatrixCount = Get-MatrixCount $matrixPath
 
 # Locate the active JSON via the shared resolver (versioned <PROVIDER>_v<X.Y>.json -> bare
@@ -325,7 +330,7 @@ Say "    - reset $sqvrReset SQVR marker(s) -> [PENDING]" "Gray"
 Say "    - cleared $statusCleared STATUS USx-Tenant-Testing row(s)" "Gray"
 Say "    - stamped tests/.test_state.json + .test_version = v$version" "Gray"
 if ($matrixRegenerated) {
-    Say "    - regenerated docs/${Provider}_TEST_MATRIX.txt" "Gray"
+    Say "    - regenerated ${Provider}_TEST_MATRIX.txt" "Gray"
     if ($matrixDelta) {
         Say "    [WARN] TEST_MATRIX combo count changed ($matrixDelta) -- combos added/removed this rebuild" "Yellow"
     }
@@ -340,5 +345,5 @@ if ($planRegenerated) {
 } else {
     Say "    [WARN] could not regenerate TEST_PLAN (no active JSON found at $activeJson)" "Yellow"
 }
-Say "  Re-run the full test matrix from Test 1 (see docs/${Provider}_TEST_MATRIX.txt)" "Gray"
+Say "  Re-run the full test matrix from Test 1 (see ${Provider}_TEST_MATRIX.txt)" "Gray"
 exit 0

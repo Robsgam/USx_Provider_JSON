@@ -44,8 +44,10 @@ if ($Path) {
 }
 
 $docsDir   = Join-Path $provDir "docs"
-$notesFile = Join-Path $docsDir "${Provider}_BUILD_NOTES.txt"
-if (-not $OutFile) { $OutFile = Join-Path $docsDir "CHANGELOG_${Provider}.md" }
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- BUILD_NOTES/CHANGELOG are "tracking".
+. (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+$notesFile = Find-DocsPath $provDir 'tracking' "${Provider}_BUILD_NOTES.txt"
+if (-not $OutFile) { $OutFile = Get-DocsPath $provDir 'tracking' "CHANGELOG_${Provider}.md" }
 
 if (-not (Test-Path $notesFile)) {
     Write-Host "  [ERROR] BUILD_NOTES not found: $notesFile" -ForegroundColor Red

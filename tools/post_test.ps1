@@ -192,6 +192,10 @@ if (-not (Test-Path $docsDir)) {
     New-Item -ItemType Directory -Path $docsDir -Force | Out-Null
     Write-Warn "Created missing docs/ directory"
 }
+# STATUS/SQVR are "tracking" category docs (2026-07-01 reorg pilot) -- resolves to
+# docs/tracking/ for a migrated provider (NJ_NJCJIS), flat docs/ otherwise (unchanged).
+. "$PSScriptRoot\_resolve_docs_path.ps1"
+$trackingDir = Get-DocsCategoryDir $providerDir 'tracking'
 
 Write-Ok "Provider: $providerDir"
 Write-Ok "Tests:    $testsDir"
@@ -361,7 +365,7 @@ $rmsContent
 
 Write-Step 3 $totalSteps "Updating SQVR..."
 
-$sqvrPath = Join-Path $docsDir "${Provider}_SQVR.txt"
+$sqvrPath = Join-Path $trackingDir "${Provider}_SQVR.txt"
 $sqvrUpdated = $false
 
 if (Test-Path $sqvrPath) {
@@ -498,7 +502,7 @@ $Query -- $Entity Entity
 
 Write-Step 4 $totalSteps "Updating STATUS.txt..."
 
-$statusPath = Join-Path $docsDir "${Provider}_STATUS.txt"
+$statusPath = Join-Path $trackingDir "${Provider}_STATUS.txt"
 $statusUpdated = $false
 
 # The test matrix row to add/update

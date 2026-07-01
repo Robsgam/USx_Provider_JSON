@@ -38,6 +38,10 @@ $provDir   = Join-Path $repoRoot "providers"
 $claudeMd  = Join-Path $repoRoot "CLAUDE.md"
 $tracker   = Join-Path $repoRoot "REBUILD_TRACKER.md"
 
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- Find-DocsPath checks the new category
+# folder first, falls back to flat docs/ (every provider that hasn't migrated yet).
+. "$toolDir\_resolve_docs_path.ps1"
+
 # ── Output + counters ────────────────────────────────────────────────────────
 $script:outputLines = @()
 $script:failCount   = 0
@@ -181,7 +185,7 @@ foreach ($pd in $providers) {
     $docPrefix = $provName
 
     # ── Pending-updates gate (blocks testing when a rebuild is required) ──
-    $pendingFile = Join-Path $pd.FullName "docs\PENDING_UPDATES.txt"
+    $pendingFile = Find-DocsPath $pd.FullName 'tracking' "PENDING_UPDATES.txt"
     if (Test-Path $pendingFile) {
         $pendingLines = Get-Content $pendingFile | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
         if ($pendingLines) {
@@ -221,9 +225,10 @@ foreach ($pd in $providers) {
     # Pick the active JSON
     $activeJson = if ($provJson) { $provJson } elseif ($mcJson) { $mcJson } else { $baseJson }
 
-    # Check reports -- try docs/ first (new), then docs/mc/ or docs/base/ (legacy)
+    # Check reports -- try docs/reports/ (migrated) or flat docs/ (not yet migrated), then
+    # docs/mc/ or docs/base/ (legacy BASE/MC variant, unrelated to the reorg)
     $docsDir = Join-Path $pd.FullName "docs"
-    $validatorReport = Join-Path $docsDir "VALIDATOR_REPORT_${docPrefix}.txt"
+    $validatorReport = Find-DocsPath $pd.FullName 'reports' "VALIDATOR_REPORT_${docPrefix}.txt"
     if (-not (Test-Path $validatorReport)) {
         $validatorReport = Join-Path $docsDir "mc\VALIDATOR_REPORT_${docPrefix}_MC.txt"
     }
@@ -236,7 +241,7 @@ foreach ($pd in $providers) {
     # equal to the live JSON hash. On mismatch/missing, auto-rerun build_report once
     # and re-read (Workstream 0.1/0.2). A SHA match guarantees the reports describe
     # the JSON on disk -- timestamps can't be gamed and re-touching can't fake it.
-    $manifestFile = Join-Path $docsDir "BUILD_MANIFEST_${docPrefix}.json"
+    $manifestFile = Find-DocsPath $pd.FullName 'tracking' "BUILD_MANIFEST_${docPrefix}.json"
     if (-not (Test-Path $manifestFile)) { $manifestFile = Join-Path $docsDir "mc\BUILD_MANIFEST_${docPrefix}_MC.json" }
     if (-not (Test-Path $manifestFile)) { $manifestFile = Join-Path $docsDir "base\BUILD_MANIFEST_${docPrefix}_BASE.json" }
 
@@ -292,7 +297,7 @@ foreach ($pd in $providers) {
     # If the matrix predates the JSON, the test instructions are stale relative to the
     # shipped JSON (a version bump changes combos; matrix must be regenerated via build_report).
     if ($version -and $provJson) {
-        $testMatrixFile = Join-Path $docsDir "${docPrefix}_TEST_MATRIX.txt"
+        $testMatrixFile = Find-DocsPath $pd.FullName 'reports' "${docPrefix}_TEST_MATRIX.txt"
         if (Test-Path $testMatrixFile) {
             $matrixTime = (Get-Item $testMatrixFile).LastWriteTime
             $jsonTime   = $provJson.LastWriteTime
@@ -319,7 +324,7 @@ foreach ($pd in $providers) {
 
     foreach ($variant in @('', 'MC', 'BASE')) {
         if ($variant -eq '') {
-            $reportPath = Join-Path $pd.FullName "docs\VALIDATOR_REPORT_${docPrefix}.txt"
+            $reportPath = Find-DocsPath $pd.FullName 'reports' "VALIDATOR_REPORT_${docPrefix}.txt"
         } elseif ($variant -eq 'MC') {
             $reportPath = Join-Path $pd.FullName "docs\mc\VALIDATOR_REPORT_${docPrefix}_MC.txt"
         } else {
@@ -361,7 +366,7 @@ SectionHeader "PHASE 2b: Metadata Divergence Gate"
 
 foreach ($pd in $providers) {
     $provName = $pd.Name
-    $mdReport = Join-Path $pd.FullName "docs\METADATA_AUDIT_${provName}.txt"
+    $mdReport = Find-DocsPath $pd.FullName 'reports' "METADATA_AUDIT_${provName}.txt"
     if (-not (Test-Path $mdReport)) {
         $mdReportMc = Join-Path $pd.FullName "docs\mc\METADATA_AUDIT_${provName}_MC.txt"
         if (Test-Path $mdReportMc) { $mdReport = $mdReportMc }
@@ -398,7 +403,7 @@ foreach ($pd in $providers) {
         @{ label = 'verify_build'; base = "VERIFY_REPORT_${provName}.txt" },
         @{ label = 'audit_cad';    base = "CAD_AUDIT_${provName}.txt" }
     )) {
-        $rpt = Join-Path $pd.FullName "docs\$($spec.base)"
+        $rpt = Find-DocsPath $pd.FullName 'reports' $spec.base
         if (-not (Test-Path $rpt)) {
             $rptMc = Join-Path $pd.FullName ("docs\mc\" + ($spec.base -replace '\.txt$','_MC.txt'))
             if (Test-Path $rptMc) { $rpt = $rptMc }
@@ -455,7 +460,7 @@ SectionHeader "PHASE 2e: Supported-Query (Devdoc) Gate"
 foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
-    $sqReport = Join-Path $pd.FullName "docs\SUPPORTED_QUERY_AUDIT_${docPrefix}.txt"
+    $sqReport = Find-DocsPath $pd.FullName 'reports' "SUPPORTED_QUERY_AUDIT_${docPrefix}.txt"
     if (-not (Test-Path $sqReport)) {
         $sqReportMc = Join-Path $pd.FullName "docs\mc\SUPPORTED_QUERY_AUDIT_${docPrefix}_MC.txt"
         if (Test-Path $sqReportMc) { $sqReport = $sqReportMc }
@@ -536,7 +541,7 @@ foreach ($pd in $providers) {
     }
 
     # Check 3c: STATUS.txt
-    $statusFile = Join-Path $pd.FullName "docs\${docPrefix}_STATUS.txt"
+    $statusFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_STATUS.txt"
     if (Test-Path $statusFile) {
         $statusText = [System.IO.File]::ReadAllText($statusFile)
         if ($statusText -match "v$([regex]::Escape($version))") {
@@ -549,7 +554,7 @@ foreach ($pd in $providers) {
     }
 
     # Check 3d: SQVR.txt
-    $sqvrFile = Join-Path $pd.FullName "docs\${docPrefix}_SQVR.txt"
+    $sqvrFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_SQVR.txt"
     if (Test-Path $sqvrFile) {
         $sqvrText = [System.IO.File]::ReadAllText($sqvrFile)
         if ($sqvrText -match "v$([regex]::Escape($version))") {
@@ -562,7 +567,7 @@ foreach ($pd in $providers) {
     }
 
     # Check 3e: JSON_INVENTORY.md
-    $invFile = Join-Path $pd.FullName "docs\JSON_INVENTORY.md"
+    $invFile = Find-DocsPath $pd.FullName 'tracking' "JSON_INVENTORY.md"
     if (Test-Path $invFile) {
         $invText = [System.IO.File]::ReadAllText($invFile)
         if ($invText -match "v$([regex]::Escape($version))") {
@@ -575,7 +580,7 @@ foreach ($pd in $providers) {
     }
 
     # Check 3f: BUILD_NOTES.txt
-    $notesFile = Join-Path $pd.FullName "docs\${docPrefix}_BUILD_NOTES.txt"
+    $notesFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_BUILD_NOTES.txt"
     if (Test-Path $notesFile) {
         $notesText = [System.IO.File]::ReadAllText($notesFile)
         if ($notesText -match "v$([regex]::Escape($version))") {
@@ -632,7 +637,7 @@ foreach ($pd in $providers) {
     # Check 3g2: per-provider changelog (auto-generated from BUILD_NOTES).
     # Adopted per-provider on next build -- if the file exists it must be current;
     # if absent it's an Info (provider hasn't been rebuilt under the new pipeline yet).
-    $clProvFile = Join-Path $pd.FullName "docs\CHANGELOG_${docPrefix}.md"
+    $clProvFile = Find-DocsPath $pd.FullName 'tracking' "CHANGELOG_${docPrefix}.md"
     if (Test-Path $clProvFile) {
         $clProvText = [System.IO.File]::ReadAllText($clProvFile)
         if ($clProvText -match "v$([regex]::Escape($version))") {

@@ -242,8 +242,10 @@ if ($Provider) {
     }
 
     if ($providerDir) {
-        # Metadata reference
-        $docsDir = Join-Path $providerDir "docs"
+        # Metadata reference -- "reference" category (2026-07-01 docs/ reorg pilot); resolves
+        # to docs/reference/ for a migrated provider, flat docs/ otherwise.
+        . (Join-Path $PSScriptRoot '_resolve_docs_path.ps1')
+        $docsDir = Get-DocsCategoryDir $providerDir 'reference'
         if (Test-Path $docsDir) {
             $metaFiles = Get-ChildItem $docsDir -Filter "*METADATA_REFERENCE*" -File -ErrorAction SilentlyContinue
             if ($metaFiles) {

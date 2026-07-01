@@ -29,6 +29,8 @@ $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
 $testsDir = Join-Path $provDir "tests"
 $docsDir  = Join-Path $provDir "docs"
+# docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- SQVR is "tracking" category.
+. "$toolDir\_resolve_docs_path.ps1"
 
 if (-not (Test-Path $provDir)) { Write-Host "  [ERROR] Provider not found: $Provider" -ForegroundColor Red; exit 1 }
 
@@ -59,7 +61,7 @@ if (-not $fp.Contains($Entity)) {
 }
 
 # ── Gate: all SQVR markers for this entity must be [CONFIRMED] (unless -Force) ──
-$sqvrPath = Join-Path $docsDir "${Provider}_SQVR.txt"
+$sqvrPath = Find-DocsPath $provDir 'tracking' "${Provider}_SQVR.txt"
 $pending = 0; $failed = 0
 if (Test-Path $sqvrPath) {
     $curEntity = $null
