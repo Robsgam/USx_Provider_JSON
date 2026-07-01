@@ -317,6 +317,17 @@ RESULT: $Result
 $logContent | Set-Content -LiteralPath $queryLogPath -Encoding UTF8
 Write-Ok "Saved: $queryLogPath"
 
+# Concurrent post_test.ps1 invocations for the SAME provider (watcher-triggered batches
+# overlapping) do a read-modify-write on SQVR.txt/STATUS.txt with no locking -- two
+# processes can each read the pre-update content, then each write back missing the
+# other's row (last-writer-wins silently drops one insertion). Found live: NJ v4.8 batch
+# testing lost the QG/QA/QB/QBN bare-combo STATUS rows this way. Serialize Steps 3+4
+# (the only file-mutating steps besides the per-query log, which is already unique per
+# combo and can't collide) with a provider-scoped named mutex.
+$ptMutex = New-Object System.Threading.Mutex($false, "Global\USxPostTest_$Provider")
+[void]$ptMutex.WaitOne()
+try {
+
 # ============================================================================
 # STEP 3: UPDATE SQVR
 # ============================================================================
@@ -471,9 +482,12 @@ if (Test-Path $statusPath) {
     $statusLines = @(Get-Content $statusPath -Encoding UTF8)
     $statusContent = $statusLines -join "`n"
 
-    # Look for an existing row with this entity+combo
-    $rowPattern = "(?m)^.*${Entity}.*${comboSafe}.*$"
-    $existingRow = $statusLines | Where-Object { $_ -match $Entity -and $_ -match [regex]::Escape($Combo) }
+    # Look for an existing row with this entity+combo. Match on a word boundary after the
+    # combo (not a bare substring) -- otherwise combo "RANDFULL" matches the ALREADY-INSERTED
+    # row for "RANDFULLN" (and "FULL" matches "FULLN"), silently overwriting the wrong combo's
+    # row instead of inserting a distinct new one (found live, NJ v4.8 keyRef rename batch).
+    $comboBoundaryPattern = [regex]::Escape($Combo) + '(?!\w)'
+    $existingRow = $statusLines | Where-Object { $_ -match $Entity -and $_ -match $comboBoundaryPattern }
 
     if ($existingRow) {
         # Update existing row
@@ -556,6 +570,11 @@ $matrixRow
     $statusStub | Set-Content -Path $statusPath -Encoding UTF8
     $statusUpdated = $true
     Write-Ok "STATUS stub created with test row"
+}
+
+} finally {
+    [void]$ptMutex.ReleaseMutex()
+    $ptMutex.Dispose()
 }
 
 # ============================================================================

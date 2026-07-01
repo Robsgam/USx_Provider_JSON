@@ -86,9 +86,10 @@ if (($pending -gt 0 -or $failed -gt 0) -and -not $Force) {
 
 # ── Evidence gate: every combo of this entity must have a VALID current-version XML
 #    backing log (provenance), plus (full pass, always) an any[] log per combo with
-#    optional fields plus a render and a negative log. This is what makes a "blocked"
-#    entity mean "evidenced": a hand-edited SQVR or a stale pre-rebuild log can no
-#    longer lock an entity (the NJ v4.7 failure mode). Override with -Force.
+#    optional fields exercised. Render/negative are manual one-time checks done at
+#    initial provider build only, not re-verified per rebuild (2026-07-01). This is what
+#    makes a "blocked" entity mean "evidenced": a hand-edited SQVR or a stale pre-rebuild
+#    log can no longer lock an entity (the NJ v4.7 failure mode). Override with -Force.
 $buildVer   = Get-BuildVersionForProvider $provDir
 $activeTier = Get-ActiveTier $provDir
 $entityFp   = $fp[$Entity]
@@ -96,10 +97,8 @@ $entityFp   = $fp[$Entity]
 # Legacy fallback for providers not yet migrated: providers/<PROVIDER>/tests/*.txt.
 $testLogs   = @()
 $entityLogDir = Join-Path $logsRoot $Entity
-$usingNewLogStructure = $false
 if (Test-Path $entityLogDir) {
     $testLogs = @(Get-ChildItem $entityLogDir -Filter "*.txt" -File -ErrorAction SilentlyContinue)
-    $usingNewLogStructure = $true
 }
 if ($testLogs.Count -eq 0 -and (Test-Path $testsDir)) { $testLogs = @(Get-ChildItem $testsDir -Filter "*.txt" -File) }
 
@@ -133,16 +132,10 @@ foreach ($c in $entityCombos) {
     }
 }
 
-# Full pass always requires a render and a negative log per entity. Under the current
-# logs/<Entity>/ structure, $testLogs is already entity-scoped by folder, so filenames no
-# longer need to carry the entity name (post_test.ps1 names them <Provider>_v<X.Y>_<Combo>.txt).
-# Legacy tests/ folder is flat across all entities, so its filenames still carry the entity name.
-$renderPattern  = if ($usingNewLogStructure) { "(?i)render" }   else { "(?i)$([regex]::Escape($Entity)).*render" }
-$negativePattern = if ($usingNewLogStructure) { "(?i)negative" } else { "(?i)$([regex]::Escape($Entity)).*negative" }
-$renderOk = @($testLogs | Where-Object { $_.Name -match $renderPattern -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
-if (-not $renderOk) { $evidenceGaps += "full pass requires a render test log for $Entity" }
-$negOk = @($testLogs | Where-Object { $_.Name -match $negativePattern -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
-if (-not $negOk) { $evidenceGaps += "full pass requires a negative test log for $Entity" }
+# Render/negative are manual one-time checks done at initial provider build only, not
+# part of the recurring per-rebuild evidence gate (2026-07-01 user directive) -- a version
+# bump's fresh fingerprint would otherwise make this requirement permanently unsatisfiable
+# post-v1, since render/negative logs are never regenerated on rebuild.
 
 if ($evidenceGaps.Count -gt 0 -and -not $Force) {
     Write-Host "  [BLOCKED] '$Entity' lacks valid current-version evidence (tier: $activeTier, build v$buildVer, fingerprint $($entityFp.Substring(0,12))):" -ForegroundColor Red

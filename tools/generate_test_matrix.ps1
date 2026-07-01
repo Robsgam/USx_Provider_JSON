@@ -7,8 +7,10 @@
   annotations on primary QIDM tests, not listed as separate tests.
 
   Tiers were removed 2026-07-01 -- the matrix is always the single all-or-nothing full
-  pass: render + every combo + per-combo any[] + guardrails + deselect + negative
-  (the full FL_FCIC standard). The -Tier param is accepted for back-compat but ignored.
+  pass: every combo + per-combo any[] + guardrails + deselect (the full FL_FCIC standard).
+  render/negative are manual one-time checks done at initial provider build only and are
+  NOT part of this recurring matrix (2026-07-01). The -Tier param is accepted for
+  back-compat but ignored.
 
   Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>]
 #>
@@ -546,7 +548,7 @@ $comboTestRefs = @{}
 [void]$sb.AppendLine("$providerName v$version -- TEST MATRIX")
 [void]$sb.AppendLine("=" * 50)
 [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd')")
-[void]$sb.AppendLine("Tier: $Tier $(if ($isPrelim) { '-- render + every combo (required fields only) + negative' } else { '-- full standard: combos + any[] + guardrails + deselect + negative' })")
+[void]$sb.AppendLine("Tier: $Tier $(if ($isPrelim) { '-- render + every combo (required fields only) + negative' } else { '-- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)' })")
 [void]$sb.AppendLine("Layout: $(if ($Variant -eq 'MC') { 'multi-card per entity' } else { 'single-card per entity' })")
 [void]$sb.AppendLine("Validator: $validatorScore")
 [void]$sb.AppendLine("")
@@ -617,10 +619,11 @@ foreach ($q in $qidms) {
 
 # ════════════════════════════════════════════════════════════════════════
 #  TEST MATRIX -- ENTITY-GROUPED
-#  Each entity is tested start-to-finish (render -> combos -> any[] ->
-#  deselect/routing -> negative), then blocked out. The test conductor and the
-#  printable test sheet group by this SAME entity order, so the PDF and the
-#  written test process are identical.
+#  Each entity is tested start-to-finish (combos -> any[] -> deselect/routing),
+#  then blocked out. Render/negative are manual one-time checks done at initial
+#  provider build only, not part of this recurring matrix (2026-07-01). The test
+#  conductor and the printable test sheet group by this SAME entity order, so
+#  the PDF and the written test process are identical.
 # ════════════════════════════════════════════════════════════════════════
 
 # (Per-combo any[] and guardrail tests are generated inline in the entity loop via
@@ -631,7 +634,8 @@ foreach ($q in $qidms) {
 [void]$sb.AppendLine("=" * 80)
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish")
-[void]$sb.AppendLine("(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.")
+[void]$sb.AppendLine("(combos+any[] per combo -> guardrail routing -> deselect), then blocked out.")
+[void]$sb.AppendLine("(render/negative are manual one-time checks at initial provider build, not in this matrix)")
 [void]$sb.AppendLine("")
 
 $testNum = 0
@@ -650,25 +654,8 @@ foreach ($ent in $entityOrder) {
     $phaseSb = [System.Text.StringBuilder]::new()
     $phaseTestCount = 0
 
-    # ── 1. RENDER ──
-    $testNum++; $phaseTestCount++
-    [void]$phaseSb.Append(("{0,2}  {1,-10}  Render form. Verify {2} card{3}:" -f $testNum, $ent, $ed.cardCount, $(if ($ed.cardCount -ne 1){'s'} else {''})))
-    [void]$phaseSb.AppendLine("                        [    ]")
-    foreach ($card in $ed.cards.Values) {
-        [void]$phaseSb.AppendLine("              $($card.id): titled `"$($card.title)`".")
-        foreach ($row in $card.rows) {
-            $fds = @()
-            foreach ($f in $row.fields) {
-                if ($f.hidden) { continue }
-                $d = $f.label
-                if ($f.type -eq 'Sel') { $d += " dropdown" }
-                if ($f.default_) { $d += "=$($f.default_)" }
-                elseif ($f.type -eq 'Sel' -and -not $f.default_) { $d += " (no default)" }
-                $fds += $d
-            }
-            if ($fds.Count -gt 0) { [void]$phaseSb.AppendLine("              $($fds -join ', ').") }
-        }
-    }
+    # Render and negative are manual one-time checks done at initial provider build only,
+    # not part of the recurring per-rebuild test matrix (2026-07-01 user directive) -- omitted.
 
     # ── 2. COMBOS ──
     # Process PRIMARY QIDMs → one test per combo, with co-fire annotations
@@ -1055,11 +1042,6 @@ foreach ($ent in $entityOrder) {
         [void]$phaseSb.AppendLine("              Fill fields that match multiple combos, verify correct one fires.")
     }
 
-    # ── 5. NEGATIVE (empty form = no send) ──
-    $testNum++; $phaseTestCount++
-    [void]$phaseSb.Append(("{0,2}  {1,-10}  " -f $testNum, $ent))
-    [void]$phaseSb.AppendLine("Empty form, verify no Send button / no request.    [    ]")
-
     # ── Write the entity section header + all of its rows ──
     $cardWord  = if ($ed.cardCount -ne 1) { 'cards' } else { 'card' }
     $comboWord = if ($ed.combos -ne 1) { 'combos' } else { 'combo' }
@@ -1077,8 +1059,8 @@ foreach ($ent in $entityOrder) {
     [void]$sb.Append($phaseSb.ToString())
 }
 
-# (any[], deselect/routing, and negative tests are now emitted per entity above,
-#  inside the entity-grouped loop -- no separate phase sections.)
+# (any[] and deselect/routing tests are emitted per entity above, inside the entity-grouped
+#  loop -- no separate phase sections. render/negative are not part of this matrix.)
 
 # ── FOOTER ──
 [void]$sb.AppendLine("")

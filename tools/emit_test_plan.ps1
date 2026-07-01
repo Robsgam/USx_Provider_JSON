@@ -188,8 +188,8 @@ foreach ($ent in $entities) {
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
     $entQidms = @($qidms | Where-Object { $_.targetEntity -eq $ent })
 
-    # render marker
-    $n++; $tests.Add([ordered]@{ n = $n; entity = $ent; kind = 'render' })
+    # render/negative are manual one-time checks done at initial provider build, not part
+    # of the recurring per-rebuild test matrix (2026-07-01 user directive) -- omitted here.
 
     foreach ($q in $entQidms) {
         foreach ($c in $q.combinations) {
@@ -265,16 +265,13 @@ foreach ($ent in $entities) {
             })
         }
     }
-
-    # negative marker
-    $n++; $tests.Add([ordered]@{ n = $n; entity = $ent; kind = 'negative' })
 }
 
 $plan = [ordered]@{
     provider = $provName
     version  = $version
     tier     = 'Full'
-    note     = 'Full pass (tiers removed 2026-07-01): render + every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative/guardrail are markers only — the driver auto-submits combo/any-field/any kinds.'
+    note     = 'Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). guardrail is a marker only — the driver auto-submits combo/any-field/any kinds.'
     testCount = $tests.Count
     tests    = $tests
 }
