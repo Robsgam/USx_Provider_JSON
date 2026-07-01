@@ -192,10 +192,39 @@
   }
 
   // Data rows only (skip the header: keep rows that actually have a "View request" link).
+  // NOTE: this deliberately EXCLUDES RMS-destination rows (they have no "View request" link
+  // since there's no ConnectCic XML behind them) -- see __usxDexTableRecon below, which is
+  // recon'ing exactly those excluded rows to find what data they DO carry.
   function dataRows() {
     return [...document.querySelectorAll('.arc-table_row')]
       .filter((r) => [...r.querySelectorAll('button,a')].some((b) => /view request/i.test(b.textContent || '')));
   }
+
+  // RMS-ROW RECON (spike, 2026-07-01 round 3): dex-log's table has an RMS-destination row
+  // for every query alongside its ConnectCic row (same "Query String" JSON, no "View request"
+  // link since there's no XML) -- dataRows() above has always silently skipped these. This dumps
+  // the full header row + one full RMS row's cell texts (labeled) so the real column mapping
+  // (which cell holds the status/result) comes from evidence, not another guess.
+  window.__usxDexTableRecon = function () {
+    const headerCells = [...document.querySelectorAll('.arc-table_header_cell')].map((th) => (th.textContent || '').trim());
+    const allRows = [...document.querySelectorAll('.arc-table_row')].filter((r) => r.querySelector('.arc-table_cell'));
+    const rmsRow = allRows.find((r) => {
+      const cells = [...r.querySelectorAll('.arc-table_cell')];
+      return cells.some((c) => (c.textContent || '').trim() === 'RMS');
+    });
+    if (!rmsRow) { console.warn('[USx-DEX-RECON] no RMS row found on this page/view.'); return null; }
+    const cellTexts = [...rmsRow.querySelectorAll('.arc-table_cell')].map((c) => (c.textContent || '').trim());
+    const labeled = headerCells.map((h, i) => ({ header: h, value: cellTexts[i] !== undefined ? cellTexts[i] : null }));
+    // Also grab the matching ConnectCic row (same Query String JSON) if present, so both sides
+    // of the pair can be compared column-for-column.
+    const qs = cellTexts[0];
+    const pairRow = qs ? allRows.find((r) => r !== rmsRow && (r.querySelector('.arc-table_cell')?.textContent || '').trim() === qs) : null;
+    const pairLabeled = pairRow ? headerCells.map((h, i) => ({ header: h, value: [...pairRow.querySelectorAll('.arc-table_cell')][i]?.textContent?.trim() ?? null })) : null;
+    const out = { headerCells, rmsRow: labeled, matchingConnectCicRow: pairLabeled };
+    console.log('%c[USx-DEX-RECON]', 'color:#c60;font-weight:bold', out);
+    console.log('[USx-DEX-RECON] report the full object above -- rmsRow is one RMS-destination row\'s cells labeled by header; matchingConnectCicRow is the paired ConnectCic row (same Query String) for comparison.');
+    return out;
+  };
 
   // Test ONE row (default: the first data row).
   window.__usxCaptureRow = async function (index) {
@@ -494,6 +523,6 @@
   };
 
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row.');
   }
 })();
