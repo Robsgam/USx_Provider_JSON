@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.7.json
-  Generated: 2026-07-01 16:33
+  Source: NJ_NJCJIS_v4.8.json
+  Generated: 2026-07-01 17:25
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- NJ_NJCJIS_v4.7
+TEST MATRIX <-> JSON CONSISTENCY -- NJ_NJCJIS_v4.8
 ============================================================
-Source: NJ_NJCJIS_v4.7.json
+Source: NJ_NJCJIS_v4.8.json
 Matrix: NJ_NJCJIS_TEST_MATRIX.txt
 Generated: 2026-07-01
 
@@ -19,19 +19,19 @@ checked separately against the devdoc by audit_supported_queries.ps1.
 
 ENTITY: VEHICLE (7 tests -- 3 cards, 2 combos)
   T1  Vehicle    [PASS] 3 cards, 7 fields, defaults verified
-  T2  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T2  Vehicle    [PASS] VehicleRegistrationQuery fires (RANDFULL)
   T3  Vehicle    [PASS] any[] fields verified: RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator
-  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (RQN)
+  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (RANDFULLN)
   T5  Vehicle    [PASS] any[] fields verified: RandomRequest, RegistrationState, ImageIndicator
-  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (RANDFULL)
   T7  Vehicle    [PASS] empty form: no combos fire
 ENTITY: PERSON (7 tests -- 3 cards, 2 combos)
   T8  Person     [PASS] 3 cards, 7 fields, defaults verified
-  T9  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T9  Person     [PASS] DriverLicenseQuery fires (FULLN)
   T10  Person     [PASS] any[] fields verified: ImageIndicator, RegistrationState
-  T11  Person     [PASS] DriverLicenseQuery fires (DQ)
+  T11  Person     [PASS] DriverLicenseQuery fires (FULL)
   T12  Person     [PASS] any[] fields verified: ImageIndicator, SexCode, RegistrationState
-  T13  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T13  Person     [PASS] DriverLicenseQuery fires (FULLN)
   T14  Person     [PASS] empty form: no combos fire
 ENTITY: BOAT (7 tests -- 1 card, 2 combos)
   T15  Boat       [PASS] 1 cards, 3 fields, defaults verified

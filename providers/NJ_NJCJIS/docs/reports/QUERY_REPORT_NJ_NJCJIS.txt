@@ -1,26 +1,26 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.7.json
-  Generated: 2026-07-01 16:33
+  Source: NJ_NJCJIS_v4.8.json
+  Generated: 2026-07-01 17:25
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- NJ_NJCJIS_v4.7.json
+  CommSys Query Simulator -- NJ_NJCJIS_v4.8.json
 ================================================================
 
 --- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
     Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 2
 
-    [FIRES first-match] RQ
+    [FIRES first-match] RANDFULL
       set: [LicensePlateNumber]
       any: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear] -> matched: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>RQ</MessageKey>
+        <MessageKey>RANDFULL</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
@@ -28,30 +28,30 @@ QUERY SIMULATION
         <RandomRequest>N</RandomRequest>
         <State>NJ</State>
       </Transaction>
-    [SKIP] RQN -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] RANDFULLN -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
-    >> PLATFORM FIRES: RQ (first matching combo)
+    >> PLATFORM FIRES: RANDFULL (first matching combo)
     >> UNION POOL (platform serializes): ImageIndicator=Y, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, RandomRequest=N, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: NJ_NJCJIS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 2
-    [SKIP] DQ -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] FULL -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] DQN
+    [FIRES first-match] FULLN
       set: [OperatorLicenseNumber]
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>
-        <MessageKey>DQ</MessageKey>
+        <MessageKey>FULLN</MessageKey>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
       </Transaction>
 
-    >> PLATFORM FIRES: DQN (first matching combo)
+    >> PLATFORM FIRES: FULLN (first matching combo)
     >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)

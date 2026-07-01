@@ -247,9 +247,10 @@ foreach ($ent in $entities) {
         foreach ($gr in $entGuardrails) {
             $gFills = @()
             $exFf  = $fieldIds | Where-Object { $_ -ieq $gr.excludedFid } | Select-Object -First 1
-            $exVal = Get-TestValue ($exFf ?? $gr.excludedFid) $false
+            if (-not $exFf) { $exFf = $gr.excludedFid }
+            $exVal = Get-TestValue $exFf $false
             if ($null -ne $exVal -and $exVal -ne '') {
-                $gFills += [ordered]@{ fieldId = ($exFf ?? $gr.excludedFid); value = "$exVal" }
+                $gFills += [ordered]@{ fieldId = $exFf; value = "$exVal" }
             }
             foreach ($sf in @($gr.loserCombo.requirements.set)) {
                 $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds

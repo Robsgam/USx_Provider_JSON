@@ -1,5 +1,25 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.8 (2026-07-01): Metadata-driven keyRef rename (user audit finding: synthetic keyRefs
+#   DQ/DQN/RQ/RQN did not match NJCJIS devdoc at all -- verified against the raw devdoc XML
+#   (providers/NJ_NJCJIS/source/NJ_NJCJIS.xml), not just the generated METADATA_REFERENCE.txt).
+#   DriverLicenseQuery: devdoc keyReference is FULL for BOTH combos (Name+DOB and OLN) --
+#   DQ->FULL (real term, Name+DOB combo), DQN->FULLN (synthetic N-suffix per
+#   PLATFORM_CONSTRAINTS.txt convention, OLN combo). VehicleRegistrationQuery: devdoc defines
+#   FOUR combos -- keyReference RAND and keyReference FULL, each for Plate and VIN -- and
+#   RAND's Set/Any fields are IDENTICAL to FULL's for a given identifier (confirmed in the raw
+#   XML: same Set fields, same Any fields), so ConnectCIC (routes by field presence only) cannot
+#   distinguish them; ONE physical combo per identifier is required, which is why an earlier
+#   build already merged them (RandomRequest EQUALS-value conditions that would have
+#   discriminated RAND vs FULL are inert on this platform -- QIDM_REFERENCE Sec 2a). RQ->RANDFULL,
+#   RQN->RANDFULLN: a compound synthetic label naming BOTH real devdoc terms it serves, instead
+#   of an unrelated invented root borrowed from another provider's build-script convention.
+#   'RQ'/'RQN'/'DQ'/'DQN' do not exist in NJ's devdoc under any name -- they were carried over
+#   from a cross-provider <Entity>Q/<Entity>QN naming habit (confirmed also in HI_HCJDC_OFML's
+#   build script, where 'RQ' happens to be HI's own real devdoc term -- it is not NJ's).
+#   Version bump invalidates all prior test evidence under the old keyRef names; full re-test
+#   required (reset_test_package.ps1 -Force).
+# =====================================================================
 # v4.7 (2026-06-26): VehicleMakeName code-source correction (RND-62365). v4.5's
 #   codeTypeCategory='VehicleType'/codeTypeSource='VEHICLE' was WRONG: the CODETYPE_TEST probe
 #   proved that table is ABSENT on the Newark instance (empty), which broke v4.6 vehicle result
@@ -32,9 +52,12 @@
 #      QV combos. NJCJIS runs the QV stolen check automatically state-side with
 #      registration queries; its response tags are still data-mined via the QRDM.
 #      Vehicle layout therefore omits ncicNumber + vehicleMakeCode (stolen-only).
-#   2. VehicleRegistrationQuery = 2 combos (RQ plate, RQN VIN). RandomRequest is
-#      user-controlled in any[] (form default N); the inert poisoned-array
-#      RandomRequest=Y conditions + synthetic RQ_RAND/RQN_RAND combos were removed
+#   2. VehicleRegistrationQuery = 2 combos (RANDFULL plate, RANDFULLN VIN) -- named
+#      for BOTH devdoc keyRefs they serve (RAND + FULL are structurally identical
+#      per identifier in the raw devdoc XML, so one physical combo covers both;
+#      v4.8 renamed from the non-devdoc RQ/RQN). RandomRequest is user-controlled
+#      in any[] (form default N); the inert poisoned-array RandomRequest=Y
+#      conditions + synthetic RQ_RAND/RQN_RAND combos were removed
 #      (behavior-preserving; QIDM_REFERENCE Sec 2a; cf. FL v5.0).
 #   3. RMS handler arguments are populated by the fixed _R helper in
 #      tools/_build_rms_bundle.ps1 (the $args reserved-name collision that dropped
@@ -50,7 +73,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.7"
+    [string]$Version = "4.8"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -88,15 +111,22 @@ $qmf = Build-Qmf -ProviderName 'NJ_NJCJIS'
 #     autoSelect=true, NO queriesToDeselect.
 #     Defaulted fields in any[] per LIMITATION #31.
 #     PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-#     Metadata uses keyRef 'RQ' for both combos; synthetic label 'RQN' (VIN path) invented
-#     for platform routing only -- NOT a real NJCJIS transaction code. See PLATFORM_CONSTRAINTS.txt.
-#     2 combos: RQ (plate), RQN (VIN). RandomRequest is user-controlled (any[],
-#     form default N) and routed server-side by its value -- it does NOT need
-#     separate combos. The earlier synthetic RQ_RAND/RQN_RAND combos used
-#     value-comparison conditions (RandomRequest EQUALS Y) which the platform
-#     treats as INERT (poisoned-array, QIDM_REFERENCE Sec 2a): the conditions
-#     were disabled, so those combos already fired unconditioned and duplicated
-#     RQ/RQN. Removed (behavior-preserving). Cf. FL v5.0 poisoned-array cleanup.
+#     v4.8 RENAME (metadata-driven naming audit): the raw devdoc XML
+#     (source/NJ_NJCJIS.xml) defines FOUR real combos here -- keyReference 'RAND' and
+#     keyReference 'FULL', each for Plate and for VIN -- and RAND's Set/Any fields are
+#     IDENTICAL to FULL's for a given identifier, so ConnectCIC (routes by field
+#     presence only) cannot tell them apart; ONE physical combo per identifier is
+#     required. keyReference 'RANDFULL' (Plate) / 'RANDFULLN' (VIN, N-suffix per
+#     PLATFORM_CONSTRAINTS.txt's synthetic-keyRef convention) names BOTH real devdoc
+#     terms the merged combo serves. (Formerly 'RQ'/'RQN' -- an unrelated root that
+#     does not exist anywhere in NJ's devdoc; see v4.8 changelog header.)
+#     RandomRequest is user-controlled (any[], form default N) and routed
+#     server-side by its value -- it does NOT need separate combos. The earlier
+#     synthetic RQ_RAND/RQN_RAND combos used value-comparison conditions
+#     (RandomRequest EQUALS Y) which the platform treats as INERT (poisoned-array,
+#     QIDM_REFERENCE Sec 2a): the conditions were disabled, so those combos already
+#     fired unconditioned and duplicated RQ/RQN. Removed (behavior-preserving).
+#     Cf. FL v5.0 poisoned-array cleanup.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -122,7 +152,7 @@ $vehRegQuery = [PSCustomObject]@{
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'RQ'
+            keyReference          = 'RANDFULL'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -137,11 +167,11 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQN'
+            keyReference          = 'RANDFULLN'
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- 2 combos: RQ (plate), RQN (VIN). RandomRequest user-controlled in any[] (form default N), default N in defaults[] for CAD. Poisoned-array RandomRequest=Y conditions removed (inert; QIDM_REFERENCE Sec 2a) and synthetic RQ_RAND/RQN_RAND combos collapsed -- behavior-preserving since conditions were already disabled.'
+    description        = 'VehicleRegistrationQuery -- 2 combos: RANDFULL (plate), RANDFULLN (VIN) -- each merges devdoc keyRefs RAND+FULL (identical Set/Any per identifier, platform cannot discriminate). RandomRequest user-controlled in any[] (form default N), default N in defaults[] for CAD. Poisoned-array RandomRequest=Y conditions removed (inert; QIDM_REFERENCE Sec 2a) and synthetic RQ_RAND/RQN_RAND combos collapsed -- behavior-preserving since conditions were already disabled.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NJ_NJCJIS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -161,11 +191,14 @@ $vehRegQuery = [PSCustomObject]@{
 # =====================================================================
 
 # =====================================================================
-# 1f. DriverLicenseQuery -- UNCHANGED from mainline
+# 1f. DriverLicenseQuery
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
-# Metadata uses keyRef 'DQ' for both combos (Name+DOB and OLN); synthetic label 'DQN'
-# (N=OLN path) invented for platform routing only. NOT a real NJCJIS transaction code.
-# See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
+# v4.8 RENAME (metadata-driven naming audit): the raw devdoc XML (source/NJ_NJCJIS.xml)
+# uses keyReference 'FULL' for BOTH combos (Name+DOB and OLN) -- confirmed directly in the
+# XML, not just the generated METADATA_REFERENCE.txt. keyReference 'FULL' (real devdoc
+# term, Name+DOB combo) / 'FULLN' (synthetic N-suffix per PLATFORM_CONSTRAINTS.txt's
+# convention, OLN combo). (Formerly 'DQ'/'DQN' -- an unrelated root that does not exist
+# anywhere in NJ's devdoc; see v4.8 changelog header.)
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -196,7 +229,7 @@ $dlQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
-            keyReference          = 'DQ'
+            keyReference          = 'FULL'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -209,11 +242,11 @@ $dlQuery = [PSCustomObject]@{
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'DQN'
+            keyReference          = 'FULLN'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- DQ (Name+DOB), DQN (OLN). OLN>Name guardrail: DQ has OperatorLicenseNumber NOT_EXISTS so OLN wins when both entered (identifier-priority guardrail).'
+    description     = 'DriverLicenseQuery -- FULL (Name+DOB), FULLN (OLN) -- devdoc keyRef is FULL for both combos; FULLN is the synthetic N-suffix disambiguation. OLN>Name guardrail: FULL has OperatorLicenseNumber NOT_EXISTS so OLN wins when both entered (identifier-priority guardrail).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NJ_NJCJIS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'

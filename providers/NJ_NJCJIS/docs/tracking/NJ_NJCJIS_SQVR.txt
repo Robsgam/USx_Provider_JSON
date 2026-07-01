@@ -1,17 +1,20 @@
-NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-01
-JSON version: v4.7
+JSON version: v4.8
 Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: PASS -- full re-test from T1 complete 2026-06-29 (v4.7: VehicleMakeName codeType fix confirmed)
+Live test: PENDING -- full re-test from T1 required (v4.8: metadata-driven keyRef rename,
+  DQ/DQN/RQ/RQN -> FULL/FULLN/RANDFULL/RANDFULLN; see BUILD_NOTES v4.8). T2-T29 below are
+  historical evidence under the pre-rename keyRef names (wire behavior unaffected by the
+  rename -- same set[]/any[]/routing -- but must be re-confirmed under the new labels).
 
 KNOWN LIMITATIONS (1):
   1. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
 
 USER-APPROVED SKIPS:
   VehicleStolenQuery (QVN/QVP/QVV) -- 3 combos SKIPPED (directive 2026-06-10).
-    Stolen vehicle preserved via RandomRequest=Y on VehicleRegistrationQuery (RQ_RAND / RQN_RAND).
+    Stolen vehicle preserved via RandomRequest=Y on VehicleRegistrationQuery (RANDFULL / RANDFULLN).
     Sole loss: NCIC# field. Confirmed acceptable; VehicleStolenQuery NOT BUILT in v4.x.
 
 ================================================================================
@@ -22,25 +25,27 @@ USER-APPROVED SKIPS:
   QIF:  Vehicle
   autoSelect: true
   queriesToDeselect: NONE
-  Combos: RQ (plate), RQN (VIN)
-  Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x)
+  Combos: RANDFULL (plate), RANDFULLN (VIN)
+  Note: RandomRequest is any[] on both combos (server interprets; no RAND/FULL routing split in v4.x).
+    keyRefs renamed v4.8 (formerly RQ/RQN -- did not exist in devdoc; RANDFULL/RANDFULLN names
+    BOTH real devdoc keyRefs (RAND + FULL) the merged combo serves -- see BUILD_NOTES v4.8).
 
-  RQ -- Plate search [CONFIRMED]
+  RANDFULL -- Plate search [PENDING]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
-    keyReference: RQ
+    keyReference: RANDFULL
     guardrail: VIN combo gated on LicensePlateNumber NOT_EXISTS (plate wins)
-    T2 (2026-06-29 v4.7): Plate=TEST123 -- VehicleRegistrationQuery/RQ fired. Defaults serialized: State=NJ, LicensePlateTypeCode=PC, LicensePlateYear=2026, RandomRequest=N, ImageIndicator=N.
-    T3 (2026-06-29 v4.7): any[] -- RandomRequest=Y, Image=Y, State=NJ (from "New Jersey" dropdown; NCIC reverse-lookup confirmed). All serialize.
+    T2 (2026-06-29, pre-v4.8 as RQ): Plate=TEST123 -- VehicleRegistrationQuery/RQ fired. Defaults serialized: State=NJ, LicensePlateTypeCode=PC, LicensePlateYear=2026, RandomRequest=N, ImageIndicator=N.
+    T3 (2026-06-29, pre-v4.8 as RQ): any[] -- RandomRequest=Y, Image=Y, State=NJ (from "New Jersey" dropdown; NCIC reverse-lookup confirmed). All serialize.
 
-  RQN -- VIN search [CONFIRMED]
+  RANDFULLN -- VIN search [PENDING]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
-    keyReference: RQN
+    keyReference: RANDFULLN
     guardrail: default combo; fires when no plate present
-    T4 (2026-06-29 v4.7): VIN=1HGCM82633A123456 -- VehicleRegistrationQuery/RQN fired. Plate fields absent (LicensePlateTypeCode/Year correctly not in RQN any[]). Defaults: State=NJ, RandomRequest=N, Image=N.
-    T5 (2026-06-29 v4.7): any[] -- RandomRequest=Y, Image=Y, State=NJ. All serialize. Plate fields still absent.
-    T6 (2026-06-29 v4.7): Guardrail Plate>VIN -- Plate=TEST123 + VIN=1HGCM82633A123456 co-entered. RQ fires, VIN absent from ConnectCIC XML. Plate wins confirmed.
+    T4 (2026-06-29, pre-v4.8 as RQN): VIN=1HGCM82633A123456 -- VehicleRegistrationQuery/RQN fired. Plate fields absent (LicensePlateTypeCode/Year correctly not in RQN any[]). Defaults: State=NJ, RandomRequest=N, Image=N.
+    T5 (2026-06-29, pre-v4.8 as RQN): any[] -- RandomRequest=Y, Image=Y, State=NJ. All serialize. Plate fields still absent.
+    T6 (2026-06-29, pre-v4.8 as RQ/RQN): Guardrail Plate>VIN -- Plate=TEST123 + VIN=1HGCM82633A123456 co-entered. RQ fires, VIN absent from ConnectCIC XML. Plate wins confirmed.
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -49,23 +54,25 @@ USER-APPROVED SKIPS:
   QIDM: NJ_NJCJIS_DriverLicenseQuery
   QIF:  Person
   autoSelect: true
-  Combos: DQN (OLN), DQ (Name+DOB)
-  Note: DQN before DQ by operational priority (OLN wins); OLN NOT_EXISTS guardrail on DQ
+  Combos: FULLN (OLN), FULL (Name+DOB)
+  Note: FULLN before FULL by operational priority (OLN wins); OLN NOT_EXISTS guardrail on FULL.
+    keyRefs renamed v4.8 (formerly DQN/DQ -- did not exist in devdoc; devdoc keyReference is
+    'FULL' for both combos -- FULLN is the synthetic N-suffix disambiguation; see BUILD_NOTES v4.8).
 
-  DQN -- OLN search [CONFIRMED]
+  FULLN -- OLN search [PENDING]
     set: operatorLicenseNumber, registrationState
     any: imageIndicator
-    keyReference: DQN
-    T9 (2026-06-29 v4.7): OLN=D999888777 -- DriverLicenseQuery/DQN fired. State=NJ (set[]), ImageIndicator=Y (only any[], confirms T10 covered).
+    keyReference: FULLN
+    T9 (2026-06-29, pre-v4.8 as DQN): OLN=D999888777 -- DriverLicenseQuery/DQN fired. State=NJ (set[]), ImageIndicator=Y (only any[], confirms T10 covered).
 
-  DQ -- Name + DOB search [CONFIRMED]
+  FULL -- Name + DOB search [PENDING]
     set: birthDate, nameLast, nameFirst
     any: imageIndicator, sexCode, registrationState
-    keyReference: DQ
+    keyReference: FULL
     guardrail: OLN NOT_EXISTS on this combo
-    T11 (2026-06-29 v4.7): Name=DOE/JON + DOB=1985-01-15 -- DriverLicenseQuery/DQ fired. Name=DOE, JON (Last-first comma-space confirmed). BirthDate=01151985 (MMddyyyy conversion confirmed). OLN absent.
-    T12 (2026-06-29 v4.7): any[] -- added SexCode=Male -> M (reverse-lookup confirmed), ImageIndicator=Y, State=NJ all serialize.
-    T13 (2026-06-29 v4.7): Guardrail OLN>Name -- OLN=D999888777 + Name+DOB all filled. DQN fires, Name+BirthDate absent from ConnectCIC XML. OLN wins confirmed.
+    T11 (2026-06-29, pre-v4.8 as DQ): Name=DOE/JON + DOB=1985-01-15 -- DriverLicenseQuery/DQ fired. Name=DOE, JON (Last-first comma-space confirmed). BirthDate=01151985 (MMddyyyy conversion confirmed). OLN absent.
+    T12 (2026-06-29, pre-v4.8 as DQ): any[] -- added SexCode=Male -> M (reverse-lookup confirmed), ImageIndicator=Y, State=NJ all serialize.
+    T13 (2026-06-29, pre-v4.8 as DQN/DQ): Guardrail OLN>Name -- OLN=D999888777 + Name+DOB all filled. DQN fires, Name+BirthDate absent from ConnectCIC XML. OLN wins confirmed.
 
 ================================================================================
 3. GunQuery -- Firearm Entity
@@ -75,7 +82,7 @@ USER-APPROVED SKIPS:
   QIF:  Firearm
   Combos: QG
 
-  QG -- Serial Number [CONFIRMED]
+  QG -- Serial Number [PENDING]
     set: gunSerialNumber
     any: gunCaliber, gunMake, gunModel, imageIndicator
     keyReference: QG
@@ -90,7 +97,7 @@ USER-APPROVED SKIPS:
   QIF:  Article
   Combos: QA
 
-  QA -- Serial + ArticleType [CONFIRMED]
+  QA -- Serial + ArticleType [PENDING]
     set: articleSerialNumber, articleTypeCode
     any: imageIndicator
     keyReference: QA
@@ -107,7 +114,7 @@ USER-APPROVED SKIPS:
   Note: No State field on Boat entity
   guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QBN -- Hull ID search [CONFIRMED]
+  QBN -- Hull ID search [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
@@ -115,7 +122,7 @@ USER-APPROVED SKIPS:
     T17 (2026-06-29 v4.7): any[] -- Image=Y serializes on QBN.
     T20 (2026-06-29 v4.7): Guardrail Hull>Reg -- Hull=REG367393 + Reg=FL1234AB56H7 co-filled. QBN fires, RegistrationNumber absent from XML. Hull wins confirmed.
 
-  QB -- Registration Number search [CONFIRMED]
+  QB -- Registration Number search [PENDING]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
@@ -135,5 +142,6 @@ SUMMARY
 ================================================================================
 
   Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips: VehicleStolenQuery QV*)
-  CONFIRMED: RQ, RQN (Vehicle), DQN, DQ (Person), QBN, QB (Boat), QG (Firearm), QA (Article) -- 8/8 (2026-06-29 v4.7)
-  PENDING:   none
+  CONFIRMED: none -- v4.8 keyRef rename requires full re-test from T1 (RANDFULL, RANDFULLN
+    (Vehicle), FULLN, FULL (Person), QBN, QB (Boat), QG (Firearm), QA (Article))
+  PENDING:   RANDFULL, RANDFULLN, FULLN, FULL, QBN, QB, QG, QA -- 8/8

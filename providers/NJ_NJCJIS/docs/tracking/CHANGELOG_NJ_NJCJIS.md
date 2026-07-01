@@ -2,9 +2,21 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.7** | Generated: 2026-07-01
+Current: **v4.8** | Generated: 2026-07-01
 
 ---
+
+## v4.8 -- 2026-07-01 -- Metadata-driven keyRef rename (DQ/DQN/RQ/RQN did not exist in devdoc)
+
+**CHANGED:** DriverLicenseQuery DQ->FULL, DQN->FULLN (devdoc keyReference is 'FULL' for both
+  combos, confirmed in source/NJ_NJCJIS.xml). VehicleRegistrationQuery RQ->RANDFULL,  
+  RQN->RANDFULLN (devdoc defines 4 combos under keyReference 'RAND' and 'FULL', each  
+  identical Set/Any per identifier -- one merged physical combo per identifier required;  
+  compound name reflects both devdoc terms it serves). NJ build script only.  
+**REASON:** user audit -- 'DQ'/'DQN'/'RQ'/'RQN' do not exist anywhere in NJ's devdoc; they were
+  a cross-provider <Entity>Q/<Entity>QN naming habit carried over from another provider's  
+  build script, not derived from this provider's own metadata. Version bump invalidates  
+  all prior test evidence under the old keyRef names; full re-test from T1 required.  
 
 ## v4.7 -- 2026-06-26 -- VehicleMakeName code source corrected (RND-62365)
 

@@ -37,11 +37,17 @@ All JSON versions produced for this provider.
 
 
 
+## v4.8 (2026-07-01)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS_v4.8.json | v4.8 | Current | 61P/0F/0W/0LIM. Metadata-driven keyRef rename: DQ->FULL, DQN->FULLN, RQ->RANDFULL, RQN->RANDFULLN (old names did not exist in NJ's devdoc). Re-import + full re-test from T1. |
+
 ## v4.7 (2026-06-26)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NJ_NJCJIS_v4.7.json | v4.7 | Current | 61P/0F/0W/0LIM. VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; fixes Newark vehicle "Mock results processed"). Re-import + full re-test from T1. |
+| NJ_NJCJIS_v4.7.json | v4.7 | Superseded | 61P/0F/0W/0LIM. VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; fixes Newark vehicle "Mock results processed"). Re-import + full re-test from T1. |
 
 ## v4.6 (2026-06-25)
 

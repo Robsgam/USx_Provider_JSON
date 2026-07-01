@@ -7,7 +7,12 @@ not every build bump. Routine pipeline rebuilds are omitted unless they carry fu
 
 ## NJ_NJCJIS
 
-Current: **v4.7** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.7.json`
+Current: **v4.8** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.8.json`
+
+### v4.8 (2026-07-01) — Metadata-driven keyRef rename (DQ/DQN/RQ/RQN did not exist in devdoc)
+- DriverLicenseQuery `DQ`→`FULL`, `DQN`→`FULLN` (devdoc keyReference is `FULL` for both combos, confirmed in raw devdoc XML)
+- VehicleRegistrationQuery `RQ`→`RANDFULL`, `RQN`→`RANDFULLN` (devdoc defines 4 combos under keyReference `RAND`/`FULL`, each identical Set/Any per identifier — one merged physical combo per identifier required; compound name reflects both)
+- `DQ`/`DQN`/`RQ`/`RQN` did not exist anywhere in NJ's devdoc — a cross-provider naming habit, not derived from this provider's own metadata; re-import + full re-test from T1
 
 ### v4.7 (2026-06-26) — VehicleMakeName code source corrected (RND-62365)
 - VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName)

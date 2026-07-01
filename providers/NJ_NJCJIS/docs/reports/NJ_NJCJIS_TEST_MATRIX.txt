@@ -1,4 +1,4 @@
-NJ_NJCJIS v4.7 -- TEST MATRIX
+NJ_NJCJIS v4.8 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect + negative
@@ -39,8 +39,8 @@ Boat (1 card, 3 fields):
 
 QIDM SUMMARY (5 QIDMs, 8 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 2 combos (RQ x2), autoSelect=true
-  DriverLicenseQuery: 2 combos (DQ x2), autoSelect=true
+  VehicleRegistrationQuery: 2 combos (RANDFU x2), autoSelect=true
+  DriverLicenseQuery: 2 combos (FULLN x1, FULL x1), autoSelect=true
   GunQuery: 1 combos (QG x1)
   ArticleSingleQuery: 1 combos (QA x1)
   BoatQuery: 2 combos (QB x2)
@@ -64,16 +64,16 @@ ENTITY 1: VEHICLE (7 tests -- 3 cards, 2 combos)
               Plate Number (required), Plate Type (optional) dropdown=PC, Plate Year (optional)=2026.
               CARD_VEH_VIN: titled "VIN SEARCH".
               VIN (required).
- 2  Vehicle     RQ+Plate           LicensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (RQ)
- 3  Vehicle     RQ+Plate           + RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator [    ]
+ 2  Vehicle     RANDFU+RANDFULL    LicensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (RANDFULL)
+ 3  Vehicle     RANDFU+RANDFULL    + RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
- 4  Vehicle     RQ+N               VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RQN)
- 5  Vehicle     RQ+N               + RandomRequest, RegistrationState, ImageIndicator [    ]
+ 4  Vehicle     RANDFU+RANDFULLN   VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RANDFULLN)
+ 5  Vehicle     RANDFU+RANDFULLN   + RandomRequest, RegistrationState, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
- 6  Vehicle     Guardrail: RQ>RQN  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ). VIN absent from XML.
+ 6  Vehicle     Guardrail: RANDFULL>RANDFULLN  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (RANDFULL). VIN absent from XML.
  7  Vehicle     Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 2: PERSON (7 tests -- 3 cards, 2 combos)
@@ -88,16 +88,16 @@ ENTITY 2: PERSON (7 tests -- 3 cards, 2 combos)
               CARD_PER_NAME: titled "NAME SEARCH".
               First Name, Last Name.
               Date of Birth (required with Name), Sex (optional) dropdown (no default).
- 9  Person      DQ+N               OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DQN)
-10  Person      DQ+N               + ImageIndicator, RegistrationState [    ]
+ 9  Person      FULLN+FULLN        OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (FULLN)
+10  Person      FULLN+FULLN        + ImageIndicator, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-11  Person      DQ+DOB             BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (DQ)
-12  Person      DQ+DOB             + ImageIndicator, SexCode, RegistrationState [    ]
+11  Person      FULL+FULL          BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (FULL)
+12  Person      FULL+FULL          + ImageIndicator, SexCode, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-13  Person      Guardrail: DQN>DQ  OperatorLicenseNumber=D999888777, Bir... [    ]
-              Expected: DriverLicenseQuery fires (DQN). DOB+LastName+FirstName absent from XML.
+13  Person      Guardrail: FULLN>FULL  OperatorLicenseNumber=D999888777, Bir... [    ]
+              Expected: DriverLicenseQuery fires (FULLN). DOB+LastName+FirstName absent from XML.
 14  Person      Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 3: BOAT (7 tests -- 1 card, 2 combos)
@@ -150,10 +150,10 @@ ENTITY 5: ARTICLE (4 tests -- 1 card, 1 combo)
 TOTAL: 29 tests
 
 COMBO COVERAGE (8/8):
-  VehicleRegistrationQuery: 2/2 -- T2(Plate), T4(N)
-  DriverLicenseQuery: 2/2 -- T9(N), T11(DOB)
+  VehicleRegistrationQuery: 2/2 -- T2(RANDFULL), T4(RANDFULLN)
+  DriverLicenseQuery: 2/2 -- T9(FULLN+FULLN), T11(FULL+FULL)
   GunQuery: 1/1 -- T23(Serial)
   ArticleSingleQuery: 1/1 -- T27(Serial)
   BoatQuery: 2/2 -- T16(N), T18(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.7.json
+IMPORT FILE: NJ_NJCJIS_v4.8.json
