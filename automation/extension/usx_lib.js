@@ -140,7 +140,7 @@
     // 2-3 options) still failing intermittently even with a 2s option-render poll pointed at
     // THIS earlier, unconfirmed step rather than option-render speed.
     let t = Date.now();
-    const opened = await pollFor(() => document.querySelector('[class*="select__menu"], [class*="select__option"], [role=option]'), 1500, 100);
+    const opened = await pollFor(() => document.querySelector('[class*="select__menu"], [role=option]'), 1500, 100);
     dbg(opened ? `menu opened after ${Date.now() - t}ms` : `menu open NOT confirmed after ${Date.now() - t}ms -- proceeding best-effort`);
 
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, value);
@@ -149,20 +149,21 @@
     const re = new RegExp('^' + code + '\\b', 'i');
 
     // Scope the option lookup to THIS field's own open listbox via aria-controls (the standard
-    // ARIA combobox link from an input to its own menu) instead of querying the whole document.
-    // Live-confirmed root cause (2026-07-01): an unscoped document.querySelectorAll picked up a
-    // stale/leftover [role=option] element from a DIFFERENT field's menu that hadn't fully
-    // unmounted -- SexCode matched a bogus single-char option ("m") and landed on the wrong
-    // final value ("F - Female"); RegistrationState found only 9 "option(s)" (a real US-state
-    // list has 50+) and landed on "MI - Michigan". Both resolved in 0-1ms, too fast to be a
-    // freshly rendered menu -- a second, unrelated open/leftover menu elsewhere in the DOM.
+    // ARIA combobox link from an input to its own menu) instead of querying the whole document --
+    // fixes cross-field contamination from a different, unrelated open menu elsewhere on the page.
     const ariaControls = input.getAttribute('aria-controls') || (control && control.getAttribute('aria-controls'));
     const scopeRoot = () => (ariaControls && document.getElementById(ariaControls)) || document;
 
-    // Poll up to 2.5s for the filtered option list to render.
+    // STRICTLY [role="option"], not [class*="select__option"]. Live-confirmed root cause
+    // (2026-07-01, full option dump): the class-based selector also matched SUBSTRING-HIGHLIGHT
+    // spans nested inside OTHER (non-matching) options -- e.g. filtering "GA" against
+    // "MI - Michigan" (which contains "ga" in "michiGAn") split that label into 3 child spans
+    // ("MI - Michi" / "ga" / "n") for highlighting, and the isolated "ga" fragment trivially
+    // matched the anchored regex against itself. Same for "M" matching the "m" inside "Female".
+    // A highlight fragment is never itself an ARIA option row, so role=option alone excludes it.
     t = Date.now();
     const found = await pollFor(() => {
-      const opts = [...scopeRoot().querySelectorAll('[class*="select__option"], [role=option]')];
+      const opts = [...scopeRoot().querySelectorAll('[role="option"]')];
       if (!opts.length) return null;
       const m = opts.find((o) => re.test((o.textContent || '').trim()));
       return { opt: m || opts[0], matched: !!m, count: opts.length, allTexts: opts.map((o) => (o.textContent || '').trim()) };
