@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Boat BoatQuery
 Combo: QBN_af_ImageIndicator (QBN_af_ImageIndicator (auto))
-Date: 2026-07-01 11:01:19
+Date: 2026-07-01 12:21:12
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 6902ecd820e01bd5ebeae1fce1f3487f358b83d0b090cc53e06040d14feba1ba
@@ -10,11 +10,11 @@ Tier: Full
 
 FORM STATE
 ----------
-@{BoatHullIdNumber=FL1234AB56H7; ImageIndicator=N}
+Not captured
 
 XML REQUEST
 -----------
-<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWF0Q5WN980HQMF4GYB45DNS"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KWF0Q5WN980HQMF4GYB45DNS</Id><BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
+<?xml version="1.0" encoding="UTF-8"?><api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api"><api:Route><api:Source>MK43RS</api:Source><api:Destinations><api:Destination>ConnectCic</api:Destination></api:Destinations></api:Route><api:Transactions><api:Transaction id="01KWF7QBK4QV3HG4633SEARDBX"><LawEnforcementTransaction version="1.0"><Session><Id>MK43RS</Id><Authentication><UserName>MK43RS</UserName><ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication></Session><Transaction><Request><MessageType>BoatQuery</MessageType><Id>01KWF7QBK4QV3HG4633SEARDBX</Id><BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber><ImageIndicator>N</ImageIndicator></Request></Transaction></LawEnforcementTransaction></api:Transaction></api:Transactions></api:ConnectCicApi>
 
 XML RESPONSE
 ------------
@@ -27,12 +27,12 @@ AUTO-EXTRACTED FROM XML REQUEST:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWF0Q5WN980HQMF4GYB45DNS
+  Id                             01KWF7QBK4QV3HG4633SEARDBX
   BoatHullIdNumber               FL1234AB56H7
   ImageIndicator                 N
 
 NOTES
 -----
-Automated capture (txId 01KWF0Q5WN980HQMF4GYB45DNS). kind=any-field; anyField=ImageIndicator; expectedKeyRef=; firedMessageType=BoatQuery.
+Automated capture (txId 01KWF7QBK4QV3HG4633SEARDBX). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QBN; firedMessageType=BoatQuery.
 
 RESULT: PASS
