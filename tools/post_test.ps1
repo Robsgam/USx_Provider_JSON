@@ -295,10 +295,28 @@ if (Test-Path $sqvrPath) {
         $newMarker = "[FAILED -- $dateStr]"
     }
 
-    $comboEsc = [regex]::Escape($Combo)
+    # SQVR documents BASE combo names only (e.g. "RQN") -- it has no entries for the
+    # any-field/all-any variant labels import_captured_tests.ps1 constructs for log-naming
+    # (e.g. "RQN_af_RandomRequest", "DQN_any"). Matching $Combo directly against SQVR text
+    # therefore never found a marker for any variant test, only base-combo tests. Strip the
+    # variant suffix for SQVR lookup purposes; $Combo (full label) is still used everywhere
+    # else (log filename, description, STATUS row) so per-kind logs stay distinct.
+    $baseCombo = $Combo -replace '(_af_[A-Za-z0-9]+|_any)$', ''
+    $comboEsc = [regex]::Escape($baseCombo)
+
+    # Match ANY marker state, not just [PENDING] -- a combo's FIRST variant test (base,
+    # any-field, or all-any -- whichever runs first) already flips the marker away from
+    # [PENDING], so every SUBSEQUENT variant of the same combo would otherwise never find a
+    # [PENDING] to replace and would falsely WARN. Matching any marker lets us detect the
+    # "already at the target state" case (a satisfied no-op, not a warning) while still
+    # correctly downgrading CONFIRMED->FAILED (or updating a FAILED date) when the new result
+    # actually differs.
+    $markerPattern = '\[(?:PENDING|CONFIRMED|FAILED[^\]]*)\]'
+    $newMarkerEsc = [regex]::Escape($newMarker)
+    $alreadySatisfied = $false
 
     # Strategy 1: Find "keyReference: <Combo>" line, then look UP for the
-    #             description line that has [PENDING] and replace ONLY that one.
+    #             description line carrying a marker and replace ONLY that one.
     $keyRefIdx = -1
     for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
         if ($sqvrLines[$i] -match "^\s*keyReference:\s*${comboEsc}(\s|$)") {
@@ -308,11 +326,11 @@ if (Test-Path $sqvrPath) {
     }
 
     if ($keyRefIdx -ge 0) {
-        # Walk backwards from keyReference line to find the [PENDING] description line
+        # Walk backwards from keyReference line to find the marker description line
         for ($j = $keyRefIdx - 1; $j -ge [Math]::Max(0, $keyRefIdx - 5); $j--) {
-            if ($sqvrLines[$j] -match '\[PENDING\]') {
-                $sqvrLines[$j] = $sqvrLines[$j] -replace '\[PENDING\]', $newMarker
-                $sqvrUpdated = $true
+            if ($sqvrLines[$j] -match $markerPattern) {
+                if ($sqvrLines[$j] -match $newMarkerEsc) { $alreadySatisfied = $true }
+                else { $sqvrLines[$j] = $sqvrLines[$j] -replace $markerPattern, $newMarker; $sqvrUpdated = $true }
                 break
             }
         }
@@ -320,33 +338,33 @@ if (Test-Path $sqvrPath) {
 
     # Strategy 2: Combo might be the short name on the description line itself
     #             (e.g., "RQ+Plate", "FRQ+VIN", "REG Plate").
-    #             Match: line starts with whitespace + combo text + " -- " + ... + [PENDING]
-    if (-not $sqvrUpdated) {
+    #             Match: line starts with whitespace + combo text + " -- " + ... + marker
+    if (-not $sqvrUpdated -and -not $alreadySatisfied) {
         # Normalize combo for matching: "RQ.Plate" -> also try "RQ Plate", "RQ+Plate"
         $comboVariants = @($comboEsc)
-        $comboVariants += [regex]::Escape(($Combo -replace '[.+]', ' '))
-        $comboVariants += [regex]::Escape(($Combo -replace '[. ]', '+'))
+        $comboVariants += [regex]::Escape(($baseCombo -replace '[.+]', ' '))
+        $comboVariants += [regex]::Escape(($baseCombo -replace '[. ]', '+'))
         $comboVariants = $comboVariants | Select-Object -Unique
 
         for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
             foreach ($cv in $comboVariants) {
-                if ($sqvrLines[$i] -match "^\s+${cv}\s+--.*\[PENDING\]") {
-                    $sqvrLines[$i] = $sqvrLines[$i] -replace '\[PENDING\]', $newMarker
-                    $sqvrUpdated = $true
+                if ($sqvrLines[$i] -match "^\s+${cv}\s+--.*${markerPattern}") {
+                    if ($sqvrLines[$i] -match $newMarkerEsc) { $alreadySatisfied = $true }
+                    else { $sqvrLines[$i] = $sqvrLines[$i] -replace $markerPattern, $newMarker; $sqvrUpdated = $true }
                     break
                 }
             }
-            if ($sqvrUpdated) { break }
+            if ($sqvrUpdated -or $alreadySatisfied) { break }
         }
     }
 
     # Strategy 3: Combo might be embedded in the description line text
     #             (e.g., user passes "RMS co-fire" and the line says "  RMS co-fire [PENDING]")
-    if (-not $sqvrUpdated) {
+    if (-not $sqvrUpdated -and -not $alreadySatisfied) {
         for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
-            if ($sqvrLines[$i] -match $comboEsc -and $sqvrLines[$i] -match '\[PENDING\]') {
-                $sqvrLines[$i] = $sqvrLines[$i] -replace '\[PENDING\]', $newMarker
-                $sqvrUpdated = $true
+            if ($sqvrLines[$i] -match $comboEsc -and $sqvrLines[$i] -match $markerPattern) {
+                if ($sqvrLines[$i] -match $newMarkerEsc) { $alreadySatisfied = $true }
+                else { $sqvrLines[$i] = $sqvrLines[$i] -replace $markerPattern, $newMarker; $sqvrUpdated = $true }
                 break
             }
         }
@@ -362,9 +380,15 @@ if (Test-Path $sqvrPath) {
             } else { $_ }
         }
         ($sqvrLines -join "`n") | Set-Content -Path $sqvrPath -Encoding UTF8 -NoNewline
-        Write-Ok "SQVR: [PENDING] -> $newMarker"
+        Write-Ok "SQVR: -> $newMarker"
+    } elseif ($alreadySatisfied) {
+        # A prior variant test for this same base combo already set the marker to this exact
+        # state (e.g. base combo PASSed and flipped [PENDING]->[CONFIRMED]; this any-field/any
+        # variant also PASSed) -- nothing to change, and NOT a warning-worthy condition.
+        Write-Ok "SQVR: already $newMarker for '$baseCombo' (no change needed)"
     } else {
-        Write-Warn "SQVR: Could not find [PENDING] marker for combo '$Combo'"
+        $comboDisplay = if ($baseCombo -ne $Combo) { "'$Combo' (base '$baseCombo')" } else { "'$Combo'" }
+        Write-Warn "SQVR: Could not find a marker for combo $comboDisplay"
         Write-Warn "      Manual update may be needed: $sqvrPath"
     }
 } else {
