@@ -6,6 +6,16 @@
   Usage:
     .\tools\watch_captures.ps1            # auto-import + commit
     .\tools\watch_captures.ps1 -NoCommit  # import only, no git commit
+
+  STARTUP CATCH-UP: .NET's FileSystemWatcher only notifies about files created AFTER it
+  starts -- it does NOT scan for files already sitting in Downloads. Live-confirmed
+  (2026-07-01): a ~30min gap where a prior watcher instance was killed left 11 stale
+  usx_captured_batch_labeled*.json files piled up (each __usxBulkFetch re-downloads the
+  FULL accumulated capture set, and Chrome appends " (N)" rather than overwrite an existing
+  same-named file) -- a freshly started watcher would never have picked any of them up. On
+  startup, sweep for pre-existing matches: import only the LARGEST (byte size is a safe proxy
+  for "most complete accumulated snapshot" since later fetches are supersets of earlier ones),
+  discard the rest as redundant duplicates.
 #>
 param([switch]$NoCommit)
 
@@ -32,6 +42,40 @@ function Wait-FileReady($p) {
     return $false
 }
 
+# Import one capture file (shared by the startup sweep and the live watch loop below).
+function Import-CaptureFile($path, $label) {
+    if (-not (Wait-FileReady $path)) {
+        Write-Host "[WATCH] $label never became readable (still locked or vanished) -- skipping." -ForegroundColor DarkYellow
+        return
+    }
+    Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
+    try {
+        if ($NoCommit) { & $importScript -Path $path -NoCommit }
+        else           { & $importScript -Path $path -Commit }
+    } catch {
+        Write-Host "[WATCH] import errored (watcher stays up): $_" -ForegroundColor Red
+    }
+    # import_captured_tests.ps1 archives (moves) the file into automation/captures; this is a
+    # harmless no-op if it's already gone.
+    Remove-Item $path -Force -ErrorAction SilentlyContinue
+}
+
+# Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
+# (no-op) on a clean start.
+$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_captured_batch_labeled*.json' -File -ErrorAction SilentlyContinue)
+if ($preExisting.Count -gt 0) {
+    Write-Host "[WATCH] startup sweep: found $($preExisting.Count) pre-existing capture file(s) in Downloads." -ForegroundColor Magenta
+    $newest = $preExisting | Sort-Object Length -Descending | Select-Object -First 1
+    Write-Host "[WATCH] importing largest/most-complete: $($newest.Name) ($($newest.Length) bytes)" -ForegroundColor Magenta
+    Import-CaptureFile $newest.FullName $newest.Name
+    $discard = $preExisting | Where-Object { $_.FullName -ne $newest.FullName }
+    foreach ($d in $discard) {
+        Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
+        Write-Host "[WATCH] discarded redundant duplicate: $($d.Name) ($($d.Length) bytes)" -ForegroundColor DarkYellow
+    }
+    Write-Host "[WATCH] startup sweep complete.`n" -ForegroundColor Magenta
+}
+
 $watcher = New-Object System.IO.FileSystemWatcher
 $watcher.Path             = $downloads
 $watcher.Filter           = 'usx_captured_batch_labeled*.json'
@@ -50,19 +94,6 @@ while ($true) {
     $recent[$ev.Name] = $now
 
     Write-Host "[WATCH] $($ev.Name) detected -- waiting for Chrome to finish writing..." -ForegroundColor Yellow
-    if (-not (Wait-FileReady $path)) {
-        Write-Host "[WATCH] $($ev.Name) never became readable (still locked or vanished) -- skipping." -ForegroundColor DarkYellow
-        continue
-    }
-    Write-Host "[WATCH] importing..." -ForegroundColor Yellow
-    try {
-        if ($NoCommit) { & $importScript -Path $path -NoCommit }
-        else           { & $importScript -Path $path -Commit }
-    } catch {
-        Write-Host "[WATCH] import errored (watcher stays up): $_" -ForegroundColor Red
-    }
-    # import_captured_tests.ps1 archives (moves) the file into automation/captures; this is a
-    # harmless no-op if it's already gone.
-    Remove-Item $path -Force -ErrorAction SilentlyContinue
+    Import-CaptureFile $path $ev.Name
     Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
 }

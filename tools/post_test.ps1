@@ -583,8 +583,10 @@ Write-Step $stepLabel $totalSteps "Summary"
 $relLogPath = $logPath.Replace("$repoRoot\", "").Replace("\", "/")
 $sqvrStatus = if ($sqvrUpdated) {
     if ($Result -eq 'PASS') { "Updated [PENDING] -> [CONFIRMED]" }
-    else { "Updated [PENDING] -> [FAILED]" }
-} else { "No matching [PENDING] found (manual update needed)" }
+    else { "Updated -> [FAILED]" }
+} elseif ($alreadySatisfied) {
+    "Already $newMarker (no change needed)"
+} else { "No matching marker found (manual update needed)" }
 
 $statusStatus = if ($statusUpdated) { "Updated test matrix" } else { "No update" }
 
