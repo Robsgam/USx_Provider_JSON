@@ -106,6 +106,65 @@
     if (!m) return null;
     try { return JSON.parse(m[0]); } catch (e) { return null; }
   }
+
+  // ---- RMS-side capture (2026-07-01) -------------------------------------------
+  // dex-log's table carries an RMS-destination row alongside the ConnectCic row for every
+  // query that has an RMS mapping (Person/Vehicle only per the RMS bundle -- Gun/Article/Boat/DH
+  // have none, so finding no RMS row for those is EXPECTED, not a failure). The RMS row's own
+  // "View request and return" popup shows a single textarea:
+  //   ***** Request *****\n\n{elasticQuery JSON}\n\n***** Response *****\n\n<text, e.g. "No Returns">
+  // (live-confirmed via __usxRmsPopupRecon spike). Unlike the ConnectCic popup, this one loaded
+  // real content from a purely synthetic click (no "trusted gesture" gate observed) -- still
+  // click-based, not zero-click network, since the network body for RMS items isn't retained by
+  // nethook.js (its capture regex only keeps XML-shaped or /queries/search list bodies).
+  function extractRmsPopup(text) {
+    const m = /\*{5}\s*Request\s*\*{5}\s*([\s\S]*?)\*{5}\s*Response\s*\*{5}\s*([\s\S]*)/i.exec(text || '');
+    if (!m) return null;
+    let requestJson = null;
+    try { requestJson = JSON.parse(m[1].trim()); } catch (e) { requestJson = null; }
+    return { requestRaw: m[1].trim(), requestJson, response: m[2].trim() };
+  }
+  // Order-independent shallow equality for two plain field-map objects (JSON key order in the
+  // DOM's rendered "Query String" cell isn't guaranteed to match our own JSON.stringify order).
+  function fieldsEqual(a, b) {
+    if (!a || !b) return false;
+    const ak = Object.keys(a), bk = Object.keys(b);
+    if (ak.length !== bk.length) return false;
+    return ak.every((k) => String(a[k]) === String(b[k]));
+  }
+  // Find the RMS-destination row (Query cell === 'RMS') whose Query String cell matches the
+  // given fields object. Returns null if none exists -- normal for entities with no RMS mapping.
+  function findRmsRowForFields(fieldsObj) {
+    if (!fieldsObj) return null;
+    const rows = [...document.querySelectorAll('.arc-table_row')].filter((r) => r.querySelector('.arc-table_cell'));
+    for (const r of rows) {
+      const cells = [...r.querySelectorAll('.arc-table_cell')];
+      if (!cells.length || (cells[1] && cells[1].textContent.trim() !== 'RMS')) continue;
+      const qs = cells[0] ? cells[0].textContent.trim() : '';
+      let parsed = null;
+      try { parsed = JSON.parse(qs); } catch (e) { continue; }
+      if (fieldsEqual(parsed, fieldsObj)) return r;
+    }
+    return null;
+  }
+  // Click an RMS row's "View request and return" link, scrape+parse the popup, close it.
+  // Best-effort: returns null (not throw) on any failure so a missing/slow RMS row never
+  // aborts the caller's main ConnectCic capture.
+  async function captureRmsRow(rmsRow) {
+    try {
+      const link = [...rmsRow.querySelectorAll('button, a')].find((b) => /view request/i.test(b.textContent || ''));
+      if (!link) return null;
+      closePopup(); await L.sleep(200);
+      realClick(link);
+      await waitFor(popupOpen, 2500);
+      await L.sleep(700);
+      const portal = document.querySelector('.chakra-portal');
+      const raw = portal ? (portal.textContent || '').trim() : null;
+      closePopup();
+      return raw ? extractRmsPopup(raw) : null;
+    } catch (e) { return null; }
+  }
+
   // Scan the (light) DOM -- including the Chakra portal where the popup renders.
   function scanForXml() {
     for (const el of document.querySelectorAll('textarea, pre, code, div, td, span, section')) {
@@ -165,8 +224,13 @@
     const x = await waitForXml(3500);
     const xx = x || scanNetworkForXml();
     const closed = closePopup(); await L.sleep(300);
-    if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed };
-    return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true };
+    // RMS row (if this entity has one -- Person/Vehicle only; Gun/Article/Boat/DH normally
+    // won't, which is expected, not a failure). Best-effort: never blocks the main XML result.
+    const rmsRow = findRmsRowForFields(fields);
+    const rms = rmsRow ? await captureRmsRow(rmsRow) : null;
+    const rmsFields = { rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null };
+    if (xx) return { ok: true, fields, requestXml: xx.xml, transactionId: xx.transactionId, messageType: xx.messageType, via: x ? 'dom' : 'network', popupClosed: closed, ...rmsFields };
+    return { ok: false, fields, requestXml: null, transactionId: null, messageType: null, popupClosed: true, ...rmsFields };
   }
 
   // Merge a captured row with the driver's test context (stashed in localStorage by
@@ -187,17 +251,29 @@
       transactionId: rec.transactionId,
       requestXml: rec.requestXml,
       formState: fs,
+      rmsRequestJson: rec.rmsRequestJson != null ? rec.rmsRequestJson : null,
+      rmsResponse: rec.rmsResponse != null ? rec.rmsResponse : null,
       capturedAt: new Date().toISOString()
     };
   }
 
   // Data rows only (skip the header: keep rows that actually have a "View request" link).
-  // NOTE: this deliberately EXCLUDES RMS-destination rows (they have no "View request" link
-  // since there's no ConnectCic XML behind them) -- see __usxDexTableRecon below, which is
-  // recon'ing exactly those excluded rows to find what data they DO carry.
+  // CORRECTED 2026-07-01: originally assumed this filter alone excluded RMS-destination rows
+  // (on the premise they had no "View request" link, hence no XML) -- __usxDexTableRecon +
+  // __usxRmsPopupRecon proved that premise wrong: RMS rows have the SAME link, just behind a
+  // differently-shaped popup (elasticQuery/response text, not ConnectCic XML). Without an
+  // explicit exclusion here, every ConnectCic-row function (captureRowEl et al.) would also
+  // iterate RMS rows and miscount them as failed ConnectCic captures (ok:false, no XML found)
+  // instead of the separate, successful RMS captures they now are via captureRmsRow(). The
+  // Query column value is the reliable discriminator (only ConnectCic rows carry a MessageType-
+  // style query name there; RMS rows always say exactly "RMS").
   function dataRows() {
-    return [...document.querySelectorAll('.arc-table_row')]
-      .filter((r) => [...r.querySelectorAll('button,a')].some((b) => /view request/i.test(b.textContent || '')));
+    return [...document.querySelectorAll('.arc-table_row')].filter((r) => {
+      const hasLink = [...r.querySelectorAll('button,a')].some((b) => /view request/i.test(b.textContent || ''));
+      if (!hasLink) return false;
+      const cells = [...r.querySelectorAll('.arc-table_cell')];
+      return !(cells[1] && cells[1].textContent.trim() === 'RMS');
+    });
   }
 
   // RMS-ROW RECON (spike, 2026-07-01 round 3): dex-log's table has an RMS-destination row
@@ -326,6 +402,8 @@
       formState: rec.formState != null
         ? (typeof rec.formState === 'string' ? rec.formState : JSON.stringify(rec.formState))
         : (rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null),
+      rmsRequestJson: rec.rmsRequestJson != null ? rec.rmsRequestJson : null,
+      rmsResponse: rec.rmsResponse != null ? rec.rmsResponse : null,
       capturedAt: new Date().toISOString(), ok: rec.ok
     };
   }
@@ -495,7 +573,12 @@
       let xml = null;
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
-      fresh.push({ qId: q.id, formState: q.parsedRawQuery || null, xml });
+      // RMS pair, if this entity has one (Person/Vehicle only) AND its row happens to still be
+      // rendered on the CURRENT dex-log page (this is a network-fetched list -- older/paginated
+      // items may not be in the live DOM; best-effort, never blocks the main XML result).
+      const rmsRow = findRmsRowForFields(q.parsedRawQuery);
+      const rms = rmsRow ? await captureRmsRow(rmsRow) : null;
+      fresh.push({ qId: q.id, formState: q.parsedRawQuery || null, xml, rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null });
       have.add(q.id);
       if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
       if (fresh.length % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${fresh.length}...`);
@@ -535,9 +618,9 @@
 
       if (mi >= 0) {
         usedM.add(mi);
-        out.push(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true }));
+        out.push(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse }));
       } else {
-        out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, capturedAt: new Date().toISOString(), ok: true });
+        out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse, capturedAt: new Date().toISOString(), ok: true });
       }
     }
     const added = fresh.length;

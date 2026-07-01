@@ -23,6 +23,13 @@
 #     -Provider TX_TLETS -Entity Person -Query DriverLicenseQuery `
 #     -Combo "DQ+Name" -Result FAIL -Description "Wrong keyRef" `
 #     -Notes "Expected DQ fired QW instead"
+#
+# ── RMS PAIR (optional, Person/Vehicle only) ────────────────────────────────
+#   Add -RmsRequestJson (the RMS-side elasticQuery JSON string) and -RmsResponse
+#   (e.g. "No Returns") when captured. Absent is normal for Gun/Article/Boat/DH
+#   (no RMS mapping exists for those entities) -- not a gap to chase.
+#   Writes the log's RMS QUERY section AND a standalone logs/rms/<stem>.json
+#   snippet (paired with logs/xml/<stem>.xml, same filename stem as the log).
 
 param(
     [Parameter(Mandatory)][string]$Provider,
@@ -35,6 +42,8 @@ param(
     [string]$XmlRequest,
     [string]$XmlResponse,
     [string]$FormState,
+    [string]$RmsRequestJson,  # RMS-side elasticQuery JSON (Person/Vehicle only; absent = no RMS mapping for this entity, not a gap)
+    [string]$RmsResponse,     # RMS-side response text (e.g. "No Returns")
     [string]$Notes,
     [string]$Tier,   # tiers removed 2026-07-01; defaults to 'Full' via Get-ActiveTier
     [switch]$NoCommit,
@@ -219,19 +228,32 @@ if ($existingLogs.Count -gt 0) {
     $isUpdate = $true
 }
 
-# Build form state section
+# Build form state section (the dex-log field-map JSON, e.g. {"ImageIndicator":"N",...})
 $formStateContent = if ($FormState) { $FormState } else { "Not captured" }
 
 # Build XML sections
 $xmlReqContent  = if ($XmlRequest)  { $XmlRequest }  else { "Not captured" }
 $xmlRespContent = if ($XmlResponse) { $XmlResponse } else { "Not captured" }
 
+# Build RMS section. Absent is EXPECTED (not a gap) for entities with no RMS mapping
+# (Gun/Article/Boat/DH -- only Person/Vehicle have one per the RMS bundle).
+$rmsContent = "Not captured"
+if ($RmsRequestJson -or $RmsResponse) {
+    $rmsReqPretty = $RmsRequestJson
+    if ($RmsRequestJson) {
+        try { $rmsReqPretty = ($RmsRequestJson | ConvertFrom-Json | ConvertTo-Json -Depth 8) } catch { $rmsReqPretty = $RmsRequestJson }
+    }
+    $rmsReqDisplay  = if ($RmsRequestJson) { $rmsReqPretty } else { "Not captured" }
+    $rmsRespDisplay = if ($RmsResponse)    { $RmsResponse }  else { "Not captured" }
+    $rmsContent = "Request:`n$rmsReqDisplay`n`nResponse:`n$rmsRespDisplay"
+}
+
 # Auto-generate field analysis from XML if available
 $fieldAnalysis = "Not captured (no XML provided)"
 if ($XmlRequest) {
     $autoAnalysis = Get-XmlFieldAnalysis $XmlRequest
     if ($autoAnalysis) {
-        $fieldAnalysis = "AUTO-EXTRACTED FROM XML REQUEST:`n$autoAnalysis"
+        $fieldAnalysis = "AUTO-EXTRACTED FROM COMMSYS XML:`n$autoAnalysis"
     } else {
         $fieldAnalysis = "XML provided but no fields extracted (check format)"
     }
@@ -251,17 +273,21 @@ Entity Fingerprint: $entityFingerprint
 Tier: $Tier
 ================================================================
 
-FORM STATE
-----------
+QUERY STRING
+------------
 $formStateContent
 
-XML REQUEST
+COMMSYS XML
 -----------
 $xmlReqContent
 
-XML RESPONSE
-------------
+COMMSYS XML RESPONSE
+--------------------
 $xmlRespContent
+
+RMS QUERY
+---------
+$rmsContent
 
 FIELD ANALYSIS
 --------------
@@ -276,6 +302,27 @@ RESULT: $Result
 
 $logContent | Set-Content -LiteralPath $logPath -Encoding UTF8
 Write-Ok "Saved: $logPath"
+
+# Per-query raw snippet files (providers/<PROVIDER>/logs/xml/, logs/rms/) -- byte-faithful
+# passthrough of the same content embedded above, broken out standalone so each side is
+# independently inspectable/diffable without parsing the narrative log. Filename stem matches
+# the test log (minus .txt) so the pair is always findable by name alone.
+$logStem = [System.IO.Path]::GetFileNameWithoutExtension($logFilename)
+if ($XmlRequest) {
+    $xmlLogDir = Join-Path $providerDir "logs\xml"
+    if (-not (Test-Path $xmlLogDir)) { New-Item -ItemType Directory -Path $xmlLogDir -Force | Out-Null }
+    $xmlSnippetPath = Join-Path $xmlLogDir "$logStem.xml"
+    $XmlRequest | Set-Content -LiteralPath $xmlSnippetPath -Encoding UTF8
+}
+if ($RmsRequestJson -or $RmsResponse) {
+    $rmsLogDir = Join-Path $providerDir "logs\rms"
+    if (-not (Test-Path $rmsLogDir)) { New-Item -ItemType Directory -Path $rmsLogDir -Force | Out-Null }
+    $rmsSnippetPath = Join-Path $rmsLogDir "$logStem.json"
+    $rmsRequestObj = $null
+    if ($RmsRequestJson) { try { $rmsRequestObj = $RmsRequestJson | ConvertFrom-Json } catch { $rmsRequestObj = $RmsRequestJson } }
+    ([PSCustomObject]@{ request = $rmsRequestObj; response = $RmsResponse } | ConvertTo-Json -Depth 8) |
+        Set-Content -LiteralPath $rmsSnippetPath -Encoding UTF8
+}
 
 # ============================================================================
 # STEP 3: UPDATE SQVR
@@ -529,6 +576,8 @@ if (-not $NoCommit) {
     $filesToAdd = @($logPath)
     if ($sqvrUpdated) { $filesToAdd += $sqvrPath }
     if ($statusUpdated) { $filesToAdd += $statusPath }
+    if ($xmlSnippetPath) { $filesToAdd += $xmlSnippetPath }
+    if ($rmsSnippetPath) { $filesToAdd += $rmsSnippetPath }
 
     $gitOk = $true
     foreach ($f in $filesToAdd) {

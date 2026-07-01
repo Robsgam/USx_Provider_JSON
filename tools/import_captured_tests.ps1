@@ -4,7 +4,7 @@
   The automation extension (automation/extension/) downloads usx_captured_*.json files,
   each an array of records:
     { provider, entity, query, combo, tier, expectedKeyRef, messageType,
-      transactionId, requestXml, formState, capturedAt }
+      transactionId, requestXml, formState, rmsRequestJson, rmsResponse, capturedAt }
 
   This script feeds each record to post_test.ps1 -- which stamps JSON Version + Entity
   Fingerprint + Tier and writes the log. Result is computed: PASS when the fired query
@@ -148,6 +148,9 @@ foreach ($file in $files) {
         }
         if ($r.formState) { $ptArgs['FormState'] = $r.formState }
         if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
+        # RMS pair (Person/Vehicle only -- absent for Gun/Article/Boat/DH is normal, not a gap).
+        if ($r.rmsRequestJson) { $ptArgs['RmsRequestJson'] = ($r.rmsRequestJson | ConvertTo-Json -Depth 8 -Compress) }
+        if ($r.rmsResponse)    { $ptArgs['RmsResponse'] = $r.rmsResponse }
 
         $color = if ($result -eq 'PASS') { 'Green' } else { 'Red' }
         if ($r.underFilled) { Write-Host "  [under-filled] $($r.provider)/$entity $($r.query) $comboLabel" -ForegroundColor DarkYellow }
