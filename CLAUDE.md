@@ -257,6 +257,37 @@ Most-specific (most set[] fields) first. Less-specific last.
 
 ---
 
+## Live Test Capture — CommSys + RMS Pairing (standard as of NJ_NJCJIS v4.7, rolling out)
+
+**Background:** `Build-RmsBundle` only emits a Vehicle QIDM and a Person QIDM (see above) — Gun,
+Article, Boat, and DriverHistoryQuery have **no RMS mapping at all**. Prior to 2026-07-01, the
+capture automation (`automation/extension/`) only scraped the CommSys/ConnectCic wire XML from
+dex-log; it never touched the RMS side, so a whole class of RMS-only regressions (e.g. a QRDM
+code-source mismatch producing "Mock results processed" — see NJ v4.6→v4.7, and the same class
+fixed for FL/HI/CA) was only ever caught by someone manually screenshotting the RMS UI. This is
+now closed: dex-log's table carries an RMS-destination row alongside the ConnectCic row for every
+query that has an RMS mapping, and its own "View request and return" popup exposes the RMS
+elasticQuery request + response text — `automation/extension/capture.js` now captures both and
+pairs them by field-map content (order-independent), not by a fragile string/position match.
+
+**Test log section order** (`tools/post_test.ps1`): `QUERY STRING` (the dex-log field-map JSON)
+→ `COMMSYS XML` → `COMMSYS XML RESPONSE` → `RMS QUERY` (request + response together) →
+`FIELD ANALYSIS` → `NOTES`. `RMS QUERY` reads "Not captured" for Gun/Article/Boat/DH — that's the
+**correct, expected** state (no RMS mapping exists for those entities), not evidence of a gap.
+
+**Per-query snippet files**: alongside the narrative `.txt` log, every test also gets
+`providers/<PROVIDER>/logs/xml/<same-stem>.xml` (byte-faithful CommSys request XML) and, when an
+RMS pair exists, `providers/<PROVIDER>/logs/rms/<same-stem>.json` (`{request, response}`) — both
+named by the same filename stem as the test log, so the triple is always findable by name alone
+without parsing the narrative log.
+
+**Rollout**: NJ_NJCJIS is the pilot/reference implementation (v4.7, 2026-07-01). Other providers
+(CA_CLETS, FL_FCIC, NY_NYSPIN_EJUSTICE, TX_TLETS, etc.) pick this up automatically the next time
+they go through a full rebuild/re-test cycle — do not backport it to another provider's capture
+usage ad hoc before that.
+
+---
+
 ## QIF Layout Helpers — Shared Module
 
 **All builds**: All QIF layout construction functions are defined in `tools/_build_layout_helpers.ps1`. Build scripts dot-source it alongside `_build_rms_bundle.ps1`.
